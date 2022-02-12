@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.production.controller;
 
+import cn.atsoft.dasheng.app.model.result.AdressResult;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.model.params.ShipSetpParam;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
@@ -88,8 +91,6 @@ public class ShipSetpController extends BaseController {
         }};
         this.shipSetpService.format(results);
 
-
-
         return ResponseData.success(ToolUtil.isEmpty(results)? new ShipSetpResult() : results.get(0));
     }
 
@@ -105,7 +106,14 @@ public class ShipSetpController extends BaseController {
         if(ToolUtil.isEmpty(shipSetpParam)){
             shipSetpParam = new ShipSetpParam();
         }
-        return this.shipSetpService.findPageBySpec(shipSetpParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.shipSetpService.findPageBySpec(shipSetpParam, null);
+
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.shipSetpService.findPageBySpec(shipSetpParam,dataScope);
+        }
+
     }
 
 

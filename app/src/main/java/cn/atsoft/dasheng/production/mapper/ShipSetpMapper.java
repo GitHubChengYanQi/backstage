@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.production.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.model.params.ShipSetpParam;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
@@ -42,7 +44,7 @@ public interface ShipSetpMapper extends BaseMapper<ShipSetp> {
      * @author song
      * @Date 2022-02-10
      */
-    Page<ShipSetpResult> customPageList(@Param("page") Page page, @Param("paramCondition") ShipSetpParam paramCondition);
+    Page<ShipSetpResult> customPageList(@Param("page") Page page, @Param("paramCondition") ShipSetpParam paramCondition, @Param("dataScope")DataScope dataScope);
 
     /**
      * 获取分页map列表

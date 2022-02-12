@@ -28,6 +28,8 @@ import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -91,6 +93,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private ProcurementOrderService procurementOrderService;
     @Autowired
     private InquiryTaskService inquiryTaskService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -1022,22 +1026,35 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     void format(List<ActivitiProcessLogResult> data) {
         List<Long> taskIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
         for (ActivitiProcessLogResult datum : data) {
             taskIds.add(datum.getTaskId());
+            userIds.add(datum.getCreateUser());
         }
         List<ActivitiProcessTask> tasks = activitiProcessTaskService.listByIds(taskIds);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+
 
         for (ActivitiProcessLogResult datum : data) {
 
             for (ActivitiProcessTask task : tasks) {
 
                 if (datum.getTaskId().equals(task.getProcessTaskId())) {
-
                     ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
                     ToolUtil.copyProperties(task, taskResult);
                     datum.setTaskResult(taskResult);
                     break;
                 }
+
+            }
+
+            for (User user : userList) {
+
+                if (datum.getCreateUser().equals(user.getUserId())) {
+                    datum.setUser(user);
+                    break;
+                }
+
             }
         }
     }

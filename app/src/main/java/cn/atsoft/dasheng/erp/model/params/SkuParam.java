@@ -43,6 +43,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String spuName;
     private Long fileId;
     private SpuClassificationParam spuClassification;
+    private String spuClassName;
 
     private List<SkuAttributeAndValue> sku;
 
@@ -71,8 +72,8 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String skuValueMd5;
     @ApiModelProperty("是否禁用")
     private Integer isBan;
-    //    @ApiModelProperty("规格")
-//    public String specifications;
+    @ApiModelProperty("规格")
+    public String specifications;
     @ApiModelProperty("执行标准")
     private String standard;
 

@@ -27,6 +27,9 @@ public class SopParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<SopDetailParam> sopDetails;
+
+    private List<Long> sopIds;
+
     /**
      * sopId
      */

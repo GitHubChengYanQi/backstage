@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,12 +123,31 @@ public class SopController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SopParam sopParam) {
+
         QueryWrapper<Sop> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("display", 1);
+
+        Sop sop = null;
+
+        if (ToolUtil.isNotEmpty(sopParam)) {
+            if (ToolUtil.isNotEmpty(sopParam.getSopId())) {
+                sop = this.sopService.getById(sopParam.getSopId());
+            }
+            contactsQueryWrapper.isNull("ship_setp_id");
+        }
+
         List<Map<String, Object>> list = this.sopService.listMaps(contactsQueryWrapper);
         SopSelectWrapper contactsSelectWrapper = new SopSelectWrapper(list);
         List<Map<String, Object>> result = contactsSelectWrapper.wrap();
+
+        if (ToolUtil.isNotEmpty(sop)) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("label", sop.getName());
+            map.put("value", sop.getSopId());
+            result.add(map);
+        }
+
         return ResponseData.success(result);
     }
 
