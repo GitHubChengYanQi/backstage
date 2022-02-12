@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.model.params.ShipSetpParam;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
@@ -64,7 +65,7 @@ public interface ShipSetpService extends IService<ShipSetp> {
      * @author song
      * @Date 2022-02-10
      */
-     PageInfo<ShipSetpResult> findPageBySpec(ShipSetpParam param);
+     PageInfo<ShipSetpResult> findPageBySpec(ShipSetpParam param, DataScope dataScope);
 
     void format(List<ShipSetpResult> param);
 }
