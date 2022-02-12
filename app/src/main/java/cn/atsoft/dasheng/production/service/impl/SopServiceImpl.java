@@ -240,9 +240,13 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
     @Override
     public void format(List<SopResult> data) {
         List<Long> shipId = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
         for (SopResult datum : data) {
             shipId.add(datum.getShipSetpId());
+            userIds.add(datum.getCreateUser());
         }
+
+        List<User> users = userService.listByIds(userIds);
         List<ShipSetp> shipSetps = shipId.size() == 0 ? new ArrayList<>() : shipSetpService.listByIds(shipId);
         List<ShipSetpResult> setpResults = BeanUtil.copyToList(shipSetps, ShipSetpResult.class, new CopyOptions());
 
@@ -253,6 +257,13 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
                     break;
                 }
             }
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
+
         }
 
     }

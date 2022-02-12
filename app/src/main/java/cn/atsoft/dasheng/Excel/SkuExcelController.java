@@ -103,7 +103,7 @@ public class SkuExcelController {
             for (int j = 0; j < readRow.size() + hang.size(); j++) {
                 try {
                     Object header = readRow.get(j);
-                    String data = (String) hang.get(j);
+                    String data = hang.get(j).toString();
                     switch (header.toString()) {
                         case "成品码":
                             if (ToolUtil.isEmpty(data)) {
@@ -309,19 +309,19 @@ public class SkuExcelController {
                             itemAttribute.setCategoryId(categoryId);
                             attributeService.save(itemAttribute);
                             attributeId = itemAttribute.getAttributeId();
-                        }else {
+                        } else {
                             attributeId = attribute.getAttributeId();
                         }
 
                         Long valueId = 0L;
                         AttributeValues attributeValues = valuesService.query().eq("attribute_values", specifications.getAttribute()).eq("attribute_values", specifications.getValue()).eq("display", 1).one();
-                        if (ToolUtil.isEmpty(attributeValues)){
+                        if (ToolUtil.isEmpty(attributeValues)) {
                             AttributeValues values = new AttributeValues();
                             values.setAttributeValues(specifications.getValue());
                             values.setAttributeId(attributeId);
                             valuesService.save(values);
                             valueId = values.getAttributeValuesId();
-                        }else {
+                        } else {
                             valueId = attributeValues.getAttributeValuesId();
                         }
                         value.setAttributeId(attributeId);
