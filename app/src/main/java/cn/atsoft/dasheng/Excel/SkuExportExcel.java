@@ -172,9 +172,9 @@ public class SkuExportExcel extends BaseController {
     @RequestMapping(value = "/exportTemplate", method = RequestMethod.GET)
     @ApiOperation("导出")
     public File jarExcel(HttpServletResponse response) throws IOException {
-        Resource res = new ClassPathResource("static/sku.xlsx");
-        InputStream stream = res.getInputStream();
-        int read = stream.read();
+//        Resource res = new ClassPathResource("static/sku.xlsx");
+//        InputStream stream = res.getInputStream();
+//        int read = stream.read();
 
 
         return null;
