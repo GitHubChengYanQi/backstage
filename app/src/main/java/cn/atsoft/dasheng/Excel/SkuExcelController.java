@@ -332,8 +332,11 @@ public class SkuExcelController {
                 }
 
             } catch (Exception e) {
-                errorList.add(skuExcelItem);
+
                 logger.error("写入异常:" + "第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);
+
+                skuExcelItem.setError(e.getMessage());
+                errorList.add(skuExcelItem);
             }
         }
         skuService.saveBatch(skuList);

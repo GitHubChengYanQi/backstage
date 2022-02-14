@@ -50,7 +50,7 @@ public class PdfPreviewController extends BaseController {
      */
     @GetMapping(value = "/loadPdfFile", produces = "application/pdf")
     @ResponseBody
-    public ClassPathResource loadPdfFile(@RequestParam(value = "file", required = false) String file) {
+    public ClassPathResource loadPdfFile(@RequestParam(value = "META-INF/file", required = false) String file) {
 
         if (ToolUtil.isEmpty(file)) {
             file = "demo.pdf";

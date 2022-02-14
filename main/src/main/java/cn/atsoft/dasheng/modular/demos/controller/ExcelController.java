@@ -51,7 +51,7 @@ public class ExcelController {
      */
     @RequestMapping("/uploadExcel")
     @ResponseBody
-    public ResponseData uploadExcel(@RequestPart("file") MultipartFile file, HttpServletRequest request) {
+    public ResponseData uploadExcel(@RequestPart("META-INF/file") MultipartFile file, HttpServletRequest request) {
         String name = file.getOriginalFilename();
         request.getSession().setAttribute("upFile", name);
         String fileSavePath = ConstantsContext.getFileUploadPath();

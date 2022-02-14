@@ -38,4 +38,6 @@ public class SkuExcelItem {
 
     private List<Specifications> specifications;
 
+    private String error;
+
 }

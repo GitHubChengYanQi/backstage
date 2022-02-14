@@ -18,6 +18,8 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +27,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @RestController
 @RequestMapping("/jazz")
 @Api(tags = "")
@@ -41,8 +46,8 @@ public class SkuExportExcel extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public List<SkuResult> dasad (@RequestBody(required = false)  SkuParam skuParam){
-        if(ToolUtil.isEmpty(skuParam)){
+    public List<SkuResult> dasad(@RequestBody(required = false) SkuParam skuParam) {
+        if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
         List<SkuResult> listBySpec = skuService.findListBySpec(skuParam);
@@ -53,7 +58,7 @@ public class SkuExportExcel extends BaseController {
     @ApiOperation("导出")
     public void qrCodetoExcel(HttpServletResponse response, Long type, String url) throws IOException {
         String title = "二维码导出表单";
-        String[] header = {"成品码", "分类", "产品", "型号","单位","是否批量","规格"};
+        String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量", "规格"};
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -95,8 +100,6 @@ public class SkuExportExcel extends BaseController {
         List<SkuResult> skuResults = skuService.findListBySpec(new SkuParam());
 
 
-
-
         int i = 1;
 //        for (Map<String, String> longStringMap : list) {
 //
@@ -125,20 +128,20 @@ public class SkuExportExcel extends BaseController {
 
             HSSFRichTextString classesStr = new HSSFRichTextString();
 
-            HSSFRichTextString spuNameStr =ToolUtil.isEmpty(skuResult.getSpuResult()) ? new HSSFRichTextString() : new HSSFRichTextString(skuResult.getSpuResult().getName());
-            HSSFRichTextString skuStr =new HSSFRichTextString();
-            if (ToolUtil.isNotEmpty(skuResult.getSpuResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult().getName()) ){
-                skuStr =  new HSSFRichTextString(skuResult.getSpuResult().getSpuClassificationResult().getName());
+            HSSFRichTextString spuNameStr = ToolUtil.isEmpty(skuResult.getSpuResult()) ? new HSSFRichTextString() : new HSSFRichTextString(skuResult.getSpuResult().getName());
+            HSSFRichTextString skuStr = new HSSFRichTextString();
+            if (ToolUtil.isNotEmpty(skuResult.getSpuResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult().getName())) {
+                skuStr = new HSSFRichTextString(skuResult.getSpuResult().getSpuClassificationResult().getName());
             }
-            HSSFRichTextString unitStr = ToolUtil.isEmpty(skuResult.getUnit()) || ToolUtil.isEmpty(skuResult.getUnit().getUnitName())  ? new HSSFRichTextString(" ") : new HSSFRichTextString(skuResult.getUnit().getUnitName());
+            HSSFRichTextString unitStr = ToolUtil.isEmpty(skuResult.getUnit()) || ToolUtil.isEmpty(skuResult.getUnit().getUnitName()) ? new HSSFRichTextString(" ") : new HSSFRichTextString(skuResult.getUnit().getUnitName());
             HSSFRichTextString isAllStr = new HSSFRichTextString();
-            if (ToolUtil.isNotEmpty(skuResult.getBatch())&&skuResult.getBatch().equals(1)) {
-                 isAllStr = new HSSFRichTextString("是");
-            }else {
-                 isAllStr = new HSSFRichTextString("否");
+            if (ToolUtil.isNotEmpty(skuResult.getBatch()) && skuResult.getBatch().equals(1)) {
+                isAllStr = new HSSFRichTextString("是");
+            } else {
+                isAllStr = new HSSFRichTextString("否");
             }
             HSSFRichTextString attributeValueStr = new HSSFRichTextString();
-            if (ToolUtil.isNotEmpty(skuResult.getSkuJsons()) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0)) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0).getValues())&&ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0).getValues().getAttributeValues()) ) {
+            if (ToolUtil.isNotEmpty(skuResult.getSkuJsons()) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0)) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0).getValues()) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0).getValues().getAttributeValues())) {
                 attributeValueStr = new HSSFRichTextString(skuResult.getSkuJsons().get(0).getValues().getAttributeValues());
             }
 
@@ -163,6 +166,17 @@ public class SkuExportExcel extends BaseController {
 
         //workbook将Excel写入到response的输出流中，供页面下载
         workbook.write(response.getOutputStream());
-//        System.out.println(workbook.write(response.getOutputStream()));
+//        System.out.println(workbook.write(response.getOutputStream())); b6
+    }
+
+    @RequestMapping(value = "/exportTemplate", method = RequestMethod.GET)
+    @ApiOperation("导出")
+    public File jarExcel(HttpServletResponse response) throws IOException {
+        Resource res = new ClassPathResource("static/sku.xlsx");
+        InputStream stream = res.getInputStream();
+        int read = stream.read();
+
+
+        return null;
     }
 }
