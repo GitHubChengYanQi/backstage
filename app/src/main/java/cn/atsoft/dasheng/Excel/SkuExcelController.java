@@ -194,16 +194,6 @@ public class SkuExcelController {
                     newItem.setName(skuExcelItem.getClassItem());
                     newItem.setType(2L);
                     //TODO 产品替换编码
-                    if (ToolUtil.isEmpty(skuExcelItem.getItemRule())) {
-                        throw new ServiceException(500, "未填写编码规则");
-                    }
-                    CodingRules codingRules = codingRulesService.query().eq("name", skuExcelItem.getItemRule()).eq("display", 1).one();
-                    if (ToolUtil.isEmpty(codingRules)) {
-                        throw new ServiceException(500, "编码规则不存在");
-                    }
-                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-
-                    newItem.setCodingClass(backCoding);
                     newItem.setPid(spuClass.getSpuClassificationId());
                     classificationService.save(newItem);
                     items.add(newItem);

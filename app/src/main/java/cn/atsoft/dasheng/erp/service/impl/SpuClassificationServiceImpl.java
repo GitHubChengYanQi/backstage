@@ -54,7 +54,13 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
+        if (ToolUtil.isNotEmpty(param.getPid()) && param.getType() != 2) {
+            Integer num = this.query().eq("pid", param.getPid()).eq("type", 2).eq("display", 1).count();
+            if (num > 0) {
+                throw new ServiceException(500, "当前分类下已有产品，不可创建");
+            }
 
+        }
         SpuClassification entity = getEntity(param);
         this.save(entity);
 

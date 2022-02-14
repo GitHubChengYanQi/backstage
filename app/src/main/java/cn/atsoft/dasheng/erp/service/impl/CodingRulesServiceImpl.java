@@ -328,10 +328,12 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     public String encoding(int module) {
         CodingRules rules = this.query().eq("module", module).eq("state", 1).one();
 
+        if (ToolUtil.isEmpty(rules)) {
+            return this.defaultEncoding();
+        }
+
         String coding = backCoding(rules.getCodingRulesId());
-
         Pattern compile = Pattern.compile("\\$(.*?)\\}");
-
         Matcher matcher = compile.matcher(coding);
 
         String temp = null;
