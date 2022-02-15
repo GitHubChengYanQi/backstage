@@ -4,13 +4,18 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionStation;
+import cn.atsoft.dasheng.production.entity.ProductionStationBind;
 import cn.atsoft.dasheng.production.entity.ProductionStationClass;
 import cn.atsoft.dasheng.production.mapper.ProductionStationMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionStationParam;
+import cn.atsoft.dasheng.production.model.result.ProductionStationBindResult;
 import cn.atsoft.dasheng.production.model.result.ProductionStationResult;
+import cn.atsoft.dasheng.production.service.ProductionStationBindService;
 import cn.atsoft.dasheng.production.service.ProductionStationClassService;
 import cn.atsoft.dasheng.production.service.ProductionStationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -33,8 +38,9 @@ import java.util.Map;
  */
 @Service
 public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationMapper, ProductionStation> implements ProductionStationService {
+
     @Autowired
-    private ProductionStationClassService stationClassService;
+    private ProductionStationBindService stationBindService;
     @Autowired
     private UserService userService;
 
@@ -42,6 +48,17 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
     public void add(ProductionStationParam param) {
         ProductionStation entity = getEntity(param);
         this.save(entity);
+        /**
+         * 添加绑定表数据
+         */
+        List<ProductionStationBind> bindList = new ArrayList<>();
+        for (Long userId : param.getUserIds()) {
+            ProductionStationBind bind = new ProductionStationBind();
+            bind.setProductionStationId(entity.getProductionStationId());
+            bind.setUserId(userId);
+            bindList.add(bind);
+        }
+        stationBindService.saveBatch(bindList);
     }
 
     @Override
@@ -67,13 +84,16 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
 
     @Override
     public List<ProductionStationResult> findListBySpec(ProductionStationParam param) {
-        return null;
+        List<ProductionStationResult> productionStationResults = this.baseMapper.customList(param);
+        this.format(productionStationResults);
+        return productionStationResults;
     }
 
     @Override
     public PageInfo<ProductionStationResult> findPageBySpec(ProductionStationParam param) {
         Page<ProductionStationResult> pageContext = getPageContext();
         IPage<ProductionStationResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -95,26 +115,31 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
         return entity;
     }
 
+    @Override
     public void format(List<ProductionStationResult> data) {
         List<Long> ids = new ArrayList<>();
         for (ProductionStationResult datum : data) {
             ids.add(datum.getProductionStationId());
         }
-        List<ProductionStationClass> stationClasses = ids.size() == 0 ? new ArrayList<>() : stationClassService.query().in("production_station_id", ids).list();
+        /**
+         * 查询子表信息
+         */
+        List<ProductionStationBindResult> stationBinds = stationBindService.getResultsByStationIds(ids);
 
+        if (ToolUtil.isNotEmpty(stationBinds)) {
 
-        if (ToolUtil.isNotEmpty(stationClasses)) {
-            List<Long> userIds = new ArrayList<>();
             for (ProductionStationResult datum : data) {
-                for (ProductionStationClass stationClass : stationClasses) {
-                    if (stationClass.getProductionStationId() != null && datum.getProductionStationId() != null &&
-                            stationClass.getProductionStationId().equals(datum.getProductionStationId())) {
-                        userIds.add(stationClass.getUserId());
+                List<ProductionStationBindResult> bindResults = new ArrayList<>();
+                List<Long> userIds = new ArrayList<>();
+                for (ProductionStationBindResult stationBind : stationBinds) {
+                    if (datum.getProductionStationId().equals(stationBind.getProductionStationId())){
+                        bindResults.add(stationBind);
+                        userIds.add(stationBind.getUserId());
                     }
                 }
+                datum.setUserIds(userIds);
+                datum.setBindResults(bindResults);
             }
-
-
         }
     }
 }

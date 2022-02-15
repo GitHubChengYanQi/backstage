@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.production.entity.ProductionStation;
 import cn.atsoft.dasheng.production.model.params.ProductionStationParam;
 import cn.atsoft.dasheng.production.model.result.ProductionStationResult;
@@ -82,9 +83,12 @@ public class ProductionStationController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ProductionStationResult> detail(@RequestBody ProductionStationParam productionStationParam) {
-        ProductionStation detail = this.productionStationService.getById(productionStationParam.getProductionStationId());
+        ProductionStation productionStationServiceById = this.productionStationService.getById(productionStationParam.getProductionStationId());
         ProductionStationResult result = new ProductionStationResult();
-        ToolUtil.copyProperties(detail, result);
+        ToolUtil.copyProperties(productionStationServiceById,result);
+        productionStationService.format(new ArrayList<ProductionStationResult>(){{
+            add(result);
+        }});
 
         return ResponseData.success(result);
     }

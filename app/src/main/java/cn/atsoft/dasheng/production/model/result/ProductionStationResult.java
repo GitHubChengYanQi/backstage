@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.production.entity.ProductionStationBind;
 import lombok.Data;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -19,7 +22,8 @@ import java.util.List;
 public class ProductionStationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    List<ProductionStationBindResult> bindResults;
+    List<Long> userIds;
 
     /**
      * 工位id
