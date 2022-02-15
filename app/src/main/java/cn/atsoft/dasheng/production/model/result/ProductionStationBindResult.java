@@ -1,30 +1,32 @@
-package cn.atsoft.dasheng.production.model.params;
+package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
- * 工位表
+ * 工位绑定表
  * </p>
  *
- * @author song
- * @since 2021-10-29
+ * @author Captain_Jazz
+ * @since 2022-02-15
  */
 @Data
 @ApiModel
-public class ProductionStationParam implements Serializable, BaseValidatingParam {
+public class ProductionStationBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private List<Long> userIds;
+    private UserResult userResult;
 
+    /**
+     * 工位分类id
+     */
+    @ApiModelProperty("工位分类id")
+    private Long productionStationBindId;
 
     /**
      * 工位id
@@ -33,10 +35,10 @@ public class ProductionStationParam implements Serializable, BaseValidatingParam
     private Long productionStationId;
 
     /**
-     * 工位名称
+     * 负责人
      */
-    @ApiModelProperty("工位名称")
-    private String name;
+    @ApiModelProperty("负责人")
+    private Long userId;
 
     /**
      * 创建者
@@ -73,13 +75,6 @@ public class ProductionStationParam implements Serializable, BaseValidatingParam
      */
     @ApiModelProperty("部门id")
     private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

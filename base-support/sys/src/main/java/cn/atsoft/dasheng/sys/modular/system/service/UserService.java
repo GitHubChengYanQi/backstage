@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.core.util.DefaultImages;
 import cn.atsoft.dasheng.sys.core.util.SaltUtil;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -354,6 +355,17 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
     public List<User> getUserByPositionAndDept(Long deptId,List<Long> positionIds){
        return this.baseMapper.listUserByPositionAndDept(deptId,positionIds);
+    }
+
+    public List<UserResult> getUserResultsByIds(List<Long> ids){
+        List<User> users = this.query().in("user_id", ids).list();
+        List<UserResult> results = new ArrayList<>();
+        for (User user : users) {
+            UserResult userResult = new UserResult();
+            ToolUtil.copyProperties(user,userResult);
+            results.add(userResult);
+        }
+        return results;
     }
 //    public List<User> getUserByPositionAndDept(Map<String,List> param){
 //        return this.baseMapper.listUserByPositionAndDept(param.get("position"),);

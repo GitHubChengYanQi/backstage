@@ -12,19 +12,24 @@ import java.util.List;
 
 /**
  * <p>
- * 工位表
+ * 工位绑定表
  * </p>
  *
- * @author song
- * @since 2021-10-29
+ * @author Captain_Jazz
+ * @since 2022-02-15
  */
 @Data
 @ApiModel
-public class ProductionStationParam implements Serializable, BaseValidatingParam {
+public class ProductionStationBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<Long> userIds;
 
+
+    /**
+     * 工位分类id
+     */
+    @ApiModelProperty("工位分类id")
+    private Long productionStationBindId;
 
     /**
      * 工位id
@@ -33,10 +38,10 @@ public class ProductionStationParam implements Serializable, BaseValidatingParam
     private Long productionStationId;
 
     /**
-     * 工位名称
+     * 负责人
      */
-    @ApiModelProperty("工位名称")
-    private String name;
+    @ApiModelProperty("负责人")
+    private Long userId;
 
     /**
      * 创建者
