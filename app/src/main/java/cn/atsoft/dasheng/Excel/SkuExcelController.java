@@ -151,7 +151,7 @@ public class SkuExcelController {
 
         //-------------------------------------------------------------------------------------------------------------
         List<Sku> skuList = new ArrayList<>();
-        List<Sku> skus = skuService.query().eq("display", 1).isNotNull("standard").list();  //所有sku
+        List<Sku> skus = skuService.query().eq("display", 1).list();  //所有sku
         List<SpuClassification> spuClassifications = classificationService.query().eq("display", 1).list(); //所有分类
         List<SpuClassification> items = classificationService.query().eq("display", 1).eq("type", 2).list();//所有产品
         List<Spu> spuList = spuService.query().eq("display", 1).list();
