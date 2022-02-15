@@ -5,19 +5,26 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
+import cn.atsoft.dasheng.production.entity.Sop;
 import cn.atsoft.dasheng.production.model.params.ShipSetpParam;
+import cn.atsoft.dasheng.production.model.params.SopParam;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.production.wrapper.ShipSetpSelectWrapper;
+import cn.atsoft.dasheng.production.wrapper.SopSelectWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -114,6 +121,25 @@ public class ShipSetpController extends BaseController {
             return this.shipSetpService.findPageBySpec(shipSetpParam,dataScope);
         }
 
+    }
+
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-10
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SopParam sopParam) {
+
+        QueryWrapper<ShipSetp> shipSetpQueryWrapper = new QueryWrapper<>();
+        shipSetpQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.shipSetpService.listMaps(shipSetpQueryWrapper);
+        ShipSetpSelectWrapper shipSetpSelectWrapper = new ShipSetpSelectWrapper(list);
+        List<Map<String, Object>> result = shipSetpSelectWrapper.wrap();
+
+        return ResponseData.success(result);
     }
 
 

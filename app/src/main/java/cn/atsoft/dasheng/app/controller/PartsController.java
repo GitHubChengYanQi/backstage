@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -61,7 +62,7 @@ public class PartsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PartsParam partsParam) {
 
-        if (ToolUtil.isNotEmpty(partsParam) && ToolUtil.isEmpty(partsParam.getSkuId())){
+        if (ToolUtil.isNotEmpty(partsParam) && ToolUtil.isEmpty(partsParam.getSkuId())) {
             if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
                 Sku sku = skuService.getById(partsParam.getItem().getSkuId());
                 if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getSpuId())) {
@@ -138,6 +139,14 @@ public class PartsController extends BaseController {
         }
         result.setItem(item);
 
+        List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+            add(result.getSkuId());
+        }});
+
+        if (skuResults.size() > 0){
+            result.setSkuResult(skuResults.get(0));
+        }
+
         result.setParts(erpPartsDetailParams);
 
 
@@ -192,10 +201,10 @@ public class PartsController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) PartsParam partsParam) {
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.eq("display",1);
-        if (ToolUtil.isNotEmpty(partsParam)){
-            if (ToolUtil.isNotEmpty(partsParam.getType())){
-                partsQueryWrapper.eq("type",partsParam.getType());
+        partsQueryWrapper.eq("display", 1);
+        if (ToolUtil.isNotEmpty(partsParam)) {
+            if (ToolUtil.isNotEmpty(partsParam.getType())) {
+                partsQueryWrapper.eq("type", partsParam.getType());
             }
         }
         List<Map<String, Object>> list = this.partsService.listMaps(partsQueryWrapper);
@@ -256,8 +265,8 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/backDetails", method = RequestMethod.GET)
     @ApiOperation("返回子表集合")
-    public ResponseData backDetails(@RequestParam Long id, Long partsId,String type) {
-        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id, partsId,type);
+    public ResponseData backDetails(@RequestParam Long id, Long partsId, String type) {
+        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id, partsId, type);
         return ResponseData.success(detailResults);
     }
 
