@@ -57,6 +57,7 @@ public class SkuController extends BaseController {
     @RequestMapping(value = "/directAdd", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData directAdd (@RequestBody SkuParam skuParam) {
+        skuParam.setAddMethod(1);
         this.skuService.directAdd(skuParam);
         return ResponseData.success();
     }
@@ -69,6 +70,7 @@ public class SkuController extends BaseController {
     @RequestMapping(value = "/indirectAdd", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData indirectAdd(@RequestBody SkuParam skuParam) {
+        skuParam.setAddMethod(2);
         this.skuService.directAdd(skuParam);
         return ResponseData.success();
     }
