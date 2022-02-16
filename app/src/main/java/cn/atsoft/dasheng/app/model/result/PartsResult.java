@@ -33,7 +33,7 @@ public class PartsResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long skuId;
     private List<BackSku> backSkus;
-
+    private SkuResult skuResult;
     private UserResult userResult;
     private SpuResult spuResult;
     private SkuResult skuResult;

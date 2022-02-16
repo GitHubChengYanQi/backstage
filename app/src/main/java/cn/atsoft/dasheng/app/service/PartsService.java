@@ -76,9 +76,11 @@ public interface PartsService extends IService<Parts> {
     PageInfo<PartsResult> findPageBySpec(PartsParam param);
 
 
-    List<ErpPartsDetailResult> backDetails(Long skuId,Long partsId,String type);
+    PartsResult getBOM(Long partId, String type);
 
-    List<ErpPartsDetailResult> oldBackDetails(Long skuId,Long partsId);
+    List<ErpPartsDetailResult> backDetails(Long skuId, Long partsId, String type);
+
+    List<ErpPartsDetailResult> oldBackDetails(Long skuId, Long partsId);
 
     List<PartsResult> getTreeParts(Long partId);
 }

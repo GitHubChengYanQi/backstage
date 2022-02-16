@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
+import cn.atsoft.dasheng.orCode.pojo.InkindQrcode;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 import java.util.Map;
@@ -192,6 +193,5 @@ public interface OrCodeService extends IService<OrCode> {
     List<AutomaticBindResult> batchAutomaticBinding(BatchAutomatic batchAutomatic);
 
 
-
-
+    InkindQrcode ExcelBind(Long skuId, Long number, Long brandId);
 }

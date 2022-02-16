@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -273,6 +274,69 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public PartsResult getBOM(Long partId, String type) {
+        Parts parts = this.getById(partId);
+        if (ToolUtil.isEmpty(parts)) {
+            return null;
+        }
+        PartsResult partsResult = new PartsResult();
+        ToolUtil.copyProperties(parts, partsResult);
+        List<ErpPartsDetailResult> detailResults = recursiveDetails(partsResult.getPartsId(), type);
+        partsResult.setParts(detailResults);
+        List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+            add(partsResult.getSkuId());
+        }});
+        partsResult.setSkuResult(skuResults.get(0));
+        return partsResult;
+    }
+
+    /**
+     * 详情递归
+     *
+     * @param partId
+     * @return
+     */
+    private List<ErpPartsDetailResult> recursiveDetails(Long partId, String type) {
+
+        List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", partId).list();
+        if (ToolUtil.isNotEmpty(details)) {
+            List<ErpPartsDetailResult> detailResults = BeanUtil.copyToList(details, ErpPartsDetailResult.class, new CopyOptions());
+            for (ErpPartsDetailResult detailResult : detailResults) {
+                List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                    add(detailResult.getSkuId());
+                }});
+                detailResult.setSkuResult(skuResults.get(0));
+                PartsResult partsResult = recursiveParts(detailResult.getSkuId(), type);
+                detailResult.setPartsResult(partsResult);
+            }
+            return detailResults;
+        }
+
+        return null;
+    }
+
+    /**
+     * 主表递归
+     *
+     * @param skuId
+     * @return
+     */
+    private PartsResult recursiveParts(Long skuId, String type) {
+        Parts parts = this.query().eq("sku_id", skuId).eq("type", type).eq("display", 1).one();
+        if (ToolUtil.isNotEmpty(parts)) {
+            PartsResult partsResult = new PartsResult();
+            ToolUtil.copyProperties(parts, partsResult);
+            List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                add(partsResult.getSkuId());
+            }});
+            partsResult.setSkuResult(skuResults.get(0));
+            List<ErpPartsDetailResult> detailResults = recursiveDetails(partsResult.getPartsId(), type);
+            partsResult.setParts(detailResults);
+            return partsResult;
+        }
+        return null;
+    }
 
     @Override
     public List<ErpPartsDetailResult> backDetails(Long skuId, Long partsId, String type) {

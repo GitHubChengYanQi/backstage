@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -106,6 +107,18 @@ public class PartsController extends BaseController {
     public ResponseData delete(@RequestBody PartsParam partsParam) {
         this.partsService.delete(partsParam);
         return ResponseData.success();
+    }
+
+    /**
+     * bom
+     *
+     * @author song
+     * @Date 2021-10-21
+     */
+    @RequestMapping(value = "/getBOM", method = RequestMethod.GET)
+    public ResponseData getBOM(@Param("partId") Long partId, String type) {
+        PartsResult bom = this.partsService.getBOM(partId, type);
+        return ResponseData.success(bom);
     }
 
     /**

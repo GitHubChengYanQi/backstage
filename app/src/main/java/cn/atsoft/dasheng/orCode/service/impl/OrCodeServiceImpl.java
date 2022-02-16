@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
 import cn.atsoft.dasheng.orCode.model.result.StockRequest;
 import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
+import cn.atsoft.dasheng.orCode.pojo.InkindQrcode;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -975,8 +976,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     }
 
 
-
-
     /**
      * 自动绑定
      *
@@ -1085,6 +1084,31 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         stockService.update(stock, new QueryWrapper<Stock>() {{
             eq("stock_id", stockId);
         }});
+    }
+
+    @Override
+    public InkindQrcode ExcelBind(Long skuId, Long number, Long brandId) {
+
+        OrCode orCode = new OrCode();
+        orCode.setType("item");
+        orCode.setState(1);
+        this.save(orCode);
+        //新建绑定实物
+        InkindParam inkindParam = new InkindParam();
+        inkindParam.setSkuId(skuId);
+        inkindParam.setType("0");
+        inkindParam.setNumber(number);
+        inkindParam.setBrandId(brandId);
+        inkindParam.setSource("excel");
+        Long formId = inkindService.add(inkindParam);
+        //二维码绑定关联
+        OrCodeBindParam bindParam = new OrCodeBindParam();
+        bindParam.setOrCodeId(orCode.getOrCodeId());
+        bindParam.setFormId(formId);
+        bindParam.setSource("excel");
+        orCodeBindService.add(bindParam);
+
+        return new InkindQrcode(formId, orCode.getOrCodeId());
     }
 }
 
