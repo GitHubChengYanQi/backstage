@@ -3,13 +3,18 @@ package cn.atsoft.dasheng.production.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.production.entity.ProductionStation;
+import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.model.params.ProductionStationParam;
+import cn.atsoft.dasheng.production.model.params.SopParam;
 import cn.atsoft.dasheng.production.model.result.ProductionStationResult;
 import cn.atsoft.dasheng.production.service.ProductionStationService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.production.wrapper.ProductionStationSelectWrapper;
+import cn.atsoft.dasheng.production.wrapper.ShipSetpSelectWrapper;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -107,6 +112,26 @@ public class ProductionStationController extends BaseController {
         }
         return this.productionStationService.findPageBySpec(productionStationParam);
     }
+
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-10
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) ProductionStationParam productionStationParam) {
+
+        QueryWrapper<ProductionStation> productionStationQueryWrapper = new QueryWrapper<>();
+        productionStationQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.productionStationService.listMaps(productionStationQueryWrapper);
+        ProductionStationSelectWrapper productionStationSelectWrapper = new ProductionStationSelectWrapper(list);
+        List<Map<String, Object>> result = productionStationSelectWrapper.wrap();
+
+        return ResponseData.success(result);
+    }
+
 
 
 }

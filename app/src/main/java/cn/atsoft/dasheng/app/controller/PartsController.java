@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -27,6 +28,7 @@ import cn.atsoft.dasheng.app.wrapper.PartsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 
+import javax.servlet.http.Part;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -150,6 +152,14 @@ public class PartsController extends BaseController {
         }
         result.setItem(item);
 
+        List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+            add(result.getSkuId());
+        }});
+
+        if (skuResults.size() > 0){
+            result.setSkuResult(skuResults.get(0));
+        }
+
         result.setParts(erpPartsDetailParams);
 
 
@@ -202,9 +212,15 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.partsService.listMaps();
-
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) PartsParam partsParam) {
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("display", 1);
+        if (ToolUtil.isNotEmpty(partsParam)) {
+            if (ToolUtil.isNotEmpty(partsParam.getType())) {
+                partsQueryWrapper.eq("type", partsParam.getType());
+            }
+        }
+        List<Map<String, Object>> list = this.partsService.listMaps(partsQueryWrapper);
         PartsSelectWrapper factory = new PartsSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);

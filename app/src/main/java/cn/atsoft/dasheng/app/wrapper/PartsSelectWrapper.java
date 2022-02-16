@@ -15,12 +15,13 @@ public class PartsSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
-        String label = Convert.toStr(map.get("parts_id"));
+        String label = Convert.toStr(map.get("part_name"));
         String value = Convert.toStr(map.get("parts_id"));
         map.clear();
         map.put("label",label);
         map.put("value",value);
     }
+
     public static List<String> fetchParentKey(List<Map<String, Object>> list, String key) {
 
         if(key.equals("0")){
