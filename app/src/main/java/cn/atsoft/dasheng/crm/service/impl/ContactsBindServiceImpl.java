@@ -33,6 +33,7 @@ import java.util.List;
 public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, ContactsBind> implements ContactsBindService {
     @Autowired
     private PhoneService phoneService;
+
     @Override
     public void add(ContactsBindParam param) {
         ContactsBind entity = getEntity(param);
@@ -45,7 +46,8 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
                 .and(i -> i.eq(ContactsBind::getContactsId, param.getContactsId()))
                 .one();
         ToolUtil.copyProperties(contactsBind, param);
-        this.removeById(getKey(param));
+        contactsBind.setDisplay(param.getDisplay());
+        this.updateById(contactsBind);
     }
 
     @Override

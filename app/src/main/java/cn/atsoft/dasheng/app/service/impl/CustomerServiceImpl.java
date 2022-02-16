@@ -104,15 +104,24 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         //添加联系人
         if (ToolUtil.isNotEmpty(param.getContactsParams())) {
-            for (ContactsParam contactsParam : param.getContactsParams()) {
-                if (ToolUtil.isNotEmpty(contactsParam.getContactsName()) && !contactsParam.getContactsName().equals("")) {
-                    Contacts contacts = contactsService.add(contactsParam);
+            for (int i = 0; i < param.getContactsParams().size(); i++) {
+                if (ToolUtil.isNotEmpty(param.getContactsParams().get(i).getContactsName()) && !param.getContactsParams().get(i).getContactsName().equals("")) {
+                    Contacts contacts = null;
                     ContactsBindParam contactsBindParam = new ContactsBindParam();
                     contactsBindParam.setCustomerId(entity.getCustomerId());
-                    contactsBindParam.setContactsId(contacts.getContactsId());
+
+                    contacts = contactsService.query().eq("contacts_id", param.getContactsParams().get(i).getContactsName()).one();
+                    if (ToolUtil.isNotEmpty(contacts)) {
+                        contactsBindParam.setContactsId(contacts.getContactsId());
+                    } else {
+                         contacts = contactsService.add(param.getContactsParams().get(i));
+                        contactsBindParam.setContactsId(contacts.getContactsId());
+                    }
                     contactsBindService.add(contactsBindParam);
                     //添加默认联系人
-                    entity.setDefaultContacts(contacts.getContactsId());
+                    if (i==0) {
+                        entity.setDefaultContacts(contacts.getContactsId());
+                    }
                 }
             }
         }
@@ -128,7 +137,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
         }
-
 
 
         this.updateById(entity);
