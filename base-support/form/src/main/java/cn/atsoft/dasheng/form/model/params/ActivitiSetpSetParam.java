@@ -23,7 +23,7 @@ import java.util.List;
 public class ActivitiSetpSetParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<ActivitiSetpSetDetailParam> setpSetDetailParam;
 
     /**
      * 主键
@@ -42,6 +42,7 @@ public class ActivitiSetpSetParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("工序Id")
     private Long shipSetpId;
+    //TODO 工序
 
     /**
      * 标准工作时长，按小时计算

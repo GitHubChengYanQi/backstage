@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.form.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -28,6 +29,12 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
      * @Date 2021-11-10
      */
     void add(ActivitiStepsParam param);
+
+    void addSetp(ActivitiStepsParam param);
+
+    void addShip(ActivitiSetpSetParam param);
+
+    void addShip(ActivitiSetpSetParam param, Long stepId);
 
     /**
      * 删除

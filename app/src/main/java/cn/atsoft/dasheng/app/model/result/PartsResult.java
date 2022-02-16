@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.core.conditions.interfaces.Compare;
 import lombok.Data;
 
 import java.util.Date;

@@ -2,16 +2,10 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
-import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
-import cn.atsoft.dasheng.app.model.params.PartRequest;
-import cn.atsoft.dasheng.app.model.params.Spu;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
-import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
@@ -20,7 +14,6 @@ import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -33,16 +26,13 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import javax.tools.Tool;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
@@ -290,9 +280,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             throw new ServiceException(500, "沒傳入skuId");
         }
         Parts one;
-        if (ToolUtil.isNotEmpty(partsId)){
+        if (ToolUtil.isNotEmpty(partsId)) {
             one = this.getById(partsId);
-        }else {
+        } else {
             one = this.query().eq("sku_id", skuId).eq("display", 1).eq("type", type).one();
         }
 
@@ -370,10 +360,54 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 return detailResults;
             }
         }
-
-
         return null;
     }
+    @Override
+    public List<PartsResult> getTreeParts(Long partId) {
+        List<Parts> parts = this.query().like("parts_id", partId).list();
+        List<Long> partsIds = new ArrayList<>();
+        for (Parts part : parts) {
+            partsIds.add(part.getPartsId());
+        }
+//        Parts partsFather = this.getById(partId);
+        List<ErpPartsDetail> partsDetails = erpPartsDetailService.query().in("parts_id", partsIds).list();
+        List<PartsResult> partsResults = new ArrayList<>();
+        for (Parts part : parts) {
+            PartsResult partsResult = new PartsResult();
+            ToolUtil.copyProperties(part, partsResult);
+            partsResults.add(partsResult);
+        }
+
+        for (PartsResult partsResult : partsResults) {
+            List<ErpPartsDetailResult> detailResults = new ArrayList<>();
+            for (ErpPartsDetail partsDetail : partsDetails) {
+                if (partsResult.getPartsId().equals(partsDetail.getPartsId())) {
+                    ErpPartsDetailResult detailResult = new ErpPartsDetailResult();
+                    ToolUtil.copyProperties(partsDetail, detailResult);
+                    detailResults.add(detailResult);
+                }
+            }
+            partsResult.setParts(detailResults);
+        }
+
+//        partsResults.sort((PartsResult ord1, PartsResult ord2) -> ord2.getChildren().compareTo(ord1.getChildren()));
+
+        Collections.sort(partsResults, new Comparator<PartsResult>() {
+            public int compare(PartsResult o1, PartsResult o2) {
+                if (o1.getChildren().length() > o2.getChildren().length()) {
+                    return 1;
+                }
+                if (o1.getChildren().length() == o2.getChildren().length()) {
+                    return 0;
+                }
+                return -1;
+            }
+        });
+//        partsResults.stream().;
+//        partsResults.stream().forEach();
+        return partsResults;
+    }
+
 
     /**
      * 生产bom 启用
@@ -389,7 +423,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             eq("display", 1);
         }});
     }
-
 
 
 //    private List<Parts> getMostJunior(List<Parts> parts, Parts part) {

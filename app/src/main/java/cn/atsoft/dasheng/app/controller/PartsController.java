@@ -283,6 +283,13 @@ public class PartsController extends BaseController {
         List<ErpPartsDetailResult> detailResults = this.partsService.oldBackDetails(id, partsId);
         return ResponseData.success(detailResults);
     }
+    @RequestMapping(value = "getTree", method = RequestMethod.GET)
+    @ApiOperation("返回子表集合")
+    public ResponseData getTree(@RequestParam Long id) {
+        List<PartsResult> treeParts = this.partsService.getTreeParts(id);
+        return ResponseData.success(treeParts);
+    }
+
 }
 
 
