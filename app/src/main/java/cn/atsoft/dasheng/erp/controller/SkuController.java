@@ -49,15 +49,27 @@ public class SkuController extends BaseController {
     private SpuClassificationService spuClassificationService;
 
     /**
-     * 新增接口
+     * 直接物料 新增接口
      *
      * @author
      * @Date 2021-10-18
      */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/directAdd", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody SkuParam skuParam) {
-        this.skuService.add(skuParam);
+    public ResponseData directAdd (@RequestBody SkuParam skuParam) {
+        this.skuService.directAdd(skuParam);
+        return ResponseData.success();
+    }
+    /**
+     * 间接物料 新增接口
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/indirectAdd", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData indirectAdd(@RequestBody SkuParam skuParam) {
+        this.skuService.directAdd(skuParam);
         return ResponseData.success();
     }
 
