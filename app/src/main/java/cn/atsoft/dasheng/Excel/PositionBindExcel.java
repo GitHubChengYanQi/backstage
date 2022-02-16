@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.Excel;
 
+import cn.atsoft.dasheng.Excel.pojo.ExcelPositionResult;
 import cn.atsoft.dasheng.Excel.pojo.PositionBind;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.StockDetails;
@@ -81,6 +82,7 @@ public class PositionBindExcel {
 
         List<PositionBind> excels = reader.readAll(PositionBind.class);
         List<PositionBind> errorList = new ArrayList<>();
+        List<PositionBind> successList = new ArrayList<>();
         for (PositionBind excel : excels) {
             strands.add(excel.getStrand());
         }
@@ -159,7 +161,7 @@ public class PositionBindExcel {
                     stockDetails.setQrCodeId(inkindQrcode.getQrCodeId());
                     stockDetailsList.add(stockDetails);
                 }
-
+                successList.add(excel);
             } catch (Exception e) {
                 logger.error(excel.getLine() + "------->" + e);
                 excel.setError(e.getMessage());
@@ -168,7 +170,12 @@ public class PositionBindExcel {
         }
 
         detailsService.saveBatch(stockDetailsList);
-        return ResponseData.success(errorList);
+
+
+        return ResponseData.success(new ExcelPositionResult() {{
+            setErrorList(errorList);
+            setSuccessList(successList);
+        }});
     }
 
     /**
