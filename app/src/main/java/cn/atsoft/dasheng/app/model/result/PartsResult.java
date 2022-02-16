@@ -35,7 +35,6 @@ public class PartsResult implements Serializable {
     private SkuResult skuResult;
     private UserResult userResult;
     private SpuResult spuResult;
-    private SkuResult skuResult;
 
     private Item item;
     //零件
