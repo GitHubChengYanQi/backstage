@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -31,7 +32,7 @@ public class PartsResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long skuId;
     private List<BackSku> backSkus;
-
+    private SkuResult skuResult;
     private UserResult userResult;
     private SpuResult spuResult;
 

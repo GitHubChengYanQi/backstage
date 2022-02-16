@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -60,7 +61,7 @@ public class PartsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PartsParam partsParam) {
 
-        if (ToolUtil.isNotEmpty(partsParam) && ToolUtil.isEmpty(partsParam.getSkuId())){
+        if (ToolUtil.isNotEmpty(partsParam) && ToolUtil.isEmpty(partsParam.getSkuId())) {
             if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
                 Sku sku = skuService.getById(partsParam.getItem().getSkuId());
                 if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getSpuId())) {
@@ -104,6 +105,18 @@ public class PartsController extends BaseController {
     public ResponseData delete(@RequestBody PartsParam partsParam) {
         this.partsService.delete(partsParam);
         return ResponseData.success();
+    }
+
+    /**
+     * bom
+     *
+     * @author song
+     * @Date 2021-10-21
+     */
+    @RequestMapping(value = "/getBOM", method = RequestMethod.GET)
+    public ResponseData getBOM(@Param("partId") Long partId, String type) {
+        PartsResult bom = this.partsService.getBOM(partId, type);
+        return ResponseData.success(bom);
     }
 
     /**
@@ -249,8 +262,8 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/backDetails", method = RequestMethod.GET)
     @ApiOperation("返回子表集合")
-    public ResponseData backDetails(@RequestParam Long id, Long partsId,String type) {
-        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id, partsId,type);
+    public ResponseData backDetails(@RequestParam Long id, Long partsId, String type) {
+        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id, partsId, type);
         return ResponseData.success(detailResults);
     }
 

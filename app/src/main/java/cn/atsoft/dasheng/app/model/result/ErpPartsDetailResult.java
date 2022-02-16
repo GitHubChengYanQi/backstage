@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.model.params.Spu;
 import cn.atsoft.dasheng.app.model.params.SpuAttribute;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import lombok.Data;
 
@@ -32,7 +33,11 @@ public class ErpPartsDetailResult implements Serializable {
     private List<BackSku> backSkus;
     private SpuResult spuResult;
 
+    private PartsResult partsResult;
+
     private Boolean isNull;
+
+    private SkuResult skuResult;
 
     private Sku sku;
 

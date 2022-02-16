@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -75,6 +76,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private StockDetailsService stockDetailsService;
     @Transactional
     @Override
     public void add(SkuParam param) {
@@ -399,6 +402,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> id = new ArrayList<>();
         id.add(param.getSkuId());
         param.setId(id);
+
         this.deleteBatch(param);
     }
 
@@ -406,7 +410,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public void deleteBatch(SkuParam param) {
         List<Long> skuIds = param.getId();
+        Integer stockSku = stockDetailsService.query().eq("sku_id", param.getSkuId()).count();
+        if (stockSku>0) {
+            throw new ServiceException(500, "库存中中有此物品数据,删除终止");
 
+        }
         List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, skuIds).list();
         List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, skuIds).and(i -> i.eq(Parts::getDisplay, 1)).list();
         if (ToolUtil.isNotEmpty(partsDetailList) || ToolUtil.isNotEmpty(partList)) {
