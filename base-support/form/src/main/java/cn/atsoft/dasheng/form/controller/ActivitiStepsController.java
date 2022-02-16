@@ -45,13 +45,6 @@ public class ActivitiStepsController extends BaseController {
         this.activitiStepsService.add(activitiStepsParam);
         return ResponseData.success();
     }
-    @RequestMapping(value = "/addS", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addS(@RequestBody ActivitiStepsParam activitiStepsParam) {
-        this.activitiStepsService.addSetp(activitiStepsParam);
-        return ResponseData.success();
-    }
-
 
     /**
      * 编辑接口

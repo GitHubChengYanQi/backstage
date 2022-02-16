@@ -38,6 +38,12 @@ public class ActivitiSetpSetDetailParam implements Serializable, BaseValidatingP
     private Long setpsId;
 
     /**
+     * 工位
+     */
+    @ApiModelProperty("步骤设置Id")
+    private Long productionStationId;
+
+    /**
      * in（投入），out（产出）
      */
     @ApiModelProperty("in（投入），out（产出）")

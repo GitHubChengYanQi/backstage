@@ -5,22 +5,28 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam;
+
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.pojo.*;
+import cn.atsoft.dasheng.form.pojo.AppointUser;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.AuditType;
+import cn.atsoft.dasheng.form.pojo.DeptPosition;
 import cn.atsoft.dasheng.form.service.*;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProcessRoute;
+import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
+import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -30,13 +36,12 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static cn.atsoft.dasheng.form.pojo.StepsType.AUDIT;
-import static cn.atsoft.dasheng.form.pojo.StepsType.START;
-import static cn.atsoft.dasheng.form.pojo.StepsType.SEND;
-import static cn.atsoft.dasheng.form.pojo.StepsType.BRANCH;
-import static cn.atsoft.dasheng.form.pojo.StepsType.ROUTE;
+import static cn.atsoft.dasheng.form.pojo.StepsType.*;
 
 /**
  * <p>
@@ -60,14 +65,18 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     private ActivitiSetpSetService setpSetService;
     @Autowired
     private ActivitiSetpSetDetailService setpSetDetailService;
+    @Autowired
+    private ProcessRouteService processRouteService;
 
 
     @Override
     @Transactional
     public void add(ActivitiStepsParam param) {
-        ActivitiProcess process = processService.getById(param.getProcessId());
-        if (process.getStatus() >= 98) {
-            throw new ServiceException(500, "当前流程已经发布,不可以修改步骤");
+        if(ToolUtil.isNotEmpty(param.getStepType()) && !param.getStepType().equals("ship")){
+            ActivitiProcess process = processService.getById(param.getProcessId());
+            if (process.getStatus() >= 98) {
+                throw new ServiceException(500, "当前流程已经发布,不可以修改步骤");
+            }
         }
         //修改 删除之间数据
         QueryWrapper<ActivitiSteps> stepsQueryWrapper = new QueryWrapper<>();
@@ -89,14 +98,17 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //TODO 需要添加生产产品
 
         //添加配置
-        if (ToolUtil.isEmpty(param.getAuditType())) {
+        if (ToolUtil.isNotEmpty(param.getStepType()) && !param.getStepType().equals("ship") && ToolUtil.isEmpty(param.getAuditType())) {
             throw new ServiceException(500, "请设置正确的配置");
         }
         /**
          * 判断是否是工艺路线
          */
-
+        if (param.getStepType().equals("ship")) {
+            addProcessRoute(param.getProcessRouteParam());
+        }else if (ToolUtil.isNotEmpty(param.getAuditType()) && ToolUtil.isNotEmpty(param.getAuditType())){
             addAudit(param.getAuditType(), param.getAuditRule(), entity.getSetpsId());
+        }
 
         //添加节点
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
@@ -104,6 +116,16 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         } else {
             throw new ServiceException(500, "配置流程有误");
         }
+    }
+
+
+
+
+    @Override
+    public void addProcessRoute(ProcessRouteParam param) {
+        ProcessRoute routeEntity = new ProcessRoute();
+        ToolUtil.copyProperties(param,routeEntity);
+        processRouteService.save(routeEntity);
     }
 
 
@@ -121,11 +143,11 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             activitiSteps.setStepType("路由");
         }
         //判断配置
-        if (ToolUtil.isEmpty(node.getAuditType())) {
+        if (ToolUtil.isNotEmpty(node.getStepType()) && !node.getStepType().equals("ship")&& ToolUtil.isEmpty(node.getAuditType())) {
             throw new ServiceException(500, "请设置正确的配置");
         }
 
-        if (node.getAuditType().toString().equals("send")) {
+        if (ToolUtil.isNotEmpty(node.getAuditType()) && node.getAuditType().toString().equals("send")) {
             ActivitiSteps steps = this.getById(supper);
             if (steps.getType().toString().equals("0")) {
                 throw new ServiceException(500, "不可以直接抄送");
@@ -148,8 +170,17 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         activitiSteps.setStepType(node.getStepType());
         activitiSteps.setProcessId(processId);
         this.save(activitiSteps);
-        //添加配置
-        addAudit(node.getAuditType(), node.getAuditRule(), activitiSteps.getSetpsId());
+        if (ToolUtil.isNotEmpty(node.getSetpSetParam())){
+        //TODO 添加绑定关系
+            node.getSetpSetParam().setSetpsId(activitiSteps.getSetpsId());
+            this.addSetpSet(node.getSetpSetParam());
+        }else if (ToolUtil.isNotEmpty(node.getAuditType()) && ToolUtil.isNotEmpty(node.getAuditType())){
+            //添加配置
+            addAudit(node.getAuditType(), node.getAuditRule(), activitiSteps.getSetpsId());
+        }else {
+
+        }
+
         //修改父级
         ActivitiSteps fatherSteps = new ActivitiSteps();
         fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
@@ -168,6 +199,20 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     }
 
+    private void addSetpSet(ActivitiSetpSetParam param){
+        ActivitiSetpSet activitiSetpSet = new ActivitiSetpSet();
+        ToolUtil.copyProperties(param,activitiSetpSet);
+        setpSetService.save(activitiSetpSet);
+        List<ActivitiSetpSetDetail> details = new ArrayList<>();
+        for (ActivitiSetpSetDetailParam activitiSetpSetDetailParam : param.getSetpSetDetailParam()) {
+            ActivitiSetpSetDetail detail = new ActivitiSetpSetDetail();
+            ToolUtil.copyProperties(activitiSetpSetDetailParam,detail);
+            detail.setSetpsId(activitiSetpSet.getSetpsId());
+            details.add(detail);
+        }
+        setpSetDetailService.saveBatch(details);
+
+    }
     /**
      * 递归添加
      *
@@ -189,14 +234,16 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             if (ToolUtil.isEmpty(stepsParam.getAuditType())) {
                 throw new ServiceException(500, "请设置正确的配置");
             }
-            addAudit(stepsParam.getAuditType(), stepsParam.getAuditRule(), activitiSteps.getSetpsId());
+            if (ToolUtil.isNotEmpty(stepsParam.getAuditType()) && ToolUtil.isNotEmpty(stepsParam.getAuditType())) {
+                addAudit(stepsParam.getAuditType(), stepsParam.getAuditRule(), activitiSteps.getSetpsId());
+            }
             //修改父级节点
             ActivitiSteps steps = this.query().eq("setps_id", supper).one();
             //修改父级分支
 
-            if (ToolUtil.isEmpty(stepsParam.getChildNode())) {
-                    throw new ServiceException(500, "请在条件下添加动作");
-            }
+//            if (ToolUtil.isEmpty(stepsParam.getChildNode())) {
+//                    throw new ServiceException(500, "请在条件下添加动作");
+//            }
             if (ToolUtil.isEmpty(steps.getConditionNodes())) {
                 steps.setConditionNodes(activitiSteps.getSetpsId().toString());
             } else {
@@ -244,7 +291,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         activitiAudit.setType(String.valueOf(auditType));
         auditService.save(activitiAudit);
     }
-
 
     @Override
     public void delete(ActivitiStepsParam param) {
