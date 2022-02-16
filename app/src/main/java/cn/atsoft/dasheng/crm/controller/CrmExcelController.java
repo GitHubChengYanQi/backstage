@@ -350,7 +350,7 @@ public class CrmExcelController {
     @ApiOperation("导出")
     public void SkuExcel(HttpServletResponse response, Long type, String url) throws IOException {
 
-        String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量", "规则名称"};
+        String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量"};
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("二维码导出");
 //        sheet.setDefaultColumnWidth(40);
