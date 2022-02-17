@@ -63,6 +63,20 @@ public class InvoiceResult implements Serializable {
     @ApiModelProperty("是否默认")
     private Integer isDefault;
 
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String invoiceNote;
+
+    /**
+     * 开户账号
+     */
+    @ApiModelProperty("开户账号")
+    private Integer bankNo;
+
+
     /**
      * 创建者
      */

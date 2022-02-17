@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.crm.model.result.CompanyRoleResult;
+import cn.atsoft.dasheng.daoxin.model.result.DaoxinDeptResult;
+import cn.atsoft.dasheng.sys.modular.system.model.result.PositionResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -28,6 +30,8 @@ public class ContactsResult implements Serializable {
     private CustomerResult customerResult;
     private CompanyRoleResult companyRoleResult;
     private List<PhoneResult> phoneParams;
+    private DaoxinDeptResult deptResult;
+    private PositionResult positionResult;
     /**
      * 联系人id
      */
@@ -58,6 +62,12 @@ public class ContactsResult implements Serializable {
      */
     @ApiModelProperty("联系电话")
     private Long phone;
+
+    /**
+     * 联系人备注
+     */
+    @ApiModelProperty("联系人备注")
+    private String contactsRemark;
 
     /**
      * 创建者

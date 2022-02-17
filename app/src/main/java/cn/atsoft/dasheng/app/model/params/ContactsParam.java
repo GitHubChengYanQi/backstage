@@ -51,6 +51,12 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
     private String contactsName;
 
     /**
+     * 联系人备注
+     */
+    @ApiModelProperty("联系人备注")
+    private String contactsRemark;
+
+    /**
      * 职务
      */
     @ApiModelProperty("职务")

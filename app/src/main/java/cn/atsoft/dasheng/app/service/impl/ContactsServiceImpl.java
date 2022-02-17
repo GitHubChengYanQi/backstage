@@ -27,15 +27,18 @@ import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.daoxin.entity.DaoxinDept;
 import cn.atsoft.dasheng.daoxin.entity.DaoxinPosition;
+import cn.atsoft.dasheng.daoxin.model.result.DaoxinDeptResult;
 import cn.atsoft.dasheng.daoxin.service.DaoxinDeptService;
 import cn.atsoft.dasheng.daoxin.service.DaoxinPositionService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.Position;
+import cn.atsoft.dasheng.sys.modular.system.model.result.PositionResult;
 import cn.atsoft.dasheng.sys.modular.system.service.PositionService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -306,11 +309,33 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         List<Long> customerIds = new ArrayList<>();
         List<Long> roleIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
+        List<Long> deptIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
         for (ContactsResult record : data) {
             contactsIds.add(record.getContactsId());
             customerIds.add(record.getCustomerId());
             roleIds.add(record.getCompanyRole());
+            deptIds.add(record.getDeptId());
+            positionIds.add(record.getPositionId());
         }
+        //查询部门
+        List<DaoxinDept> daoxinDepts = daoxinDeptService.listByIds(deptIds);
+        List<DaoxinDeptResult> deptResults = new ArrayList<>();
+        for (DaoxinDept daoxinDept : daoxinDepts) {
+            DaoxinDeptResult daoxinDeptResult = new DaoxinDeptResult();
+            ToolUtil.copyProperties(daoxinDept,daoxinDeptResult);
+            deptResults.add(daoxinDeptResult);
+        }
+        //查询职位
+        List<Position> positions = positionService.listByIds(positionIds);
+        List<PositionResult> positionResults = new ArrayList<>();
+        for (Position position : positions) {
+            PositionResult positionResult = new PositionResult();
+            ToolUtil.copyProperties(position,positionResult);
+            positionResults.add(positionResult);
+        }
+
+
         List<CompanyRole> companyRoleList = roleIds.size() == 0 ? new ArrayList<>() : companyRoleService.lambdaQuery().in(CompanyRole::getCompanyRoleId, roleIds).list();
         List<Long> ids = new ArrayList<>();
         List<ContactsBind> contactsBinds = new ArrayList<>();
@@ -366,6 +391,18 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 }
             }
             record.setPhoneParams(List);
+
+            for (DaoxinDeptResult deptResult : deptResults) {
+                if (record.getDeptId().equals(deptResult.getDeptId())){
+                    record.setDeptResult(deptResult);
+                }
+            }
+            for (PositionResult positionResult : positionResults) {
+                if (record.getPositionId().equals(positionResult.getPositionId())){
+                    record.setPositionResult(positionResult);
+                }
+            }
+
         }
 
     }
