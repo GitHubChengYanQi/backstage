@@ -1,82 +1,37 @@
 package cn.atsoft.dasheng.production.model.result;
 
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * sop 主表
+ * sop 绑定 工序
  * </p>
  *
  * @author song
- * @since 2022-02-10
+ * @since 2022-02-17
  */
 @Data
 @ApiModel
-public class SopResult implements Serializable {
+public class SopBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<SopDetailResult> sopDetails;
-    private Long pid;
-    private List<SopResult> oldSop;
-    private User user;
-    private List<String> mediaUrls;
-    private     List<ShipSetpResult> shipSetpResults;
 
     /**
-     * 修改原因
+     * 绑定id
      */
-    private String alterWhy;
-    /**
-     * sopId
-     */
-    @ApiModelProperty("sopId")
+    @ApiModelProperty("绑定id")
+    private Long bindId;
+
+    @ApiModelProperty("")
     private Long sopId;
 
-    /**
-     * 编号
-     */
-    @ApiModelProperty("编号")
-    private String coding;
-
-    /**
-     * 工序
-     */
-    @ApiModelProperty("工序")
+    @ApiModelProperty("")
     private Long shipSetpId;
-
-    /**
-     * 名称
-     */
-    @ApiModelProperty("名称")
-    private String name;
-
-    /**
-     * 版本号
-     */
-    @ApiModelProperty("版本号")
-    private String versionNumber;
-
-    /**
-     * 成品图
-     */
-    @ApiModelProperty("成品图")
-    private String finishedPicture;
-
-    /**
-     * 注意事项
-     */
-    @ApiModelProperty("注意事项")
-    private String note;
 
     /**
      * 创建者

@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
@@ -47,6 +49,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     @Autowired
     private ProcessRouteService processRouteService;
 
+    @Autowired
+    private SkuService skuService;
+
 
     @Override
     @Transactional
@@ -63,7 +68,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
          */
         switch (param.getStepType()) {
             case "shipStart":
-                Long route = addProcessRoute(param.getProcessRouteParam());
+                Long route = addProcessRoute(param.getProcessRoute());
                 entity.setFormId(route);
                 this.updateById(entity);
                 break;
@@ -112,7 +117,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         //判断配置
         switch (node.getStepType()) {
             case "setp":
-                addSetpSet(node.getSetpSetParam(), activitiSteps.getSetpsId());
+                addSetpSet(node.getSetpSet(), activitiSteps.getSetpsId());
                 break;
             default:
                 throw new ServiceException(500, "请确定类型");
@@ -170,7 +175,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             this.save(activitiSteps);
             switch (stepsParam.getStepType()) {
                 case "setp":
-                    addSetpSet(stepsParam.getSetpSetParam(), activitiSteps.getSetpsId());
+                    addSetpSet(stepsParam.getSetpSet(), activitiSteps.getSetpsId());
                     break;
                 default:
                     throw new ServiceException(500, "请确定类型");
@@ -224,7 +229,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         for (ActivitiStepsResult stepsResult : stepsResults) {
             if (stepsResult.getSupper() == 0) {
                 ProcessRouteResult routeResult = processRouteService.detail(formId);
-                stepsResult.setProcessRouteResult(routeResult);
+                stepsResult.setProcessRoute(routeResult);
                 if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
                     ActivitiStepsResult children = getChildren(stepsResult.getChildren(), stepsResults);
                     stepsResult.setChildNode(children);
@@ -248,7 +253,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             if (stepsResult.getSetpsId().toString().equals(children)) {
 
                 ActivitiSetpSetResult setpSetResult = setpSetResult(stepsResult.getSetpsId());
-                stepsResult.setSetpSetResult(setpSetResult);
+                stepsResult.setSetpSet(setpSetResult);
 
                 if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {        //下级是节点或者路由
                     ActivitiStepsResult result = getChildren(stepsResult.getChildren(), stepsResults);
@@ -283,7 +288,12 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return stepsResults;
     }
 
-
+    /**
+     * 工序步骤
+     *
+     * @param stepId
+     * @return
+     */
     private ActivitiSetpSetResult setpSetResult(Long stepId) {
         ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", stepId).one();
         ActivitiSetpSetResult setpSetResult = new ActivitiSetpSetResult();
@@ -292,10 +302,33 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return setpSetResult;
     }
 
-
+    /**
+     * 工序步骤详情
+     *
+     * @param stepId
+     * @return
+     */
     private List<ActivitiSetpSetDetailResult> setpSetDetailResult(Long stepId) {
         List<ActivitiSetpSetDetail> setpSetDetails = setpSetDetailService.query().eq("setps_id", stepId).list();
-        return BeanUtil.copyToList(setpSetDetails, ActivitiSetpSetDetailResult.class, new CopyOptions());
+        List<ActivitiSetpSetDetailResult> detailResults = BeanUtil.copyToList(setpSetDetails, ActivitiSetpSetDetailResult.class, new CopyOptions());
+        List<Long> skuIds = new ArrayList<>();
+        for (ActivitiSetpSetDetailResult setpSetDetailResult : detailResults) {
+            if (ToolUtil.isNotEmpty(setpSetDetailResult.getSetpsId())) {
+                skuIds.add(setpSetDetailResult.getSetpsId());
+            }
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        for (ActivitiSetpSetDetailResult detailResult : detailResults) {
+            for (SkuResult skuResult : skuResults) {
+                if (ToolUtil.isNotEmpty(detailResult.getSkuId()) && detailResult.getSkuResult().equals(skuResult.getSkuId())){
+                    detailResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+
+        return detailResults;
     }
 
 

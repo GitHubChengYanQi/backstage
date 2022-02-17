@@ -39,11 +39,10 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private String stepType;
 
-    private ActivitiSetpSetParam setpSetParam;   //工序步骤
+    private ActivitiSetpSetParam setpSet;   //工序步骤
 
 
-
-    private ProcessRouteParam processRouteParam;
+    private ProcessRouteParam processRoute;
 
 
     /**

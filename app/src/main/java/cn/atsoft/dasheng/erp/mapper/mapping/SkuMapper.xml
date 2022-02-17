@@ -118,13 +118,15 @@
                 and standard like CONCAT ('%',#{paramCondition.standard},'%')
             </if>
             <if test="paramCondition.spuName != null and paramCondition.spuName != ''">
-                and spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.spuName},'%') and display = 1)
+                and spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.spuName},'%')
+                and display = 1)
             </if>
             <if test="paramCondition.spuClassName != null and paramCondition.spuClassName != ''">
                 AND spu_id IN (
                 SELECT spu_id FROM goods_spu
                 WHERE
-                spu_classification_id IN ( SELECT spu_classification_id FROM goods_spu_class WHERE `name` LIKE CONCAT ('%',#{paramCondition.spuClassName},'%')) )
+                spu_classification_id IN ( SELECT spu_classification_id FROM goods_spu_class WHERE `name` LIKE CONCAT
+                ('%',#{paramCondition.spuClassName},'%')) )
             </if>
 
 
@@ -142,6 +144,7 @@
                 </foreach>
             </if>
         </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">

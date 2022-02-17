@@ -45,9 +45,9 @@ public class ActivitiStepsResult implements Serializable {
 
     private Boolean permissions;
 
-    private Object processRouteResult;
+    private Object processRoute;
 
-    private ActivitiSetpSetResult setpSetResult;
+    private ActivitiSetpSetResult setpSet;
 
     private List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
     /**

@@ -8,13 +8,11 @@ import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.ToolResult;
 import cn.atsoft.dasheng.erp.service.ToolService;
-import cn.atsoft.dasheng.production.entity.ShipSetp;
-import cn.atsoft.dasheng.production.entity.ShipSetpBind;
-import cn.atsoft.dasheng.production.entity.ShipSetpClass;
-import cn.atsoft.dasheng.production.entity.Sop;
+import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ShipSetpMapper;
 import cn.atsoft.dasheng.production.model.params.ShipSetpBindParam;
 import cn.atsoft.dasheng.production.model.params.ShipSetpParam;
+import cn.atsoft.dasheng.production.model.params.SopBindParam;
 import cn.atsoft.dasheng.production.model.result.ShipSetpBindResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpClassResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
@@ -36,6 +34,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -62,6 +61,8 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
 
     @Autowired
     private SopService sopService;
+    @Autowired
+    private SopBindServiceImpl sopBindService;
 
     @Override
     public void add(ShipSetpParam param) {
@@ -77,8 +78,12 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
             }
             shipSetpBindService.saveBatch(bindEntityList);
         }
-        if (ToolUtil.isNotEmpty(param.getSopId())){
-            sopService.addShip(param.getSopId(),entity.getShipSetpId());
+        if (ToolUtil.isNotEmpty(param.getSopId())) {
+            SopBind sopBind = new SopBind();
+            sopBind.setSopId(param.getSopId());
+            sopBind.setShipSetpId(entity.getShipSetpId());
+            sopBindService.save(sopBind);
+//            sopService.addShip(param.getSopId(), entity.getShipSetpId());
         }
     }
 
@@ -108,11 +113,12 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
             }
             shipSetpBindService.saveBatch(bindEntityList);
         }
-        if (ToolUtil.isNotEmpty(param.getSopId())){
-//            Sop sop = sopService.query().eq("ship_setp_id", oldEntity.getShipSetpId()).eq("display", 1).one();
-//            sop.setShipSetpId(null);
-//            sopService.updateById(sop);
-            sopService.addShip(param.getSopId(),oldEntity.getShipSetpId());
+        if (ToolUtil.isNotEmpty(param.getSopId())) {
+            sopBindService.update(new SopBindParam() {{
+                setSopId(param.getSopId());
+                setShipSetpId(param.getShipSetpId());
+            }});
+//            sopService.addShip(param.getSopId(), oldEntity.getShipSetpId());
         }
         this.updateById(newEntity);
 
@@ -131,10 +137,11 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
     @Override
     public PageInfo<ShipSetpResult> findPageBySpec(ShipSetpParam param, DataScope dataScope) {
         Page<ShipSetpResult> pageContext = getPageContext();
-        IPage<ShipSetpResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<ShipSetpResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
     @Override
     public void format(List<ShipSetpResult> param) {
         List<Long> createUserIds = new ArrayList<>();
@@ -173,14 +180,7 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
         }
 
         //查询SOP
-        List<Sop> list = shipSetpIds.size() == 0 ? new ArrayList<>() : sopService.query().in("ship_setp_id", shipSetpIds).eq("display", 1).list();
-        List<SopResult> sopResults = new ArrayList<>();
-        for (Sop sop : list) {
-            SopResult sopResult = new SopResult();
-            ToolUtil.copyProperties(sop,sopResult);
-            sopResults.add(sopResult);
-        }
-        sopService.format(sopResults);
+        Map<Long, SopResult> serviceSop = sopBindService.getSop(shipSetpIds);
 
 
         //查询创建人
@@ -217,12 +217,11 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
 
                 shipSetpResult.setBinds(shipSetpBindResults);
             }
-            for (SopResult sopResult : sopResults) {
-                if (sopResult.getShipSetpId().equals(shipSetpResult.getShipSetpId())){
-                    shipSetpResult.setSopResult(sopResult);
-                    shipSetpResult.setSopId(sopResult.getSopId());
-                }
-            }
+
+            SopResult result = serviceSop.get(shipSetpResult.getShipSetpId());
+            shipSetpResult.setSopResult(result);
+
+
         }
 
 

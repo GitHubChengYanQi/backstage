@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.model.result.SopDetailResult;
 import cn.atsoft.dasheng.production.model.result.SopResult;
 import cn.atsoft.dasheng.production.service.ShipSetpService;
+import cn.atsoft.dasheng.production.service.SopBindService;
 import cn.atsoft.dasheng.production.service.SopDetailService;
 import cn.atsoft.dasheng.production.service.SopService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -32,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +58,9 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
 
     @Autowired
     private ShipSetpService shipSetpService;
+
+    @Autowired
+    private SopBindService sopBindService;
 
     @Override
     public Long add(SopParam param) {
@@ -239,24 +244,18 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
 
     @Override
     public void format(List<SopResult> data) {
-        List<Long> shipId = new ArrayList<>();
+
         List<Long> userIds = new ArrayList<>();
+        List<Long> sopIds = new ArrayList<>();
         for (SopResult datum : data) {
-            shipId.add(datum.getShipSetpId());
             userIds.add(datum.getCreateUser());
+            sopIds.add(datum.getSopId());
         }
-
+        Map<Long, List<ShipSetpResult>> shipMap = sopBindService.getShipSetp(sopIds);
         List<User> users = userService.listByIds(userIds);
-        List<ShipSetp> shipSetps = shipId.size() == 0 ? new ArrayList<>() : shipSetpService.listByIds(shipId);
-        List<ShipSetpResult> setpResults = BeanUtil.copyToList(shipSetps, ShipSetpResult.class, new CopyOptions());
 
         for (SopResult datum : data) {
-            for (ShipSetpResult setpResult : setpResults) {
-                if (ToolUtil.isNotEmpty(datum.getShipSetpId()) && datum.getShipSetpId().equals(setpResult.getShipSetpId())) {
-                    datum.setShipSetpResult(setpResult);
-                    break;
-                }
-            }
+
             for (User user : users) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     datum.setUser(user);
@@ -264,6 +263,8 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
                 }
             }
 
+            List<ShipSetpResult> shipSetpResults = shipMap.get(datum.getSopId());
+            datum.setShipSetpResults(shipSetpResults);
         }
 
     }
