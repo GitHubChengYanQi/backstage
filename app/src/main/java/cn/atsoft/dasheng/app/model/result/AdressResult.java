@@ -40,6 +40,12 @@ public class AdressResult implements Serializable {
     @ApiModelProperty("地址")
     private String location;
 
+    /**
+     * 地址
+     */
+    @ApiModelProperty("地址备注")
+    private String addressRemark;
+
     private String region;
 
     /**

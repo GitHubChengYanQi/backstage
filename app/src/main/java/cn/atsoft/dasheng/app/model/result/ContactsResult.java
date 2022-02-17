@@ -64,6 +64,12 @@ public class ContactsResult implements Serializable {
     private Long phone;
 
     /**
+     * 联系人备注
+     */
+    @ApiModelProperty("联系人备注")
+    private String contactsRemark;
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

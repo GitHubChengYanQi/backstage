@@ -53,6 +53,12 @@ public class Contacts implements Serializable {
     private String job;
 
     /**
+     * 联系人备注
+     */
+    @TableField("contacts_remark")
+    private String contactsRemark;
+
+    /**
      * 联系电话
      */
     @TableField("phone")
@@ -137,6 +143,14 @@ public class Contacts implements Serializable {
 
     public Long getUpdateUser() {
         return updateUser;
+    }
+
+    public String getContactsRemark() {
+        return contactsRemark;
+    }
+
+    public void setContactsRemark(String contactsRemark) {
+        this.contactsRemark = contactsRemark;
     }
 
     public void setUpdateUser(Long updateUser) {

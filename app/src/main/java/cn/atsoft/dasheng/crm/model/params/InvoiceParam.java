@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -66,6 +67,20 @@ public class InvoiceParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("是否默认")
     private Integer isDefault;
+
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String invoiceNote;
+
+    /**
+     * 开户账号
+     */
+    @ApiModelProperty("开户账号")
+    private Integer bankNo;
+
 
     /**
      * 创建者

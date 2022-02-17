@@ -63,6 +63,19 @@ public class Invoice implements Serializable {
     @TableField("is_default")
     private Integer isDefault;
 
+
+    /**
+     * 备注
+     */
+    @TableField("invoice_note")
+    private String invoiceNote;
+
+    /**
+     * 开户账号
+     */
+    @TableField("bank_no")
+    private Integer bankNo;
+
     /**
      * 创建者
      */
@@ -99,6 +112,22 @@ public class Invoice implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+
+    public String getInvoiceNote() {
+        return invoiceNote;
+    }
+
+    public void setInvoiceNote(String invoiceNote) {
+        this.invoiceNote = invoiceNote;
+    }
+
+    public Integer getBankNo() {
+        return bankNo;
+    }
+
+    public void setBankNo(Integer bankNo) {
+        this.bankNo = bankNo;
+    }
 
     public Long getInvoiceId() {
         return invoiceId;

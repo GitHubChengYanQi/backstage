@@ -8,6 +8,7 @@
         <result column="location" property="location"/>
         <result column="longitude" property="longitude"/>
         <result column="latitude" property="latitude"/>
+        <result column="address_remark" property="addressRemark"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>

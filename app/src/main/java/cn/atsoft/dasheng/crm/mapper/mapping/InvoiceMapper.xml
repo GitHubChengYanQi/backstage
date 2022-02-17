@@ -10,6 +10,8 @@
         <result column="bank_account" property="bankAccount" />
         <result column="credit_code" property="creditCode" />
         <result column="email" property="email" />
+        <result column="bank_no" property="bankNo" />
+        <result column="invoice_note" property="invoiceNote" />
         <result column="is_default" property="isDefault" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -21,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        invoice_id AS "invoiceId", customer_id AS "customerId", bank AS "bank", bank_account AS "bankAccount", credit_code AS "creditCode", email AS "email", is_default AS "isDefault", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        invoice_id AS "invoiceId", bank_no AS "bankNo", invoice_note AS "invoiceNote",customer_id AS "customerId", bank AS "bank", bank_account AS "bankAccount", credit_code AS "creditCode", email AS "email", is_default AS "isDefault", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
