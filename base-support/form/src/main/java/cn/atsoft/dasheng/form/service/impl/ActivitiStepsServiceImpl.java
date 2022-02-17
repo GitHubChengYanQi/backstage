@@ -64,7 +64,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     @Override
     @Transactional
-    public void add(ActivitiStepsParam param) {
+    public void addProcess(ActivitiStepsParam param) {
         ActivitiProcess process = processService.getById(param.getProcessId());
         if (process.getStatus() >= 98) {
             throw new ServiceException(500, "当前流程已经发布,不可以修改步骤");
@@ -96,7 +96,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
          * 判断是否是工艺路线
          */
 
-            addAudit(param.getAuditType(), param.getAuditRule(), entity.getSetpsId());
+        addAudit(param.getAuditType(), param.getAuditRule(), entity.getSetpsId());
 
         //添加节点
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
@@ -117,20 +117,11 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public void luYou(ActivitiStepsParam node, Long supper, Long processId) {
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
-        if (node.getType().toString().equals("4")) {
+        if (node.getType().equals("4")) {
             activitiSteps.setStepType("路由");
         }
         //判断配置
-        if (ToolUtil.isEmpty(node.getAuditType())) {
-            throw new ServiceException(500, "请设置正确的配置");
-        }
 
-        if (node.getAuditType().toString().equals("send")) {
-            ActivitiSteps steps = this.getById(supper);
-            if (steps.getType().toString().equals("0")) {
-                throw new ServiceException(500, "不可以直接抄送");
-            }
-        }
         switch (node.getType()) {
             case "1":
                 activitiSteps.setType(AUDIT);
@@ -195,7 +186,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             //修改父级分支
 
             if (ToolUtil.isEmpty(stepsParam.getChildNode())) {
-                    throw new ServiceException(500, "请在条件下添加动作");
+                throw new ServiceException(500, "请在条件下添加动作");
             }
             if (ToolUtil.isEmpty(steps.getConditionNodes())) {
                 steps.setConditionNodes(activitiSteps.getSetpsId().toString());

@@ -22,7 +22,7 @@ import java.util.List;
 public class ActivitiSetpSetParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<ActivitiSetpSetDetailParam> setpSetDetailParam;
+    private List<ActivitiSetpSetDetailParam> setpSetDetailParam;   //工序步骤详情
     /**
      * 主键
      */
