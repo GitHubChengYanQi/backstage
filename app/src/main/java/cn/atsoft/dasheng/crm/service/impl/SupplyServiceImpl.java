@@ -127,7 +127,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
      */
     @Override
     public void addList(List<SupplyParam> supplyParams, Long customerId) {
-        if (ToolUtil.isNotEmpty(supplyParams)) {
+        if (ToolUtil.isEmpty(supplyParams)) {
             throw new ServiceException(500, "请添加供应物料");
         }
         Customer customer = customerService.getById(customerId);
@@ -146,6 +146,23 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         }
         this.saveBatch(supplies);
     }
+
+    @Override
+    public void customerAdd(List<SupplyParam> supplyParams, Long customerId) {
+        List<Supply> supplies = new ArrayList<>();
+        for (SupplyParam supplyParam : supplyParams) {
+            for (BrandParam brandParam : supplyParam.getBrandParams()) {
+                supplyParam.setCustomerId(customerId);
+                supplyParam.setBrandId(brandParam.getBrandId());
+                supplyParam.setSkuId(supplyParam.getSkuId());
+                Supply supply = new Supply();
+                ToolUtil.copyProperties(supplyParam, supply);
+                supplies.add(supply);
+            }
+        }
+        this.saveBatch(supplies);
+    }
+
 
     @Override
     public List<SupplyResult> detail(Long customerId) {
@@ -426,11 +443,12 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     /**
      * 根据供应商ids 查询绑定物料品牌返回
+     *
      * @param customerIds
      * @return
      */
     @Override
-    public List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds){
+    public List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds) {
         if (ToolUtil.isEmpty(customerIds)) {
             return null;
         }
@@ -441,14 +459,14 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             skuIds.add(supply.getSkuId());
             brandIds.add(supply.getBrandId());
         }
-        List<SkuResult> skuResults =skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
+        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         List<SupplyResult> results = new ArrayList<>();
         for (Supply supply : supplies) {
             SupplyResult supplyResult = new SupplyResult();
-            ToolUtil.copyProperties(supply,supplyResult);
+            ToolUtil.copyProperties(supply, supplyResult);
             for (SkuResult skuResult : skuResults) {
-                if (supplyResult.getSkuId().equals(skuResult.getSkuId())){
+                if (supplyResult.getSkuId().equals(skuResult.getSkuId())) {
                     supplyResult.setSkuResult(skuResult);
                 }
             }

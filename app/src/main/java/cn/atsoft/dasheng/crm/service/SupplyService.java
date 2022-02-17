@@ -74,6 +74,8 @@ public interface SupplyService extends IService<Supply> {
 
     void addList(List<SupplyParam> supplyParams, Long customerId);
 
+    void customerAdd(List<SupplyParam> supplyParams, Long customerId);
+
     List<SupplyResult> detail(Long customerId);
 
     List<SupplyResult> getListByCustomerId(Long customerId);

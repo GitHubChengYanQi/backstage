@@ -118,11 +118,13 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         DaoxinDept daoxinDept = null;
         Position position = null;
         contacts = this.query().eq("contacts_id", param.getContactsName()).one();   //联系人
-        if (ToolUtil.isEmpty(contacts)) {
-            contacts = new Contacts();
-            contacts.setContactsName(param.getContactsName());
-            this.save(contacts);
+        if (ToolUtil.isNotEmpty(contacts)) {
+            return contacts.getContactsId();
         }
+        contacts = new Contacts();
+        contacts.setContactsName(param.getContactsName());
+        this.save(contacts);
+
         if (ToolUtil.isNotEmpty(param.getDeptName())) {                             //部门
             daoxinDept = daoxinDeptService.query().eq("dept_id", param.getContactsName()).one();
             if (ToolUtil.isEmpty(daoxinDept)) {
@@ -274,9 +276,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isNotEmpty(param.getCustomerId())) {
             List<Long> contactsIds = this.baseMapper.queryContactsId(param.getCustomerId());
             if (ToolUtil.isNotEmpty(contactsIds)) {
-                for (Long id : contactsIds) {
-                    ids.add(id);
-                }
+                ids.addAll(contactsIds);
             }
         }
 
@@ -329,15 +329,15 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         List<DaoxinDeptResult> deptResults = new ArrayList<>();
         for (DaoxinDept daoxinDept : daoxinDepts) {
             DaoxinDeptResult daoxinDeptResult = new DaoxinDeptResult();
-            ToolUtil.copyProperties(daoxinDept,daoxinDeptResult);
+            ToolUtil.copyProperties(daoxinDept, daoxinDeptResult);
             deptResults.add(daoxinDeptResult);
         }
         //查询职位
-        List<Position> positions =positionIds.size() == 0 ? new ArrayList<>() : positionService.listByIds(positionIds);
+        List<Position> positions = positionIds.size() == 0 ? new ArrayList<>() : positionService.listByIds(positionIds);
         List<PositionResult> positionResults = new ArrayList<>();
         for (Position position : positions) {
             PositionResult positionResult = new PositionResult();
-            ToolUtil.copyProperties(position,positionResult);
+            ToolUtil.copyProperties(position, positionResult);
             positionResults.add(positionResult);
         }
 
@@ -399,12 +399,12 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             record.setPhoneParams(List);
 
             for (DaoxinDeptResult deptResult : deptResults) {
-                if (record.getDeptId().equals(deptResult.getDeptId())){
+                if (record.getDeptId().equals(deptResult.getDeptId())) {
                     record.setDeptResult(deptResult);
                 }
             }
             for (PositionResult positionResult : positionResults) {
-                if (record.getPositionId().equals(positionResult.getPositionId())){
+                if (record.getPositionId().equals(positionResult.getPositionId())) {
                     record.setPositionResult(positionResult);
                 }
             }

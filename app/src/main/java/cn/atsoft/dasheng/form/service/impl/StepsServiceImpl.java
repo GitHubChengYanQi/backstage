@@ -343,7 +343,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
         for (ActivitiSetpSetDetailResult detailResult : detailResults) {
             for (SkuResult skuResult : skuResults) {
-                if (ToolUtil.isNotEmpty(detailResult.getSkuId()) && detailResult.getSkuResult().equals(skuResult.getSkuId())) {
+                if (ToolUtil.isNotEmpty(detailResult.getSkuId()) && detailResult.getSkuId().equals(skuResult.getSkuId())) {
                     detailResult.setSkuResult(skuResult);
                     break;
                 }

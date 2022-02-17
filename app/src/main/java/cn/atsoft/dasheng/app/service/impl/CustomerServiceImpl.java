@@ -137,6 +137,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         }
         for (InvoiceParam invoiceParam : param.getInvoiceParams()) {
+            invoiceParam.setCustomerId(entity.getCustomerId());
             invoiceService.add(invoiceParam);
         }
 
@@ -273,7 +274,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         /***
          * 默认地址
          */
-        List<Adress> adresses = adressService.query().in("adress_id", adressIds).eq("display", 1).list();
+        List<Adress> adresses = adressIds.size() == 0 ? new ArrayList<>() : adressService.query().in("adress_id", adressIds).eq("display", 1).list();
 
         /**
          * 获取联系人
