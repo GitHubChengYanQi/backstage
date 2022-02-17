@@ -148,8 +148,14 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 }
             }
         }
-        contacts.setDeptId(daoxinDept.getDeptId());
-        contacts.setPositionId(position.getPositionId());
+        if (ToolUtil.isNotEmpty(daoxinDept)) {
+            contacts.setDeptId(daoxinDept.getDeptId());
+        }
+        if (ToolUtil.isNotEmpty(position)) {
+            contacts.setPositionId(position.getPositionId());
+        }
+
+
         this.updateById(contacts);
         return contacts.getContactsId();
     }
@@ -319,7 +325,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             positionIds.add(record.getPositionId());
         }
         //查询部门
-        List<DaoxinDept> daoxinDepts = daoxinDeptService.listByIds(deptIds);
+        List<DaoxinDept> daoxinDepts = deptIds.size() == 0 ? new ArrayList<>() : daoxinDeptService.listByIds(deptIds);
         List<DaoxinDeptResult> deptResults = new ArrayList<>();
         for (DaoxinDept daoxinDept : daoxinDepts) {
             DaoxinDeptResult daoxinDeptResult = new DaoxinDeptResult();
@@ -327,7 +333,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             deptResults.add(daoxinDeptResult);
         }
         //查询职位
-        List<Position> positions = positionService.listByIds(positionIds);
+        List<Position> positions =positionIds.size() == 0 ? new ArrayList<>() : positionService.listByIds(positionIds);
         List<PositionResult> positionResults = new ArrayList<>();
         for (Position position : positions) {
             PositionResult positionResult = new PositionResult();
