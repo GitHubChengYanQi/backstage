@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.daoxin.mapper.DeptMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.daoxin.entity.Dept">
+        <id column="dept_id" property="deptId" />
+        <result column="pid" property="pid" />
+        <result column="pids" property="pids" />
+        <result column="simple_name" property="simpleName" />
+        <result column="full_name" property="fullName" />
+        <result column="description" property="description" />
+        <result column="version" property="version" />
+        <result column="sort" property="sort" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        dept_id AS "deptId", pid AS "pid", pids AS "pids", simple_name AS "simpleName", full_name AS "fullName", description AS "description", version AS "version", sort AS "sort", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.daoxin.model.result.DeptResult" parameterType="cn.atsoft.dasheng.daoxin.model.params.DeptParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_dept where 1 = 1
+            <if test="paramCondition.deptId != null">
+                and dept_id like CONCAT('%',#{paramCondition.deptId},'%')
+            </if>
+            <if test="paramCondition.pid != null">
+                and pid like CONCAT('%',#{paramCondition.pid},'%')
+            </if>
+            <if test="paramCondition.pids != null and paramCondition.pids != ''">
+                and pids like CONCAT('%',#{paramCondition.pids},'%')
+            </if>
+            <if test="paramCondition.simpleName != null and paramCondition.simpleName != ''">
+                and simple_name like CONCAT('%',#{paramCondition.simpleName},'%')
+            </if>
+            <if test="paramCondition.fullName != null and paramCondition.fullName != ''">
+                and full_name like CONCAT('%',#{paramCondition.fullName},'%')
+            </if>
+            <if test="paramCondition.description != null and paramCondition.description != ''">
+                and description like CONCAT('%',#{paramCondition.description},'%')
+            </if>
+            <if test="paramCondition.version != null">
+                and version like CONCAT('%',#{paramCondition.version},'%')
+            </if>
+            <if test="paramCondition.sort != null">
+                and sort like CONCAT('%',#{paramCondition.sort},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.daoxin.model.params.DeptParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_dept where 1 = 1
+                <if test="paramCondition.deptId != null">
+                        and dept_id like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.pid != null">
+                        and pid like CONCAT('%',#{paramCondition.pid},'%')
+                </if>
+                <if test="paramCondition.pids != null and paramCondition.pids != ''">
+                        and pids like CONCAT('%',#{paramCondition.pids},'%')
+                </if>
+                <if test="paramCondition.simpleName != null and paramCondition.simpleName != ''">
+                        and simple_name like CONCAT('%',#{paramCondition.simpleName},'%')
+                </if>
+                <if test="paramCondition.fullName != null and paramCondition.fullName != ''">
+                        and full_name like CONCAT('%',#{paramCondition.fullName},'%')
+                </if>
+                <if test="paramCondition.description != null and paramCondition.description != ''">
+                        and description like CONCAT('%',#{paramCondition.description},'%')
+                </if>
+                <if test="paramCondition.version != null">
+                        and version like CONCAT('%',#{paramCondition.version},'%')
+                </if>
+                <if test="paramCondition.sort != null">
+                        and sort like CONCAT('%',#{paramCondition.sort},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.daoxin.model.result.DeptResult" parameterType="cn.atsoft.dasheng.daoxin.model.params.DeptParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_dept where 1 = 1
+                <if test="paramCondition.deptId != null">
+                        and dept_id like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.pid != null">
+                        and pid like CONCAT('%',#{paramCondition.pid},'%')
+                </if>
+                <if test="paramCondition.pids != null and paramCondition.pids != ''">
+                        and pids like CONCAT('%',#{paramCondition.pids},'%')
+                </if>
+                <if test="paramCondition.simpleName != null and paramCondition.simpleName != ''">
+                        and simple_name like CONCAT('%',#{paramCondition.simpleName},'%')
+                </if>
+                <if test="paramCondition.fullName != null and paramCondition.fullName != ''">
+                        and full_name like CONCAT('%',#{paramCondition.fullName},'%')
+                </if>
+                <if test="paramCondition.description != null and paramCondition.description != ''">
+                        and description like CONCAT('%',#{paramCondition.description},'%')
+                </if>
+                <if test="paramCondition.version != null">
+                        and version like CONCAT('%',#{paramCondition.version},'%')
+                </if>
+                <if test="paramCondition.sort != null">
+                        and sort like CONCAT('%',#{paramCondition.sort},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.daoxin.model.params.DeptParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_dept where 1 = 1
+                <if test="paramCondition.deptId != null">
+                        and dept_id like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.pid != null">
+                        and pid like CONCAT('%',#{paramCondition.pid},'%')
+                </if>
+                <if test="paramCondition.pids != null and paramCondition.pids != ''">
+                        and pids like CONCAT('%',#{paramCondition.pids},'%')
+                </if>
+                <if test="paramCondition.simpleName != null and paramCondition.simpleName != ''">
+                        and simple_name like CONCAT('%',#{paramCondition.simpleName},'%')
+                </if>
+                <if test="paramCondition.fullName != null and paramCondition.fullName != ''">
+                        and full_name like CONCAT('%',#{paramCondition.fullName},'%')
+                </if>
+                <if test="paramCondition.description != null and paramCondition.description != ''">
+                        and description like CONCAT('%',#{paramCondition.description},'%')
+                </if>
+                <if test="paramCondition.version != null">
+                        and version like CONCAT('%',#{paramCondition.version},'%')
+                </if>
+                <if test="paramCondition.sort != null">
+                        and sort like CONCAT('%',#{paramCondition.sort},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+    </select>
+
+</mapper>

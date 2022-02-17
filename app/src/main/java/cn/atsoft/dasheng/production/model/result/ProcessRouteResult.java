@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 工艺路线列表
@@ -19,7 +24,7 @@ import java.util.List;
 public class ProcessRouteResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private SkuResult skuResult;
 
     /**
      * 工艺路线id
