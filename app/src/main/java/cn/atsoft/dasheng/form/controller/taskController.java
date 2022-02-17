@@ -2,8 +2,7 @@ package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.config.MobileService;
-import cn.atsoft.dasheng.erp.entity.QualityTask;
+
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.*;

@@ -1,38 +1,23 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
-import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.auth.model.LoginUser;
-import cn.atsoft.dasheng.base.pojo.page.PageFactory;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam;
 
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.*;
-import cn.atsoft.dasheng.form.pojo.AppointUser;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.AuditType;
-import cn.atsoft.dasheng.form.pojo.DeptPosition;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
 import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
 import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,9 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.*;
 
@@ -55,7 +38,7 @@ import static cn.atsoft.dasheng.form.pojo.StepsType.*;
  * @since 2021-11-10
  */
 @Service
-public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiSteps> implements ActivitiStepsService {
+public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiSteps> implements StepsService {
 
     @Autowired
     private ActivitiSetpSetService setpSetService;
@@ -314,6 +297,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         List<ActivitiSetpSetDetail> setpSetDetails = setpSetDetailService.query().eq("setps_id", stepId).list();
         return BeanUtil.copyToList(setpSetDetails, ActivitiSetpSetDetailResult.class, new CopyOptions());
     }
+
+
 }
 
 

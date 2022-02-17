@@ -2,9 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.config.MobileService;
-import cn.atsoft.dasheng.erp.entity.ActivitiTaskSend;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
-import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -14,17 +12,15 @@ import cn.atsoft.dasheng.form.pojo.DeptPosition;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
-import org.beetl.ext.fn.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +29,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static cn.atsoft.dasheng.form.pojo.RuleType.quality_complete;
 import static cn.atsoft.dasheng.form.pojo.RuleType.send;
 
 @Service
@@ -57,7 +52,7 @@ public class ActivitiProcessTaskSend {
     @Autowired
     private UserService userService;
     @Autowired
-    private ActivitiStepsService activitiStepsService;
+    private StepsService activitiStepsService;
     @Autowired
     private MobileService mobileService;
     @Autowired

@@ -21,7 +21,7 @@ import java.util.List;
  * @author Sing
  * @since 2021-11-10
  */
-public interface ActivitiStepsService extends IService<ActivitiSteps> {
+public interface StepsService extends IService<ActivitiSteps> {
 
 
     @Transactional
