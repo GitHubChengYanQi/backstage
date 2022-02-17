@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class PositionResult implements Serializable {
+public class DaoxinPositionResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.daoxin.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.daoxin.entity.Position;
-import cn.atsoft.dasheng.daoxin.model.params.PositionParam;
-import cn.atsoft.dasheng.daoxin.model.result.PositionResult;
+import cn.atsoft.dasheng.daoxin.entity.DaoxinPosition;
+import cn.atsoft.dasheng.daoxin.model.params.DaoxinPositionParam;
+import cn.atsoft.dasheng.daoxin.model.result.DaoxinPositionResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author Captain_Jazz
  * @since 2022-02-17
  */
-public interface PositionService extends IService<Position> {
+public interface DaoxinPositionService extends IService<DaoxinPosition> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface PositionService extends IService<Position> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    void add(PositionParam param);
+    void add(DaoxinPositionParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface PositionService extends IService<Position> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    void delete(PositionParam param);
+    void delete(DaoxinPositionParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface PositionService extends IService<Position> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    void update(PositionParam param);
+    void update(DaoxinPositionParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface PositionService extends IService<Position> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    PositionResult findBySpec(PositionParam param);
+    DaoxinPositionResult findBySpec(DaoxinPositionParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface PositionService extends IService<Position> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    List<PositionResult> findListBySpec(PositionParam param);
+    List<DaoxinPositionResult> findListBySpec(DaoxinPositionParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface PositionService extends IService<Position> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-     PageInfo<PositionResult> findPageBySpec(PositionParam param);
+     PageInfo<DaoxinPositionResult> findPageBySpec(DaoxinPositionParam param);
 
 }

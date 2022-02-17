@@ -28,6 +28,8 @@ public interface ContactsService extends IService<Contacts> {
      */
     Contacts add(ContactsParam param);
 
+    Long insert(ContactsParam param);
+
     /**
      * 删除
      *

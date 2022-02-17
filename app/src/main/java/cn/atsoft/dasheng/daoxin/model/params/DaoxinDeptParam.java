@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DeptParam implements Serializable, BaseValidatingParam {
+public class DaoxinDeptParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 

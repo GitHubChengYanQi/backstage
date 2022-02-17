@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DeptResult implements Serializable {
+public class DaoxinDeptResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

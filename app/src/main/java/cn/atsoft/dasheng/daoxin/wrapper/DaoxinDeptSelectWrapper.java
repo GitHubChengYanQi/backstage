@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PositionSelectWrapper extends BaseControllerWrapper {
+public class DaoxinDeptSelectWrapper extends BaseControllerWrapper {
 
-    public PositionSelectWrapper(List<Map<String, Object>> multi) {
+    public DaoxinDeptSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 

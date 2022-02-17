@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -13,7 +16,7 @@ import java.util.List;
  * 联系人表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @Data
@@ -26,6 +29,11 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
     private List<PhoneParam> phoneParams;
 
 
+    private String deptName;
+
+    private String positionName;
+
+    private Long positionId;
     /**
      * 联系人id
      */

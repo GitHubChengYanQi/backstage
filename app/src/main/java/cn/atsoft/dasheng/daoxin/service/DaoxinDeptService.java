@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.daoxin.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.daoxin.entity.Dept;
-import cn.atsoft.dasheng.daoxin.model.params.DeptParam;
-import cn.atsoft.dasheng.daoxin.model.result.DeptResult;
+import cn.atsoft.dasheng.daoxin.entity.DaoxinDept;
+import cn.atsoft.dasheng.daoxin.model.params.DaoxinDeptParam;
+import cn.atsoft.dasheng.daoxin.model.result.DaoxinDeptResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author Captain_Jazz
  * @since 2022-02-17
  */
-public interface DeptService extends IService<Dept> {
+public interface DaoxinDeptService extends IService<DaoxinDept> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface DeptService extends IService<Dept> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    void add(DeptParam param);
+    void add(DaoxinDeptParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface DeptService extends IService<Dept> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    void delete(DeptParam param);
+    void delete(DaoxinDeptParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface DeptService extends IService<Dept> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    void update(DeptParam param);
+    void update(DaoxinDeptParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface DeptService extends IService<Dept> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    DeptResult findBySpec(DeptParam param);
+    DaoxinDeptResult findBySpec(DaoxinDeptParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface DeptService extends IService<Dept> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-    List<DeptResult> findListBySpec(DeptParam param);
+    List<DaoxinDeptResult> findListBySpec(DaoxinDeptParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface DeptService extends IService<Dept> {
      * @author Captain_Jazz
      * @Date 2022-02-17
      */
-     PageInfo<DeptResult> findPageBySpec(DeptParam param);
+     PageInfo<DaoxinDeptResult> findPageBySpec(DaoxinDeptParam param);
 
 }

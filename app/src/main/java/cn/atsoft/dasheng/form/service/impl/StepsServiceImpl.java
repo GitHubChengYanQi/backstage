@@ -81,6 +81,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
 
     public Long addProcessRoute(ProcessRouteParam param) {
+        param.setProcessRouteId(null);
         ProcessRoute routeEntity = new ProcessRoute();
         ToolUtil.copyProperties(param, routeEntity);
         processRouteService.save(routeEntity);
@@ -151,6 +152,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         for (ActivitiSetpSetDetailParam activitiSetpSetDetailParam : param.getSetpSetDetails()) {
             ActivitiSetpSetDetail detail = new ActivitiSetpSetDetail();
             ToolUtil.copyProperties(activitiSetpSetDetailParam, detail);
+            detail.setType(activitiSetpSetDetailParam.getEquals());
             detail.setSetpsId(stepId);
             details.add(detail);
         }

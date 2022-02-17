@@ -26,11 +26,17 @@ public class ActivitiSetpSetResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<ActivitiSetpSetDetailResult> setpSetDetails;
+
+
+
+    private String type = "setp";
     /**
      * 主键
      */
     @ApiModelProperty("主键")
     private Long setId;
+
+    private Integer productionType;
 
     /**
      * 步骤Id

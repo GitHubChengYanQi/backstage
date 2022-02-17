@@ -31,16 +31,10 @@ import java.util.List;
  */
 @Service
 public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> implements InvoiceService {
-    @Autowired
-    private CustomerService customerService;
+
 
     @Override
     public void add(InvoiceParam param) {
-        Customer customer = customerService.getById(param.getCustomerId());
-        if (customer.getSupply() != 1) {
-            throw new ServiceException(500, "不可添加开票");
-        }
-
         Invoice entity = getEntity(param);
         this.save(entity);
     }

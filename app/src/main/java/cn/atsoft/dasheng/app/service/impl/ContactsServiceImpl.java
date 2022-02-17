@@ -25,7 +25,13 @@ import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
 import cn.atsoft.dasheng.crm.model.result.CompanyRoleResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
+import cn.atsoft.dasheng.daoxin.entity.DaoxinDept;
+import cn.atsoft.dasheng.daoxin.entity.DaoxinPosition;
+import cn.atsoft.dasheng.daoxin.service.DaoxinDeptService;
+import cn.atsoft.dasheng.daoxin.service.DaoxinPositionService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.Position;
+import cn.atsoft.dasheng.sys.modular.system.service.PositionService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -55,6 +61,10 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     private PhoneService phoneService;
     @Autowired
     private ContactsBindService contactsBindService;
+    @Autowired
+    private DaoxinDeptService daoxinDeptService;
+    @Autowired
+    private PositionService positionService;
 
     @Override
     @FreedLog
@@ -64,7 +74,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
         List<Long> phoneNumber = new ArrayList<>();
         for (PhoneParam phoneParam : param.getPhoneParams()) {
-            if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())){
+            if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())) {
                 phoneNumber.add(phoneParam.getPhoneNumber());
             }
         }
@@ -98,6 +108,49 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         return entity;
 
     }
+
+    @Override
+    public Long insert(ContactsParam param) {
+        Contacts contacts = null;
+        DaoxinDept daoxinDept = null;
+        Position position = null;
+        contacts = this.query().eq("contacts_id", param.getContactsName()).one();   //联系人
+        if (ToolUtil.isEmpty(contacts)) {
+            contacts = new Contacts();
+            contacts.setContactsName(param.getContactsName());
+            this.save(contacts);
+        }
+        if (ToolUtil.isNotEmpty(param.getDeptName())) {                             //部门
+            daoxinDept = daoxinDeptService.query().eq("dept_id", param.getContactsName()).one();
+            if (ToolUtil.isEmpty(daoxinDept)) {
+                daoxinDept = new DaoxinDept();
+                daoxinDept.setFullName(param.getDeptName());
+                daoxinDeptService.save(daoxinDept);
+            }
+        }
+        if (ToolUtil.isNotEmpty(param.getPositionName())) {                        //职位
+            position = positionService.query().eq("position_id", param.getPositionName()).one();
+            if (ToolUtil.isEmpty(position)) {
+                position = new Position();
+                position.setName(param.getPositionName());
+                positionService.save(position);
+            }
+        }
+        // 添加电话号码
+        for (PhoneParam phone : param.getPhoneParams()) {
+            if (ToolUtil.isNotEmpty(phone)) {
+                if (phone.getPhoneNumber() != null) {
+                    phone.setContactsId(contacts.getContactsId());
+                    phoneService.add(phone);
+                }
+            }
+        }
+        contacts.setDeptId(daoxinDept.getDeptId());
+        contacts.setPositionId(position.getPositionId());
+        this.updateById(contacts);
+        return contacts.getContactsId();
+    }
+
 
     @Override
     @FreedLog

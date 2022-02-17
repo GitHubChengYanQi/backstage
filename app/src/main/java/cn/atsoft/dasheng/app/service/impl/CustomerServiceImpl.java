@@ -26,6 +26,8 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -106,38 +108,37 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (ToolUtil.isNotEmpty(param.getContactsParams())) {
             for (int i = 0; i < param.getContactsParams().size(); i++) {
                 if (ToolUtil.isNotEmpty(param.getContactsParams().get(i).getContactsName()) && !param.getContactsParams().get(i).getContactsName().equals("")) {
-                    Contacts contacts = null;
+                    Long conId = contactsService.insert(param.getContactsParams().get(i));
                     ContactsBindParam contactsBindParam = new ContactsBindParam();
                     contactsBindParam.setCustomerId(entity.getCustomerId());
-
-                    contacts = contactsService.query().eq("contacts_id", param.getContactsParams().get(i).getContactsName()).one();
-                    if (ToolUtil.isNotEmpty(contacts)) {
-                        contactsBindParam.setContactsId(contacts.getContactsId());
-                    } else {
-                         contacts = contactsService.add(param.getContactsParams().get(i));
-                        contactsBindParam.setContactsId(contacts.getContactsId());
-                    }
+                    contactsBindParam.setContactsId(conId);
                     contactsBindService.add(contactsBindParam);
                     //添加默认联系人
-                    if (i==0) {
-                        entity.setDefaultContacts(contacts.getContactsId());
+                    if (i == 0) {
+                        entity.setDefaultContacts(conId);
                     }
                 }
             }
         }
 
-
+        //添加地址
         if (ToolUtil.isNotEmpty(param.getAdressParams())) {
-            for (AdressParam adressParam : param.getAdressParams()) {
-                if (ToolUtil.isNotEmpty(adressParam.getMap()) && !adressParam.getMap().getAddress().equals("")) {
-                    adressParam.setCustomerId(entity.getCustomerId());
-                    Adress adress = adressService.add(adressParam);
-
+            for (int i = 0; i < param.getAdressParams().size(); i++) {
+                if (ToolUtil.isNotEmpty(param.getAdressParams().get(i).getMap()) && !param.getAdressParams().get(i).getMap().getAddress().equals("")) {
+                    param.getAdressParams().get(i).setCustomerId(entity.getCustomerId());
+                    Adress adress = adressService.add(param.getAdressParams().get(i));
                     entity.setDefaultAddress(adress.getAdressId());
+                    if (i == 0) {
+                        entity.setDefaultAddress(adress.getAdressId());
+                    }
                 }
             }
-        }
 
+        }
+        invoiceService.add(param.getInvoiceParam());
+        if (param.getSupply() == 1) {   //供应商
+            supplyService.addList(param.getSupplyParams(), entity.getCustomerId());
+        }
 
         this.updateById(entity);
         return entity;
@@ -238,6 +239,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> contactsIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
         List<Long> invoiceIds = new ArrayList<>();
+        List<Long> adressIds = new ArrayList<>();
         Long customerId = null;
 
 
@@ -250,6 +252,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customerIds.add(record.getCustomerId());
             customerId = record.getCustomerId();
             invoiceIds.add(record.getInvoiceId());
+            adressIds.add(record.getDefaultAddress());
         }
 
 
@@ -263,6 +266,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
         List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.listByIds(invoiceIds);
+        /***
+         * 默认地址
+         */
+        List<Adress> adresses = adressService.query().in("adress_id", adressIds).eq("display", 1).list();
+
         /**
          * 获取联系人
          */
@@ -340,6 +348,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     InvoiceResult invoiceResult = new InvoiceResult();
                     ToolUtil.copyProperties(invoice, invoiceResult);
                     record.setInvoiceResult(invoiceResult);
+                    break;
+                }
+            }
+            for (Adress adress : adresses) {
+                if (adress.getAdressId().equals(record.getDefaultAddress())) {
+                    record.setAddress(adress);
                     break;
                 }
             }

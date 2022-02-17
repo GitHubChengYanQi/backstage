@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2022-02-17
  */
 @TableName("daoxin_dept")
-public class Dept implements Serializable {
+public class DaoxinDept implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -192,7 +192,7 @@ public class Dept implements Serializable {
 
     @Override
     public String toString() {
-        return "Dept{" +
+        return "DaoxinDept{" +
         "deptId=" + deptId +
         ", pid=" + pid +
         ", pids=" + pids +

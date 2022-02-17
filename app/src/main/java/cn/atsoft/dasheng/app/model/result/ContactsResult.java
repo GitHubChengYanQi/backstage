@@ -34,6 +34,7 @@ public class ContactsResult implements Serializable {
     @ApiModelProperty("联系人id")
     private Long contactsId;
 
+    private Long positionId;
     /**
      * 公司角色
      */

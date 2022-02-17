@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.form.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,9 +27,13 @@ public class ActivitiSetpSet implements Serializable {
     /**
      * 主键
      */
-      @TableId(value = "set_id", type = IdType.AUTO)
+    @TableId(value = "set_id", type = IdType.AUTO)
     private Long setId;
-
+    /**
+     * 类型
+     */
+    @TableField("production_type")
+    private Integer productionType;
     /**
      * 步骤Id
      */
@@ -51,16 +58,16 @@ public class ActivitiSetpSet implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
 
@@ -136,18 +143,26 @@ public class ActivitiSetpSet implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Integer getProductionType() {
+        return productionType;
+    }
+
+    public void setProductionType(Integer productionType) {
+        this.productionType = productionType;
+    }
+
     @Override
     public String toString() {
         return "ActivitiSetpSet{" +
-        "setId=" + setId +
-        ", setpsId=" + setpsId +
-        ", shipSetpId=" + shipSetpId +
-        ", length=" + length +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "setId=" + setId +
+                ", setpsId=" + setpsId +
+                ", shipSetpId=" + shipSetpId +
+                ", length=" + length +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }

@@ -25,7 +25,7 @@ public class ActivitiSetpSetDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private Object skuResult;
 
-    private String stepType = "setp";
+    private String equals;
     /**
      * 详情Id
      */

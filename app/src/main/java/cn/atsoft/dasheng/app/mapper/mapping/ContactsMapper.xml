@@ -14,13 +14,13 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
-        <result column="client_id" property="clientId"/>
         <result column="company_role_id" property="companyRole"/>
+        <result column="position_id" property="positionId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">company_role_id
-    AS "companyRole",
+    AS "companyRole",position_id AS "positionId",
         contacts_id
         AS "contactsId", contacts_name AS "contactsName", job AS "job", phone AS "phone", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>

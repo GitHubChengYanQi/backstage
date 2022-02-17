@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2022-02-17
  */
 @TableName("daoxin_position")
-public class Position implements Serializable {
+public class DaoxinPosition implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -164,7 +164,7 @@ public class Position implements Serializable {
 
     @Override
     public String toString() {
-        return "Position{" +
+        return "DaoxinPosition{" +
         "positionId=" + positionId +
         ", name=" + name +
         ", code=" + code +

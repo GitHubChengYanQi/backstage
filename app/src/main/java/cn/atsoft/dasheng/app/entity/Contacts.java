@@ -29,6 +29,12 @@ public class Contacts implements Serializable {
     @TableId(value = "contacts_id", type = IdType.ID_WORKER)
     private Long contactsId;
     /**
+     * 职位
+     */
+    @TableField("position_id")
+    private Long positionId;
+
+    /**
      * 公司角色
      */
     @TableField("company_role_id")
@@ -85,10 +91,8 @@ public class Contacts implements Serializable {
     /**
      * 部门编号
      */
-    @TableField(value = "deptId",fill = FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
-
-
 
 
     public Long getContactsId() {
@@ -164,7 +168,6 @@ public class Contacts implements Serializable {
     }
 
 
-
     public Long getDeptId() {
         return deptId;
     }
@@ -179,6 +182,14 @@ public class Contacts implements Serializable {
 
     public void setCompanyRole(Long companyRole) {
         this.companyRole = companyRole;
+    }
+
+    public Long getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
     }
 
     @Override

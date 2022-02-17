@@ -59,16 +59,6 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Autowired
     private CrmCustomerLevelService levelService;
     @Autowired
-    private ContactsService contactsService;
-    @Autowired
-    private PhoneService phoneService;
-    @Autowired
-    private AdressService adressService;
-    @Autowired
-    private SkuBrandBindService brandBindService;
-    @Autowired
-    private SkuBrandBindService skuBrandBindService;
-    @Autowired
     private BrandService brandService;
 
     @Override
