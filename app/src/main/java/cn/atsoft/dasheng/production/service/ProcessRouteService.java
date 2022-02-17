@@ -67,4 +67,6 @@ public interface ProcessRouteService extends IService<ProcessRoute> {
      PageInfo<ProcessRouteResult> findPageBySpec(ProcessRouteParam param);
 
     ProcessRouteResult detail(Long id);
+
+    ProcessRouteResult getRouteBySkuId(Long skuId);
 }

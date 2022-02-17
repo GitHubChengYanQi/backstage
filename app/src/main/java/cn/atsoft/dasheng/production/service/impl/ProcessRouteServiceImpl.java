@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
@@ -12,6 +14,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -27,6 +30,9 @@ import java.util.List;
  */
 @Service
 public class ProcessRouteServiceImpl extends ServiceImpl<ProcessRouteMapper, ProcessRoute> implements ProcessRouteService {
+    @Autowired
+    private PartsService partsService;
+
 
     @Override
     public void add(ProcessRouteParam param) {
@@ -88,5 +94,13 @@ public class ProcessRouteServiceImpl extends ServiceImpl<ProcessRouteMapper, Pro
         ProcessRouteResult routeResult = new ProcessRouteResult();
         ToolUtil.copyProperties(processRoute, routeResult);
         return routeResult;
+    }
+    @Override
+    public ProcessRouteResult getRouteBySkuId(Long skuId){
+        Parts parts = partsService.query().eq("sku_id", skuId).eq("type", 2).eq("display", 1).one();
+        ProcessRoute processRoute = this.query().eq("parts_id", parts.getPartsId()).eq("status", 99).eq("display", 1).one();
+        ProcessRouteResult processRouteResult = new ProcessRouteResult();
+        ToolUtil.copyProperties(processRoute,processRouteResult);
+        return processRouteResult;
     }
 }
