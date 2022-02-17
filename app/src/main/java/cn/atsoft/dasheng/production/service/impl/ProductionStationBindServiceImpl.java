@@ -66,7 +66,7 @@ public class ProductionStationBindServiceImpl extends ServiceImpl<ProductionStat
     }
     @Override
     public List<ProductionStationBindResult> getResultsByStationIds(List<Long> ids){
-        List<ProductionStationBind> stationBinds = ids.size() == 0 ? new ArrayList<>() : this.query().in("production_station_id", ids).list();
+        List<ProductionStationBind> stationBinds = ids.size() == 0 ? new ArrayList<>() : this.query().in("production_station_id", ids).eq("display",1).list();
         List<ProductionStationBindResult> results = new ArrayList<>();
         for (ProductionStationBind stationBind : stationBinds) {
             ProductionStationBindResult result = new ProductionStationBindResult();

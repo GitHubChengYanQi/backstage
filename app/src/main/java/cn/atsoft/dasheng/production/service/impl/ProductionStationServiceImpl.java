@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -51,14 +52,8 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
         /**
          * 添加绑定表数据
          */
-        List<ProductionStationBind> bindList = new ArrayList<>();
-        for (Long userId : param.getUserIds()) {
-            ProductionStationBind bind = new ProductionStationBind();
-            bind.setProductionStationId(entity.getProductionStationId());
-            bind.setUserId(userId);
-            bindList.add(bind);
-        }
-        stationBindService.saveBatch(bindList);
+        param.setProductionStationId(entity.getProductionStationId());
+        this.saveOrUpdateBind(param);
     }
 
     @Override
@@ -74,9 +69,26 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
         ProductionStation oldEntity = getOldEntity(param);
         ProductionStation newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        oldEntity.setDisplay(null);
+        this.saveOrUpdateBind(param);
         this.updateById(newEntity);
     }
 
+    private void saveOrUpdateBind(ProductionStationParam param){
+        List<ProductionStationBind> productionStationBindList = stationBindService.query().eq("production_station_id", param.getProductionStationId()).list();
+        for (ProductionStationBind stationBind : productionStationBindList) {
+            stationBind.setDisplay(0);
+        }
+        stationBindService.updateBatchById(productionStationBindList);
+        List<ProductionStationBind> bindList = new ArrayList<>();
+        for (Long userId : param.getUserIds()) {
+            ProductionStationBind bind = new ProductionStationBind();
+            bind.setProductionStationId(param.getProductionStationId());
+            bind.setUserId(userId);
+            bindList.add(bind);
+        }
+        stationBindService.saveBatch(bindList);
+    }
     @Override
     public ProductionStationResult findBySpec(ProductionStationParam param) {
         return null;
@@ -124,6 +136,7 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
         /**
          * 查询子表信息
          */
+//        List<ProductionStationBindResult> stationBinds = stationBindService.getResultsByStationIds(ids);
         List<ProductionStationBindResult> stationBinds = stationBindService.getResultsByStationIds(ids);
 
         if (ToolUtil.isNotEmpty(stationBinds)) {
