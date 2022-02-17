@@ -315,6 +315,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      */
     private ActivitiSetpSetResult setpSetResult(Long stepId) {
         ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", stepId).one();
+        if (ToolUtil.isEmpty(setpSet)) {
+            return new ActivitiSetpSetResult();
+        }
         ActivitiSetpSetResult setpSetResult = new ActivitiSetpSetResult();
         ToolUtil.copyProperties(setpSet, setpSetResult);
         setpSetResult.setSetpSetDetails(setpSetDetailResult(stepId));
