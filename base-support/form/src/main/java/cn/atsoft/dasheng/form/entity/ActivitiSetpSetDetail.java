@@ -63,14 +63,6 @@ public class ActivitiSetpSetDetail implements Serializable {
     @TableField("parent_id")
     private Long parentId;
 
-    public Long getProductionStationId() {
-        return productionStationId;
-    }
-
-    public void setProductionStationId(Long productionStationId) {
-        this.productionStationId = productionStationId;
-    }
-
     /**
      * 质检方案Id
      */
@@ -82,6 +74,14 @@ public class ActivitiSetpSetDetail implements Serializable {
      */
     @TableField("quality_id")
     private Long qualityId;
+
+
+
+    /**
+     * 自检方案Id
+     */
+    @TableField("my_quality_id")
+    private Long myQualityId;
 
     /**
      * 删除状态
@@ -164,6 +164,22 @@ public class ActivitiSetpSetDetail implements Serializable {
 
     public void setQualityId(Long qualityId) {
         this.qualityId = qualityId;
+    }
+
+    public Long getMyQualityId() {
+        return myQualityId;
+    }
+
+    public void setMyQualityId(Long myQualityId) {
+        this.myQualityId = myQualityId;
+    }
+
+    public Long getProductionStationId() {
+        return productionStationId;
+    }
+
+    public void setProductionStationId(Long productionStationId) {
+        this.productionStationId = productionStationId;
     }
 
     public Integer getDisplay() {

@@ -88,6 +88,17 @@ public class ProcessRouteController extends BaseController {
 //        result.setValue(parentValue);
         return ResponseData.success(result);
     }
+    /**
+     * 查看详情接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-02-15
+     */
+    @RequestMapping(value = "/getRouteBySkuId", method = RequestMethod.GET)
+    @ApiOperation("详情")
+    public ResponseData<ProcessRouteResult> getRouteBySkuId(@RequestParam Long id) {
+       return ResponseData.success(this.processRouteService.getRouteBySkuId(id));
+    }
 
     /**
      * 查询列表

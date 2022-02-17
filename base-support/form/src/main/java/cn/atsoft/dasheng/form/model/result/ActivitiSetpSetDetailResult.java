@@ -75,6 +75,12 @@ public class ActivitiSetpSetDetailResult implements Serializable {
     private Long qualityId;
 
     /**
+     * 自检方案Id
+     */
+    @ApiModelProperty("质检方案Id")
+    private Long myQualityId;
+
+    /**
      * 删除状态
      */
     @ApiModelProperty("删除状态")

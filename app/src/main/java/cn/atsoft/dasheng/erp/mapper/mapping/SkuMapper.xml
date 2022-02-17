@@ -31,6 +31,32 @@
         sku_id
         AS "skuId",batch AS "batch", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
+    <!-- sku,spu,spu_class查询结果列 -->
+    <sql id="Left_Join_List">
+        goods_spu
+        .
+        name
+        AS "spuName",
+        goods_sku.standard AS "standard",
+        goods_sku.type AS "type",
+        goods_sku.coding AS "coding",
+        goods_sku.quality_plan_id AS "qualityPlanId",
+        goods_sku.file_id AS "fileId",
+        goods_sku.sku_id AS "skuId",
+        goods_sku.batch AS "batch",
+        goods_sku.sku_name AS "skuName",
+        goods_sku.remarks AS "remarks",
+        goods_sku.specifications AS "specifications",
+        goods_sku.is_ban AS "isBan",
+        goods_sku.sku_value_md5 AS "skuValueMd5",
+        goods_sku.spu_id AS "spuId",
+        goods_sku.sku_value AS "skuValue",
+        goods_sku.create_time AS "createTime",
+        goods_sku.create_user AS "createUser",
+        goods_sku.update_time AS "updateTime",
+        goods_sku.update_user AS "updateUser",
+        goods_sku.display AS "display"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.SkuResult"
@@ -65,86 +91,142 @@
         </if>
     </select>
 
+    <!--    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.SkuResult"-->
+    <!--            parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">-->
+    <!--        select-->
+    <!--        <include refid="Base_Column_List"/>-->
+    <!--        from-->
+    <!--        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">-->
+    <!--            (-->
+    <!--            select-->
+    <!--            *-->
+    <!--            from `goods_sku` where 1 = 1 and display =1-->
+    <!--            and (spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.skuName},'%') and-->
+    <!--            display = 1)-->
+    <!--            OR spu_id IN(SELECT spu_id FROM goods_spu WHERE spu_classification_id IN(SELECT spu_classification_id FROM-->
+    <!--            goods_spu_class WHERE `name` like CONCAT ('%',#{paramCondition.skuName},'%') AND display = 1 ) and display =-->
+    <!--            1) )-->
+    <!--            UNION-->
+    <!--            SELECT-->
+    <!--            *-->
+    <!--            FROM goods_sku where standard like CONCAT ('%',#{paramCondition.skuName},'%') and display = 1-->
+    <!--            )emptb-->
+    <!--            WHERE 1 = 1 order by name,standar-->
+    <!--            <if test="spuIds != null  and spuIds.size > 0 ">-->
+    <!--                and emptb.spu_id in-->
+    <!--                <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">-->
+    <!--                    #{state}-->
+    <!--                </foreach>-->
+    <!--            </if>-->
+    <!--            <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">-->
+    <!--                and emptb.sku_id in-->
+    <!--                <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">-->
+    <!--                    #{state}-->
+    <!--                </foreach>-->
+    <!--            </if>-->
+
+    <!--        </if>-->
+
+    <!--        <if test="paramCondition.skuName == null or paramCondition.skuName == ''">-->
+    <!--            goods_sku where 1 = 1 and display =1 and sku_id in (select sku_id from goods_spu where display = 1 order by name )-->
+    <!--            <if test="paramCondition.skuId != null">-->
+    <!--                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')-->
+    <!--            </if>-->
+    <!--            <if test="paramCondition.coding != null">-->
+    <!--                and coding like CONCAT('%',#{paramCondition.coding},'%')-->
+    <!--            </if>-->
+    <!--            <if test="paramCondition.type != null">-->
+    <!--                and type = #{paramCondition.type}-->
+    <!--            </if>-->
+    <!--            <if test="paramCondition.spuId != null">-->
+    <!--                and spu_id like CONCAT('%',#{paramCondition.spuId},'%')-->
+    <!--            </if>-->
+    <!--            <if test="paramCondition.standard != null and paramCondition.standard != ''">-->
+    <!--                and standard like CONCAT ('%',#{paramCondition.standard},'%')-->
+    <!--            </if>-->
+    <!--                <if test="paramCondition.spuName != null and paramCondition.spuName != ''">-->
+    <!--                    and spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.spuName},'%') and display = 1 order by name )-->
+    <!--                </if>-->
+    <!--            <if test="paramCondition.spuClassName != null and paramCondition.spuClassName != ''">-->
+    <!--                AND spu_id IN (-->
+    <!--                SELECT spu_id FROM goods_spu-->
+    <!--                WHERE-->
+    <!--                spu_classification_id IN ( SELECT spu_classification_id FROM goods_spu_class WHERE `name` LIKE CONCAT ('%',#{paramCondition.spuClassName},'%')) )-->
+    <!--                order by name-->
+    <!--            </if>-->
+
+
+    <!--            <if test="spuIds != null  and spuIds.size > 0 ">-->
+    <!--                and spu_id in-->
+    <!--                <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">-->
+    <!--                    #{state}-->
+    <!--                </foreach>-->
+
+    <!--            </if>-->
+    <!--            <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">-->
+    <!--                and sku_id in-->
+    <!--                <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">-->
+    <!--                    #{state}-->
+    <!--                </foreach>-->
+    <!--            </if>-->
+    <!--        </if>-->
+
+    <!--    </select>-->
     <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.SkuResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select
-        <include refid="Base_Column_List"/>
-        from
+        <include refid="Left_Join_List"/>
+        from goods_sku
+        LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
+        LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id =goods_spu.spu_classification_id
+        WHERE 1=1 and goods_sku.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
-            (
-            select
-            *
-            from `goods_sku` where 1 = 1 and display =1
-            and (spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.skuName},'%') and
-            display = 1)
-            OR spu_id IN(SELECT spu_id FROM goods_spu WHERE spu_classification_id IN(SELECT spu_classification_id FROM
-            goods_spu_class WHERE `name` like CONCAT ('%',#{paramCondition.skuName},'%') AND display = 1) and display =
-            1))
-            UNION
-            SELECT
-            *
-            FROM goods_sku where standard like CONCAT ('%',#{paramCondition.skuName},'%') and display = 1
-            )emptb
-            WHERE 1 = 1
-            <if test="spuIds != null  and spuIds.size > 0 ">
-                and emptb.spu_id in
-                <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
-                    #{state}
-                </foreach>
-            </if>
-            <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
-                and emptb.sku_id in
-                <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
-                    #{state}
-                </foreach>
-            </if>
+            and goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or goods_spu_class.name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT ('%',#{paramCondition.skuName},'%')
         </if>
 
         <if test="paramCondition.skuName == null or paramCondition.skuName == ''">
-            goods_sku where 1 = 1 and display =1
+
             <if test="paramCondition.skuId != null">
-                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+                and skuId like CONCAT('%',#{paramCondition.skuId},'%')
             </if>
             <if test="paramCondition.coding != null">
                 and coding like CONCAT('%',#{paramCondition.coding},'%')
+            </if>
+            <if test="paramCondition.standard != null">
+                and standard like CONCAT('%',#{paramCondition.coding},'%')
             </if>
             <if test="paramCondition.type != null">
                 and type = #{paramCondition.type}
             </if>
             <if test="paramCondition.spuId != null">
-                and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+                and spuId like CONCAT('%',#{paramCondition.spuId},'%')
             </if>
-            <if test="paramCondition.standard != null and paramCondition.standard != ''">
-                and standard like CONCAT ('%',#{paramCondition.standard},'%')
+            <if test="paramCondition.spuName != null">
+                and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
             </if>
-            <if test="paramCondition.spuName != null and paramCondition.spuName != ''">
-                and spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.spuName},'%')
-                and display = 1)
-            </if>
-            <if test="paramCondition.spuClassName != null and paramCondition.spuClassName != ''">
-                AND spu_id IN (
-                SELECT spu_id FROM goods_spu
-                WHERE
-                spu_classification_id IN ( SELECT spu_classification_id FROM goods_spu_class WHERE `name` LIKE CONCAT
-                ('%',#{paramCondition.spuClassName},'%')) )
-            </if>
-
-
-            <if test="spuIds != null  and spuIds.size > 0 ">
-                and spu_id in
-                <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
-                    #{state}
-                </foreach>
-
-            </if>
-            <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
-                and sku_id in
-                <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
-                    #{state}
-                </foreach>
+            <if test="paramCondition.spuClassName != null">
+                and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
             </if>
         </if>
+        <if test="spuIds != null  and spuIds.size > 0 ">
+            and goods_sku.spu_id in
+            <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
 
+        </if>
+        <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        order by
+        spuName,
+        standard,
+        createTime
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
