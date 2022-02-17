@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,8 +44,11 @@ public class StepsController extends BaseController {
         return ResponseData.success();
     }
 
-
-
+    @RequestMapping(value = "/shipDetail", method = RequestMethod.GET)
+    public ResponseData shipDetail(@Param("id") Long id) {
+        ActivitiStepsResult detail = this.activitiStepsService.detail(id);
+        return ResponseData.success(detail);
+    }
 }
 
 

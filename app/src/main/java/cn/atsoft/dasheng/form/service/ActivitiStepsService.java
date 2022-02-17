@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -22,82 +23,12 @@ import java.util.List;
  */
 public interface ActivitiStepsService extends IService<ActivitiSteps> {
 
-    /**
-     * 新增
-     *
-     * @author Sing
-     * @Date 2021-11-10
-     */
+
+    @Transactional
     void add(ActivitiStepsParam param);
 
+    Long addProcessRoute(ProcessRouteParam param);
 
 
-    void addProcessRoute(ProcessRouteParam param);
-
-
-    /**
-     * 删除
-     *
-     * @author Sing
-     * @Date 2021-11-10
-     */
-    void delete(ActivitiStepsParam param);
-
-    /**
-     * 更新
-     *
-     * @author Sing
-     * @Date 2021-11-10
-     */
-    void update(ActivitiStepsParam param);
-
-    /**
-     * 查询单条数据，Specification模式
-     *
-     * @author Sing
-     * @Date 2021-11-10
-     */
-    ActivitiStepsResult findBySpec(ActivitiStepsParam param);
-
-    /**
-     * 查询列表，Specification模式
-     *
-     * @author Sing
-     * @Date 2021-11-10
-     */
-    List<ActivitiStepsResult> findListBySpec(ActivitiStepsParam param);
-
-    /**
-     * 查询分页数据，Specification模式
-     *
-     * @author Sing
-     * @Date 2021-11-10
-     */
-    PageInfo<ActivitiStepsResult> findPageBySpec(ActivitiStepsParam param);
-
-
-    ActivitiStepsResult backStepsResult(Long id);
-
-
-    ActivitiStepsResult getSteps(Long id);
-
-
-    List<ActivitiStepsResult> backSteps(List<Long> ids);
-
-    Boolean checkUser(AuditRule starUser);
-
-
-    ActivitiStepsResult getStepResult(Long processId);
-
-
-    List<ActivitiStepsResult> getStepsByProcessId(Long processId);
-
-    /**
-     * 流程结构返回状态
-     *
-     * @param
-     * @param logs
-     * @return
-     */
-    ActivitiStepsResult getStepLog(ActivitiStepsResult stepResult, List<ActivitiProcessLogResult> logs);
+    ActivitiStepsResult detail(Long formId);
 }

@@ -45,6 +45,10 @@ public class ActivitiStepsResult implements Serializable {
 
     private Boolean permissions;
 
+    private Object processRouteResult;
+
+    private ActivitiSetpSetResult setpSetResult;
+
     private List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
     /**
      * 步骤Id，主键
@@ -67,7 +71,7 @@ public class ActivitiStepsResult implements Serializable {
      */
 
     @ApiModelProperty("步骤类型：ship（工艺），setp（工序），audit（审核），audit_process（审核流程）")
-    @JSONField(serialzeFeatures= SerializerFeature.WriteEnumUsingToString)
+    @JSONField(serialzeFeatures = SerializerFeature.WriteEnumUsingToString)
     private StepsType type;
 
     /**

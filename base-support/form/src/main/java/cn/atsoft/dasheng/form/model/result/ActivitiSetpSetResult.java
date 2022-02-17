@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 工序步骤设置表
@@ -20,7 +25,7 @@ public class ActivitiSetpSetResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<ActivitiSetpSetDetailResult> setpSetDetailResults;
     /**
      * 主键
      */
