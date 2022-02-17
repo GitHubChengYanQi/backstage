@@ -54,11 +54,11 @@ public class SkuController extends BaseController {
      * @author
      * @Date 2021-10-18
      */
-    @RequestMapping(value = "/directAdd", method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData directAdd (@RequestBody SkuParam skuParam) {
+    public ResponseData addItem (@RequestBody SkuParam skuParam) {
         skuParam.setAddMethod(1);
-        this.skuService.directAdd(skuParam);
+        this.skuService.add(skuParam);
         return ResponseData.success();
     }
     /**
@@ -160,11 +160,27 @@ public class SkuController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
+    @ApiOperation("直接物料列表")
     public PageInfo<SkuResult> list(@RequestBody(required = false) SkuParam skuParam) {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
+        skuParam.setAddMethod(1);
+        return this.skuService.findPageBySpec(skuParam);
+    }
+    /**
+     * 查询列表
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/indirectList", method = RequestMethod.POST)
+    @ApiOperation("间接物料列表")
+    public PageInfo<SkuResult> indirectList(@RequestBody(required = false) SkuParam skuParam) {
+        if (ToolUtil.isEmpty(skuParam)) {
+            skuParam = new SkuParam();
+        }
+        skuParam.setAddMethod(2);
         return this.skuService.findPageBySpec(skuParam);
     }
 

@@ -207,6 +207,9 @@
             <if test="paramCondition.spuName != null">
                 and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
             </if>
+            <if test="paramCondition.addMethod != null and paramCondition.addMethod != ''">
+                and add_method = #{paramCondition.addMethod}
+            </if>
             <if test="paramCondition.spuClassName != null">
                 and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
             </if>
