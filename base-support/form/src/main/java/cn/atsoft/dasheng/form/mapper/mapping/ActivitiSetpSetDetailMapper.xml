@@ -12,6 +12,7 @@
         <result column="num" property="num" />
         <result column="parent_id" property="parentId" />
         <result column="quality_id" property="qualityId" />
+        <result column="my_quality_id" property="myQualityId" />
         <result column="display" property="display" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -21,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        detail_id AS "detailId", setps_id AS "setpsId", type AS "type", spu_id AS "spuId", sku_id AS "skuId", num AS "num", parent_id AS "parentId", quality_id AS "qualityId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        detail_id AS "detailId", setps_id AS "setpsId", type AS "type", spu_id AS "spuId", sku_id AS "skuId", num AS "num", parent_id AS "parentId", quality_id AS "qualityId",my_quality_id AS "myQualityId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
