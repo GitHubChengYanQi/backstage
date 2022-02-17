@@ -74,7 +74,7 @@ public class Invoice implements Serializable {
      * 开户账号
      */
     @TableField("bank_no")
-    private Integer bankNo;
+    private Long bankNo;
 
     /**
      * 创建者
@@ -121,11 +121,11 @@ public class Invoice implements Serializable {
         this.invoiceNote = invoiceNote;
     }
 
-    public Integer getBankNo() {
+    public Long getBankNo() {
         return bankNo;
     }
 
-    public void setBankNo(Integer bankNo) {
+    public void setBankNo(Long bankNo) {
         this.bankNo = bankNo;
     }
 

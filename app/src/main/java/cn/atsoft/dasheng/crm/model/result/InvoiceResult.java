@@ -105,7 +105,7 @@ public class InvoiceResult implements Serializable {
      * 状态
      */
     @ApiModelProperty("状态")
-    private Integer display;
+    private Long display;
 
     /**
      * 部门id

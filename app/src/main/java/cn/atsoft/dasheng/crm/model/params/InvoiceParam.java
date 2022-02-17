@@ -79,7 +79,7 @@ public class InvoiceParam implements Serializable, BaseValidatingParam {
      * 开户账号
      */
     @ApiModelProperty("开户账号")
-    private Integer bankNo;
+    private Long bankNo;
 
 
     /**
