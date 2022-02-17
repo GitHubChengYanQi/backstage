@@ -146,7 +146,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         activitiSetpSet.setSetpsId(stepId);
         setpSetService.save(activitiSetpSet);
         List<ActivitiSetpSetDetail> details = new ArrayList<>();
-        for (ActivitiSetpSetDetailParam activitiSetpSetDetailParam : param.getSetpSetDetailParam()) {
+        for (ActivitiSetpSetDetailParam activitiSetpSetDetailParam : param.getSetpSetDetails()) {
             ActivitiSetpSetDetail detail = new ActivitiSetpSetDetail();
             ToolUtil.copyProperties(activitiSetpSetDetailParam, detail);
             detail.setSetpsId(stepId);
@@ -298,7 +298,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", stepId).one();
         ActivitiSetpSetResult setpSetResult = new ActivitiSetpSetResult();
         ToolUtil.copyProperties(setpSet, setpSetResult);
-        setpSetResult.setSetpSetDetailResults(setpSetDetailResult(stepId));
+        setpSetResult.setSetpSetDetails(setpSetDetailResult(stepId));
         return setpSetResult;
     }
 
