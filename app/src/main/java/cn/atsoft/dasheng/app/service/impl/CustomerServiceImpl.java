@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.crm.entity.ContactsBind;
 import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
+import cn.atsoft.dasheng.crm.model.params.InvoiceParam;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
@@ -135,7 +136,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
 
         }
-        invoiceService.add(param.getInvoiceParam());
+        for (InvoiceParam invoiceParam : param.getInvoiceParams()) {
+            invoiceService.add(invoiceParam);
+        }
+
         if (param.getSupply() == 1) {   //供应商
             supplyService.addList(param.getSupplyParams(), entity.getCustomerId());
         }

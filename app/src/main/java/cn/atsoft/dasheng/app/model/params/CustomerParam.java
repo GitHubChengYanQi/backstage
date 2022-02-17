@@ -32,7 +32,7 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private List<PurchaseQuotationParam> quotationParams;
     private List<AdressParam> adressParams;
     private List<SupplyParam> supplyParams;
-    private InvoiceParam invoiceParam;
+    private List<InvoiceParam> invoiceParams;
     private Long customerLevelId;
     private Integer status;
     private Long originId;

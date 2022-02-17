@@ -68,6 +68,21 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
          */
         switch (param.getStepType()) {
             case "shipStart":
+                if (ToolUtil.isNotEmpty(param.getProcessRoute().getProcessRouteId())) {
+                    List<ActivitiSteps> steps = this.query().eq("form_id", param.getProcessRoute().getProcessRouteId()).list();
+                    ArrayList<Long> list = new ArrayList<Long>() {{
+                        for (ActivitiSteps step : steps) {
+                            add(step.getSetpsId());
+                        }
+                    }};
+                    setpSetService.remove(new QueryWrapper<ActivitiSetpSet>() {{
+                        in("setps_id", list);
+                    }});
+                    setpSetDetailService.remove(new QueryWrapper<ActivitiSetpSetDetail>() {{
+                        in("setps_id", list);
+                    }});
+                    this.removeByIds(steps);
+                }
                 Long route = addProcessRoute(param.getProcessRoute());
                 entity.setFormId(route);
                 this.updateById(entity);
