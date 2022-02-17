@@ -119,6 +119,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             case "setp":
                 addSetpSet(node.getSetpSet(), activitiSteps.getSetpsId());
                 break;
+            case "route":
+                break;
             default:
                 throw new ServiceException(500, "请确定类型");
         }
@@ -321,7 +323,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
         for (ActivitiSetpSetDetailResult detailResult : detailResults) {
             for (SkuResult skuResult : skuResults) {
-                if (ToolUtil.isNotEmpty(detailResult.getSkuId()) && detailResult.getSkuResult().equals(skuResult.getSkuId())){
+                if (ToolUtil.isNotEmpty(detailResult.getSkuId()) && detailResult.getSkuResult().equals(skuResult.getSkuId())) {
                     detailResult.setSkuResult(skuResult);
                     break;
                 }
