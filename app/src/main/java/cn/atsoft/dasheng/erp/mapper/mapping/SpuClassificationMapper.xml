@@ -126,7 +126,7 @@
         <if test="paramCondition.codingClass != null">
             and coding_class like CONCAT('%',#{paramCondition.codingClass},'%')
         </if>
-        order by sort ASC
+        order by sort desc
     </select>
 
     <select id="customPageMapList" resultType="map"
