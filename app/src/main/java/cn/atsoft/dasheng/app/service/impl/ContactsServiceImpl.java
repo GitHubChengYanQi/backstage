@@ -155,7 +155,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             contacts.setDeptId(daoxinDept.getDeptId());
         }
         if (ToolUtil.isNotEmpty(companyRole)) {
-            contacts.setPositionId(companyRole.getCompanyRoleId());
+            contacts.setCompanyRole(companyRole.getCompanyRoleId());
         }
 
 
@@ -404,13 +404,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             for (DaoxinDeptResult deptResult : deptResults) {
                 if (ToolUtil.isNotEmpty(record.getDeptId()) && record.getDeptId().equals(deptResult.getDeptId())) {
                     record.setDeptResult(deptResult);
-                }
-            }
-
-
-            for (CompanyRoleResult positionResult : positionResults) {
-                if (ToolUtil.isNotEmpty(record.getPositionId()) && record.getPositionId().equals(positionResult.getCompanyRoleId())) {
-                    record.setCompanyRoleResult(positionResult);
                 }
             }
 
