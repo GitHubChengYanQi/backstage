@@ -110,20 +110,20 @@ public class CompanyRoleController extends BaseController {
 //        return ResponseData.success(result);
 //    }
 //
-//    /**
-//     * 查询列表
-//     *
-//     * @author
-//     * @Date 2021-09-06
-//     */
-//    @RequestMapping(value = "/list", method = RequestMethod.POST)
-//    @ApiOperation("列表")
-//    public PageInfo<CompanyRoleResult> list(@RequestBody(required = false) CompanyRoleParam companyRoleParam) {
-//        if (ToolUtil.isEmpty(companyRoleParam)) {
-//            companyRoleParam = new CompanyRoleParam();
-//        }
-//        return this.companyRoleService.findPageBySpec(companyRoleParam);
-//    }
+    /**
+     * 查询列表
+     *
+     * @author
+     * @Date 2021-09-06
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<CompanyRoleResult> list(@RequestBody(required = false) CompanyRoleParam companyRoleParam) {
+        if (ToolUtil.isEmpty(companyRoleParam)) {
+            companyRoleParam = new CompanyRoleParam();
+        }
+        return this.companyRoleService.findPageBySpec(companyRoleParam);
+    }
 
     /**
      * 选择列表
