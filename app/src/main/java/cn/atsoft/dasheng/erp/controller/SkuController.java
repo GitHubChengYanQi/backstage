@@ -165,7 +165,7 @@ public class SkuController extends BaseController {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
-        skuParam.setAddMethod(1);
+//        skuParam.setAddMethod(1);
         return this.skuService.findPageBySpec(skuParam);
     }
     /**
