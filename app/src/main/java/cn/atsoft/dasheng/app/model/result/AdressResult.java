@@ -3,10 +3,13 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.app.model.params.CustomerMap;
 import cn.atsoft.dasheng.crm.region.RegionResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -14,7 +17,7 @@ import java.util.List;
  * 客户地址表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @Data
@@ -27,7 +30,7 @@ public class AdressResult implements Serializable {
 
     private CustomerMap map;
 
-
+    private String detailLocation;
     /**
      * 地址id
      */

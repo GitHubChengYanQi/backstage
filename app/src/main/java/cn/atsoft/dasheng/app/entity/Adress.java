@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 客户地址表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @TableName("daoxin_crm_adress")
@@ -24,9 +27,13 @@ public class Adress implements Serializable {
     /**
      * 地址id
      */
-      @TableId(value = "adress_id", type = IdType.ID_WORKER)
+    @TableId(value = "adress_id", type = IdType.ID_WORKER)
     private Long adressId;
-
+    /**
+     * 详情地址
+     */
+    @TableField("detail_location")
+    private String detailLocation;
     /**
      * 地址
      */
@@ -38,24 +45,9 @@ public class Adress implements Serializable {
     @TableField("address_remark")
     private String addressRemark;
 
-    public String getAddressRemark() {
-        return addressRemark;
-    }
-
-    public void setAddressRemark(String addressRemark) {
-        this.addressRemark = addressRemark;
-    }
-
     @TableField("region")
     private String region;
 
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
 
     /**
      * 经度
@@ -72,25 +64,25 @@ public class Adress implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -102,7 +94,7 @@ public class Adress implements Serializable {
     /**
      * 部门id
      */
-    @TableField(value = "deptId",fill =FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     /**
@@ -198,6 +190,30 @@ public class Adress implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public String getDetailLocation() {
+        return detailLocation;
+    }
+
+    public void setDetailLocation(String detailLocation) {
+        this.detailLocation = detailLocation;
+    }
+
+    public String getAddressRemark() {
+        return addressRemark;
+    }
+
+    public void setAddressRemark(String addressRemark) {
+        this.addressRemark = addressRemark;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     @Override
