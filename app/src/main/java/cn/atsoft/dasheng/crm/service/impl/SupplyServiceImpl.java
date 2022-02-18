@@ -117,6 +117,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         Page<SupplyResult> pageContext = getPageContext();
         IPage<SupplyResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
+        page.getRecords().removeIf(i -> ToolUtil.isEmpty(i.getSkuResult()));
         return PageFactory.createPageInfo(page);
     }
 

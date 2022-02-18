@@ -97,7 +97,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         // 添加电话号码
         for (PhoneParam phone : param.getPhoneParams()) {
             if (ToolUtil.isNotEmpty(phone)) {
-                if (phone.getPhoneNumber() != null && !phone.getPhoneNumber().equals("")) {
+                if (phone.getPhoneNumber() != null) {
                     phone.setContactsId(entity.getContactsId());
                     phoneService.add(phone);
                 } else {
@@ -155,7 +155,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             contacts.setDeptId(daoxinDept.getDeptId());
         }
         if (ToolUtil.isNotEmpty(companyRole)) {
-            contacts.setPositionId(companyRole.getCompanyRoleId());
+            contacts.setCompanyRole(companyRole.getCompanyRoleId());
         }
 
 
@@ -284,6 +284,10 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         IPage<ContactsResult> page = this.baseMapper.customPageList(dataScope, pageContext, param, ids);
         format(page.getRecords());
 
+        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+            contactsBindService.ContractsFormat(page.getRecords(), param.getCustomerId());
+        }
+
         return PageFactory.createPageInfo(page);
     }
 
@@ -317,13 +321,13 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         List<Long> roleIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
         List<Long> deptIds = new ArrayList<>();
-        List<Long> positionIds = new ArrayList<>();
+
         for (ContactsResult record : data) {
             contactsIds.add(record.getContactsId());
             customerIds.add(record.getCustomerId());
             roleIds.add(record.getCompanyRole());
             deptIds.add(record.getDeptId());
-            positionIds.add(record.getPositionId());
+
         }
         //查询部门
         List<DaoxinDept> daoxinDepts = deptIds.size() == 0 ? new ArrayList<>() : daoxinDeptService.listByIds(deptIds);
@@ -333,16 +337,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             ToolUtil.copyProperties(daoxinDept, daoxinDeptResult);
             deptResults.add(daoxinDeptResult);
         }
+
         //查询职位
-        List<CompanyRole> companyRoles = positionIds.size() == 0 ? new ArrayList<>() : roleService.listByIds(positionIds);
-        List<CompanyRoleResult> positionResults = new ArrayList<>();
-        for (CompanyRole role : companyRoles) {
-            CompanyRoleResult positionResult = new CompanyRoleResult();
-            ToolUtil.copyProperties(role, positionResult);
-            positionResults.add(positionResult);
-        }
-
-
         List<CompanyRole> companyRoleList = roleIds.size() == 0 ? new ArrayList<>() : companyRoleService.lambdaQuery().in(CompanyRole::getCompanyRoleId, roleIds).list();
         List<Long> ids = new ArrayList<>();
         List<ContactsBind> contactsBinds = new ArrayList<>();
@@ -355,7 +351,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 ids.add(contactsBind.getCustomerId());
             }
         }
-
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("customer_id", ids);
@@ -407,14 +402,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 }
             }
 
-
-            for (CompanyRoleResult positionResult : positionResults) {
-                if (ToolUtil.isNotEmpty(record.getPositionId()) && record.getPositionId().equals(positionResult.getCompanyRoleId())) {
-                    record.setCompanyRoleResult(positionResult);
-                }
-            }
-
         }
-
     }
+
+
 }

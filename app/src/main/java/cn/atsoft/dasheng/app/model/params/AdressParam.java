@@ -3,10 +3,13 @@ package cn.atsoft.dasheng.app.model.params;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -14,7 +17,7 @@ import java.util.List;
  * 客户地址表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @Data
@@ -32,6 +35,7 @@ public class AdressParam implements Serializable, BaseValidatingParam {
 
     private CustomerMap map;
 
+    private String detailLocation;
     /**
      * 地址
      */

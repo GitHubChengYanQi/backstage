@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.params;
 import cn.atsoft.dasheng.crm.model.params.InvoiceParam;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -88,6 +89,31 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("成立时间")
     private Date setup;
+
+
+    /**
+     * 注册资本
+     */
+    @ApiModelProperty("注册资本")
+    private Long registeredCapital;
+
+    /**
+     * 传真
+     */
+    @ApiModelProperty("传真")
+    private String fax;
+
+    /**
+     * 企业电话
+     */
+    @ApiModelProperty("企业电话")
+    private String telephone;
+
+    /**
+     * 邮编
+     */
+    @ApiModelProperty("邮编")
+    private String zipCode;
 
     /**
      * 法定代表人

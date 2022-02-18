@@ -4,19 +4,27 @@ package cn.atsoft.dasheng.form.service.impl;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.form.entity.*;
+import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
+import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam;
-
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
-import cn.atsoft.dasheng.form.model.result.*;
-import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
+import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
+import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
 import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
+import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
+import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -48,9 +56,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private ActivitiSetpSetDetailService setpSetDetailService;
     @Autowired
     private ProcessRouteService processRouteService;
-
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private ShipSetpService shipSetpService;
 
 
     @Override
@@ -303,8 +312,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      */
     private List<ActivitiStepsResult> getStepsResultByFormId(Long formId) {
         List<ActivitiSteps> activitiSteps = this.query().eq("form_id", formId).list();
-        List<ActivitiStepsResult> stepsResults = BeanUtil.copyToList(activitiSteps, ActivitiStepsResult.class, new CopyOptions());
-        return stepsResults;
+        return BeanUtil.copyToList(activitiSteps, ActivitiStepsResult.class, new CopyOptions());
     }
 
     /**
@@ -320,6 +328,14 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         }
         ActivitiSetpSetResult setpSetResult = new ActivitiSetpSetResult();
         ToolUtil.copyProperties(setpSet, setpSetResult);
+
+        if (ToolUtil.isNotEmpty(setpSetResult.getShipSetpId())) {
+            ShipSetp shipSetp = shipSetpService.getById(setpSetResult.getShipSetpId());
+            ShipSetpResult shipSetpResult = new ShipSetpResult();
+            ToolUtil.copyProperties(shipSetp, shipSetpResult);
+            setpSetResult.setShipSetpResult(shipSetpResult);
+        }
+
         setpSetResult.setSetpSetDetails(setpSetDetailResult(stepId));
         return setpSetResult;
     }
@@ -334,12 +350,14 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         List<ActivitiSetpSetDetail> setpSetDetails = setpSetDetailService.query().eq("setps_id", stepId).list();
         List<ActivitiSetpSetDetailResult> detailResults = BeanUtil.copyToList(setpSetDetails, ActivitiSetpSetDetailResult.class, new CopyOptions());
         List<Long> skuIds = new ArrayList<>();
+
         for (ActivitiSetpSetDetailResult setpSetDetailResult : detailResults) {
             if (ToolUtil.isNotEmpty(setpSetDetailResult.getSetpsId())) {
                 skuIds.add(setpSetDetailResult.getSkuId());
             }
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
 
         for (ActivitiSetpSetDetailResult detailResult : detailResults) {
             for (SkuResult skuResult : skuResults) {

@@ -37,6 +37,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -107,6 +108,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         Page<PurchaseQuotationResult> pageContext = getPageContext();
         IPage<PurchaseQuotationResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
+        page.getRecords().removeIf(i -> ToolUtil.isEmpty(i.getSkuResult()));
         return PageFactory.createPageInfo(page);
     }
 
@@ -470,7 +472,6 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
      * @return
      */
     private Boolean judgeLevel(Long levelId, Customer customer) {
-
 
 
         if (ToolUtil.isEmpty(customer.getCustomerLevelId())) {

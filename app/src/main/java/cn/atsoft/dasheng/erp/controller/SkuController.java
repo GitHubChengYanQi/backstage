@@ -49,15 +49,29 @@ public class SkuController extends BaseController {
     private SpuClassificationService spuClassificationService;
 
     /**
-     * 新增接口
+     * 直接物料 新增接口
      *
      * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody SkuParam skuParam) {
+    public ResponseData addItem (@RequestBody SkuParam skuParam) {
+        skuParam.setAddMethod(1);
         this.skuService.add(skuParam);
+        return ResponseData.success();
+    }
+    /**
+     * 间接物料 新增接口
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/indirectAdd", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData indirectAdd(@RequestBody SkuParam skuParam) {
+        skuParam.setAddMethod(2);
+        this.skuService.directAdd(skuParam);
         return ResponseData.success();
     }
 
@@ -146,11 +160,26 @@ public class SkuController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
+    @ApiOperation("直接物料列表")
     public PageInfo<SkuResult> list(@RequestBody(required = false) SkuParam skuParam) {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
+        return this.skuService.findPageBySpec(skuParam);
+    }
+    /**
+     * 查询列表
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/indirectList", method = RequestMethod.POST)
+    @ApiOperation("间接物料列表")
+    public PageInfo<SkuResult> indirectList(@RequestBody(required = false) SkuParam skuParam) {
+        if (ToolUtil.isEmpty(skuParam)) {
+            skuParam = new SkuParam();
+        }
+        skuParam.setAddMethod(2);
         return this.skuService.findPageBySpec(skuParam);
     }
 

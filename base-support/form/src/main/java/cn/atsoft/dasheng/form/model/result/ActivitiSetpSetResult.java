@@ -27,7 +27,7 @@ public class ActivitiSetpSetResult implements Serializable {
 
     private List<ActivitiSetpSetDetailResult> setpSetDetails;
 
-
+    private Object shipSetpResult;
 
     private String type = "setp";
     /**

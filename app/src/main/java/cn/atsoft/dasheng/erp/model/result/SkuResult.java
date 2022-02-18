@@ -72,6 +72,7 @@ public class SkuResult implements Serializable {
      * 类型
      */
     private Integer type;
+    private Integer addMethod;
     /**
      * sku名字
      */

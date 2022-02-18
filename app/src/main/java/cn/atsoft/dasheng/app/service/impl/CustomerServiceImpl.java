@@ -93,12 +93,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Transactional
     public Customer add(CustomerParam param) {
         //查询数据库是否已有同名客户
-        QueryWrapper<Customer> queryWrapper = new QueryWrapper();
-        queryWrapper.in("display", 1);
-        queryWrapper.lambda().eq(Customer::getCustomerName, param.getCustomerName());
-        List<Customer> list = baseMapper.selectList(queryWrapper);
+        List<Customer> customerList = this.query().eq("display", 1).eq("customer_name", param.getCustomerName()).list();
+
         //有同名客户 阻止添加
-        if (!ToolUtil.isEmpty(list)) {
+        if (!ToolUtil.isEmpty(customerList)) {
             throw new ServiceException(500, "已有当前客户");
         }
         param.setCustomerId(null);
@@ -147,6 +145,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         if (param.getSupply() == 1) {   //供应商
             supplyService.addList(param.getSupplyParams(), entity.getCustomerId());
+            brandService.save(new Brand() {{
+                setBrandName(entity.getCustomerName());
+            }});
         }
 
         this.updateById(entity);
