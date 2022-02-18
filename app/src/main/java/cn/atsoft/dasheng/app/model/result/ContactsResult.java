@@ -32,6 +32,8 @@ public class ContactsResult implements Serializable {
     private List<PhoneResult> phoneParams;
     private DaoxinDeptResult deptResult;
 
+
+    private Integer  isNotDeparture;
     /**
      * 联系人id
      */

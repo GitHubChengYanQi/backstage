@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.service;
 
+import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
@@ -66,4 +67,5 @@ public interface ContactsBindService extends IService<ContactsBind> {
      */
      PageInfo<ContactsBindResult> findPageBySpec(ContactsBindParam param);
 
+    void ContractsFormat(List<ContactsResult> results, Long customerId);
 }

@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.entity.Phone;
+import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -99,4 +101,23 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
         return entity;
     }
 
+    /**
+     * 当前联系人 所在的公司 离职状态
+     *
+     * @param results
+     * @param customerId
+     */
+    @Override
+    public void ContractsFormat(List<ContactsResult> results, Long customerId) {
+        List<ContactsBind> contactsBinds = this.query().eq("customer_id", customerId).list();
+
+        for (ContactsBind contactsBind : contactsBinds) {
+            for (ContactsResult result : results) {
+                if (result.getContactsId().equals(contactsBind.getContactsId())) {
+                    result.setIsNotDeparture(contactsBind.getDisplay());
+                    break;
+                }
+            }
+        }
+    }
 }
