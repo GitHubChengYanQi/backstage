@@ -47,14 +47,23 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
         ContactsBind contactsBind = this.lambdaQuery().in(ContactsBind::getCustomerId, param.getCustomerId())
                 .and(i -> i.eq(ContactsBind::getContactsId, param.getContactsId()))
                 .one();
-        ToolUtil.copyProperties(contactsBind, param);
         contactsBind.setDisplay(param.getDisplay());
+        ToolUtil.copyProperties(contactsBind, param);
         this.updateById(contactsBind);
-        if (ToolUtil.isNotEmpty(param.getNewCustomerId())) {
-            ContactsBind entity = new ContactsBind();
-            entity.setContactsId(param.getContactsId());
-            entity.setCustomerId(param.getNewCustomerId());
-            this.save(entity);
+
+        if (ToolUtil.isNotEmpty(param.getNewCustomerId())) {   //复职
+            ContactsBind bind = null;
+            bind = this.query().eq("customer_id", param.getNewCustomerId()).eq("contacts_id", param.getContactsId()).one();
+            if (ToolUtil.isNotEmpty(bind)) {
+                bind.setDisplay(1);
+                this.updateById(bind);
+            } else {
+                bind = new ContactsBind();
+                bind.setContactsId(param.getContactsId());
+                bind.setCustomerId(param.getNewCustomerId());
+                this.save(bind);
+            }
+
         }
     }
 
