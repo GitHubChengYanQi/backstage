@@ -59,6 +59,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
      */
     private SpuRequest spuAttributes;
     private Integer type;
+    @ApiModelProperty("添加方式")
     private Integer addMethod;
     /**
      * sku名字
