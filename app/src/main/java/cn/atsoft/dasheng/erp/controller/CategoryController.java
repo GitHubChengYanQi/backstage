@@ -105,7 +105,7 @@ public class CategoryController extends BaseController {
         if (ToolUtil.isNotEmpty(detail)) {
 
             List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery()
-                    .in(ItemAttribute::getCategoryId, detail.getCategoryId()).orderByAsc(ItemAttribute::getSort)
+                    .in(ItemAttribute::getCategoryId, detail.getCategoryId()).orderByDesc(ItemAttribute::getSort)
                     .list();
 
             if (ToolUtil.isNotEmpty(itemAttributes)) {
@@ -186,6 +186,7 @@ public class CategoryController extends BaseController {
     public ResponseData<List<TreeNode>> treeView() {
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
         categoryQueryWrapper.in("display", 1);
+        categoryQueryWrapper.orderByDesc("sort");
         List<Map<String, Object>> list = this.categoryService.listMaps(categoryQueryWrapper);
 
         List<TreeNode> treeViewNodes = new ArrayList<>();

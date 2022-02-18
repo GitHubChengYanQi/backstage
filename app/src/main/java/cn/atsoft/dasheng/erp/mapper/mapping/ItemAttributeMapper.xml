@@ -126,7 +126,7 @@
         <if test="paramCondition.standard != null">
             and standard = #{{paramCondition.standard}
         </if>
-        order by sort ASC
+        order by sort desc
     </select>
 
     <select id="customPageMapList" resultType="map"
