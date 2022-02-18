@@ -34,9 +34,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
 
     @Override
-    public void add(InvoiceParam param) {
+    public Long add(InvoiceParam param) {
         Invoice entity = getEntity(param);
         this.save(entity);
+        return entity.getInvoiceId();
     }
 
     @Override

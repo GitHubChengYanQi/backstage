@@ -24,7 +24,7 @@ public interface InvoiceService extends IService<Invoice> {
      * @author song
      * @Date 2021-12-20
      */
-    void add(InvoiceParam param);
+    Long add(InvoiceParam param);
 
     /**
      * 删除

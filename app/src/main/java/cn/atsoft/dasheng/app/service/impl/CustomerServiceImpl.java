@@ -137,8 +137,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         }
         for (InvoiceParam invoiceParam : param.getInvoiceParams()) {
-            invoiceParam.setCustomerId(entity.getCustomerId());
-            invoiceService.add(invoiceParam);
+
+        }
+        for (int i = 0; i < param.getInvoiceParams().size(); i++) {
+            param.getInvoiceParams().get(i).setCustomerId(entity.getCustomerId());
+            Long add = invoiceService.add(param.getInvoiceParams().get(i));
+            if (i == 0) {
+                entity.setIndustryId(add);
+            }
         }
 
         if (param.getSupply() == 1) {   //供应商
