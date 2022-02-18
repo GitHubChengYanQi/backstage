@@ -88,6 +88,32 @@ public class CustomerResult implements Serializable {
 
     private Long customerLevelId;
 
+
+
+    /**
+     * 注册资本
+     */
+    @ApiModelProperty("注册资本")
+    private Long registeredCapital;
+
+    /**
+     * 传真
+     */
+    @ApiModelProperty("传真")
+    private String fax;
+
+    /**
+     * 企业电话
+     */
+    @ApiModelProperty("企业电话")
+    private String telephone;
+
+    /**
+     * 邮编
+     */
+    @ApiModelProperty("邮编")
+    private String zipCode;
+    
     private Integer status;
     private Integer blacklist;
     private Integer classification;

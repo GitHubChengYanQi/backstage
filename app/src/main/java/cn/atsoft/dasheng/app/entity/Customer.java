@@ -49,6 +49,33 @@ public class Customer implements Serializable {
     @TableField("invoice_id")
     private Long invoiceId;
 
+    /**
+     * 注册资本
+     */
+    @TableField("registered_capital")
+    private Long registeredCapital;
+
+    /**
+     * 传真
+     */
+    @TableField("fax")
+    private String fax;
+
+    /**
+     * 企业电话
+     */
+    @TableField("telephone")
+    private String telephone;
+
+    /**
+     * 邮编
+     */
+    @TableField("zipCode")
+    private String zipCode;
+
+
+
+
 
     @TableField("classification")
     private Integer classification;
@@ -239,6 +266,39 @@ public class Customer implements Serializable {
     public void setDefaultAddress(Long defaultAddress) {
         this.defaultAddress = defaultAddress;
     }
+
+    public Long getRegisteredCapital() {
+        return registeredCapital;
+    }
+
+    public void setRegisteredCapital(Long registeredCapital) {
+        this.registeredCapital = registeredCapital;
+    }
+
+    public String getFax() {
+        return fax;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
 
     /**
      * 成立时间
