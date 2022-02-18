@@ -26,6 +26,8 @@ public interface SkuBrandBindService extends IService<SkuBrandBind> {
      */
     void add(SkuBrandBindParam param);
 
+    void addBatch(SkuBrandBindParam param);
+
     /**
      * 删除
      *
