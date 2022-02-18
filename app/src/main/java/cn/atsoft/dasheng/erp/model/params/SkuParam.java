@@ -31,6 +31,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
 
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValues;
+    @ApiModelProperty("skuId")
     private Long skuId;
     private List<Long> skuIds;
     private SpuParam spu;
