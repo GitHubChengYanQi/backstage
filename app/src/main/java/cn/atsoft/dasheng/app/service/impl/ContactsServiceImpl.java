@@ -399,12 +399,12 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             record.setPhoneParams(List);
 
             for (DaoxinDeptResult deptResult : deptResults) {
-                if (record.getDeptId().equals(deptResult.getDeptId())) {
+                if (ToolUtil.isNotEmpty(record.getDeptId()) && record.getDeptId().equals(deptResult.getDeptId())) {
                     record.setDeptResult(deptResult);
                 }
             }
             for (PositionResult positionResult : positionResults) {
-                if (record.getPositionId().equals(positionResult.getPositionId())) {
+                if (ToolUtil.isNotEmpty(record.getPositionId()) && record.getPositionId().equals(positionResult.getPositionId())) {
                     record.setPositionResult(positionResult);
                 }
             }
