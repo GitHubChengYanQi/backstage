@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListingParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
@@ -116,7 +117,10 @@ public class PurchaseListingController extends BaseController {
     @ApiOperation("待买")
     public ResponseData planList() {
         Set<ListingPlan> plans = this.purchaseListingService.plans();
-        return ResponseData.success(plans);
+        List<ListingPlan> planList = new ArrayList<>(plans);
+        planList.removeIf(plan -> plan.getSkuResult() == null);
+
+        return ResponseData.success(planList);
     }
 
 

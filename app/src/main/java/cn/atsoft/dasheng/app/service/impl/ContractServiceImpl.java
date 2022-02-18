@@ -89,7 +89,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             }};
             format(results);
 
-            if (ToolUtil.isNotEmpty(param.getContractDetailList()) && param.getContractDetailList().size() > 0){
+            if (ToolUtil.isNotEmpty(param.getContractDetailList()) && param.getContractDetailList().size() > 0) {
                 for (ContractDetail contractDetail : param.getContractDetailList()) {
                     contractDetail.setContractId(entity.getContractId());
                     contractDetail.setTotalPrice(contractDetail.getSalePrice() * contractDetail.getQuantity());

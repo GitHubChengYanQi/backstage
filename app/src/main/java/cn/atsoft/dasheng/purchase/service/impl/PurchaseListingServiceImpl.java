@@ -121,7 +121,6 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
 
     @Override
     public Set<ListingPlan> plans() {
-        List<ListingPlan> plans = new ArrayList<>();
         List<PurchaseAsk> asks = askService.query().eq("status", 2).list();
         List<Long> askIds = new ArrayList<>();
         for (PurchaseAsk ask : asks) {
@@ -160,12 +159,13 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
                     plan.setBrandResult(result.getBrandResult());
                 }
             }
+
             plan.setChildren(resultList);
             plan.setApplyNumber(number);
         }
 
-        return listingPlanSet;
 
+        return listingPlanSet;
     }
 
     public void format(List<PurchaseListingResult> param) {
@@ -204,5 +204,6 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
                 }
             }
         }
+
     }
 }

@@ -393,6 +393,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 if (phone.getContactsId().equals(record.getContactsId())) {
                     PhoneResult phoneResult = new PhoneResult();
                     ToolUtil.copyProperties(phone, phoneResult);
+                    String phoneNumber = phoneResult.getPhoneNumber().toString().substring(0, 3) + "****" + phoneResult.getPhoneNumber().toString().substring(7, phoneResult.getPhoneNumber().toString().length());
+                    phoneResult.setPhone(phoneNumber);
                     List.add(phoneResult);
                 }
             }
