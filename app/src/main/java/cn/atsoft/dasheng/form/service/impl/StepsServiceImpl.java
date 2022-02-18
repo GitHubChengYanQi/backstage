@@ -19,9 +19,12 @@ import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
+import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
 import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
+import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
+import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -55,7 +58,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private ProcessRouteService processRouteService;
     @Autowired
     private SkuService skuService;
-
+    @Autowired
+    private ShipSetpService shipSetpService;
 
 
     @Override
@@ -324,6 +328,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         }
         ActivitiSetpSetResult setpSetResult = new ActivitiSetpSetResult();
         ToolUtil.copyProperties(setpSet, setpSetResult);
+
+        if (ToolUtil.isNotEmpty(setpSetResult.getShipSetpId())) {
+            ShipSetp shipSetp = shipSetpService.getById(setpSetResult.getShipSetpId());
+            ShipSetpResult shipSetpResult = new ShipSetpResult();
+            ToolUtil.copyProperties(shipSetp, shipSetpResult);
+            setpSetResult.setShipSetpResult(shipSetpResult);
+        }
 
         setpSetResult.setSetpSetDetails(setpSetDetailResult(stepId));
         return setpSetResult;
