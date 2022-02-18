@@ -42,7 +42,7 @@
         <result column="registered_capital" property="registeredCapital"/>
         <result column="fax" property="fax"/>
         <result column="telephone" property="telephone"/>
-        <result column="zip_code" property="zipCode"/>
+        <result column="zipCode" property="zipCode"/>
 
     </resultMap>
 
@@ -51,7 +51,7 @@
         registered_capital AS "registeredCapital",
         fax AS "fax",
         telephone AS "telephone",
-        zip_code AS "zipCode",
+        zipCode AS "zipCode",
     region AS "region",supply AS "supply",blacklist AS "blacklist",invoice_id AS "invoiceId",
         industry_id AS "industryId" ,agent AS "agent",avatar AS "avatar",sort AS "sort" , classification AS "classification",
         customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,

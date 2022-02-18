@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,9 @@ public interface SkuService extends IService<Sku> {
      * @Date 2021-10-18
      */
     void add(SkuParam param);
+
+    @Transactional
+    void directAdd(SkuParam param);
 
     /**
      * 删除

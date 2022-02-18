@@ -11,6 +11,7 @@
         <result column="sku_value_md5" property="skuValueMd5"/>
         <result column="spu_id" property="spuId"/>
         <result column="standard" property="standard"/>
+        <result column="add_method" property="addMethod"/>
         <result column="specifications" property="specifications"/>
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
@@ -27,7 +28,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">type
-    AS "type",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId",
+    AS "type",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId", add_method AS "addMethod" ,
         sku_id
         AS "skuId",batch AS "batch", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
@@ -37,6 +38,7 @@
         .
         name
         AS "spuName",
+        goods_sku.add_method AS "addMethod",
         goods_sku.standard AS "standard",
         goods_sku.type AS "type",
         goods_sku.coding AS "coding",
@@ -206,8 +208,14 @@
             <if test="paramCondition.spuName != null">
                 and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
             </if>
+            <if test="paramCondition.addMethod != null and paramCondition.addMethod != ''">
+                and add_method = #{paramCondition.addMethod}
+            </if>
             <if test="paramCondition.spuClassName != null">
                 and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
+            </if>
+            <if test="paramCondition.addMethod != null and paramCondition.addMethod != ''">
+                and goods_sku.add_method = #{paramCondition.addMethod}
             </if>
         </if>
         <if test="spuIds != null  and spuIds.size > 0 ">

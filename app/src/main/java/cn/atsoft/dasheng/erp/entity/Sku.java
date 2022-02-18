@@ -73,6 +73,11 @@ public class Sku implements Serializable {
 
     @TableField("is_ban")
     private Integer isBan;
+
+
+
+    @TableField("add_method")
+    private Integer addMethod;
     @TableField("standard")
     private String standard;
 
@@ -140,6 +145,14 @@ public class Sku implements Serializable {
 
     public void setQualityPlanId(Long qualityPlanId) {
         this.qualityPlanId = qualityPlanId;
+    }
+
+    public Integer getAddMethod() {
+        return addMethod;
+    }
+
+    public void setAddMethod(Integer addMethod) {
+        this.addMethod = addMethod;
     }
 
     /**

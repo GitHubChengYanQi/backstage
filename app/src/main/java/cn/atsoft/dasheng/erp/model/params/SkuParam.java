@@ -59,6 +59,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
      */
     private SpuRequest spuAttributes;
     private Integer type;
+    private Integer addMethod;
     /**
      * sku名字
      */
