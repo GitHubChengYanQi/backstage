@@ -48,6 +48,12 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
         ToolUtil.copyProperties(contactsBind, param);
         contactsBind.setDisplay(param.getDisplay());
         this.updateById(contactsBind);
+        if (ToolUtil.isNotEmpty(param.getNewCustomerId())) {
+            ContactsBind entity = new ContactsBind();
+            entity.setContactsId(param.getContactsId());
+            entity.setCustomerId(param.getNewCustomerId());
+            this.save(entity);
+        }
     }
 
     @Override

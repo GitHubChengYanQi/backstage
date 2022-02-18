@@ -31,7 +31,7 @@ public class ContactsResult implements Serializable {
     private CompanyRoleResult companyRoleResult;
     private List<PhoneResult> phoneParams;
     private DaoxinDeptResult deptResult;
-    private PositionResult positionResult;
+
     /**
      * 联系人id
      */

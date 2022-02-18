@@ -67,7 +67,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Autowired
     private DaoxinDeptService daoxinDeptService;
     @Autowired
-    private PositionService positionService;
+    private CompanyRoleService roleService;
 
     @Override
     @FreedLog
@@ -117,6 +117,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         Contacts contacts = null;
         DaoxinDept daoxinDept = null;
         Position position = null;
+        CompanyRole companyRole = null;
         contacts = this.query().eq("contacts_id", param.getContactsName()).one();   //联系人
         if (ToolUtil.isNotEmpty(contacts)) {
             return contacts.getContactsId();
@@ -134,11 +135,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
         }
         if (ToolUtil.isNotEmpty(param.getPositionName())) {                        //职位
-            position = positionService.query().eq("position_id", param.getPositionName()).one();
-            if (ToolUtil.isEmpty(position)) {
-                position = new Position();
-                position.setName(param.getPositionName());
-                positionService.save(position);
+            companyRole = roleService.query().eq("company_role_id", param.getPositionName()).one();
+            if (ToolUtil.isEmpty(companyRole)) {
+                companyRole = new CompanyRole();
+                companyRole.setPosition(param.getPositionName());
+                roleService.save(companyRole);
             }
         }
         // 添加电话号码
@@ -153,8 +154,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isNotEmpty(daoxinDept)) {
             contacts.setDeptId(daoxinDept.getDeptId());
         }
-        if (ToolUtil.isNotEmpty(position)) {
-            contacts.setPositionId(position.getPositionId());
+        if (ToolUtil.isNotEmpty(companyRole)) {
+            contacts.setPositionId(companyRole.getCompanyRoleId());
         }
 
 
@@ -173,7 +174,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
             Contacts entity = getEntity(param);
             param.setDisplay(0);
-            QueryWrapper queryWrapper = new QueryWrapper<>();
+            QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("contacts_id", param.getContactsId());
             phoneService.remove(queryWrapper);
             this.update(param);
@@ -333,11 +334,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             deptResults.add(daoxinDeptResult);
         }
         //查询职位
-        List<Position> positions = positionIds.size() == 0 ? new ArrayList<>() : positionService.listByIds(positionIds);
-        List<PositionResult> positionResults = new ArrayList<>();
-        for (Position position : positions) {
-            PositionResult positionResult = new PositionResult();
-            ToolUtil.copyProperties(position, positionResult);
+        List<CompanyRole> companyRoles = positionIds.size() == 0 ? new ArrayList<>() : roleService.listByIds(positionIds);
+        List<CompanyRoleResult> positionResults = new ArrayList<>();
+        for (CompanyRole role : companyRoles) {
+            CompanyRoleResult positionResult = new CompanyRoleResult();
+            ToolUtil.copyProperties(role, positionResult);
             positionResults.add(positionResult);
         }
 
@@ -393,7 +394,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 if (phone.getContactsId().equals(record.getContactsId())) {
                     PhoneResult phoneResult = new PhoneResult();
                     ToolUtil.copyProperties(phone, phoneResult);
-                    String phoneNumber = phoneResult.getPhoneNumber().toString().substring(0, 3) + "****" + phoneResult.getPhoneNumber().toString().substring(7, phoneResult.getPhoneNumber().toString().length());
+                    String phoneNumber = phoneResult.getPhoneNumber().toString().substring(0, 3) + "****" + phoneResult.getPhoneNumber().toString().substring(7);
                     phoneResult.setPhone(phoneNumber);
                     List.add(phoneResult);
                 }
@@ -405,9 +406,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                     record.setDeptResult(deptResult);
                 }
             }
-            for (PositionResult positionResult : positionResults) {
-                if (ToolUtil.isNotEmpty(record.getPositionId()) && record.getPositionId().equals(positionResult.getPositionId())) {
-                    record.setPositionResult(positionResult);
+
+
+            for (CompanyRoleResult positionResult : positionResults) {
+                if (ToolUtil.isNotEmpty(record.getPositionId()) && record.getPositionId().equals(positionResult.getCompanyRoleId())) {
+                    record.setCompanyRoleResult(positionResult);
                 }
             }
 

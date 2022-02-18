@@ -336,7 +336,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         List<Long> skuIds = new ArrayList<>();
         for (ActivitiSetpSetDetailResult setpSetDetailResult : detailResults) {
             if (ToolUtil.isNotEmpty(setpSetDetailResult.getSetpsId())) {
-                skuIds.add(setpSetDetailResult.getSetpsId());
+                skuIds.add(setpSetDetailResult.getSkuId());
             }
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
