@@ -408,7 +408,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
      */
     private Long getOrSaveSpuClass(SkuParam param) {
         Long spuClassificationId = 0L;
-        SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
+        SpuClassification spuClassification = new SpuClassification();
+
+        if (ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())){
+            spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getSpuClassificationId, param.getSpuClassification().getSpuClassificationId()).and(i -> i.eq(SpuClassification::getDisplay, 1)).and(i -> i.eq(SpuClassification::getType, 2)).one();
+        }else{
+            spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).and(i -> i.eq(SpuClassification::getType, 2)).one();
+        }
+
         if (ToolUtil.isEmpty(spuClassification)) {
             SpuClassification spuClassificationEntity = new SpuClassification();
             spuClassificationEntity.setName(param.getSpuClassification().getName());
