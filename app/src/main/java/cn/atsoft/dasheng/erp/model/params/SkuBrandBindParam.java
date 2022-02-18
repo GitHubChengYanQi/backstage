@@ -23,7 +23,7 @@ import java.util.List;
 public class SkuBrandBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<Long> brandIds;
 
     /**
      * 产品品牌绑定表

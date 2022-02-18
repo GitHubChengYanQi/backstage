@@ -75,6 +75,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private UnitService unitService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private SkuBrandBindService skuBrandBindService;
 
     @Autowired
     private StockDetailsService stockDetailsService;
@@ -233,6 +235,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              */
 
             this.save(entity);
+            /**
+             * 绑定品牌（多个）
+             */
+            if (ToolUtil.isNotEmpty(param.getBrandIds())){
+                skuBrandBindService.addBatch(new SkuBrandBindParam(){{
+                    setBrandIds(param.getBrandIds());
+                    setSkuId(entity.getSkuId());
+                }});
+            }
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
             if (ToolUtil.isEmpty(spuId)) {
@@ -282,6 +293,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     throw new ServiceException(500, "此物料在产品中已存在");
                 } else {
                     this.save(entity);
+                    /**
+                     * 绑定品牌（多个）
+                     */
+                    if (ToolUtil.isNotEmpty(param.getBrandIds())){
+                        skuBrandBindService.addBatch(new SkuBrandBindParam(){{
+                            setBrandIds(param.getBrandIds());
+                            setSkuId(entity.getSkuId());
+                        }});
+                    }
                 }
             }
 
@@ -370,6 +390,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
         this.save(entity);
+        if (ToolUtil.isNotEmpty(param.getBrandIds())){
+            skuBrandBindService.addBatch(new SkuBrandBindParam(){{
+                setBrandIds(param.getBrandIds());
+                setSkuId(entity.getSkuId());
+            }});
+        }
     }
 
 

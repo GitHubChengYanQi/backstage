@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +33,18 @@ public class SkuBrandBindServiceImpl extends ServiceImpl<SkuBrandBindMapper, Sku
     public void add(SkuBrandBindParam param){
         SkuBrandBind entity = getEntity(param);
         this.save(entity);
+
+    }
+    @Override
+    public void addBatch(SkuBrandBindParam param){
+        List<SkuBrandBind> entityList = new ArrayList<>();
+        for (Long brandId : param.getBrandIds()) {
+            SkuBrandBind skuBrandBind = new SkuBrandBind();
+            skuBrandBind.setBrandId(brandId);
+            skuBrandBind.setSkuId(param.getSkuId());
+            entityList.add(skuBrandBind);
+        }
+        this.saveBatch(entityList);
     }
 
     @Override
