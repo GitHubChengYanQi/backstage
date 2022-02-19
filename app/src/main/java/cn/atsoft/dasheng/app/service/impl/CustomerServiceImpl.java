@@ -263,8 +263,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customerId = record.getCustomerId();
             invoiceIds.add(record.getInvoiceId());
             adressIds.add(record.getDefaultAddress());
+            if (ToolUtil.isNotEmpty(record.getDefaultContacts())){
+                contactsIds.add(record.getDefaultContacts());
+            }
         }
-
 
         List<ContactsBind> contactsBinds = contactsBindService.lambdaQuery()
                 .in(ContactsBind::getCustomerId, customerId)
@@ -317,7 +319,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (customerId != null) {
             adressList = adressService.lambdaQuery().eq(Adress::getCustomerId, customerId).list();
         }
-
+        
 
         for (CustomerResult record : data) {
 
@@ -446,9 +448,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     }
                 }
             }
-
-
+            for (Contacts contacts : contactsList) {
+                if  (ToolUtil.isNotEmpty(record.getDefaultContacts()) && record.getDefaultContacts().equals(contacts.getContactsId())){
+                    ContactsResult contactsResult = new ContactsResult();
+                    ToolUtil.copyProperties(contacts,contactsResult);
+                    record.setDefaultContactsResult(contactsResult);
+                }
+            }
         }
+
         return data.size() == 0 ? null : data.get(0);
     }
 
