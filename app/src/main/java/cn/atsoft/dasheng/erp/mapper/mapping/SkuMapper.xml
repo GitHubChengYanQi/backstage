@@ -231,6 +231,12 @@
                 #{state}
             </foreach>
         </if>
+        <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
+            and goods_sku.sku_id not in
+            <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
         order by
         spuName,
         standard,

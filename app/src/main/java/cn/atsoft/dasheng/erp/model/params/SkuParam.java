@@ -39,6 +39,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private Long spuClassificationId;
     private Long spuStandard;
     private List<Long> id;
+    private List<Long> noSkuIds;
     private Long spuClass;
     private Long unitId;
     private Integer batch;
