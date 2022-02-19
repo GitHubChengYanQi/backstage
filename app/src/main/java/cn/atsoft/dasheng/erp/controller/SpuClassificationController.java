@@ -150,7 +150,7 @@ public class SpuClassificationController extends BaseController {
         }
 
         spuClassificationQueryWrapper.eq("display", 1);
-        spuClassificationQueryWrapper.orderByAsc("sort");
+        spuClassificationQueryWrapper.orderByDesc("sort");
 
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 

@@ -70,7 +70,7 @@ public class SopDetailServiceImpl extends ServiceImpl<SopDetailMapper, SopDetail
         if (ToolUtil.isEmpty(sopId)) {
             return new ArrayList<>();
         }
-        List<SopDetail> sopDetails = this.query().eq("sop_id", sopId).orderByAsc("sort").list();
+        List<SopDetail> sopDetails = this.query().eq("sop_id", sopId).orderByDesc("sort").list();
         if (ToolUtil.isEmpty(sopDetails)) {
             return new ArrayList<>();
         }

@@ -139,7 +139,7 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
         }
         QueryWrapper<CrmBusinessSalesProcess> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("sales_id", salesIds);
-        queryWrapper.orderByAsc("sort");
+        queryWrapper.orderByDesc("sort");
         List<CrmBusinessSalesProcess> res = salesIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(queryWrapper);
 
         for (CrmBusinessSalesResult item : data) {
