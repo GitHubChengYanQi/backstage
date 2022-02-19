@@ -139,7 +139,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             param.getInvoiceParams().get(i).setCustomerId(entity.getCustomerId());
             Long add = invoiceService.add(param.getInvoiceParams().get(i));
             if (i == 0) {
-                entity.setIndustryId(add);
+                entity.setInvoiceId(add);
             }
         }
 
@@ -263,7 +263,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customerId = record.getCustomerId();
             invoiceIds.add(record.getInvoiceId());
             adressIds.add(record.getDefaultAddress());
-            if (ToolUtil.isNotEmpty(record.getDefaultContacts())){
+            if (ToolUtil.isNotEmpty(record.getDefaultContacts())) {
                 contactsIds.add(record.getDefaultContacts());
             }
         }
@@ -292,7 +292,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<ContactsResult> contactsResultList = new ArrayList<>();
         for (Contacts contacts : contactsList) {
             ContactsResult contactsResult = new ContactsResult();
-            ToolUtil.copyProperties(contacts,contactsResult);
+            ToolUtil.copyProperties(contacts, contactsResult);
             contactsResultList.add(contactsResult);
         }
         contactsService.format(contactsResultList);
@@ -326,7 +326,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (customerId != null) {
             adressList = adressService.lambdaQuery().eq(Adress::getCustomerId, customerId).list();
         }
-        
+
 
         for (CustomerResult record : data) {
 
@@ -456,7 +456,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
             for (ContactsResult contacts : contactsResultList) {
-                if  (ToolUtil.isNotEmpty(record.getDefaultContacts()) && record.getDefaultContacts().equals(contacts.getContactsId())){
+                if (ToolUtil.isNotEmpty(record.getDefaultContacts()) && record.getDefaultContacts().equals(contacts.getContactsId())) {
                     record.setDefaultContactsResult(contacts);
                 }
             }
