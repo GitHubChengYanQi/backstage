@@ -289,6 +289,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("contacts_id", contactsIds);
         List<Contacts> contactsList = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.list(contactsQueryWrapper);
+        List<ContactsResult> contactsResultList = new ArrayList<>();
+        for (Contacts contacts : contactsList) {
+            ContactsResult contactsResult = new ContactsResult();
+            ToolUtil.copyProperties(contacts,contactsResult);
+            contactsResultList.add(contactsResult);
+        }
+        contactsService.format(contactsResultList);
 
         /**
          * 获取originId
@@ -448,11 +455,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     }
                 }
             }
-            for (Contacts contacts : contactsList) {
+            for (ContactsResult contacts : contactsResultList) {
                 if  (ToolUtil.isNotEmpty(record.getDefaultContacts()) && record.getDefaultContacts().equals(contacts.getContactsId())){
-                    ContactsResult contactsResult = new ContactsResult();
-                    ToolUtil.copyProperties(contacts,contactsResult);
-                    record.setDefaultContactsResult(contactsResult);
+                    record.setDefaultContactsResult(contacts);
                 }
             }
         }
