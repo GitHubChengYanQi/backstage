@@ -120,8 +120,10 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         List<SopDetailResult> resultBySopId = sopDetailService.getResultBySopId(sop.getSopId()); //获取详情
 
         List<SopResult> oldSop = getOldSopByPid(sop.getSopId());  //获取修改记录
-        List<Long> imgId = Arrays.stream(sopResult.getFinishedPicture().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-
+        List<Long> imgId = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(sopResult.getFinishedPicture())) {
+            imgId = Arrays.stream(sopResult.getFinishedPicture().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        }
         List<String> mediaUrls = new ArrayList<>();
         for (Long aLong : imgId) {
             String mediaUrl = mediaService.getMediaUrl(aLong, 0L); //成品图
