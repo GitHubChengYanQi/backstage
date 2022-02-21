@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -28,7 +29,7 @@ public class SopResult implements Serializable {
     private List<SopDetailResult> sopDetails;
     private Long pid;
     private List<SopResult> oldSop;
-    private User user;
+    private UserResult user;
     private List<String> mediaUrls;
     private     List<ShipSetpResult> shipSetpResults;
 

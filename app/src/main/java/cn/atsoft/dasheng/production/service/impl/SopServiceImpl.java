@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.production.service.SopDetailService;
 import cn.atsoft.dasheng.production.service.SopService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -218,10 +219,10 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         for (SopResult sopResult : sopResults) {
             userIds.add(sopResult.getCreateUser());
         }
-        List<User> users = userService.listByIds(userIds);
+        List<UserResult> users =userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
 
         for (SopResult sopResult : sopResults) {
-            for (User user : users) {
+            for (UserResult user : users) {
                 if (user.getUserId().equals(sopResult.getCreateUser())) {
                     sopResult.setUser(user);
                     break;
@@ -252,11 +253,11 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
             sopIds.add(datum.getSopId());
         }
         Map<Long, List<ShipSetpResult>> shipMap = sopBindService.getShipSetp(sopIds);
-        List<User> users = userService.listByIds(userIds);
+        List<UserResult> users = (userIds.size() == 0) ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
 
         for (SopResult datum : data) {
 
-            for (User user : users) {
+            for (UserResult user : users) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     datum.setUser(user);
                     break;
