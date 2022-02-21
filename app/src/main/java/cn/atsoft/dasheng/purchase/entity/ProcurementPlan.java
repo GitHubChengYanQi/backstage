@@ -46,6 +46,34 @@ public class ProcurementPlan implements Serializable {
     private String remark;
 
     /**
+     * 主题
+     */
+    @TableField("theme")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @TableField("origin")
+    private String origin;
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    /**
      * 要求供应商等级
      */
     @TableField("need_level")

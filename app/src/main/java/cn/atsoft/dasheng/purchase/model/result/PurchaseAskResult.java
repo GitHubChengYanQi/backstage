@@ -90,6 +90,20 @@ public class PurchaseAskResult implements Serializable {
     @ApiModelProperty("来源id")
     private Long sourceId;
 
+
+
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
+
     /**
      * 创建时间
      */

@@ -12,6 +12,8 @@
         <result column="is_spupplier" property="isSpupplier" />
         <result column="display" property="display" />
         <result column="status" property="status" />
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
         <result column="delivery_date" property="deliveryDate" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -21,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        procurement_plan_id AS "procurementPlanId", procurement_plan_name AS "procurementPlanName", user_id AS "userId", remark AS "remark", need_level AS "needLevel", is_spupplier AS "isSpupplier", display AS "display", status AS "status", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        procurement_plan_id AS "procurementPlanId", theme AS "theme" , origin AS "origin" ,procurement_plan_name AS "procurementPlanName", user_id AS "userId", remark AS "remark", need_level AS "needLevel", is_spupplier AS "isSpupplier", display AS "display", status AS "status", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 

@@ -53,6 +53,19 @@ public class ProcurementPlanParam implements Serializable, BaseValidatingParam {
     private String remark;
 
     /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
+
+
+    /**
      * 要求供应商等级
      */
     @ApiModelProperty("要求供应商等级")

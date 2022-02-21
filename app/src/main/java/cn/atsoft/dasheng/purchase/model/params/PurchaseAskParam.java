@@ -116,6 +116,20 @@ public class PurchaseAskParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("状态")
     private Long display;
 
+
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
+
+    
     /**
      * 部门id
      */

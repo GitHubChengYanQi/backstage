@@ -50,6 +50,20 @@ public class ProcurementOrderResult implements Serializable {
     @ApiModelProperty("备注")
     private String note;
 
+
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
+
+
     /**
      * 删除状态
      */

@@ -8,6 +8,8 @@
         <result column="procurement_plan_id" property="procurementPlanId"/>
         <result column="status" property="status"/>
         <result column="note" property="note"/>
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
         <result column="display" property="display"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
@@ -22,7 +24,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">money
-    AS "money", coding AS "coding",adress_id AS "adressId",
+    AS "money", coding AS "coding",adress_id AS "adressId", theme AS "theme" , origin AS "origin" ,
         procurement_order_id
         AS "procurementOrderId", procurement_plan_id AS "procurementPlanId", status AS "status", note AS "note", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
     </sql>

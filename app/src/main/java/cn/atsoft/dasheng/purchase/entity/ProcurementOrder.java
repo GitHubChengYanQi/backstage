@@ -58,10 +58,37 @@ public class ProcurementOrder implements Serializable {
     private Integer status;
 
     /**
-     * 备注
+     * z
      */
     @TableField("note")
     private String note;
+    /**
+     * 主题
+     */
+    @TableField("theme")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @TableField("origin")
+    private String origin;
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
 
     /**
      * 删除状态
