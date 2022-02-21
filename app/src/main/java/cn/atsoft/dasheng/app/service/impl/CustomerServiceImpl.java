@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.aliyuncs.ram.model.v20150501.CreateUserRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -257,6 +259,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             originIds.add(record.getOriginId());
             levelIds.add(record.getCustomerLevelId());
             userIds.add(record.getUserId());
+            userIds.add(record.getCreateUser());
             industryIds.add(record.getIndustryId());
             dycustomerIds.add(record.getCustomerId());
             customerIds.add(record.getCustomerId());
@@ -314,10 +317,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         /**
          * 获取userId
          * */
-        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", userIds);
-        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
-
+        List<Long> collectUserIds = userIds.stream().distinct().collect(Collectors.toList());
+//        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+//        userQueryWrapper.in("user_id", collectUserIds);
+//        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
+        List<UserResult> userResults = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
         QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
         industryQueryWrapper.in("industry_id", industryIds);
         List<CrmIndustry> industryList = industryIds.size() == 0 ? new ArrayList<>() : crmIndustryService.list(industryQueryWrapper);
@@ -393,11 +397,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     break;
                 }
             }
-            for (User user : userList) {
+            for (UserResult user : userResults) {
                 if (user.getUserId().equals(record.getUserId())) {
-                    UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user, userResult);
-                    record.setUserResult(userResult);
+                    record.setUserResult(user);
+                    break;
+                }
+
+
+            }
+            for (UserResult user : userResults) {
+                if (record.getCreateUser().equals(user.getUserId())){
+                    record.setCreateUserResult(user);
                     break;
                 }
             }
@@ -461,6 +471,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
         }
+
 
         return data.size() == 0 ? null : data.get(0);
     }
