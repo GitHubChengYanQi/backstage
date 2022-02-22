@@ -24,7 +24,11 @@ public class PurchaseListing implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    /**
+     * 交货时间
+      */
+    @TableField("delivery_time")
+    private Date deliveryTime;
     /**
      * 品牌
      */
@@ -229,6 +233,14 @@ public class PurchaseListing implements Serializable {
 
     public void setBrandId(Long brandId) {
         this.brandId = brandId;
+    }
+
+    public Date getDeliveryTime() {
+        return deliveryTime;
+    }
+
+    public void setDeliveryTime(Date deliveryTime) {
+        this.deliveryTime = deliveryTime;
     }
 
     @Override
