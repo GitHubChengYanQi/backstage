@@ -938,11 +938,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             b = false;
                         }
                         break;
-                    case money:  //总金额
-                        if (!judeg(ask, Long.valueOf(purchaseAsk.getMoney()))) {
-                            b = false;
-                        }
-                        break;
+//                    case money:  //总金额
+//                        if (!judeg(ask, Long.valueOf(purchaseAsk.getMoney()))) {
+//                            b = false;
+//                        }
+//                        break;
                 }
             }
 
