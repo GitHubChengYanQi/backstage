@@ -28,6 +28,11 @@ public class PurchaseAskResult implements Serializable {
     private String CreateUserName;
     List<PurchaseListingResult> purchaseListingResults;
 
+    private Date processTime;
+
+    private Integer applyNumber;
+
+    private Integer applyType;
 
     private User user;
     /**
@@ -89,7 +94,6 @@ public class PurchaseAskResult implements Serializable {
      */
     @ApiModelProperty("来源id")
     private Long sourceId;
-
 
 
     /**

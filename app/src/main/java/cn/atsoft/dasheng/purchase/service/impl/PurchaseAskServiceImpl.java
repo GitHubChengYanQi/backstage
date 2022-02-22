@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
@@ -65,6 +66,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     private CodingRulesService rulesService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private StepsService stepsSer;
 
     @Override
     @Transactional
@@ -165,9 +168,16 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
 
     public void format(List<PurchaseAskResult> param) {
         List<Long> userIds = new ArrayList<>();
+        List<Long> askIds = new ArrayList<>();
         for (PurchaseAskResult purchaseAskResult : param) {
             userIds.add(purchaseAskResult.getCreateUser());
+            askIds.add(purchaseAskResult.getPurchaseAskId());
         }
+
+
+        List<PurchaseListing> purchaseListings = askIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().in("purchase_ask_id", askIds).eq("display", 1).list();
+
+
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (PurchaseAskResult purchaseAskResult : param) {
             for (User user : userList) {
@@ -175,7 +185,20 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
                     purchaseAskResult.setCreateUserName(user.getName());
                 }
             }
+            int type = 0;
+            int number = 0;
+            for (PurchaseListing purchaseListing : purchaseListings) {
+                if (purchaseListing.getPurchaseAskId().equals(purchaseAskResult.getPurchaseAskId())) {
+                    type = type + 1;
+                    number = Math.toIntExact(number + purchaseListing.getApplyNumber());
+                }
+            }
+            Date processTime = stepsSer.getProcessTime(purchaseAskResult.getPurchaseAskId());
+            purchaseAskResult.setProcessTime(processTime);
+            purchaseAskResult.setApplyNumber(number);
+            purchaseAskResult.setApplyType(type);
         }
+
     }
 
     @Override
@@ -185,9 +208,14 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         ToolUtil.copyProperties(detail, result);
         User user = userService.getById(result.getCreateUser());
         result.setUser(user);
+        int number = 0;
         List<PurchaseListingResult> purchaseListing = purchaseListingService.getByAskId(param.getPurchaseAskId());
+        for (PurchaseListingResult listingResult : purchaseListing) {
+            number = Math.toIntExact(number + listingResult.getApplyNumber());
+        }
         result.setPurchaseListingResults(purchaseListing);
-
+        result.setApplyType(purchaseListing.size());
+        result.setApplyNumber(number);
         return result;
     }
 
@@ -275,4 +303,6 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         }
         return askResults;
     }
+
+
 }
