@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.*;
@@ -73,6 +74,17 @@ public class ActivitiStepsController extends BaseController {
     public ResponseData delete(@RequestBody ActivitiStepsParam activitiStepsParam) {
         this.activitiStepsService.delete(activitiStepsParam);
         return ResponseData.success();
+    }
+
+    /**
+     * 通过类型查询流程
+     *
+     * @author Sing
+     * @Date 2021-11-10
+     */
+    @RequestMapping(value = "/getStepResultByType", method = RequestMethod.GET)
+    public ResponseData getStepResultByType(@Param("type") String type) {
+        return ResponseData.success(this.activitiStepsService.getStepResultByType(type));
     }
 
     /**

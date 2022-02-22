@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,4 +32,6 @@ public interface StepsService extends IService<ActivitiSteps> {
 
 
     ActivitiStepsResult detail(Long formId);
+
+    Date getProcessTime(Long fromId);
 }

@@ -98,7 +98,7 @@
         <if test="paramCondition.sort != null">
             and sort like CONCAT('%',#{paramCondition.sort},'%')
         </if>
-        order by sort desc
+
     </select>
 
     <select id="customPageMapList" resultType="map"
