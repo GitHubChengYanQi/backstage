@@ -26,6 +26,8 @@ public class PurchaseListingParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private Long brandId;
+
+    private Date deliveryTime;
     /**
      * 采购清单id
      */

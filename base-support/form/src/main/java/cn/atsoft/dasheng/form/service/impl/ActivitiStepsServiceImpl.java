@@ -659,6 +659,15 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return stepResult;
     }
 
+    @Override
+    public ActivitiStepsResult getStepResultByType(String type) {
+        ActivitiProcess process = processService.query().eq("type", type).eq("status", 99).one();
+        if (ToolUtil.isNotEmpty(process)) {
+            return getStepResult(process.getProcessId());
+        }
+        return null;
+    }
+
     /**
      * 子节点比对log
      *

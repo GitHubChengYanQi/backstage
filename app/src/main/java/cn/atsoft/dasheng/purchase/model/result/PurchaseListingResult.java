@@ -32,6 +32,8 @@ public class PurchaseListingResult implements Serializable {
 
     private BrandResult brandResult;
 
+    private Date deliveryTime;
+
     private User user;
     /**
      * 采购清单id
