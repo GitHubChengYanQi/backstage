@@ -53,8 +53,7 @@ public class FreedAop {
     private AdressService adressService;
     @Autowired
     private ContractService contractService;
-    @Autowired
-    private ErpOrderService erpOrderService;
+
     @Autowired
     private RepairDynamicService repairDynamicService;
     @Autowired
@@ -94,39 +93,8 @@ public class FreedAop {
         BusinessDynamicParam businessDynamicParam = new BusinessDynamicParam();
 
 
-/**
- * 订单状态
- */
-        if (target instanceof ErpOrderService) {
-            FreedTemplateProperties.Contacts contacts = freedTemplateService.getConfig().getContacts();
-            String content = "";
-            ErpOrder erpOrder = (ErpOrder) result;
-            QueryWrapper<ErpOrder> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in("order_id", erpOrder.getOrderId());
-            List<ErpOrder> erpOrderList = erpOrderService.list(queryWrapper);
-            for (ErpOrder order : erpOrderList) {
-                customerDynamicParam.setCustomerId(order.getPartyAContactsId());
-            }
 
-            switch (methodName) {
-                case "add":
-                    content = contacts.getAdd().replace("[操作人]", user.getName());
-                    customerDynamicParam.setContent(content);
 
-                    break;
-                case "update":
-                    content = contacts.getEdit().replace("[操作人]", user.getName());
-                    customerDynamicParam.setContent(content);
-
-                    break;
-                case "delete":
-                    content = contacts.getDelete().replace("[操作人]", user.getName());
-                    customerDynamicParam.setContent(content);
-
-                    break;
-            }
-            customerDynamicService.add(customerDynamicParam);
-        }
 
         /**
          * 联系人状态

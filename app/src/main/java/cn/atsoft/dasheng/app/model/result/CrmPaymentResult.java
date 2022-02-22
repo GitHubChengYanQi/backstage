@@ -24,7 +24,7 @@ public class CrmPaymentResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private ItemsResult itemsResult;
-    private ErpOrderResult orderResult;
+
     private OutstockResult outstockResult;
 
     /**

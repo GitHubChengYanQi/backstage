@@ -1,13 +1,13 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.ErpOrder;
+
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.entity.Outstock;
-import cn.atsoft.dasheng.app.model.result.ErpOrderResult;
+
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.model.result.OutstockResult;
-import cn.atsoft.dasheng.app.service.ErpOrderService;
+
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -42,8 +42,7 @@ import java.util.List;
 public class CrmPaymentServiceImpl extends ServiceImpl<CrmPaymentMapper, CrmPayment> implements CrmPaymentService {
     @Autowired
     private ItemsService itemsService;
-    @Autowired
-    public ErpOrderService orderService;
+
     @Autowired
     private OutstockService outstockService;
 
@@ -113,9 +112,7 @@ public class CrmPaymentServiceImpl extends ServiceImpl<CrmPaymentMapper, CrmPaym
             outstockIds.add(datum.getOutstockId());
 
         }
-        QueryWrapper<ErpOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("order_id", oriderIds);
-        List<ErpOrder> orderList =oriderIds.size()==0? new ArrayList<>(): orderService.list(queryWrapper);
+
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("item_id", itemIds);
@@ -126,14 +123,7 @@ public class CrmPaymentServiceImpl extends ServiceImpl<CrmPaymentMapper, CrmPaym
         List<Outstock> outList =outstockIds.size()==0?new ArrayList<>(): outstockService.list(outstockQueryWrapper);
 
         for (CrmPaymentResult datum : data) {
-            for (ErpOrder erpOrder : orderList) {
-                if (datum.getOrderId().equals(erpOrder.getOrderId())) {
-                    ErpOrderResult erpOrderResult = new ErpOrderResult();
-                    ToolUtil.copyProperties(erpOrder, erpOrderResult);
-                    datum.setOrderResult(erpOrderResult);
-                    break;
-                }
-            }
+
             for (Items items : itemList) {
                 if (datum.getItemId().equals(items.getItemId())) {
                     ItemsResult itemsResult = new ItemsResult();

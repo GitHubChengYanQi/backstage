@@ -614,10 +614,23 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Sku newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
 
-
-        Category one = categoryService.getById(param.getSpu().getCategoryId());
-        Long categoryId = one.getCategoryId();
-
+        Category one;
+        if (ToolUtil.isNotEmpty(param.getSpu().getCategoryId())){
+            one = categoryService.getById(param.getSpu().getCategoryId());
+        }else {
+            String trim = param.getSpu().getName().trim();
+            one = categoryService.query().eq("category_name", trim).eq("display", 1).one();
+        }
+//        Category one = categoryService.getById(param.getSpu().getCategoryId());
+        Long categoryId;
+        if (ToolUtil.isNotEmpty(one)) {
+            categoryId = one.getCategoryId();
+        } else {
+            Category category = new Category();
+            category.setCategoryName(param.getSpu().getName().replace(" ", ""));
+            categoryService.save(category);
+            categoryId = category.getCategoryId();
+        }
 
         /**
          * sku名称（skuName）加型号(spuName)判断防止重复
@@ -629,10 +642,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Long spuClassificationId = this.getOrSaveSpuClass(param);
 
         Spu spuEntity = new Spu();
+        spuEntity.setName(param.getSpu().getName());
         spuEntity.setSpuClassificationId(param.getSpuClassificationId());
         spuEntity.setUnitId(param.getUnitId());
         spuEntity.setSpuClassificationId(spuClassificationId);
         spuEntity.setSpuId(param.getSpuId());
+        spuEntity.setCategoryId(categoryId);
         spuService.updateById(spuEntity);
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);

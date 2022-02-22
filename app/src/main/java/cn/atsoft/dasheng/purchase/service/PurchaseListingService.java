@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListingParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.atsoft.dasheng.purchase.pojo.PlanListParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -75,6 +76,6 @@ public interface PurchaseListingService extends IService<PurchaseListing> {
      *
      * @return
      */
-    Set<ListingPlan> plans();
+    Set<ListingPlan> plans(PlanListParam param);
 
 }

@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListingParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.atsoft.dasheng.purchase.pojo.PlanListParam;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -115,8 +116,11 @@ public class PurchaseListingController extends BaseController {
      */
     @RequestMapping(value = "/planList", method = RequestMethod.POST)
     @ApiOperation("待买")
-    public ResponseData planList() {
-        Set<ListingPlan> plans = this.purchaseListingService.plans();
+    public ResponseData planList(@RequestBody(required = false) PlanListParam param) {
+        Set<ListingPlan> plans = this.purchaseListingService.plans(param);
+        if (ToolUtil.isEmpty(plans)) {
+            return ResponseData.success(null);
+        }
         List<ListingPlan> planList = new ArrayList<>(plans);
         planList.removeIf(plan -> plan.getSkuResult() == null);
 

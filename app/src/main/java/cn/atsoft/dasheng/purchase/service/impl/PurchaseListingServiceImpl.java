@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.purchase.mapper.PurchaseListingMapper;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListingParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.atsoft.dasheng.purchase.pojo.PlanListParam;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -120,14 +121,32 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
     }
 
     @Override
-    public Set<ListingPlan> plans() {
-        List<PurchaseAsk> asks = askService.query().eq("status", 2).list();
+    public Set<ListingPlan> plans(PlanListParam param) {
+        QueryWrapper<PurchaseAsk> askQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getCoding())) {
+            askQueryWrapper.eq("coding", param.getCoding());
+        }
+        if (ToolUtil.isNotEmpty(param.getType())) {
+            askQueryWrapper.eq("type", param.getType());
+        }
+        askQueryWrapper.eq("status", 2);
+        List<PurchaseAsk> asks = askService.list(askQueryWrapper);
         List<Long> askIds = new ArrayList<>();
         for (PurchaseAsk ask : asks) {
             askIds.add(ask.getPurchaseAskId());
         }
+        if (ToolUtil.isEmpty(askIds)) {
+            return  null;
+        }
         //查询所有申请通过的物料
-        List<PurchaseListing> purchaseListingList = askIds.size() == 0 ? new ArrayList<>() : this.query().in("purchase_ask_id", askIds).eq("status", 0).list();
+        QueryWrapper<PurchaseListing> listingQueryWrapper = new QueryWrapper<>();
+        listingQueryWrapper.in("purchase_ask_id", askIds);
+        listingQueryWrapper.eq("status", 0);
+        if (ToolUtil.isNotEmpty(param.getEndTime()) && ToolUtil.isNotEmpty(param.getBeginTime())) {
+
+            listingQueryWrapper.between("delivery_date", param.getBeginTime(), param.getEndTime());
+        }
+        List<PurchaseListing> purchaseListingList = this.list(listingQueryWrapper);
 
 
         Set<ListingPlan> listingPlanSet = new HashSet<>();
