@@ -255,7 +255,6 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         List<User> users = userService.listByIds(userIds);
 
         for (SopResult datum : data) {
-
             for (User user : users) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     datum.setUser(user);

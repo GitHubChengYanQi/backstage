@@ -4,9 +4,7 @@ package cn.atsoft.dasheng.form.service.impl;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
-import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam;
@@ -14,9 +12,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
-import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
-import cn.atsoft.dasheng.form.service.StepsService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
@@ -35,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.*;
@@ -60,6 +57,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private SkuService skuService;
     @Autowired
     private ShipSetpService shipSetpService;
+    @Autowired
+    private ActivitiProcessTaskService processTaskService;
+    @Autowired
+    private ActivitiProcessLogService processLogService;
 
 
     @Override
@@ -371,6 +372,24 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return detailResults;
     }
 
+    /**
+     * 获取流程最后的处理时间
+     *
+     * @param fromId
+     * @return
+     */
+    @Override
+    public Date getProcessTime(Long fromId) {
+
+        ActivitiProcessTask processTask = processTaskService.query().eq("form_id", fromId).one();
+        if (ToolUtil.isEmpty(processTask)) {
+            return null;
+        }
+
+        List<ActivitiProcessLog> processLogs = processLogService.query().eq("task_id", processTask.getProcessTaskId()).orderByDesc("update_time").list();
+
+        return processLogs.get(0).getUpdateTime();
+    }
 
 }
 

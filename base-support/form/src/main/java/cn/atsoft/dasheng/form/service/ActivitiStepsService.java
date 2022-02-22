@@ -95,4 +95,7 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
      * @return
      */
     ActivitiStepsResult getStepLog(ActivitiStepsResult stepResult, List<ActivitiProcessLogResult> logs);
+
+    ActivitiStepsResult getStepResultByType(String type);
+
 }
