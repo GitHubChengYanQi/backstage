@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class PurchaseListingParam implements Serializable, BaseValidatingParam {
 
     private Long brandId;
 
-    private Date deliveryTime;
+    private Time deliveryTime;
     /**
      * 采购清单id
      */
