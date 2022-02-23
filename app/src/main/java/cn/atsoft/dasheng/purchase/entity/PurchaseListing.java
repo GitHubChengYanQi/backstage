@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.purchase.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
+import java.sql.Time;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -28,7 +29,7 @@ public class PurchaseListing implements Serializable {
      * 交货时间
       */
     @TableField("delivery_time")
-    private Date deliveryTime;
+    private Time deliveryTime;
     /**
      * 品牌
      */
@@ -235,11 +236,11 @@ public class PurchaseListing implements Serializable {
         this.brandId = brandId;
     }
 
-    public Date getDeliveryTime() {
+    public Time getDeliveryTime() {
         return deliveryTime;
     }
 
-    public void setDeliveryTime(Date deliveryTime) {
+    public void setDeliveryTime(Time deliveryTime) {
         this.deliveryTime = deliveryTime;
     }
 

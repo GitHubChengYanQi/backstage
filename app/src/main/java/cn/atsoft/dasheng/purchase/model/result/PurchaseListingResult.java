@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
+import java.sql.Time;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -32,7 +33,7 @@ public class PurchaseListingResult implements Serializable {
 
     private BrandResult brandResult;
 
-    private Date deliveryTime;
+    private Time deliveryTime;
 
     private User user;
     /**
