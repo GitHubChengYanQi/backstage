@@ -68,4 +68,5 @@ public interface PaymentDetailService extends IService<PaymentDetail> {
      */
      PageInfo<PaymentDetailResult> findPageBySpec(PaymentDetailParam param);
 
+    List<PaymentDetailResult> getResults(Long paymentId);
 }

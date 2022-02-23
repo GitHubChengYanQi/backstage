@@ -32,45 +32,46 @@ public class PaymentDetailController extends BaseController {
     @Autowired
     private PaymentDetailService paymentDetailService;
 
-    /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody PaymentDetailParam paymentDetailParam) {
-        this.paymentDetailService.add(paymentDetailParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody PaymentDetailParam paymentDetailParam) {
-
-        this.paymentDetailService.update(paymentDetailParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody PaymentDetailParam paymentDetailParam)  {
-        this.paymentDetailService.delete(paymentDetailParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 新增接口
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    @RequestMapping(value = "/add", method = RequestMethod.POST)
+//    @ApiOperation("新增")
+//    public ResponseData addItem(@RequestBody PaymentDetailParam paymentDetailParam) {
+//        this.paymentDetailService.add(paymentDetailParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 编辑接口
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody PaymentDetailParam paymentDetailParam) {
+//
+//        this.paymentDetailService.update(paymentDetailParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 删除接口
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody PaymentDetailParam paymentDetailParam)  {
+//        this.paymentDetailService.delete(paymentDetailParam);
+//        return ResponseData.success();
+//    }
+//
 
     /**
      * 查看详情接口

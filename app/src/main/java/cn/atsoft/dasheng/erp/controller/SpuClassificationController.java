@@ -122,9 +122,6 @@ public class SpuClassificationController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
         QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
 
-        if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getIsNotproduct())) {
-            queryWrapper.eq("type", spuClassificationParam.getIsNotproduct());
-        }
         if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())) {
             queryWrapper.eq("pid", spuClassificationParam.getSpuClassificationId());
         }

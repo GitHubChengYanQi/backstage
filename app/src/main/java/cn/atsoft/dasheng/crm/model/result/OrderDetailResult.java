@@ -1,11 +1,18 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 订单明细表
@@ -20,6 +27,9 @@ public class OrderDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private SkuResult skuResult;
+    private BrandResult brandResult;
+    private CustomerResult customerResult;
 
     /**
      * 详情id

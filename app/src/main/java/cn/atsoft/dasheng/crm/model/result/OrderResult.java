@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.crm.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 订单表
@@ -20,6 +24,8 @@ public class OrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private PaymentResult paymentResult;
+    private List<OrderDetailResult> detailResults;
     private Date date;
     /**
      * 货币种类

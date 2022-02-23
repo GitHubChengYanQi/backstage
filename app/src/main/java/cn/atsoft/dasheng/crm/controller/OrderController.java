@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,32 +46,8 @@ public class OrderController extends BaseController {
         return ResponseData.success();
     }
 
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody OrderParam orderParam) {
 
-        this.orderService.update(orderParam);
-        return ResponseData.success();
-    }
 
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OrderParam orderParam)  {
-        this.orderService.delete(orderParam);
-        return ResponseData.success();
-    }
 
     /**
      * 查看详情接口
@@ -81,12 +58,8 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<OrderResult> detail(@RequestBody OrderParam orderParam) {
-        Order detail = this.orderService.getById(orderParam.getOrderId());
-        OrderResult result = new OrderResult();
-        ToolUtil.copyProperties(detail, result);
-
-
-        return ResponseData.success(result);
+        OrderResult detail = this.orderService.getDetail(orderParam.getOrderId());
+        return ResponseData.success(detail);
     }
 
     /**
@@ -98,13 +71,11 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OrderResult> list(@RequestBody(required = false) OrderParam orderParam) {
-        if(ToolUtil.isEmpty(orderParam)){
+        if (ToolUtil.isEmpty(orderParam)) {
             orderParam = new OrderParam();
         }
         return this.orderService.findPageBySpec(orderParam);
     }
-
-
 
 
 }
