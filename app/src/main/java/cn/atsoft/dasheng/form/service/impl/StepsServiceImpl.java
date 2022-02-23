@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.ViewUpdate;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
@@ -21,6 +22,8 @@ import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.production.service.ShipSetpService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -61,7 +64,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private ActivitiProcessTaskService processTaskService;
     @Autowired
     private ActivitiProcessLogService processLogService;
-
+    @Autowired
+    private UserService userService;
 
     @Override
     @Transactional
@@ -379,7 +383,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @return
      */
     @Override
-    public Date getProcessTime(Long fromId) {
+    public ViewUpdate getProcessTime(Long fromId) {
 
         ActivitiProcessTask processTask = processTaskService.query().eq("form_id", fromId).one();
         if (ToolUtil.isEmpty(processTask)) {
@@ -388,7 +392,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
         List<ActivitiProcessLog> processLogs = processLogService.query().eq("task_id", processTask.getProcessTaskId()).orderByDesc("update_time").list();
 
-        return processLogs.get(0).getUpdateTime();
+        ActivitiProcessLog processLog = processLogs.get(0);
+        User user = userService.getById(processLog.getUpdateUser());
+        ViewUpdate viewUpdate = new ViewUpdate();
+
+        viewUpdate.setUpdateTime(processLog.getUpdateTime());
+        viewUpdate.setUpdateUser(user);
+        return viewUpdate;
     }
 
 }

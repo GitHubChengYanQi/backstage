@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.ViewUpdate;
 import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -33,5 +34,5 @@ public interface StepsService extends IService<ActivitiSteps> {
 
     ActivitiStepsResult detail(Long formId);
 
-    Date getProcessTime(Long fromId);
+    ViewUpdate getProcessTime(Long fromId);
 }

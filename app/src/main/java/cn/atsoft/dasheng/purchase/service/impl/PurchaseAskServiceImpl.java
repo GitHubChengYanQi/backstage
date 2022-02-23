@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.pojo.ViewUpdate;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
@@ -193,8 +194,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
                     number = Math.toIntExact(number + purchaseListing.getApplyNumber());
                 }
             }
-            Date processTime = stepsSer.getProcessTime(purchaseAskResult.getPurchaseAskId());
-            purchaseAskResult.setProcessTime(processTime);
+            ViewUpdate viewUpdate = stepsSer.getProcessTime(purchaseAskResult.getPurchaseAskId());
+            purchaseAskResult.setViewUpdate(viewUpdate);
             purchaseAskResult.setApplyNumber(number);
             purchaseAskResult.setApplyType(type);
         }
