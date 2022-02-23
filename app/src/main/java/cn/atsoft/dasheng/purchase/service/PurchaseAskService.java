@@ -76,6 +76,8 @@ public interface PurchaseAskService extends IService<PurchaseAsk> {
 
     void updateRefuseStatus(ActivitiProcessTask param);
 
+    void rejected(Long askId);
+
     void complateAsk(Long processTaskId);
 
     List<PurchaseAskResult> getResults(List<Long> askIds);

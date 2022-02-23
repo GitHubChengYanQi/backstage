@@ -70,6 +70,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     @Autowired
     private StepsService stepsSer;
 
+
     @Override
     @Transactional
     public void add(PurchaseAskParam param) {
@@ -247,6 +248,28 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             ask.setStatus(1);
             this.updateById(ask);
         }
+    }
+
+    /**
+     * 采购申请驳回
+     *
+     * @param askId
+     */
+    @Override
+    public void rejected(Long askId) {
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", askId).one();
+        if (ToolUtil.isEmpty(processTask)) {
+            throw new ServiceException(500, "当前采购申请没有流程任务");
+        }
+        PurchaseAsk ask = this.getById(askId);
+        ask.setStatus(3);
+        this.updateById(ask);
+
+        List<ActivitiProcessLog> processLogs = activitiProcessLogService.query().eq("task_id", processTask).list();
+        for (ActivitiProcessLog processLog : processLogs) {
+            processLog.setStatus(0);
+        }
+        activitiProcessLogService.updateBatchById(processLogs);
     }
 
     private Serializable getKey(PurchaseAskParam param) {
