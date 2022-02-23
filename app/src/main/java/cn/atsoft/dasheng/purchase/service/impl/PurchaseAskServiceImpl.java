@@ -88,10 +88,10 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
 //        }
 
         int totalCount = 0;
-        int totalType = param.getPurchaseListingParams().size();
+        int totalType = param.getPurchaseListings().size();
         List<PurchaseListing> purchaseListings = new ArrayList<>();
         //添加采购清单
-        for (PurchaseListingParam purchaseListingParam : param.getPurchaseListingParams()) {
+        for (PurchaseListingParam purchaseListingParam : param.getPurchaseListings()) {
             totalCount += purchaseListingParam.getApplyNumber();
             purchaseListingParam.setPurchaseAskId(entity.getPurchaseAskId());
             PurchaseListing purchaseListing = new PurchaseListing();
@@ -214,7 +214,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         for (PurchaseListingResult listingResult : purchaseListing) {
             number = Math.toIntExact(number + listingResult.getApplyNumber());
         }
-        result.setPurchaseListingResults(purchaseListing);
+        result.setPurchaseListings(purchaseListing);
         result.setApplyType(purchaseListing.size());
         result.setApplyNumber(number);
         return result;

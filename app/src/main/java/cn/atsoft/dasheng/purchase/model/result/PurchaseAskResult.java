@@ -27,7 +27,7 @@ public class PurchaseAskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String CreateUserName;
-    List<PurchaseListingResult> purchaseListingResults;
+    List<PurchaseListingResult> purchaseListings;
 
     private ViewUpdate viewUpdate;
 

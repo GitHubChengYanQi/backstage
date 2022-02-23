@@ -136,7 +136,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             askIds.add(ask.getPurchaseAskId());
         }
         if (ToolUtil.isEmpty(askIds)) {
-            return  null;
+            return null;
         }
         //查询所有申请通过的物料
         QueryWrapper<PurchaseListing> listingQueryWrapper = new QueryWrapper<>();

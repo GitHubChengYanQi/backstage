@@ -20,7 +20,11 @@ public class OrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private Date date;
+    /**
+     * 货币种类
+     */
+    private String currency;
     /**
      * 订单编号
      */

@@ -7,11 +7,13 @@ import cn.atsoft.dasheng.crm.entity.Payment;
 import cn.atsoft.dasheng.crm.mapper.PaymentMapper;
 import cn.atsoft.dasheng.crm.model.params.PaymentParam;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
-import  cn.atsoft.dasheng.crm.service.PaymentService;
+import cn.atsoft.dasheng.crm.service.PaymentDetailService;
+import cn.atsoft.dasheng.crm.service.PaymentService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -27,20 +29,26 @@ import java.util.List;
  */
 @Service
 public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> implements PaymentService {
+    @Autowired
+    private PaymentDetailService detailService;
+
 
     @Override
-    public void add(PaymentParam param){
+    public void add(PaymentParam param) {
         Payment entity = getEntity(param);
         this.save(entity);
+        if (ToolUtil.isNotEmpty(param.getDetailParams())) {
+            detailService.addList(entity.getPaymentId(), param.getDetailParams());
+        }
     }
 
     @Override
-    public void delete(PaymentParam param){
+    public void delete(PaymentParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(PaymentParam param){
+    public void update(PaymentParam param) {
         Payment oldEntity = getOldEntity(param);
         Payment newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +56,23 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     @Override
-    public PaymentResult findBySpec(PaymentParam param){
+    public PaymentResult findBySpec(PaymentParam param) {
         return null;
     }
 
     @Override
-    public List<PaymentResult> findListBySpec(PaymentParam param){
+    public List<PaymentResult> findListBySpec(PaymentParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<PaymentResult> findPageBySpec(PaymentParam param){
+    public PageInfo<PaymentResult> findPageBySpec(PaymentParam param) {
         Page<PaymentResult> pageContext = getPageContext();
         IPage<PaymentResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(PaymentParam param){
+    private Serializable getKey(PaymentParam param) {
         return param.getPaymentId();
     }
 

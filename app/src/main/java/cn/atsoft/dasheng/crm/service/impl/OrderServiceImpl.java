@@ -4,16 +4,21 @@ package cn.atsoft.dasheng.crm.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Order;
+import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
-import  cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.crm.service.OrderDetailService;
+import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.PaymentService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,20 +32,28 @@ import java.util.List;
  */
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
+    @Autowired
+    private OrderDetailService detailService;
+    @Autowired
+    private PaymentService paymentService;
 
     @Override
-    public void add(OrderParam param){
+    @Transactional
+    public void add(OrderParam param) {
         Order entity = getEntity(param);
         this.save(entity);
+        detailService.addList(entity.getOrderId(), param.getDetailParams());
+        paymentService.add(param.getPaymentParam());
+
     }
 
     @Override
-    public void delete(OrderParam param){
+    public void delete(OrderParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(OrderParam param){
+    public void update(OrderParam param) {
         Order oldEntity = getOldEntity(param);
         Order newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +61,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public OrderResult findBySpec(OrderParam param){
+    public OrderResult findBySpec(OrderParam param) {
         return null;
     }
 
     @Override
-    public List<OrderResult> findListBySpec(OrderParam param){
+    public List<OrderResult> findListBySpec(OrderParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<OrderResult> findPageBySpec(OrderParam param){
+    public PageInfo<OrderResult> findPageBySpec(OrderParam param) {
         Page<OrderResult> pageContext = getPageContext();
         IPage<OrderResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(OrderParam param){
+    private Serializable getKey(OrderParam param) {
         return param.getOrderId();
     }
 

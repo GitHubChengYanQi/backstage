@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -23,8 +25,15 @@ import java.util.List;
 public class OrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    private List<OrderDetailParam> detailParams;
 
+    private PaymentParam paymentParam;
 
+    private Date date;
+    /**
+     * 货币种类
+     */
+    private String currency;
     /**
      * 订单编号
      */

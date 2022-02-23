@@ -21,6 +21,8 @@
         <result column="update_time" property="updateTime"/>
         <result column="create_time" property="createTime"/>
         <result column="update_user" property="updateUser"/>
+        <result column="date" property="date"/>
+        <result column="currency" property="currency"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->

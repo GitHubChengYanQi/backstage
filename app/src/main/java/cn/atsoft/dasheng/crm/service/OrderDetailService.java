@@ -26,6 +26,8 @@ public interface OrderDetailService extends IService<OrderDetail> {
      */
     void add(OrderDetailParam param);
 
+    void addList(Long orderId, List<OrderDetailParam> params);
+
     /**
      * 删除
      *

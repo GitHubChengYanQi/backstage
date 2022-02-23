@@ -31,6 +31,16 @@ public class Order implements Serializable {
     private Long orderId;
 
     /**
+     * 日期
+     */
+    @TableField("date")
+    private Date date;
+    /**
+     * 货币种类
+     */
+    @TableField("currency")
+    private String currency;
+    /**
      * 合同id
      */
     @TableField("contract_id")
@@ -262,6 +272,22 @@ public class Order implements Serializable {
 
     public void setUpdateUser(Long updateUser) {
         this.updateUser = updateUser;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     @Override

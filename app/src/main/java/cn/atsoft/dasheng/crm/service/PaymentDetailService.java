@@ -26,6 +26,8 @@ public interface PaymentDetailService extends IService<PaymentDetail> {
      */
     void add(PaymentDetailParam param);
 
+    void addList(Long paymentId, List<PaymentDetailParam> params);
+
     /**
      * 删除
      *
