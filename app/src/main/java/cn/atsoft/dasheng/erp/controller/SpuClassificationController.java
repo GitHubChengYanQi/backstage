@@ -142,10 +142,6 @@ public class SpuClassificationController extends BaseController {
             }
         }
 
-        if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getIsNotproduct())) {
-            spuClassificationQueryWrapper.eq("type", spuClassificationParam.getIsNotproduct());
-        }
-
         spuClassificationQueryWrapper.eq("display", 1);
         spuClassificationQueryWrapper.orderByDesc("sort");
 

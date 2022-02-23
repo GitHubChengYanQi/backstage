@@ -136,7 +136,8 @@ public class SkuController extends BaseController {
 //                if (ToolUtil.isNotEmpty(spuClassification.getPid())) {
                     //分类
                     SpuClassification spuClassification1 = spuClassificationService.getById(spu.getSpuClassificationId());
-                    sku.setSkuClass(spuClassification1);
+                    sku.setSpuClass(spuClassification1.getSpuClassificationId());
+//                    sku.setSkuClass(spuClassification1);
 //                }
 
             }
