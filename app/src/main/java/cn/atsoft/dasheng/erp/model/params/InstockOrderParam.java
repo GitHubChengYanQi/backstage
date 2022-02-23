@@ -66,6 +66,18 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     @ApiModelProperty("负责人")
     private Long userId;
 
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
+
     @ApiModelProperty(hidden = true)
     private Date createTime;
 

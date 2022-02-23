@@ -96,6 +96,13 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     @Transactional
     public void add(InquiryTaskParam param) {
         InquiryTask entity = getEntity(param);
+
+
+
+
+
+
+
         this.save(entity);
 
         List<Long> skuIds = new ArrayList<>();

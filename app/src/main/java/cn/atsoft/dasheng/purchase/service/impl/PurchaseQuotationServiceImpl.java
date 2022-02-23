@@ -26,11 +26,13 @@ import cn.atsoft.dasheng.purchase.mapper.PurchaseQuotationMapper;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 import cn.atsoft.dasheng.purchase.pojo.QuotationParam;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,6 +44,7 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -75,6 +78,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     @Override
     public void add(PurchaseQuotationParam param) {
         PurchaseQuotation entity = getEntity(param);
+
         this.save(entity);
     }
 
@@ -172,11 +176,23 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
     @Override
     public void addList(QuotationParam param) {
+        String jsonString = null;
         switch (param.getSource()) {
             case "toBuyPlan":
                 break;
             case "purchasePlan":
                 ProcurementPlan plan = planService.getById(param.getSourceId());
+                if (plan.getOrigin() != null) {
+                    ThemeAndOrigin parent = JSON.parseObject(plan.getOrigin(), ThemeAndOrigin.class);
+                    ThemeAndOrigin themeAndOrigin = new ThemeAndOrigin() {{
+                        setSource(param.getSource());
+                        setSourceId(param.getSourceId());
+                        setParent(new ArrayList<ThemeAndOrigin>(){{
+                            add(parent);
+                        }});
+                    }};
+                    jsonString = JSON.toJSONString(themeAndOrigin);
+                }
                 if (ToolUtil.isEmpty(plan)) {
                     throw new ServiceException(500, "采购计划不存在");
                 }
@@ -216,6 +232,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
             quotation.setSource(param.getSource());
             quotation.setSourceId(param.getSourceId());
             quotation.setCustomerId(quotationParam.getCustomerId());
+            quotation.setOrigin(jsonString);
+            quotation.setTheme(quotationParam.getTheme());
             quotations.add(quotation);
             customerIds.add(quotation.getCustomerId());
         }

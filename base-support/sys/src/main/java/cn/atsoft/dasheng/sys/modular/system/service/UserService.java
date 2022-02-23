@@ -358,7 +358,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
 
     public List<UserResult> getUserResultsByIds(List<Long> ids){
-        List<User> users = this.query().in("user_id", ids).list();
+        List<User> users = ids.size() == 0 ? new ArrayList<>() : this.query().in("user_id", ids).list();
         List<UserResult> results = new ArrayList<>();
         for (User user : users) {
             UserResult userResult = new UserResult();

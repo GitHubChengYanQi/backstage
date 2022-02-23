@@ -9,6 +9,8 @@
         <result column="inquiry_task_code" property="inquiryTaskCode" />
         <result column="user_id" property="userId" />
         <result column="deadline" property="deadline" />
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
         <result column="supplier_level" property="supplierLevel" />
         <result column="isSupplier" property="isSupplier" />
         <result column="create_time" property="createTime" />
@@ -21,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        inquiry_task_id AS "inquiryTaskId", inquiry_task_name AS "inquiryTaskName",inquiry_task_code AS "inquiryTaskCode", user_id AS "userId", deadline AS "deadline", supplier_level AS "supplierLevel", isSupplier AS "isSupplier", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        inquiry_task_id AS "inquiryTaskId",  theme AS "theme" , origin AS "origin" ,inquiry_task_name AS "inquiryTaskName",inquiry_task_code AS "inquiryTaskCode", user_id AS "userId", deadline AS "deadline", supplier_level AS "supplierLevel", isSupplier AS "isSupplier", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 

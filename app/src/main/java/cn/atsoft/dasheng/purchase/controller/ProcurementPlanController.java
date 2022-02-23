@@ -10,6 +10,8 @@ import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -19,6 +21,7 @@ import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -44,6 +47,8 @@ public class ProcurementPlanController extends BaseController {
     private ProcurementPlanService procurementPlanService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private GetOrigin getOrigin;
 
     /**
      * 新增接口
@@ -80,7 +85,9 @@ public class ProcurementPlanController extends BaseController {
         User user = userService.getById(result.getCreateUser());
         result.setFounder(user);
         procurementPlanService.detail(result);
-
+        ThemeAndOrigin themeAndOrigin = JSON.parseObject(result.getOrigin(), ThemeAndOrigin.class);
+        ThemeAndOrigin origin = getOrigin.getOrigin(themeAndOrigin);
+        result.setThemeAndOrigin(origin);
         return ResponseData.success(result);
     }
 

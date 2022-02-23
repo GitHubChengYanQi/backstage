@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -33,6 +34,7 @@ public class PurchaseAskController extends BaseController {
 
     @Autowired
     private PurchaseAskService purchaseAskService;
+
 
     /**
      * 新增接口

@@ -75,4 +75,5 @@ public interface ProcurementPlanService extends IService<ProcurementPlan> {
      */
      PageInfo<ProcurementPlanResult> findPageBySpec(ProcurementPlanParam param);
 
+    List<ProcurementPlanResult> listResultByIds(List<Long> ids);
 }
