@@ -1,11 +1,13 @@
-package cn.atsoft.dasheng.app.model.params;
+package cn.atsoft.dasheng.crm.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-import java.util.Date;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,28 +15,16 @@ import java.util.List;
  * 付款信息表
  * </p>
  *
- * @author ta
- * @since 2021-07-26
+ * @author song
+ * @since 2022-02-23
  */
 @Data
 @ApiModel
-public class CrmPaymentParam implements Serializable, BaseValidatingParam {
+public class PaymentParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
-
-    /**
-     * 物品
-     */
-    @ApiModelProperty("物品")
-    private  Long itemId;
-
-    /**
-     * 出库
-     */
-    @ApiModelProperty("出库")
-    private Long outstockId;
     /**
      * 付款信息id
      */
@@ -48,28 +38,40 @@ public class CrmPaymentParam implements Serializable, BaseValidatingParam {
     private Long orderId;
 
     /**
-     * 付款时间
+     * 结算方式
      */
-    @ApiModelProperty("付款时间")
-    private Date payTime;
+    @ApiModelProperty("结算方式")
+    private String payMethod;
 
     /**
-     * 支付方式
+     * 是否运费
      */
-    @ApiModelProperty("支付方式")
-    private String payType;
+    @ApiModelProperty("是否运费")
+    private Integer freight;
 
     /**
-     * 运费
+     * 名称
      */
-    @ApiModelProperty("运费")
-    private Long freight;
+    @ApiModelProperty("名称")
+    private String name;
 
     /**
-     * 部门编号
+     * 交货方式
      */
-    @ApiModelProperty("部门编号")
-    private Long deptId;
+    @ApiModelProperty("交货方式")
+    private String deliveryWay;
+
+    /**
+     * 交货地址
+     */
+    @ApiModelProperty("交货地址")
+    private Long adressId;
+
+    /**
+     * 付款方式
+     */
+    @ApiModelProperty("付款方式")
+    private Integer payPlan;
 
     /**
      * 创建者
@@ -102,10 +104,16 @@ public class CrmPaymentParam implements Serializable, BaseValidatingParam {
     private Integer display;
 
     /**
-     * 出库id
+     * 部门编号
      */
-    @ApiModelProperty("出库id")
-    private Long deliveryId;
+    @ApiModelProperty("部门编号")
+    private Long deptId;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String remark;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

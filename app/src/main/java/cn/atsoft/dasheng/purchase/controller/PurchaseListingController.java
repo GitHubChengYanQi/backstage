@@ -117,6 +117,9 @@ public class PurchaseListingController extends BaseController {
     @RequestMapping(value = "/planList", method = RequestMethod.POST)
     @ApiOperation("待买")
     public ResponseData planList(@RequestBody(required = false) PlanListParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new PlanListParam();
+        }
         Set<ListingPlan> plans = this.purchaseListingService.plans(param);
         if (ToolUtil.isEmpty(plans)) {
             return ResponseData.success(null);
