@@ -92,19 +92,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             /**
              * 查询分类  添加分类
              */
-            Category one1 = categoryService.lambdaQuery().eq(Category::getCategoryName, param.getSpu().getName()).and(i -> i.eq(Category::getDisplay, 1)).one();
-            Long categoryId;
-            if (ToolUtil.isNotEmpty(one1)) {
-                categoryId = one1.getCategoryId();
-            } else {
-                Category category = new Category();
-                category.setCategoryName(param.getSpu().getName().replace(" ", ""));
-                categoryService.save(category);
-                categoryId = category.getCategoryId();
-            }
+            Category category = this.getOrSaveCategory(param);
+            Long categoryId = category.getCategoryId();
 
-            Long spuClassificationId = this.getOrSaveSpuClass(param);
-
+//            Long spuClassificationId = this.getOrSaveSpuClass(param);
+            SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
+            Long spuClassificationId = spuClassification.getSpuClassificationId();
             //生成编码
             CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
             if (ToolUtil.isNotEmpty(codingRules)) {
@@ -139,7 +132,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
              */
-            Spu spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+            Spu spu = this.getOrSaveSpu(param,spuClassificationId, categoryId);
             List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
             if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
                 throw new ServiceException(500, "此物料在产品中已存在");
@@ -147,7 +140,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             /**
              * 查询产品，添加产品 在上方spu查询
              */
-            Long spuId = this.getOrSaveSpu(param, spu, spuClassificationId, categoryId);
+            Long spuId = spu.getSpuId();
 
 
             /**
@@ -310,18 +303,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     @Transactional
     public void directAdd(SkuParam param) {
-        Category one1 = categoryService.lambdaQuery().eq(Category::getCategoryName, param.getSpu().getName()).and(i -> i.eq(Category::getDisplay, 1)).one();
-        Long categoryId;
-        if (ToolUtil.isNotEmpty(one1)) {
-            categoryId = one1.getCategoryId();
-        } else {
-            Category category = new Category();
-            category.setCategoryName(param.getSpu().getName().replace(" ", ""));
-            categoryService.save(category);
-            categoryId = category.getCategoryId();
-        }
+        Category category = this.getOrSaveCategory(param);
+        Long categoryId = category.getCategoryId();
 
-        Long spuClassificationId = this.getOrSaveSpuClass(param);
+        SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
+        Long spuClassificationId = spuClassification.getSpuClassificationId();
 
         //生成编码
         CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
@@ -358,7 +344,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * sku名称（skuName）加型号(spuName)判断防止重复
          */
-        Spu spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+        Spu spu = this.getOrSaveSpu(param , spuClassificationId, categoryId);
+        Long spuId =spu.getSpuId();
         List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
         if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
             throw new ServiceException(500, "此物料在产品中已存在");
@@ -366,7 +353,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * 查询产品，添加产品 在上方spu查询
          */
-        Long spuId = this.getOrSaveSpu(param, spu, spuClassificationId, categoryId);
 
         List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
 
@@ -399,62 +385,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
 
-    private Long getOrSaveSpu(SkuParam param, Spu spu, Long spuClassificationId, Long categoryId) {
-        Long spuId = param.getSpu().getSpuId();
-        Spu spuEntity = new Spu();
-        spuEntity.setUnitId(param.getUnitId());
-        if (ToolUtil.isEmpty(spuId)) {
-            if (ToolUtil.isNotEmpty(spu)) {
-                spuId = spu.getSpuId();
 
-            } else {
-                spuEntity.setName(param.getSpu().getName());
-                spuEntity.setSpuClassificationId(spuClassificationId);
-                spuEntity.setCategoryId(categoryId);
-                spuEntity.setType(0);
-                spuService.save(spuEntity);
-                spuId = spuEntity.getSpuId();
-            }
-        } else {
-            /**
-             * TODO 疑问  为什么要 更新
-             * 因为会涉及到spu单位的修改
-             */
-            spuEntity.setSpuId(spuId);
-            spuService.updateById(spuEntity);
-        }
-        return spuId;
-    }
-
-    /**
-     * 查询产品 新建或返回已有产品id
-     *
-     * @param param
-     * @return
-     */
-    private Long getOrSaveSpuClass(SkuParam param) {
-        Long spuClassificationId = 0L;
-        SpuClassification spuClassification = new SpuClassification();
-
-        if (ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())){
-            spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getSpuClassificationId, param.getSpuClassification().getSpuClassificationId()).and(i -> i.eq(SpuClassification::getDisplay, 1)).and(i -> i.eq(SpuClassification::getType, 2)).one();
-        }else{
-            spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).and(i -> i.eq(SpuClassification::getType, 2)).one();
-        }
-
-        if (ToolUtil.isEmpty(spuClassification)) {
-            SpuClassification spuClassificationEntity = new SpuClassification();
-            spuClassificationEntity.setName(param.getSpuClassification().getName());
-            spuClassificationEntity.setType(2L);
-            spuClassificationEntity.setPid(param.getSpuClass());
-            spuClassificationService.save(spuClassificationEntity);
-            spuClassificationId = spuClassificationEntity.getSpuClassificationId();
-        } else {
-            spuClassificationId = spuClassification.getSpuClassificationId();
-        }
-        param.setSpuClass(spuClassificationId);
-        return spuClassificationId;
-    }
 
     @Transactional
     public List<AttributeValues> addAttributeAndValue(List<SkuAttributeAndValue> param, Long categoryId) {
@@ -614,41 +545,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Sku newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
 
-        Category one;
-        if (ToolUtil.isNotEmpty(param.getSpu().getCategoryId())){
-            one = categoryService.getById(param.getSpu().getCategoryId());
-        }else {
-            String trim = param.getSpu().getName().trim();
-            one = categoryService.query().eq("category_name", trim).eq("display", 1).one();
-        }
-//        Category one = categoryService.getById(param.getSpu().getCategoryId());
-        Long categoryId;
-        if (ToolUtil.isNotEmpty(one)) {
-            categoryId = one.getCategoryId();
-        } else {
-            Category category = new Category();
-            category.setCategoryName(param.getSpu().getName().replace(" ", ""));
-            categoryService.save(category);
-            categoryId = category.getCategoryId();
-        }
-
-        /**
-         * sku名称（skuName）加型号(spuName)判断防止重复
-         */
-
+        Category category = this.getOrSaveCategory(param);
+        Long categoryId = category.getCategoryId();
 
         List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
 
-        Long spuClassificationId = this.getOrSaveSpuClass(param);
+        SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
+        Long spuClassificationId = spuClassification.getSpuClassificationId();
+        Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
 
-        Spu spuEntity = new Spu();
-        spuEntity.setName(param.getSpu().getName());
-        spuEntity.setSpuClassificationId(param.getSpuClassificationId());
-        spuEntity.setUnitId(param.getUnitId());
-        spuEntity.setSpuClassificationId(spuClassificationId);
-        spuEntity.setSpuId(param.getSpuId());
-        spuEntity.setCategoryId(categoryId);
-        spuService.updateById(spuEntity);
+
+        newEntity.setSpuId(orSaveSpu.getSpuId());
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);
         String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
@@ -1145,4 +1052,80 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         return skuMap;
     }
+
+    private Category getOrSaveCategory(SkuParam param){
+        Category category = new Category();
+        Category entity = new Category();
+        if (ToolUtil.isNotEmpty(param.getSpu().getCategoryId())){
+            category = categoryService.getById(param.getSpu().getCategoryId());
+        }else {
+            String trim = param.getSpu().getName().trim();
+            category = categoryService.query().eq("category_name", trim).eq("display", 1).one();
+        }
+        ToolUtil.copyProperties(category,entity);
+        if (ToolUtil.isEmpty(category)){
+
+            entity.setCategoryName(param.getSpu().getName().replace(" ", ""));
+            categoryService.save(entity);
+        }
+        return entity;
+
+    }
+    private Spu getOrSaveSpu(SkuParam param, Long spuClassificationId, Long categoryId) {
+        Spu spu = new Spu();
+        Long spuId = param.getSpu().getSpuId();
+
+        if(ToolUtil.isNotEmpty(param.getSpu().getSpuId())){
+            spu =  spuService.lambdaQuery().eq(Spu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+        }else if (ToolUtil.isNotEmpty(param.getSpu().getName())){
+            spu =  spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+        }
+        Spu spuEntity = new Spu();
+        ToolUtil.copyProperties(spu,spuEntity);
+        spuEntity.setUnitId(param.getUnitId());
+        if (ToolUtil.isEmpty(spu)) {
+            if (ToolUtil.isNotEmpty(spu)) {
+                spuService.updateById(spuEntity);
+                return  spu;
+
+            } else {
+                spuEntity.setName(param.getSpu().getName());
+                spuEntity.setSpuClassificationId(spuClassificationId);
+                spuEntity.setCategoryId(categoryId);
+                spuEntity.setType(0);
+                spuService.save(spuEntity);
+            }
+        }
+        return spuEntity;
+    }
+
+//    /**
+//     * 查询产品 新建或返回已有产品id
+//     *
+//     * @param param
+//     * @return
+//     */
+//    private Long getOrSaveSpuClass(SkuParam param) {
+//        Long spuClassificationId = 0L;
+//        SpuClassification spuClassification = new SpuClassification();
+//
+//        if (ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())){
+//            spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getSpuClassificationId, param.getSpuClassification().getSpuClassificationId()).and(i -> i.eq(SpuClassification::getDisplay, 1)).and(i -> i.eq(SpuClassification::getType, 2)).one();
+//        }else{
+//            spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).and(i -> i.eq(SpuClassification::getType, 2)).one();
+//        }
+//
+//        if (ToolUtil.isEmpty(spuClassification)) {
+//            SpuClassification spuClassificationEntity = new SpuClassification();
+//            spuClassificationEntity.setName(param.getSpuClassification().getName());
+//            spuClassificationEntity.setType(1L);
+//            spuClassificationEntity.setPid(param.getSpuClass());
+//            spuClassificationService.save(spuClassificationEntity);
+//            spuClassificationId = spuClassificationEntity.getSpuClassificationId();
+//        } else {
+//            spuClassificationId = spuClassification.getSpuClassificationId();
+//        }
+//        param.setSpuClass(spuClassificationId);
+//        return spuClassificationId;
+//    }
 }
