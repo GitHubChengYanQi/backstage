@@ -132,6 +132,126 @@ public class OrderResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 甲方联系人id
+     */
+    @ApiModelProperty("甲方联系人id")
+    private Long partyAContactsId;
+
+    /**
+     * 甲方地址id
+     */
+    @ApiModelProperty("甲方地址id")
+    private Long partyAAdressId;
+
+    /**
+     * 甲方电话
+     */
+    @ApiModelProperty("甲方电话")
+    private Long partyAPhone;
+
+    /**
+     * 甲方委托人id
+     */
+    @ApiModelProperty("甲方委托人id")
+    private Long partyAClientId;
+
+    /**
+     * 乙方联系人id
+     */
+    @ApiModelProperty("乙方联系人id")
+    private Long partyBContactsId;
+
+    /**
+     * 乙方地址id
+     */
+    @ApiModelProperty("乙方地址id")
+    private Long partyBAdressId;
+
+    /**
+     * 乙方电话
+     */
+    @ApiModelProperty("乙方电话")
+    private Long partyBPhone;
+
+    /**
+     * 乙方委托人id
+     */
+    @ApiModelProperty("乙方委托人id")
+    private Long partyBClientId;
+
+    /**
+     * 乙方 银行Id
+     */
+    @ApiModelProperty("乙方 银行Id")
+    private Long partyBBankId;
+
+    /**
+     * 乙方开户行账号
+     */
+    @ApiModelProperty("乙方开户行账号")
+    private Long partyBBankAccount;
+
+    /**
+     * 乙方法人
+     */
+    @ApiModelProperty("乙方法人")
+    private String partyBLegalPerson;
+
+    /**
+     * 乙方公司电话
+     */
+    @ApiModelProperty("乙方公司电话")
+    private String partyBCompanyPhone;
+
+    /**
+     * 乙方传真
+     */
+    @ApiModelProperty("乙方传真")
+    private String partyBFax;
+
+    /**
+     * 乙方邮编
+     */
+    @ApiModelProperty("乙方邮编")
+    private String partyBZipcode;
+
+    /**
+     * 甲方银行Id
+     */
+    @ApiModelProperty("甲方银行Id")
+    private Long partyABankId;
+
+    /**
+     * 甲方开户行账号
+     */
+    @ApiModelProperty("甲方开户行账号")
+    private Long partyABankAccount;
+
+    /**
+     * 甲方法人
+     */
+    @ApiModelProperty("甲方法人")
+    private String partyALegalPerson;
+
+    /**
+     * 甲方公司电话
+     */
+    @ApiModelProperty("甲方公司电话")
+    private String partyACompanyPhone;
+
+    /**
+     * 甲方传真
+     */
+    @ApiModelProperty("甲方传真")
+    private String partyAFax;
+
+    /**
+     * 甲方
+     */
+    @ApiModelProperty("甲方")
+    private String partyAZipcode;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
