@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -100,6 +101,35 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
         }
         return skuIds;
+    }
+
+    /**
+     * 预购获取库存数量
+     *
+     * @param plans
+     */
+    @Override
+    public void preorder(List<ListingPlan> plans) {
+        if (ToolUtil.isNotEmpty(plans)) {
+
+            List<Long> skuIds = new ArrayList<>();
+            List<Long> brandIds = new ArrayList<>();
+            for (ListingPlan plan : plans) {
+                skuIds.add(plan.getSkuId());
+                brandIds.add(plan.getBrandId());
+            }
+            List<StockDetails> details = this.query().in("sku_id", skuIds).in("brand_id", brandIds).list();
+            for (ListingPlan plan : plans) {
+                Long stockNumber = 0L;
+                for (StockDetails detail : details) {
+                    if (plan.getSkuId().equals(detail.getSkuId()) && plan.getBrandId().equals(detail.getBrandId())) {
+                        stockNumber = stockNumber + detail.getNumber();
+                    }
+                }
+                plan.setStockNumber(stockNumber);
+            }
+        }
+
     }
 
     @Override

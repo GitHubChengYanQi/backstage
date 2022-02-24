@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.controller;
 
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
@@ -36,6 +37,8 @@ public class PurchaseListingController extends BaseController {
 
     @Autowired
     private PurchaseListingService purchaseListingService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     /**
      * 新增接口
@@ -127,8 +130,11 @@ public class PurchaseListingController extends BaseController {
         List<ListingPlan> planList = new ArrayList<>(plans);
         planList.removeIf(plan -> plan.getSkuResult() == null);
 
+        stockDetailsService.preorder(planList);
+
         return ResponseData.success(planList);
     }
+
 
 
 }

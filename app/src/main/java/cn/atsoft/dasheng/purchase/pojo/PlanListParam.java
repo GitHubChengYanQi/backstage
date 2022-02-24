@@ -10,4 +10,5 @@ public class PlanListParam {
     private String beginTime;
     private String endTime;
     private String coding;
+    private Long stockNumber;
 }
