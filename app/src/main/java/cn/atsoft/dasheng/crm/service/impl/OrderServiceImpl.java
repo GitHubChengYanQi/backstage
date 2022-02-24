@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Contract;
+import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Order;
@@ -38,14 +40,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderDetailService detailService;
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private ContractService contractService;
 
     @Override
     @Transactional
     public void add(OrderParam param) {
         Order entity = getEntity(param);
         this.save(entity);
+
         detailService.addList(entity.getOrderId(), param.getDetailParams());
+
         paymentService.add(param.getPaymentParam());
+
+        if (ToolUtil.isNotEmpty(param.getContractParam())) {
+            contractService.orderAddContract(entity.getOrderId(), param.getContractParam());
+        }
+
 
     }
 

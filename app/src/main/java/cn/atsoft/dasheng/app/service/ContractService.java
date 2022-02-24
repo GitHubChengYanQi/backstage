@@ -76,4 +76,6 @@ public interface ContractService extends IService<Contract> {
 
 
     ContractResult addResult (ContractParam param);
+
+    void orderAddContract(Long orderId, ContractParam param);
 }
