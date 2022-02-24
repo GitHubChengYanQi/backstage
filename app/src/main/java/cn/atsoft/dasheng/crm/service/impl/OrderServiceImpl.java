@@ -7,7 +7,9 @@ import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
+import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
+import cn.atsoft.dasheng.crm.model.result.PaymentResult;
 import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -95,4 +97,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return entity;
     }
 
+    @Override
+    public OrderResult getDetail(Long id) {
+        Order order = this.getById(id);
+        OrderResult orderResult = new OrderResult();
+        ToolUtil.copyProperties(order, orderResult);
+
+        PaymentResult paymentResult = paymentService.getDetail(orderResult.getOrderId());
+        List<OrderDetailResult> details = detailService.getDetails(paymentResult.getOrderId());
+        orderResult.setDetailResults(details);
+        orderResult.setPaymentResult(paymentResult);
+        return orderResult;
+    }
 }

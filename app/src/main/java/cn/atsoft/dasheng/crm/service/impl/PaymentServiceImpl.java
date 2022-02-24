@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Payment;
 import cn.atsoft.dasheng.crm.mapper.PaymentMapper;
 import cn.atsoft.dasheng.crm.model.params.PaymentParam;
+import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
 import cn.atsoft.dasheng.crm.service.PaymentDetailService;
 import cn.atsoft.dasheng.crm.service.PaymentService;
@@ -90,4 +91,27 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         return entity;
     }
 
+    /**
+     * 详情
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public PaymentResult getDetail(Long orderId) {
+        if (ToolUtil.isEmpty(orderId)) {
+            return null;
+        }
+        Payment payment = this.query().eq("order_id", orderId).one();
+        if (ToolUtil.isEmpty(payment)) {
+            return null;
+        }
+        PaymentResult paymentResult = new PaymentResult();
+        ToolUtil.copyProperties(payment, paymentResult);
+
+        List<PaymentDetailResult> serviceResults = detailService.getResults(paymentResult.getPaymentId());
+        paymentResult.setDetailResults(serviceResults);
+
+        return paymentResult;
+    }
 }

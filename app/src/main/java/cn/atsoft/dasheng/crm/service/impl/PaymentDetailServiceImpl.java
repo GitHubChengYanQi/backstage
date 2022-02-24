@@ -9,6 +9,8 @@ import cn.atsoft.dasheng.crm.model.params.PaymentDetailParam;
 import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import cn.atsoft.dasheng.crm.service.PaymentDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -100,6 +102,22 @@ public class PaymentDetailServiceImpl extends ServiceImpl<PaymentDetailMapper, P
         PaymentDetail entity = new PaymentDetail();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    /**
+     * 通过付款id 返回详情
+     *
+     * @param paymentId
+     * @return
+     */
+    @Override
+    public List<PaymentDetailResult> getResults(Long paymentId) {
+        if (ToolUtil.isEmpty(paymentId)) {
+            return new ArrayList<>();
+        }
+        List<PaymentDetail> details = this.query().eq("payment_id", paymentId).list();
+        return BeanUtil.copyToList(details, PaymentDetailResult.class, new CopyOptions());
+
     }
 
 }

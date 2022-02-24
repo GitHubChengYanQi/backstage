@@ -32,45 +32,45 @@ public class PaymentController extends BaseController {
     @Autowired
     private PaymentService paymentService;
 
-    /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody PaymentParam paymentParam) {
-        this.paymentService.add(paymentParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody PaymentParam paymentParam) {
-
-        this.paymentService.update(paymentParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody PaymentParam paymentParam)  {
-        this.paymentService.delete(paymentParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 新增接口
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    @RequestMapping(value = "/add", method = RequestMethod.POST)
+//    @ApiOperation("新增")
+//    public ResponseData addItem(@RequestBody PaymentParam paymentParam) {
+//        this.paymentService.add(paymentParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 编辑接口
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody PaymentParam paymentParam) {
+//
+//        this.paymentService.update(paymentParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 删除接口
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody PaymentParam paymentParam)  {
+//        this.paymentService.delete(paymentParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口

@@ -66,4 +66,5 @@ public interface OrderService extends IService<Order> {
      */
      PageInfo<OrderResult> findPageBySpec(OrderParam param);
 
+    OrderResult getDetail(Long id);
 }

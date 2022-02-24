@@ -137,6 +137,13 @@ public class TemplateController extends BaseController {
         this.templateService.batchDelete(batchDeleteRequest.getIds());
         return ResponseData.success();
     }
+
+
+    @RequestMapping(value = "/getLabel", method = RequestMethod.GET)
+    public ResponseData getLabel(@RequestParam Long id) {
+        List<String> label = this.templateService.getLabel(id);
+        return ResponseData.success(label);
+    }
 }
 
 
