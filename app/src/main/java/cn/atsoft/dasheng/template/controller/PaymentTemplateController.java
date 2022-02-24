@@ -86,8 +86,8 @@ public class PaymentTemplateController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PaymentTemplateResult> detail(@RequestParam Long id) {
-        PaymentTemplateResult result = this.paymentTemplateService.detail(id);
+    public ResponseData<PaymentTemplateResult> detail(@RequestBody(required = false) PaymentTemplateParam paymentTemplateParam) {
+        PaymentTemplateResult result = this.paymentTemplateService.detail(paymentTemplateParam.getTemplateId());
         return ResponseData.success(result);
     }
 
@@ -108,7 +108,6 @@ public class PaymentTemplateController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) PaymentTemplateParam param) {
         QueryWrapper<PaymentTemplate> queryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(param.getOftenUser())) {
