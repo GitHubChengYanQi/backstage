@@ -62,6 +62,7 @@ public class TopicMessage {
                     logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 }
                 break;
+
             default:
         }
     }

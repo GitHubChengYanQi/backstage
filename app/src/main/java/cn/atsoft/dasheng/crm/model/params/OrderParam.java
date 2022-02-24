@@ -11,6 +11,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     private PaymentParam paymentParam;
 
     private ContractParam contractParam;
+    @NotNull
+    private String processType;
 
     private Date date;
     /**

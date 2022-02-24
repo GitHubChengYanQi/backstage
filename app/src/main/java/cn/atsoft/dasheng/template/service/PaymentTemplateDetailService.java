@@ -66,4 +66,7 @@ public interface PaymentTemplateDetailService extends IService<PaymentTemplateDe
      */
      PageInfo<PaymentTemplateDetailResult> findPageBySpec(PaymentTemplateDetailParam param);
 
+    List<PaymentTemplateDetailResult> getDetails(Long id);
+
+    void addList(Long id, List<PaymentTemplateDetailParam> params);
 }

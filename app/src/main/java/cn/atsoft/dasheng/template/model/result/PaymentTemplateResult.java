@@ -1,11 +1,17 @@
 package cn.atsoft.dasheng.template.model.result;
 
+import cn.atsoft.dasheng.template.entity.PaymentTemplateDetail;
+import cn.atsoft.dasheng.template.model.params.PaymentTemplateParam;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 付款模板
@@ -20,7 +26,7 @@ public class PaymentTemplateResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<PaymentTemplateDetailResult> templates;
     /**
      * 模板主见
      */

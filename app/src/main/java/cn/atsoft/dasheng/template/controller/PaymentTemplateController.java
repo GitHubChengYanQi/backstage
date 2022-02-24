@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.template.controller;
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.template.entity.PaymentTemplate;
 import cn.atsoft.dasheng.template.model.params.PaymentTemplateParam;
@@ -8,11 +11,14 @@ import cn.atsoft.dasheng.template.service.PaymentTemplateService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.template.wrapper.PaymentTemplateSelectWrapper;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +73,7 @@ public class PaymentTemplateController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody PaymentTemplateParam paymentTemplateParam)  {
+    public ResponseData delete(@RequestBody PaymentTemplateParam paymentTemplateParam) {
         this.paymentTemplateService.delete(paymentTemplateParam);
         return ResponseData.success();
     }
@@ -80,11 +86,8 @@ public class PaymentTemplateController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PaymentTemplateResult> detail(@RequestBody PaymentTemplateParam paymentTemplateParam) {
-        PaymentTemplate detail = this.paymentTemplateService.getById(paymentTemplateParam.getTemplateId());
-        PaymentTemplateResult result = new PaymentTemplateResult();
-        ToolUtil.copyProperties(detail, result);
-
+    public ResponseData<PaymentTemplateResult> detail(@RequestParam Long id) {
+        PaymentTemplateResult result = this.paymentTemplateService.detail(id);
         return ResponseData.success(result);
     }
 
@@ -97,14 +100,26 @@ public class PaymentTemplateController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<PaymentTemplateResult> list(@RequestBody(required = false) PaymentTemplateParam paymentTemplateParam) {
-        if(ToolUtil.isEmpty(paymentTemplateParam)){
+        if (ToolUtil.isEmpty(paymentTemplateParam)) {
             paymentTemplateParam = new PaymentTemplateParam();
         }
         return this.paymentTemplateService.findPageBySpec(paymentTemplateParam);
     }
 
-
-
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    @Permission
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) PaymentTemplateParam param) {
+        QueryWrapper<PaymentTemplate> queryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getOftenUser())) {
+            queryWrapper.in("often_user", param.getOftenUser());
+        }
+        queryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.paymentTemplateService.listMaps(queryWrapper);
+        PaymentTemplateSelectWrapper selectWrapper = new PaymentTemplateSelectWrapper(list);
+        List<Map<String, Object>> result = selectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 }
 

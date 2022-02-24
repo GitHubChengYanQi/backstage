@@ -4,14 +4,18 @@ package cn.atsoft.dasheng.template.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.template.entity.PaymentTemplate;
+import cn.atsoft.dasheng.template.entity.PaymentTemplateDetail;
 import cn.atsoft.dasheng.template.mapper.PaymentTemplateMapper;
 import cn.atsoft.dasheng.template.model.params.PaymentTemplateParam;
+import cn.atsoft.dasheng.template.model.result.PaymentTemplateDetailResult;
 import cn.atsoft.dasheng.template.model.result.PaymentTemplateResult;
-import  cn.atsoft.dasheng.template.service.PaymentTemplateService;
+import cn.atsoft.dasheng.template.service.PaymentTemplateDetailService;
+import cn.atsoft.dasheng.template.service.PaymentTemplateService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -27,20 +31,26 @@ import java.util.List;
  */
 @Service
 public class PaymentTemplateServiceImpl extends ServiceImpl<PaymentTemplateMapper, PaymentTemplate> implements PaymentTemplateService {
+    @Autowired
+    private PaymentTemplateDetailService detailService;
 
     @Override
-    public void add(PaymentTemplateParam param){
+    public void add(PaymentTemplateParam param) {
         PaymentTemplate entity = getEntity(param);
         this.save(entity);
+        if (ToolUtil.isNotEmpty(param.getTemplates())) {
+            detailService.addList(entity.getTemplateId(), param.getTemplates());
+        }
+
     }
 
     @Override
-    public void delete(PaymentTemplateParam param){
+    public void delete(PaymentTemplateParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(PaymentTemplateParam param){
+    public void update(PaymentTemplateParam param) {
         PaymentTemplate oldEntity = getOldEntity(param);
         PaymentTemplate newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +58,36 @@ public class PaymentTemplateServiceImpl extends ServiceImpl<PaymentTemplateMappe
     }
 
     @Override
-    public PaymentTemplateResult findBySpec(PaymentTemplateParam param){
+    public PaymentTemplateResult findBySpec(PaymentTemplateParam param) {
         return null;
     }
 
     @Override
-    public List<PaymentTemplateResult> findListBySpec(PaymentTemplateParam param){
+    public List<PaymentTemplateResult> findListBySpec(PaymentTemplateParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<PaymentTemplateResult> findPageBySpec(PaymentTemplateParam param){
+    public PageInfo<PaymentTemplateResult> findPageBySpec(PaymentTemplateParam param) {
         Page<PaymentTemplateResult> pageContext = getPageContext();
         IPage<PaymentTemplateResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(PaymentTemplateParam param){
+    @Override
+    public PaymentTemplateResult detail(Long id) {
+        PaymentTemplate paymentTemplate = this.getById(id);
+        if (ToolUtil.isEmpty(paymentTemplate)) {
+            return null;
+        }
+        PaymentTemplateResult result = new PaymentTemplateResult();
+        ToolUtil.copyProperties(paymentTemplate, result);
+        List<PaymentTemplateDetailResult> details = detailService.getDetails(result.getTemplateId());
+        result.setTemplates(details);
+        return result;
+    }
+
+    private Serializable getKey(PaymentTemplateParam param) {
         return param.getTemplateId();
     }
 
