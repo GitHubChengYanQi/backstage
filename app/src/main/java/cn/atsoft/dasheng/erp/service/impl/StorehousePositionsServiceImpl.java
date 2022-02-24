@@ -351,12 +351,37 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             templete = templete.replace("${bind}", stringBuffer.toString());
         }
         if (templete.contains("${name}")) {
-            templete = templete.replace("${name}", param.getName());
+            templete = templete.replace("${name}",param.getName());
+        }
+        if (templete.contains("${parent}")) {
+            templete = templete.replace("${parent}", this.getParent(param.getStorehousePositionsId()));
         }
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();
         ToolUtil.copyProperties(printTemplate, printTemplateResult);
         printTemplateResult.setTemplete(templete);
         param.setPrintTemplateResult(printTemplateResult);
+    }
+
+    private String getParent(Long id){
+        StorehousePositions positions = this.getById(id);
+        Storehouse storehouse = storehouseService.getById(positions.getStorehouseId());
+        List<StorehousePositions> storehousePositionsList = this.query().eq("storehouse_id", positions.getStorehouseId()).eq("display", 1).list();
+        StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
+        stringBuffer= new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
+        return stringBuffer.toString();
+    }
+    private StringBuffer formatParentStringBuffer(StorehousePositions positions,List<StorehousePositions> storehousePositionsList , StringBuffer stringBuffer){
+        if (!positions.getPid().equals(0L)) {
+            for (StorehousePositions storehousePositions : storehousePositionsList) {
+                if (positions.getPid().equals(storehousePositions.getStorehousePositionsId())) {
+                    StringBuffer now = new StringBuffer().append(positions.getName()).append("/").append(stringBuffer);
+                    stringBuffer = now;
+                    stringBuffer = this.formatParentStringBuffer(storehousePositions, storehousePositionsList, stringBuffer);
+                }
+
+            }
+        }
+        return stringBuffer;
     }
 
 
