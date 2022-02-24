@@ -76,12 +76,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             contractService.orderAddContract(entity.getOrderId(), param.getContractParam());
         }
         String type = null;
+        String source = null;
         switch (param.getType()) {
             case 1:
                 type = "purchaseAsk";
+                source = "采购";
                 break;
             case 2:
                 type = "销售申请";
+                source = "销售申请";
                 break;
             default:
         }
@@ -92,7 +95,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             qualityTaskService.power(activitiProcess);//检查创建权限
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的(申请)");
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + source + "申请");
 //            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getOrderId());

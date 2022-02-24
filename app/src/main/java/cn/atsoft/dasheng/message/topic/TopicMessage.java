@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.message.topic;
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.model.params.MessageParam;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
+import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -33,6 +34,9 @@ public class TopicMessage {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private ContractService contractService;
+
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
     @RabbitListener(queues = "${spring.rabbitmq.prefix}" + MESSAGE_REAL_QUEUE)
@@ -62,7 +66,9 @@ public class TopicMessage {
                     logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 }
                 break;
+            case CONTRACT:
 
+                break;
             default:
         }
     }

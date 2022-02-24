@@ -125,7 +125,6 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             //添加log
             activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getPurchaseAskId(), "purchaseAsk");
             activitiProcessLogService.autoAudit(taskId, 1);
-
         } else {
             entity.setStatus(2);
             this.updateById(entity);
