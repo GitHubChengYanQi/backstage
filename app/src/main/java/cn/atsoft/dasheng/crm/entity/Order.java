@@ -101,6 +101,286 @@ public class Order implements Serializable {
     private String remark;
 
     /**
+     * 甲方联系人id
+     */
+    @TableField("party_a_contacts_id")
+    private Long partyAContactsId;
+
+    /**
+     * 甲方地址id
+     */
+    @TableField("party_a_adress_id")
+    private Long partyAAdressId;
+
+    /**
+     * 甲方电话
+     */
+    @TableField("party_a_phone")
+    private Long partyAPhone;
+
+    /**
+     * 甲方委托人id
+     */
+    @TableField("party_a_client_id")
+    private Long partyAClientId;
+
+    /**
+     * 乙方联系人id
+     */
+    @TableField("party_b_contacts_id")
+    private Long partyBContactsId;
+
+    /**
+     * 乙方地址id
+     */
+    @TableField("party_b_adress_id")
+    private Long partyBAdressId;
+
+    /**
+     * 乙方电话
+     */
+    @TableField("party_b_phone")
+    private Long partyBPhone;
+
+    /**
+     * 乙方委托人id
+     */
+    @TableField("party_b_client_id")
+    private Long partyBClientId;
+
+    /**
+     * 乙方 银行Id
+     */
+    @TableField("party_b_bank_id")
+    private Long partyBBankId;
+
+    /**
+     * 乙方开户行账号
+     */
+    @TableField("party_b_bank_account")
+    private Long partyBBankAccount;
+
+    /**
+     * 乙方法人
+     */
+    @TableField("party_b_legal_person")
+    private String partyBLegalPerson;
+
+    /**
+     * 乙方公司电话
+     */
+    @TableField("party_b_company_phone")
+    private String partyBCompanyPhone;
+
+    /**
+     * 乙方传真
+     */
+    @TableField("party_b_fax")
+    private String partyBFax;
+
+    /**
+     * 乙方邮编
+     */
+    @TableField("party_b_zipCode")
+    private String partyBZipcode;
+
+    /**
+     * 甲方银行Id
+     */
+    @TableField("party_a_bank_id")
+    private Long partyABankId;
+
+    /**
+     * 甲方开户行账号
+     */
+    @TableField("party_a_bank_account")
+    private Long partyABankAccount;
+
+    /**
+     * 甲方法人
+     */
+    @TableField("party_a_legal_person")
+    private String partyALegalPerson;
+
+    /**
+     * 甲方公司电话
+     */
+    @TableField("party_a_company_phone")
+    private String partyACompanyPhone;
+
+    /**
+     * 甲方传真
+     */
+    @TableField("party_a_fax")
+    private String partyAFax;
+
+    /**
+     * 甲方
+     */
+    @TableField("party_a_zipCode")
+    private String partyAZipcode;
+
+    public Long getPartyAContactsId() {
+        return partyAContactsId;
+    }
+
+    public void setPartyAContactsId(Long partyAContactsId) {
+        this.partyAContactsId = partyAContactsId;
+    }
+
+    public Long getPartyAAdressId() {
+        return partyAAdressId;
+    }
+
+    public void setPartyAAdressId(Long partyAAdressId) {
+        this.partyAAdressId = partyAAdressId;
+    }
+
+    public Long getPartyAPhone() {
+        return partyAPhone;
+    }
+
+    public void setPartyAPhone(Long partyAPhone) {
+        this.partyAPhone = partyAPhone;
+    }
+
+    public Long getPartyAClientId() {
+        return partyAClientId;
+    }
+
+    public void setPartyAClientId(Long partyAClientId) {
+        this.partyAClientId = partyAClientId;
+    }
+
+    public Long getPartyBContactsId() {
+        return partyBContactsId;
+    }
+
+    public void setPartyBContactsId(Long partyBContactsId) {
+        this.partyBContactsId = partyBContactsId;
+    }
+
+    public Long getPartyBAdressId() {
+        return partyBAdressId;
+    }
+
+    public void setPartyBAdressId(Long partyBAdressId) {
+        this.partyBAdressId = partyBAdressId;
+    }
+
+    public Long getPartyBPhone() {
+        return partyBPhone;
+    }
+
+    public void setPartyBPhone(Long partyBPhone) {
+        this.partyBPhone = partyBPhone;
+    }
+
+    public Long getPartyBClientId() {
+        return partyBClientId;
+    }
+
+    public void setPartyBClientId(Long partyBClientId) {
+        this.partyBClientId = partyBClientId;
+    }
+
+    public Long getPartyBBankId() {
+        return partyBBankId;
+    }
+
+    public void setPartyBBankId(Long partyBBankId) {
+        this.partyBBankId = partyBBankId;
+    }
+
+    public Long getPartyBBankAccount() {
+        return partyBBankAccount;
+    }
+
+    public void setPartyBBankAccount(Long partyBBankAccount) {
+        this.partyBBankAccount = partyBBankAccount;
+    }
+
+    public String getPartyBLegalPerson() {
+        return partyBLegalPerson;
+    }
+
+    public void setPartyBLegalPerson(String partyBLegalPerson) {
+        this.partyBLegalPerson = partyBLegalPerson;
+    }
+
+    public String getPartyBCompanyPhone() {
+        return partyBCompanyPhone;
+    }
+
+    public void setPartyBCompanyPhone(String partyBCompanyPhone) {
+        this.partyBCompanyPhone = partyBCompanyPhone;
+    }
+
+    public String getPartyBFax() {
+        return partyBFax;
+    }
+
+    public void setPartyBFax(String partyBFax) {
+        this.partyBFax = partyBFax;
+    }
+
+    public String getPartyBZipcode() {
+        return partyBZipcode;
+    }
+
+    public void setPartyBZipcode(String partyBZipcode) {
+        this.partyBZipcode = partyBZipcode;
+    }
+
+    public Long getPartyABankId() {
+        return partyABankId;
+    }
+
+    public void setPartyABankId(Long partyABankId) {
+        this.partyABankId = partyABankId;
+    }
+
+    public Long getPartyABankAccount() {
+        return partyABankAccount;
+    }
+
+    public void setPartyABankAccount(Long partyABankAccount) {
+        this.partyABankAccount = partyABankAccount;
+    }
+
+    public String getPartyALegalPerson() {
+        return partyALegalPerson;
+    }
+
+    public void setPartyALegalPerson(String partyALegalPerson) {
+        this.partyALegalPerson = partyALegalPerson;
+    }
+
+    public String getPartyACompanyPhone() {
+        return partyACompanyPhone;
+    }
+
+    public void setPartyACompanyPhone(String partyACompanyPhone) {
+        this.partyACompanyPhone = partyACompanyPhone;
+    }
+
+    public String getPartyAFax() {
+        return partyAFax;
+    }
+
+    public void setPartyAFax(String partyAFax) {
+        this.partyAFax = partyAFax;
+    }
+
+    public String getPartyAZipcode() {
+        return partyAZipcode;
+    }
+
+    public void setPartyAZipcode(String partyAZipcode) {
+        this.partyAZipcode = partyAZipcode;
+    }
+
+    /**
      * 创建者
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)

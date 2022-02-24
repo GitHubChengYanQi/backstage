@@ -133,7 +133,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
              */
-            Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
+            Spu spu = this.getOrSaveSpu(param,spuClassificationId, categoryId);
             List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
             if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
                 throw new ServiceException(500, "此物料在产品中已存在");
@@ -346,8 +346,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * sku名称（skuName）加型号(spuName)判断防止重复
          */
-        Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-        Long spuId = spu.getSpuId();
+        Spu spu = this.getOrSaveSpu(param , spuClassificationId, categoryId);
+        Long spuId =spu.getSpuId();
         List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
         if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
             throw new ServiceException(500, "此物料在产品中已存在");
@@ -385,6 +385,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }});
         }
     }
+
+
 
 
     @Transactional
@@ -552,7 +554,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
         Long spuClassificationId = spuClassification.getSpuClassificationId();
-        param.setSpuClassificationId(spuClassificationId);
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
 
 
@@ -610,25 +611,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         Page<SkuResult> pageContext = getPageContext();
-        List<Long> spuIds = null;
-        if (ToolUtil.isNotEmpty(param.getSpuClass())) {
-            spuIds = new ArrayList<>();
-            List<SpuClassification> classifications = spuClassificationService.query().eq("pid", param.getSpuClass()).eq("display", 1).list();
-            List<Long> classIds = new ArrayList<>();
-            for (SpuClassification classification : classifications) {
-                classIds.add(classification.getSpuClassificationId());
-            }
-            List<Spu> spuList = classIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_classification_id", classIds).eq("display", 1).list();
-            for (Spu spu : spuList) {
-                spuIds.add(spu.getSpuId());
-            }
-            if (ToolUtil.isEmpty(spuList)) {
-                spuIds.add(0L);
-            }
-        } else {
-            spuIds = new ArrayList<>();
-        }
-        IPage<SkuResult> page = this.baseMapper.customPageList(spuIds, pageContext, param);
+        IPage<SkuResult> page = this.baseMapper.customPageList(new ArrayList<>(), pageContext, param);
         format(page.getRecords());
 
 
@@ -1072,7 +1055,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return entity;
 
     }
-
     private Spu getOrSaveSpu(SkuParam param, Long spuClassificationId, Long categoryId) {
         Spu spu = new Spu();
         Long spuId = param.getSpu().getSpuId();
