@@ -278,18 +278,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             }});
 
             List<ItemAttribute> attributes = itemAttributeService.query().eq("category_id", param.getCategoryId()).list();
-            itemAttributeService.removeByIds(new ArrayList<Long>(){{
-                for (ItemAttribute attribute : attributes) {
-                    add(attribute.getAttributeId());
-                }
-            }});
-            attributeValuesService.remove(new QueryWrapper<AttributeValues>() {{
-                in("attribute_id", new ArrayList<Long>() {{
+            if (attributes.size() > 0) {
+                itemAttributeService.removeByIds(new ArrayList<Long>() {{
                     for (ItemAttribute attribute : attributes) {
                         add(attribute.getAttributeId());
                     }
                 }});
-            }});
+                attributeValuesService.remove(new QueryWrapper<AttributeValues>() {{
+                    in("attribute_id", new ArrayList<Long>() {{
+                        for (ItemAttribute attribute : attributes) {
+                            add(attribute.getAttributeId());
+                        }
+                    }});
+                }});
+            }
+
+
         }
         Category category = new Category();
         ToolUtil.copyProperties(param, category);
