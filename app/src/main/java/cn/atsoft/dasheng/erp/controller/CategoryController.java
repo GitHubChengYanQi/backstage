@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 
+import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.erp.service.CategoryService;
@@ -101,7 +102,9 @@ public class CategoryController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<CategoryResult> detail(@RequestBody CategoryParam categoryParam) {
         Category detail = this.categoryService.getById(categoryParam.getCategoryId());
+        CategoryResult result = new CategoryResult();
         List<CategoryRequest> categoryRequests = new ArrayList<>();
+        List<ItemAttributeParam> itemAttributeParamList = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail)) {
 
             List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery()
@@ -122,17 +125,26 @@ public class CategoryController extends BaseController {
                     categoryRequest.setAttribute(itemAttribute);
                     List<AttributeValues> attributeValuesResults = new ArrayList<>();
 
+                    ItemAttributeParam itemAttributeParam = new ItemAttributeParam();
+                    ToolUtil.copyProperties(itemAttribute, itemAttributeParam);
+
+                    List<AttributeValuesParam> attributeValuesParams = new ArrayList<>();
                     for (AttributeValues attributeValue : attributeValues) {
                         if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
                             attributeValuesResults.add(attributeValue);
+                            AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
+                            ToolUtil.copyProperties(attributeValue, attributeValuesParam);
+                            attributeValuesParams.add(attributeValuesParam);
                         }
                     }
+                    itemAttributeParam.setAttributeValuesParams(attributeValuesParams);
+                    itemAttributeParamList.add(itemAttributeParam);
                     categoryRequest.setValue(attributeValuesResults);
                     categoryRequests.add(categoryRequest);
                 }
             }
         }
-        CategoryResult result = new CategoryResult();
+        result.setItemAttributeParams(itemAttributeParamList);
         ToolUtil.copyProperties(detail, result);
         result.setCategoryRequests(categoryRequests);
         return ResponseData.success(result);
@@ -140,7 +152,8 @@ public class CategoryController extends BaseController {
 
     /**
      * 批量添加
-      * @param categoryParam
+     *
+     * @param categoryParam
      * @return
      */
     @RequestMapping(value = "/addList", method = RequestMethod.POST)
@@ -148,6 +161,7 @@ public class CategoryController extends BaseController {
         this.categoryService.addList(categoryParam);
         return ResponseData.success();
     }
+
     /**
      * 查询列表
      *
