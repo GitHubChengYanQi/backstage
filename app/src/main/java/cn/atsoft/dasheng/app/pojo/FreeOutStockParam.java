@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class FreeOutStockParam {
     @NotNull
-    private Long codeId;
+    private Long inkindId;
     @NotNull
     private Long number;
 

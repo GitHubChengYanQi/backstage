@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.*;
 
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.pojo.ContractReplace;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -66,6 +67,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private ContractDetailService contractDetailService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private TemplateService templateService;
 
     @Autowired
     private MessageProducer messageProducer;
@@ -399,4 +402,27 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         this.update(contract, updateWrapper);
     }
 
+    /**
+     * 订单创建合同
+     *
+     * @param orderId
+     * @param param
+     */
+    @Override
+    public void orderAddContract(Long orderId, ContractParam param) {
+        Contract contract = new Contract();
+        ToolUtil.copyProperties(param, contract);
+        contract.setSource("订单");
+        contract.setSourceId(orderId);
+
+        Template template = templateService.getById(param.getTemplateId());
+        String content = template.getContent();
+        for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
+            if (content.contains(contractReplace.getOldText())) {
+                content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+            }
+        }
+        contract.setContent(content);
+        this.save(contract);
+    }
 }

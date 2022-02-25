@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -83,6 +84,13 @@ public interface StockDetailsService extends IService<StockDetails> {
      * @return
      */
     List<StockDetailsResult> getStockDetails(Long stockId);
+
+    /**
+     * 预购返回库存数量
+     *
+     * @param plans
+     */
+    void preorder(List<ListingPlan> plans);
 
 
 }

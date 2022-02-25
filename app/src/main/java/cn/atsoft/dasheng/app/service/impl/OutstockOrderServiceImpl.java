@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.erp.service.impl.OutstockSendTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -52,8 +53,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Autowired
     private StockDetailsService stockDetailsService;
     @Autowired
-    private OutstockService outstockService;
-    @Autowired
     private UserService userService;
     @Autowired
     private OutstockListingService outstockListingService;
@@ -62,14 +61,13 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Autowired
     private CodingRulesService codingRulesService;
     @Autowired
-    private OutstockSendTemplate outstockSendTemplate;
-    @Autowired
     private OrCodeService orCodeService;
     @Autowired
     private InkindService inkindService;
-
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private OrCodeBindService bindService;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -159,10 +157,13 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
      */
     @Override
     public void freeOutStock(FreeOutStockParam freeOutStockParam) {
-        StockDetails stockDetails = stockDetailsService.query().eq("qr_code_id", freeOutStockParam.getCodeId()).one();
+
+
+        StockDetails stockDetails = stockDetailsService.query().eq("inkind_id", freeOutStockParam.getInkindId()).one();
         if (ToolUtil.isEmpty(stockDetails)) {
             throw new ServiceException(500, "库存没有此物料");
         }
+
         if (stockDetails.getNumber() < freeOutStockParam.getNumber()) {
             throw new ServiceException(500, "数量不足");
         }

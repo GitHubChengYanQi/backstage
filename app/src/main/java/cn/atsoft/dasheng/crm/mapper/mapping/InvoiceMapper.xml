@@ -4,207 +4,215 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.Invoice">
-        <id column="invoice_id" property="invoiceId" />
-        <result column="customer_id" property="customerId" />
-        <result column="bank" property="bank" />
-        <result column="bank_account" property="bankAccount" />
-        <result column="credit_code" property="creditCode" />
-        <result column="email" property="email" />
-        <result column="bank_no" property="bankNo" />
-        <result column="invoice_note" property="invoiceNote" />
-        <result column="is_default" property="isDefault" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
-        <result column="deptId" property="deptId" />
+        <id column="invoice_id" property="invoiceId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="bank" property="bank"/>
+        <result column="bank_account" property="bankAccount"/>
+        <result column="credit_code" property="creditCode"/>
+        <result column="email" property="email"/>
+        <result column="bank_no" property="bankNo"/>
+        <result column="invoice_note" property="invoiceNote"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="bank_id" property="bankId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        invoice_id AS "invoiceId", bank_no AS "bankNo", invoice_note AS "invoiceNote",customer_id AS "customerId", bank AS "bank", bank_account AS "bankAccount", credit_code AS "creditCode", email AS "email", is_default AS "isDefault", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    <sql id="Base_Column_List">bank_id
+    AS "bankId",
+        invoice_id
+        AS "invoiceId", bank_no AS "bankNo", invoice_note AS "invoiceNote",customer_id AS "customerId", bank AS "bank", bank_account AS "bankAccount", credit_code AS "creditCode", email AS "email", is_default AS "isDefault", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.InvoiceResult" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.InvoiceResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_invoice where 1 = 1
-            <if test="paramCondition.invoiceId != null">
-                and invoice_id like CONCAT('%',#{paramCondition.invoiceId},'%')
-            </if>
-            <if test="paramCondition.customerId != null">
-                and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-            </if>
-            <if test="paramCondition.bank != null and paramCondition.bank != ''">
-                and bank like CONCAT('%',#{paramCondition.bank},'%')
-            </if>
-            <if test="paramCondition.bankAccount != null">
-                and bank_account like CONCAT('%',#{paramCondition.bankAccount},'%')
-            </if>
-            <if test="paramCondition.creditCode != null and paramCondition.creditCode != ''">
-                and credit_code like CONCAT('%',#{paramCondition.creditCode},'%')
-            </if>
-            <if test="paramCondition.email != null and paramCondition.email != ''">
-                and email like CONCAT('%',#{paramCondition.email},'%')
-            </if>
-            <if test="paramCondition.isDefault != null">
-                and is_default like CONCAT('%',#{paramCondition.isDefault},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
-            <if test="paramCondition.deptId != null">
-                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-            </if>
+        <if test="paramCondition.invoiceId != null">
+            and invoice_id like CONCAT('%',#{paramCondition.invoiceId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.bank != null and paramCondition.bank != ''">
+            and bank like CONCAT('%',#{paramCondition.bank},'%')
+        </if>
+        <if test="paramCondition.bankAccount != null">
+            and bank_account like CONCAT('%',#{paramCondition.bankAccount},'%')
+        </if>
+        <if test="paramCondition.creditCode != null and paramCondition.creditCode != ''">
+            and credit_code like CONCAT('%',#{paramCondition.creditCode},'%')
+        </if>
+        <if test="paramCondition.email != null and paramCondition.email != ''">
+            and email like CONCAT('%',#{paramCondition.email},'%')
+        </if>
+        <if test="paramCondition.isDefault != null">
+            and is_default like CONCAT('%',#{paramCondition.isDefault},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_invoice where 1 = 1
-                <if test="paramCondition.invoiceId != null">
-                        and invoice_id like CONCAT('%',#{paramCondition.invoiceId},'%')
-                </if>
-                <if test="paramCondition.customerId != null">
-                        and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-                </if>
-                <if test="paramCondition.bank != null and paramCondition.bank != ''">
-                        and bank like CONCAT('%',#{paramCondition.bank},'%')
-                </if>
-                <if test="paramCondition.bankAccount != null">
-                        and bank_account like CONCAT('%',#{paramCondition.bankAccount},'%')
-                </if>
-                <if test="paramCondition.creditCode != null and paramCondition.creditCode != ''">
-                        and credit_code like CONCAT('%',#{paramCondition.creditCode},'%')
-                </if>
-                <if test="paramCondition.email != null and paramCondition.email != ''">
-                        and email like CONCAT('%',#{paramCondition.email},'%')
-                </if>
-                <if test="paramCondition.isDefault != null">
-                        and is_default like CONCAT('%',#{paramCondition.isDefault},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.invoiceId != null">
+            and invoice_id like CONCAT('%',#{paramCondition.invoiceId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.bank != null and paramCondition.bank != ''">
+            and bank like CONCAT('%',#{paramCondition.bank},'%')
+        </if>
+        <if test="paramCondition.bankAccount != null">
+            and bank_account like CONCAT('%',#{paramCondition.bankAccount},'%')
+        </if>
+        <if test="paramCondition.creditCode != null and paramCondition.creditCode != ''">
+            and credit_code like CONCAT('%',#{paramCondition.creditCode},'%')
+        </if>
+        <if test="paramCondition.email != null and paramCondition.email != ''">
+            and email like CONCAT('%',#{paramCondition.email},'%')
+        </if>
+        <if test="paramCondition.isDefault != null">
+            and is_default like CONCAT('%',#{paramCondition.isDefault},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.InvoiceResult" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.InvoiceResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_invoice where 1 = 1
-                <if test="paramCondition.invoiceId != null">
-                        and invoice_id like CONCAT('%',#{paramCondition.invoiceId},'%')
-                </if>
-                <if test="paramCondition.customerId != null">
-                        and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-                </if>
-                <if test="paramCondition.bank != null and paramCondition.bank != ''">
-                        and bank like CONCAT('%',#{paramCondition.bank},'%')
-                </if>
-                <if test="paramCondition.bankAccount != null">
-                        and bank_account like CONCAT('%',#{paramCondition.bankAccount},'%')
-                </if>
-                <if test="paramCondition.creditCode != null and paramCondition.creditCode != ''">
-                        and credit_code like CONCAT('%',#{paramCondition.creditCode},'%')
-                </if>
-                <if test="paramCondition.email != null and paramCondition.email != ''">
-                        and email like CONCAT('%',#{paramCondition.email},'%')
-                </if>
-                <if test="paramCondition.isDefault != null">
-                        and is_default like CONCAT('%',#{paramCondition.isDefault},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.invoiceId != null">
+            and invoice_id like CONCAT('%',#{paramCondition.invoiceId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.bank != null and paramCondition.bank != ''">
+            and bank like CONCAT('%',#{paramCondition.bank},'%')
+        </if>
+        <if test="paramCondition.bankAccount != null">
+            and bank_account like CONCAT('%',#{paramCondition.bankAccount},'%')
+        </if>
+        <if test="paramCondition.creditCode != null and paramCondition.creditCode != ''">
+            and credit_code like CONCAT('%',#{paramCondition.creditCode},'%')
+        </if>
+        <if test="paramCondition.email != null and paramCondition.email != ''">
+            and email like CONCAT('%',#{paramCondition.email},'%')
+        </if>
+        <if test="paramCondition.isDefault != null">
+            and is_default like CONCAT('%',#{paramCondition.isDefault},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.bankId != null and paramCondition.bankId != ''">
+            and bank_id like CONCAT('%',#{paramCondition.bankId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_invoice where 1 = 1
-                <if test="paramCondition.invoiceId != null">
-                        and invoice_id like CONCAT('%',#{paramCondition.invoiceId},'%')
-                </if>
-                <if test="paramCondition.customerId != null">
-                        and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-                </if>
-                <if test="paramCondition.bank != null and paramCondition.bank != ''">
-                        and bank like CONCAT('%',#{paramCondition.bank},'%')
-                </if>
-                <if test="paramCondition.bankAccount != null">
-                        and bank_account like CONCAT('%',#{paramCondition.bankAccount},'%')
-                </if>
-                <if test="paramCondition.creditCode != null and paramCondition.creditCode != ''">
-                        and credit_code like CONCAT('%',#{paramCondition.creditCode},'%')
-                </if>
-                <if test="paramCondition.email != null and paramCondition.email != ''">
-                        and email like CONCAT('%',#{paramCondition.email},'%')
-                </if>
-                <if test="paramCondition.isDefault != null">
-                        and is_default like CONCAT('%',#{paramCondition.isDefault},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.invoiceId != null">
+            and invoice_id like CONCAT('%',#{paramCondition.invoiceId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.bank != null and paramCondition.bank != ''">
+            and bank like CONCAT('%',#{paramCondition.bank},'%')
+        </if>
+        <if test="paramCondition.bankAccount != null">
+            and bank_account like CONCAT('%',#{paramCondition.bankAccount},'%')
+        </if>
+        <if test="paramCondition.creditCode != null and paramCondition.creditCode != ''">
+            and credit_code like CONCAT('%',#{paramCondition.creditCode},'%')
+        </if>
+        <if test="paramCondition.email != null and paramCondition.email != ''">
+            and email like CONCAT('%',#{paramCondition.email},'%')
+        </if>
+        <if test="paramCondition.isDefault != null">
+            and is_default like CONCAT('%',#{paramCondition.isDefault},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
 </mapper>

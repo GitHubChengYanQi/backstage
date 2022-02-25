@@ -94,6 +94,12 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
+        <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
+            and sku_id not in
+            <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
         <choose>
             <when test="paramCondition.nameSource == '供应商'">
                 and customer_id in (select customer_id from daoxin_crm_customer where customer_name like

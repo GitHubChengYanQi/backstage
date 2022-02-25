@@ -47,4 +47,11 @@ public class MessageEntity {
      * 代办消息
      */
     private Message message;
+    /**
+     *
+     */
+
+    private Long id;
+    private String insideType;
+    private Object object;
 }

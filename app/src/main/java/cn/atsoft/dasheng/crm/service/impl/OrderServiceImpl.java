@@ -1,8 +1,13 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
@@ -10,10 +15,18 @@ import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
+import cn.atsoft.dasheng.crm.service.BankService;
 import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.PaymentService;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,15 +51,79 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderDetailService detailService;
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private ContractService contractService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+    @Autowired
+    private QualityTaskService qualityTaskService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private ContactsService contactsService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private PhoneService phoneService;
+    @Autowired
+    private BankService bankService;
+    @Autowired
+    private CustomerService customerService;
 
     @Override
     @Transactional
     public void add(OrderParam param) {
         Order entity = getEntity(param);
         this.save(entity);
+
         detailService.addList(entity.getOrderId(), param.getDetailParams());
+
         paymentService.add(param.getPaymentParam());
 
+        if (ToolUtil.isNotEmpty(param.getContractParam())) {
+            contractService.orderAddContract(entity.getOrderId(), param.getContractParam());
+        }
+        String type = null;
+        String source = null;
+        switch (param.getType()) {
+            case 1:
+                type = "purchaseAsk";
+                source = "采购";
+                break;
+            case 2:
+                type = "销售申请";
+                source = "销售申请";
+                break;
+            default:
+        }
+
+        //发起审批流程
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", param.getProcessType()).eq("status", 99).eq("module", "purchaseAsk").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            qualityTaskService.power(activitiProcess);//检查创建权限
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + source + "申请");
+//            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
+            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setFormId(entity.getOrderId());
+            activitiProcessTaskParam.setType(type);
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("processTask");
+            wxCpSendTemplate.setSourceId(taskId);
+            //添加log
+            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getOrderId(), type);
+            activitiProcessLogService.autoAudit(taskId, 1);
+        } else {
+//            entity.setStatus(99);
+//            this.updateById(entity);
+        }
     }
 
     @Override
@@ -107,6 +184,35 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderDetailResult> details = detailService.getDetails(paymentResult.getOrderId());
         orderResult.setDetailResults(details);
         orderResult.setPaymentResult(paymentResult);
+        detailFormat(orderResult);
         return orderResult;
+    }
+
+    private void detailFormat(OrderResult result) {
+        Contacts Acontacts = contactsService.getById(result.getPartyAClientId());//甲方委托人
+        Contacts Bcontacts = contactsService.getById(result.getPartyBClientId());//乙方联系人
+        result.setAcontacts(Acontacts);
+        result.setBcontacts(Bcontacts);
+
+        Bank Abank = bankService.getById(result.getPartyABankId()); //甲方银行
+        Bank Bbank = bankService.getById(result.getPartyBBankId());//乙方银行
+        result.setAbank(Abank);
+        result.setBbank(Bbank);
+
+        Adress Aadress = adressService.getById(result.getPartyAAdressId());//甲方地址
+        Adress Badress = adressService.getById(result.getPartyBAdressId());//乙方地址
+        result.setAadress(Aadress);
+        result.setBadress(Badress);
+
+        Phone Aphone = phoneService.getById(result.getPartyAPhone());//甲方电话；
+        Phone Bphone = phoneService.getById(result.getPartyBPhone());//乙方电话
+        result.setAphone(Aphone);
+        result.setBphone(Bphone);
+
+        Customer Acustomer = customerService.getById(result.getBuyerId());//甲方;
+        Customer Bcustomer = customerService.getById(result.getSellerId());//乙方
+        result.setAcustomer(Acustomer);
+        result.setBcustomer(Bcustomer);
+
     }
 }

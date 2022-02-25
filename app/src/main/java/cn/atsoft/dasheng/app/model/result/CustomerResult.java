@@ -53,7 +53,8 @@ public class CustomerResult implements Serializable {
     private String region;
     private String abbreviation;
     private RegionResult regionResult;
-    private List<InvoiceResult> invoiceResults;
+    private InvoiceResult invoiceResult;
+    private List<InstockResult> invoiceResults;
     private Integer businessCount;
     private Integer contracrCount;
     private Integer dynamicCount;

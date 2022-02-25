@@ -31,6 +31,7 @@ import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -271,11 +272,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             positionsMap.put(inkind.getInkindId(), freeInStockParam.getPositionsId());
             houseMap.put(inkind.getInkindId(), freeInStockParam.getStoreHouseId());
         }
-
-        List<Stock> stocks = stockService.getStockByInKind(inkinds, new ArrayList<Long>() {{
-            add(freeInStockParam.getStoreHouseId());
-        }});
-        instock(inkinds, stocks, positionsMap, positionsBinds, houseMap);  //入库
+        instock(inkinds, positionsMap, positionsBinds, houseMap);  //入库
     }
 
     /**
@@ -305,27 +302,21 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<StorehousePositionsBind> positionsBinds = positionsBindService.query().in("position_id", positionsIds).list();
 
         List<Inkind> inkinds = inkindService.listByIds(inkindIds);
-        List<Stock> stocks = stockService.getStockByInKind(inkinds, new ArrayList<Long>() {{
-            for (FreeInStockParam.PositionsInStock inStock : inStocks) {
-                add(inStock.getStoreHouseId());
-            }
-        }});
-        instock(inkinds, stocks, positionsMap, positionsBinds, houseMap);  //入库
+
+        instock(inkinds,positionsMap, positionsBinds, houseMap);  //入库
     }
 
     /**
      * 入库操作逻辑
      *
      * @param inkinds   实物
-     * @param stocks    库存
      * @param positions 库位
      * @param binds     绑定关系
      * @param houseId   仓库
      */
-    private void instock(List<Inkind> inkinds, List<Stock> stocks, Map<Long, Long> positions, List<StorehousePositionsBind> binds, Map<Long, Long> houseId) {
+    private void instock(List<Inkind> inkinds, Map<Long, Long> positions, List<StorehousePositionsBind> binds, Map<Long, Long> houseId) {
 
         List<StockDetails> stockDetailsList = new ArrayList<>();
-        List<Long> stockIds = new ArrayList<>();
         List<Long> inkindIds = new ArrayList<>();
 
         for (Inkind inkind : inkinds) {  //获取二维码
@@ -338,31 +329,16 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             for (Inkind inkind : inkinds) {
                 if (bind.getFormId().equals(inkind.getInkindId())) {
                     qrMap.put(inkind.getInkindId(), bind.getOrCodeId());
+                    break;
                 }
             }
         }
 
         for (Inkind inkind : inkinds) {
-            Long stockId;
-            Stock exist = judgeStockExist(inkind, stocks);
-            if (judgePosition(binds, inkind)) {
-                throw new ServiceException(500, "入库的物料 未和库位绑定");
-            }
-            if (ToolUtil.isNotEmpty(exist)) {
-                stockId = exist.getStockId();
-            } else {  //没有相同库存
-                Stock newStock = new Stock();
-                newStock.setInventory(inkind.getNumber());
-                newStock.setBrandId(inkind.getBrandId());
-                newStock.setSkuId(inkind.getSkuId());
-                newStock.setStorehouseId(houseId.get(inkind.getInkindId()));
-                newStock.setCustomerId(inkind.getCustomerId());
-                stockService.save(newStock);
-                stocks.add(newStock);
-                stockId = newStock.getStockId();
-            }
+//            if (judgePosition(binds, inkind)) {
+//                throw new ServiceException(500, "入库的物料 未和库位绑定");
+//            }
             StockDetails stockDetails = new StockDetails();
-            stockDetails.setStockId(stockId);
             stockDetails.setNumber(inkind.getNumber());
             stockDetails.setStorehousePositionsId(positions.get(inkind.getInkindId()));
             stockDetails.setQrCodeId(qrMap.get(inkind.getInkindId()));
@@ -373,11 +349,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetails.setSkuId(inkind.getSkuId());
             stockDetailsList.add(stockDetails);
             inkind.setType("1");
-            stockIds.add(stockId);
+
         }
         stockDetailsService.saveBatch(stockDetailsList);
         inkindService.updateBatchById(inkinds);
-        stockService.updateNumber(stockIds);
+
     }
 
     /**
@@ -437,6 +413,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         return true;
     }
+
+
 
 
     private Serializable getKey(InstockOrderParam param) {

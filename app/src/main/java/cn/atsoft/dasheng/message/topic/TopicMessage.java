@@ -1,5 +1,9 @@
 package cn.atsoft.dasheng.message.topic;
 
+import cn.atsoft.dasheng.app.entity.BusinessTrack;
+import cn.atsoft.dasheng.app.model.params.MessageParam;
+import cn.atsoft.dasheng.app.service.BusinessTrackService;
+import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
@@ -64,6 +68,9 @@ public class TopicMessage {
                     messageService.save(messageEntity.getMessage());
                     logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 }
+                break;
+            case CONTRACT:
+
                 break;
             default:
         }

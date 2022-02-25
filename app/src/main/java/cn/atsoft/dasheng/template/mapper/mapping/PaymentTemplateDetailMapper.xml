@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.template.mapper.PaymentTemplateDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.template.entity.PaymentTemplateDetail">
+        <id column="detail_id" property="detailId" />
+        <result column="template_id" property="templateId" />
+        <result column="money" property="money" />
+        <result column="percentum" property="percentum" />
+        <result column="pay_type" property="payType" />
+        <result column="pay_time" property="payTime" />
+        <result column="date_way" property="dateWay" />
+        <result column="date_number" property="dateNumber" />
+        <result column="remark" property="remark" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        detail_id AS "detailId", template_id AS "templateId", money AS "money", percentum AS "percentum", pay_type AS "payType", pay_time AS "payTime", date_way AS "dateWay", date_number AS "dateNumber", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.template.model.result.PaymentTemplateDetailResult" parameterType="cn.atsoft.dasheng.template.model.params.PaymentTemplateDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_payment_template_detail where 1 = 1
+            <if test="paramCondition.detailId != null">
+                and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+            </if>
+            <if test="paramCondition.templateId != null">
+                and template_id like CONCAT('%',#{paramCondition.templateId},'%')
+            </if>
+            <if test="paramCondition.money != null">
+                and money like CONCAT('%',#{paramCondition.money},'%')
+            </if>
+            <if test="paramCondition.percentum != null">
+                and percentum like CONCAT('%',#{paramCondition.percentum},'%')
+            </if>
+            <if test="paramCondition.payType != null">
+                and pay_type like CONCAT('%',#{paramCondition.payType},'%')
+            </if>
+            <if test="paramCondition.payTime != null and paramCondition.payTime != ''">
+                and pay_time like CONCAT('%',#{paramCondition.payTime},'%')
+            </if>
+            <if test="paramCondition.dateWay != null">
+                and date_way like CONCAT('%',#{paramCondition.dateWay},'%')
+            </if>
+            <if test="paramCondition.dateNumber != null">
+                and date_number like CONCAT('%',#{paramCondition.dateNumber},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.template.model.params.PaymentTemplateDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_payment_template_detail where 1 = 1
+                <if test="paramCondition.detailId != null">
+                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+                </if>
+                <if test="paramCondition.templateId != null">
+                        and template_id like CONCAT('%',#{paramCondition.templateId},'%')
+                </if>
+                <if test="paramCondition.money != null">
+                        and money like CONCAT('%',#{paramCondition.money},'%')
+                </if>
+                <if test="paramCondition.percentum != null">
+                        and percentum like CONCAT('%',#{paramCondition.percentum},'%')
+                </if>
+                <if test="paramCondition.payType != null">
+                        and pay_type like CONCAT('%',#{paramCondition.payType},'%')
+                </if>
+                <if test="paramCondition.payTime != null and paramCondition.payTime != ''">
+                        and pay_time like CONCAT('%',#{paramCondition.payTime},'%')
+                </if>
+                <if test="paramCondition.dateWay != null">
+                        and date_way like CONCAT('%',#{paramCondition.dateWay},'%')
+                </if>
+                <if test="paramCondition.dateNumber != null">
+                        and date_number like CONCAT('%',#{paramCondition.dateNumber},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.template.model.result.PaymentTemplateDetailResult" parameterType="cn.atsoft.dasheng.template.model.params.PaymentTemplateDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_payment_template_detail where 1 = 1
+                <if test="paramCondition.detailId != null">
+                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+                </if>
+                <if test="paramCondition.templateId != null">
+                        and template_id like CONCAT('%',#{paramCondition.templateId},'%')
+                </if>
+                <if test="paramCondition.money != null">
+                        and money like CONCAT('%',#{paramCondition.money},'%')
+                </if>
+                <if test="paramCondition.percentum != null">
+                        and percentum like CONCAT('%',#{paramCondition.percentum},'%')
+                </if>
+                <if test="paramCondition.payType != null">
+                        and pay_type like CONCAT('%',#{paramCondition.payType},'%')
+                </if>
+                <if test="paramCondition.payTime != null and paramCondition.payTime != ''">
+                        and pay_time like CONCAT('%',#{paramCondition.payTime},'%')
+                </if>
+                <if test="paramCondition.dateWay != null">
+                        and date_way like CONCAT('%',#{paramCondition.dateWay},'%')
+                </if>
+                <if test="paramCondition.dateNumber != null">
+                        and date_number like CONCAT('%',#{paramCondition.dateNumber},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.template.model.params.PaymentTemplateDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_payment_template_detail where 1 = 1
+                <if test="paramCondition.detailId != null">
+                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+                </if>
+                <if test="paramCondition.templateId != null">
+                        and template_id like CONCAT('%',#{paramCondition.templateId},'%')
+                </if>
+                <if test="paramCondition.money != null">
+                        and money like CONCAT('%',#{paramCondition.money},'%')
+                </if>
+                <if test="paramCondition.percentum != null">
+                        and percentum like CONCAT('%',#{paramCondition.percentum},'%')
+                </if>
+                <if test="paramCondition.payType != null">
+                        and pay_type like CONCAT('%',#{paramCondition.payType},'%')
+                </if>
+                <if test="paramCondition.payTime != null and paramCondition.payTime != ''">
+                        and pay_time like CONCAT('%',#{paramCondition.payTime},'%')
+                </if>
+                <if test="paramCondition.dateWay != null">
+                        and date_way like CONCAT('%',#{paramCondition.dateWay},'%')
+                </if>
+                <if test="paramCondition.dateNumber != null">
+                        and date_number like CONCAT('%',#{paramCondition.dateNumber},'%')
+                </if>
+    </select>
+
+</mapper>

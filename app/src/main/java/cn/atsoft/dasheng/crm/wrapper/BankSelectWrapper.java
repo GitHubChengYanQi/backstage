@@ -15,5 +15,10 @@ public class BankSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+        String label = Convert.toStr(map.get("bank_name"));
+        String value = Convert.toStr(map.get("bank_id"));
+        map.clear();
+        map.put("label", label);
+        map.put("value", value);
     }
 }
