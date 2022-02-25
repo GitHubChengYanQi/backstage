@@ -230,6 +230,15 @@ public class OrderResult implements Serializable {
     private Long partyABankAccount;
 
     /**
+     * 甲方开户行号
+     */
+    private Long partyABankNo;
+    /**
+     * 乙方方开户行号
+     */
+    private Long partyBBankNo;
+
+    /**
      * 甲方法人
      */
     @ApiModelProperty("甲方法人")

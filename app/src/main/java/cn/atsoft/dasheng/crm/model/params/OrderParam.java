@@ -209,6 +209,15 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     private String partyBCompanyPhone;
 
     /**
+     * 甲方开户行号
+     */
+    private Long partyABankNo;
+    /**
+     * 乙方方开户行号
+     */
+    private Long partyBBankNo;
+
+    /**
      * 乙方传真
      */
     @ApiModelProperty("乙方传真")

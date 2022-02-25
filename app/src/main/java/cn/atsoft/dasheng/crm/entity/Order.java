@@ -392,6 +392,33 @@ public class Order implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Long getPartyABankNo() {
+        return partyABankNo;
+    }
+
+    public void setPartyABankNo(Long partyABankNo) {
+        this.partyABankNo = partyABankNo;
+    }
+
+    public Long getPartyBBankNo() {
+        return partyBBankNo;
+    }
+
+    public void setPartyBBankNo(Long partyBBankNo) {
+        this.partyBBankNo = partyBBankNo;
+    }
+
+    /**
+     * 甲方开户行号
+     */
+    @TableField("party_a_bank_no")
+    private Long partyABankNo;
+    /**
+     * 乙方方开户行号
+     */
+    @TableField("party_b_bank_no")
+    private Long partyBBankNo;
+
     /**
      * 状态
      */
