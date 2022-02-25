@@ -68,4 +68,5 @@ public interface CategoryService extends IService<Category> {
      */
      PageInfo<CategoryResult> findPageBySpec(CategoryParam param);
 
+    void addList(CategoryParam param);
 }

@@ -139,6 +139,16 @@ public class CategoryController extends BaseController {
     }
 
     /**
+     * 批量添加
+      * @param categoryParam
+     * @return
+     */
+    @RequestMapping(value = "/addList", method = RequestMethod.POST)
+    public ResponseData addList(@RequestBody CategoryParam categoryParam) {
+        this.categoryService.addList(categoryParam);
+        return ResponseData.success();
+    }
+    /**
      * 查询列表
      *
      * @author jazz

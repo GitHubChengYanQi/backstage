@@ -51,7 +51,5 @@ public class MessageEntity {
      *
      */
 
-    private Long id;
-    private String insideType;
-    private Object object;
+
 }

@@ -67,6 +67,7 @@ spring:
       simple:
         acknowledge-mode: manual
     prefix: dx
+    testPrefix: song
 
 # 邮件发送（改为自己的账号）
 mail:
