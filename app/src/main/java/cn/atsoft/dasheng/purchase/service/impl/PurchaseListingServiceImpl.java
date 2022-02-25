@@ -147,7 +147,8 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         QueryWrapper<PurchaseListing> listingQueryWrapper = new QueryWrapper<>();
         listingQueryWrapper.in("purchase_ask_id", askIds);
         listingQueryWrapper.eq("status", 0);
-        if (ToolUtil.isNotEmpty(param.getEndTime()) && ToolUtil.isNotEmpty(param.getBeginTime())) {
+
+        if (ToolUtil.isNotEmpty(param.getEndTime()) && ToolUtil.isNotEmpty(param.getBeginTime())) {  //日期查询
             listingQueryWrapper.between("delivery_date", param.getBeginTime(), param.getEndTime());
         }
         if (ToolUtil.isNotEmpty(param.getStockNumber())) {          //小于库存数量
@@ -157,6 +158,9 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
                     add(detail.getSkuId());
                 }
             }});
+        }
+        if (ToolUtil.isNotEmpty(param.getSkuId()) && ToolUtil.isNotEmpty(param.getBrandId())) {
+            listingQueryWrapper.notIn("sku_id", param.getSkuId()).notIn("brand_id", param.getBrandId());
         }
         List<PurchaseListing> purchaseListingList = this.list(listingQueryWrapper);
 

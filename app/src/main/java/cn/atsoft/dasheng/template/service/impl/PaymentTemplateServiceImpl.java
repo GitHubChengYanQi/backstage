@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.template.model.result.PaymentTemplateResult;
 import cn.atsoft.dasheng.template.service.PaymentTemplateDetailService;
 import cn.atsoft.dasheng.template.service.PaymentTemplateService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,6 +37,15 @@ public class PaymentTemplateServiceImpl extends ServiceImpl<PaymentTemplateMappe
 
     @Override
     public void add(PaymentTemplateParam param) {
+
+
+        this.remove(new QueryWrapper<PaymentTemplate>() {{
+            eq("display", 1);
+        }});
+        detailService.remove(new QueryWrapper<PaymentTemplateDetail>() {{
+            eq("display", 1);
+        }});
+
         PaymentTemplate entity = getEntity(param);
         this.save(entity);
         if (ToolUtil.isNotEmpty(param.getTemplates())) {
