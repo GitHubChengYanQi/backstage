@@ -55,7 +55,7 @@ public class Order implements Serializable {
     /**
      * 买方id
      */
-    @TableField("buyer _id")
+    @TableField("buyer_id")
     private Long buyerId;
 
     /**
