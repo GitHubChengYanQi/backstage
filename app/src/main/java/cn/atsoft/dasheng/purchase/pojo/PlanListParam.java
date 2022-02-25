@@ -12,8 +12,7 @@ public class PlanListParam {
     private String endTime;
     private String coding;
     private Long stockNumber;
-
-
+    private List<String> keys;
     private Long skuId;
 
 }
