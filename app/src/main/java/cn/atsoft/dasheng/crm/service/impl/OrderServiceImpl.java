@@ -2,7 +2,10 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Contract;
+import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.ContractService;
+import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -14,6 +17,7 @@ import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
+import cn.atsoft.dasheng.crm.service.BankService;
 import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -61,6 +65,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private QualityTaskService qualityTaskService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private ContactsService contactsService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private PhoneService phoneService;
+    @Autowired
+    private BankService bankService;
 
     @Override
     @Transactional
@@ -173,5 +185,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderResult.setDetailResults(details);
         orderResult.setPaymentResult(paymentResult);
         return orderResult;
+    }
+
+    private void detailFormat(OrderDetailResult result) {
+         contactsService.getById(result.)
     }
 }

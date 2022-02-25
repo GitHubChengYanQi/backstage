@@ -14,6 +14,6 @@ public class PlanListParam {
     private Long stockNumber;
 
 
-    private List<Long> skuId;
-    private List<Long> brandId;
+    private Long skuId;
+
 }

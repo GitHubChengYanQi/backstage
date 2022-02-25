@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.template.service.PaymentTemplateService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,16 +36,19 @@ public class PaymentTemplateServiceImpl extends ServiceImpl<PaymentTemplateMappe
     @Autowired
     private PaymentTemplateDetailService detailService;
 
+
     @Override
     public void add(PaymentTemplateParam param) {
 
-
-        this.remove(new QueryWrapper<PaymentTemplate>() {{
-            eq("display", 1);
-        }});
-        detailService.remove(new QueryWrapper<PaymentTemplateDetail>() {{
-            eq("display", 1);
-        }});
+        if (ToolUtil.isNotEmpty(param.getTemplateId())) {
+            this.removeById(new PaymentTemplate() {{
+                setTemplateId(param.getTemplateId());
+            }});
+            detailService.remove(new QueryWrapper<PaymentTemplateDetail>() {{
+                eq("template_id", param.getTemplateId());
+            }});
+            param.setTemplateId(null);
+        }
 
         PaymentTemplate entity = getEntity(param);
         this.save(entity);

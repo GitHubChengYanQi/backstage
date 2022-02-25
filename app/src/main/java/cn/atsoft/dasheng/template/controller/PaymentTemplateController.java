@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.template.wrapper.PaymentTemplateSelectWrapper;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;

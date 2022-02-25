@@ -329,14 +329,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             for (Inkind inkind : inkinds) {
                 if (bind.getFormId().equals(inkind.getInkindId())) {
                     qrMap.put(inkind.getInkindId(), bind.getOrCodeId());
+                    break;
                 }
             }
         }
 
         for (Inkind inkind : inkinds) {
-            if (judgePosition(binds, inkind)) {
-                throw new ServiceException(500, "入库的物料 未和库位绑定");
-            }
+//            if (judgePosition(binds, inkind)) {
+//                throw new ServiceException(500, "入库的物料 未和库位绑定");
+//            }
             StockDetails stockDetails = new StockDetails();
             stockDetails.setNumber(inkind.getNumber());
             stockDetails.setStorehousePositionsId(positions.get(inkind.getInkindId()));

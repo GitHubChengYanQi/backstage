@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.crm.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 供应商开票
@@ -26,6 +30,11 @@ public class InvoiceResult implements Serializable {
      */
     @ApiModelProperty("开票")
     private Long invoiceId;
+
+    /**
+     * 银行
+     */
+    private Long bankId;
 
     /**
      * 客户id

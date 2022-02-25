@@ -159,8 +159,8 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
                 }
             }});
         }
-        if (ToolUtil.isNotEmpty(param.getSkuId()) && ToolUtil.isNotEmpty(param.getBrandId())) {
-            listingQueryWrapper.notIn("sku_id", param.getSkuId()).notIn("brand_id", param.getBrandId());
+        if (ToolUtil.isNotEmpty(param.getSkuId())) {
+            listingQueryWrapper.eq("sku_id", param.getSkuId());
         }
         List<PurchaseListing> purchaseListingList = this.list(listingQueryWrapper);
 
