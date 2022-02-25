@@ -1,5 +1,10 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.Phone;
+import cn.atsoft.dasheng.crm.entity.Bank;
 import lombok.Data;
 
 import java.util.Date;
@@ -27,6 +32,22 @@ public class OrderResult implements Serializable {
     private PaymentResult paymentResult;
     private List<OrderDetailResult> detailResults;
     private Date date;
+
+    private Customer Acustomer;
+    private Customer Bcustomer;
+
+    private Adress Aadress;
+    private Adress Badress;
+
+    private Contacts Acontacts;
+    private Contacts Bcontacts;
+
+    private Bank Abank;
+    private Bank Bbank;
+
+    private Phone Aphone;
+    private Phone Bphone;
+
     /**
      * 货币种类
      */

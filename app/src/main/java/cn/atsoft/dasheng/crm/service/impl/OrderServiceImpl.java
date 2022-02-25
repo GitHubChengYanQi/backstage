@@ -1,15 +1,13 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Contract;
-import cn.atsoft.dasheng.app.service.AdressService;
-import cn.atsoft.dasheng.app.service.ContactsService;
-import cn.atsoft.dasheng.app.service.ContractService;
-import cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
@@ -73,6 +71,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private PhoneService phoneService;
     @Autowired
     private BankService bankService;
+    @Autowired
+    private CustomerService customerService;
 
     @Override
     @Transactional
@@ -184,10 +184,35 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderDetailResult> details = detailService.getDetails(paymentResult.getOrderId());
         orderResult.setDetailResults(details);
         orderResult.setPaymentResult(paymentResult);
+        detailFormat(orderResult);
         return orderResult;
     }
 
-    private void detailFormat(OrderDetailResult result) {
-         contactsService.getById(result.)
+    private void detailFormat(OrderResult result) {
+        Contacts Acontacts = contactsService.getById(result.getPartyAClientId());//甲方委托人
+        Contacts Bcontacts = contactsService.getById(result.getPartyBClientId());//乙方联系人
+        result.setAcontacts(Acontacts);
+        result.setBcontacts(Bcontacts);
+
+        Bank Abank = bankService.getById(result.getPartyABankId()); //甲方银行
+        Bank Bbank = bankService.getById(result.getPartyBBankId());//乙方银行
+        result.setAbank(Abank);
+        result.setBbank(Bbank);
+
+        Adress Aadress = adressService.getById(result.getPartyAAdressId());//甲方地址
+        Adress Badress = adressService.getById(result.getPartyBAdressId());//乙方地址
+        result.setAadress(Aadress);
+        result.setBadress(Badress);
+
+        Phone Aphone = phoneService.getById(result.getPartyAPhone());//甲方电话；
+        Phone Bphone = phoneService.getById(result.getPartyBPhone());//乙方电话
+        result.setAphone(Aphone);
+        result.setBphone(Bphone);
+
+        Customer Acustomer = customerService.getById(result.getBuyerId());//甲方;
+        Customer Bcustomer = customerService.getById(result.getSellerId());//乙方
+        result.setAcustomer(Acustomer);
+        result.setBcustomer(Bcustomer);
+
     }
 }
