@@ -4,7 +4,7 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.*;
 
 
-
+import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.FreedLog;
@@ -19,6 +19,8 @@ import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -29,7 +31,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -320,6 +325,49 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             add("createTime");
         }};
         return PageFactory.defaultPage(fields);
+    }
+
+    @Override
+    public Set<ContractDetailSetRequest> pendingProductionPlan() {
+        List<ContractDetail> contractDetails = contractDetailService.query().eq("display", 1).eq("status", 0).list();
+        List<ContractDetailResult> contractDetailResults = new ArrayList<>();
+
+        Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
+        for (ContractDetail contractDetail : contractDetails) {
+            ContractDetailSetRequest request = new ContractDetailSetRequest();
+            ToolUtil.copyProperties(contractDetail,request);
+            contractDetailSet.add(request);
+        }
+        for (ContractDetail contractDetail : contractDetails) {
+            ContractDetailResult contractDetailResult = new ContractDetailResult();
+            ToolUtil.copyProperties(contractDetail, contractDetailResult);
+            contractDetailResults.add(contractDetailResult);
+        }
+        this.contractDetailService.format(contractDetailResults);
+        for (ContractDetailSetRequest request : contractDetailSet) {
+            Long quantity = 0L ;
+            List<ContractDetailResult> results = new ArrayList<>();
+            for (ContractDetailResult contractDetailResult : contractDetailResults) {
+                if (
+                        ToolUtil.isNotEmpty(contractDetailResult.getBrandId()) && ToolUtil.isNotEmpty(contractDetailResult.getSkuId()) && ToolUtil.isNotEmpty(contractDetailResult.getCustomerId()) &&
+                        ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
+                                contractDetailResult.getBrandId().equals(request.getBrandId()) && contractDetailResult.getSkuId().equals(request.getSkuId()) && contractDetailResult.getCustomerId().equals(request.getCustomerId())
+                ){
+                    quantity += contractDetailResult.getQuantity();
+                    results.add(contractDetailResult);
+                    request.setSkuId(contractDetailResult.getSkuId());
+                    request.setBrandId(contractDetailResult.getBrandId());
+                    request.setCustomerId(contractDetailResult.getCustomerId());
+                }
+                request.setChildren(results);
+                request.setQuantity(quantity);
+            }
+        }
+
+        return contractDetailSet;
+
+
+
     }
 
     private Contract getOldEntity(ContractParam param) {

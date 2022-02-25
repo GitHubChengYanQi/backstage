@@ -1,12 +1,16 @@
 package cn.atsoft.dasheng.message.topic;
 
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
+import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.MessageParam;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
@@ -61,6 +65,30 @@ public class TopicMessage {
                     messageService.save(messageEntity.getMessage());
                     logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 }
+                break;
+            default:
+        }
+    }
+    @RabbitListener(queues = "${spring.rabbitmq.prefix2}" + MESSAGE_REAL_QUEUE)
+    public void readMicroService(Message message, Channel channel) throws IOException {
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+//        logger.info(new String(message.getBody()));
+        MicroServiceEntity microServiceEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
+        switch (microServiceEntity.getType()) {
+            case CONTRACT:
+                try {
+                    ContractParam contractParam = JSON.parseObject(microServiceEntity.getObject().toString(), ContractParam.class);
+                    switch (microServiceEntity.getOperationType()){
+                        case SAVE:
+                                //保存
+                            break;
+                    }
+                }catch (ServiceException e){
+                    e.printStackTrace();
+                }
+                break;
+
+            case PRODUCTION:
                 break;
             default:
         }
