@@ -135,7 +135,11 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         Matcher m = p.matcher(content);//开始编译
         while (m.find()) {
             String group = m.group(1);
-            if (group.contains("<number>")||group.contains("<text>")|| group.contains("<time>")) {
+            if (group.contains("<input class=\"inp\" placeholder=\"文本框\" disabled=\"\"/>")
+                    ||
+                    group.contains("<input class=\"number\" placeholder=\"数字框\" disabled=\"\"/>")
+                    ||
+                    group.contains("<input class=\"date\" placeholder=\"时间框\" disabled=\"\"/>")) {
                 resultList.add(group);
             }
         }
