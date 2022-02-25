@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
+import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -32,6 +33,8 @@ public class CategoryResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private CategoryResult pidCategoryResult;
     private List<CategoryRequest> categoryRequests;
+    private List<ItemAttributeParam> itemAttributeParams;
+
 
     /**
      * 物品类目Id
