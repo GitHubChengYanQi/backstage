@@ -10,16 +10,14 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
+import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
-import cn.atsoft.dasheng.crm.service.BankService;
-import cn.atsoft.dasheng.crm.service.OrderDetailService;
-import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.crm.service.PaymentService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -73,6 +71,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private BankService bankService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private SupplyService supplyService;
 
     @Override
     @Transactional
@@ -81,8 +81,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         this.save(entity);
 
         detailService.addList(entity.getOrderId(), param.getDetailParams());
-
         paymentService.add(param.getPaymentParam());
+
+        supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
 
         if (ToolUtil.isNotEmpty(param.getContractParam())) {
             contractService.orderAddContract(entity.getOrderId(), param.getContractParam());

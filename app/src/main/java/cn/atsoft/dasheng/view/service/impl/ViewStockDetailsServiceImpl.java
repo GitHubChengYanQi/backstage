@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.view.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -13,6 +15,7 @@ import cn.atsoft.dasheng.view.model.params.ViewStockDetailsParam;
 import cn.atsoft.dasheng.view.model.result.ViewStockDetailsResult;
 import cn.atsoft.dasheng.view.service.ViewStockDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,6 +41,8 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
     StockDetailsService stockDetailsService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private PartsService partsService;
 
 
     @Override
@@ -57,6 +62,12 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
                 break;
             case "spu":
                 results = this.baseMapper.spuList(param);
+                break;
+            case "bom":
+                Parts parts = partsService.getById(param.getPartId());
+                List<Long> skuIds = JSON.parseArray(parts.getChildrens(), Long.class);
+                param.setSkuIds(skuIds);
+                results = this.baseMapper.bomList(param);
                 break;
             default:
                 return null;

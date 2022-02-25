@@ -505,10 +505,25 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         return results;
     }
 
+    /**
+     * 订单回填绑定
+     *
+     * @param customerId
+     * @param params
+     */
+    @Override
     public void OrdersBackfill(Long customerId, List<OrderDetailParam> params) {
         List<Supply> supplies = this.list();
         for (OrderDetailParam param : params) {
             boolean judge = judge(customerId, param, supplies);
+            if (judge) {
+                Supply supply = new Supply();
+                supply.setCustomerId(customerId);
+                supply.setBrandId(param.getBrandId());
+                supply.setSkuId(param.getSkuId());
+                this.save(supply);
+                supplies.add(supply);
+            }
         }
 
     }
