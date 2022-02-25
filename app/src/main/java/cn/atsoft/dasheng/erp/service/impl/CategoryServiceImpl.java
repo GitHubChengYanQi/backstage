@@ -270,6 +270,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      * @param param
      */
     @Override
+    @Transactional
     public void addList(CategoryParam param) {
         if (ToolUtil.isNotEmpty(param.getCategoryId())) {
             this.remove(new QueryWrapper<Category>() {{
@@ -277,7 +278,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             }});
 
             List<ItemAttribute> attributes = itemAttributeService.query().eq("category_id", param.getCategoryId()).list();
-            itemAttributeService.removeByIds(attributes);
+            itemAttributeService.removeByIds(new ArrayList<Long>(){{
+                for (ItemAttribute attribute : attributes) {
+                    add(attribute.getAttributeId());
+                }
+            }});
             attributeValuesService.remove(new QueryWrapper<AttributeValues>() {{
                 in("attribute_id", new ArrayList<Long>() {{
                     for (ItemAttribute attribute : attributes) {

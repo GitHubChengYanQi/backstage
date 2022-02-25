@@ -357,13 +357,15 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         contract.setSourceId(orderId);
 
         Template template = templateService.getById(param.getTemplateId());
-        String content = template.getContent();
-        for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
-            if (content.contains(contractReplace.getOldText())) {
-                content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+        if (ToolUtil.isNotEmpty(template)) {
+            String content = template.getContent();
+            for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
+                if (content.contains(contractReplace.getOldText())) {
+                    content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+                }
             }
+            contract.setContent(content);
+            this.save(contract);
         }
-        contract.setContent(content);
-        this.save(contract);
     }
 }

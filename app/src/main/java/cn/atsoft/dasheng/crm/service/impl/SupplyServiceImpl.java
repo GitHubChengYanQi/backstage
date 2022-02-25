@@ -450,7 +450,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             long stockNumber = 0L;
             long applyNumber = 0L;
             for (StockDetails stockDetail : stockDetails) {
-                if (stockDetail.getSkuId().equals(datum.getSkuId()) && stockDetail.getBrandId().equals(datum.getBrandId())) {
+                if (ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getSkuId().equals(datum.getSkuId()) && stockDetail.getBrandId().equals(datum.getBrandId())) {
                     stockNumber = stockNumber + stockDetail.getNumber();
                 }
             }
