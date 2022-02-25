@@ -87,6 +87,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (ToolUtil.isNotEmpty(param.getContractParam())) {
             contractService.orderAddContract(entity.getOrderId(), param.getContractParam());
         }
+
         String type = null;
         String source = null;
         switch (param.getType()) {

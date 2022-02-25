@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -502,5 +503,22 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             results.add(supplyResult);
         }
         return results;
+    }
+
+    public void OrdersBackfill(Long customerId, List<OrderDetailParam> params) {
+        List<Supply> supplies = this.list();
+        for (OrderDetailParam param : params) {
+            boolean judge = judge(customerId, param, supplies);
+        }
+
+    }
+
+    private boolean judge(Long customerId, OrderDetailParam param, List<Supply> supplies) {
+        for (Supply supply : supplies) {
+            if (param.getSkuId().equals(supply.getSkuId()) && param.getCustomerId().equals(customerId) && supply.getBrandId().equals(param.getBrandId())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
