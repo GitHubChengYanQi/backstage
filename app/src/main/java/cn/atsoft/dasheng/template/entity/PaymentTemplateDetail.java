@@ -1,20 +1,23 @@
-package cn.atsoft.dasheng.crm.entity;
+package cn.atsoft.dasheng.template.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 
 /**
  * <p>
- * 付款详情
+ * 付款模板详情
  * </p>
  *
  * @author song
- * @since 2022-02-23
+ * @since 2022-02-24
  */
-@TableName("daoxin_crm_payment_detail")
-public class PaymentDetail implements Serializable {
+@TableName("daoxin_payment_template_detail")
+public class PaymentTemplateDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,10 +28,10 @@ public class PaymentDetail implements Serializable {
     private Long detailId;
 
     /**
-     * 付款信息id
+     * 模板id
      */
-    @TableField("payment_id")
-    private Long paymentId;
+    @TableField("template_id")
+    private Long templateId;
 
     /**
      * 金额
@@ -75,14 +78,26 @@ public class PaymentDetail implements Serializable {
     /**
      * 创建者
      */
-    @TableField(value = "create_user", fill = FieldFill.INSERT)
+      @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
-     * 部门编号
+     * 修改者
      */
-    @TableField("deptId")
-    private Long deptId;
+      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    private Date updateTime;
 
     /**
      * 状态
@@ -91,22 +106,11 @@ public class PaymentDetail implements Serializable {
     private Integer display;
 
     /**
-     * 修改时间
+     * 部门编号
      */
-    @TableField(value = "update_time", fill = FieldFill.UPDATE)
-    private Date updateTime;
+    @TableField("deptId")
+    private Long deptId;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /**
-     * 修改者
-     */
-    @TableField(value = "update_user", fill = FieldFill.UPDATE)
-    private Long updateUser;
 
     public Long getDetailId() {
         return detailId;
@@ -116,12 +120,12 @@ public class PaymentDetail implements Serializable {
         this.detailId = detailId;
     }
 
-    public Long getPaymentId() {
-        return paymentId;
+    public Long getTemplateId() {
+        return templateId;
     }
 
-    public void setPaymentId(Long paymentId) {
-        this.paymentId = paymentId;
+    public void setTemplateId(Long templateId) {
+        this.templateId = templateId;
     }
 
     public Integer getMoney() {
@@ -188,28 +192,12 @@ public class PaymentDetail implements Serializable {
         this.createUser = createUser;
     }
 
-    public Long getDeptId() {
-        return deptId;
+    public Long getUpdateUser() {
+        return updateUser;
     }
 
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
-
-    public Integer getDisplay() {
-        return display;
-    }
-
-    public void setDisplay(Integer display) {
-        this.display = display;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    public void setUpdateUser(Long updateUser) {
+        this.updateUser = updateUser;
     }
 
     public Date getCreateTime() {
@@ -220,19 +208,35 @@ public class PaymentDetail implements Serializable {
         this.createTime = createTime;
     }
 
-    public Long getUpdateUser() {
-        return updateUser;
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
-    public void setUpdateUser(Long updateUser) {
-        this.updateUser = updateUser;
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(Integer display) {
+        this.display = display;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     @Override
     public String toString() {
-        return "PaymentDetail{" +
+        return "PaymentTemplateDetail{" +
         "detailId=" + detailId +
-        ", paymentId=" + paymentId +
+        ", templateId=" + templateId +
         ", money=" + money +
         ", percentum=" + percentum +
         ", payType=" + payType +
@@ -240,6 +244,12 @@ public class PaymentDetail implements Serializable {
         ", dateWay=" + dateWay +
         ", dateNumber=" + dateNumber +
         ", remark=" + remark +
+        ", createUser=" + createUser +
+        ", updateUser=" + updateUser +
+        ", createTime=" + createTime +
+        ", updateTime=" + updateTime +
+        ", display=" + display +
+        ", deptId=" + deptId +
         "}";
     }
 }

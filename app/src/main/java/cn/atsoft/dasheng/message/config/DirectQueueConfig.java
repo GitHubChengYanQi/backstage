@@ -36,6 +36,10 @@ public class DirectQueueConfig {
     public final static String MESSAGE_DELAY_ROUTE = ".message.delay.route";
     public final static String MESSAGE_DELAY_QUEUE = ".message.delay.queue";
 
+
+
+
+
     @Bean
     public void init() {
         mqPrefix = tmpPrefix;

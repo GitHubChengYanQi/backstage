@@ -23,7 +23,9 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
+import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -60,6 +62,10 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private CrmCustomerLevelService levelService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private PurchaseListingService listingService;
 
     @Override
     @Transactional
@@ -419,6 +425,9 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
+        List<StockDetails> stockDetails = stockDetailsService.list();
+        List<PurchaseListing> purchaseListings = listingService.query().ne("status", 99).list();
+
 
         for (SupplyResult datum : data) {
             for (SkuResult skuResult : skuResults) {
@@ -438,6 +447,20 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                     datum.setCustomerResult(customerResult);
                 }
             }
+            long stockNumber = 0L;
+            long applyNumber = 0L;
+            for (StockDetails stockDetail : stockDetails) {
+                if (stockDetail.getSkuId().equals(datum.getSkuId()) && stockDetail.getBrandId().equals(datum.getBrandId())) {
+                    stockNumber = stockNumber + stockDetail.getNumber();
+                }
+            }
+            for (PurchaseListing purchaseListing : purchaseListings) {
+                if (purchaseListing.getSkuId().equals(datum.getSkuId()) && purchaseListing.getBrandId().equals(datum.getBrandId())) {
+                    applyNumber = applyNumber + purchaseListing.getApplyNumber();
+                }
+            }
+            datum.setStockNumber(stockNumber);
+            datum.setApplyNumber(applyNumber);
         }
 
     }
