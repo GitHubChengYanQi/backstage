@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.production.mapper.ProductionPlanMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.ProductionPlan">
+        <id column="production_plan_id" property="productionPlanId" />
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
+        <result column="execution_time" property="executionTime" />
+        <result column="user_id" property="userId" />
+        <result column="remark" property="remark" />
+        <result column="create_user" property="createUser" />
+        <result column="deptId" property="deptId" />
+        <result column="display" property="display" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        production_plan_id AS "productionPlanId", theme AS "theme", origin AS "origin", execution_time AS "executionTime", user_id AS "userId", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPlanResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_plan where 1 = 1
+            <if test="paramCondition.productionPlanId != null">
+                and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+            </if>
+            <if test="paramCondition.theme != null and paramCondition.theme != ''">
+                and theme like CONCAT('%',#{paramCondition.theme},'%')
+            </if>
+            <if test="paramCondition.origin != null and paramCondition.origin != ''">
+                and origin like CONCAT('%',#{paramCondition.origin},'%')
+            </if>
+            <if test="paramCondition.executionTime != null and paramCondition.executionTime != ''">
+                and execution_time like CONCAT('%',#{paramCondition.executionTime},'%')
+            </if>
+            <if test="paramCondition.userId != null">
+                and user_id like CONCAT('%',#{paramCondition.userId},'%')
+            </if>
+            <if test="paramCondition.remark != null">
+                and remark like CONCAT('%',#{paramCondition.remark},'%')
+            </if>
+            <if test="paramCondition.createUser != null">
+                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </if>
+            <if test="paramCondition.deptId != null">
+                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+            </if>
+            <if test="paramCondition.display != null">
+                and display like CONCAT('%',#{paramCondition.display},'%')
+            </if>
+            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+            <if test="paramCondition.updateUser != null">
+                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_plan where 1 = 1
+                <if test="paramCondition.productionPlanId != null">
+                        and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+                </if>
+                <if test="paramCondition.theme != null and paramCondition.theme != ''">
+                        and theme like CONCAT('%',#{paramCondition.theme},'%')
+                </if>
+                <if test="paramCondition.origin != null and paramCondition.origin != ''">
+                        and origin like CONCAT('%',#{paramCondition.origin},'%')
+                </if>
+                <if test="paramCondition.executionTime != null and paramCondition.executionTime != ''">
+                        and execution_time like CONCAT('%',#{paramCondition.executionTime},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.remark != null">
+                        and remark like CONCAT('%',#{paramCondition.remark},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPlanResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_plan where 1 = 1
+                <if test="paramCondition.productionPlanId != null">
+                        and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+                </if>
+                <if test="paramCondition.theme != null and paramCondition.theme != ''">
+                        and theme like CONCAT('%',#{paramCondition.theme},'%')
+                </if>
+                <if test="paramCondition.origin != null and paramCondition.origin != ''">
+                        and origin like CONCAT('%',#{paramCondition.origin},'%')
+                </if>
+                <if test="paramCondition.executionTime != null and paramCondition.executionTime != ''">
+                        and execution_time like CONCAT('%',#{paramCondition.executionTime},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.remark != null">
+                        and remark like CONCAT('%',#{paramCondition.remark},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_plan where 1 = 1
+                <if test="paramCondition.productionPlanId != null">
+                        and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+                </if>
+                <if test="paramCondition.theme != null and paramCondition.theme != ''">
+                        and theme like CONCAT('%',#{paramCondition.theme},'%')
+                </if>
+                <if test="paramCondition.origin != null and paramCondition.origin != ''">
+                        and origin like CONCAT('%',#{paramCondition.origin},'%')
+                </if>
+                <if test="paramCondition.executionTime != null and paramCondition.executionTime != ''">
+                        and execution_time like CONCAT('%',#{paramCondition.executionTime},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.remark != null">
+                        and remark like CONCAT('%',#{paramCondition.remark},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+    </select>
+
+</mapper>

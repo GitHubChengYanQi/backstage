@@ -1,5 +1,5 @@
 package cn.atsoft.dasheng.message.enmu;
 
 public enum MicroServiceType {
-    CONTRACT,PRODUCTION,
+    CONTRACT,PRODUCTION_PLAN,
 }

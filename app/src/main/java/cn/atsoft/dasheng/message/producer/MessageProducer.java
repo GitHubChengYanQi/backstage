@@ -1,13 +1,10 @@
 package cn.atsoft.dasheng.message.producer;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.message.config.DirectQueueConfig;
-import cn.atsoft.dasheng.message.config.DirectQueueConfig2;
+import cn.atsoft.dasheng.message.config.MicroServiceDirectQueueConfig;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +12,6 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static cn.atsoft.dasheng.message.config.DirectQueueConfig.*;
 
 @Component
 public class MessageProducer {
@@ -78,7 +73,7 @@ public class MessageProducer {
             String randomString = ToolUtil.getRandomString(5);
 //            String s = messageEntity.getCpData().getDescription() + randomString;
 //            logger.info("发送" + messageEntity.getCpData().getDescription());
-            rabbitTemplate.convertAndSend(DirectQueueConfig2.getMessageRealExchange(), DirectQueueConfig.getMessageRealRoute(), JSON.toJSONString(microServiceEntity));
+            rabbitTemplate.convertAndSend(MicroServiceDirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMessageRealRoute(), JSON.toJSONString(microServiceEntity));
 
         }
     }
@@ -94,7 +89,7 @@ public class MessageProducer {
         microServiceEntity.setExpiration(ttl);
         microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
         if (ToolUtil.isNotEmpty(microServiceEntity.getMaxTimes()) && microServiceEntity.getTimes() <= microServiceEntity.getMaxTimes()) {
-            rabbitTemplate.convertAndSend(DirectQueueConfig2.getMessageRealExchange(), DirectQueueConfig.getMessageRealRoute(), JSON.toJSONString(microServiceEntity), message -> {
+            rabbitTemplate.convertAndSend(MicroServiceDirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMessageRealRoute(), JSON.toJSONString(microServiceEntity), message -> {
                 MessageProperties messageProperties = message.getMessageProperties();
                 messageProperties.setExpiration(ttl.toString());//单位是毫秒
                 return message;

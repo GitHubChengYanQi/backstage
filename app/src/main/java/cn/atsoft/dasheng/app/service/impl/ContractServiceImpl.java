@@ -18,6 +18,10 @@ import cn.atsoft.dasheng.crm.entity.ContractClass;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
@@ -63,6 +67,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
     public ContractResult detail(Long id) {
@@ -99,7 +105,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
                 contractDetailService.saveBatch(param.getContractDetailList());
             }
-
+            messageProducer.microService(new MicroServiceEntity(){{
+                setType(MicroServiceType.CONTRACT);
+                setOperationType(OperationType.SAVE);
+                setObject(param);
+            }});
 
             return results.get(0);
         }

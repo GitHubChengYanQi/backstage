@@ -1,21 +1,16 @@
 package cn.atsoft.dasheng.message.topic;
 
-import cn.atsoft.dasheng.app.entity.BusinessTrack;
-import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
-import cn.atsoft.dasheng.app.model.params.MessageParam;
-import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.hutool.json.JSONUtil;
+import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
+import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
 import me.chanjar.weixin.common.error.WxErrorException;
-import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -27,6 +22,7 @@ import java.io.IOException;
 
 
 import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MESSAGE_REAL_QUEUE;
+import static cn.atsoft.dasheng.message.config.MicroServiceDirectQueueConfig.MICROSERVICE_REAL_QUEUE;
 
 
 @Component
@@ -36,6 +32,9 @@ public class TopicMessage {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private ProductionPlanService productionPlanService;
 
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
@@ -69,26 +68,35 @@ public class TopicMessage {
             default:
         }
     }
-    @RabbitListener(queues = "${spring.rabbitmq.prefix2}" + MESSAGE_REAL_QUEUE)
+    @RabbitListener(queues = "${spring.rabbitmq.prefix}" + MICROSERVICE_REAL_QUEUE)
     public void readMicroService(Message message, Channel channel) throws IOException {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 //        logger.info(new String(message.getBody()));
         MicroServiceEntity microServiceEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
         switch (microServiceEntity.getType()) {
             case CONTRACT:
-                try {
                     ContractParam contractParam = JSON.parseObject(microServiceEntity.getObject().toString(), ContractParam.class);
                     switch (microServiceEntity.getOperationType()){
                         case SAVE:
                                 //保存
                             break;
                     }
-                }catch (ServiceException e){
-                    e.printStackTrace();
-                }
                 break;
 
-            case PRODUCTION:
+            case PRODUCTION_PLAN:
+                ProductionPlanParam productionPlanParam = JSON.parseObject(microServiceEntity.getObject().toString(), ProductionPlanParam.class);
+                switch (microServiceEntity.getOperationType()){
+                    case SAVE:
+                        //保存
+                        productionPlanService.add(productionPlanParam);
+                        break;
+                    case UPDATE:
+                        productionPlanService.update(productionPlanParam);
+                        break;
+                    case DELETE:
+                        productionPlanService.delete(productionPlanParam);
+                        break;
+                }
                 break;
             default:
         }
