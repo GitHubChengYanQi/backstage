@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.service.MicroService;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import com.alibaba.fastjson.JSON;
@@ -26,7 +27,7 @@ import java.io.IOException;
 
 
 import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MESSAGE_REAL_QUEUE;
-import static cn.atsoft.dasheng.message.config.MicroServiceDirectQueueConfig.MICROSERVICE_REAL_QUEUE;
+import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MICROSERVICE_REAL_QUEUE;
 
 
 @Component
@@ -38,7 +39,7 @@ public class TopicMessage {
     private MessageService messageService;
 
     @Autowired
-    private ProductionPlanService productionPlanService;
+    private MicroService microService;
 
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
@@ -69,43 +70,13 @@ public class TopicMessage {
                     logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 }
                 break;
-            case CONTRACT:
-
-                break;
             default:
         }
     }
     @RabbitListener(queues = "${spring.rabbitmq.prefix}" + MICROSERVICE_REAL_QUEUE)
     public void readMicroService(Message message, Channel channel) throws IOException {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-//        logger.info(new String(message.getBody()));
         MicroServiceEntity microServiceEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
-        switch (microServiceEntity.getType()) {
-            case CONTRACT:
-                    ContractParam contractParam = JSON.parseObject(microServiceEntity.getObject().toString(), ContractParam.class);
-                    switch (microServiceEntity.getOperationType()){
-                        case SAVE:
-                                //保存
-                            break;
-                    }
-                break;
-
-            case PRODUCTION_PLAN:
-                ProductionPlanParam productionPlanParam = JSON.parseObject(microServiceEntity.getObject().toString(), ProductionPlanParam.class);
-                switch (microServiceEntity.getOperationType()){
-                    case SAVE:
-                        //保存
-                        productionPlanService.add(productionPlanParam);
-                        break;
-                    case UPDATE:
-                        productionPlanService.update(productionPlanParam);
-                        break;
-                    case DELETE:
-                        productionPlanService.delete(productionPlanParam);
-                        break;
-                }
-                break;
-            default:
-        }
+        microService.microServiceDo(microServiceEntity);
     }
 }

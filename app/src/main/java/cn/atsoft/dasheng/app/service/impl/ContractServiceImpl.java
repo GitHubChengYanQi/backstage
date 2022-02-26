@@ -108,11 +108,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
                 contractDetailService.saveBatch(param.getContractDetailList());
             }
-            messageProducer.microService(new MicroServiceEntity(){{
-                setType(MicroServiceType.CONTRACT);
-                setOperationType(OperationType.SAVE);
-                setObject(param);
-            }});
+
 
             return results.get(0);
         }

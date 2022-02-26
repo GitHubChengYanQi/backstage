@@ -63,7 +63,7 @@ public class MessageProducer {
     /**
      * 普通队列
      *
-     * @param microServiceEntity 内容对象
+     * @param microSerrrrerviceEntity 内容对象
      */
     public void microService(MicroServiceEntity microServiceEntity) {
         microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
@@ -73,7 +73,7 @@ public class MessageProducer {
             String randomString = ToolUtil.getRandomString(5);
 //            String s = messageEntity.getCpData().getDescription() + randomString;
 //            logger.info("发送" + messageEntity.getCpData().getDescription());
-            rabbitTemplate.convertAndSend(MicroServiceDirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMessageRealRoute(), JSON.toJSONString(microServiceEntity));
+            rabbitTemplate.convertAndSend(DirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMicroServiceRealRoute(), JSON.toJSONString(microServiceEntity));
 
         }
     }
@@ -89,7 +89,7 @@ public class MessageProducer {
         microServiceEntity.setExpiration(ttl);
         microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
         if (ToolUtil.isNotEmpty(microServiceEntity.getMaxTimes()) && microServiceEntity.getTimes() <= microServiceEntity.getMaxTimes()) {
-            rabbitTemplate.convertAndSend(MicroServiceDirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMessageRealRoute(), JSON.toJSONString(microServiceEntity), message -> {
+            rabbitTemplate.convertAndSend(DirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMicroServiceRealRoute(), JSON.toJSONString(microServiceEntity), message -> {
                 MessageProperties messageProperties = message.getMessageProperties();
                 messageProperties.setExpiration(ttl.toString());//单位是毫秒
                 return message;
