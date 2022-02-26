@@ -74,7 +74,7 @@ public class Payment implements Serializable {
      * 付款方式
      */
     @TableField("pay_plan")
-    private Integer payPlan;
+    private Long payPlan;
 
     /**
      * 创建者
@@ -175,11 +175,11 @@ public class Payment implements Serializable {
         this.adressId = adressId;
     }
 
-    public Integer getPayPlan() {
+    public Long getPayPlan() {
         return payPlan;
     }
 
-    public void setPayPlan(Integer payPlan) {
+    public void setPayPlan(Long payPlan) {
         this.payPlan = payPlan;
     }
 

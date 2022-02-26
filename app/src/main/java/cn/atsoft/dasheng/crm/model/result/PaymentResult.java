@@ -73,7 +73,7 @@ public class PaymentResult implements Serializable {
      * 付款方式
      */
     @ApiModelProperty("付款方式")
-    private Integer payPlan;
+    private Long payPlan;
 
     /**
      * 创建者
