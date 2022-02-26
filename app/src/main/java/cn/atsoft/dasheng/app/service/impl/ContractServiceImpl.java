@@ -377,8 +377,43 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
             contract.setPartyAContactsId(orderParam.getPartyAContactsId());
             contract.setPartyBContactsId(orderParam.getPartyBContactsId());
+            try {
+                if (content.contains("${{Acontacts}}") && ToolUtil.isNotEmpty(orderParam.getPartyAContactsId())) {
+                    Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
+                    content = content.replace("${{Acontacts}}", contacts.getContactsName());
+                }
+                if (content.contains("${{Bcontacts}}") && ToolUtil.isNotEmpty(orderParam.getPartyBContactsId())) {
+                    Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
+                    content = content.replace("${{Bcontacts}}", contacts.getContactsName());
+                }
+                if (content.contains("${{AAddress}}") && ToolUtil.isNotEmpty(orderParam.getPartyAAdressId())) {
+                    Adress adress = adressService.getById(orderParam.getPartyAAdressId());
+                    content = content.replace("${{AAddress}}", adress.getLocation());
+                }
+                if (content.contains("${{BAddress}}") && ToolUtil.isNotEmpty(orderParam.getPartyBAdressId())) {
+                    Adress adress = adressService.getById(orderParam.getPartyBAdressId());
+                    content = content.replace("${{BAddress}}", adress.getLocation());
+                }
+                if (content.contains("${{APhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyAPhone())) {
+                    Phone phone = phoneService.getById(orderParam.getPartyAPhone());
+                    content = content.replace("${{APhone}}", phone.getPhoneNumber().toString());
+                }
+                if (content.contains("${{BPhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyBPhone())) {
+                    Phone phone = phoneService.getById(orderParam.getPartyBPhone());
+                    content = content.replace("${{BPhone}}", phone.getPhoneNumber().toString());
+                }
 
+                if (content.contains("${{ACustomer}}") && ToolUtil.isNotEmpty(orderParam.getBuyerId())) {
+                    Customer customer = customerService.getById(orderParam.getBuyerId());
+                    content = content.replace("${{ACustomer}}", customer.getCustomerName());
+                }
+                if (content.contains("${{BCustomer}}") && ToolUtil.isNotEmpty(orderParam.getSellerId())) {
+                    Customer customer = customerService.getById(orderParam.getSellerId());
+                    content = content.replace("${{BCustomer}}", customer.getCustomerName());
+                }
+            } catch (Exception e) {
 
+            }
 
             contract.setContent(content);
             this.save(contract);
