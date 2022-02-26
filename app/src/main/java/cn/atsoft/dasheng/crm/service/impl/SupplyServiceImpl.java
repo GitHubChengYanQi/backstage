@@ -530,7 +530,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     private boolean judge(Long customerId, OrderDetailParam param, List<Supply> supplies) {
         for (Supply supply : supplies) {
-            if (param.getSkuId().equals(supply.getSkuId()) && param.getCustomerId().equals(customerId) && supply.getBrandId().equals(param.getBrandId())) {
+            if (param.getSkuId().equals(supply.getSkuId()) && supply.getCustomerId().equals(customerId) && supply.getBrandId().equals(param.getBrandId())) {
                 return false;
             }
         }
