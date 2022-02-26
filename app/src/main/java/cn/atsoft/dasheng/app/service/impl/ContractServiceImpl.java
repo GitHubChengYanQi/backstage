@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
+import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
@@ -350,7 +351,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
      * @param param
      */
     @Override
-    public void orderAddContract(Long orderId, ContractParam param) {
+    public void orderAddContract(Long orderId, ContractParam param, OrderParam orderParam) {
         Contract contract = new Contract();
         ToolUtil.copyProperties(param, contract);
         contract.setSource("订单");
@@ -364,6 +365,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
                 }
             }
+            contract.setPartyA(orderParam.getBuyerId());
+            contract.setPartyB(orderParam.getSellerId());
+
+            contract.setPartyAPhone(orderParam.getPartyAPhone());
+            contract.setPartyBPhone(orderParam.getPartyBPhone());
+
+            contract.setPartyAAdressId(orderParam.getPartyAAdressId());
+            contract.setPartyBAdressId(orderParam.getPartyBAdressId());
+
+
             contract.setContent(content);
             this.save(contract);
         }
