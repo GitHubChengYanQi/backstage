@@ -25,6 +25,8 @@ public class PaymentResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<PaymentDetailResult> detailResults;
+
+    private Integer money;
     /**
      * 付款信息id
      */
