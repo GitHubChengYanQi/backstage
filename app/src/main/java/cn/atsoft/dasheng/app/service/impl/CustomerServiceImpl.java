@@ -372,6 +372,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     ToolUtil.copyProperties(invoice, invoiceResult);
 //                    record.setInvoiceResult(invoiceResult);
                     invoiceResults.add(invoiceResult);
+                    record.setInvoiceResults(invoiceResults);
 //                    break;
                 }
             }
