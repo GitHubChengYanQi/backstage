@@ -372,10 +372,22 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     ToolUtil.copyProperties(invoice, invoiceResult);
 //                    record.setInvoiceResult(invoiceResult);
                     invoiceResults.add(invoiceResult);
+//                    break;
+                }
+            }
+
+
+
+            for (Invoice invoice : invoices) {      //对比开票
+                if (invoice.getInvoiceId().equals(record.getInvoiceId())) {
+                    InvoiceResult invoiceResult = new InvoiceResult();
+                    ToolUtil.copyProperties(invoice, invoiceResult);
+                    record.setInvoiceResult(invoiceResult);
+//                    invoiceResults.add(invoiceResult);
                     break;
                 }
             }
-            record.setInvoiceResults(invoiceResults);
+//            record.setInvoiceResults(invoiceResults);
             for (Adress adress : adresses) {
                 if (adress.getAdressId().equals(record.getDefaultAddress())) {
                     record.setAddress(adress);
