@@ -456,7 +456,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 //        partsResults.sort((PartsResult ord1, PartsResult ord2) -> ord2.getChildren().compareTo(ord1.getChildren()));
 
-        Collections.sort(partsResults, new Comparator<PartsResult>() {
+        partsResults.sort(new Comparator<PartsResult>() {
             public int compare(PartsResult o1, PartsResult o2) {
                 if (o1.getChildren().length() > o2.getChildren().length()) {
                     return 1;

@@ -26,6 +26,8 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<PaymentDetailParam> detailParams;
+
+    private Integer money;
     /**
      * 付款信息id
      */

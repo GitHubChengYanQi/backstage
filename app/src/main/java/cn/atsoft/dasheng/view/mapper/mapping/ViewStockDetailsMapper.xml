@@ -31,6 +31,12 @@
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
+        <if test="paramCondition.skuId !=null ">
+            and sku_id = #{paramCondition.skuId}
+        </if>
+        <if test="paramCondition.spuId !=null ">
+            and spu_id = #{paramCondition.spuId}
+        </if>
         group by spu_classification_id
     </select>
 
@@ -40,10 +46,7 @@
         <include refid="Base_Column_List"/>
         ,sum(number) AS number
         from view_stock_details where 1 = 1
-        <if test="paramCondition.storehouseId != null">
-            and storehouse_id = #{paramCondition.storehouseId}
-        </if>
-        group by spu_id
+         group by spu_id
     </select>
 
     <select id="skuList" resultType="cn.atsoft.dasheng.view.model.result.ViewStockDetailsResult"
@@ -55,8 +58,34 @@
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
+        <if test="paramCondition.skuId !=null ">
+            and sku_id = #{paramCondition.skuId}
+        </if>
+        <if test="paramCondition.spuId !=null ">
+            and spu_id = #{paramCondition.spuId}
+        </if>
         group by sku_id
     </select>
 
+    <select id="bomList" resultType="cn.atsoft.dasheng.view.model.result.ViewStockDetailsResult"
+            parameterType="cn.atsoft.dasheng.view.model.params.ViewStockDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        ,sum(number) AS number
+        from view_stock_details where 1 = 1
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.skuIds">
+            and sku_id = #{paramCondition.skuIds}
+        </if>
+        <if test="paramCondition.skuId !=null ">
+            and sku_id = #{paramCondition.skuId}
+        </if>
+        <if test="paramCondition.spuId !=null ">
+            and spu_id = #{paramCondition.spuId}
+        </if>
+        group by sku_id
+    </select>
 
 </mapper>

@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -502,5 +503,37 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             results.add(supplyResult);
         }
         return results;
+    }
+
+    /**
+     * 订单回填绑定
+     *
+     * @param customerId
+     * @param params
+     */
+    @Override
+    public void OrdersBackfill(Long customerId, List<OrderDetailParam> params) {
+        List<Supply> supplies = this.list();
+        for (OrderDetailParam param : params) {
+            boolean judge = judge(customerId, param, supplies);
+            if (judge) {
+                Supply supply = new Supply();
+                supply.setCustomerId(customerId);
+                supply.setBrandId(param.getBrandId());
+                supply.setSkuId(param.getSkuId());
+                this.save(supply);
+                supplies.add(supply);
+            }
+        }
+
+    }
+
+    private boolean judge(Long customerId, OrderDetailParam param, List<Supply> supplies) {
+        for (Supply supply : supplies) {
+            if (param.getSkuId().equals(supply.getSkuId()) && param.getCustomerId().equals(customerId) && supply.getBrandId().equals(param.getBrandId())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
