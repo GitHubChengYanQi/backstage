@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +42,10 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody OrderParam orderParam) {
+    public ResponseData addItem(@RequestBody @Valid OrderParam orderParam) {
         this.orderService.add(orderParam);
         return ResponseData.success();
     }
-
-
 
 
     /**

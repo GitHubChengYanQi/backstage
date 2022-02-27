@@ -352,11 +352,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
      */
     @Override
     public void orderAddContract(Long orderId, ContractParam param, OrderParam orderParam) {
+        if (ToolUtil.isEmpty(param)) {
+            throw new ServiceException(500, "合同对象为空");
+        }
         Contract contract = new Contract();
         ToolUtil.copyProperties(param, contract);
         contract.setSource("订单");
         contract.setSourceId(orderId);
-
+        if (ToolUtil.isEmpty(param.getTemplateId())) {
+            throw new ServiceException(500, "请选择合同模板");
+        }
         Template template = templateService.getById(param.getTemplateId());
         if (ToolUtil.isNotEmpty(template)) {
             String content = template.getContent();

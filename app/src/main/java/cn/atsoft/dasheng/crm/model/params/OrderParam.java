@@ -87,11 +87,13 @@ public class OrderParam implements Serializable, BaseValidatingParam {
      * 1采购 2销售
      */
     @ApiModelProperty("1采购 2销售")
+    @NotNull
     private Integer type;
 
     /**
      * 是否生成合同
      */
+    @NotNull
     @ApiModelProperty("是否生成合同")
     private Integer generateContract;
 
