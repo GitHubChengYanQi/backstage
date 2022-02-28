@@ -1,17 +1,22 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 生产计划子表
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-02-25
  */
 @Data
@@ -20,12 +25,14 @@ public class ProductionPlanDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private SkuResult skuResult;
     /**
      * 生产计划子表id
      */
     @ApiModelProperty("生产计划子表id")
     private Long productionPlanDetailId;
+
+    private Long stockNumber;
 
     /**
      * 生产计划id
@@ -40,10 +47,13 @@ public class ProductionPlanDetailResult implements Serializable {
     private Long skuId;
 
     /**
-     * 数量
+     * 计划数量
      */
-    @ApiModelProperty("数量")
-    private Integer number;
+    private Integer planNumber;
+    /**
+     * 生产中的数量
+     */
+    private Integer makingNumber;
 
     /**
      * 交付时间

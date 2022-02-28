@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -44,10 +45,13 @@ public class ProductionPlanDetailParam implements Serializable, BaseValidatingPa
     private Long skuId;
 
     /**
-     * 数量
+     * 计划数量
      */
-    @ApiModelProperty("数量")
-    private Integer number;
+    private Integer planNumber;
+    /**
+     * 生产中的数量
+     */
+    private Integer makingNumber;
 
     /**
      * 交付时间

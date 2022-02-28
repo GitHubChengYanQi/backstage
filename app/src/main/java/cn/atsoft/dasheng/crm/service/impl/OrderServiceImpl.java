@@ -52,16 +52,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Autowired
     private ContractService contractService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
-    @Autowired
-    private ActivitiProcessTaskService activitiProcessTaskService;
-    @Autowired
-    private ActivitiProcessService activitiProcessService;
-    @Autowired
-    private QualityTaskService qualityTaskService;
-    @Autowired
-    private WxCpSendTemplate wxCpSendTemplate;
-    @Autowired
     private ContactsService contactsService;
     @Autowired
     private AdressService adressService;
