@@ -152,45 +152,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              */
             Long spuId = spu.getSpuId();
 
-
-            /**
-             * 查询属性，添加属性
-             */
-//            Long itemAttributeId = null;
-//            if (ToolUtil.isNotEmpty(categoryId)) {
-//                //查询出属性id
-//                ItemAttribute InBaseAttribute = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, categoryId).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one();
-//                /**
-//                 * 如果已经创建过产品  但是 没有物料属性  创建物料属性后  创建属性值  最后绑定创建物料
-//                 */
-//
-//                if (ToolUtil.isNotEmpty(InBaseAttribute)) {
-//                    itemAttributeId = InBaseAttribute.getAttributeId();
-//                } else {
-//                    ItemAttribute attribute = new ItemAttribute();
-//                    attribute.setCategoryId(categoryId);
-//                    attribute.setAttribute("规格");
-//                    attribute.setStandard(param.getSpuStandard());
-//                    itemAttributeService.save(attribute);
-//                    itemAttributeId = attribute.getAttributeId();
-//                }
-//            }
-//            Long attributeValuesId = null;
-//            //根据分类查询出属性新建属性值
-//            /**
-//             * 查询属性值  添加属性值
-//             */
-//            AttributeValues InBaseAttributeValue = attributeValuesService.lambdaQuery().eq(AttributeValues::getAttributeId, itemAttributeId).eq(AttributeValues::getAttributeValues, param.getSpecifications()).eq(AttributeValues::getDisplay, 1).one();
-//            if (ToolUtil.isNotEmpty(InBaseAttributeValue)) {
-//                attributeValuesId = InBaseAttributeValue.getAttributeValuesId();
-//            } else {
-//                AttributeValues attributeValues = new AttributeValues();
-//                attributeValues.setAttributeValues(param.getSpecifications());
-//                attributeValues.setAttributeId(itemAttributeId);
-//                attributeValuesService.save(attributeValues);
-//                attributeValuesId = attributeValues.getAttributeValuesId();
-//            }
-
             /**
              * 做匹配保存 属性属性值方法
              *
@@ -380,7 +341,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         Sku entity = getEntity(param);
 
-        list.sort(Comparator.comparing(AttributeValues::getAttributeId));
+
         String json = JSON.toJSONString(list);
 
         entity.setSpuId(spuId);
@@ -462,6 +423,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 list.add(value);
             }
         }
+        list.sort(Comparator.comparing(AttributeValues::getAttributeId));
         return list;
     }
 
