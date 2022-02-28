@@ -9,8 +9,10 @@ import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.CategoryMapper;
+import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
 
+import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.erp.service.CategoryService;
@@ -260,5 +262,57 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 }
             }
         }
+    }
+
+    /**
+     * 批量添加
+     *
+     * @param param
+     */
+    @Override
+    @Transactional
+    public void addList(CategoryParam param) {
+        if (ToolUtil.isNotEmpty(param.getCategoryId())) {
+            this.remove(new QueryWrapper<Category>() {{
+                eq("category_id", param.getCategoryId());
+            }});
+
+            List<ItemAttribute> attributes = itemAttributeService.query().eq("category_id", param.getCategoryId()).list();
+            if (attributes.size() > 0) {
+                itemAttributeService.removeByIds(new ArrayList<Long>() {{
+                    for (ItemAttribute attribute : attributes) {
+                        add(attribute.getAttributeId());
+                    }
+                }});
+                attributeValuesService.remove(new QueryWrapper<AttributeValues>() {{
+                    in("attribute_id", new ArrayList<Long>() {{
+                        for (ItemAttribute attribute : attributes) {
+                            add(attribute.getAttributeId());
+                        }
+                    }});
+                }});
+            }
+
+
+        }
+        Category category = new Category();
+        ToolUtil.copyProperties(param, category);
+        this.save(category);
+
+        for (ItemAttributeParam itemAttributeParam : param.getItemAttributeParams()) {
+            ItemAttribute itemAttribute = new ItemAttribute();
+            ToolUtil.copyProperties(itemAttributeParam, itemAttribute);
+            itemAttribute.setCategoryId(category.getCategoryId());
+            itemAttributeService.save(itemAttribute);
+
+            for (AttributeValuesParam attributeValuesParam : itemAttributeParam.getAttributeValuesParams()) {
+                AttributeValues attributeValues = new AttributeValues();
+                ToolUtil.copyProperties(attributeValuesParam, attributeValues);
+                attributeValues.setAttributeId(itemAttribute.getAttributeId());
+                attributeValuesService.save(attributeValues);
+            }
+
+        }
+
     }
 }

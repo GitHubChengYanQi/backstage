@@ -47,6 +47,13 @@ public interface ViewStockDetailsMapper extends BaseMapper<ViewStockDetails> {
      */
     List<ViewStockDetailsResult> skuList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
 
+    /**  获取bom列表
+     *
+     * @param paramCondition
+     * @return
+     */
+    List<ViewStockDetailsResult> bomList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+
     /**
      * 获取map列表
      *

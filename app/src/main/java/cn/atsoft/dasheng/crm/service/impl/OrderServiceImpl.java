@@ -10,16 +10,14 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
+import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
-import cn.atsoft.dasheng.crm.service.BankService;
-import cn.atsoft.dasheng.crm.service.OrderDetailService;
-import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.crm.service.PaymentService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -73,6 +71,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private BankService bankService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private SupplyService supplyService;
 
     @Override
     @Transactional
@@ -81,49 +81,51 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         this.save(entity);
 
         detailService.addList(entity.getOrderId(), param.getDetailParams());
-
         paymentService.add(param.getPaymentParam());
 
-        if (ToolUtil.isNotEmpty(param.getContractParam())) {
-            contractService.orderAddContract(entity.getOrderId(), param.getContractParam());
-        }
-        String type = null;
-        String source = null;
-        switch (param.getType()) {
-            case 1:
-                type = "purchaseAsk";
-                source = "采购";
-                break;
-            case 2:
-                type = "销售申请";
-                source = "销售申请";
-                break;
-            default:
+        supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
+
+        if (param.getType() == 1) {   //创建合同
+            contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param);
         }
 
+//        String type = null;
+//        String source = null;
+//        switch (param.getType()) {
+//            case 1:
+//                type = "purchaseAsk";
+//                source = "采购";
+//                break;
+//            case 2:
+//                type = "销售申请";
+//                source = "销售申请";
+//                break;
+//            default:
+//        }
+
         //发起审批流程
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", param.getProcessType()).eq("status", 99).eq("module", "purchaseAsk").one();
-        if (ToolUtil.isNotEmpty(activitiProcess)) {
-            qualityTaskService.power(activitiProcess);//检查创建权限
-            LoginUser user = LoginContextHolder.getContext().getUser();
-            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + source + "申请");
-//            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
-            activitiProcessTaskParam.setUserId(param.getCreateUser());
-            activitiProcessTaskParam.setFormId(entity.getOrderId());
-            activitiProcessTaskParam.setType(type);
-            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-            //添加小铃铛
-            wxCpSendTemplate.setSource("processTask");
-            wxCpSendTemplate.setSourceId(taskId);
-            //添加log
-            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getOrderId(), type);
-            activitiProcessLogService.autoAudit(taskId, 1);
-        } else {
-//            entity.setStatus(99);
-//            this.updateById(entity);
-        }
+//        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", param.getProcessType()).eq("status", 99).eq("module", "purchaseAsk").one();
+//        if (ToolUtil.isNotEmpty(activitiProcess)) {
+//            qualityTaskService.power(activitiProcess);//检查创建权限
+//            LoginUser user = LoginContextHolder.getContext().getUser();
+//            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+//            activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + source + "申请");
+////            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
+//            activitiProcessTaskParam.setUserId(param.getCreateUser());
+//            activitiProcessTaskParam.setFormId(entity.getOrderId());
+//            activitiProcessTaskParam.setType(type);
+//            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+//            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+//            //添加小铃铛
+//            wxCpSendTemplate.setSource("processTask");
+//            wxCpSendTemplate.setSourceId(taskId);
+//            //添加log
+//            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getOrderId(), type);
+//            activitiProcessLogService.autoAudit(taskId, 1);
+//        } else {
+////            entity.setStatus(99);
+////            this.updateById(entity);
+//        }
     }
 
     @Override

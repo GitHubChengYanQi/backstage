@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
+import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
@@ -405,20 +406,77 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
      * @param param
      */
     @Override
-    public void orderAddContract(Long orderId, ContractParam param) {
+    public void orderAddContract(Long orderId, ContractParam param, OrderParam orderParam) {
+        if (ToolUtil.isEmpty(param)) {
+            throw new ServiceException(500, "合同对象为空");
+        }
         Contract contract = new Contract();
         ToolUtil.copyProperties(param, contract);
         contract.setSource("订单");
         contract.setSourceId(orderId);
-
-        Template template = templateService.getById(param.getTemplateId());
-        String content = template.getContent();
-        for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
-            if (content.contains(contractReplace.getOldText())) {
-                content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
-            }
+        if (ToolUtil.isEmpty(param.getTemplateId())) {
+            throw new ServiceException(500, "请选择合同模板");
         }
-        contract.setContent(content);
-        this.save(contract);
+        Template template = templateService.getById(param.getTemplateId());
+        if (ToolUtil.isNotEmpty(template)) {
+            String content = template.getContent();
+            for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
+                if (content.contains(contractReplace.getOldText())) {
+                    content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+                }
+            }
+            contract.setPartyA(orderParam.getBuyerId());
+            contract.setPartyB(orderParam.getSellerId());
+
+            contract.setPartyAPhone(orderParam.getPartyAPhone());
+            contract.setPartyBPhone(orderParam.getPartyBPhone());
+
+            contract.setPartyAAdressId(orderParam.getPartyAAdressId());
+            contract.setPartyBAdressId(orderParam.getPartyBAdressId());
+
+
+            contract.setPartyAContactsId(orderParam.getPartyAContactsId());
+            contract.setPartyBContactsId(orderParam.getPartyBContactsId());
+            try {
+                if (content.contains("${{Acontacts}}") && ToolUtil.isNotEmpty(orderParam.getPartyAContactsId())) {
+                    Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
+                    content = content.replace("${{Acontacts}}", contacts.getContactsName());
+                }
+                if (content.contains("${{Bcontacts}}") && ToolUtil.isNotEmpty(orderParam.getPartyBContactsId())) {
+                    Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
+                    content = content.replace("${{Bcontacts}}", contacts.getContactsName());
+                }
+                if (content.contains("${{AAddress}}") && ToolUtil.isNotEmpty(orderParam.getPartyAAdressId())) {
+                    Adress adress = adressService.getById(orderParam.getPartyAAdressId());
+                    content = content.replace("${{AAddress}}", adress.getLocation());
+                }
+                if (content.contains("${{BAddress}}") && ToolUtil.isNotEmpty(orderParam.getPartyBAdressId())) {
+                    Adress adress = adressService.getById(orderParam.getPartyBAdressId());
+                    content = content.replace("${{BAddress}}", adress.getLocation());
+                }
+                if (content.contains("${{APhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyAPhone())) {
+                    Phone phone = phoneService.getById(orderParam.getPartyAPhone());
+                    content = content.replace("${{APhone}}", phone.getPhoneNumber().toString());
+                }
+                if (content.contains("${{BPhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyBPhone())) {
+                    Phone phone = phoneService.getById(orderParam.getPartyBPhone());
+                    content = content.replace("${{BPhone}}", phone.getPhoneNumber().toString());
+                }
+
+                if (content.contains("${{ACustomer}}") && ToolUtil.isNotEmpty(orderParam.getBuyerId())) {
+                    Customer customer = customerService.getById(orderParam.getBuyerId());
+                    content = content.replace("${{ACustomer}}", customer.getCustomerName());
+                }
+                if (content.contains("${{BCustomer}}") && ToolUtil.isNotEmpty(orderParam.getSellerId())) {
+                    Customer customer = customerService.getById(orderParam.getSellerId());
+                    content = content.replace("${{BCustomer}}", customer.getCustomerName());
+                }
+            } catch (Exception e) {
+
+            }
+
+            contract.setContent(content);
+            this.save(contract);
+        }
     }
 }

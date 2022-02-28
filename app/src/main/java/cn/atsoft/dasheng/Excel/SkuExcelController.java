@@ -105,7 +105,7 @@ public class SkuExcelController {
                     Object header = readRow.get(j);
                     String data = hang.get(j).toString();
                     switch (header.toString()) {
-                        case "成品码":
+                        case "物料编码":
                             if (ToolUtil.isEmpty(data)) {
                                 data = null;
                                 skuExcelItem.setStandard(null);
@@ -163,7 +163,7 @@ public class SkuExcelController {
             try {
                 //成品码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
-                    throw new ServiceException(500, "成品码不存在");
+                    throw new ServiceException(500, "物料编码不存在");
                 } else {
                     skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
                     for (Sku sku : skus) {
@@ -189,31 +189,27 @@ public class SkuExcelController {
                 if (ToolUtil.isEmpty(spuClass)) {
                     throw new ServiceException(500, "没有分类");
                 }
-                //物料分类------------------------------------------------------------------------------------------
-                if (ToolUtil.isEmpty(skuExcelItem.getSpuName())) {
-                    throw new ServiceException(500, "参数错误");
+
+                //产品--------------------------------------------------------------------------------------------
+                if (ToolUtil.isEmpty(skuExcelItem.getClassItem())) {
+                    throw new ServiceException(500, "产品不存在");
                 }
-                skuExcelItem.setSpuName(skuExcelItem.getSpuName().replaceAll(" ", ""));
+                skuExcelItem.setSpuName(skuExcelItem.getClassItem().replaceAll(" ", ""));
                 Long categoryId = null;
                 for (Category category : categories) {
-                    if (skuExcelItem.getSpuName().equals(category.getCategoryName())) {
+                    if (skuExcelItem.getClassItem().equals(category.getCategoryName())) {
                         categoryId = category.getCategoryId();
                         break;
                     }
                 }
                 if (ToolUtil.isEmpty(categoryId)) {
                     Category category = new Category();
-                    category.setCategoryName(skuExcelItem.getSpuName());
+                    category.setCategoryName(skuExcelItem.getClassItem());
                     categoryService.save(category);
                     categories.add(category);
                     categoryId = category.getCategoryId();
                 }
-
-                //产品--------------------------------------------------------------------------------------------
-                if (ToolUtil.isEmpty(skuExcelItem.getClassItem())) {
-                    throw new ServiceException(500, "产品不存在");
-                }
-                skuExcelItem.setClassItem(skuExcelItem.getClassItem().replaceAll(" ", ""));
+      
                 Spu newItem = null;
                 for (Spu spu : spuList) {
                     if (skuExcelItem.getClassItem().equals(spu.getName())) {
@@ -302,7 +298,7 @@ public class SkuExcelController {
                 if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
                     skuList.add(newSku);
                 }
-
+                newSku.setSpuId(newItem.getSpuId());
             } catch (Exception e) {
                 logger.error("写入异常:" + "第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);   //错误异常
                 skuExcelItem.setError(e.getMessage());

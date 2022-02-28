@@ -44,6 +44,8 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
     private List<Long> skuIds;
 
     private List<Long> noSkuIds;
+    private List<Long> noBrandIds;
+    private List<Long> noCustomerIds;
 
     @ApiModelProperty("")
     private Long supplyId;

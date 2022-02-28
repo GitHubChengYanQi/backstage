@@ -94,9 +94,27 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
-        <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
+        <if test="paramCondition.noSkuIds != null and paramCondition.noSkuIds.size > 0
+        and paramCondition.noBrandIds !=null and paramCondition.noBrandIds.size>0
+ and paramCondition.noCustomerIds !=null and paramCondition.noCustomerIds.size>0 ">
             and sku_id not in
             <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+            union
+            select
+            <include refid="Base_Column_List"/>
+            from daoxin_supply where 1 = 1 and display = 1
+            and brand_id not in
+            <foreach collection="paramCondition.noBrandIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+            union
+            select
+            <include refid="Base_Column_List"/>
+            from daoxin_supply where 1 = 1 and display = 1
+            and customer_id not in
+            <foreach collection="paramCondition.noCustomerIds" index="index" item="state" separator="," close=")" open="(">
                 #{state}
             </foreach>
         </if>

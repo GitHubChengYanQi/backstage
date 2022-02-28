@@ -25,6 +25,8 @@ public class PaymentResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<PaymentDetailResult> detailResults;
+
+    private Integer money;
     /**
      * 付款信息id
      */
@@ -71,7 +73,7 @@ public class PaymentResult implements Serializable {
      * 付款方式
      */
     @ApiModelProperty("付款方式")
-    private Integer payPlan;
+    private Long payPlan;
 
     /**
      * 创建者
