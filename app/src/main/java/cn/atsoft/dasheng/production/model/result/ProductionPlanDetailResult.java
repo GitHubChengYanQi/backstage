@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.servlet.http.Part;
 import java.util.List;
 
 /**
@@ -24,6 +26,8 @@ import java.util.List;
 public class ProductionPlanDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private PartsResult partsResult;
 
     private SkuResult skuResult;
     /**
