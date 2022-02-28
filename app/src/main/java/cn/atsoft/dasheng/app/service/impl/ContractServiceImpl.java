@@ -340,9 +340,17 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
     @Override
     public Set<ContractDetailSetRequest> pendingProductionPlan() {
-        List<ContractDetail> contractDetails = contractDetailService.query().eq("display", 1).eq("status", 0).list();
+        List<Contract> contracts = this.query().eq("source", "销售").eq("display", 1).list();
+        List<Long> contractIds = new ArrayList<>();
+        for (Contract contract : contracts) {
+            contractIds.add(contract.getContractId());
+        }
+        List<ContractDetail> contractDetails = contractIds.size() == 0 ? new ArrayList<>() : contractDetailService.query().eq("display", 1).in("contract_id",contractIds).list();
         List<ContractDetailResult> contractDetailResults = new ArrayList<>();
 
+        /**
+         * 返回合并后的数据
+         */
         Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
         for (ContractDetail contractDetail : contractDetails) {
             ContractDetailSetRequest request = new ContractDetailSetRequest();

@@ -162,7 +162,7 @@ public class ContractController extends BaseController {
         return ResponseData.success(result);
     }
     @RequestMapping(value = "/pendingProductionPlan", method = RequestMethod.POST)
-    @ApiOperation("Select数据接口")
+    @ApiOperation("待生产计划")
     public ResponseData pendingProductionPlan(){
         Set<ContractDetailSetRequest> contractDetailSetRequests = this.contractService.pendingProductionPlan();
         return ResponseData.success(contractDetailSetRequests);
