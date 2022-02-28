@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
+import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
@@ -9,6 +11,7 @@ import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -70,6 +73,8 @@ public interface ContractService extends IService<Contract> {
      * @Date 2021-07-21
      */
     PageInfo<ContractResult> findPageBySpec(ContractParam param, DataScope dataScope);
+
+    Set<ContractDetailSetRequest> pendingProductionPlan();
 
     void batchDelete(List<Long> id);
 

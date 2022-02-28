@@ -58,7 +58,7 @@ public class SkuExportExcel extends BaseController {
     @ApiOperation("导出")
     public void qrCodetoExcel(HttpServletResponse response, Long type, String url) throws IOException {
         String title = "二维码导出表单";
-        String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量", "规格"};
+        String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量", "规格"};
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();

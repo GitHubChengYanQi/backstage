@@ -4,15 +4,18 @@ import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.model.params.MessageParam;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.ContractService;
+import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
-import cn.hutool.json.JSONUtil;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.service.MicroService;
+import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
+import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
 import me.chanjar.weixin.common.error.WxErrorException;
-import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -24,6 +27,7 @@ import java.io.IOException;
 
 
 import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MESSAGE_REAL_QUEUE;
+import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MICROSERVICE_REAL_QUEUE;
 
 
 @Component
@@ -35,7 +39,7 @@ public class TopicMessage {
     private MessageService messageService;
 
     @Autowired
-    private ContractService contractService;
+    private MicroService microService;
 
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
@@ -66,10 +70,13 @@ public class TopicMessage {
                     logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 }
                 break;
-            case CONTRACT:
-
-                break;
             default:
         }
+    }
+    @RabbitListener(queues = "${spring.rabbitmq.prefix}" + MICROSERVICE_REAL_QUEUE)
+    public void readMicroService(Message message, Channel channel) throws IOException {
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        MicroServiceEntity microServiceEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
+        microService.microServiceDo(microServiceEntity);
     }
 }

@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.app.controller;
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
+import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
+import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import cn.atsoft.dasheng.app.model.result.ContractRequest;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
@@ -27,6 +29,7 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -157,6 +160,12 @@ public class ContractController extends BaseController {
         ContractMachineSelectWrapper customerSelectWrapper = new ContractMachineSelectWrapper(list);
         List<Map<String, Object>> result = customerSelectWrapper.wrap();
         return ResponseData.success(result);
+    }
+    @RequestMapping(value = "/pendingProductionPlan", method = RequestMethod.POST)
+    @ApiOperation("待生产计划")
+    public ResponseData pendingProductionPlan(){
+        Set<ContractDetailSetRequest> contractDetailSetRequests = this.contractService.pendingProductionPlan();
+        return ResponseData.success(contractDetailSetRequests);
     }
 
 

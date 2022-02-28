@@ -58,6 +58,7 @@ public class SkuResult implements Serializable {
     private List<BrandResult> brandResultList;
     private BrandResult brandResult;
     private User user;
+    private Boolean inBom;
 
     /**
      * 之间方案id

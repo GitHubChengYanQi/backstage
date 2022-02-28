@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.Attribute;
+import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
@@ -21,6 +22,10 @@ import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -80,6 +85,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Autowired
     private StockDetailsService stockDetailsService;
+
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Transactional
     @Override
@@ -238,6 +246,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     setSkuId(entity.getSkuId());
                 }});
             }
+            messageProducer.microService(new MicroServiceEntity(){{
+                setType(MicroServiceType.CONTRACT);
+                setOperationType(OperationType.SAVE);
+                setObject(new ContractParam());
+                setTimes(0);
+                setMaxTimes(2);
+            }},100);
+
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
             if (ToolUtil.isEmpty(spuId)) {
@@ -632,8 +648,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> valuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
-
+        List<Long> skuIds = new ArrayList<>();
         for (SkuResult skuResult : param) {
+            skuIds.add(skuResult.getSkuId());
             spuIds.add(skuResult.getSpuId());
             userIds.add(skuResult.getCreateUser());
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
@@ -686,8 +703,22 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
 
+        /**
+         * 查询清单
+         */
+
+        List<Parts> parts = partsService.query().in("sku_id", skuIds).eq("display", 1).list();
+
 
         for (SkuResult skuResult : param) {
+            skuResult.setInBom(false);
+
+            for (Parts part : parts) {
+                if (part.getSkuId().equals(skuResult.getSkuId())){
+                    skuResult.setInBom(true);
+                    break;
+                }
+            }
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(skuResult.getCreateUser()) && user.getUserId().equals(skuResult.getCreateUser())) {
                     skuResult.setUser(user);
