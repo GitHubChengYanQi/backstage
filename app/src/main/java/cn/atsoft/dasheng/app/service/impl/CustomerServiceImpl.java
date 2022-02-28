@@ -22,6 +22,10 @@ import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -89,6 +93,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Autowired
     private CrmCustomerLevelService levelService;
 
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
     @FreedLog
@@ -376,6 +382,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 //                    break;
                 }
             }
+            record.setInvoiceResults(invoiceResults);
 
 
 
