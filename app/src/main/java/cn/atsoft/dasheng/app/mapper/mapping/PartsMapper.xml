@@ -135,6 +135,9 @@
         <if test="paramCondition.spuId != null">
             and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
         </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
         <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
             and attribute like CONCAT('%',#{paramCondition.attribute},'%')
         </if>

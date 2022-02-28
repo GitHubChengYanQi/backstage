@@ -41,6 +41,7 @@ public class SkuResult implements Serializable {
     private String categoryName;
     private SpuResult spuResult;
     private String spuName;
+    private Long partsId;
     private String createUserName;
     private String skuTextValue;
     private Long spuClass;

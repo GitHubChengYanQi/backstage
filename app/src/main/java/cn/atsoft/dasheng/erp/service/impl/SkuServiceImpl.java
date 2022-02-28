@@ -91,8 +91,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Transactional
     @Override
-    public void add(SkuParam param) {
+    public Long add(SkuParam param) {
 
+        Long skuId = null;
 
         /**
          * type=1 是整机添加
@@ -237,6 +238,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              */
 
             this.save(entity);
+            skuId = entity.getSkuId();
             /**
              * 绑定品牌（多个）
              */
@@ -303,6 +305,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     throw new ServiceException(500, "此物料在产品中已存在");
                 } else {
                     this.save(entity);
+                    skuId = entity.getSkuId();
                     /**
                      * 绑定品牌（多个）
                      */
@@ -316,6 +319,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
         }
+        return skuId;
     }
 
     @Override
@@ -714,6 +718,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             for (Parts part : parts) {
                 if (part.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setInBom(true);
+                    skuResult.setPartsId(part.getPartsId());
                     break;
                 }
             }
