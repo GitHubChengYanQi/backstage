@@ -62,7 +62,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public void add(PartsParam partsParam) {
 
-        Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
+        Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("type", partsParam.getType()).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(one)) {
             Parts parts = new Parts();
             ToolUtil.copyProperties(partsParam, parts);
