@@ -141,7 +141,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
              */
-            Spu spu = this.getOrSaveSpu(param,spuClassificationId, categoryId);
+            Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
             List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
             if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
                 throw new ServiceException(500, "此物料在产品中已存在");
@@ -246,13 +246,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     setSkuId(entity.getSkuId());
                 }});
             }
-            messageProducer.microService(new MicroServiceEntity(){{
+            messageProducer.microService(new MicroServiceEntity() {{
                 setType(MicroServiceType.CONTRACT);
                 setOperationType(OperationType.ADD);
                 setObject(new ContractParam());
                 setTimes(0);
                 setMaxTimes(2);
-            }},100);
+            }}, 100);
 
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
@@ -362,8 +362,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * sku名称（skuName）加型号(spuName)判断防止重复
          */
-        Spu spu = this.getOrSaveSpu(param , spuClassificationId, categoryId);
-        Long spuId =spu.getSpuId();
+        Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
+        Long spuId = spu.getSpuId();
         List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
         if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
             throw new ServiceException(500, "此物料在产品中已存在");
@@ -401,8 +401,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }});
         }
     }
-
-
 
 
     @Transactional
@@ -707,14 +705,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 查询清单
          */
 
-        List<Parts> parts = partsService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).list();
 
 
         for (SkuResult skuResult : param) {
             skuResult.setInBom(false);
 
             for (Parts part : parts) {
-                if (part.getSkuId().equals(skuResult.getSkuId())){
+                if (part.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setInBom(true);
                     break;
                 }
@@ -1086,6 +1084,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return entity;
 
     }
+
     private Spu getOrSaveSpu(SkuParam param, Long spuClassificationId, Long categoryId) {
         Spu spu = new Spu();
         Long spuId = param.getSpu().getSpuId();
