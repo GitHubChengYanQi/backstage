@@ -105,7 +105,7 @@ public class SkuExcelController {
                     Object header = readRow.get(j);
                     String data = hang.get(j).toString();
                     switch (header.toString()) {
-                        case "成品码":
+                        case "物料编码":
                             if (ToolUtil.isEmpty(data)) {
                                 data = null;
                                 skuExcelItem.setStandard(null);
@@ -163,7 +163,7 @@ public class SkuExcelController {
             try {
                 //成品码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
-                    throw new ServiceException(500, "成品码不存在");
+                    throw new ServiceException(500, "物料编码不存在");
                 } else {
                     skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
                     for (Sku sku : skus) {
@@ -302,7 +302,7 @@ public class SkuExcelController {
                 if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
                     skuList.add(newSku);
                 }
-
+                newSku.setSpuId(newItem.getSpuId());
             } catch (Exception e) {
                 logger.error("写入异常:" + "第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);   //错误异常
                 skuExcelItem.setError(e.getMessage());
