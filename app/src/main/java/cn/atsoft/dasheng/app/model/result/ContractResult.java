@@ -29,6 +29,8 @@ public class ContractResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private ContractClassResult classResult;
+
+    private List<ContractDetailResult> contractDetailResults;
     /**
      * 合同id
      */

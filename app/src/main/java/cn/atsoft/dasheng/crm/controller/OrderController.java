@@ -75,6 +75,35 @@ public class OrderController extends BaseController {
         }
         return this.orderService.findPageBySpec(orderParam);
     }
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/pendingProductionPlan", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData pendingProductionPlan(@RequestBody(required = false) OrderParam orderParam) {
+        if (ToolUtil.isEmpty(orderParam)) {
+            orderParam = new OrderParam();
+        }
+
+        return ResponseData.success(this.orderService.pendingProductionPlan(orderParam));
+    }
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/pendingProductionPlanByContracts", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData pendingProductionPlanByContracts(@RequestBody(required = false) OrderParam orderParam) {
+        if (ToolUtil.isEmpty(orderParam)) {
+            orderParam = new OrderParam();
+        }
+        return ResponseData.success(this.orderService.pendingProductionPlanByContracts(orderParam)) ;
+    }
 
 
 }
