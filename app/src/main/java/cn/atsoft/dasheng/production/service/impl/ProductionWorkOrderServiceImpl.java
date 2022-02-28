@@ -1,20 +1,31 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.service.StepsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProcessRoute;
+import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.mapper.ProductionWorkOrderMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
+import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import  cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +38,18 @@ import java.util.List;
  */
 @Service
 public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOrderMapper, ProductionWorkOrder> implements ProductionWorkOrderService {
+
+    @Autowired
+    private PartsService partsService;
+
+    @Autowired
+    private ProcessRouteService processRouteService;
+
+
+    @Autowired
+    private StepsService stepsService;
+
+
 
     @Override
     public void add(ProductionWorkOrderParam param){
@@ -80,6 +103,37 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
         ProductionWorkOrder entity = new ProductionWorkOrder();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public void microServiceAdd(Object param){
+        List<ProductionPlanDetail> productionPlanDetails = JSON.parseArray(param.toString(), ProductionPlanDetail.class);
+        List<Long> skuIds = new ArrayList<>();  //先取出物料   去bom中查找
+        for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
+            skuIds.add(productionPlanDetail.getSkuId());
+        }
+
+        Parts designParts = partsService.query().in("sku_id",skuIds).eq("type", 1).eq("display", 1).eq("status", 99).one();
+        if (ToolUtil.isNotEmpty(designParts)){
+            throw new ServiceException(500,"请先创建设计bom");
+        }
+        Parts productionParts = partsService.query().in("sku_id",skuIds).eq("type", 2).eq("display", 1).eq("status", 99).one();
+        if (ToolUtil.isNotEmpty(productionParts)){
+            throw new ServiceException(500,"请先创建生产bom");
+        }
+
+
+        ProcessRoute processRoute = processRouteService.query().eq("parts_id", productionParts.getPartsId()).eq("status", 99).one();
+
+
+
+    }
+    private void loopGetSetps(List<ActivitiSteps> shipIds,List<Long> processRouteIds){
+        List<ActivitiSteps> activitiSteps = stepsService.query().eq("step_type", "setp").in("form_id",processRouteIds).list();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            if (activitiStep.getStepType().equals("shipRoute")){
+                processRouteIds.add(activitiStep.getFormId())
+            }
+        }
     }
 
 }
