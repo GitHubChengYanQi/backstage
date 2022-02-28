@@ -648,8 +648,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> valuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
-
+        List<Long> skuIds = new ArrayList<>();
         for (SkuResult skuResult : param) {
+            skuIds.add(skuResult.getSkuId());
             spuIds.add(skuResult.getSpuId());
             userIds.add(skuResult.getCreateUser());
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
@@ -702,8 +703,22 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
 
+        /**
+         * 查询清单
+         */
+
+        List<Parts> parts = partsService.query().in("sku_id", skuIds).eq("display", 1).list();
+
 
         for (SkuResult skuResult : param) {
+            skuResult.setInBom(false);
+
+            for (Parts part : parts) {
+                if (part.getSkuId().equals(skuResult.getSkuId())){
+                    skuResult.setInBom(true);
+                    break;
+                }
+            }
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(skuResult.getCreateUser()) && user.getUserId().equals(skuResult.getCreateUser())) {
                     skuResult.setUser(user);
