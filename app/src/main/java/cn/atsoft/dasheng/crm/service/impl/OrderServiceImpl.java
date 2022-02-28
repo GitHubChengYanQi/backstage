@@ -2,6 +2,10 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.ContractParam;
+import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
+import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
+import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -33,7 +37,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -226,4 +233,83 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         result.setBcustomer(Bcustomer);
 
     }
+    @Override
+    public List<OrderResult> pendingProductionPlanByContracts(OrderParam orderParam) {
+        orderParam.setType(2);
+        List<OrderResult> orderResults = this.baseMapper.customList(orderParam);
+        List<Long> orderIds = new ArrayList<>();
+        for (OrderResult orderResult : orderResults) {
+            orderIds.add(orderResult.getContractId());
+        }
+        List<OrderDetail> orderDetails = detailService.query().in("order_id", orderIds).eq("display", 1).list();
+        List<OrderDetailResult> orderDetailResults = new ArrayList<>();
+        for (OrderDetail orderDetail : orderDetails) {
+            OrderDetailResult result = new OrderDetailResult();
+            ToolUtil.copyProperties(orderDetail,result);
+            orderDetailResults.add(result);
+        }
+        detailService.format(orderDetailResults);
+        for (OrderResult orderResult : orderResults) {
+            List<OrderDetailResult> results = new ArrayList<>();
+            for (OrderDetailResult orderDetailResult : orderDetailResults) {
+                if (orderResult.getOrderId().equals(orderDetailResult.getOrderId())) {
+                    results.add(orderDetailResult);
+                }
+            }
+            orderResult.setDetailResults(results);
+        }
+        return orderResults;
+    }
+    @Override
+    public Set<ContractDetailSetRequest> pendingProductionPlan(OrderParam orderParam) {
+        orderParam.setType(2);
+        List<OrderResult> orderResults = this.baseMapper.customList(orderParam);
+        List<Long> orderIds = new ArrayList<>();
+        for (OrderResult orderResult : orderResults) {
+            orderIds.add(orderResult.getContractId());
+        }
+        List<OrderDetail> orderDetails = detailService.query().in("order_id", orderIds).eq("display", 1).list();
+        List<OrderDetailResult> orderDetailResults = new ArrayList<>();
+
+        /**
+         * 返回合并后的数据
+         */
+        Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
+        for (OrderDetail orderDetail : orderDetails) {
+            ContractDetailSetRequest request = new ContractDetailSetRequest();
+            ToolUtil.copyProperties(orderDetail, request);
+            contractDetailSet.add(request);
+        }
+        for (OrderDetail orderDetail : orderDetails) {
+            OrderDetailResult orderDetailResult = new OrderDetailResult();
+            ToolUtil.copyProperties(orderDetail, orderDetailResult);
+            orderDetailResults.add(orderDetailResult);
+        }
+        this.detailService.format(orderDetailResults);
+        for (ContractDetailSetRequest request : contractDetailSet) {
+            Long quantity = 0L;
+            List<OrderDetailResult> results = new ArrayList<>();
+            for (OrderDetailResult orderDetailResult : orderDetailResults) {
+                if (
+                        ToolUtil.isNotEmpty(orderDetailResult.getBrandId()) && ToolUtil.isNotEmpty(orderDetailResult.getSkuId()) && ToolUtil.isNotEmpty(orderDetailResult.getCustomerId()) &&
+                                ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
+                                orderDetailResult.getBrandId().equals(request.getBrandId()) && orderDetailResult.getSkuId().equals(request.getSkuId()) && orderDetailResult.getCustomerId().equals(request.getCustomerId())
+                ) {
+                    quantity += orderDetailResult.getPreordeNumber();
+                    results.add(orderDetailResult);
+                    request.setSkuId(orderDetailResult.getSkuId());
+                    request.setBrandId(orderDetailResult.getBrandId());
+                    request.setCustomerId(orderDetailResult.getCustomerId());
+                }
+                request.setChildren(results);
+                request.setQuantity(quantity);
+            }
+        }
+
+        return contractDetailSet;
+
+
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.service;
 
+import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
@@ -7,6 +8,7 @@ import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -67,4 +69,8 @@ public interface OrderService extends IService<Order> {
      PageInfo<OrderResult> findPageBySpec(OrderParam param);
 
     OrderResult getDetail(Long id);
+
+    List<OrderResult> pendingProductionPlanByContracts(OrderParam orderParam);
+
+    Set<ContractDetailSetRequest> pendingProductionPlan(OrderParam orderParam);
 }
