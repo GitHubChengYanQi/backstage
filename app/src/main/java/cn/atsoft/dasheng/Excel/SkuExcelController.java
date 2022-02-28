@@ -189,31 +189,27 @@ public class SkuExcelController {
                 if (ToolUtil.isEmpty(spuClass)) {
                     throw new ServiceException(500, "没有分类");
                 }
-                //物料分类------------------------------------------------------------------------------------------
-                if (ToolUtil.isEmpty(skuExcelItem.getSpuName())) {
-                    throw new ServiceException(500, "参数错误");
+
+                //产品--------------------------------------------------------------------------------------------
+                if (ToolUtil.isEmpty(skuExcelItem.getClassItem())) {
+                    throw new ServiceException(500, "产品不存在");
                 }
-                skuExcelItem.setSpuName(skuExcelItem.getSpuName().replaceAll(" ", ""));
+                skuExcelItem.setSpuName(skuExcelItem.getClassItem().replaceAll(" ", ""));
                 Long categoryId = null;
                 for (Category category : categories) {
-                    if (skuExcelItem.getSpuName().equals(category.getCategoryName())) {
+                    if (skuExcelItem.getClassItem().equals(category.getCategoryName())) {
                         categoryId = category.getCategoryId();
                         break;
                     }
                 }
                 if (ToolUtil.isEmpty(categoryId)) {
                     Category category = new Category();
-                    category.setCategoryName(skuExcelItem.getSpuName());
+                    category.setCategoryName(skuExcelItem.getClassItem());
                     categoryService.save(category);
                     categories.add(category);
                     categoryId = category.getCategoryId();
                 }
-
-                //产品--------------------------------------------------------------------------------------------
-                if (ToolUtil.isEmpty(skuExcelItem.getClassItem())) {
-                    throw new ServiceException(500, "产品不存在");
-                }
-                skuExcelItem.setClassItem(skuExcelItem.getClassItem().replaceAll(" ", ""));
+      
                 Spu newItem = null;
                 for (Spu spu : spuList) {
                     if (skuExcelItem.getClassItem().equals(spu.getName())) {

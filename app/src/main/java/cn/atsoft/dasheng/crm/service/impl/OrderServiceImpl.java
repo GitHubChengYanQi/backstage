@@ -85,7 +85,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
 
-        if (param.getType() == 2) {
+        if (param.getType() == 1) {   //创建合同
             contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param);
         }
 
