@@ -209,7 +209,7 @@ public class SkuExcelController {
                     categories.add(category);
                     categoryId = category.getCategoryId();
                 }
-      
+
                 Spu newItem = null;
                 for (Spu spu : spuList) {
                     if (skuExcelItem.getClassItem().equals(spu.getName())) {
@@ -226,6 +226,7 @@ public class SkuExcelController {
                     spuService.save(newItem);
                     spuList.add(newItem);
                 }
+                newSku.setSpuId(newItem.getSpuId());
                 //单位------------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getUnit())) {
                     throw new ServiceException(500, "参数错误");
@@ -298,7 +299,7 @@ public class SkuExcelController {
                 if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
                     skuList.add(newSku);
                 }
-                newSku.setSpuId(newItem.getSpuId());
+
             } catch (Exception e) {
                 logger.error("写入异常:" + "第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);   //错误异常
                 skuExcelItem.setError(e.getMessage());
