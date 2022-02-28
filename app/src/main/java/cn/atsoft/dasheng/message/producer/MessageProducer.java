@@ -63,7 +63,7 @@ public class MessageProducer {
     /**
      * 普通队列
      *
-     * @param microSerrrrerviceEntity 内容对象
+     * @param microServiceEntity 内容对象
      */
     public void microService(MicroServiceEntity microServiceEntity) {
         microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
