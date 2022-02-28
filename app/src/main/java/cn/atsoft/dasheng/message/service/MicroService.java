@@ -22,11 +22,14 @@ public class MicroService {
     public void microServiceDo(MicroServiceEntity microServiceEntity){
         switch (microServiceEntity.getType()) {
             case CONTRACT:
-                ContractParam contractParam = JSON.parseObject(microServiceEntity.getObject().toString(), ContractParam.class);
+
                 switch (microServiceEntity.getOperationType()){
                     case SAVE:
                         //保存
 
+                        break;
+                    case ADD:
+                        ContractParam contractParam = JSON.parseObject(microServiceEntity.getObject().toString(), ContractParam.class);
                         break;
                 }
                 break;

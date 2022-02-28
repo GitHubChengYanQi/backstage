@@ -7,6 +7,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -41,18 +42,21 @@ public class PaymentDetailParam implements Serializable, BaseValidatingParam {
      * 金额
      */
     @ApiModelProperty("金额")
+    @NotNull
     private Integer money;
 
     /**
      * 百分比
      */
     @ApiModelProperty("百分比")
+    @NotNull
     private Integer percentum;
 
     /**
      * 付款类型
      */
     @ApiModelProperty("付款类型")
+    @NotNull
     private Integer payType;
 
     /**

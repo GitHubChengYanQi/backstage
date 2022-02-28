@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.crm.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,7 +27,7 @@ public class OrderDetail implements Serializable {
     /**
      * 详情id
      */
-      @TableId(value = "detail_id", type = IdType.ID_WORKER)
+    @TableId(value = "detail_id", type = IdType.ID_WORKER)
     private Long detailId;
 
     /**
@@ -82,7 +85,7 @@ public class OrderDetail implements Serializable {
      * 锐率
      */
     @TableField("rate")
-    private Integer rate;
+    private Long rate;
 
     /**
      * 交货日期
@@ -93,25 +96,25 @@ public class OrderDetail implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -215,11 +218,11 @@ public class OrderDetail implements Serializable {
         this.paperType = paperType;
     }
 
-    public Integer getRate() {
+    public Long getRate() {
         return rate;
     }
 
-    public void setRate(Integer rate) {
+    public void setRate(Long rate) {
         this.rate = rate;
     }
 
@@ -282,25 +285,25 @@ public class OrderDetail implements Serializable {
     @Override
     public String toString() {
         return "OrderDetail{" +
-        "detailId=" + detailId +
-        ", orderId=" + orderId +
-        ", skuId=" + skuId +
-        ", brandId=" + brandId +
-        ", customerId=" + customerId +
-        ", preordeNumber=" + preordeNumber +
-        ", purchaseNumber=" + purchaseNumber +
-        ", unitId=" + unitId +
-        ", onePrice=" + onePrice +
-        ", totalPrice=" + totalPrice +
-        ", paperType=" + paperType +
-        ", rate=" + rate +
-        ", deliveryDate=" + deliveryDate +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "detailId=" + detailId +
+                ", orderId=" + orderId +
+                ", skuId=" + skuId +
+                ", brandId=" + brandId +
+                ", customerId=" + customerId +
+                ", preordeNumber=" + preordeNumber +
+                ", purchaseNumber=" + purchaseNumber +
+                ", unitId=" + unitId +
+                ", onePrice=" + onePrice +
+                ", totalPrice=" + totalPrice +
+                ", paperType=" + paperType +
+                ", rate=" + rate +
+                ", deliveryDate=" + deliveryDate +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

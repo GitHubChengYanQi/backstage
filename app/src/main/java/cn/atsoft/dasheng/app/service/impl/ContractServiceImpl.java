@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
@@ -345,7 +346,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
         for (ContractDetail contractDetail : contractDetails) {
             ContractDetailSetRequest request = new ContractDetailSetRequest();
-            ToolUtil.copyProperties(contractDetail,request);
+            ToolUtil.copyProperties(contractDetail, request);
             contractDetailSet.add(request);
         }
         for (ContractDetail contractDetail : contractDetails) {
@@ -355,14 +356,14 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         this.contractDetailService.format(contractDetailResults);
         for (ContractDetailSetRequest request : contractDetailSet) {
-            Long quantity = 0L ;
+            Long quantity = 0L;
             List<ContractDetailResult> results = new ArrayList<>();
             for (ContractDetailResult contractDetailResult : contractDetailResults) {
                 if (
                         ToolUtil.isNotEmpty(contractDetailResult.getBrandId()) && ToolUtil.isNotEmpty(contractDetailResult.getSkuId()) && ToolUtil.isNotEmpty(contractDetailResult.getCustomerId()) &&
-                        ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
+                                ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
                                 contractDetailResult.getBrandId().equals(request.getBrandId()) && contractDetailResult.getSkuId().equals(request.getSkuId()) && contractDetailResult.getCustomerId().equals(request.getCustomerId())
-                ){
+                ) {
                     quantity += contractDetailResult.getQuantity();
                     results.add(contractDetailResult);
                     request.setSkuId(contractDetailResult.getSkuId());
@@ -375,7 +376,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
 
         return contractDetailSet;
-
 
 
     }
@@ -406,13 +406,13 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
      * @param param
      */
     @Override
-    public void orderAddContract(Long orderId, ContractParam param, OrderParam orderParam) {
+    public void orderAddContract(Long orderId, ContractParam param, OrderParam orderParam, String orderType) {
         if (ToolUtil.isEmpty(param)) {
             throw new ServiceException(500, "合同对象为空");
         }
         Contract contract = new Contract();
         ToolUtil.copyProperties(param, contract);
-        contract.setSource("订单");
+        contract.setSource(orderType);
         contract.setSourceId(orderId);
         if (ToolUtil.isEmpty(param.getTemplateId())) {
             throw new ServiceException(500, "请选择合同模板");
@@ -474,9 +474,31 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             } catch (Exception e) {
 
             }
-
             contract.setContent(content);
             this.save(contract);
+            createContractDetail(contract.getContractId(), orderParam);
         }
     }
+
+    /**
+     * 添加合同详情
+     *
+     * @param contractId
+     * @param
+     */
+    private void createContractDetail(Long contractId, OrderParam param) {
+
+        List<ContractDetail> details = new ArrayList<>();
+        for (OrderDetailParam detailParam : param.getDetailParams()) {
+            ContractDetail contractDetail = new ContractDetail();
+            contractDetail.setContractId(contractId);
+            contractDetail.setContractId(param.getSellerId());
+            contractDetail.setSkuId(detailParam.getSkuId());
+            contractDetail.setBrandId(detailParam.getBrandId());
+            contractDetail.setQuantity(Math.toIntExact(detailParam.getPurchaseNumber()));
+            details.add(contractDetail);
+        }
+        contractDetailService.saveBatch(details);
+    }
+
 }

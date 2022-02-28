@@ -59,12 +59,13 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
      */
 
     @Override
-    public void addList(Long orderId, List<OrderDetailParam> params) {
+    public void addList(Long orderId, Long customerId, List<OrderDetailParam> params) {
         List<OrderDetail> details = new ArrayList<>();
         for (OrderDetailParam param : params) {
             OrderDetail orderDetail = new OrderDetail();
             ToolUtil.copyProperties(param, orderDetail);
             orderDetail.setOrderId(orderId);
+            orderDetail.setCustomerId(customerId);
             details.add(orderDetail);
         }
         this.saveBatch(details);

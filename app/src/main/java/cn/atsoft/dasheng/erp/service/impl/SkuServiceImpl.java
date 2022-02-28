@@ -248,7 +248,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
             messageProducer.microService(new MicroServiceEntity(){{
                 setType(MicroServiceType.CONTRACT);
-                setOperationType(OperationType.SAVE);
+                setOperationType(OperationType.ADD);
                 setObject(new ContractParam());
                 setTimes(0);
                 setMaxTimes(2);

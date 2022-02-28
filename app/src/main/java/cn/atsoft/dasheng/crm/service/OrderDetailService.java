@@ -26,7 +26,7 @@ public interface OrderDetailService extends IService<OrderDetail> {
      */
     void add(OrderDetailParam param);
 
-    void addList(Long orderId, List<OrderDetailParam> params);
+    void addList(Long orderId, Long customerId, List<OrderDetailParam> params);
 
     /**
      * 删除
@@ -66,7 +66,7 @@ public interface OrderDetailService extends IService<OrderDetail> {
      * @author song
      * @Date 2022-02-23
      */
-     PageInfo<OrderDetailResult> findPageBySpec(OrderDetailParam param);
+    PageInfo<OrderDetailResult> findPageBySpec(OrderDetailParam param);
 
     List<OrderDetailResult> getDetails(Long orderId);
 }

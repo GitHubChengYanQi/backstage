@@ -80,13 +80,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order entity = getEntity(param);
         this.save(entity);
 
-        detailService.addList(entity.getOrderId(), param.getDetailParams());
+        detailService.addList(entity.getOrderId(),param.getSellerId() ,param.getDetailParams());
         paymentService.add(param.getPaymentParam());
 
         supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
+        String orderType = null;
+        switch (param.getType()) {
+            case 1:
+                orderType = "采购";
+                break;
+            case 2:
+                orderType = "销售";
+                break;
+        }
 
-        if (param.getType() == 1) {   //创建合同
-            contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param);
+        if (param.getGenerateContract() == 1) {   //创建合同
+            contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param, orderType);
         }
 
 //        String type = null;
@@ -106,8 +115,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //发起审批流程
 //        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", param.getProcessType()).eq("status", 99).eq("module", "purchaseAsk").one();
 //        if (ToolUtil.isNotEmpty(activitiProcess)) {
-//            qualityTaskService.power(activitiProcess);//检查创建权限
-//            LoginUser user = LoginContextHolder.getContext().getUser();
+//            qualityTaskSers);//检查创建权限
+////            LoginUser user = LoginContextHolder.getCvice.power(activitiProcesontext().getUser();
 //            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
 //            activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + source + "申请");
 ////            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
