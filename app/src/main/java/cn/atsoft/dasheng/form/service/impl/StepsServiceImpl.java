@@ -67,6 +67,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     @Autowired
     private UserService userService;
 
+
     @Override
     @Transactional
     public void add(ActivitiStepsParam param) {
@@ -151,6 +152,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                 break;
             case "route":
                 break;
+            case "ship":
+                if (ToolUtil.isEmpty(node.getProcessRouteId())) {
+                    throw new ServiceException(500, "请确定子路线");
+                }
+                activitiSteps.setFormId(node.getProcessRouteId());
+                this.updateById(activitiSteps);
+                break;
             default:
                 throw new ServiceException(500, "请确定类型");
         }
@@ -209,6 +217,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             switch (stepsParam.getStepType()) {
                 case "setp":
                     addSetpSet(stepsParam.getSetpSet(), activitiSteps.getSetpsId());
+                    break;
+                case "ship":
+                    if (ToolUtil.isEmpty(stepsParam.getProcessRouteId())) {
+                        throw new ServiceException(500, "请确定子路线");
+                    }
+                    activitiSteps.setFormId(stepsParam.getProcessRouteId());
+                    this.updateById(activitiSteps);
                     break;
                 default:
                     throw new ServiceException(500, "请确定类型");
@@ -284,9 +299,18 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
         for (ActivitiStepsResult stepsResult : stepsResults) {
             if (stepsResult.getSetpsId().toString().equals(children)) {
-
                 ActivitiSetpSetResult setpSetResult = setpSetResult(stepsResult.getSetpsId());
-                stepsResult.setSetpSet(setpSetResult);
+                switch (stepsResult.getStepType()) {
+                    case "ship":
+                        ProcessRoute processRoute = processRouteService.getById(stepsResult.getFormId());
+                        ProcessRouteResult routeResult = new ProcessRouteResult();
+                        ToolUtil.copyProperties(processRoute, routeResult);
+                        stepsResult.setProcessRoute(routeResult);
+                        break;
+                    default:
+                        stepsResult.setSetpSet(setpSetResult);
+                }
+
 
                 if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {        //下级是节点或者路由
                     ActivitiStepsResult result = getChildren(stepsResult.getChildren(), stepsResults);
@@ -316,8 +340,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @return
      */
     private List<ActivitiStepsResult> getStepsResultByFormId(Long formId) {
-        List<ActivitiSteps> activitiSteps = this.query().eq("form_id", formId).list();
+
+        List<ActivitiSteps> activitiSteps = this.query().eq("form_id", formId).or().eq("step_type", "ship").list();
         return BeanUtil.copyToList(activitiSteps, ActivitiStepsResult.class, new CopyOptions());
+
     }
 
     /**

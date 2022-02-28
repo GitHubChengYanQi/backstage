@@ -102,19 +102,21 @@ public class ProcessRouteServiceImpl extends ServiceImpl<ProcessRouteMapper, Pro
         ToolUtil.copyProperties(processRoute, routeResult);
 
         Parts service = partsService.getById(routeResult.getPartsId());
-
-        List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
-            add(service.getSkuId());
-        }});
-        routeResult.setSkuResult(skuResults.get(0));
+        if (ToolUtil.isNotEmpty(service)) {
+            List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                add(service.getSkuId());
+            }});
+            routeResult.setSkuResult(skuResults.get(0));
+        }
         return routeResult;
     }
+
     @Override
-    public ProcessRouteResult getRouteBySkuId(Long skuId){
+    public ProcessRouteResult getRouteBySkuId(Long skuId) {
         Parts parts = partsService.query().eq("sku_id", skuId).eq("type", 2).eq("display", 1).one();
         ProcessRoute processRoute = this.query().eq("parts_id", parts.getPartsId()).eq("status", 99).eq("display", 1).one();
         ProcessRouteResult processRouteResult = new ProcessRouteResult();
-        ToolUtil.copyProperties(processRoute,processRouteResult);
+        ToolUtil.copyProperties(processRoute, processRouteResult);
         return processRouteResult;
     }
 }

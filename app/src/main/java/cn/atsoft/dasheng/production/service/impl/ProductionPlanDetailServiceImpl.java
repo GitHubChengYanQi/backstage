@@ -98,7 +98,7 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
             serviceEntity.setType(MicroServiceType.WORK_ORDER);
             serviceEntity.setOperationType(OperationType.ADD);
             String jsonString = JSON.toJSONString(ok);
-            serviceEntity.setJson(jsonString);
+            serviceEntity.setObject(jsonString);
             messageProducer.microService(serviceEntity);
         }
     }

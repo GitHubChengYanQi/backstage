@@ -22,11 +22,12 @@
         <result column="sku_id" property="skuId"/>
         <result column="children" property="children"/>
         <result column="childrens" property="childrens"/>
+        <result column="status" property="status"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sku_id
-    AS "skuId", children AS "children",childrens AS "childrens",
+    AS "skuId", children AS "children",childrens AS "childrens",status AS "status",
         parts_id
         AS "partsId", spu_id AS "spuId",skus AS "skus",type AS "type", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
     </sql>

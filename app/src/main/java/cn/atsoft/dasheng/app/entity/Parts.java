@@ -34,6 +34,11 @@ public class Parts implements Serializable {
     @TableField("type")
     private String type;
     /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
+    /**
      * skuId
      */
     @TableField("sku_id")
@@ -265,6 +270,14 @@ public class Parts implements Serializable {
 
     public void setChildrens(String childrens) {
         this.childrens = childrens;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     @Override

@@ -75,8 +75,12 @@ public class PartsController extends BaseController {
                 }
             }
         }
+        if (partsParam.getStatus()==99) {
+            this.partsService.update(partsParam);
+        }else {
+            this.partsService.add(partsParam);
+        }
 
-        this.partsService.add(partsParam);
         return ResponseData.success();
     }
 

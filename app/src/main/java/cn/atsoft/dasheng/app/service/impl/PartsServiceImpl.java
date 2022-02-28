@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
@@ -61,18 +62,28 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public void add(PartsParam partsParam) {
 
-        if (ToolUtil.isEmpty(partsParam.getParts())) {
-            throw new ServiceException(500, "物料清单错误");
+        Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
+        if (ToolUtil.isNotEmpty(one)) {
+            Parts parts = new Parts();
+            ToolUtil.copyProperties(partsParam, parts);
+            this.save(parts);
+            List<ErpPartsDetail> partsDetails = new ArrayList<>();
+
+            for (ErpPartsDetailParam part : partsParam.getParts()) {
+                part.setPartsId(part.getPartsId());
+                part.setPartsDetailId(null);
+                ErpPartsDetail partsDetail = new ErpPartsDetail();
+                ToolUtil.copyProperties(part, partsDetail);
+                partsDetails.add(partsDetail);
+            }
+            erpPartsDetailService.saveBatch(partsDetails);
         }
 
         List<Long> skuIds = new ArrayList<>();
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             skuIds.add(part.getSkuId());
         }
-        List<Sku> skus = skuService.query().in("sku_id", skuIds).eq("display", 1).list();
-        if (partsParam.getParts().size() != skus.size()) {
-            throw new ServiceException(500, "物料错误");
-        }
+
         List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
         Parts parts1 = new Parts();
         List<Long> ids = new ArrayList<>();
@@ -241,10 +252,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 //        erpPartsDetailService.update(erpPartsDetail, erpPartsDetailQueryWrapper);
     }
 
-    @Transactional
+
     @Override
     public void update(PartsParam param) {
-
+        Parts oldEntity = getOldEntity(param);
+        Parts newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
     }
 
 
@@ -426,6 +440,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         return null;
     }
+
     @Override
     public List<PartsResult> getTreeParts(Long partId) {
         List<Parts> parts = this.query().like("parts_id", partId).list();

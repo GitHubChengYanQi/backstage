@@ -10,6 +10,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,8 @@ import java.util.List;
 @ApiModel
 public class PartsParam implements Serializable, BaseValidatingParam {
 
+    private Integer status;
+
     private static final long serialVersionUID = 1L;
 
     private String skuName;
@@ -38,7 +41,7 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     private String skuNote;
 
     private String type;
-
+    @NotNull
     private List<ErpPartsDetailParam> parts;
 
     private Long pSkuId;
