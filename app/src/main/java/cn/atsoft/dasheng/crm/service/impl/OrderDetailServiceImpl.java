@@ -170,5 +170,38 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
         return detailResults;
     }
+    @Override
+    public void format(List<OrderDetailResult> param){
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
+        for (OrderDetailResult orderDetailResult : param) {
+            skuIds.add(orderDetailResult.getSkuId());
+            brandIds.add(orderDetailResult.getDetailId());
+            customerIds.add(orderDetailResult.getCustomerId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<CustomerResult> customerResults = customerService.getResults(customerIds);
+
+        for (OrderDetailResult orderDetailResult : param) {
+            for (SkuResult skuResult : skuResults) {
+                if (orderDetailResult.getSkuId().equals(skuResult.getSkuId())) {
+                    orderDetailResult.setSkuResult(skuResult);
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (orderDetailResult.getBrandId().equals(brandResult.getBrandId())) {
+                    orderDetailResult.setBrandResult(brandResult);
+                }
+            }
+            for (CustomerResult customerResult : customerResults) {
+                if (orderDetailResult.getCustomerId().equals(customerResult.getCustomerId())) {
+                    orderDetailResult.setCustomerResult(customerResult);
+                }
+            }
+        }
+
+    }
 
 }

@@ -35,6 +35,10 @@ public class MicroServiceEntity {
      * 当前推送次数
      */
     private Integer times;
+    /**
+     * 参数json
+     */
+    private String json;
 
 
 }

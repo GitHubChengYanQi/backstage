@@ -1,69 +1,73 @@
 package cn.atsoft.dasheng.production.model.result;
 
-import cn.atsoft.dasheng.app.model.result.PartsResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.servlet.http.Part;
 import java.util.List;
-
 /**
  * <p>
- * 生产计划子表
+ * 生产任务
  * </p>
  *
- * @author
- * @since 2022-02-25
+ * @author 
+ * @since 2022-02-28
  */
 @Data
 @ApiModel
-public class ProductionPlanDetailResult implements Serializable {
+public class ProductionTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private PartsResult partsResult;
-
-    private SkuResult skuResult;
-    /**
-     * 生产计划子表id
-     */
-    @ApiModelProperty("生产计划子表id")
-    private Long productionPlanDetailId;
-
-    private Long stockNumber;
 
     /**
-     * 生产计划id
+     * 生产任务id
      */
-    @ApiModelProperty("生产计划id")
-    private Long productionPlanId;
+    @ApiModelProperty("生产任务id")
+    private Long productionTaskId;
 
     /**
-     * 产品id
+     * 编码
      */
-    @ApiModelProperty("产品id")
-    private Long skuId;
+    @ApiModelProperty("编码")
+    private String coding;
 
     /**
-     * 计划数量
+     * 生产任务名称
      */
-    private Integer planNumber;
-    /**
-     * 生产中的数量
-     */
-    private Integer makingNumber;
+    @ApiModelProperty("生产任务名称")
+    private String productionTaskName;
 
     /**
-     * 交付时间
+     * 备注
      */
-    @ApiModelProperty("交付时间")
-    private Date deliveryDate;
+    @ApiModelProperty("备注")
+    private String remark;
+
+    /**
+     * 负责人
+     */
+    @ApiModelProperty("负责人")
+    private Long userId;
+
+    /**
+     * 工单id
+     */
+    @ApiModelProperty("工单id")
+    private Long workOrderId;
+
+    /**
+     * 工序id
+     */
+    @ApiModelProperty("工序id")
+    private Long shipSetpId;
+
+    /**
+     * 生产时间
+     */
+    @ApiModelProperty("生产时间")
+    private Date productionTime;
 
     /**
      * 创建者
@@ -100,6 +104,18 @@ public class ProductionPlanDetailResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源Json字符串
+     */
+    @ApiModelProperty("来源Json字符串")
+    private String origin;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

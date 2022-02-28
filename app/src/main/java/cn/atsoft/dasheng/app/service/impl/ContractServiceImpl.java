@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.crm.entity.ContractClass;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
+import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
@@ -340,53 +341,55 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
     @Override
     public Set<ContractDetailSetRequest> pendingProductionPlan() {
-        List<Contract> contracts = this.query().eq("source", "销售").eq("display", 1).list();
-        List<Long> contractIds = new ArrayList<>();
-        for (Contract contract : contracts) {
-            contractIds.add(contract.getContractId());
-        }
-        List<ContractDetail> contractDetails = contractIds.size() == 0 ? new ArrayList<>() : contractDetailService.query().eq("display", 1).in("contract_id",contractIds).list();
-        List<ContractDetailResult> contractDetailResults = new ArrayList<>();
+//        List<Contract> contracts = this.query().eq("source", "销售").eq("display", 1).list();
+//        List<Long> contractIds = new ArrayList<>();
+//        for (Contract contract : contracts) {
+//            contractIds.add(contract.getContractId());
+//        }
+//        List<ContractDetail> contractDetails = contractIds.size() == 0 ? new ArrayList<>() : contractDetailService.query().eq("display", 1).in("contract_id", contractIds).list();
+//        List<ContractDetailResult> contractDetailResults = new ArrayList<>();
+//
+//        /**
+//         * 返回合并后的数据
+//         */
+//        Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
+//        for (ContractDetail contractDetail : contractDetails) {
+//            ContractDetailSetRequest request = new ContractDetailSetRequest();
+//            ToolUtil.copyProperties(contractDetail, request);
+//            contractDetailSet.add(request);
+//        }
+//        for (ContractDetail contractDetail : contractDetails) {
+//            ContractDetailResult contractDetailResult = new ContractDetailResult();
+//            ToolUtil.copyProperties(contractDetail, contractDetailResult);
+//            contractDetailResults.add(contractDetailResult);
+//        }
+//        this.contractDetailService.format(contractDetailResults);
+//        for (ContractDetailSetRequest request : contractDetailSet) {
+//            Long quantity = 0L;
+//            List<OrderDetailResult> results = new ArrayList<>();
+//            for (OrderDetailResult contractDetailResult : contractDetailResults) {
+//                if (
+//                        ToolUtil.isNotEmpty(contractDetailResult.getBrandId()) && ToolUtil.isNotEmpty(contractDetailResult.getSkuId()) && ToolUtil.isNotEmpty(contractDetailResult.getCustomerId()) &&
+//                                ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
+//                                contractDetailResult.getBrandId().equals(request.getBrandId()) && contractDetailResult.getSkuId().equals(request.getSkuId()) && contractDetailResult.getCustomerId().equals(request.getCustomerId())
+//                ) {
+//                    quantity += contractDetailResult.getQuantity();
+//                    results.add(contractDetailResult);
+//                    request.setSkuId(contractDetailResult.getSkuId());
+//                    request.setBrandId(contractDetailResult.getBrandId());
+//                    request.setCustomerId(contractDetailResult.getCustomerId());
+//                }
+//                request.setChildren(results);
+//                request.setQuantity(quantity);
+//            }
+//        }
 
-        /**
-         * 返回合并后的数据
-         */
-        Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
-        for (ContractDetail contractDetail : contractDetails) {
-            ContractDetailSetRequest request = new ContractDetailSetRequest();
-            ToolUtil.copyProperties(contractDetail, request);
-            contractDetailSet.add(request);
-        }
-        for (ContractDetail contractDetail : contractDetails) {
-            ContractDetailResult contractDetailResult = new ContractDetailResult();
-            ToolUtil.copyProperties(contractDetail, contractDetailResult);
-            contractDetailResults.add(contractDetailResult);
-        }
-        this.contractDetailService.format(contractDetailResults);
-        for (ContractDetailSetRequest request : contractDetailSet) {
-            Long quantity = 0L;
-            List<ContractDetailResult> results = new ArrayList<>();
-            for (ContractDetailResult contractDetailResult : contractDetailResults) {
-                if (
-                        ToolUtil.isNotEmpty(contractDetailResult.getBrandId()) && ToolUtil.isNotEmpty(contractDetailResult.getSkuId()) && ToolUtil.isNotEmpty(contractDetailResult.getCustomerId()) &&
-                                ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
-                                contractDetailResult.getBrandId().equals(request.getBrandId()) && contractDetailResult.getSkuId().equals(request.getSkuId()) && contractDetailResult.getCustomerId().equals(request.getCustomerId())
-                ) {
-                    quantity += contractDetailResult.getQuantity();
-                    results.add(contractDetailResult);
-                    request.setSkuId(contractDetailResult.getSkuId());
-                    request.setBrandId(contractDetailResult.getBrandId());
-                    request.setCustomerId(contractDetailResult.getCustomerId());
-                }
-                request.setChildren(results);
-                request.setQuantity(quantity);
-            }
-        }
-
-        return contractDetailSet;
-
+        return null;
 
     }
+
+
+
 
     private Contract getOldEntity(ContractParam param) {
         return this.getById(getKey(param));

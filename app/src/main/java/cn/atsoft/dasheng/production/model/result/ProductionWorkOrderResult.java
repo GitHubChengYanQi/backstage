@@ -1,69 +1,55 @@
 package cn.atsoft.dasheng.production.model.result;
 
-import cn.atsoft.dasheng.app.model.result.PartsResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.servlet.http.Part;
 import java.util.List;
-
 /**
  * <p>
- * 生产计划子表
+ * 工单
  * </p>
  *
- * @author
- * @since 2022-02-25
+ * @author 
+ * @since 2022-02-28
  */
 @Data
 @ApiModel
-public class ProductionPlanDetailResult implements Serializable {
+public class ProductionWorkOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private PartsResult partsResult;
 
-    private SkuResult skuResult;
-    /**
-     * 生产计划子表id
-     */
-    @ApiModelProperty("生产计划子表id")
-    private Long productionPlanDetailId;
-
-    private Long stockNumber;
+    @ApiModelProperty("")
+    private Long workOrderId;
 
     /**
-     * 生产计划id
+     * 工序id
      */
-    @ApiModelProperty("生产计划id")
-    private Long productionPlanId;
+    @ApiModelProperty("工序id")
+    private Long shipSetpId;
 
-    /**
-     * 产品id
-     */
-    @ApiModelProperty("产品id")
+    @ApiModelProperty("")
     private Long skuId;
 
     /**
-     * 计划数量
+     * 生产数量
      */
-    private Integer planNumber;
-    /**
-     * 生产中的数量
-     */
-    private Integer makingNumber;
+    @ApiModelProperty("生产数量")
+    private Integer count;
 
     /**
-     * 交付时间
+     * 来源
      */
-    @ApiModelProperty("交付时间")
-    private Date deliveryDate;
+    @ApiModelProperty("来源")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @ApiModelProperty("来源id")
+    private Long sourceId;
 
     /**
      * 创建者
@@ -100,6 +86,18 @@ public class ProductionPlanDetailResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源Json字符串
+     */
+    @ApiModelProperty("来源Json字符串")
+    private String origin;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

@@ -4,179 +4,186 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.ProductionPlanDetail">
-        <id column="production_plan_detail_id" property="productionPlanDetailId" />
-        <result column="production_plan_id" property="productionPlanId" />
-        <result column="sku_id" property="skuId" />
-        <result column="number" property="number" />
-        <result column="delivery_date" property="deliveryDate" />
-        <result column="create_user" property="createUser" />
-        <result column="deptId" property="deptId" />
-        <result column="display" property="display" />
-        <result column="update_time" property="updateTime" />
-        <result column="create_time" property="createTime" />
-        <result column="update_user" property="updateUser" />
+        <id column="production_plan_detail_id" property="productionPlanDetailId"/>
+        <result column="production_plan_id" property="productionPlanId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="plan_number" property="planNumber"/>
+        <result column="making_number" property="makingNumber"/>
+        <result column="delivery_date" property="deliveryDate"/>
+        <result column="create_user" property="createUser"/>
+        <result column="deptId" property="deptId"/>
+        <result column="display" property="display"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        production_plan_detail_id AS "productionPlanDetailId", production_plan_id AS "productionPlanId", sku_id AS "skuId", number AS "number", delivery_date AS "deliveryDate", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+    <sql id="Base_Column_List">plan_number
+    AS "planNumber",making_number AS "makingNumber",
+        production_plan_detail_id
+        AS "productionPlanDetailId", production_plan_id AS "productionPlanId", sku_id AS "skuId", delivery_date AS "deliveryDate", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPlanDetailResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPlanDetailResult"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_plan_detail where 1 = 1
-            <if test="paramCondition.productionPlanDetailId != null">
-                and production_plan_detail_id like CONCAT('%',#{paramCondition.productionPlanDetailId},'%')
-            </if>
-            <if test="paramCondition.productionPlanId != null">
-                and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
-            </if>
-            <if test="paramCondition.skuId != null">
-                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-            </if>
-            <if test="paramCondition.number != null">
-                and number like CONCAT('%',#{paramCondition.number},'%')
-            </if>
-            <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
-                and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.deptId != null">
-                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
+        <if test="paramCondition.productionPlanDetailId != null">
+            and production_plan_detail_id like CONCAT('%',#{paramCondition.productionPlanDetailId},'%')
+        </if>
+        <if test="paramCondition.productionPlanId != null">
+            and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.planNumber != null">
+            and plan_number like CONCAT('%',#{paramCondition.planNumber},'%')
+        </if>
+        <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
+            and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_plan_detail where 1 = 1
-                <if test="paramCondition.productionPlanDetailId != null">
-                        and production_plan_detail_id like CONCAT('%',#{paramCondition.productionPlanDetailId},'%')
-                </if>
-                <if test="paramCondition.productionPlanId != null">
-                        and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
-                        and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
+        <if test="paramCondition.productionPlanDetailId != null">
+            and production_plan_detail_id like CONCAT('%',#{paramCondition.productionPlanDetailId},'%')
+        </if>
+        <if test="paramCondition.productionPlanId != null">
+            and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.planNumber != null">
+            and plan_number like CONCAT('%',#{paramCondition.planNumber},'%')
+        </if>
+        <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
+            and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPlanDetailResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPlanDetailResult"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_plan_detail where 1 = 1
-                <if test="paramCondition.productionPlanDetailId != null">
-                        and production_plan_detail_id like CONCAT('%',#{paramCondition.productionPlanDetailId},'%')
-                </if>
-                <if test="paramCondition.productionPlanId != null">
-                        and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
-                        and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
+        <if test="paramCondition.productionPlanDetailId != null">
+            and production_plan_detail_id like CONCAT('%',#{paramCondition.productionPlanDetailId},'%')
+        </if>
+        <if test="paramCondition.productionPlanId != null">
+            and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.planNumber != null">
+            and plan_number like CONCAT('%',#{paramCondition.planNumber},'%')
+        </if>
+        <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
+            and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_plan_detail where 1 = 1
-                <if test="paramCondition.productionPlanDetailId != null">
-                        and production_plan_detail_id like CONCAT('%',#{paramCondition.productionPlanDetailId},'%')
-                </if>
-                <if test="paramCondition.productionPlanId != null">
-                        and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
-                        and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
+        <if test="paramCondition.productionPlanDetailId != null">
+            and production_plan_detail_id like CONCAT('%',#{paramCondition.productionPlanDetailId},'%')
+        </if>
+        <if test="paramCondition.productionPlanId != null">
+            and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.planNumber != null">
+            and plan_number like CONCAT('%',#{paramCondition.planNumber},'%')
+        </if>
+        <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
+            and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
     </select>
 
 </mapper>

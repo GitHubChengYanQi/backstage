@@ -69,4 +69,6 @@ public interface OrderDetailService extends IService<OrderDetail> {
     PageInfo<OrderDetailResult> findPageBySpec(OrderDetailParam param);
 
     List<OrderDetailResult> getDetails(Long orderId);
+
+    void format(List<OrderDetailResult> param);
 }

@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.production.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 生产计划子表
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-02-25
  */
 @TableName("daoxin_production_plan_detail")
@@ -24,7 +27,7 @@ public class ProductionPlanDetail implements Serializable {
     /**
      * 生产计划子表id
      */
-      @TableId(value = "production_plan_detail_id", type = IdType.ID_WORKER)
+    @TableId(value = "production_plan_detail_id", type = IdType.ID_WORKER)
     private Long productionPlanDetailId;
 
     /**
@@ -40,10 +43,15 @@ public class ProductionPlanDetail implements Serializable {
     private Long skuId;
 
     /**
-     * 数量
+     * 计划数量
      */
-    @TableField("number")
-    private Integer number;
+    @TableField("plan_number")
+    private Integer planNumber;
+    /**
+     * 生产中的数量
+     */
+    @TableField("making_number")
+    private Integer makingNumber;
 
     /**
      * 交付时间
@@ -54,7 +62,7 @@ public class ProductionPlanDetail implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
@@ -72,19 +80,19 @@ public class ProductionPlanDetail implements Serializable {
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
 
@@ -112,13 +120,6 @@ public class ProductionPlanDetail implements Serializable {
         this.skuId = skuId;
     }
 
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
 
     public Date getDeliveryDate() {
         return deliveryDate;
@@ -176,20 +177,36 @@ public class ProductionPlanDetail implements Serializable {
         this.updateUser = updateUser;
     }
 
+    public Integer getPlanNumber() {
+        return planNumber;
+    }
+
+    public void setPlanNumber(Integer planNumber) {
+        this.planNumber = planNumber;
+    }
+
+    public Integer getMakingNumber() {
+        return makingNumber;
+    }
+
+    public void setMakingNumber(Integer makingNumber) {
+        this.makingNumber = makingNumber;
+    }
+
     @Override
     public String toString() {
         return "PlanDetail{" +
-        "productionPlanDetailId=" + productionPlanDetailId +
-        ", productionPlanId=" + productionPlanId +
-        ", skuId=" + skuId +
-        ", number=" + number +
-        ", deliveryDate=" + deliveryDate +
-        ", createUser=" + createUser +
-        ", deptId=" + deptId +
-        ", display=" + display +
-        ", updateTime=" + updateTime +
-        ", createTime=" + createTime +
-        ", updateUser=" + updateUser +
-        "}";
+                "productionPlanDetailId=" + productionPlanDetailId +
+                ", productionPlanId=" + productionPlanId +
+                ", skuId=" + skuId +
+                ", number=" + planNumber +
+                ", deliveryDate=" + deliveryDate +
+                ", createUser=" + createUser +
+                ", deptId=" + deptId +
+                ", display=" + display +
+                ", updateTime=" + updateTime +
+                ", createTime=" + createTime +
+                ", updateUser=" + updateUser +
+                "}";
     }
 }

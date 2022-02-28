@@ -48,6 +48,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             details.add(detail);
         }
         productionPlanDetailService.saveBatch(details);
+
     }
 
     @Override

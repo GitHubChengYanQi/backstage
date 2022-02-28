@@ -1,69 +1,43 @@
 package cn.atsoft.dasheng.production.model.result;
 
-import cn.atsoft.dasheng.app.model.result.PartsResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.servlet.http.Part;
 import java.util.List;
-
 /**
  * <p>
- * 生产计划子表
+ * 
  * </p>
  *
- * @author
- * @since 2022-02-25
+ * @author 
+ * @since 2022-02-28
  */
 @Data
 @ApiModel
-public class ProductionPlanDetailResult implements Serializable {
+public class ProductionTaskDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private PartsResult partsResult;
-
-    private SkuResult skuResult;
-    /**
-     * 生产计划子表id
-     */
-    @ApiModelProperty("生产计划子表id")
-    private Long productionPlanDetailId;
-
-    private Long stockNumber;
 
     /**
-     * 生产计划id
+     * 子表id
      */
-    @ApiModelProperty("生产计划id")
-    private Long productionPlanId;
+    @ApiModelProperty("子表id")
+    private Long productionTaskDetailId;
 
     /**
-     * 产品id
+     * 主表id
      */
-    @ApiModelProperty("产品id")
-    private Long skuId;
+    @ApiModelProperty("主表id")
+    private Long productionTaskId;
 
     /**
-     * 计划数量
+     * 生产卡片id
      */
-    private Integer planNumber;
-    /**
-     * 生产中的数量
-     */
-    private Integer makingNumber;
-
-    /**
-     * 交付时间
-     */
-    @ApiModelProperty("交付时间")
-    private Date deliveryDate;
+    @ApiModelProperty("生产卡片id")
+    private Long productionCardId;
 
     /**
      * 创建者
