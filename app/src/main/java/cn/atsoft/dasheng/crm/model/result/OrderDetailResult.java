@@ -92,7 +92,7 @@ public class OrderDetailResult implements Serializable {
      * 锐率
      */
     @ApiModelProperty("锐率")
-    private Integer rate;
+    private Long rate;
 
     /**
      * 交货日期

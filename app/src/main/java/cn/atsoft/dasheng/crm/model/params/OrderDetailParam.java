@@ -7,6 +7,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -36,31 +37,34 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("订单id")
     private Long orderId;
-
+    @NotNull
     @ApiModelProperty("")
     private Long skuId;
-
+    @NotNull
     @ApiModelProperty("")
     private Long brandId;
-
+    @NotNull
     @ApiModelProperty("")
     private Long customerId;
 
     /**
      * 预购数量
      */
+    @NotNull
     @ApiModelProperty("预购数量")
     private Long preordeNumber;
 
     /**
      * 采购数量
      */
+    @NotNull
     @ApiModelProperty("采购数量")
     private Long purchaseNumber;
 
     /**
      * 单位id
      */
+    @NotNull
     @ApiModelProperty("单位id")
     private Long unitId;
 
@@ -79,6 +83,7 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
     /**
      * 票据类型
      */
+    @NotNull
     @ApiModelProperty("票据类型")
     private Integer paperType;
 
@@ -86,7 +91,7 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
      * 锐率
      */
     @ApiModelProperty("锐率")
-    private Integer rate;
+    private Long rate;
 
     /**
      * 交货日期

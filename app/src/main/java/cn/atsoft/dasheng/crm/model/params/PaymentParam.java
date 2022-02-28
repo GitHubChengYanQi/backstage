@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<PaymentDetailParam> detailParams;
-
+    @NotNull
     private Integer money;
     /**
      * 付款信息id
@@ -74,6 +75,7 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
      * 付款方式
      */
     @ApiModelProperty("付款方式")
+    @NotNull
     private Long payPlan;
 
     /**

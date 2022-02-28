@@ -28,12 +28,13 @@ import java.util.List;
 public class OrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    @NotNull
     private List<OrderDetailParam> detailParams;
-
+    @NotNull
     private PaymentParam paymentParam;
 
     private ContractParam contractParam;
-    @NotNull
+
     private String processType;
 
     private Date date;
