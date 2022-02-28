@@ -28,7 +28,7 @@ public interface SkuService extends IService<Sku> {
      * @author
      * @Date 2021-10-18
      */
-    void add(SkuParam param);
+    Long add(SkuParam param);
 
     @Transactional
     void directAdd(SkuParam param);

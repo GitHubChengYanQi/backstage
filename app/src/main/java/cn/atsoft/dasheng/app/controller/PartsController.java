@@ -68,6 +68,7 @@ public class PartsController extends BaseController {
                 Sku sku = skuService.getById(partsParam.getItem().getSkuId());
                 if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getSpuId())) {
                     partsParam.setSpuId(sku.getSpuId());
+                    partsParam.setSkuId(sku.getSkuId());
                 }
             } else {
                 if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {

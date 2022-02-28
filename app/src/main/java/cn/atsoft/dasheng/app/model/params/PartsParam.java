@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
+import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -34,6 +35,12 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     private String children;
 
     private String childrens;
+
+    private String specifications;
+
+    private List<SkuAttributeAndValue> sku;
+
+    private Integer batch;
 
     private String skuNote;
 

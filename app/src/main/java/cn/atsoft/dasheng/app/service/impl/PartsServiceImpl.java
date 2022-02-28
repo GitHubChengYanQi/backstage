@@ -14,10 +14,14 @@ import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.model.params.SkuParam;
+import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -56,6 +60,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Autowired
     private SkuService skuService;
     @Autowired
+    private SpuService spuService;
+    @Autowired
     private PartsService partsService;
 
     @Override
@@ -91,7 +97,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                         throw new ServiceException(500, "请勿循环添加");
                     }
                 } else {
-                    if (partsParam.getItem().getSkuId().equals(aLong)) {
+                    if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId()) && partsParam.getItem().getSkuId().equals(aLong)) {
                         throw new ServiceException(500, "请勿循环添加");
                     }
                 }
@@ -107,19 +113,25 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             }
         } else {
             if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
-                partsParam.getSkuRequests().sort(Comparator.comparing(SkuRequest::getAttributeId));
-                String json = JSON.toJSONString(partsParam.getSkuRequests());
-                Integer count = skuService.query().like("sku_value", json).count();
-                if (count > 0) {
-                    throw new ServiceException(500, "已有相同物料");
-                }
-                sku.setSkuValue(json);
-                sku.setSkuName(partsParam.getSkuName());
-                sku.setType(0);
-                sku.setRemarks(partsParam.getSkuNote());
-                sku.setStandard(partsParam.getStandard());
-                sku.setSpuId(partsParam.getItem().getSpuId());
-                skuService.save(sku);
+
+                Spu spu = spuService.getById(partsParam.getItem().getSpuId());
+                SpuParam spuParam = new SpuParam();
+                ToolUtil.copyProperties(spu, spuParam);
+
+
+                SkuParam skuParam = new SkuParam();
+                skuParam.setBatch(partsParam.getBatch());
+                skuParam.setSkuName(partsParam.getSkuName());
+                skuParam.setType(0);
+                skuParam.setRemarks(partsParam.getSkuNote());
+                skuParam.setStandard(partsParam.getStandard());
+                skuParam.setSpecifications(partsParam.getSpecifications());
+                skuParam.setSpuId(partsParam.getItem().getSpuId());
+                skuParam.setSku(partsParam.getSku());
+                skuParam.setSpu(spuParam);
+                skuParam.setSpuClass(spuParam.getSpuClassificationId());
+                Long skuId = skuService.add(skuParam);
+                sku.setSkuId(skuId);
             } else if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
                 sku = skuService.getById(partsParam.getItem().getSkuId()); // query().eq("sku_id", partsParam.getItem().getSkuId()).eq("display", 1).count();
                 if (ToolUtil.isEmpty(sku)) {
@@ -426,6 +438,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         return null;
     }
+
     @Override
     public List<PartsResult> getTreeParts(Long partId) {
         List<Parts> parts = this.query().like("parts_id", partId).list();
@@ -513,7 +526,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     public void format(List<PartsResult> data) {
 
-
         List<Long> pids = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
@@ -524,21 +536,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).in(Parts::getDisplay, 1).list();
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-        Map<Long, List<BackSku>> sendSku = null;
-        if (ToolUtil.isNotEmpty(skuIds)) {
-            sendSku = skuService.sendSku(skuIds);
-        }
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
         for (PartsResult datum : data) {
 
             if (ToolUtil.isNotEmpty(datum.getSkuId())) {
                 Sku sku = skuService.getById(datum.getSkuId());
                 datum.setSku(sku);
-            }
-            if (sendSku != null && ToolUtil.isNotEmpty(datum.getSkuId())) {
-                List<BackSku> backSkus = sendSku.get(datum.getSkuId());
-                datum.setBackSkus(backSkus);
-                SpuResult spuResult = skuService.backSpu(datum.getSkuId());
-                datum.setSpuResult(spuResult);
             }
 
             List<PartsResult> partsResults = new ArrayList<>();
@@ -558,6 +563,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     datum.setUserResult(userResult);
+                    break;
+                }
+            }
+            for (SkuResult skuResult : skuResults) {
+                if (ToolUtil.isNotEmpty(datum.getSkuId()) && datum.getSkuId().equals(skuResult.getSkuId())) {
+                    datum.setSkuResult(skuResult);
                     break;
                 }
             }
