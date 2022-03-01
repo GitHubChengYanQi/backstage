@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -23,7 +24,9 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
+import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -60,6 +63,10 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private CrmCustomerLevelService levelService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private PurchaseListingService listingService;
 
     @Override
     @Transactional
@@ -419,6 +426,9 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
+        List<StockDetails> stockDetails = stockDetailsService.list();
+        List<PurchaseListing> purchaseListings = listingService.query().ne("status", 99).list();
+
 
         for (SupplyResult datum : data) {
             for (SkuResult skuResult : skuResults) {
@@ -438,6 +448,20 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                     datum.setCustomerResult(customerResult);
                 }
             }
+            long stockNumber = 0L;
+            long applyNumber = 0L;
+            for (StockDetails stockDetail : stockDetails) {
+                if (ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getSkuId().equals(datum.getSkuId()) && stockDetail.getBrandId().equals(datum.getBrandId())) {
+                    stockNumber = stockNumber + stockDetail.getNumber();
+                }
+            }
+            for (PurchaseListing purchaseListing : purchaseListings) {
+                if (purchaseListing.getSkuId().equals(datum.getSkuId()) && purchaseListing.getBrandId().equals(datum.getBrandId())) {
+                    applyNumber = applyNumber + purchaseListing.getApplyNumber();
+                }
+            }
+            datum.setStockNumber(stockNumber);
+            datum.setApplyNumber(applyNumber);
         }
 
     }
@@ -479,5 +503,37 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             results.add(supplyResult);
         }
         return results;
+    }
+
+    /**
+     * 订单回填绑定
+     *
+     * @param customerId
+     * @param params
+     */
+    @Override
+    public void OrdersBackfill(Long customerId, List<OrderDetailParam> params) {
+        List<Supply> supplies = this.list();
+        for (OrderDetailParam param : params) {
+            boolean judge = judge(customerId, param, supplies);
+            if (judge) {
+                Supply supply = new Supply();
+                supply.setCustomerId(customerId);
+                supply.setBrandId(param.getBrandId());
+                supply.setSkuId(param.getSkuId());
+                this.save(supply);
+                supplies.add(supply);
+            }
+        }
+
+    }
+
+    private boolean judge(Long customerId, OrderDetailParam param, List<Supply> supplies) {
+        for (Supply supply : supplies) {
+            if (param.getSkuId().equals(supply.getSkuId()) && supply.getCustomerId().equals(customerId) && supply.getBrandId().equals(param.getBrandId())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

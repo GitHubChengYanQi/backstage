@@ -67,6 +67,11 @@ spring:
       simple:
         acknowledge-mode: manual
     prefix: dx
+    prefix2: microservices
+
+
+
+
 
 # 邮件发送（改为自己的账号）
 mail:

@@ -25,7 +25,7 @@ public class PurchaseAskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    List<PurchaseListingParam> purchaseListingParams;
+    List<PurchaseListingParam> purchaseListings;
     /**
      * 采购申请id
      */

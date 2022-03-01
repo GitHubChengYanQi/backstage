@@ -105,7 +105,7 @@ public class SkuExcelController {
                     Object header = readRow.get(j);
                     String data = hang.get(j).toString();
                     switch (header.toString()) {
-                        case "成品码":
+                        case "物料编码":
                             if (ToolUtil.isEmpty(data)) {
                                 data = null;
                                 skuExcelItem.setStandard(null);
@@ -153,7 +153,6 @@ public class SkuExcelController {
         List<Sku> skuList = new ArrayList<>();
         List<Sku> skus = skuService.query().eq("display", 1).list();  //所有sku
         List<SpuClassification> spuClassifications = classificationService.query().eq("display", 1).eq("type", 1).list(); //所有分类
-        List<SpuClassification> items = classificationService.query().eq("display", 1).eq("type", 2).list();//所有产品
         List<Spu> spuList = spuService.query().eq("display", 1).list();
         List<Unit> units = unitService.query().eq("display", 1).list();
         List<Category> categories = categoryService.query().eq("display", 1).list();
@@ -164,7 +163,7 @@ public class SkuExcelController {
             try {
                 //成品码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
-                    throw new ServiceException(500, "成品码不存在");
+                    throw new ServiceException(500, "物料编码不存在");
                 } else {
                     skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
                     for (Sku sku : skus) {
@@ -175,8 +174,8 @@ public class SkuExcelController {
                     newSku.setStandard(skuExcelItem.getStandard());
                     skus.add(newSku);
                 }
-
-                //分类----------------------------------------------------------------------------------------------
+                newSku.setSkuName(skuExcelItem.getSpuName());  //   型号
+                // 分类----------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getSpuClass())) {
                     throw new ServiceException(500, "参数错误");
                 }
@@ -190,76 +189,49 @@ public class SkuExcelController {
                 if (ToolUtil.isEmpty(spuClass)) {
                     throw new ServiceException(500, "没有分类");
                 }
+
                 //产品--------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getClassItem())) {
                     throw new ServiceException(500, "产品不存在");
                 }
-                skuExcelItem.setClassItem(skuExcelItem.getClassItem().replaceAll(" ", ""));
-                SpuClassification newItem = null;
-                for (SpuClassification item : items) {
-                    if (skuExcelItem.getClassItem().equals(item.getName())) {
-                        newItem = item;
-                        item.setPid(spuClass.getSpuClassificationId());
-                        classificationService.updateById(item);
-                        break;
-                    }
-                }
-                if (ToolUtil.isEmpty(newItem)) {
-                    newItem = new SpuClassification();
-                    newItem.setName(skuExcelItem.getClassItem());
-                    newItem.setType(2L);
-                    //TODO 产品替换编码
-                    newItem.setPid(spuClass.getSpuClassificationId());
-                    classificationService.save(newItem);
-                    items.add(newItem);
-                }
-                //物料分类------------------------------------------------------------------------------------------
-                if (ToolUtil.isEmpty(skuExcelItem.getSpuName())) {
-                    throw new ServiceException(500, "参数错误");
-                }
-                skuExcelItem.setSpuName(skuExcelItem.getSpuName().replaceAll(" ", ""));
+                skuExcelItem.setSpuName(skuExcelItem.getClassItem().replaceAll(" ", ""));
                 Long categoryId = null;
                 for (Category category : categories) {
-                    if (skuExcelItem.getSpuName().equals(category.getCategoryName())) {
+                    if (skuExcelItem.getClassItem().equals(category.getCategoryName())) {
                         categoryId = category.getCategoryId();
                         break;
                     }
                 }
                 if (ToolUtil.isEmpty(categoryId)) {
                     Category category = new Category();
-                    category.setCategoryName(skuExcelItem.getSpuName());
+                    category.setCategoryName(skuExcelItem.getClassItem());
                     categoryService.save(category);
                     categories.add(category);
                     categoryId = category.getCategoryId();
                 }
 
-                //型号----------------------------------------------------------------------------------------------
-                Long spuId = null;
+                Spu newItem = null;
                 for (Spu spu : spuList) {
-                    if (spu.getName().equals(skuExcelItem.getSpuName())) {
-                        newSku.setSpuId(spu.getSpuId());
-                        spu.setSpuClassificationId(newItem.getSpuClassificationId());
-                        spuService.updateById(spu);
-                        spuId = spu.getSpuId();
+                    if (skuExcelItem.getClassItem().equals(spu.getName())) {
+                        newItem = spu;
                         break;
                     }
                 }
-                if (ToolUtil.isEmpty(spuId)) {
-                    Spu newSpu = new Spu();
-                    newSpu.setSpuClassificationId(newItem.getSpuClassificationId());
-                    newSpu.setName(skuExcelItem.getSpuName());
-                    newSpu.setCategoryId(categoryId);
-                    spuService.save(newSpu);
-                    spuList.add(newSpu);
-                    newSku.setSpuId(newSpu.getSpuId());
-                    spuId = newSpu.getSpuId();
+                if (ToolUtil.isEmpty(newItem)) {
+                    newItem = new Spu();
+                    newItem.setName(skuExcelItem.getClassItem());
+                    newItem.setSpuClassificationId(spuClass.getSpuClassificationId());
+                    newItem.setCategoryId(categoryId);
+                    //TODO 产品替换编码
+                    spuService.save(newItem);
+                    spuList.add(newItem);
                 }
+                newSku.setSpuId(newItem.getSpuId());
                 //单位------------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getUnit())) {
                     throw new ServiceException(500, "参数错误");
                 }
                 skuExcelItem.setUnit(skuExcelItem.getUnit().replaceAll(" ", ""));
-                Spu spuById = spuService.getById(spuId);
                 Long unitId = null;
                 for (Unit unit : units) {
                     if (unit.getUnitName().equals(skuExcelItem.getUnit())) {
@@ -274,8 +246,8 @@ public class SkuExcelController {
                     units.add(newUnit);
                     unitId = newUnit.getUnitId();
                 }
-                spuById.setUnitId(unitId);
-                spuService.updateById(spuById);
+                newItem.setUnitId(unitId);
+                spuService.updateById(newItem);
                 //批量-----------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getIsNotBatch())) {
                     throw new ServiceException(500, "参数错误");

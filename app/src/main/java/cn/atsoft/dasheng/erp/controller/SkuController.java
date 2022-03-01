@@ -130,14 +130,15 @@ public class SkuController extends BaseController {
                 sku.setUnit(unit);
             }
             if (ToolUtil.isNotEmpty(spu.getSpuClassificationId())) {
-                SpuClassification spuClassification = spuClassificationService.getById(spu.getSpuClassificationId());
-                sku.setSpuClassification(spuClassification);  //产品
-
-                if (ToolUtil.isNotEmpty(spuClassification.getPid())) {
+//                SpuClassification spuClassification = spuClassificationService.getById(spu.getSpuClassificationId());
+//                sku.setSpuClassification(spuClassification);  //产品
+//
+//                if (ToolUtil.isNotEmpty(spuClassification.getPid())) {
                     //分类
-                    SpuClassification spuClassification1 = spuClassificationService.getById(spuClassification.getPid());
-                    sku.setSkuClass(spuClassification1);
-                }
+                    SpuClassification spuClassification1 = spuClassificationService.getById(spu.getSpuClassificationId());
+                    sku.setSpuClass(spuClassification1.getSpuClassificationId());
+//                    sku.setSkuClass(spuClassification1);
+//                }
 
             }
         }

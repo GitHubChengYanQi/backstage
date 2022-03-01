@@ -25,6 +25,8 @@ import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -70,6 +72,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     @Autowired
     private StepsService stepsSer;
 
+
     @Override
     @Transactional
     public void add(PurchaseAskParam param) {
@@ -88,10 +91,10 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
 //        }
 
         int totalCount = 0;
-        int totalType = param.getPurchaseListingParams().size();
+        int totalType = param.getPurchaseListings().size();
         List<PurchaseListing> purchaseListings = new ArrayList<>();
         //添加采购清单
-        for (PurchaseListingParam purchaseListingParam : param.getPurchaseListingParams()) {
+        for (PurchaseListingParam purchaseListingParam : param.getPurchaseListings()) {
             totalCount += purchaseListingParam.getApplyNumber();
             purchaseListingParam.setPurchaseAskId(entity.getPurchaseAskId());
             PurchaseListing purchaseListing = new PurchaseListing();
@@ -122,7 +125,6 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             //添加log
             activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getPurchaseAskId(), "purchaseAsk");
             activitiProcessLogService.autoAudit(taskId, 1);
-
         } else {
             entity.setStatus(2);
             this.updateById(entity);
@@ -177,7 +179,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
 
 
         List<PurchaseListing> purchaseListings = askIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().in("purchase_ask_id", askIds).eq("display", 1).list();
-
+        List<PurchaseListingResult> resultList = BeanUtil.copyToList(purchaseListings, PurchaseListingResult.class, new CopyOptions());
+        purchaseListingService.format(resultList);
 
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (PurchaseAskResult purchaseAskResult : param) {
@@ -198,6 +201,14 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             purchaseAskResult.setViewUpdate(viewUpdate);
             purchaseAskResult.setApplyNumber(number);
             purchaseAskResult.setApplyType(type);
+
+            List<PurchaseListingResult> results = new ArrayList<>();
+            for (PurchaseListingResult listingResult : resultList) {
+                if (listingResult.getPurchaseAskId().equals(purchaseAskResult.getPurchaseAskId())) {
+                    results.add(listingResult);
+                }
+            }
+            purchaseAskResult.setPurchaseListings(results);
         }
 
     }
@@ -214,7 +225,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         for (PurchaseListingResult listingResult : purchaseListing) {
             number = Math.toIntExact(number + listingResult.getApplyNumber());
         }
-        result.setPurchaseListingResults(purchaseListing);
+        result.setPurchaseListings(purchaseListing);
         result.setApplyType(purchaseListing.size());
         result.setApplyNumber(number);
         return result;
@@ -247,6 +258,28 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             ask.setStatus(1);
             this.updateById(ask);
         }
+    }
+
+    /**
+     * 采购申请驳回
+     *
+     * @param askId
+     */
+    @Override
+    public void rejected(Long askId) {
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", askId).one();
+        if (ToolUtil.isEmpty(processTask)) {
+            throw new ServiceException(500, "当前采购申请没有流程任务");
+        }
+        PurchaseAsk ask = this.getById(askId);
+        ask.setStatus(3);
+        this.updateById(ask);
+
+        List<ActivitiProcessLog> processLogs = activitiProcessLogService.query().eq("task_id", processTask).list();
+        for (ActivitiProcessLog processLog : processLogs) {
+            processLog.setStatus(0);
+        }
+        activitiProcessLogService.updateBatchById(processLogs);
     }
 
     private Serializable getKey(PurchaseAskParam param) {

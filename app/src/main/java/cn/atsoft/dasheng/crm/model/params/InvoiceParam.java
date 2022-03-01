@@ -33,6 +33,11 @@ public class InvoiceParam implements Serializable, BaseValidatingParam {
     private Long invoiceId;
 
     /**
+     * 银行
+     */
+    private Long bankId;
+
+    /**
      * 客户id
      */
     @ApiModelProperty("客户id")

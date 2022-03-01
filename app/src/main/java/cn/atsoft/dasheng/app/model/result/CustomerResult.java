@@ -54,11 +54,11 @@ public class CustomerResult implements Serializable {
     private String abbreviation;
     private RegionResult regionResult;
     private InvoiceResult invoiceResult;
+    private List<InvoiceResult> invoiceResults;
     private Integer businessCount;
     private Integer contracrCount;
     private Integer dynamicCount;
     private Integer contactsCount;
-    private Long invoiceId;
     private Contacts contact;
     private Adress address;
     private Integer supply;
@@ -83,6 +83,8 @@ public class CustomerResult implements Serializable {
      */
     @ApiModelProperty("客户名称")
     private String customerName;
+    @ApiModelProperty("支付信息")
+    private Long invoiceId;
 
     /**
      * 客户地址id

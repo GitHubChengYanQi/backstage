@@ -446,6 +446,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isNotEmpty(details)) {
             throw new ServiceException(500, "已入库，请勿再次入库");
         }
+
         Long formId = orCodeBindService.getFormId(inKindRequest.getCodeId());
         InstockList instockList = null;
         Long number = 0L;
@@ -455,9 +456,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 throw new ServiceException(500, "二维码信息不符");
             }
             number = one.getNumber();
-            if (one.getType().equals("1")) {
-                throw new ServiceException(500, "已入库");
-            }
+//            if (one.getType().equals("1")) {
+//                throw new ServiceException(500, "已入库");
+//            }
             one.setType("1");
             Inkind inkind = new Inkind();
             inkind.setType("1");

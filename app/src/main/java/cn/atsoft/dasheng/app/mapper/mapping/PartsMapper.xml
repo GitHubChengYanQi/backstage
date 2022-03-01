@@ -22,11 +22,12 @@
         <result column="sku_id" property="skuId"/>
         <result column="children" property="children"/>
         <result column="childrens" property="childrens"/>
+        <result column="status" property="status"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sku_id
-    AS "skuId", children AS "children",childrens AS "childrens",
+    AS "skuId", children AS "children",childrens AS "childrens",status AS "status",
         parts_id
         AS "partsId", spu_id AS "spuId",skus AS "skus",type AS "type", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
     </sql>
@@ -127,12 +128,15 @@
             parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_parts where display = 1
+        from daoxin_erp_parts where 1 = 1
         <if test="paramCondition.partsId != null">
             and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
         </if>
         <if test="paramCondition.spuId != null">
             and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
         </if>
         <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
             and attribute like CONCAT('%',#{paramCondition.attribute},'%')

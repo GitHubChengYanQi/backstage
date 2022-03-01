@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
+import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +27,8 @@ import java.util.List;
 @ApiModel
 public class PartsParam implements Serializable, BaseValidatingParam {
 
+    private Integer status;
+
     private static final long serialVersionUID = 1L;
 
     private String skuName;
@@ -34,6 +38,12 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     private String children;
 
     private String childrens;
+
+    private String specifications;
+
+    private List<SkuAttributeAndValue> sku;
+
+    private Integer batch;
 
     private String skuNote;
 
@@ -56,6 +66,7 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     /**
      * 清单id
      */
+    @NotNull
     @ApiModelProperty("清单id")
     private Long partsId;
 

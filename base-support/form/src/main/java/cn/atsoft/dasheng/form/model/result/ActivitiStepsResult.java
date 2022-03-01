@@ -50,6 +50,8 @@ public class ActivitiStepsResult implements Serializable {
     private ActivitiSetpSetResult setpSet;
 
     private List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
+
+
     /**
      * 步骤Id，主键
      */

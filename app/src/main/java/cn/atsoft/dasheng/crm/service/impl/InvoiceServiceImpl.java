@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,6 +69,13 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         Page<InvoiceResult> pageContext = getPageContext();
         IPage<InvoiceResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+    private void format(List<InvoiceResult> param){
+        List<Long> bankIds = new ArrayList<>();
+        for (InvoiceResult invoiceResult : param) {
+
+            bankIds.add(invoiceResult.getBankId());
+        }
     }
 
     private Serializable getKey(InvoiceParam param) {

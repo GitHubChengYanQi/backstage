@@ -80,7 +80,6 @@ public class InstockSendTemplate {
         wxCpTemplate.setTitle("入库提醒");
         wxCpTemplate.setDescription("有新的物料需要入库");
         wxCpTemplate.setUserIds(users);
-
         wxCpTemplate.setUrl(url);
         //获取url
 //        wxCpSendTemplate.setMessage(new Message(){{

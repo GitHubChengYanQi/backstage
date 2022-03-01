@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -50,6 +52,8 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
     private UserService userService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public void add(PurchaseListingParam param) {
@@ -129,6 +133,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         if (ToolUtil.isNotEmpty(param.getType())) {
             askQueryWrapper.eq("type", param.getType());
         }
+
         askQueryWrapper.eq("status", 2);
         List<PurchaseAsk> asks = askService.list(askQueryWrapper);
         List<Long> askIds = new ArrayList<>();
@@ -136,18 +141,28 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             askIds.add(ask.getPurchaseAskId());
         }
         if (ToolUtil.isEmpty(askIds)) {
-            return  null;
+            return null;
         }
         //查询所有申请通过的物料
         QueryWrapper<PurchaseListing> listingQueryWrapper = new QueryWrapper<>();
         listingQueryWrapper.in("purchase_ask_id", askIds);
         listingQueryWrapper.eq("status", 0);
-        if (ToolUtil.isNotEmpty(param.getEndTime()) && ToolUtil.isNotEmpty(param.getBeginTime())) {
 
+        if (ToolUtil.isNotEmpty(param.getEndTime()) && ToolUtil.isNotEmpty(param.getBeginTime())) {  //日期查询
             listingQueryWrapper.between("delivery_date", param.getBeginTime(), param.getEndTime());
         }
+        if (ToolUtil.isNotEmpty(param.getStockNumber())) {          //小于库存数量
+            List<StockDetails> details = stockDetailsService.query().lt("number", param.getStockNumber()).list();
+            listingQueryWrapper.in("sku_id", new ArrayList<Long>() {{
+                for (StockDetails detail : details) {
+                    add(detail.getSkuId());
+                }
+            }});
+        }
+        if (ToolUtil.isNotEmpty(param.getSkuId())) {
+            listingQueryWrapper.eq("sku_id", param.getSkuId());
+        }
         List<PurchaseListing> purchaseListingList = this.list(listingQueryWrapper);
-
 
         Set<ListingPlan> listingPlanSet = new HashSet<>();
         for (PurchaseListing purchaseListing : purchaseListingList) {
@@ -168,7 +183,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         for (ListingPlan plan : listingPlanSet) {
 
             List<PurchaseListingResult> resultList = new ArrayList<>();
-            Long number = 0L;
+            long number = 0L;
             for (PurchaseListingResult result : results) {
                 if (ToolUtil.isNotEmpty(result.getBrandId()) && ToolUtil.isNotEmpty(result.getSkuId())
                         && plan.getSkuId().equals(result.getSkuId()) && plan.getBrandId().equals(result.getBrandId())) {
@@ -182,11 +197,10 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             plan.setChildren(resultList);
             plan.setApplyNumber(number);
         }
-
-
         return listingPlanSet;
     }
 
+    @Override
     public void format(List<PurchaseListingResult> param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();

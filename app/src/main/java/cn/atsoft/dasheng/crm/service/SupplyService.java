@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.crm.service;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -93,4 +94,6 @@ public interface SupplyService extends IService<Supply> {
     List<SupplyResult> getSupplyBySupplierId (Long supplierId);
 
     List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds);
+
+    void OrdersBackfill(Long customerId, List<OrderDetailParam> params);
 }

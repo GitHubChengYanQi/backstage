@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 
 import javax.servlet.http.Part;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,11 +64,13 @@ public class PartsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PartsParam partsParam) {
 
+
         if (ToolUtil.isNotEmpty(partsParam) && ToolUtil.isEmpty(partsParam.getSkuId())) {
             if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
                 Sku sku = skuService.getById(partsParam.getItem().getSkuId());
                 if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getSpuId())) {
                     partsParam.setSpuId(sku.getSpuId());
+                    partsParam.setSkuId(sku.getSkuId());
                 }
             } else {
                 if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
@@ -75,7 +78,6 @@ public class PartsController extends BaseController {
                 }
             }
         }
-
         this.partsService.add(partsParam);
         return ResponseData.success();
     }
@@ -89,10 +91,19 @@ public class PartsController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody PartsParam partsParam) {
+        Parts parts = this.partsService.getById(partsParam.getPartsId());
+        if (parts.getStatus() == 99) {
+            this.partsService.updateAdd(partsParam);
+        } else {
+            this.partsService.update(partsParam);
+        }
+        return ResponseData.success();
+    }
 
-//        List<String>  pidValue = partsParam.getPidValue();
-//        partsParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
-//        this.partsService.update(partsParam);
+
+    @RequestMapping(value = "/release", method = RequestMethod.POST)
+    public ResponseData release(@RequestBody @Valid PartsParam partsParam) {
+        this.partsService.release(partsParam.getPartsId());
         return ResponseData.success();
     }
 
@@ -156,7 +167,7 @@ public class PartsController extends BaseController {
             add(result.getSkuId());
         }});
 
-        if (skuResults.size() > 0){
+        if (skuResults.size() > 0) {
             result.setSkuResult(skuResults.get(0));
         }
 
@@ -218,6 +229,9 @@ public class PartsController extends BaseController {
         if (ToolUtil.isNotEmpty(partsParam)) {
             if (ToolUtil.isNotEmpty(partsParam.getType())) {
                 partsQueryWrapper.eq("type", partsParam.getType());
+            }
+            if (ToolUtil.isNotEmpty(partsParam.getStatus())) {
+                partsQueryWrapper.eq("status", partsParam.getStatus());
             }
         }
         List<Map<String, Object>> list = this.partsService.listMaps(partsQueryWrapper);
@@ -296,6 +310,7 @@ public class PartsController extends BaseController {
         List<ErpPartsDetailResult> detailResults = this.partsService.oldBackDetails(id, partsId);
         return ResponseData.success(detailResults);
     }
+
     @RequestMapping(value = "getTree", method = RequestMethod.GET)
     @ApiOperation("返回子表集合")
     public ResponseData getTree(@RequestParam Long id) {

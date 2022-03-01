@@ -47,4 +47,9 @@ public class MessageEntity {
      * 代办消息
      */
     private Message message;
+    /**
+     *
+     */
+
+
 }

@@ -78,4 +78,5 @@ public interface PurchaseListingService extends IService<PurchaseListing> {
      */
     Set<ListingPlan> plans(PlanListParam param);
 
+    void format(List<PurchaseListingResult> param);
 }

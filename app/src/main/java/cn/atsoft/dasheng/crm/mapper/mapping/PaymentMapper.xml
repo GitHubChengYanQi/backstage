@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.crm.mapper.PaymentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.Payment">
+        <id column="payment_id" property="paymentId"/>
+        <result column="order_id" property="orderId"/>
+        <result column="pay_method" property="payMethod"/>
+        <result column="freight" property="freight"/>
+        <result column="name" property="name"/>
+        <result column="delivery_way" property="deliveryWay"/>
+        <result column="adress_id" property="adressId"/>
+        <result column="pay_plan" property="payPlan"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="remark" property="remark"/>
+        <result column="money" property="money"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">money
+    AS "money",type AS "type",status AS "status",
+        payment_id
+        AS "paymentId", order_id AS "orderId", pay_method AS "payMethod", freight AS "freight", name AS "name", delivery_way AS "deliveryWay", adress_id AS "adressId", pay_plan AS "payPlan", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", remark AS "remark"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.PaymentParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_payment where 1 = 1
+        <if test="paramCondition.orderId != null">
+            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.deliveryWay != null and paramCondition.deliveryWay != ''">
+            and delivery_way like CONCAT('%',#{paramCondition.deliveryWay},'%')
+        </if>
+        <if test="paramCondition.payPlan != null">
+            and pay_plan like CONCAT('%',#{paramCondition.payPlan},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_payment where 1 = 1
+        <if test="paramCondition.orderId != null">
+            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.deliveryWay != null and paramCondition.deliveryWay != ''">
+            and delivery_way like CONCAT('%',#{paramCondition.deliveryWay},'%')
+        </if>
+        <if test="paramCondition.payPlan != null">
+            and pay_plan like CONCAT('%',#{paramCondition.payPlan},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.PaymentParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_payment where 1 = 1
+        <if test="paramCondition.orderId != null">
+            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.deliveryWay != null and paramCondition.deliveryWay != ''">
+            and delivery_way like CONCAT('%',#{paramCondition.deliveryWay},'%')
+        </if>
+        <if test="paramCondition.payPlan != null">
+            and pay_plan like CONCAT('%',#{paramCondition.payPlan},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_payment where 1 = 1
+        <if test="paramCondition.orderId != null">
+            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.deliveryWay != null and paramCondition.deliveryWay != ''">
+            and delivery_way like CONCAT('%',#{paramCondition.deliveryWay},'%')
+        </if>
+        <if test="paramCondition.payPlan != null">
+            and pay_plan like CONCAT('%',#{paramCondition.payPlan},'%')
+        </if>
+    </select>
+
+</mapper>

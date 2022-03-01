@@ -4,8 +4,9 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.*;
 
 
-
+import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.pojo.ContractReplace;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -15,10 +16,19 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
+import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
+import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -29,7 +39,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -57,7 +70,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private ContractDetailService contractDetailService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private TemplateService templateService;
 
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
     public ContractResult detail(Long id) {
@@ -322,6 +339,58 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         return PageFactory.defaultPage(fields);
     }
 
+    @Override
+    public Set<ContractDetailSetRequest> pendingProductionPlan() {
+//        List<Contract> contracts = this.query().eq("source", "销售").eq("display", 1).list();
+//        List<Long> contractIds = new ArrayList<>();
+//        for (Contract contract : contracts) {
+//            contractIds.add(contract.getContractId());
+//        }
+//        List<ContractDetail> contractDetails = contractIds.size() == 0 ? new ArrayList<>() : contractDetailService.query().eq("display", 1).in("contract_id", contractIds).list();
+//        List<ContractDetailResult> contractDetailResults = new ArrayList<>();
+//
+//        /**
+//         * 返回合并后的数据
+//         */
+//        Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
+//        for (ContractDetail contractDetail : contractDetails) {
+//            ContractDetailSetRequest request = new ContractDetailSetRequest();
+//            ToolUtil.copyProperties(contractDetail, request);
+//            contractDetailSet.add(request);
+//        }
+//        for (ContractDetail contractDetail : contractDetails) {
+//            ContractDetailResult contractDetailResult = new ContractDetailResult();
+//            ToolUtil.copyProperties(contractDetail, contractDetailResult);
+//            contractDetailResults.add(contractDetailResult);
+//        }
+//        this.contractDetailService.format(contractDetailResults);
+//        for (ContractDetailSetRequest request : contractDetailSet) {
+//            Long quantity = 0L;
+//            List<OrderDetailResult> results = new ArrayList<>();
+//            for (OrderDetailResult contractDetailResult : contractDetailResults) {
+//                if (
+//                        ToolUtil.isNotEmpty(contractDetailResult.getBrandId()) && ToolUtil.isNotEmpty(contractDetailResult.getSkuId()) && ToolUtil.isNotEmpty(contractDetailResult.getCustomerId()) &&
+//                                ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
+//                                contractDetailResult.getBrandId().equals(request.getBrandId()) && contractDetailResult.getSkuId().equals(request.getSkuId()) && contractDetailResult.getCustomerId().equals(request.getCustomerId())
+//                ) {
+//                    quantity += contractDetailResult.getQuantity();
+//                    results.add(contractDetailResult);
+//                    request.setSkuId(contractDetailResult.getSkuId());
+//                    request.setBrandId(contractDetailResult.getBrandId());
+//                    request.setCustomerId(contractDetailResult.getCustomerId());
+//                }
+//                request.setChildren(results);
+//                request.setQuantity(quantity);
+//            }
+//        }
+
+        return null;
+
+    }
+
+
+
+
     private Contract getOldEntity(ContractParam param) {
         return this.getById(getKey(param));
     }
@@ -339,6 +408,108 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         UpdateWrapper<Contract> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("contract_id", contractId);
         this.update(contract, updateWrapper);
+    }
+
+    /**
+     * 订单创建合同
+     *
+     * @param orderId
+     * @param param
+     */
+    @Override
+    public void orderAddContract(Long orderId, ContractParam param, OrderParam orderParam, String orderType) {
+        if (ToolUtil.isEmpty(param)) {
+            throw new ServiceException(500, "合同对象为空");
+        }
+        Contract contract = new Contract();
+        ToolUtil.copyProperties(param, contract);
+        contract.setSource(orderType);
+        contract.setSourceId(orderId);
+        if (ToolUtil.isEmpty(param.getTemplateId())) {
+            throw new ServiceException(500, "请选择合同模板");
+        }
+        Template template = templateService.getById(param.getTemplateId());
+        if (ToolUtil.isNotEmpty(template)) {
+            String content = template.getContent();
+            for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
+                if (content.contains(contractReplace.getOldText())) {
+                    content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+                }
+            }
+            contract.setPartyA(orderParam.getBuyerId());
+            contract.setPartyB(orderParam.getSellerId());
+
+            contract.setPartyAPhone(orderParam.getPartyAPhone());
+            contract.setPartyBPhone(orderParam.getPartyBPhone());
+
+            contract.setPartyAAdressId(orderParam.getPartyAAdressId());
+            contract.setPartyBAdressId(orderParam.getPartyBAdressId());
+
+
+            contract.setPartyAContactsId(orderParam.getPartyAContactsId());
+            contract.setPartyBContactsId(orderParam.getPartyBContactsId());
+            try {
+                if (content.contains("${{Acontacts}}") && ToolUtil.isNotEmpty(orderParam.getPartyAContactsId())) {
+                    Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
+                    content = content.replace("${{Acontacts}}", contacts.getContactsName());
+                }
+                if (content.contains("${{Bcontacts}}") && ToolUtil.isNotEmpty(orderParam.getPartyBContactsId())) {
+                    Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
+                    content = content.replace("${{Bcontacts}}", contacts.getContactsName());
+                }
+                if (content.contains("${{AAddress}}") && ToolUtil.isNotEmpty(orderParam.getPartyAAdressId())) {
+                    Adress adress = adressService.getById(orderParam.getPartyAAdressId());
+                    content = content.replace("${{AAddress}}", adress.getLocation());
+                }
+                if (content.contains("${{BAddress}}") && ToolUtil.isNotEmpty(orderParam.getPartyBAdressId())) {
+                    Adress adress = adressService.getById(orderParam.getPartyBAdressId());
+                    content = content.replace("${{BAddress}}", adress.getLocation());
+                }
+                if (content.contains("${{APhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyAPhone())) {
+                    Phone phone = phoneService.getById(orderParam.getPartyAPhone());
+                    content = content.replace("${{APhone}}", phone.getPhoneNumber().toString());
+                }
+                if (content.contains("${{BPhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyBPhone())) {
+                    Phone phone = phoneService.getById(orderParam.getPartyBPhone());
+                    content = content.replace("${{BPhone}}", phone.getPhoneNumber().toString());
+                }
+
+                if (content.contains("${{ACustomer}}") && ToolUtil.isNotEmpty(orderParam.getBuyerId())) {
+                    Customer customer = customerService.getById(orderParam.getBuyerId());
+                    content = content.replace("${{ACustomer}}", customer.getCustomerName());
+                }
+                if (content.contains("${{BCustomer}}") && ToolUtil.isNotEmpty(orderParam.getSellerId())) {
+                    Customer customer = customerService.getById(orderParam.getSellerId());
+                    content = content.replace("${{BCustomer}}", customer.getCustomerName());
+                }
+            } catch (Exception e) {
+
+            }
+            contract.setContent(content);
+            this.save(contract);
+            createContractDetail(contract.getContractId(), orderParam);
+        }
+    }
+
+    /**
+     * 添加合同详情
+     *
+     * @param contractId
+     * @param
+     */
+    private void createContractDetail(Long contractId, OrderParam param) {
+
+        List<ContractDetail> details = new ArrayList<>();
+        for (OrderDetailParam detailParam : param.getDetailParams()) {
+            ContractDetail contractDetail = new ContractDetail();
+            contractDetail.setContractId(contractId);
+            contractDetail.setContractId(param.getSellerId());
+            contractDetail.setSkuId(detailParam.getSkuId());
+            contractDetail.setBrandId(detailParam.getBrandId());
+            contractDetail.setQuantity(Math.toIntExact(detailParam.getPurchaseNumber()));
+            details.add(contractDetail);
+        }
+        contractDetailService.saveBatch(details);
     }
 
 }

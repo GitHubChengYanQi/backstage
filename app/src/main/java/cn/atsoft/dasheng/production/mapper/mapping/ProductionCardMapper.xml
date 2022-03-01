@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.production.mapper.ProductionCardMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.ProductionCard">
+        <id column="production_card_id" property="productionCardId" />
+        <result column="work_order_id" property="workOrderId" />
+        <result column="sku_id" property="skuId" />
+        <result column="create_user" property="createUser" />
+        <result column="deptId" property="deptId" />
+        <result column="source" property="source" />
+        <result column="source_id" property="sourceId" />
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
+        <result column="display" property="display" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        production_card_id AS "productionCardId",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionCardResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionCardParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_card where 1 = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionCardParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_card where 1 = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.ProductionCardResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionCardParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_card where 1 = 1
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionCardParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_card where 1 = 1
+    </select>
+
+</mapper>

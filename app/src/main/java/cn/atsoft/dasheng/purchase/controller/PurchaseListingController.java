@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.controller;
 
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
@@ -36,6 +37,8 @@ public class PurchaseListingController extends BaseController {
 
     @Autowired
     private PurchaseListingService purchaseListingService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     /**
      * 新增接口
@@ -117,6 +120,9 @@ public class PurchaseListingController extends BaseController {
     @RequestMapping(value = "/planList", method = RequestMethod.POST)
     @ApiOperation("待买")
     public ResponseData planList(@RequestBody(required = false) PlanListParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new PlanListParam();
+        }
         Set<ListingPlan> plans = this.purchaseListingService.plans(param);
         if (ToolUtil.isEmpty(plans)) {
             return ResponseData.success(null);
@@ -124,8 +130,11 @@ public class PurchaseListingController extends BaseController {
         List<ListingPlan> planList = new ArrayList<>(plans);
         planList.removeIf(plan -> plan.getSkuResult() == null);
 
+        stockDetailsService.preorder(planList);
+
         return ResponseData.success(planList);
     }
+
 
 
 }

@@ -49,6 +49,13 @@ public class PurchaseAskController extends BaseController {
         return ResponseData.success();
     }
 
+
+    @RequestMapping(value = "/rejected", method = RequestMethod.GET)
+    @ApiOperation("驳回")
+    public ResponseData rejected(@RequestParam Long askId  ) {
+        this.purchaseAskService.rejected(askId);
+        return ResponseData.success();
+    }
     /**
      * 编辑接口
      *

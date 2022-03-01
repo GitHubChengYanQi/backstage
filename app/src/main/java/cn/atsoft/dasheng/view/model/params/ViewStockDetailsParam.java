@@ -4,8 +4,10 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -13,7 +15,7 @@ import java.util.List;
  * VIEW
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-01-27
  */
 @Data
@@ -27,6 +29,10 @@ public class ViewStockDetailsParam implements Serializable, BaseValidatingParam 
     private Long skuId;
 
     private String type;
+
+    private Long partId;
+
+    private List<Long> skuIds;
 
     /**
      * 物品Id

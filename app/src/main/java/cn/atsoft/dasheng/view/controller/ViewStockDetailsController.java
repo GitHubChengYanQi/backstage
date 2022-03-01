@@ -42,7 +42,7 @@ public class ViewStockDetailsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData list(@RequestBody(required = false) ViewStockDetailsParam viewStockDetailsParam) {
+    public ResponseData list(@RequestBody ViewStockDetailsParam viewStockDetailsParam) {
         if (ToolUtil.isEmpty(viewStockDetailsParam)) {
             viewStockDetailsParam = new ViewStockDetailsParam();
         }

@@ -120,9 +120,6 @@
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
-        <if test="paramCondition.type != null">
-            and type like CONCAT('%',#{paramCondition.type},'%')
-        </if>
         <if test="paramCondition.codingClass != null">
             and coding_class like CONCAT('%',#{paramCondition.codingClass},'%')
         </if>

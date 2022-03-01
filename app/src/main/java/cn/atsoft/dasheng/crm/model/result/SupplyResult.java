@@ -29,6 +29,10 @@ public class SupplyResult implements Serializable {
 
     private CustomerResult customerResult;
 
+    private Long stockNumber;
+
+    private Long applyNumber;
+
     private Long brandId;
 
     private SkuResult skuResult;

@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
 import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -84,12 +85,14 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     /**
      * 自由入库
+     *
      * @param freeInStockParam
      */
     void freeInstock(FreeInStockParam freeInStockParam);
 
     /**
      * 多个库位入库
+     *
      * @param stockParam
      */
     void freeInStockByPositions(FreeInStockParam stockParam);
@@ -100,4 +103,6 @@ public interface InstockOrderService extends IService<InstockOrder> {
     boolean judgeSkuBind(Inkind inkind, List<Supply> supplies);
 
     Boolean judgePosition(List<StorehousePositionsBind> positionsBinds, Inkind inkind);
+
+
 }

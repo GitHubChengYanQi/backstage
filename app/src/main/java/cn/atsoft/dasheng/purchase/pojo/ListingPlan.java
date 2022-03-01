@@ -11,9 +11,12 @@ import java.util.List;
 public class ListingPlan {
     private Long skuId;
     private Long applyNumber;
+    private Long stockNumber;
+    private Long brandId;
+
     private SkuResult skuResult;
     private BrandResult brandResult;
     private List<PurchaseListingResult> children;
 
-    private Long brandId;
+
 }

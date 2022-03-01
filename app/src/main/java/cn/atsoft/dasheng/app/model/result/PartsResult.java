@@ -36,19 +36,19 @@ public class PartsResult implements Serializable {
     private SkuResult skuResult;
     private UserResult userResult;
     private SpuResult spuResult;
-
+    private Integer status;
     private Item item;
     //零件
     private List<PartsResult> partsResults;
 
     private List<ErpPartsDetailResult> parts;
 
-    @JSONField(serialize = false)
+
     private String children;
 
     private String type;
 
-    @JSONField(serialize = false)
+
     private String childrens;
 
     private Sku sku;

@@ -73,4 +73,5 @@ public interface TemplateService extends IService<Template> {
      */
     void batchDelete(List<Long> ids);
 
+    List<String> getLabel(Long id);
 }

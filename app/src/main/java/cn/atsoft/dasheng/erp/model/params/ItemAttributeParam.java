@@ -25,7 +25,9 @@ import java.util.List;
 public class ItemAttributeParam extends AbstractDictMap implements Serializable, Comparable<ItemAttributeParam>, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
     private List<AttributeValuesParam> attributeValuesParams;
+
     private AttributeValuesParam attributeValuesParam;
     /**
      * 是否標配

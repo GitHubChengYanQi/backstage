@@ -22,6 +22,10 @@ import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -89,6 +93,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Autowired
     private CrmCustomerLevelService levelService;
 
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
     @FreedLog
@@ -243,7 +249,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     public CustomerResult format(List<CustomerResult> data) {
 
-        List<Long> dycustomerIds = new ArrayList<>();
+//        List<Long> dycustomerIds = new ArrayList<>();
         List<Long> originIds = new ArrayList<>();
         List<Long> levelIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
@@ -261,7 +267,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             userIds.add(record.getUserId());
             userIds.add(record.getCreateUser());
             industryIds.add(record.getIndustryId());
-            dycustomerIds.add(record.getCustomerId());
+//            dycustomerIds.add(record.getCustomerId());
             customerIds.add(record.getCustomerId());
             customerId = record.getCustomerId();
             invoiceIds.add(record.getInvoiceId());
@@ -280,7 +286,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             contactsIds.add(contactsBind.getContactsId());
         }
 
-        List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.listByIds(invoiceIds);
+        List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.query().in("customer_id",customerIds).eq("display",1).list();
         /***
          * 默认地址
          */
@@ -365,15 +371,31 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             } else if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 0) {
                 record.setClassificationName("代理商");
             }
+            List<InvoiceResult> invoiceResults = new ArrayList<>();
+            for (Invoice invoice : invoices) {      //对比开票
+                if (invoice.getCustomerId().equals(record.getCustomerId())) {
+                    InvoiceResult invoiceResult = new InvoiceResult();
+                    ToolUtil.copyProperties(invoice, invoiceResult);
+//                    record.setInvoiceResult(invoiceResult);
+                    invoiceResults.add(invoiceResult);
+                    record.setInvoiceResults(invoiceResults);
+//                    break;
+                }
+            }
+            record.setInvoiceResults(invoiceResults);
+
+
 
             for (Invoice invoice : invoices) {      //对比开票
-                if (ToolUtil.isNotEmpty(record.getInvoiceId()) && invoice.getInvoiceId().equals(record.getInvoiceId())) {
+                if (invoice.getInvoiceId().equals(record.getInvoiceId())) {
                     InvoiceResult invoiceResult = new InvoiceResult();
                     ToolUtil.copyProperties(invoice, invoiceResult);
                     record.setInvoiceResult(invoiceResult);
+//                    invoiceResults.add(invoiceResult);
                     break;
                 }
             }
+//            record.setInvoiceResults(invoiceResults);
             for (Adress adress : adresses) {
                 if (adress.getAdressId().equals(record.getDefaultAddress())) {
                     record.setAddress(adress);

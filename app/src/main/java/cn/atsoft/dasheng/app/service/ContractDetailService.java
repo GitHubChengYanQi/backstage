@@ -70,4 +70,5 @@ public interface ContractDetailService extends IService<ContractDetail> {
      */
      PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param, DataScope dataScope );
 
+    void format(List<ContractDetailResult> data);
 }

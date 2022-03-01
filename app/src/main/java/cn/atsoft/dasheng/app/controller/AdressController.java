@@ -132,9 +132,12 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) AdressParam adressParam) {
         QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
-        adressQueryWrapper.in("display", 1);
+        adressQueryWrapper.eq("display", 1);
+        if (ToolUtil.isNotEmpty(adressParam) && ToolUtil.isNotEmpty(adressParam.getCustomerId())){
+            adressQueryWrapper.eq("customer_id", adressParam.getCustomerId());
+        }
         List<Map<String, Object>> list = this.adressService.listMaps(adressQueryWrapper);
         AdressSelectWrapper adressSelectWrapper = new AdressSelectWrapper(list);
         List<Map<String, Object>> result = adressSelectWrapper.wrap();

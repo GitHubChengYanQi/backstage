@@ -188,8 +188,8 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
-    private void format(List<ContractDetailResult> data) {
+    @Override
+    public void format(List<ContractDetailResult> data) {
 
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();

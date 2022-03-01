@@ -41,6 +41,7 @@ public class SkuResult implements Serializable {
     private String categoryName;
     private SpuResult spuResult;
     private String spuName;
+    private Long partsId;
     private String createUserName;
     private String skuTextValue;
     private Long spuClass;
@@ -58,6 +59,7 @@ public class SkuResult implements Serializable {
     private List<BrandResult> brandResultList;
     private BrandResult brandResult;
     private User user;
+    private Boolean inBom;
 
     /**
      * 之间方案id

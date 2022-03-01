@@ -183,11 +183,14 @@
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id =goods_spu.spu_classification_id
         WHERE 1=1 and goods_sku.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
-            and goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
-            or goods_spu_class.name like CONCAT ('%',#{paramCondition.skuName},'%')
-            or standard like CONCAT ('%',#{paramCondition.skuName},'%')
-        </if>
+            and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT ('%',#{paramCondition.skuName},'%'))
 
+        </if>
+        <if test="paramCondition.addMethod != null">
+            AND goods_sku.add_method = #{paramCondition.addMethod}
+        </if>
         <if test="paramCondition.skuName == null or paramCondition.skuName == ''">
 
             <if test="paramCondition.skuId != null">
@@ -214,8 +217,8 @@
             <if test="paramCondition.spuClassName != null">
                 and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
             </if>
-            <if test="paramCondition.addMethod != null and paramCondition.addMethod != ''">
-                and goods_sku.add_method = #{paramCondition.addMethod}
+            <if test="paramCondition.spuClass != null">
+                and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
             </if>
         </if>
         <if test="spuIds != null  and spuIds.size > 0 ">
