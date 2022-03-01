@@ -27,8 +27,11 @@ import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.model.params.SourceEnum;
 import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -75,6 +78,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
     @Autowired
     private MessageProducer messageProducer;
+
+    @Autowired
+    private GetOrigin getOrigin;
 
     @Override
     public ContractResult detail(Long id) {
@@ -126,8 +132,14 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         } else {
             Contract entity = getEntity(param);
             this.save(entity);
+            if (ToolUtil.isNotEmpty(param.getSource()) && ToolUtil.isNotEmpty(param.getSourceId())){
+                String origin = getOrigin.newThemeAndOrigin("contract", entity.getContractId(), entity.getSource(), entity.getSourceId());
+                entity.setOrigin(origin);
+                this.updateById(entity);
+            }
             return entity;
         }
+
     }
 
     @Override
@@ -387,8 +399,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         return null;
 
     }
-
-
 
 
     private Contract getOldEntity(ContractParam param) {

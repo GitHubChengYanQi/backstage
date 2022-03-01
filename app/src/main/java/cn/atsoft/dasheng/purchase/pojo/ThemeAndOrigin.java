@@ -9,8 +9,6 @@ import java.util.List;
 @Data
 public class ThemeAndOrigin {
 
-
-//        private Long parentId;
         private String source;
         private Long sourceId;
         private List<ThemeAndOrigin> parent;

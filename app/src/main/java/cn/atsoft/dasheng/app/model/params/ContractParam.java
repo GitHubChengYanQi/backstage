@@ -71,6 +71,20 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("合同名称")
     private String name;
 
+
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
+
+
     /**
      * 负责人id
      */

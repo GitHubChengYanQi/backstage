@@ -105,6 +105,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         for (PurchaseListing purchaseListing : purchaseListings) {
             askIds.add(purchaseListing.getPurchaseAskId());
         }
+
         List<Long> collectAskIds = askIds.stream().distinct().collect(Collectors.toList());
         ThemeAndOrigin themeAndOrigin = new ThemeAndOrigin();
         List<ThemeAndOrigin> parent = new ArrayList<ThemeAndOrigin>();

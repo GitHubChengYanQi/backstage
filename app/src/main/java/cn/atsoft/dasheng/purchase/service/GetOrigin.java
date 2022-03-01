@@ -166,6 +166,12 @@ public class GetOrigin {
                 coding = ask.getCoding();
                 createTime = ask.getCreateTime();
                 break;
+            case "order":
+                Order order = JSONObject.parseObject(JSONObject.toJSONString(param), Order.class);
+                fromId = order.getOrderId();
+//                coding = order.getCoding();
+                createTime = order.getCreateTime();
+                break;
         }
         Long finalFromId = fromId;
         String finalCoding = coding;
@@ -180,19 +186,28 @@ public class GetOrigin {
         }});
 
     }
-
-    public ThemeAndOrigin originFormat(SourceEnum source, Long sourceId) {
+    public String newThemeAndOrigin(String self,Long selfId,String source,Long sourceId){
+        ThemeAndOrigin themeAndOrigin = originFormat(source, sourceId);
+        themeAndOrigin.setSource(self);
+        themeAndOrigin.setSourceId(selfId);
+        return JSON.toJSONString(themeAndOrigin);
+    }
+    public ThemeAndOrigin originFormat(String source, Long sourceId) {
         ThemeAndOrigin themeAndOrigin = new ThemeAndOrigin();
+        ThemeAndOrigin parent = new ThemeAndOrigin();
         switch (source) {
-            case PURCHASEASK:
+            case "purchaseAsk":
                 PurchaseAsk byId = purchaseAskService.getById(sourceId);
-                themeAndOrigin =  JSON.parseObject(byId.getOrigin(), ThemeAndOrigin.class);
+                parent =  JSON.parseObject(byId.getOrigin(), ThemeAndOrigin.class);
                 break;
-            case ORDER:
+            case "order":
                 Order order = orderService.getById(sourceId);
-                themeAndOrigin =  JSON.parseObject(order.getOrigin(), ThemeAndOrigin.class);
+                parent =  JSON.parseObject(order.getOrigin(), ThemeAndOrigin.class);
             break;
         }
+        List<ThemeAndOrigin> parents = new ArrayList<>();
+        parents.add(parent);
+        themeAndOrigin.setParent(parents);
         return themeAndOrigin;
     }
 }
