@@ -73,6 +73,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(one)) {
             Parts parts = new Parts();
             ToolUtil.copyProperties(partsParam, parts);
+            parts.setStatus(0);
             parts.setPartsId(null);
             this.save(parts);
             List<ErpPartsDetail> partsDetails = new ArrayList<>();
@@ -92,6 +93,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             skuIds.add(part.getSkuId());
         }
+        judge(partsParam); //防止添加重复数据
 
         List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
         Parts parts1 = new Parts();
@@ -156,6 +158,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
 
         Parts entity = getEntity(partsParam);
+        entity.setPartsId(null);
         this.save(entity);
 
         List<ErpPartsDetail> details = new ArrayList<>();
@@ -184,6 +187,52 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
     }
+
+    private void judge(PartsParam partsParam) {
+        List<Long> skuIds = new ArrayList<>();
+        for (ErpPartsDetailParam part : partsParam.getParts()) {
+            skuIds.add(part.getSkuId());
+        }
+        long count = skuIds.stream().distinct().count();
+        if (count != partsParam.getParts().size()) {
+            throw new ServiceException(500, "请勿添加重复数据");
+        }
+    }
+
+    @Override
+    public void updateAdd(PartsParam partsParam) {
+        judge(partsParam); //防止添加重复数据
+
+        Parts newPart = new Parts();
+        ToolUtil.copyProperties(partsParam, newPart);
+        newPart.setPid(partsParam.getPartsId());
+        newPart.setPartsId(null);
+        this.save(newPart);
+
+        List<ErpPartsDetail> details = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (ErpPartsDetailParam partsDetail : partsParam.getParts()) {
+            ErpPartsDetail newDetail = new ErpPartsDetail();
+            ToolUtil.copyProperties(partsDetail, newDetail);
+            newDetail.setPartsDetailId(null);
+            newDetail.setPartsId(newPart.getPartsId());
+            skuIds.add(partsDetail.getSkuId());
+            details.add(newDetail);
+        }
+
+        erpPartsDetailService.saveBatch(details);
+
+        // 更新当前节点，及下级
+        Map<String, List<Long>> childrenMap = getChildrens(newPart.getSkuId(), partsParam.getType());
+        newPart.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        newPart.setChildren(JSON.toJSONString(skuIds));
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("parts_id", newPart.getPartsId());
+        this.update(newPart, partsQueryWrapper);
+
+        updateChildren(newPart.getSkuId(), partsParam.getType());
+    }
+
 
     /**
      * 更新包含它的
@@ -217,17 +266,19 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         };
 
         List<Long> skuIds = new ArrayList<>();
-        Parts parts = this.query().eq("sku_id", id).eq("display", 1).eq("type", type).one();
+        List<Parts> parts = this.query().eq("sku_id", id).eq("display", 1).eq("type", type).list();
         if (ToolUtil.isNotEmpty(parts)) {
-            List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
-            for (ErpPartsDetail detail : details) {
-                skuIds.add(detail.getSkuId());
-                childrensSkuIds.add(detail.getSkuId());
-                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId(), type);
-                childrensSkuIds.addAll(childrenMap.get("childrens"));
+            for (Parts part : parts) {
+                List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", part.getPartsId()).eq("display", 1).list();
+                for (ErpPartsDetail detail : details) {
+                    skuIds.add(detail.getSkuId());
+                    childrensSkuIds.add(detail.getSkuId());
+                    Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId(), type);
+                    childrensSkuIds.addAll(childrenMap.get("childrens"));
+                    result.put("children", skuIds);
+                    result.put("childrens", childrensSkuIds);
+                }
             }
-            result.put("children", skuIds);
-            result.put("childrens", childrensSkuIds);
         }
         return result;
     }
@@ -291,12 +342,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts release = this.getById(id);
         release.setStatus(99);
 
-        List<Parts> parts = this.query().eq("sku_id", release.getSkuId()).eq("type", release.getType()).eq("display", 1).list();
+        Parts parts = this.query().eq("sku_id", release.getSkuId()).eq("type", release.getType()).eq("display", 1).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(parts)) {
-            for (Parts part : parts) {
-                part.setDisplay(0);
-            }
-            this.updateBatchById(parts);
+            parts.setDisplay(0);
+            this.updateById(parts);
         }
 
         this.updateById(release);

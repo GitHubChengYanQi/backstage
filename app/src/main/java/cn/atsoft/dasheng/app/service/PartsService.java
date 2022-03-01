@@ -27,6 +27,8 @@ public interface PartsService extends IService<Parts> {
      */
     void add(PartsParam partsParam);
 
+    void updateAdd(PartsParam partsParam);
+
     /**
      * 删除
      *

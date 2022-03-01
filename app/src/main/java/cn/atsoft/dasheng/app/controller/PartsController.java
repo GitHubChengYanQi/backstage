@@ -78,10 +78,7 @@ public class PartsController extends BaseController {
                 }
             }
         }
-
         this.partsService.add(partsParam);
-
-
         return ResponseData.success();
     }
 
@@ -96,8 +93,8 @@ public class PartsController extends BaseController {
     public ResponseData update(@RequestBody PartsParam partsParam) {
         Parts parts = this.partsService.getById(partsParam.getPartsId());
         if (parts.getStatus() == 99) {
-            this.partsService.add(partsParam);
-        }else {
+            this.partsService.updateAdd(partsParam);
+        } else {
             this.partsService.update(partsParam);
         }
         return ResponseData.success();
