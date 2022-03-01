@@ -8,6 +8,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.models.auth.In;
 
 import java.io.Serializable;
 
@@ -30,6 +31,14 @@ public class Payment implements Serializable {
     @TableId(value = "payment_id", type = IdType.ID_WORKER)
     private Long paymentId;
 
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
+
+    @TableField("type")
+    private Integer type;
 
     @TableField("money")
     private Integer money;
@@ -118,6 +127,13 @@ public class Payment implements Serializable {
     @TableField("remark")
     private String remark;
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
     public Long getPaymentId() {
         return paymentId;
@@ -245,6 +261,14 @@ public class Payment implements Serializable {
 
     public void setMoney(Integer money) {
         this.money = money;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     @Override

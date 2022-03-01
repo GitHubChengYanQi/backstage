@@ -77,10 +77,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order entity = getEntity(param);
         this.save(entity);
 
-        detailService.addList(entity.getOrderId(),param.getSellerId() ,param.getDetailParams());
-        paymentService.add(param.getPaymentParam());
-
-        supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
         String orderType = null;
         switch (param.getType()) {
             case 1:
@@ -90,6 +86,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 orderType = "销售";
                 break;
         }
+
+        detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());
+        paymentService.add(param.getPaymentParam(), orderType);
+
+        supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
+
 
         if (param.getGenerateContract() == 1) {   //创建合同
             contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param, orderType);
@@ -223,6 +225,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         result.setBcustomer(Bcustomer);
 
     }
+
     @Override
     public List<OrderResult> pendingProductionPlanByContracts(OrderParam orderParam) {
         orderParam.setType(2);
@@ -235,7 +238,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderDetailResult> orderDetailResults = new ArrayList<>();
         for (OrderDetail orderDetail : orderDetails) {
             OrderDetailResult result = new OrderDetailResult();
-            ToolUtil.copyProperties(orderDetail,result);
+            ToolUtil.copyProperties(orderDetail, result);
             orderDetailResults.add(result);
         }
         detailService.format(orderDetailResults);
@@ -250,6 +253,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         return orderResults;
     }
+
     @Override
     public Set<ContractDetailSetRequest> pendingProductionPlan(OrderParam orderParam) {
         orderParam.setType(2);

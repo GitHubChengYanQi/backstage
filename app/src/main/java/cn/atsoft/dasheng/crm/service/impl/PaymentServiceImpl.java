@@ -35,8 +35,17 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
 
     @Override
-    public void add(PaymentParam param) {
+    public void add(PaymentParam param, String type) {
+
         Payment entity = getEntity(param);
+        switch (type) {
+            case "采购":
+                param.setType(1);
+                break;
+            case "销售":
+                param.setType(2);
+                break;
+        }
         this.save(entity);
         if (ToolUtil.isNotEmpty(param.getDetailParams())) {
             detailService.addList(entity.getPaymentId(), param.getDetailParams());

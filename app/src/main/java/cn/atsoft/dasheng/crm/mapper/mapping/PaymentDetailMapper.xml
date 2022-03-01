@@ -4,81 +4,88 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.PaymentDetail">
-        <id column="detail_id" property="detailId" />
-        <result column="payment_id" property="paymentId" />
-        <result column="money" property="money" />
-        <result column="percentum" property="percentum" />
-        <result column="pay_type" property="payType" />
-        <result column="pay_time" property="payTime" />
-        <result column="date_way" property="dateWay" />
-        <result column="date_number" property="dateNumber" />
-        <result column="remark" property="remark" />
+        <id column="detail_id" property="detailId"/>
+        <result column="payment_id" property="paymentId"/>
+        <result column="money" property="money"/>
+        <result column="percentum" property="percentum"/>
+        <result column="pay_type" property="payType"/>
+        <result column="pay_time" property="payTime"/>
+        <result column="date_way" property="dateWay"/>
+        <result column="date_number" property="dateNumber"/>
+        <result column="remark" property="remark"/>
+        <result column="status" property="status"/>
+        <result column="real_pay" property="realPay"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        detail_id AS "detailId", payment_id AS "paymentId", money AS "money", percentum AS "percentum", pay_type AS "payType", pay_time AS "payTime", date_way AS "dateWay", date_number AS "dateNumber", remark AS "remark"
+    <sql id="Base_Column_List"> status
+    AS "status",real_pay AS "realPay",
+        detail_id
+        AS "detailId", payment_id AS "paymentId", money AS "money", percentum AS "percentum", pay_type AS "payType", pay_time AS "payTime", date_way AS "dateWay", date_number AS "dateNumber", remark AS "remark"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentDetailResult" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentDetailParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentDetailResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.PaymentDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_payment_detail where 1 = 1
-            <if test="paramCondition.detailId != null">
-                and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
-            </if>
-            <if test="paramCondition.paymentId != null">
-                and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
-            </if>
-            <if test="paramCondition.payType != null">
-                and pay_type like CONCAT('%',#{paramCondition.payType},'%')
-            </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.paymentId != null">
+            and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
+        </if>
+        <if test="paramCondition.payType != null">
+            and pay_type like CONCAT('%',#{paramCondition.payType},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_payment_detail where 1 = 1
-                <if test="paramCondition.detailId != null">
-                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
-                </if>
-                <if test="paramCondition.paymentId != null">
-                        and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
-                </if>
-                <if test="paramCondition.payType != null">
-                        and pay_type like CONCAT('%',#{paramCondition.payType},'%')
-                </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.paymentId != null">
+            and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
+        </if>
+        <if test="paramCondition.payType != null">
+            and pay_type like CONCAT('%',#{paramCondition.payType},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentDetailResult" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentDetailParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentDetailResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.PaymentDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_payment_detail where 1 = 1
-                <if test="paramCondition.detailId != null">
-                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
-                </if>
-                <if test="paramCondition.paymentId != null">
-                        and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
-                </if>
-                <if test="paramCondition.payType != null">
-                        and pay_type like CONCAT('%',#{paramCondition.payType},'%')
-                </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.paymentId != null">
+            and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
+        </if>
+        <if test="paramCondition.payType != null">
+            and pay_type like CONCAT('%',#{paramCondition.payType},'%')
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentDetailParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.crm.model.params.PaymentDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_payment_detail where 1 = 1
-                <if test="paramCondition.detailId != null">
-                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
-                </if>
-                <if test="paramCondition.paymentId != null">
-                        and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
-                </if>
-                <if test="paramCondition.payType != null">
-                        and pay_type like CONCAT('%',#{paramCondition.payType},'%')
-                </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.paymentId != null">
+            and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
+        </if>
+        <if test="paramCondition.payType != null">
+            and pay_type like CONCAT('%',#{paramCondition.payType},'%')
+        </if>
     </select>
 
 </mapper>

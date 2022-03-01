@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -32,6 +33,9 @@ public class PaymentDetailParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("付款详情主见")
     private Long detailId;
 
+    private Integer realPay;
+
+    private Integer status;
     /**
      * 付款信息id
      */

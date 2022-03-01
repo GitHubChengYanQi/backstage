@@ -31,6 +31,11 @@ public class Order implements Serializable {
     private Long orderId;
 
     /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
+    /**
      * 日期
      */
     @TableField("date")
@@ -595,6 +600,14 @@ public class Order implements Serializable {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     @Override

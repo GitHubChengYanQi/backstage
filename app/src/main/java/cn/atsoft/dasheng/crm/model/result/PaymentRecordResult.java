@@ -1,83 +1,55 @@
 package cn.atsoft.dasheng.crm.model.result;
 
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 付款信息表
+ * 付款记录
  * </p>
  *
  * @author song
- * @since 2022-02-23
+ * @since 2022-03-01
  */
 @Data
 @ApiModel
-public class PaymentResult implements Serializable {
+public class PaymentRecordResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<PaymentDetailResult> detailResults;
 
-    private Integer money;
     /**
-     * 付款信息id
+     * 付款记录id
      */
-    @ApiModelProperty("付款信息id")
+    @ApiModelProperty("付款记录id")
+    private Long recordId;
+
+    /**
+     * 付款详情id
+     */
+    @ApiModelProperty("付款详情id")
+    private Long detailId;
+
+    /**
+     * 付款主表id
+     */
+    @ApiModelProperty("付款主表id")
     private Long paymentId;
 
-    private Integer type;
-
-    private Integer status;
+    /**
+     * 付款金额
+     */
+    @ApiModelProperty("付款金额")
+    private Integer paymentAmount;
 
     /**
-     * 订单编号
+     * 备注
      */
-    @ApiModelProperty("订单编号")
-    private Long orderId;
-
-    /**
-     * 结算方式
-     */
-    @ApiModelProperty("结算方式")
-    private String payMethod;
-
-    /**
-     * 是否运费
-     */
-    @ApiModelProperty("是否运费")
-    private Integer freight;
-
-    /**
-     * 名称
-     */
-    @ApiModelProperty("名称")
-    private String name;
-
-    /**
-     * 交货方式
-     */
-    @ApiModelProperty("交货方式")
-    private String deliveryWay;
-
-    /**
-     * 交货地址
-     */
-    @ApiModelProperty("交货地址")
-    private Long adressId;
-
-    /**
-     * 付款方式
-     */
-    @ApiModelProperty("付款方式")
-    private Long payPlan;
+    @ApiModelProperty("备注")
+    private String remark;
 
     /**
      * 创建者
@@ -114,12 +86,6 @@ public class PaymentResult implements Serializable {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String remark;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.crm.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 付款详情
@@ -27,6 +31,10 @@ public class PaymentDetailResult implements Serializable {
     @ApiModelProperty("付款详情主见")
     private Long detailId;
 
+    private Integer status;
+
+
+    private Integer realPay;
     /**
      * 付款信息id
      */

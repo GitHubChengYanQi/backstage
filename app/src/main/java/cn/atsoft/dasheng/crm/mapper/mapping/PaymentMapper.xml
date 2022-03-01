@@ -20,11 +20,13 @@
         <result column="deptId" property="deptId"/>
         <result column="remark" property="remark"/>
         <result column="money" property="money"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">money
-    AS "money",
+    AS "money",type AS "type",status AS "status",
         payment_id
         AS "paymentId", order_id AS "orderId", pay_method AS "payMethod", freight AS "freight", name AS "name", delivery_way AS "deliveryWay", adress_id AS "adressId", pay_plan AS "payPlan", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", remark AS "remark"
     </sql>

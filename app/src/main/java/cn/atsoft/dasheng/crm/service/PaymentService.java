@@ -24,7 +24,7 @@ public interface PaymentService extends IService<Payment> {
      * @author song
      * @Date 2022-02-23
      */
-    void add(PaymentParam param);
+    void add(PaymentParam param, String type);
 
     /**
      * 删除
@@ -64,7 +64,7 @@ public interface PaymentService extends IService<Payment> {
      * @author song
      * @Date 2022-02-23
      */
-     PageInfo<PaymentResult> findPageBySpec(PaymentParam param);
+    PageInfo<PaymentResult> findPageBySpec(PaymentParam param);
 
     PaymentResult getDetail(Long orderId);
 }

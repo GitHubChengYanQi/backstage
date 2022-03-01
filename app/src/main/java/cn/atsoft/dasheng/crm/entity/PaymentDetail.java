@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.crm.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.models.auth.In;
 
 import java.util.Date;
 import java.io.Serializable;
@@ -21,8 +22,18 @@ public class PaymentDetail implements Serializable {
     /**
      * 付款详情主见
      */
-      @TableId(value = "detail_id", type = IdType.ID_WORKER)
+    @TableId(value = "detail_id", type = IdType.ID_WORKER)
     private Long detailId;
+    /**
+     * 实付
+     */
+    @TableField("real_pay")
+    private Integer realPay;
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
 
     /**
      * 付款信息id
@@ -107,6 +118,22 @@ public class PaymentDetail implements Serializable {
      */
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public Integer getRealPay() {
+        return realPay;
+    }
+
+    public void setRealPay(Integer realPay) {
+        this.realPay = realPay;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Long getDetailId() {
         return detailId;
@@ -231,15 +258,15 @@ public class PaymentDetail implements Serializable {
     @Override
     public String toString() {
         return "PaymentDetail{" +
-        "detailId=" + detailId +
-        ", paymentId=" + paymentId +
-        ", money=" + money +
-        ", percentum=" + percentum +
-        ", payType=" + payType +
-        ", payTime=" + payTime +
-        ", dateWay=" + dateWay +
-        ", dateNumber=" + dateNumber +
-        ", remark=" + remark +
-        "}";
+                "detailId=" + detailId +
+                ", paymentId=" + paymentId +
+                ", money=" + money +
+                ", percentum=" + percentum +
+                ", payType=" + payType +
+                ", payTime=" + payTime +
+                ", dateWay=" + dateWay +
+                ", dateNumber=" + dateNumber +
+                ", remark=" + remark +
+                "}";
     }
 }

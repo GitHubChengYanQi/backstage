@@ -38,6 +38,8 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     private String processType;
 
     private Date date;
+
+    private Integer status;
     /**
      * 货币种类
      */

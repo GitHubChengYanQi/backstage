@@ -48,6 +48,8 @@ public class OrderResult implements Serializable {
     private Phone Aphone;
     private Phone Bphone;
 
+    private Integer status;
+
     /**
      * 货币种类
      */
