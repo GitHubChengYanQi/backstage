@@ -60,7 +60,7 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
      * 备注
      */
     @ApiModelProperty("备注")
-    private Long remark;
+    private String remark;
 
     /**
      * 创建者

@@ -40,6 +40,62 @@ public class ProductionWorkOrder implements Serializable {
     private Integer count;
 
     /**
+     * 投入物料
+     */
+    @TableField("in_sku_id")
+    private Long inSkuId;
+
+    /**
+     * 产出物料
+     */
+    @TableField("out_sku_id")
+    private Long outSkuId;
+
+    /**
+     * 投入物料
+     */
+    @TableField("in_sku_number")
+    private Integer inSkuNumber;
+
+    public Long getInSkuId() {
+        return inSkuId;
+    }
+
+    public void setInSkuId(Long inSkuId) {
+        this.inSkuId = inSkuId;
+    }
+
+    public Long getOutSkuId() {
+        return outSkuId;
+    }
+
+    public void setOutSkuId(Long outSkuId) {
+        this.outSkuId = outSkuId;
+    }
+
+    public Integer getInSkuNumber() {
+        return inSkuNumber;
+    }
+
+    public void setInSkuNumber(Integer inSkuNumber) {
+        this.inSkuNumber = inSkuNumber;
+    }
+
+    public Integer getOutSkuNumber() {
+        return outSkuNumber;
+    }
+
+    public void setOutSkuNumber(Integer outSkuNumber) {
+        this.outSkuNumber = outSkuNumber;
+    }
+
+    /**
+     * 产出物料
+     */
+    @TableField("out_sku_number")
+    private Integer outSkuNumber;
+
+    /**
      * 来源
      */
     @TableField("source")

@@ -66,4 +66,6 @@ public interface ProductionWorkOrderService extends IService<ProductionWorkOrder
      */
      PageInfo<ProductionWorkOrderResult> findPageBySpec(ProductionWorkOrderParam param);
 
+
+    void microServiceAdd(Object param);
 }
