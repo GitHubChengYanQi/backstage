@@ -183,8 +183,14 @@ public class SpuController extends BaseController {
 
                     }
                 }
-                JSONArray jsonArray = JSONUtil.parseArray(detail.getAttribute());
-                List<Attribute> attributes = JSONUtil.toList(jsonArray, Attribute.class);
+                JSONArray jsonArray = new JSONArray();
+                List<Attribute> attributes = new ArrayList<>();
+                if(ToolUtil.isNotEmpty(detail.getAttribute()) && detail.getAttribute()!="" && detail.getAttribute()!=null){
+                    jsonArray = JSONUtil.parseArray(detail.getAttribute());
+                    attributes = JSONUtil.toList(jsonArray, Attribute.class);
+                }
+
+
 
 
                 List<AttributeInSpu> tree = new ArrayList<>();

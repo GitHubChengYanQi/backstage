@@ -55,7 +55,7 @@ public class ProductionPlanResult implements Serializable {
      * 备注
      */
     @ApiModelProperty("备注")
-    private Long remark;
+    private String remark;
 
     /**
      * 创建者

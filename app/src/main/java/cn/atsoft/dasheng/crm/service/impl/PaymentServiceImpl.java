@@ -3,11 +3,14 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.Payment;
+import cn.atsoft.dasheng.crm.entity.PaymentDetail;
 import cn.atsoft.dasheng.crm.mapper.PaymentMapper;
 import cn.atsoft.dasheng.crm.model.params.PaymentParam;
 import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
+import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.crm.service.PaymentDetailService;
 import cn.atsoft.dasheng.crm.service.PaymentService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -32,6 +35,8 @@ import java.util.List;
 public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> implements PaymentService {
     @Autowired
     private PaymentDetailService detailService;
+    @Autowired
+    private OrderService orderService;
 
 
     @Override
@@ -99,6 +104,32 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+    /**
+     * 更新付款状态
+     *
+     * @param payId
+     */
+    @Override
+    public void updatePay(Long payId) {
+        List<PaymentDetail> details = detailService.query().eq("payment_id", payId).list();
+        boolean t = true;
+        for (PaymentDetail detail : details) {
+            if (detail.getStatus() != 99) {
+                t = false;
+                break;
+            }
+        }
+        if (t) {
+            Payment payment = this.getById(payId);
+            payment.setStatus(99);
+            this.updateById(payment);
+            Order order = orderService.getById(payment.getOrderId());
+            order.setStatus(99);
+            orderService.updateById(order);
+        }
+    }
+
 
     /**
      * 详情
