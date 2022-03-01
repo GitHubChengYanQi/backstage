@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
@@ -72,6 +73,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(one)) {
             Parts parts = new Parts();
             ToolUtil.copyProperties(partsParam, parts);
+            parts.setStatus(0);
             parts.setPartsId(null);
             this.save(parts);
             List<ErpPartsDetail> partsDetails = new ArrayList<>();
@@ -86,11 +88,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             erpPartsDetailService.saveBatch(partsDetails);
             return;
         }
-
+//----------------------------------------------------------------------------------------------------------------------
         List<Long> skuIds = new ArrayList<>();
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             skuIds.add(part.getSkuId());
         }
+        judge(partsParam); //防止添加重复数据
 
         List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
         Parts parts1 = new Parts();
@@ -100,6 +103,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         parts1.setChildrens(ids.toString());
         parts.add(parts1);
+
 
         for (Parts part : parts) {
             JSONArray jsonArray = JSONUtil.parseArray(part.getChildrens());
@@ -153,29 +157,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             }
         }
 
-
-//        partsOne.setDisplay(0);
-        QueryWrapper<Parts> wrapper = new QueryWrapper<>();
-        wrapper.eq("sku_id", sku.getSkuId());
-        wrapper.eq("type", partsParam.getType());
-        Parts tmp = new Parts() {{
-            setDisplay(0);
-        }};
-        this.update(tmp, wrapper);
-
-
-        // 删除清单
-        if (ToolUtil.isNotEmpty(partsParam.getPartsId())) {
-            Parts part = new Parts();
-            part.setDisplay(0);
-            QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-            partsQueryWrapper.in("parts_id", partsParam.getPartsId());
-            this.update(part, partsQueryWrapper);
-        }
-
-        partsParam.setPartsId(null);
-        partsParam.setSkuId(sku.getSkuId());
         Parts entity = getEntity(partsParam);
+        entity.setPartsId(null);
         this.save(entity);
 
         List<ErpPartsDetail> details = new ArrayList<>();
@@ -204,6 +187,52 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
     }
+
+    private void judge(PartsParam partsParam) {
+        List<Long> skuIds = new ArrayList<>();
+        for (ErpPartsDetailParam part : partsParam.getParts()) {
+            skuIds.add(part.getSkuId());
+        }
+        long count = skuIds.stream().distinct().count();
+        if (count != partsParam.getParts().size()) {
+            throw new ServiceException(500, "请勿添加重复数据");
+        }
+    }
+
+    @Override
+    public void updateAdd(PartsParam partsParam) {
+        judge(partsParam); //防止添加重复数据
+
+        Parts newPart = new Parts();
+        ToolUtil.copyProperties(partsParam, newPart);
+        newPart.setPid(partsParam.getPartsId());
+        newPart.setPartsId(null);
+        this.save(newPart);
+
+        List<ErpPartsDetail> details = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (ErpPartsDetailParam partsDetail : partsParam.getParts()) {
+            ErpPartsDetail newDetail = new ErpPartsDetail();
+            ToolUtil.copyProperties(partsDetail, newDetail);
+            newDetail.setPartsDetailId(null);
+            newDetail.setPartsId(newPart.getPartsId());
+            skuIds.add(partsDetail.getSkuId());
+            details.add(newDetail);
+        }
+
+        erpPartsDetailService.saveBatch(details);
+
+        // 更新当前节点，及下级
+        Map<String, List<Long>> childrenMap = getChildrens(newPart.getSkuId(), partsParam.getType());
+        newPart.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        newPart.setChildren(JSON.toJSONString(skuIds));
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("parts_id", newPart.getPartsId());
+        this.update(newPart, partsQueryWrapper);
+
+        updateChildren(newPart.getSkuId(), partsParam.getType());
+    }
+
 
     /**
      * 更新包含它的
@@ -237,17 +266,19 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         };
 
         List<Long> skuIds = new ArrayList<>();
-        Parts parts = this.query().eq("sku_id", id).eq("display", 1).eq("type", type).one();
+        List<Parts> parts = this.query().eq("sku_id", id).eq("display", 1).eq("type", type).list();
         if (ToolUtil.isNotEmpty(parts)) {
-            List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
-            for (ErpPartsDetail detail : details) {
-                skuIds.add(detail.getSkuId());
-                childrensSkuIds.add(detail.getSkuId());
-                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId(), type);
-                childrensSkuIds.addAll(childrenMap.get("childrens"));
+            for (Parts part : parts) {
+                List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", part.getPartsId()).eq("display", 1).list();
+                for (ErpPartsDetail detail : details) {
+                    skuIds.add(detail.getSkuId());
+                    childrensSkuIds.add(detail.getSkuId());
+                    Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId(), type);
+                    childrensSkuIds.addAll(childrenMap.get("childrens"));
+                    result.put("children", skuIds);
+                    result.put("childrens", childrensSkuIds);
+                }
             }
-            result.put("children", skuIds);
-            result.put("childrens", childrensSkuIds);
         }
         return result;
     }
@@ -269,15 +300,56 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public void update(PartsParam param) {
+
+        erpPartsDetailService.remove(new QueryWrapper<ErpPartsDetail>() {{
+            eq("parts_id", param.getPartsId());
+        }});
+
         Parts oldEntity = getOldEntity(param);
         Parts newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        Parts parts = this.query().eq("display", param.getSkuId()).eq("display", 1).one();
-        parts.setDisplay(0);
-        this.updateById(parts);
         this.updateById(newEntity);
+
+        List<ErpPartsDetail> partsDetails = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (ErpPartsDetailParam part : param.getParts()) {
+            ErpPartsDetail partsDetail = new ErpPartsDetail();
+            ToolUtil.copyProperties(part, partsDetail);
+            partsDetail.setPartsId(newEntity.getPartsId());
+            partsDetails.add(partsDetail);
+        }
+        erpPartsDetailService.saveBatch(partsDetails);
+
+
+        // 更新当前节点，及下级
+        Map<String, List<Long>> childrenMap = getChildrens(newEntity.getSkuId(), newEntity.getType());
+        newEntity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        newEntity.setChildren(JSON.toJSONString(skuIds));
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("parts_id", newEntity.getPartsId());
+        this.update(newEntity, partsQueryWrapper);
+
+        updateChildren(newEntity.getSkuId(), newEntity.getType());
     }
 
+    /**
+     * 发布
+     *
+     * @param id
+     */
+    @Override
+    public void release(Long id) {
+        Parts release = this.getById(id);
+        release.setStatus(99);
+
+        Parts parts = this.query().eq("sku_id", release.getSkuId()).eq("type", release.getType()).eq("display", 1).eq("status", 99).one();
+        if (ToolUtil.isNotEmpty(parts)) {
+            parts.setDisplay(0);
+            this.updateById(parts);
+        }
+
+        this.updateById(release);
+    }
 
     @Override
     public PartsResult findBySpec(PartsParam param) {

@@ -43,12 +43,12 @@ public class PartsResult implements Serializable {
 
     private List<ErpPartsDetailResult> parts;
 
-    @JSONField(serialize = false)
+
     private String children;
 
     private String type;
 
-    @JSONField(serialize = false)
+
     private String childrens;
 
     private Sku sku;

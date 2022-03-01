@@ -27,6 +27,8 @@ public interface PartsService extends IService<Parts> {
      */
     void add(PartsParam partsParam);
 
+    void updateAdd(PartsParam partsParam);
+
     /**
      * 删除
      *
@@ -42,6 +44,8 @@ public interface PartsService extends IService<Parts> {
      * @Date 2021-10-21
      */
     void update(PartsParam param);
+
+    void release(Long id);
 
     /**
      * 查询单条数据，Specification模式

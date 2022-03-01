@@ -128,7 +128,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_parts where display = 1
+        from daoxin_erp_parts where 1 = 1
         <if test="paramCondition.partsId != null">
             and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
         </if>

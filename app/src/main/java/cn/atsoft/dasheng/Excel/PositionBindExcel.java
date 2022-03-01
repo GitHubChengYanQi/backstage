@@ -148,6 +148,7 @@ public class PositionBindExcel {
                     bindService.save(positionBind);
                     positionsBinds.add(positionBind);
                 }
+
                 if (ToolUtil.isNotEmpty(excel.getStockNumber()) && excel.getStockNumber() > 0) {
                     //库存
                     InkindQrcode inkindQrcode = codeService.ExcelBind(excel.getSkuId(), Long.valueOf(excel.getStockNumber()), brand.getBrandId());
