@@ -11,10 +11,12 @@ import cn.atsoft.dasheng.erp.model.params.StorehousePositionsDeptBindParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsDeptBindResult;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsDeptBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -33,17 +35,44 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StorehousePositionsDeptBindServiceImpl extends ServiceImpl<StorehousePositionsDeptBindMapper, StorehousePositionsDeptBind> implements StorehousePositionsDeptBindService {
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Override
     public void add(StorehousePositionsDeptBindParam param) {
-        StorehousePositionsDeptBind entity = getEntity(param);
-        StorehousePositionsDeptBind storehousePositionsDeptBind = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).one();
-        if (ToolUtil.isNotEmpty(storehousePositionsDeptBind)) {
-            storehousePositionsDeptBind.setDeptId(param.getDeptId());
-            this.updateById(storehousePositionsDeptBind);
-        } else {
-            this.save(entity);
+        StorehousePositions positions = positionsService.getById(param.getStorehousePositionsId());
+        List<StorehousePositions> positionsList = positionsService.list();
+        List<StorehousePositions> children = getAllChildren(positions, positionsList);
+        children.add(positions);    //取出所有要绑定部门的库位
+
+        List<Long> positionId = new ArrayList<>();
+        for (StorehousePositions child : children) {
+            positionId.add(child.getStorehousePositionsId());
         }
+        if (ToolUtil.isNotEmpty(positionId)) {
+            this.remove(new QueryWrapper<StorehousePositionsDeptBind>() {{    //删除老数据
+                in("storehouse_positions_id", positionId);
+            }});
+        }
+
+
+        List<StorehousePositionsDeptBind> storehousePositionsDeptBinds = new ArrayList<>();
+        for (StorehousePositions child : children) {
+            StorehousePositionsDeptBind deptBind = new StorehousePositionsDeptBind();
+            deptBind.setStorehousePositionsId(child.getStorehousePositionsId());
+            deptBind.setDeptId(param.getDeptId());
+            storehousePositionsDeptBinds.add(deptBind);
+        }
+        this.saveBatch(storehousePositionsDeptBinds);
+//        StorehousePositionsDeptBind entity = getEntity(param);
+//        StorehousePositionsDeptBind storehousePositionsDeptBind = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).one();
+//        if (ToolUtil.isNotEmpty(storehousePositionsDeptBind)) {
+//
+//            storehousePositionsDeptBind.setDeptId(param.getDeptId());
+//            this.updateById(storehousePositionsDeptBind);
+//        } else {
+//            this.save(entity);
+//        }
     }
 
     @Override
@@ -81,7 +110,7 @@ public class StorehousePositionsDeptBindServiceImpl extends ServiceImpl<Storehou
             ToolUtil.copyProperties(storehousePositionsDeptBind, result);
             List<Long> deptId = new ArrayList<>();
             if (ToolUtil.isNotEmpty(storehousePositionsDeptBind.getDeptId())) {
-                deptId = Arrays.asList(storehousePositionsDeptBind.getDeptId().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                deptId = Arrays.stream(storehousePositionsDeptBind.getDeptId().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             }
             result.setDeptIds(deptId);
             results.add(result);
