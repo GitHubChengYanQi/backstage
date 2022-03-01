@@ -72,17 +72,19 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(one)) {
             Parts parts = new Parts();
             ToolUtil.copyProperties(partsParam, parts);
+            parts.setPartsId(null);
             this.save(parts);
             List<ErpPartsDetail> partsDetails = new ArrayList<>();
 
             for (ErpPartsDetailParam part : partsParam.getParts()) {
-                part.setPartsId(part.getPartsId());
+                part.setPartsId(parts.getPartsId());
                 part.setPartsDetailId(null);
                 ErpPartsDetail partsDetail = new ErpPartsDetail();
                 ToolUtil.copyProperties(part, partsDetail);
                 partsDetails.add(partsDetail);
             }
             erpPartsDetailService.saveBatch(partsDetails);
+            return;
         }
 
         List<Long> skuIds = new ArrayList<>();
@@ -270,6 +272,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts oldEntity = getOldEntity(param);
         Parts newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        Parts parts = this.query().eq("display", param.getSkuId()).eq("display", 1).one();
+        parts.setDisplay(0);
+        this.updateById(parts);
         this.updateById(newEntity);
     }
 
@@ -409,7 +414,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     }
 
                     for (SkuResult skuResult : skuResults) {
-                        if (detailResult.getSkuId().equals(skuResult.getSkuId())){
+                        if (detailResult.getSkuId().equals(skuResult.getSkuId())) {
                             detailResult.setSkuResult(skuResult);
                             break;
                         }
