@@ -158,6 +158,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
 
         Parts entity = getEntity(partsParam);
+        entity.setSkuId(sku.getSkuId());
         entity.setPartsId(null);
         this.save(entity);
 
