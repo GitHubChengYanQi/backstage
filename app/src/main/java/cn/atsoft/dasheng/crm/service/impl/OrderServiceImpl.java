@@ -184,6 +184,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return entity;
     }
 
+ 
+
     @Override
     public OrderResult getDetail(Long id) {
         Order order = this.getById(id);
@@ -301,8 +303,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         return contractDetailSet;
-
-
     }
 
 
