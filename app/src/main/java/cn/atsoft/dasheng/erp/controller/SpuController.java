@@ -152,8 +152,14 @@ public class SpuController extends BaseController {
                 if (ToolUtil.isNotEmpty(itemAttributes)) {
                     for (Sku sku : skus) {
                         //list
-                        JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
-                        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+                        JSONArray jsonArray = new JSONArray();
+                        List<AttributeValues> valuesRequests = new ArrayList<>();
+                        if (ToolUtil.isNotEmpty(sku.getSkuValue())) {
+                             jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+                             valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+                        }
+
+
                         SkuResult skuResult = new SkuResult();
                         skuResult.setSkuId(sku.getSkuId());
                         Map<String, String> skuValueMap = new HashMap<>();

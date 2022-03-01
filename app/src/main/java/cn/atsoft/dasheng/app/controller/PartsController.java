@@ -230,6 +230,9 @@ public class PartsController extends BaseController {
             if (ToolUtil.isNotEmpty(partsParam.getType())) {
                 partsQueryWrapper.eq("type", partsParam.getType());
             }
+            if (ToolUtil.isNotEmpty(partsParam.getStatus())) {
+                partsQueryWrapper.eq("status", partsParam.getStatus());
+            }
         }
         List<Map<String, Object>> list = this.partsService.listMaps(partsQueryWrapper);
         PartsSelectWrapper factory = new PartsSelectWrapper(list);
