@@ -46,6 +46,7 @@
         <result column="party_a_bank_no" property="partyABankNo"/>
         <result column="party_b_bank_no" property="partyBBankNo"/>
         <result column="status" property="status"/>
+        <result column="coding" property="coding"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -54,7 +55,7 @@
     <!--        AS "orderId", contract_id AS "contractId", price AS "price", buyer_id AS "buyerId", seller_id AS "sellerId", theme AS "theme", origin AS "origin", type AS "type", generate_contract AS "generateContract", delivery_date AS "deliveryDate", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"-->
     <!--    </sql>-->
     <sql id="Base_Column_List">  status
-    AS "status" ,
+    AS "status" ,coding AS "coding",
         order_id
         AS "orderId", contract_id AS "contractId",party_a_bank_no AS "partyABankNo",party_b_bank_no AS "partyBBankNo", price AS "price", buyer_id AS "buyerId", seller_id AS "sellerId", theme AS "theme", origin AS "origin", type AS "type", generate_contract AS "generateContract", delivery_date AS "deliveryDate", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", coding AS "coding", date AS "date", currency AS "currency", party_a_contacts_id AS "partyAContactsId", party_a_adress_id AS "partyAAdressId", party_a_phone AS "partyAPhone", party_a_client_id AS "partyAClientId", party_b_contacts_id AS "partyBContactsId", party_b_adress_id AS "partyBAdressId", party_b_phone AS "partyBPhone", party_b_client_id AS "partyBClientId", party_b_bank_id AS "partyBBankId", party_b_bank_account AS "partyBBankAccount", party_b_legal_person AS "partyBLegalPerson", party_b_company_phone AS "partyBCompanyPhone", party_b_fax AS "partyBFax", party_b_zipCode AS "partyBZipcode", party_a_bank_id AS "partyABankId", party_a_bank_account AS "partyABankAccount", party_a_legal_person AS "partyALegalPerson", party_a_company_phone AS "partyACompanyPhone", party_a_fax AS "partyAFax", party_a_zipCode AS "partyAZipcode"
     </sql>

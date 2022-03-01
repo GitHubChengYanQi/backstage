@@ -30,6 +30,8 @@ public class Order implements Serializable {
     @TableId(value = "order_id", type = IdType.ID_WORKER)
     private Long orderId;
 
+    @TableField("coding")
+    private String coding;
     /**
      * 状态
      */
@@ -224,6 +226,14 @@ public class Order implements Serializable {
      */
     @TableField("party_a_zipCode")
     private String partyAZipcode;
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
 
     public Long getPartyAContactsId() {
         return partyAContactsId;

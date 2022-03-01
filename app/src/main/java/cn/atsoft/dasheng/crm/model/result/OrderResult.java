@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.crm.entity.Bank;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -49,6 +50,8 @@ public class OrderResult implements Serializable {
     private Phone Bphone;
 
     private Integer status;
+    private String coding;
+    private User user;
 
     /**
      * 货币种类

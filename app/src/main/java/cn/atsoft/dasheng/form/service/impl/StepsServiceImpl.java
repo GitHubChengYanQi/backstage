@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +97,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                     setpSetDetailService.remove(new QueryWrapper<ActivitiSetpSetDetail>() {{
                         in("setps_id", list);
                     }});
-                    this.removeByIds(steps);
+                    this.removeByIds(list);
                 }
                 Long route = addProcessRoute(param.getProcessRoute());
                 entity.setFormId(route);
@@ -105,7 +106,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         }
         //添加节点
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
-            luYou(param.getChildNode(), entity.getSetpsId(), entity.getFormId());
+            luYou(param.getProcessRouteId(), param.getChildNode(), entity.getSetpsId(), entity.getFormId());
         }
     }
 
@@ -125,7 +126,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param node
      * @param supper
      */
-    public void luYou(ActivitiStepsParam node, Long supper, Long formId) {
+    public void luYou(Long processRouteId, ActivitiStepsParam node, Long supper, Long formId) {
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
 
@@ -153,11 +154,14 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             case "route":
                 break;
             case "ship":
-                if (ToolUtil.isEmpty(node.getProcessRouteId())) {
+
+                if (ToolUtil.isEmpty(node.getProcessRouteId())) {   //step更换工艺类型
                     throw new ServiceException(500, "请确定子路线");
                 }
                 activitiSteps.setFormId(node.getProcessRouteId());
                 this.updateById(activitiSteps);
+
+                updateSuperior(processRouteId, node.getProcessRouteId());  //跟新上级状态
                 break;
             default:
                 throw new ServiceException(500, "请确定类型");
@@ -171,11 +175,11 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
         //添加ChildNode
         if (ToolUtil.isNotEmpty(node.getChildNode())) {
-            luYou(node.getChildNode(), activitiSteps.getSetpsId(), formId);
+            luYou(processRouteId, node.getChildNode(), activitiSteps.getSetpsId(), formId);
         }
         //添加分支
         if (ToolUtil.isNotEmpty(node.getConditionNodeList())) {
-            recursiveAdd(node.getConditionNodeList(), activitiSteps.getSetpsId(), formId);
+            recursiveAdd(processRouteId, node.getConditionNodeList(), activitiSteps.getSetpsId(), formId);
         }
 
     }
@@ -203,7 +207,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param stepsParams
      * @param supper
      */
-    public void recursiveAdd(List<ActivitiStepsParam> stepsParams, Long supper, Long formId) {
+    public void recursiveAdd(Long processRouteId, List<ActivitiStepsParam> stepsParams, Long supper, Long formId) {
         //分支遍历
         for (ActivitiStepsParam stepsParam : stepsParams) {
             //获取super
@@ -224,6 +228,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                     }
                     activitiSteps.setFormId(stepsParam.getProcessRouteId());
                     this.updateById(activitiSteps);
+
+                    updateSuperior(processRouteId, stepsParam.getProcessRouteId());  //跟新上级状态
+
                     break;
                 default:
                     throw new ServiceException(500, "请确定类型");
@@ -245,13 +252,40 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             this.update(steps, queryWrapper);
             //继续递归添加
             if (ToolUtil.isNotEmpty(stepsParam.getChildNode())) {
-                luYou(stepsParam.getChildNode(), activitiSteps.getSetpsId(), formId);
+                luYou(processRouteId, stepsParam.getChildNode(), activitiSteps.getSetpsId(), formId);
             }
 
         }
 
     }
 
+    /**
+     * 更新上级工艺child
+     *
+     * @param supperId
+     * @param presentId
+     */
+    private void updateSuperior(Long supperId, Long presentId) {
+        String f;
+        String c = null;
+        ProcessRoute father = processRouteService.getById(supperId);
+        ProcessRoute child = processRouteService.getById(presentId);
+        if (ToolUtil.isNotEmpty(child.getChildrens())) {
+            c = child.getChildrens();
+            if (c.contains(supperId.toString())) {
+                throw new ServiceException(500, "请勿循环添加");
+            }
+        }
+        if (ToolUtil.isEmpty(father.getChildrens())) {
+            f = presentId.toString();
+        } else {
+            f = father.getChildrens() + "," + presentId;
+        }
+
+        father.setChildrens(f + c);
+
+        processRouteService.updateById(father);
+    }
 
     private Serializable getKey(ActivitiStepsParam param) {
         return param.getSetpsId();

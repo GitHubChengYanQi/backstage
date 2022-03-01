@@ -25,12 +25,18 @@ public class ProcessRoute implements Serializable {
 
     private Long processRouteId;
 
+
     /**
      * 工艺路线编号
      */
     @TableField("process_route_coding")
     private String processRouteCoding;
 
+    @TableField("children")
+    private String children;
+
+    @TableField("childrens")
+    private String childrens;
     /**
      * 工艺路线名称
      */
@@ -58,25 +64,25 @@ public class ProcessRoute implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -91,6 +97,21 @@ public class ProcessRoute implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public String getChildren() {
+        return children;
+    }
+
+    public void setChildren(String children) {
+        this.children = children;
+    }
+
+    public String getChildrens() {
+        return childrens;
+    }
+
+    public void setChildrens(String childrens) {
+        this.childrens = childrens;
+    }
 
     public Long getProcessRouteId() {
         return processRouteId;
@@ -191,18 +212,18 @@ public class ProcessRoute implements Serializable {
     @Override
     public String toString() {
         return "ProcessRoute{" +
-        "processRouteId=" + processRouteId +
-        ", processRouteCoding=" + processRouteCoding +
-        ", processRoteName=" + processRoteName +
-        ", partsId=" + partsId +
-        ", version=" + version +
-        ", status=" + status +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "processRouteId=" + processRouteId +
+                ", processRouteCoding=" + processRouteCoding +
+                ", processRoteName=" + processRoteName +
+                ", partsId=" + partsId +
+                ", version=" + version +
+                ", status=" + status +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

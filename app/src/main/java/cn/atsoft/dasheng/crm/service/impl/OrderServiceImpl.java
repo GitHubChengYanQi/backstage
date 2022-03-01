@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -29,6 +30,10 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -70,6 +75,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private CustomerService customerService;
     @Autowired
     private SupplyService supplyService;
+    @Autowired
+    private UserService userService;
 
     @Override
     @Transactional
@@ -163,6 +170,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public PageInfo<OrderResult> findPageBySpec(OrderParam param) {
         Page<OrderResult> pageContext = getPageContext();
         IPage<OrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -184,7 +192,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return entity;
     }
 
- 
 
     @Override
     public OrderResult getDetail(Long id) {
@@ -305,5 +312,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return contractDetailSet;
     }
 
+    private void format(List<OrderResult> data) {
+        List<Long> customerIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        for (OrderResult datum : data) {
+            customerIds.add(datum.getBuyerId());
+            customerIds.add(datum.getSellerId());
+            userIds.add(datum.getCreateUser());
+        }
 
+        List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+
+        for (OrderResult datum : data) {
+
+            for (Customer customer : customers) {
+                if (customer.getCustomerId().equals(datum.getBuyerId())) {
+                    datum.setAcustomer(customer);
+                }
+                if (customer.getCustomerId().equals(datum.getSellerId())) {
+                    datum.setBcustomer(customer);
+                }
+            }
+
+            for (User user : userList) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
+        }
+
+
+    }
 }
