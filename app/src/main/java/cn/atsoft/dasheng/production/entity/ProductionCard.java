@@ -58,6 +58,29 @@ public class ProductionCard implements Serializable {
     private Integer display;
 
     /**
+     * 状态
+     */
+    @TableField("source")
+    private String source;
+    /**
+     * 状态
+     */
+    @TableField("source_id")
+    private Long sourceId;
+    /**
+     * 状态
+     */
+    @TableField("origin")
+    private String origin;
+
+
+    /**
+     * 状态
+     */
+    @TableField("theme")
+    private String theme;
+
+    /**
      * 修改时间
      */
       @TableField(value = "update_time", fill = FieldFill.UPDATE)
@@ -147,6 +170,39 @@ public class ProductionCard implements Serializable {
     public void setUpdateUser(Long updateUser) {
         this.updateUser = updateUser;
     }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
 
     @Override
     public String toString() {

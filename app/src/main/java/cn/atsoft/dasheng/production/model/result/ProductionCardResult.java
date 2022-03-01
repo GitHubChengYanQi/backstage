@@ -40,6 +40,30 @@ public class ProductionCardResult implements Serializable {
     private Long skuId;
 
     /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String source;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源Id")
+    private Long sourceId;
+
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

@@ -80,6 +80,7 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
     /**
      * 生产计划产品对应当前的bom
      */
+
     public void getItemBom(List<ProductionPlanDetailResult> detailResults) {
 
         List<Parts> partsList = partsService.query().eq("display", 1).list();

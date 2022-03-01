@@ -55,7 +55,7 @@ public class ProductionPlan implements Serializable {
      * 备注
      */
     @TableField("remark")
-    private Long remark;
+    private String remark;
 
     /**
      * 创建者
@@ -134,11 +134,11 @@ public class ProductionPlan implements Serializable {
         this.userId = userId;
     }
 
-    public Long getRemark() {
+    public String getRemark() {
         return remark;
     }
 
-    public void setRemark(Long remark) {
+    public void setRemark(String remark) {
         this.remark = remark;
     }
 

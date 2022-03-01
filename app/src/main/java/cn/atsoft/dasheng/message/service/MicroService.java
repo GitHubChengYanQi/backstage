@@ -4,9 +4,11 @@ import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.production.entity.ProductionCard;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
 import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
+import cn.atsoft.dasheng.production.service.ProductionCardService;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import com.alibaba.fastjson.JSON;
@@ -22,6 +24,9 @@ public class MicroService {
 
     @Autowired
     private ProductionWorkOrderService productionWorkOrderService;
+
+    @Autowired
+    private ProductionCardService productionCardService;
 
 
     public void microServiceDo(MicroServiceEntity microServiceEntity) {
@@ -59,11 +64,13 @@ public class MicroService {
                         break;
                 }
                 break;
-            case PRODUCTION_WORKORDER:
+            case WORK_ORDER:
                 switch (microServiceEntity.getOperationType()) {
                     case ADD:
-                        ProductionWorkOrderParam productionWorkOrderParam = JSON.parseObject(microServiceEntity.getObject().toString(), ProductionWorkOrderParam.class);
-                        productionWorkOrderService.microServiceAdd(productionWorkOrderParam);
+
+                        productionWorkOrderService.microServiceAdd(microServiceEntity.getObject());
+                        productionCardService.addBatchCardByProductionPlan(microServiceEntity.getObject());
+
                 }
                 break;
             default:

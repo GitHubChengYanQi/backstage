@@ -1,8 +1,15 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPlanMapper;
@@ -12,6 +19,7 @@ import cn.atsoft.dasheng.production.model.result.ProductionPlanResult;
 import cn.atsoft.dasheng.production.service.ProductionPlanDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,18 +44,47 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     @Autowired
     private ProductionPlanDetailService productionPlanDetailService;
 
+    @Autowired
+    private MessageProducer messageProducer;
+
+    @Autowired
+    private PartsService partsService;
+
     @Override
     public void add(ProductionPlanParam param){
         ProductionPlan entity = getEntity(param);
         this.save(entity);
+        List<Long> skuIds = new ArrayList<>();
+
         List<ProductionPlanDetail> details = new ArrayList<>();
         for (ProductionPlanDetailParam productionPlanDetailParam : param.getProductionPlanDetailParams()) {
             ProductionPlanDetail detail = new ProductionPlanDetail();
             ToolUtil.copyProperties(productionPlanDetailParam,detail);
             detail.setProductionPlanId(entity.getProductionPlanId());
+            skuIds.add(detail.getSkuId());
             details.add(detail);
         }
+        Integer designParts = partsService.query().in("sku_id", skuIds).eq("type", 1).eq("display", 1).eq("status", 99).count();
+        if (designParts<skuIds.size()) {
+            int i = skuIds.size() - designParts;
+            throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
+        }
+        Integer productionParts = partsService.query().in("sku_id", skuIds).eq("type", 2).eq("display", 1).eq("status", 99).count();
+        if (productionParts<skuIds.size()) {
+            int i = skuIds.size() - productionParts;
+            throw new ServiceException(500, "有"+i+"个物品你没有生产bom,请先创建生产bom");
+        }
         productionPlanDetailService.saveBatch(details);
+        if (details.size() > 0) {    //调用消息队列
+            MicroServiceEntity serviceEntity = new MicroServiceEntity();
+            serviceEntity.setType(MicroServiceType.WORK_ORDER);
+            serviceEntity.setOperationType(OperationType.ADD);
+            String jsonString = JSON.toJSONString(details);
+            serviceEntity.setObject(jsonString);
+            serviceEntity.setMaxTimes(2);
+            serviceEntity.setTimes(0);
+            messageProducer.microService(serviceEntity);
+        }
 
     }
 

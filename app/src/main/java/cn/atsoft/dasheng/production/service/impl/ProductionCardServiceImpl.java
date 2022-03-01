@@ -4,17 +4,21 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
+import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionCardMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionCardParam;
+import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.model.result.ProductionCardResult;
 import  cn.atsoft.dasheng.production.service.ProductionCardService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,6 +84,22 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
         ProductionCard entity = new ProductionCard();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public void addBatchCardByProductionPlan(Object param){
+        List<ProductionPlanDetail> productionPlanDetails = JSON.parseArray(param.toString(), ProductionPlanDetail.class);
+        List<ProductionCard> cardList = new ArrayList<>();
+        for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
+            for (int i = 0; i < productionPlanDetail.getPlanNumber(); i++) {
+                ProductionCard card = new ProductionCard();
+                card.setSkuId(productionPlanDetail.getSkuId());
+                card.setSource("productionPlan");
+                card.setSourceId(productionPlanDetail.getProductionPlanId());
+                //TODO 增加来源JSON
+                cardList.add(card);
+            }
+        }
+        this.saveBatch(cardList);
     }
 
 }
