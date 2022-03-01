@@ -43,6 +43,8 @@ public interface PartsService extends IService<Parts> {
      */
     void update(PartsParam param);
 
+    void release(Long id);
+
     /**
      * 查询单条数据，Specification模式
      *

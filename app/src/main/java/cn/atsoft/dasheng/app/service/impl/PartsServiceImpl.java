@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
@@ -86,7 +87,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             erpPartsDetailService.saveBatch(partsDetails);
             return;
         }
-
+//----------------------------------------------------------------------------------------------------------------------
         List<Long> skuIds = new ArrayList<>();
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             skuIds.add(part.getSkuId());
@@ -100,6 +101,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         parts1.setChildrens(ids.toString());
         parts.add(parts1);
+
 
         for (Parts part : parts) {
             JSONArray jsonArray = JSONUtil.parseArray(part.getChildrens());
@@ -153,28 +155,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             }
         }
 
-
-//        partsOne.setDisplay(0);
-        QueryWrapper<Parts> wrapper = new QueryWrapper<>();
-        wrapper.eq("sku_id", sku.getSkuId());
-        wrapper.eq("type", partsParam.getType());
-        Parts tmp = new Parts() {{
-            setDisplay(0);
-        }};
-        this.update(tmp, wrapper);
-
-
-        // 删除清单
-        if (ToolUtil.isNotEmpty(partsParam.getPartsId())) {
-            Parts part = new Parts();
-            part.setDisplay(0);
-            QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-            partsQueryWrapper.in("parts_id", partsParam.getPartsId());
-            this.update(part, partsQueryWrapper);
-        }
-
-        partsParam.setPartsId(null);
-        partsParam.setSkuId(sku.getSkuId());
         Parts entity = getEntity(partsParam);
         this.save(entity);
 
@@ -269,15 +249,58 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public void update(PartsParam param) {
+
+        erpPartsDetailService.remove(new QueryWrapper<ErpPartsDetail>() {{
+            eq("parts_id", param.getPartsId());
+        }});
+
         Parts oldEntity = getOldEntity(param);
         Parts newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        Parts parts = this.query().eq("display", param.getSkuId()).eq("display", 1).one();
-        parts.setDisplay(0);
-        this.updateById(parts);
         this.updateById(newEntity);
+
+        List<ErpPartsDetail> partsDetails = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (ErpPartsDetailParam part : param.getParts()) {
+            ErpPartsDetail partsDetail = new ErpPartsDetail();
+            ToolUtil.copyProperties(part, partsDetail);
+            partsDetail.setPartsId(newEntity.getPartsId());
+            partsDetails.add(partsDetail);
+        }
+        erpPartsDetailService.saveBatch(partsDetails);
+
+
+        // 更新当前节点，及下级
+        Map<String, List<Long>> childrenMap = getChildrens(newEntity.getSkuId(), newEntity.getType());
+        newEntity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        newEntity.setChildren(JSON.toJSONString(skuIds));
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("parts_id", newEntity.getPartsId());
+        this.update(newEntity, partsQueryWrapper);
+
+        updateChildren(newEntity.getSkuId(), newEntity.getType());
     }
 
+    /**
+     * 发布
+     *
+     * @param id
+     */
+    @Override
+    public void release(Long id) {
+        Parts release = this.getById(id);
+        release.setStatus(99);
+
+        List<Parts> parts = this.query().eq("sku_id", release.getSkuId()).eq("type", release.getType()).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(parts)) {
+            for (Parts part : parts) {
+                part.setDisplay(0);
+            }
+            this.updateBatchById(parts);
+        }
+
+        this.updateById(release);
+    }
 
     @Override
     public PartsResult findBySpec(PartsParam param) {

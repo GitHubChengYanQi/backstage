@@ -48,7 +48,7 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     private String skuNote;
 
     private String type;
-    @NotNull
+
     private List<ErpPartsDetailParam> parts;
 
     private Long pSkuId;
@@ -66,6 +66,7 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     /**
      * 清单id
      */
+    @NotNull
     @ApiModelProperty("清单id")
     private Long partsId;
 
