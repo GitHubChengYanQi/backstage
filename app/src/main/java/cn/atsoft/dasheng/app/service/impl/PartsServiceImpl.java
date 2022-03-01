@@ -301,6 +301,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public void update(PartsParam param) {
 
+        judge(param); //防止添加重复数据
+
         erpPartsDetailService.remove(new QueryWrapper<ErpPartsDetail>() {{
             eq("parts_id", param.getPartsId());
         }});
