@@ -58,8 +58,8 @@ public class SkuController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem (@RequestBody SkuParam skuParam) {
         skuParam.setAddMethod(1);
-        this.skuService.add(skuParam);
-        return ResponseData.success();
+        Long aLong = this.skuService.add(skuParam);
+        return ResponseData.success(aLong);
     }
     /**
      * 间接物料 新增接口
