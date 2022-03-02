@@ -77,36 +77,37 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         ActivitiSteps entity = getEntity(param);
         entity.setType(START);
         this.save(entity);
-        //TODO 需要添加生产产品
+        Long processRouteId = null;
 
         /**
-         * 判断是否是工艺路线
+         * 顶级
          */
-        switch (param.getStepType()) {
-            case "shipStart":
-                if (ToolUtil.isNotEmpty(param.getProcessRoute().getProcessRouteId())) {
-                    List<ActivitiSteps> steps = this.query().eq("form_id", param.getProcessRoute().getProcessRouteId()).list();
-                    ArrayList<Long> list = new ArrayList<Long>() {{
-                        for (ActivitiSteps step : steps) {
-                            add(step.getSetpsId());
-                        }
-                    }};
-                    setpSetService.remove(new QueryWrapper<ActivitiSetpSet>() {{
-                        in("setps_id", list);
-                    }});
-                    setpSetDetailService.remove(new QueryWrapper<ActivitiSetpSetDetail>() {{
-                        in("setps_id", list);
-                    }});
-                    this.removeByIds(list);
+        if (ToolUtil.isNotEmpty(param.getProcessRoute().getProcessRouteId())) {    //删除之前步骤
+            List<ActivitiSteps> steps = this.query().eq("form_id", param.getProcessRoute().getProcessRouteId()).list();
+            ArrayList<Long> list = new ArrayList<Long>() {{
+                for (ActivitiSteps step : steps) {
+                    add(step.getSetpsId());
                 }
-                Long route = addProcessRoute(param.getProcessRoute());
-                entity.setFormId(route);
-                this.updateById(entity);
-                break;
+            }};
+            setpSetService.remove(new QueryWrapper<ActivitiSetpSet>() {{
+                in("setps_id", list);
+            }});
+            setpSetDetailService.remove(new QueryWrapper<ActivitiSetpSetDetail>() {{
+                in("setps_id", list);
+            }});
+            this.removeByIds(list);
+            processRouteId = param.getProcessRoute().getProcessRouteId();
+        } else {
+            Long route = addProcessRoute(param.getProcessRoute());
+            processRouteId = route;
         }
+
+        entity.setFormId(processRouteId);
+        this.updateById(entity);
+
         //添加节点
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
-            luYou(param.getProcessRouteId(), param.getChildNode(), entity.getSetpsId(), entity.getFormId());
+            luYou(processRouteId, param.getChildNode(), entity.getSetpsId(), entity.getFormId());
         }
     }
 
