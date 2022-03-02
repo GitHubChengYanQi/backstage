@@ -107,6 +107,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 //            Long spuClassificationId = this.getOrSaveSpuClass(param);
             SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
+            Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
+            if(parentSpuClassifications>0){
+                throw new ServiceException(500,"物料必须添加在最底级分类中");
+            }
+
+
             Long spuClassificationId = spuClassification.getSpuClassificationId();
             //生成编码
             CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
@@ -291,6 +297,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
         Long spuClassificationId = spuClassification.getSpuClassificationId();
+        Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
+        if(parentSpuClassifications>0){
+            throw new ServiceException(500,"物料必须添加在最底级分类中");
+        }
 
         //生成编码
         CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
