@@ -25,7 +25,7 @@ public interface PartsService extends IService<Parts> {
      * @author song
      * @Date 2021-10-21
      */
-    void add(PartsParam partsParam);
+    Parts add(PartsParam partsParam);
 
     void updateAdd(PartsParam partsParam);
 

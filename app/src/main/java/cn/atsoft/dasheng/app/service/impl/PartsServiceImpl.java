@@ -67,7 +67,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     private PartsService partsService;
 
     @Override
-    public void add(PartsParam partsParam) {
+    public Parts add(PartsParam partsParam) {
 
         Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("type", partsParam.getType()).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(one)) {
@@ -86,7 +86,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 partsDetails.add(partsDetail);
             }
             erpPartsDetailService.saveBatch(partsDetails);
-            return;
+            return null;
         }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -161,6 +161,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         this.update(entity, partsQueryWrapper);
 
         updateChildren(entity.getSkuId(), partsParam.getType());
+
+        return entity;
 
 
     }
@@ -299,6 +301,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         judge(param); //防止添加重复数据
         DeadLoopJudge(param);
 
+
+        judge(param); //防止添加重复数据
 
         erpPartsDetailService.remove(new QueryWrapper<ErpPartsDetail>() {{
             eq("parts_id", param.getPartsId());
