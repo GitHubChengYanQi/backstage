@@ -171,6 +171,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Long> skuIds = new ArrayList<>();
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             skuIds.add(part.getSkuId());
+            if (part.getSkuId().equals(partsParam.getSkuId())) {
+                throw new ServiceException(500, "请看清在加");
+            }
         }
         long count = skuIds.stream().distinct().count();
         if (count != partsParam.getParts().size()) {
