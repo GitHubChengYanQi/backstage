@@ -100,11 +100,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
             partsQueryWrapper.eq("parts_id", parts.getPartsId());
             this.update(parts, partsQueryWrapper);
+
             updateChildren(parts.getSkuId(), partsParam.getType());
             return null;
         }
 //----------------------------------------------------------------------------------------------------------------------
-
 
 
         Sku sku = new Sku();
@@ -616,8 +616,34 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Parts> partsList = this.list(new QueryWrapper<Parts>() {{ //所有清单
             eq("display", 1);
         }});
+
+
     }
 
+    @Override
+    public List<PartsResult> getdetails(List<Long> partIds) {
+        if (ToolUtil.isEmpty(partIds)) {
+            return new ArrayList<>();
+        }
+        List<Parts> partsList = this.query().in("parts_id", partIds).list();
+        List<PartsResult> results = BeanUtil.copyToList(partsList, PartsResult.class, new CopyOptions());
+        List<Long> ids = new ArrayList<>();
+        for (PartsResult result : results) {
+            ids.add(result.getPartsId());
+        }
+        List<ErpPartsDetailResult> details = erpPartsDetailService.getDetails(ids);
+        for (PartsResult result : results) {
+            List<ErpPartsDetailResult> detailResults = new ArrayList<>();
+
+            for (ErpPartsDetailResult detail : details) {
+                if (detail.getPartsId().equals(result.getPartsId())) {
+                    detailResults.add(detail);
+                }
+            }
+            result.setParts(detailResults);
+        }
+        return results;
+    }
 
     private Serializable getKey(PartsParam param) {
         return param.getPartsId();
@@ -649,11 +675,18 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).in(Parts::getDisplay, 1).list();
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-
+        List<ErpPartsDetailResult> details = erpPartsDetailService.getDetails(pids);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
 
         for (PartsResult datum : data) {
+            List<ErpPartsDetailResult> detailResults = new ArrayList<>();
 
+            for (ErpPartsDetailResult detail : details) {
+                if (detail.getPartsId().equals(datum.getPartsId())) {
+                    detailResults.add(detail);
+                }
+            }
+            datum.setParts(detailResults);
             if (ToolUtil.isNotEmpty(datum.getSkuId())) {
                 Sku sku = skuService.getById(datum.getSkuId());
                 datum.setSku(sku);
