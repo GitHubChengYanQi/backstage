@@ -10,5 +10,5 @@ import java.util.Map;
 @Data
 public class SkuRequest {
     private List<AttributeInSpu> tree;
-    private List<Map<String,String>> list;
+    private List<Map<String,Object>> list;
 }
