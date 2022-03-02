@@ -78,8 +78,8 @@ public class PartsController extends BaseController {
                 }
             }
         }
-        this.partsService.add(partsParam);
-        return ResponseData.success();
+        Parts parts = this.partsService.add(partsParam);
+        return ResponseData.success(parts);
     }
 
     /**
