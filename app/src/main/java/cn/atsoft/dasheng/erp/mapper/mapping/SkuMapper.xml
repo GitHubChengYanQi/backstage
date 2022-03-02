@@ -196,6 +196,9 @@
             <if test="paramCondition.skuId != null">
                 AND goods_sku.sku_id = #{paramCondition.skuId}
             </if>
+            <if test="paramCondition.name != null">
+                AND goods_sku.sku_name like CONCAT('%',#{paramCondition.name},'%')
+            </if>
             <if test="paramCondition.coding != null">
                 and goods_sku.coding like CONCAT('%',#{paramCondition.coding},'%')
             </if>
@@ -210,9 +213,6 @@
             </if>
             <if test="paramCondition.spuName != null">
                 and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
-            </if>
-            <if test="paramCondition.addMethod != null and paramCondition.addMethod != ''">
-                and goods_sku.add_method = #{paramCondition.addMethod}
             </if>
             <if test="paramCondition.spuClassName != null">
                 and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
