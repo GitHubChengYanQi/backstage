@@ -628,10 +628,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Parts> partsList = this.query().in("parts_id", partIds).list();
         List<PartsResult> results = BeanUtil.copyToList(partsList, PartsResult.class, new CopyOptions());
         List<Long> ids = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (PartsResult result : results) {
             ids.add(result.getPartsId());
+            skuIds.add(result.getSkuId());
         }
         List<ErpPartsDetailResult> details = erpPartsDetailService.getDetails(ids);
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
         for (PartsResult result : results) {
             List<ErpPartsDetailResult> detailResults = new ArrayList<>();
 
@@ -641,6 +645,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 }
             }
             result.setParts(detailResults);
+
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(result.getSkuId())) {
+                    result.setSkuResult(skuResult);
+                    break;
+                }
+            }
         }
         return results;
     }
