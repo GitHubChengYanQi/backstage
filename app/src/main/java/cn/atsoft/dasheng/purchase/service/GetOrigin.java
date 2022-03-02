@@ -1,8 +1,14 @@
 package cn.atsoft.dasheng.purchase.service;
 
+import cn.atsoft.dasheng.app.entity.OutstockOrder;
+import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
+import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.model.params.SourceEnum;
@@ -32,6 +38,10 @@ public class GetOrigin {
     private UserService userService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private InstockOrderService instockOrderService;
+    @Autowired
+    private OutstockOrderService outstockOrderService;
 
     public ThemeAndOrigin getOrigin(ThemeAndOrigin themeAndOrigin) {
 //        ThemeAndOrigin themeAndOrigin = JSON.parseObject(Origin, ThemeAndOrigin.class); //将字段中的JSON解析出对象
@@ -166,6 +176,30 @@ public class GetOrigin {
                 coding = ask.getCoding();
                 createTime = ask.getCreateTime();
                 break;
+            case "procurementOrder":
+                ProcurementOrder procurementOrder = JSONObject.parseObject(JSONObject.toJSONString(param), ProcurementOrder.class);
+                fromId = procurementOrder.getProcurementOrderId();
+                coding = procurementOrder.getCoding();
+                createTime = procurementOrder.getCreateTime();
+                break;
+            case "workOrder":
+                ProductionWorkOrder productionWorkOrder = JSONObject.parseObject(JSONObject.toJSONString(param), ProductionWorkOrder.class);
+                fromId = productionWorkOrder.getWorkOrderId();
+//                coding = productionWorkOrder.getCoding();
+                createTime = productionWorkOrder.getCreateTime();
+                break;
+            case "instockOrder":
+                InstockOrder instockOrder = JSONObject.parseObject(JSONObject.toJSONString(param), InstockOrder.class);
+                fromId = instockOrder.getInstockOrderId();
+                coding = instockOrder.getCoding();
+                createTime = instockOrder.getCreateTime();
+                break;
+            case "outstockOrder":
+                OutstockOrder outstockOrder = JSONObject.parseObject(JSONObject.toJSONString(param), OutstockOrder.class);
+                fromId = outstockOrder.getOutstockOrderId();
+                coding = outstockOrder.getCoding();
+                createTime = outstockOrder.getCreateTime();
+                break;
             case "order":
                 Order order = JSONObject.parseObject(JSONObject.toJSONString(param), Order.class);
                 fromId = order.getOrderId();
@@ -195,16 +229,37 @@ public class GetOrigin {
     public ThemeAndOrigin originFormat(String source, Long sourceId) {
         ThemeAndOrigin themeAndOrigin = new ThemeAndOrigin();
         ThemeAndOrigin parent = new ThemeAndOrigin();
+        String json = null;
         switch (source) {
             case "purchaseAsk":
                 PurchaseAsk byId = purchaseAskService.getById(sourceId);
-                parent =  JSON.parseObject(byId.getOrigin(), ThemeAndOrigin.class);
+                json  = byId.getOrigin();
                 break;
             case "order":
                 Order order = orderService.getById(sourceId);
-                parent =  JSON.parseObject(order.getOrigin(), ThemeAndOrigin.class);
-            break;
+                break;
+            case "instockOrder":
+                InstockOrder instockOrder = instockOrderService.getById(sourceId);
+                json = instockOrder.getOrigin();
+                break;
+            case "outstockOrder":
+                OutstockOrder outstockOrder = outstockOrderService.getById(sourceId);
+                json = outstockOrder.getOrigin();
+                break;
+            case "procurementPlan":
+                ProcurementPlan procurementPlan = procurementPlanService.getById(sourceId);
+                json = procurementPlan.getOrigin();
+                break;
+            case "workOrder":
+
+                break;
+            default:
         }
+        if (ToolUtil.isNotEmpty(json) && json != ""){
+            parent =  JSON.parseObject(json, ThemeAndOrigin.class);
+        }
+
+
         List<ThemeAndOrigin> parents = new ArrayList<>();
         parents.add(parent);
         themeAndOrigin.setParent(parents);
