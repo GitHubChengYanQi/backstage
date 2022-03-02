@@ -415,11 +415,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     itemAttributeEntity.setCategoryId(categoryId);
                     itemAttributeService.save(itemAttributeEntity);
                     value.setAttributeId(itemAttributeEntity.getAttributeId());
+
                 }
 
                 if (ToolUtil.isNotEmpty(skuAttributeAndValue.getValue()) && attributes.size() > 0 && attributeValues.stream().anyMatch(attributeValue -> attributeValue.getAttributeValues().equals(skuAttributeAndValue.getValue()))) {
                     for (AttributeValues attributeValue : attributeValues) {
-                        if (skuAttributeAndValue.getValue().equals(attributeValue.getAttributeValues())) {
+                        if (skuAttributeAndValue.getValue().equals(attributeValue.getAttributeValues()) && attributeValue.getAttributeId().equals(value.getAttributeId()) ) {
                             value.setAttributeValuesId(attributeValue.getAttributeValuesId());
                         }
                     }
