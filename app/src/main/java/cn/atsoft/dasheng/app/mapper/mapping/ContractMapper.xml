@@ -13,6 +13,8 @@
         <result column="template_id" property="templateId"/>
         <result column="note" property="note"/>
         <result column="allMoney" property="allMoney"/>
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
         <result column="contract_class_id" property="contractClassId"/>
         <result column="party_a_adress_id" property="partyAAdressId"/>
         <result column="party_b_adress_id" property="partyBAdressId"/>
@@ -35,7 +37,8 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">  source_id AS "sourceId", source AS "source",contract_class_id
+    <sql id="Base_Column_List">  theme AS "theme" , origin AS "origin" ,
+ source_id AS "sourceId", source AS "source",contract_class_id
     AS "contractClassId",payment AS "payment" ,party_a_phone
     AS "partyAPhone",  party_b_phone AS "partyBPhone" ,deptId AS "deptId",
         party_a_adress_id AS "partyAAdressId", party_b_adress_id AS "partyBAdressId", party_a_contacts_id AS "partyAContactsId", party_b_contacts_id AS "partyBContactsId", audit

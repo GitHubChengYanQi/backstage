@@ -337,6 +337,15 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         }
         return askResults;
     }
-
-
+    @Override
+    public List<PurchaseAskResult> listResultByIds(List<Long> ids){
+        List<PurchaseAsk> purchaseAsks = ids.size() == 0 ? new ArrayList<>() : this.listByIds(ids);
+        List<PurchaseAskResult> results = new ArrayList<>();
+        for (PurchaseAsk purchaseAsk : purchaseAsks) {
+            PurchaseAskResult result = new PurchaseAskResult();
+            ToolUtil.copyProperties(purchaseAsk,result);
+            results.add(result);
+        }
+        return results;
+    }
 }

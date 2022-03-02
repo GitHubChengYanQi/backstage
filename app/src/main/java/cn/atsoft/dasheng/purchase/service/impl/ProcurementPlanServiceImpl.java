@@ -28,10 +28,12 @@ import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,6 +46,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -95,6 +98,27 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
             throw new ServiceException(500, "已有相同名称采购计划,请更换名称");
         }
         ProcurementPlan entity = getEntity(param);
+        //TODO 添加来源与主题
+
+        List<PurchaseListing> purchaseListings = purchaseListingService.listByIds(param.getListingIds());
+        List<Long> askIds = new ArrayList<>();
+        for (PurchaseListing purchaseListing : purchaseListings) {
+            askIds.add(purchaseListing.getPurchaseAskId());
+        }
+
+        List<Long> collectAskIds = askIds.stream().distinct().collect(Collectors.toList());
+        ThemeAndOrigin themeAndOrigin = new ThemeAndOrigin();
+        List<ThemeAndOrigin> parent = new ArrayList<ThemeAndOrigin>();
+        for (Long collectAskId : collectAskIds) {
+            ThemeAndOrigin detail = new ThemeAndOrigin() {{
+                setSource("purchaseAsk");
+                setSourceId(collectAskId);
+            }};
+            parent.add(detail);
+        }
+        themeAndOrigin.setParent(parent);
+        String jsonString = JSON.toJSONString(themeAndOrigin);
+        entity.setOrigin(jsonString);
         this.save(entity);
 
         param.setProcurementPlanId(entity.getProcurementPlanId());
@@ -220,7 +244,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
      * @param planId
      */
     @Override
-    public void updateStatus(Long planId)  {
+    public void updateStatus(Long planId) {
         List<ProcurementPlanDetal> detals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, planId).list();
         if (ToolUtil.isEmpty(detals)) {
             throw new ServiceException(500, "请确当前数据");
@@ -315,5 +339,16 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
                 }
             }
         }
+    }
+    @Override
+    public List<ProcurementPlanResult> listResultByIds(List<Long> ids){
+        List<ProcurementPlanResult> results = new ArrayList<>();
+        List<ProcurementPlan> procurementPlans =ids.size() == 0 ? new ArrayList<>() : this.listByIds(ids);
+        for (ProcurementPlan procurementPlan : procurementPlans) {
+            ProcurementPlanResult result = new ProcurementPlanResult();
+            ToolUtil.copyProperties(procurementPlan,result);
+            results.add(result);
+        }
+        return results;
     }
 }

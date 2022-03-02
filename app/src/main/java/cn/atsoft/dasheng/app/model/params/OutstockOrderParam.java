@@ -27,7 +27,17 @@ public class OutstockOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
 
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
 
     /**
      * 来源

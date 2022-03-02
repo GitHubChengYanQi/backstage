@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
@@ -33,6 +34,7 @@ public class ProcurementPlanResult implements Serializable {
 
     private User founder;
 
+    private ThemeAndOrigin themeAndOrigin;
 
     private User user;
     /**

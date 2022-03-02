@@ -9,6 +9,8 @@
         <result column="user_id" property="userId"/>
         <result column="note" property="note"/>
         <result column="time" property="time"/>
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>

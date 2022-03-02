@@ -88,6 +88,18 @@ public class InstockOrderResult implements Serializable {
     private Long deptId;
 
     /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String origin;
+
+    /**
      * 入库状态
      */
     @ApiModelProperty("入库状态")

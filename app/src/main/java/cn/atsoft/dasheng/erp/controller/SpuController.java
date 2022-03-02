@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.Material;
+import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.Values;
+import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.MaterialService;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -28,7 +31,9 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import static java.util.Comparator.comparingLong;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -65,6 +70,9 @@ public class SpuController extends BaseController {
     private MaterialService materialService;
     @Autowired
     private SpuClassificationService spuClassificationService;
+
+    @Autowired
+    private PartsService partsService;
 
     /**
      * 新增接口
@@ -126,7 +134,7 @@ public class SpuController extends BaseController {
 
             List<AttributeInSpu> attributeResults = new ArrayList<>();
             List<AttributeValueInSpu> attributeValuesResults = new ArrayList<>();
-            List<Map<String, String>> list = new ArrayList<>();
+            List<Map<String, Object>> list = new ArrayList<>();
 
             SpuClassification spuClassification = detail.getSpuClassificationId() == null ? new SpuClassification() : spuClassificationService
                     .query().in("spu_classification_id", detail.getSpuClassificationId()).and(i -> i.eq("display", 1)).one();
@@ -135,6 +143,13 @@ public class SpuController extends BaseController {
             SpuResult spuResult = new SpuResult();
             List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
                     skuService.query().in("spu_id", detail.getSpuId()).and(i -> i.eq("display", 1)).list();
+            //取skuIds 去清单查找是否存在bom
+            List<Long> skuIds = new ArrayList<>();
+            for (Sku sku : skus) {
+                skuIds.add(sku.getSkuId());
+            }
+            List<Parts> parts = partsService.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
+
             List<List<SkuJson>> requests = new ArrayList<>();
             List<SkuResult> skuResultList = new ArrayList<>();
             List<CategoryRequest> categoryRequests = new ArrayList<>();
@@ -155,15 +170,28 @@ public class SpuController extends BaseController {
                         JSONArray jsonArray = new JSONArray();
                         List<AttributeValues> valuesRequests = new ArrayList<>();
                         if (ToolUtil.isNotEmpty(sku.getSkuValue())) {
-                             jsonArray = JSONUtil.parseArray(sku.getSkuValue());
-                             valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+                            jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+                            valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
                         }
 
 
                         SkuResult skuResult = new SkuResult();
                         skuResult.setSkuId(sku.getSkuId());
-                        Map<String, String> skuValueMap = new HashMap<>();
+                        Map<String, Object> skuValueMap = new HashMap<>();
                         skuValueMap.put("id", sku.getSkuId().toString());
+
+                        for (Parts part : parts) {
+                            if (sku.getSkuId().equals(part.getSkuId()) && part.getType().equals("1")) {
+                                PartsResult partsResult = new PartsResult();
+                                ToolUtil.copyProperties(part, partsResult);
+                                skuValueMap.put("designParts", partsResult);
+
+                            } else if (sku.getSkuId().equals(part.getSkuId()) && part.getType().equals("2")) {
+                                PartsResult partsResult = new PartsResult();
+                                ToolUtil.copyProperties(part, partsResult);
+                                skuValueMap.put("productionParts", partsResult);
+                            }
+                        }
                         if (ToolUtil.isNotEmpty(valuesRequests)) {
                             for (AttributeValues valuesRequest : valuesRequests) {
                                 AttributeInSpu itemAttributeResult = new AttributeInSpu();
@@ -182,34 +210,68 @@ public class SpuController extends BaseController {
 
 
                     }
+                    List<Attribute> attributes = new ArrayList<>();
+                    List<AttributeInSpu> tree = new ArrayList<>();
+                    for (ItemAttribute attribute : itemAttributes) {
+                        attributes.add(new Attribute() {{
+                            setAttribute(attribute.getAttribute());
+                            setId(attribute.getAttributeId());
+                            setAttributeId(attribute.getAttributeId().toString());
+                        }});
+
+//                        AttributeInSpu attributeInSpu = new AttributeInSpu();
+//                        attributeInSpu.setK_s(Long.valueOf(attribute.getAttributeId()));
+//                        attributeInSpu.setK(attribute.getAttribute());
+//                        List<AttributeValueInSpu> v = new ArrayList<>();
+//                        for (Values attributeValue : attribute.getAttributeValues()) {
+//                            AttributeValueInSpu attributeValueInSpu = new AttributeValueInSpu();
+//                            attributeValueInSpu.setId(Long.valueOf(attributeValue.getAttributeValuesId()));
+//                            attributeValueInSpu.setName(attributeValue.getAttributeValues());
+//                            attributeValueInSpu.setAttributeId(Long.valueOf(attribute.getAttributeId()));
+//                            v.add(attributeValueInSpu);
+//                        }
+//                        attributeInSpu.setV(v);
+//                        tree.add(attributeInSpu);
+                    }
+                    for (Attribute attribute : attributes) {
+                        List<Values> valuesList = new ArrayList<>();
+                        AttributeInSpu attributeInSpu = new AttributeInSpu();
+                        attributeInSpu.setK_s(Long.valueOf(attribute.getAttributeId()));
+                        attributeInSpu.setK(attribute.getAttribute());
+                        List<AttributeValueInSpu> v = new ArrayList<>();
+                        for (AttributeValues attributeValuesResult : attributeValues) {
+                            if (attribute.getId().equals(attributeValuesResult.getAttributeId())) {
+                                Values values = new Values();
+                                values.setAttributeValues(attributeValuesResult.getAttributeValues());
+                                values.setAttributeValuesId(attributeValuesResult.getAttributeValuesId().toString());
+                                values.setAttributeId(attribute.getId());
+                                valuesList.add(values);
+
+                                AttributeValueInSpu attributeValueInSpu = new AttributeValueInSpu();
+                                attributeValueInSpu.setId(Long.valueOf(attributeValuesResult.getAttributeValuesId()));
+                                attributeValueInSpu.setName(attributeValuesResult.getAttributeValues());
+                                attributeValueInSpu.setAttributeId(Long.valueOf(attribute.getAttributeId()));
+                                v.add(attributeValueInSpu);
+
+                            }
+
+                        }
+                        attributeInSpu.setV(v);
+                        tree.add(attributeInSpu);
+                        attribute.setAttributeValues(valuesList);
+
+
+                    }
+
+                    skuRequest.setTree(tree);
                 }
                 JSONArray jsonArray = new JSONArray();
                 List<Attribute> attributes = new ArrayList<>();
-                if(ToolUtil.isNotEmpty(detail.getAttribute()) && detail.getAttribute()!="" && detail.getAttribute()!=null){
+                if (ToolUtil.isNotEmpty(detail.getAttribute()) && detail.getAttribute() != "" && detail.getAttribute() != null) {
                     jsonArray = JSONUtil.parseArray(detail.getAttribute());
                     attributes = JSONUtil.toList(jsonArray, Attribute.class);
                 }
 
-
-
-
-                List<AttributeInSpu> tree = new ArrayList<>();
-                for (Attribute attribute : attributes) {
-                    AttributeInSpu attributeInSpu = new AttributeInSpu();
-                    attributeInSpu.setK_s(Long.valueOf(attribute.getAttributeId()));
-                    attributeInSpu.setK(attribute.getAttribute());
-                    List<AttributeValueInSpu> v = new ArrayList<>();
-                    for (Values attributeValue : attribute.getAttributeValues()) {
-                        AttributeValueInSpu attributeValueInSpu = new AttributeValueInSpu();
-                        attributeValueInSpu.setId(Long.valueOf(attributeValue.getAttributeValuesId()));
-                        attributeValueInSpu.setName(attributeValue.getAttributeValues());
-                        attributeValueInSpu.setAttributeId(Long.valueOf(attribute.getAttributeId()));
-                        v.add(attributeValueInSpu);
-                    }
-                    attributeInSpu.setV(v);
-                    tree.add(attributeInSpu);
-                }
-                skuRequest.setTree(tree);
 
                 /**
                  * 废弃笛卡尔积计算出的tree改用上方的valuesRequests

@@ -175,7 +175,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
         List<AttributeInSpu> attributeResults = new ArrayList<>();
         List<AttributeValueInSpu> attributeValuesResults = new ArrayList<>();
-        List<Map<String, String>> list = new ArrayList<>();
+        List<Map<String, Object>> list = new ArrayList<>();
 
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
@@ -201,7 +201,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                     List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
                     SkuResult skuResult = new SkuResult();
                     skuResult.setSkuId(sku.getSkuId());
-                    Map<String, String> skuValueMap = new HashMap<>();
+                    Map<String, Object> skuValueMap = new HashMap<>();
                     skuValueMap.put("id", sku.getSkuId().toString());
                     if (ToolUtil.isNotEmpty(valuesRequests)) {
                         for (AttributeValues valuesRequest : valuesRequests) {

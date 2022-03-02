@@ -28,13 +28,15 @@
         <result column="deptId" property="deptId"/>
         <result column="payment_method" property="paymentMethod"/>
         <result column="tax_price" property="taxPrice"/>
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">payment_method
     AS "paymentMethod",tax_price AS "taxPrice",
         purchase_quotation_id
-        AS "purchaseQuotationId", sku_id AS "skuId",brand_id AS "brandId", price AS "price", customer_id AS "customerId", period_of_validity AS "periodOfValidity", total AS "total", pre_tax AS "preTax", freight AS "freight", after_tax AS "afterTax", is_freight AS "isFreight", source AS "source", source_id AS "sourceId", form_id AS "formId", delivery_date AS "deliveryDate", Invoice_type AS "InvoiceType", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "purchaseQuotationId", sku_id AS "skuId",brand_id AS "brandId", theme AS "theme" , origin AS "origin" ,price AS "price", customer_id AS "customerId", period_of_validity AS "periodOfValidity", total AS "total", pre_tax AS "preTax", freight AS "freight", after_tax AS "afterTax", is_freight AS "isFreight", source AS "source", source_id AS "sourceId", form_id AS "formId", delivery_date AS "deliveryDate", Invoice_type AS "InvoiceType", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 
