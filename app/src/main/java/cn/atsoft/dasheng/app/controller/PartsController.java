@@ -196,6 +196,12 @@ public class PartsController extends BaseController {
         return this.partsService.findPageBySpec(partsParam);
     }
 
+    @RequestMapping(value = "/getdetails", method = RequestMethod.POST)
+    public ResponseData getdetails(@RequestBody PartsParam param) {
+        List<PartsResult> results = this.partsService.getdetails(param.getPartIds());
+        return ResponseData.success(results);
+    }
+
     /**
      * 查询列表
      *

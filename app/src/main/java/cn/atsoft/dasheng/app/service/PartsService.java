@@ -87,4 +87,6 @@ public interface PartsService extends IService<Parts> {
     List<ErpPartsDetailResult> oldBackDetails(Long skuId, Long partsId);
 
     List<PartsResult> getTreeParts(Long partId);
+
+    List<PartsResult> getdetails(List<Long> partIds);
 }

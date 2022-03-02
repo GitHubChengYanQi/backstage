@@ -66,4 +66,5 @@ public interface ErpPartsDetailService extends IService<ErpPartsDetail> {
      */
      PageInfo<ErpPartsDetailResult> findPageBySpec(ErpPartsDetailParam param);
 
+    List<ErpPartsDetailResult> getDetails(List<Long> partIds);
 }
