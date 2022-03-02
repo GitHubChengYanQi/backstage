@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -26,7 +27,7 @@ public class ProcessRouteResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private SkuResult skuResult;
-
+    private ActivitiStepsResult stepsResult;
     /**
      * 工艺路线id
      */
@@ -94,7 +95,7 @@ public class ProcessRouteResult implements Serializable {
     /**
      * 状态
      */
-    
+
     @ApiModelProperty("状态")
     private Integer display;
 

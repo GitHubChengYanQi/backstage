@@ -336,11 +336,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                 ActivitiSetpSetResult setpSetResult = setpSetResult(stepsResult.getSetpsId());
                 switch (stepsResult.getStepType()) {
                     case "ship":
-                       
-                        ProcessRoute processRoute = processRouteService.getById(stepsResult.getFormId());
-                        ProcessRouteResult routeResult = new ProcessRouteResult();
-                        ToolUtil.copyProperties(processRoute, routeResult);
-                        stepsResult.setProcessRoute(routeResult);
+                        ProcessRouteResult result = getRoute(stepsResult.getFormId());
+                        stepsResult.setProcessRoute(result);
                         break;
                     default:
                         stepsResult.setSetpSet(setpSetResult);
@@ -462,6 +459,29 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return viewUpdate;
     }
 
+    /**
+     * 子工艺路线结构
+     *
+     * @param id
+     * @return
+     */
+    private ProcessRouteResult getRoute(Long id) {
+        ProcessRoute processRoute = processRouteService.getById(id);
+        ProcessRouteResult routeResult = new ProcessRouteResult();
+        ToolUtil.copyProperties(processRoute, routeResult);
+        ActivitiStepsResult stepsResult = detail(id);
+        routeResult.setStepsResult(stepsResult);
+        return routeResult;
+    }
+
+    /**
+     * 启用
+     *
+     * @param processRouteId
+     */
+    public void invoke(Long processRouteId) {
+
+    }
 }
 
 
