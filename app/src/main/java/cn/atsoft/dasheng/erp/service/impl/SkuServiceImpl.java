@@ -108,8 +108,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            Long spuClassificationId = this.getOrSaveSpuClass(param);
             SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
             Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
-            if(parentSpuClassifications>0){
-                throw new ServiceException(500,"物料必须添加在最底级分类中");
+            if (parentSpuClassifications > 0) {
+                throw new ServiceException(500, "物料必须添加在最底级分类中");
             }
 
 
@@ -298,8 +298,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
         Long spuClassificationId = spuClassification.getSpuClassificationId();
         Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
-        if(parentSpuClassifications>0){
-            throw new ServiceException(500,"物料必须添加在最底级分类中");
+        if (parentSpuClassifications > 0) {
+            throw new ServiceException(500, "物料必须添加在最底级分类中");
         }
 
         //生成编码
@@ -804,6 +804,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         SpuResult spuResult = this.backSpu(sku.getSkuId());
         skuResult.setSpuResult(spuResult);
+
+        List<Parts> parts = partsService.query().eq("sku_id", id).eq("display", 1).list();
+
+        if (parts.size() > 0) {
+            skuResult.setInBom(true);
+
+        }
 
         JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
