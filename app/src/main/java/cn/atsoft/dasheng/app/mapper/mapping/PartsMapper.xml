@@ -174,7 +174,8 @@
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type like CONCAT('%',#{paramCondition.type},'%')
         </if>
-    </select>
+
+  </select>
 
     <select id="oldCustomPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
             parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
