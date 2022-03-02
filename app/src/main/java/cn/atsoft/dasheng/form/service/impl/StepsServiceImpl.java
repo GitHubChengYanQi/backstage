@@ -73,7 +73,6 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     @Transactional
     public void add(ActivitiStepsParam param) {
 
-
         ActivitiSteps entity = getEntity(param);
         entity.setType(START);
         this.save(entity);
@@ -98,8 +97,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             this.removeByIds(list);
             processRouteId = param.getProcessRoute().getProcessRouteId();
         } else {
-            Long route = addProcessRoute(param.getProcessRoute());
-            processRouteId = route;
+            processRouteId = addProcessRoute(param.getProcessRoute());
         }
 
         entity.setFormId(processRouteId);
@@ -155,14 +153,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             case "route":
                 break;
             case "ship":
-
-                if (ToolUtil.isEmpty(node.getProcessRouteId())) {   //step更换工艺类型
+                if (ToolUtil.isEmpty(node.getProcessRoute())) {   //step更换工艺类型
                     throw new ServiceException(500, "请确定子路线");
                 }
-                activitiSteps.setFormId(node.getProcessRouteId());
-                this.updateById(activitiSteps);
+                updateSuperior(processRouteId, node.getProcessRoute().getProcessRouteId());  //跟新上级状态
 
-                updateSuperior(processRouteId, node.getProcessRouteId());  //跟新上级状态
+                activitiSteps.setFormId(node.getProcessRoute().getProcessRouteId());
+                this.updateById(activitiSteps);
                 break;
             default:
                 throw new ServiceException(500, "请确定类型");
@@ -224,13 +221,12 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                     addSetpSet(stepsParam.getSetpSet(), activitiSteps.getSetpsId());
                     break;
                 case "ship":
-                    if (ToolUtil.isEmpty(stepsParam.getProcessRouteId())) {
+                    if (ToolUtil.isEmpty(stepsParam.getProcessRoute())) {
                         throw new ServiceException(500, "请确定子路线");
                     }
-                    activitiSteps.setFormId(stepsParam.getProcessRouteId());
+                    activitiSteps.setFormId(stepsParam.getProcessRoute().getProcessRouteId());
                     this.updateById(activitiSteps);
-
-                    updateSuperior(processRouteId, stepsParam.getProcessRouteId());  //跟新上级状态
+                    updateSuperior(processRouteId, stepsParam.getProcessRoute().getProcessRouteId());  //跟新上级状态
 
                     break;
                 default:
@@ -267,8 +263,11 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param presentId
      */
     private void updateSuperior(Long supperId, Long presentId) {
-        String f;
-        String c = null;
+        if (ToolUtil.isEmpty(presentId)) {
+            throw new ServiceException(500, "子路线id为空");
+        }
+        String f = "";
+        String c = "";
         ProcessRoute father = processRouteService.getById(supperId);
         ProcessRoute child = processRouteService.getById(presentId);
         if (ToolUtil.isNotEmpty(child.getChildrens())) {
@@ -337,6 +336,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                 ActivitiSetpSetResult setpSetResult = setpSetResult(stepsResult.getSetpsId());
                 switch (stepsResult.getStepType()) {
                     case "ship":
+                       
                         ProcessRoute processRoute = processRouteService.getById(stepsResult.getFormId());
                         ProcessRouteResult routeResult = new ProcessRouteResult();
                         ToolUtil.copyProperties(processRoute, routeResult);

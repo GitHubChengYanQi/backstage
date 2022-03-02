@@ -69,8 +69,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public Parts add(PartsParam partsParam) {
 
+        judge(partsParam); //防止添加重复数据
+        DeadLoopJudge(partsParam); //防止死循环添加
+
+
+        //如果相同sku已有发布  新创建
         Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("type", partsParam.getType()).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(one)) {
+
             Parts parts = new Parts();
             ToolUtil.copyProperties(partsParam, parts);
             parts.setStatus(0);
@@ -85,13 +91,20 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 ToolUtil.copyProperties(part, partsDetail);
                 partsDetails.add(partsDetail);
             }
+
             erpPartsDetailService.saveBatch(partsDetails);
+            // 更新当前节点，及下级
+            Map<String, List<Long>> childrenMap = getChildrens(parts.getSkuId(), partsParam.getType());
+            parts.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+            parts.setChildren(JSON.toJSONString(parts));
+            QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+            partsQueryWrapper.eq("parts_id", parts.getPartsId());
+            this.update(parts, partsQueryWrapper);
+            updateChildren(parts.getSkuId(), partsParam.getType());
             return null;
         }
 //----------------------------------------------------------------------------------------------------------------------
 
-        judge(partsParam); //防止添加重复数据
-        DeadLoopJudge(partsParam); //防止死循环添加
 
 
         Sku sku = new Sku();
@@ -102,12 +115,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             }
         } else {
             if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
-
                 Spu spu = spuService.getById(partsParam.getItem().getSpuId());
                 SpuParam spuParam = new SpuParam();
                 ToolUtil.copyProperties(spu, spuParam);
-
-
                 SkuParam skuParam = new SkuParam();
                 skuParam.setBatch(partsParam.getBatch());
                 skuParam.setSkuName(partsParam.getSkuName());
@@ -166,6 +176,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
     }
+
 
     private void judge(PartsParam partsParam) {
         List<Long> skuIds = new ArrayList<>();
@@ -294,7 +305,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         for (Long along : alongs) {
             if (along.equals(param.getSkuId())) {
-                throw new ServiceException(500, "请勿循环添加");
+                List<SkuResult> results = skuService.formatSkuResult(new ArrayList<Long>() {{
+                    add(along);
+                }});
+                SkuResult result = results.get(0);
+                throw new ServiceException(500, "请勿循环添加:" + result.getSpuResult().getName() + "/" + result.getSkuName());
             }
         }
     }
