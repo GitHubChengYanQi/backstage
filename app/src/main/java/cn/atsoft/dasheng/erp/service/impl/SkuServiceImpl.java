@@ -420,7 +420,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
                 if (ToolUtil.isNotEmpty(skuAttributeAndValue.getValue()) && attributes.size() > 0 && attributeValues.stream().anyMatch(attributeValue -> attributeValue.getAttributeValues().equals(skuAttributeAndValue.getValue()))) {
                     for (AttributeValues attributeValue : attributeValues) {
-                        if (skuAttributeAndValue.getValue().equals(attributeValue.getAttributeValues()) && attributeValue.getAttributeId().equals(value.getAttributeId()) ) {
+                        if (skuAttributeAndValue.getValue().equals(attributeValue.getAttributeValues()) && attributeValue.getAttributeId().equals(value.getAttributeId())) {
                             value.setAttributeValuesId(attributeValue.getAttributeValuesId());
                         }
                     }
@@ -810,7 +810,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         if (parts.size() > 0) {
             skuResult.setInBom(true);
-
+            skuResult.setPartsId(parts.get(0).getPartsId());
         }
 
         JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
