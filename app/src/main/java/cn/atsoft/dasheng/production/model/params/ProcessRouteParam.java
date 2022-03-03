@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -32,10 +33,10 @@ public class ProcessRouteParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("工艺路线id")
     private Long processRouteId;
 
+    @NotNull
     private Long skuId;
 
     private Long spuId;
-
 
     /**
      * 工艺路线编号

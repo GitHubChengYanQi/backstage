@@ -67,6 +67,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private ActivitiProcessLogService processLogService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private StepProcessService processService;
+    @Autowired
+    private StepProcessService stepProcessService;
 
 
     @Override
@@ -118,6 +122,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
     public Long addProcessRoute(ProcessRouteParam param) {
         param.setProcessRouteId(null);
+        Integer count = processRouteService.query().eq("sku_id", param.getSkuId()).count();
+        if (count > 1) {
+            throw new ServiceException(500, "已有相同工艺路线");
+        }
         ProcessRoute routeEntity = new ProcessRoute();
         ToolUtil.copyProperties(param, routeEntity);
         processRouteService.save(routeEntity);
@@ -371,13 +379,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
 
     /**
-     * 返回所有步骤
+     * 返回当前工艺下所有步骤
      *
      * @param formId
      * @return
      */
-    private List<ActivitiStepsResult> getStepsResultByFormId(Long formId) {
-
+    @Override
+    public List<ActivitiStepsResult> getStepsResultByFormId(Long formId) {
         List<ActivitiSteps> activitiSteps = this.query().eq("form_id", formId).or().eq("step_type", "ship").list();
         return BeanUtil.copyToList(activitiSteps, ActivitiStepsResult.class, new CopyOptions());
 
@@ -477,6 +485,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         ActivitiStepsResult stepsResult = detail(id);
         routeResult.setStepsResult(stepsResult);
         routeResult.setType("ship");
+        List<ActivitiSetpSetResult> step = this.stepProcessService.getStep(id);
+        routeResult.setSetpSetResults(step);
         return routeResult;
     }
 
