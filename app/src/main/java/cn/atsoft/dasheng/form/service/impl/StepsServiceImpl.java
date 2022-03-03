@@ -98,9 +98,12 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             }});
             this.removeByIds(list);
             processRouteId = param.getProcessRoute().getProcessRouteId();
+            ProcessRoute route = processRouteService.getEntity(param.getProcessRoute());   //修改工艺
+            processRouteService.updateById(route);
         } else {
             processRouteId = addProcessRoute(param.getProcessRoute());
         }
+
 
         entity.setFormId(processRouteId);
         this.updateById(entity);

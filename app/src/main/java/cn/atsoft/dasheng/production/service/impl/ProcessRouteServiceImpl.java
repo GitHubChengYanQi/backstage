@@ -89,7 +89,8 @@ public class ProcessRouteServiceImpl extends ServiceImpl<ProcessRouteMapper, Pro
         return this.getById(getKey(param));
     }
 
-    private ProcessRoute getEntity(ProcessRouteParam param) {
+    @Override
+    public ProcessRoute getEntity(ProcessRouteParam param) {
         ProcessRoute entity = new ProcessRoute();
         ToolUtil.copyProperties(param, entity);
         return entity;
