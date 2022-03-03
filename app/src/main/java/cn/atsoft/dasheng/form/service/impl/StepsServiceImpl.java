@@ -476,6 +476,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         ToolUtil.copyProperties(processRoute, routeResult);
         ActivitiStepsResult stepsResult = detail(id);
         routeResult.setStepsResult(stepsResult);
+        routeResult.setType("ship");
         return routeResult;
     }
 

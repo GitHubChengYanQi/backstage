@@ -36,6 +36,8 @@ public class ProcessRouteResult implements Serializable {
 
     private Long skuId;
 
+    private String type;
+
     /**
      * 工艺路线编号
      */
