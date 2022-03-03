@@ -34,6 +34,7 @@ public class ProcessRouteParam implements Serializable, BaseValidatingParam {
 
     private Long skuId;
 
+    private Long spuId;
 
 
     /**
