@@ -694,7 +694,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (Parts part : parts) {
             partsIds.add(part.getPartsId());
         }
-        List<ProcessRoute> processRoutes = skuIds.size() == 0 ? new ArrayList<>() : processRouteService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
+        List<ProcessRoute> processRoutes = skuIds.size() == 0 ? new ArrayList<>() : processRouteService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         for (SkuResult skuResult : param) {
             for (ProcessRoute processRoute : processRoutes) {
@@ -824,6 +824,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         SpuResult spuResult = this.backSpu(sku.getSkuId());
         skuResult.setSpuResult(spuResult);
+
+        ProcessRoute one = processRouteService.query().eq("sku_id", id).eq("display", 1).one();
+
+        if (ToolUtil.isNotEmpty(one)){
+            ProcessRouteResult processRouteResult = new ProcessRouteResult();
+            ToolUtil.copyProperties(one,processRouteResult);
+            skuResult.setProcessRouteResult(processRouteResult);
+        }
 
         List<Parts> parts = partsService.query().eq("sku_id", id).eq("display", 1).list();
 
