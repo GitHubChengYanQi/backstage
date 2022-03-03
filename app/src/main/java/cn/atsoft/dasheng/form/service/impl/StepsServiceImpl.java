@@ -71,7 +71,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
     @Override
     @Transactional
-    public void add(ActivitiStepsParam param) {
+    public Long add(ActivitiStepsParam param) {
 
         ActivitiSteps entity = getEntity(param);
         entity.setType(START);
@@ -112,6 +112,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
             luYou(processRouteId, param.getChildNode(), entity.getSetpsId(), entity.getFormId());
         }
+        return processRouteId;
     }
 
 

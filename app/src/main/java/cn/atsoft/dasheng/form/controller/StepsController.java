@@ -42,8 +42,8 @@ public class StepsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ActivitiStepsParam activitiStepsParam) {
-        this.activitiStepsService.add(activitiStepsParam);
-        return ResponseData.success();
+        Long id = this.activitiStepsService.add(activitiStepsParam);
+        return ResponseData.success(id);
     }
 
     @RequestMapping(value = "/shipDetail", method = RequestMethod.GET)

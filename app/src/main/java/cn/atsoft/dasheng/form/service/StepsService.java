@@ -26,8 +26,8 @@ import java.util.List;
 public interface StepsService extends IService<ActivitiSteps> {
 
 
-    @Transactional
-    void add(ActivitiStepsParam param);
+
+    Long add(ActivitiStepsParam param);
 
     Long addProcessRoute(ProcessRouteParam param);
 

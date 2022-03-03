@@ -614,6 +614,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         return PageFactory.createPageInfo(page);
     }
+    @Override
+    public PageInfo<SkuResult> changePageBySpec(SkuParam param) {
+        if (param.getSkuIds() != null) {
+            if (param.getSkuIds().size() == 0) {
+                return null;
+            }
+        }
+        Page<SkuResult> pageContext = getPageContext();
+        IPage<SkuResult> page = this.baseMapper.customPageList(new ArrayList<>(), pageContext, param);
+        format(page.getRecords());
+
+
+        return PageFactory.createPageInfo(page);
+    }
 
     @Override
     public List<SkuResult> AllSku() {
