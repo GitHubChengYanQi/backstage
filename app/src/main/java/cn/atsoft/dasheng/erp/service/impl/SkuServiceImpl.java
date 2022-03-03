@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
+import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
@@ -272,23 +273,23 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                  *
                  *  ↓为新sku防止重复判断  以名称加型号 做数据库比对判断
                  */
-                List<Spu> spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).list();
-                List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
-                if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
-                    throw new ServiceException(500, "此物料在产品中已存在");
-                } else {
-                    this.save(entity);
-                    skuId = entity.getSkuId();
-                    /**
-                     * 绑定品牌（多个）
-                     */
-                    if (ToolUtil.isNotEmpty(param.getBrandIds())) {
-                        skuBrandBindService.addBatch(new SkuBrandBindParam() {{
-                            setBrandIds(param.getBrandIds());
-                            setSkuId(entity.getSkuId());
-                        }});
-                    }
+//                List<Spu> spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).list();
+//                List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+//                if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
+//                    throw new ServiceException(500, "此物料在产品中已存在");
+//                } else {
+                this.save(entity);
+                skuId = entity.getSkuId();
+                /**
+                 * 绑定品牌（多个）
+                 */
+                if (ToolUtil.isNotEmpty(param.getBrandIds())) {
+                    skuBrandBindService.addBatch(new SkuBrandBindParam() {{
+                        setBrandIds(param.getBrandIds());
+                        setSkuId(entity.getSkuId());
+                    }});
                 }
+//                }
             }
 
         }
@@ -345,10 +346,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          */
         Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
         Long spuId = spu.getSpuId();
-        List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
-        if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
-            throw new ServiceException(500, "此物料在产品中已存在");
-        }
+//        List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+//        if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
+//            throw new ServiceException(500, "此物料在产品中已存在");
+//        }
         /**
          * 查询产品，添加产品 在上方spu查询
          */
@@ -366,12 +367,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         String md5 = SecureUtil.md5(categoryId + spuId + entity.getSkuValue());
 
         entity.setSkuValueMd5(md5);
-        if (ToolUtil.isNotEmpty(codingRules)) {
-            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
-            if (skuCount > 0) {
-                throw new ServiceException(500, "该物料已经存在");
-            }
-        }
+//        if (ToolUtil.isNotEmpty(codingRules)) {
+//            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
+//            if (skuCount > 0) {
+//                throw new ServiceException(500, "该物料已经存在");
+//            }
+//        }
 
 
         this.save(entity);
@@ -700,7 +701,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             for (ProcessRoute processRoute : processRoutes) {
                 if (processRoute.getSkuId().equals(skuResult.getSkuId())) {
                     ProcessRouteResult processRouteResult = new ProcessRouteResult();
-                    ToolUtil.copyProperties(processRoute,processRouteResult);
+                    ToolUtil.copyProperties(processRoute, processRouteResult);
                     skuResult.setProcessRouteResult(processRouteResult);
                 }
             }
@@ -827,9 +828,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         ProcessRoute one = processRouteService.query().eq("sku_id", id).eq("display", 1).one();
 
-        if (ToolUtil.isNotEmpty(one)){
+        if (ToolUtil.isNotEmpty(one)) {
             ProcessRouteResult processRouteResult = new ProcessRouteResult();
-            ToolUtil.copyProperties(one,processRouteResult);
+            ToolUtil.copyProperties(one, processRouteResult);
             skuResult.setProcessRouteResult(processRouteResult);
         }
 
@@ -1124,7 +1125,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return spuEntity;
     }
 
-//    /**
+    //    /**
 //     * 查询产品 新建或返回已有产品id
 //     *
 //     * @param param
@@ -1153,4 +1154,30 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //        param.setSpuClass(spuClassificationId);
 //        return spuClassificationId;
 //    }
+    @Override
+    public Long addSkuFromSpu(PartsParam partsParam) {
+        Sku sku = new Sku();
+
+        if (ToolUtil.isNotEmpty(partsParam.getSpuId())) {
+            Spu spu = spuService.getById(partsParam.getSpuId());
+            SpuParam spuParam = new SpuParam();
+            ToolUtil.copyProperties(spu, spuParam);
+            SkuParam skuParam = new SkuParam();
+            skuParam.setSkuName(partsParam.getSkuName());
+            skuParam.setType(0);
+            skuParam.setRemarks(partsParam.getSkuNote());
+            skuParam.setStandard(partsParam.getStandard());
+            skuParam.setSpecifications(partsParam.getSpecifications());
+            skuParam.setSpuId(partsParam.getSpuId());
+            skuParam.setSku(partsParam.getSku());
+            skuParam.setSpu(spuParam);
+            skuParam.setRemarks(partsParam.getNote());
+            skuParam.setSpuClass(spuParam.getSpuClassificationId());
+            Long skuId = skuService.add(skuParam);
+            sku.setSkuId(skuId);
+            return sku.getSkuId();
+        }
+
+        return null;
+    }
 }

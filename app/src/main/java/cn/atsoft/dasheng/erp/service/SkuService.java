@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
@@ -99,4 +100,35 @@ public interface SkuService extends IService<Sku> {
     SkuResult getSku(Long id);
 
     List<SkuResult> formatSkuResult (List<Long> skuIds);
+
+    //    /**
+//     * 查询产品 新建或返回已有产品id
+//     *
+//     * @param param
+//     * @return
+//     */
+//    private Long getOrSaveSpuClass(SkuParam param) {
+//        Long spuClassificationId = 0L;
+//        SpuClassification spuClassification = new SpuClassification();
+//
+//        if (ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())){
+//            spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getSpuClassificationId, param.getSpuClassification().getSpuClassificationId()).and(i -> i.eq(SpuClassification::getDisplay, 1)).and(i -> i.eq(SpuClassification::getType, 2)).one();
+//        }else{
+//            spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).and(i -> i.eq(SpuClassification::getType, 2)).one();
+//        }
+//
+//        if (ToolUtil.isEmpty(spuClassification)) {
+//            SpuClassification spuClassificationEntity = new SpuClassification();
+//            spuClassificationEntity.setName(param.getSpuClassification().getName());
+//            spuClassificationEntity.setType(1L);
+//            spuClassificationEntity.setPid(param.getSpuClass());
+//            spuClassificationService.save(spuClassificationEntity);
+//            spuClassificationId = spuClassificationEntity.getSpuClassificationId();
+//        } else {
+//            spuClassificationId = spuClassification.getSpuClassificationId();
+//        }
+//        param.setSpuClass(spuClassificationId);
+//        return spuClassificationId;
+//    }
+    Long addSkuFromSpu(PartsParam partsParam);
 }
