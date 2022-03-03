@@ -64,16 +64,16 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             skuIds.add(detail.getSkuId());
             details.add(detail);
         }
-        Integer designParts = partsService.query().in("sku_id", skuIds).eq("type", 1).eq("display", 1).eq("status", 99).count();
-        if (designParts<skuIds.size()) {
-            int i = skuIds.size() - designParts;
-            throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
-        }
-        Integer productionParts = partsService.query().in("sku_id", skuIds).eq("type", 2).eq("display", 1).eq("status", 99).count();
-        if (productionParts<skuIds.size()) {
-            int i = skuIds.size() - productionParts;
-            throw new ServiceException(500, "有"+i+"个物品你没有生产bom,请先创建生产bom");
-        }
+//        Integer designParts = partsService.query().in("sku_id", skuIds).eq("type", 1).eq("display", 1).eq("status", 99).count();
+//        if (designParts<skuIds.size()) {
+//            int i = skuIds.size() - designParts;
+//            throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
+//        }
+//        Integer productionParts = partsService.query().in("sku_id", skuIds).eq("type", 2).eq("display", 1).eq("status", 99).count();
+//        if (productionParts<skuIds.size()) {
+//            int i = skuIds.size() - productionParts;
+//            throw new ServiceException(500, "有"+i+"个物品你没有生产bom,请先创建生产bom");
+//        }
         productionPlanDetailService.saveBatch(details);
         if (details.size() > 0) {    //调用消息队列
             MicroServiceEntity serviceEntity = new MicroServiceEntity();
