@@ -209,7 +209,7 @@
                 and goods_sku.type = #{paramCondition.type}
             </if>
             <if test="paramCondition.spuId != null">
-                and goods_sku.spuId like CONCAT('%',#{paramCondition.spuId},'%')
+                and goods_sku.spu_id = #{paramCondition.spuId}
             </if>
             <if test="paramCondition.spuName != null">
                 and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
@@ -280,7 +280,7 @@
                 and goods_sku.type = #{paramCondition.type}
             </if>
             <if test="paramCondition.spuId != null">
-                and goods_sku.spuId like CONCAT('%',#{paramCondition.spuId},'%')
+                and goods_sku.spu_id = #{paramCondition.spuId}
             </if>
             <if test="paramCondition.spuName != null">
                 and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')

@@ -71,14 +71,16 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     public Parts add(PartsParam partsParam) {
 
         judge(partsParam); //防止添加重复数据
-        DeadLoopJudge(partsParam); //防止死循环添加
+//        DeadLoopJudge(partsParam); //防止死循环添加
 
         //如果相同sku已有发布  新创建
         Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("type", partsParam.getType()).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(one)) {
+            one.setStatus(0);
+            this.updateById(one);
             Parts parts = new Parts();
             ToolUtil.copyProperties(partsParam, parts);
-            parts.setStatus(0);
+            parts.setStatus(99);
             parts.setPartsId(null);
             this.save(parts);
             List<ErpPartsDetail> partsDetails = new ArrayList<>();
@@ -133,6 +135,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts entity = getEntity(partsParam);
         entity.setSkuId(sku.getSkuId());
         entity.setPartsId(null);
+        entity.setStatus(99);
         this.save(entity);
 
         List<ErpPartsDetail> details = new ArrayList<>();
@@ -435,7 +438,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(partsId)) {
             one = this.getById(partsId);
         } else {
-            one = this.query().eq("sku_id", skuId).eq("display", 1).eq("type", type).one();
+            one = this.query().eq("sku_id", skuId).eq("display", 1).eq("type", type).eq("status",99).one();
         }
 
 
@@ -458,7 +461,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 for (ErpPartsDetailResult detailResult : detailResults) {
                     SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
                     detailResult.setIsNull(true);
-                    Parts parts = partsService.query().in("sku_id", detailResult.getSkuId()).eq("display", 1).one();
+                    Parts parts = partsService.query().eq("sku_id", detailResult.getSkuId()).eq("display", 1).eq("status", 99).one();
                     if (ToolUtil.isEmpty(parts)) {
                         detailResult.setIsNull(false);
                     } else {
