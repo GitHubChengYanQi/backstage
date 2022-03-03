@@ -24,7 +24,11 @@ public class ProcessRoute implements Serializable {
     @TableId(value = "process_route_id", type = IdType.ID_WORKER)
 
     private Long processRouteId;
-
+    /**
+     * sku
+     */
+    @TableField("sku_id")
+    private Long skuId;
 
     /**
      * 工艺路线编号
@@ -207,6 +211,14 @@ public class ProcessRoute implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
     @Override

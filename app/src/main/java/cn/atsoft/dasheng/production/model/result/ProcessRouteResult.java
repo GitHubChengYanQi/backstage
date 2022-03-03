@@ -34,6 +34,8 @@ public class ProcessRouteResult implements Serializable {
     @ApiModelProperty("工艺路线id")
     private Long processRouteId;
 
+    private Long skuId;
+
     /**
      * 工艺路线编号
      */

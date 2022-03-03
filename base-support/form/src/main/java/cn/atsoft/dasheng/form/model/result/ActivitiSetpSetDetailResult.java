@@ -32,6 +32,8 @@ public class ActivitiSetpSetDetailResult implements Serializable {
     @ApiModelProperty("详情Id")
     private Long detailId;
 
+    private String productionType;
+
     /**
      * 步骤设置Id
      */

@@ -32,6 +32,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -72,36 +73,27 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         judge(partsParam); //防止添加重复数据
         DeadLoopJudge(partsParam); //防止死循环添加
 
-
         //如果相同sku已有发布  新创建
         Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("type", partsParam.getType()).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(one)) {
-
             Parts parts = new Parts();
             ToolUtil.copyProperties(partsParam, parts);
             parts.setStatus(0);
             parts.setPartsId(null);
             this.save(parts);
             List<ErpPartsDetail> partsDetails = new ArrayList<>();
-
+            List<Long> skuIds = new ArrayList<>();
             for (ErpPartsDetailParam part : partsParam.getParts()) {
+                skuIds.add(part.getSkuId());
                 part.setPartsId(parts.getPartsId());
                 part.setPartsDetailId(null);
                 ErpPartsDetail partsDetail = new ErpPartsDetail();
                 ToolUtil.copyProperties(part, partsDetail);
                 partsDetails.add(partsDetail);
             }
-
             erpPartsDetailService.saveBatch(partsDetails);
             // 更新当前节点，及下级
-            Map<String, List<Long>> childrenMap = getChildrens(parts.getSkuId(), partsParam.getType());
-            parts.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-            parts.setChildren(JSON.toJSONString(parts));
-            QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-            partsQueryWrapper.eq("parts_id", parts.getPartsId());
-            this.update(parts, partsQueryWrapper);
-
-            updateChildren(parts.getSkuId(), partsParam.getType());
+            updateStatue(parts, skuIds);  // 更新上级状态
             return null;
         }
 //----------------------------------------------------------------------------------------------------------------------
@@ -138,14 +130,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 }
             }
         }
-
         Parts entity = getEntity(partsParam);
         entity.setSkuId(sku.getSkuId());
         entity.setPartsId(null);
         this.save(entity);
 
         List<ErpPartsDetail> details = new ArrayList<>();
-
+        List<Long> skuIds = new ArrayList<>();
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             if (ToolUtil.isNotEmpty(part)) {
                 ErpPartsDetail detail = new ErpPartsDetail();
@@ -154,23 +145,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 detail.setPartsId(entity.getPartsId());
                 detail.setNote(part.getNote());
                 details.add(detail);
+                skuIds.add(part.getSkuId());
             }
         }
         erpPartsDetailService.saveBatch(details);
 
-        List<Long> skuIds = new ArrayList<>();
-        for (ErpPartsDetailParam part : partsParam.getParts()) {
-            skuIds.add(part.getSkuId());
-        }
-        // 更新当前节点，及下级
-        Map<String, List<Long>> childrenMap = getChildrens(entity.getSkuId(), partsParam.getType());
-        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        entity.setChildren(JSON.toJSONString(skuIds));
-        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.eq("parts_id", entity.getPartsId());
-        this.update(entity, partsQueryWrapper);
-
-        updateChildren(entity.getSkuId(), partsParam.getType());
+        updateStatue(entity, skuIds);  // 更新上级状态
 
         return entity;
 
@@ -216,15 +196,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         erpPartsDetailService.saveBatch(details);
 
-        // 更新当前节点，及下级
-        Map<String, List<Long>> childrenMap = getChildrens(newPart.getSkuId(), partsParam.getType());
-        newPart.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        newPart.setChildren(JSON.toJSONString(skuIds));
-        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.eq("parts_id", newPart.getPartsId());
-        this.update(newPart, partsQueryWrapper);
-
-        updateChildren(newPart.getSkuId(), partsParam.getType());
+        updateStatue(newPart, skuIds);  //更新上级状态
     }
 
 
@@ -338,19 +310,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             ToolUtil.copyProperties(part, partsDetail);
             partsDetail.setPartsId(newEntity.getPartsId());
             partsDetails.add(partsDetail);
+            skuIds.add(part.getSkuId());
         }
         erpPartsDetailService.saveBatch(partsDetails);
 
+        updateStatue(newEntity, skuIds);  // 更新上级状态
 
-        // 更新当前节点，及下级
-        Map<String, List<Long>> childrenMap = getChildrens(newEntity.getSkuId(), newEntity.getType());
-        newEntity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        newEntity.setChildren(JSON.toJSONString(skuIds));
-        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.eq("parts_id", newEntity.getPartsId());
-        this.update(newEntity, partsQueryWrapper);
-
-        updateChildren(newEntity.getSkuId(), newEntity.getType());
     }
 
     /**
@@ -604,20 +569,19 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
     /**
-     * 生产bom 启用
-     *
-     * @param partId
+     * 下级发生变化 更新上级
      */
-    public void updateStatue(Long partId) {
-        Parts production = this.getById(partId); //生产BOM
+    public void updateStatue(Parts entity, List<Long> skuIds) {
 
-        Parts design = this.getById(production.getPid());  //设计Bom
+        // 更新当前节点，及下级
+        Map<String, List<Long>> childrenMap = getChildrens(entity.getSkuId(), entity.getType());
+        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        entity.setChildren(JSON.toJSONString(skuIds));
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("parts_id", entity.getPartsId());
+        this.update(entity, partsQueryWrapper);
 
-        List<Parts> partsList = this.list(new QueryWrapper<Parts>() {{ //所有清单
-            eq("display", 1);
-        }});
-
-
+        updateChildren(entity.getSkuId(), entity.getType());
     }
 
     @Override

@@ -34,6 +34,11 @@ public class ActivitiSetpSetParam implements Serializable, BaseValidatingParam {
     private Integer productionType;
 
     /**
+     * 工位
+     */
+    @ApiModelProperty("工位Id")
+    private Long productionStationId;
+    /**
      * 步骤Id
      */
     @ApiModelProperty("步骤Id")

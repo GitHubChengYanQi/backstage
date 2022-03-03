@@ -24,6 +24,7 @@ public class ActivitiSetpSet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 主键
      */
@@ -34,6 +35,12 @@ public class ActivitiSetpSet implements Serializable {
      */
     @TableField("production_type")
     private Integer productionType;
+
+    /**
+     * 工位Id
+     */
+    @TableField("production_station_id")
+    private Long productionStationId;
     /**
      * 步骤Id
      */
@@ -149,6 +156,14 @@ public class ActivitiSetpSet implements Serializable {
 
     public void setProductionType(Integer productionType) {
         this.productionType = productionType;
+    }
+
+    public Long getProductionStationId() {
+        return productionStationId;
+    }
+
+    public void setProductionStationId(Long productionStationId) {
+        this.productionStationId = productionStationId;
     }
 
     @Override

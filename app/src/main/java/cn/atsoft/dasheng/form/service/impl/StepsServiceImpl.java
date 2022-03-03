@@ -77,7 +77,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         entity.setType(START);
         this.save(entity);
         Long processRouteId = null;
-
+        if (!"shipStart".equals(param.getStepType())) {
+            throw new ServiceException(500, "最顶级格式不对");
+        }
         /**
          * 顶级
          */
@@ -191,7 +193,6 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         for (ActivitiSetpSetDetailParam activitiSetpSetDetailParam : param.getSetpSetDetails()) {
             ActivitiSetpSetDetail detail = new ActivitiSetpSetDetail();
             ToolUtil.copyProperties(activitiSetpSetDetailParam, detail);
-            detail.setType(activitiSetpSetDetailParam.getEquals());
             detail.setSetpsId(stepId);
             details.add(detail);
         }

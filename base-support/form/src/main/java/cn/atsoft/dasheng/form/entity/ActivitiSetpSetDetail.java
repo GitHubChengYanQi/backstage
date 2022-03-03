@@ -63,11 +63,7 @@ public class ActivitiSetpSetDetail implements Serializable {
     @TableField("parent_id")
     private Long parentId;
 
-    /**
-     * 质检方案Id
-     */
-    @TableField("production_station_id")
-    private Long productionStationId;
+
 
     /**
      * 质检方案Id
@@ -174,13 +170,7 @@ public class ActivitiSetpSetDetail implements Serializable {
         this.myQualityId = myQualityId;
     }
 
-    public Long getProductionStationId() {
-        return productionStationId;
-    }
 
-    public void setProductionStationId(Long productionStationId) {
-        this.productionStationId = productionStationId;
-    }
 
     public Integer getDisplay() {
         return display;

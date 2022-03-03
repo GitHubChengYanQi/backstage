@@ -4,42 +4,49 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.ActivitiSetpSet">
-        <id column="set_id" property="setId" />
-        <result column="setps_id" property="setpsId" />
-        <result column="ship_setp_id" property="shipSetpId" />
-        <result column="length" property="length" />
-        <result column="display" property="display" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="set_id" property="setId"/>
+        <result column="setps_id" property="setpsId"/>
+        <result column="ship_setp_id" property="shipSetpId"/>
+        <result column="length" property="length"/>
+        <result column="display" property="display"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="production_station_id" property="productionStationId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        set_id AS "setId", setps_id AS "setpsId", ship_setp_id AS "shipSetpId", length AS "length", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+    <sql id="Base_Column_List">production_station_id
+    AS "productionStationId",
+        set_id
+        AS "setId", setps_id AS "setpsId", ship_setp_id AS "shipSetpId", length AS "length", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_setp_set where 1 = 1
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_setp_set where 1 = 1
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_setp_set where 1 = 1
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_setp_set where 1 = 1

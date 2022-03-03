@@ -26,6 +26,8 @@ public class ActivitiSetpSetDetailParam implements Serializable, BaseValidatingP
     private static final long serialVersionUID = 1L;
 
     private String equals;
+
+    private String productionType;
     /**
      * 详情Id
      */
@@ -38,11 +40,7 @@ public class ActivitiSetpSetDetailParam implements Serializable, BaseValidatingP
     @ApiModelProperty("步骤设置Id")
     private Long setpsId;
 
-    /**
-     * 工位
-     */
-    @ApiModelProperty("步骤设置Id")
-    private Long productionStationId;
+
 
     /**
      * in（投入），out（产出）

@@ -36,7 +36,13 @@ public class ActivitiSetpSetResult implements Serializable {
     @ApiModelProperty("主键")
     private Long setId;
 
-    private Integer productionType;
+    private String productionType;
+
+    /**
+     * 工位
+     */
+    @ApiModelProperty("工位Id")
+    private Long productionStationId;
 
     /**
      * 步骤Id

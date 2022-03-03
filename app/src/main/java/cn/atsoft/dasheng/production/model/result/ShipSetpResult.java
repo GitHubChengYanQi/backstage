@@ -3,11 +3,15 @@ package cn.atsoft.dasheng.production.model.result;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 工序表
@@ -29,6 +33,7 @@ public class ShipSetpResult implements Serializable {
     private List<ShipSetpBindResult> binds;
     private SopResult sopResult;
     private Long sopId;
+    private Integer productionType;
 
 
     /**
@@ -38,7 +43,7 @@ public class ShipSetpResult implements Serializable {
     private Long shipSetpId;
 
     /**
-     * 工序名称	
+     * 工序名称
      */
     @ApiModelProperty("工序名称")
     private String shipSetpName;
