@@ -217,7 +217,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("parts_id", part.getPartsId());
             this.update(part, queryWrapper);
-            updateChildren(part.getSkuId(), type);
         }
     }
 
@@ -225,7 +224,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      * 递归
      */
     public Map<String, List<Long>> getChildrens(Long id, String type) {
-
         List<Long> childrensSkuIds = new ArrayList<>();
         Map<String, List<Long>> result = new HashMap<String, List<Long>>() {
             {
@@ -233,21 +231,19 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 put("childrens", new ArrayList<>());
             }
         };
-
         List<Long> skuIds = new ArrayList<>();
-        List<Parts> parts = this.query().eq("sku_id", id).eq("display", 1).eq("type", type).list();
+        Parts parts = this.query().eq("sku_id", id).eq("display", 1).eq("type", type).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(parts)) {
-            for (Parts part : parts) {
-                List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", part.getPartsId()).eq("display", 1).list();
-                for (ErpPartsDetail detail : details) {
-                    skuIds.add(detail.getSkuId());
-                    childrensSkuIds.add(detail.getSkuId());
-                    Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId(), type);
-                    childrensSkuIds.addAll(childrenMap.get("childrens"));
-                    result.put("children", skuIds);
-                    result.put("childrens", childrensSkuIds);
-                }
+            List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
+            for (ErpPartsDetail detail : details) {
+                skuIds.add(detail.getSkuId());
+                childrensSkuIds.add(detail.getSkuId());
+                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId(), type);
+                childrensSkuIds.addAll(childrenMap.get("childrens"));
+                result.put("children", skuIds);
+                result.put("childrens", childrensSkuIds);
             }
+
         }
         return result;
     }
@@ -438,7 +434,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(partsId)) {
             one = this.getById(partsId);
         } else {
-            one = this.query().eq("sku_id", skuId).eq("display", 1).eq("type", type).eq("status",99).one();
+            one = this.query().eq("sku_id", skuId).eq("display", 1).eq("type", type).eq("status", 99).one();
         }
 
 
