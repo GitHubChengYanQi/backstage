@@ -210,7 +210,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         List<Parts> partList = this.query().like("children", skuId).eq("display", 1).eq("type", type).eq("status", 99).list();
         for (Parts part : partList) {
-            Map<String, List<Long>> childrenMap = getChildrens(skuId, type);
+            Map<String, List<Long>> childrenMap = getChildrens(part.getSkuId(), type);
             part.setChildren(JSON.toJSONString(childrenMap.get("children")));
             part.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
             // update
