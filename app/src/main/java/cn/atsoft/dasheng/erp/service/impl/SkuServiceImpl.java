@@ -27,6 +27,9 @@ import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProcessRoute;
+import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
+import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.crypto.SecureUtil;
@@ -88,6 +91,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Autowired
     private MessageProducer messageProducer;
+
+    @Autowired
+    private ProcessRouteService processRouteService;
 
     @Transactional
     @Override
@@ -635,6 +641,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attributeIds.add(valuesRequest.getAttributeId());
             }
         }
+//        List<Parts> list1 = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
 
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
@@ -682,13 +689,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 查询清单
          */
 
-        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).list();
-
+        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
+        List<Long> partsIds = new ArrayList<>();
+        for (Parts part : parts) {
+            partsIds.add(part.getPartsId());
+        }
+        List<ProcessRoute> processRoutes = skuIds.size() == 0 ? new ArrayList<>() : processRouteService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
 
         for (SkuResult skuResult : param) {
+            for (ProcessRoute processRoute : processRoutes) {
+                
+            }
             skuResult.setInBom(false);
 
             for (Parts part : parts) {
+
                 if (part.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setInBom(true);
                     skuResult.setPartsId(part.getPartsId());
