@@ -208,7 +208,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      */
     public void updateChildren(Long skuId, String type) {
 
-        List<Parts> partList = this.query().like("children", skuId).eq("display", 1).eq("type", type).list();
+        List<Parts> partList = this.query().like("children", skuId).eq("display", 1).eq("type", type).eq("status", 99).list();
         for (Parts part : partList) {
             Map<String, List<Long>> childrenMap = getChildrens(skuId, type);
             part.setChildren(JSON.toJSONString(childrenMap.get("children")));
@@ -217,6 +217,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("parts_id", part.getPartsId());
             this.update(part, queryWrapper);
+
+            updateChildren(part.getSkuId(), type);
         }
     }
 
@@ -240,9 +242,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 childrensSkuIds.add(detail.getSkuId());
                 Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId(), type);
                 childrensSkuIds.addAll(childrenMap.get("childrens"));
-                result.put("children", skuIds);
-                result.put("childrens", childrensSkuIds);
             }
+            result.put("children", skuIds);
+            result.put("childrens", childrensSkuIds);
 
         }
         return result;
@@ -267,13 +269,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
         List<Long> alongs = new ArrayList<>();
-        alongs.add(param.getSkuId());
         for (Parts part : parts) {
             JSONArray jsonArray = JSONUtil.parseArray(part.getChildrens());
             List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
             alongs.addAll(longs);
         }
         for (Long along : alongs) {
+            alongs.add(param.getSkuId());
             if (along.equals(param.getSkuId())) {
                 List<SkuResult> results = skuService.formatSkuResult(new ArrayList<Long>() {{
                     add(along);
