@@ -34,5 +34,7 @@ public interface StepsService extends IService<ActivitiSteps> {
 
     ActivitiStepsResult detail(Long formId);
 
+    List<ActivitiStepsResult> getStepsResultByFormId(Long formId);
+
     ViewUpdate getProcessTime(Long fromId);
 }
