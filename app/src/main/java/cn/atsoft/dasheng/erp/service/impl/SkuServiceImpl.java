@@ -698,7 +698,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         for (SkuResult skuResult : param) {
             for (ProcessRoute processRoute : processRoutes) {
-                
+                if (processRoute.getSkuId().equals(skuResult.getSkuId())) {
+                    ProcessRouteResult processRouteResult = new ProcessRouteResult();
+                    ToolUtil.copyProperties(processRoute,processRouteResult);
+                    skuResult.setProcessRouteResult(processRouteResult);
+                }
             }
             skuResult.setInBom(false);
 
