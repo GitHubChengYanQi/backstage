@@ -34,7 +34,7 @@ public class ActivitiSetpSet implements Serializable {
      * 类型
      */
     @TableField("production_type")
-    private Integer productionType;
+    private String productionType;
 
     /**
      * 工位Id
@@ -150,11 +150,11 @@ public class ActivitiSetpSet implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public Integer getProductionType() {
+    public String getProductionType() {
         return productionType;
     }
 
-    public void setProductionType(Integer productionType) {
+    public void setProductionType(String productionType) {
         this.productionType = productionType;
     }
 
