@@ -177,6 +177,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public void updateAdd(PartsParam partsParam) {
+
         judge(partsParam); //防止添加重复数据
         DeadLoopJudge(partsParam);  //防止死循环添加
 
@@ -267,7 +268,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             skuIds.add(part.getSkuId());
         }
 
-        List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).eq("status",99).list();
         List<Long> alongs = new ArrayList<>();
         for (Parts part : parts) {
             JSONArray jsonArray = JSONUtil.parseArray(part.getChildrens());
@@ -275,7 +276,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             alongs.addAll(longs);
         }
         for (Long along : alongs) {
-            alongs.add(param.getSkuId());
             if (along.equals(param.getSkuId())) {
                 List<SkuResult> results = skuService.formatSkuResult(new ArrayList<Long>() {{
                     add(along);
