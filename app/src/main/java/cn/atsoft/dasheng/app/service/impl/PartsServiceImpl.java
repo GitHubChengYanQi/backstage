@@ -71,7 +71,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     public Parts add(PartsParam partsParam) {
 
         judge(partsParam); //防止添加重复数据
-//        DeadLoopJudge(partsParam); //防止死循环添加
+        DeadLoopJudge(partsParam); //防止死循环添加
 
         //如果相同sku已有发布  新创建
         Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("type", partsParam.getType()).eq("status", 99).one();
