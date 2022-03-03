@@ -125,20 +125,20 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
         for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
 
 
-            Parts designParts = partsService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("type", 1).eq("display", 1).eq("status", 99).one();
-            if (ToolUtil.isEmpty(designParts)) {
-                throw new ServiceException(500, "请先创建设计bom");
-            }
-            Parts productionParts = partsService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("type", 2).eq("display", 1).eq("status", 99).one();
-            if (ToolUtil.isEmpty(productionParts)) {
-                throw new ServiceException(500, "请先创建生产bom");
-            }
+//            Parts designParts = partsService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("type", 1).eq("display", 1).eq("status", 99).one();
+//            if (ToolUtil.isEmpty(designParts)) {
+//                throw new ServiceException(500, "请先创建设计bom");
+//            }
+//            Parts productionParts = partsService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("type", 2).eq("display", 1).eq("status", 99).one();
+//            if (ToolUtil.isEmpty(productionParts)) {
+//                throw new ServiceException(500, "请先创建生产bom");
+//            }
 
 
-            ProcessRoute processRouteByparts = processRouteService.query().eq("parts_id", productionParts.getPartsId()).eq("status", 99).one();
-            if (ToolUtil.isEmpty(processRouteByparts)) {
-                throw new ServiceException(500, "请先创建" + productionParts.getPartName() + "的工艺路线");
-            }
+            ProcessRoute processRouteByparts = processRouteService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("status", 99).one();
+//            if (ToolUtil.isEmpty(processRouteByparts)) {
+//                throw new ServiceException(500, "请先创建" + productionParts.getPartName() + "的工艺路线");
+//            }
             ActivitiStepsResult activitiStepsResult = stepsService.detail(processRouteByparts.getProcessRouteId());
             List<ActivitiStepsResult> results = new ArrayList<>();
             this.loopGetSetps(activitiStepsResult, results, 1*productionPlanDetail.getPlanNumber());

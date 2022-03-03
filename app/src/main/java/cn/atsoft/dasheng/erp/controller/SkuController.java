@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -102,6 +103,12 @@ public class SkuController extends BaseController {
     public ResponseData delete(@RequestBody SkuParam skuParam) {
         this.skuService.delete(skuParam);
         return ResponseData.success();
+    }
+    @RequestMapping(value = "/addSkuFromSpu", method = RequestMethod.POST)
+//    @BussinessLog(value = "删除sku", key = "name", dict = SkuParam.class)
+    @ApiOperation("删除")
+    public ResponseData skuParam(@RequestBody PartsParam param) {
+        return ResponseData.success(this.skuService.addSkuFromSpu(param));
     }
 
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
