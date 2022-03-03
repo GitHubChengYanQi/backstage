@@ -74,6 +74,7 @@ public class ProcessRouteServiceImpl extends ServiceImpl<ProcessRouteMapper, Pro
     public PageInfo<ProcessRouteResult> findPageBySpec(ProcessRouteParam param) {
         Page<ProcessRouteResult> pageContext = getPageContext();
         IPage<ProcessRouteResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -119,5 +120,23 @@ public class ProcessRouteServiceImpl extends ServiceImpl<ProcessRouteMapper, Pro
         ProcessRouteResult processRouteResult = new ProcessRouteResult();
         ToolUtil.copyProperties(processRoute, processRouteResult);
         return processRouteResult;
+    }
+
+    private void format(List<ProcessRouteResult> data) {
+
+        List<Long> skuIds = new ArrayList<>();
+        for (ProcessRouteResult datum : data) {
+            skuIds.add(datum.getSkuId());
+        }
+
+        List<SkuResult> results = skuService.formatSkuResult(skuIds);
+        for (ProcessRouteResult datum : data) {
+            for (SkuResult result : results) {
+                if (ToolUtil.isNotEmpty(datum.getSkuId()) && datum.getSkuId().equals(result.getSkuId())) {
+                    datum.setSkuResult(result);
+                    break;
+                }
+            }
+        }
     }
 }
