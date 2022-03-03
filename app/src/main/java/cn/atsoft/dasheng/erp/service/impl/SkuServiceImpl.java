@@ -848,11 +848,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             skuResult.setProcessRouteResult(processRouteResult);
         }
 
-        List<Parts> parts = partsService.query().eq("sku_id", id).eq("display", 1).list();
+        Parts parts = partsService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).one();
 
-        if (parts.size() > 0) {
+        if (ToolUtil.isNotEmpty(parts)) {
             skuResult.setInBom(true);
-            skuResult.setPartsId(parts.get(0).getPartsId());
+            skuResult.setPartsId(parts.getPartsId());
         }
 
         JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
