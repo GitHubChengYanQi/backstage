@@ -108,8 +108,7 @@ public class SkuController extends BaseController {
 //    @BussinessLog(value = "删除sku", key = "name", dict = SkuParam.class)
     @ApiOperation("删除")
     public ResponseData skuParam(@RequestBody PartsParam param) {
-        this.skuService.addSkuFromSpu(param);
-        return ResponseData.success();
+        return ResponseData.success(this.skuService.addSkuFromSpu(param));
     }
 
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
