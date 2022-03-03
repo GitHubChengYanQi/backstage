@@ -136,12 +136,12 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
 
             ProcessRoute processRouteByparts = processRouteService.query().eq("parts_id", productionParts.getPartsId()).eq("status", 99).one();
-            if(ToolUtil.isEmpty(processRouteByparts)){
-                throw  new ServiceException(500,"请先创建"+productionParts.getPartName()+"的工艺路线");
+            if (ToolUtil.isEmpty(processRouteByparts)) {
+                throw new ServiceException(500, "请先创建" + productionParts.getPartName() + "的工艺路线");
             }
             ActivitiStepsResult activitiStepsResult = stepsService.detail(processRouteByparts.getProcessRouteId());
             List<ActivitiStepsResult> results = new ArrayList<>();
-            this.loopGetSetps(activitiStepsResult, results);
+            this.loopGetSetps(activitiStepsResult, results, 1*productionPlanDetail.getPlanNumber());
             List<Long> setpIds = new ArrayList<>();
             for (ActivitiStepsResult result : results) {
                 setpIds.add(result.getSetpsId());
@@ -164,7 +164,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                 activitiSetpSetResults.add(setpSetResult);
             }
             skuIds.add(productionPlanDetail.getSkuId());
-            createWorkOrder(productionPlanDetail,activitiSetpSetResults);
+            createWorkOrder(productionPlanDetail, activitiSetpSetResults);
         }
 
 
@@ -192,10 +192,29 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
         this.saveBatch(workOrders);
     }
 
-    private void loopGetSetps(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> results) {
-        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
+    private void loopGetSetps(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> results, int num) {
+        num = 1;
+        int count = 0;
+        if (activitiStepsResult.getStepType().equals("ship")) {
+            ProcessRouteResult processRouteResult = JSON.parseObject(activitiStepsResult.getProcessRoute().toString(), ProcessRouteResult.class);
+            for (ActivitiSetpSetDetailResult setpSetDetail : processRouteResult.getStepsResult().getSetpSet().getSetpSetDetails()) {
+                num = num * setpSetDetail.getNum();
+            }
+            results.add(processRouteResult.getStepsResult());
+            loopGetSetps(processRouteResult.getStepsResult(),results,num);
+
+        } else if (activitiStepsResult.getStepType().equals("shipStart")) {
+            loopGetSetps(activitiStepsResult.getChildNode(), results, num);
+        } else if (activitiStepsResult.getStepType().equals("route")) {
+            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
+                loopGetSetps(stepsResult, results, num);
+            }
+            loopGetSetps(activitiStepsResult.getChildNode(), results, num);
+        } else if (activitiStepsResult.getStepType().equals("setp")) {
             results.add(activitiStepsResult.getChildNode());
-            this.loopGetSetps(activitiStepsResult.getChildNode(), results);
+            for (ActivitiSetpSetDetailResult setpSetDetail : activitiStepsResult.getSetpSet().getSetpSetDetails()) {
+                setpSetDetail.setNum(setpSetDetail.getNum() * num);
+            }
         }
     }
 
