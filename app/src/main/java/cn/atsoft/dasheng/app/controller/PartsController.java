@@ -148,13 +148,14 @@ public class PartsController extends BaseController {
         QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
         erpPartsDetailQueryWrapper.in("parts_id", detail.getPartsId());
         List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.list(erpPartsDetailQueryWrapper);
-
         List<ErpPartsDetailResult> erpPartsDetailParams = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
             ErpPartsDetailResult erpPartsDetailResult = new ErpPartsDetailResult();
             ToolUtil.copyProperties(erpPartsDetail, erpPartsDetailResult);
             erpPartsDetailResult.setPartsAttributes(erpPartsDetail.getAttribute());
             erpPartsDetailParams.add(erpPartsDetailResult);
+            skuIds.add(erpPartsDetail.getSkuId());
         }
 
         Item item = new Item();
@@ -163,14 +164,21 @@ public class PartsController extends BaseController {
         }
         result.setItem(item);
 
-        List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
-            add(result.getSkuId());
-        }});
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
 
         if (skuResults.size() > 0) {
             result.setSkuResult(skuResults.get(0));
         }
-
+        for (ErpPartsDetailResult erpPartsDetailParam : erpPartsDetailParams) {
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(erpPartsDetailParam.getSkuId())) {
+                    erpPartsDetailParam.setSkuResult(skuResult);
+                    erpPartsDetailParam.setCoding(skuResult.getStandard());
+                    break;
+                }
+            }
+        }
         result.setParts(erpPartsDetailParams);
 
 

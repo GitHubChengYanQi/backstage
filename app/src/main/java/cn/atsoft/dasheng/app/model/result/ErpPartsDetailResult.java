@@ -35,6 +35,8 @@ public class ErpPartsDetailResult implements Serializable {
 
     private PartsResult partsResult;
 
+    private String coding;
+
     private Boolean isNull;
 
     private SkuResult skuResult;

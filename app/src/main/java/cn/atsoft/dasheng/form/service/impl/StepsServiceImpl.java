@@ -103,6 +103,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             this.removeByIds(list);
             processRouteId = param.getProcessRoute().getProcessRouteId();
             ProcessRoute route = processRouteService.getEntity(param.getProcessRoute());   //修改工艺
+            route.setChildrens("");
             processRouteService.updateById(route);
         } else {
             processRouteId = addProcessRoute(param.getProcessRoute());
@@ -279,24 +280,12 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         if (ToolUtil.isEmpty(presentId)) {
             throw new ServiceException(500, "子路线id为空");
         }
-        String f = "";
-        String c = "";
         ProcessRoute father = processRouteService.getById(supperId);
         ProcessRoute child = processRouteService.getById(presentId);
-        if (ToolUtil.isNotEmpty(child.getChildrens())) {
-            c = child.getChildrens();
-            if (c.contains(supperId.toString())) {
-                throw new ServiceException(500, "请勿循环添加");
-            }
-        }
-        if (ToolUtil.isEmpty(father.getChildrens())) {
-            f = presentId.toString();
-        } else {
-            f = father.getChildrens() + "," + presentId;
-        }
+        List<Long> fatherList = JSON.parseArray(father.getChildrens(), Long.class);
+        List<Long> childList = JSON.parseArray(child.getChildrens(), Long.class);
 
-        father.setChildrens(f + c);
-
+        fatherList.addAll(childList);
         processRouteService.updateById(father);
     }
 

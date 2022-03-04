@@ -268,7 +268,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             skuIds.add(part.getSkuId());
         }
 
-        List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).eq("status",99).list();
+        List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
         List<Long> alongs = new ArrayList<>();
         for (Parts part : parts) {
             JSONArray jsonArray = JSONUtil.parseArray(part.getChildrens());
@@ -276,6 +276,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             alongs.addAll(longs);
         }
         for (Long along : alongs) {
+
             if (along.equals(param.getSkuId())) {
                 List<SkuResult> results = skuService.formatSkuResult(new ArrayList<Long>() {{
                     add(along);
@@ -283,6 +284,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 SkuResult result = results.get(0);
                 throw new ServiceException(500, "请勿循环添加:" + result.getSpuResult().getName() + "/" + result.getSkuName());
             }
+
+
         }
     }
 

@@ -56,7 +56,7 @@ public class StepProcessServiceImpl implements StepProcessService {
     }
 
     private List<ActivitiSetpSetResult> getAllSet(List<Long> ids) {
-        List<ActivitiSetpSet> setpSets = setpSetService.query().in("setps_id", ids).list();
+        List<ActivitiSetpSet> setpSets = ids.size() == 0 ? new ArrayList<>() : setpSetService.query().in("setps_id", ids).list();
         List<ActivitiSetpSetResult> results = BeanUtil.copyToList(setpSets, ActivitiSetpSetResult.class, new CopyOptions());
         StepSetFormat(results);
         return results;
