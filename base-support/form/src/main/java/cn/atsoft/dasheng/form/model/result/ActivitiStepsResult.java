@@ -49,7 +49,9 @@ public class ActivitiStepsResult implements Serializable {
 
     private ActivitiSetpSetResult setpSet;
 
-    private List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
+    private List<ActivitiStepsResult> conditionNodeList;
+
+    private List<ActivitiStepsResult> tree2List;
 
 
     /**
