@@ -31,6 +31,8 @@ public interface SkuService extends IService<Sku> {
      */
     Long add(SkuParam param);
 
+    List<SkuResult> getSkuByMd5(SkuParam param);
+
     @Transactional
     void directAdd(SkuParam param);
 

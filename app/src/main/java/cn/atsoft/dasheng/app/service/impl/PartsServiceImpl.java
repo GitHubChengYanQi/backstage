@@ -96,7 +96,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             erpPartsDetailService.saveBatch(partsDetails);
             // 更新当前节点，及下级
             updateStatue(parts, skuIds);  // 更新上级状态
-            return null;
+            return parts;
         }
 //----------------------------------------------------------------------------------------------------------------------
 

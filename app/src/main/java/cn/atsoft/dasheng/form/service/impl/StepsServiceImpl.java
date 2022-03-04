@@ -175,8 +175,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                     throw new ServiceException(500, "请确定子路线");
                 }
                 updateSuperior(processRouteId, node.getProcessRoute().getProcessRouteId());  //跟新上级状态
-
                 activitiSteps.setFormId(node.getProcessRoute().getProcessRouteId());
+
+                setDetailaddProcessRoute(activitiSteps.getSetpsId(), node.getProcessRoute());  //添加子工艺产出 和 数量
                 this.updateById(activitiSteps);
                 break;
             default:
@@ -245,6 +246,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                     this.updateById(activitiSteps);
                     updateSuperior(processRouteId, stepsParam.getProcessRoute().getProcessRouteId());  //跟新上级状态
 
+                    setDetailaddProcessRoute(activitiSteps.getSetpsId(), stepsParam.getProcessRoute());
                     break;
                 default:
                     throw new ServiceException(500, "请确定类型");
@@ -416,6 +418,18 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         activitiSteps.addAll(steps);
         return BeanUtil.copyToList(activitiSteps, ActivitiStepsResult.class, new CopyOptions());
 
+    }
+
+    /**
+     * 添加子工艺产出和产出数量
+     */
+    private void setDetailaddProcessRoute(Long stepId, ProcessRouteParam routeParam) {
+        ActivitiSetpSetDetail setDetail = new ActivitiSetpSetDetail();
+        setDetail.setSetpsId(stepId);
+        setDetail.setType("out");
+        setDetail.setSkuId(routeParam.getSkuId());
+        setDetail.setNum(routeParam.getNumber());
+        setpSetDetailService.save(setDetail);
     }
 
     /**
