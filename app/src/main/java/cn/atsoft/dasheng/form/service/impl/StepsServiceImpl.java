@@ -414,12 +414,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      */
     @Override
     public List<ActivitiStepsResult> getStepsResultByFormId(Long formId) {
-        List<ActivitiSteps> activitiSteps = this.query().eq("form_id", formId).list();
-        List<ActivitiSteps> steps = this.query().eq("step_type", "ship").list();
-        activitiSteps.addAll(steps);
-        return BeanUtil.copyToList(activitiSteps, ActivitiStepsResult.class, new CopyOptions());
-
+        List<ActivitiSteps> steps = this.query().eq("form_id", formId).or().eq("step_type", "ship").list();
+        return BeanUtil.copyToList(steps, ActivitiStepsResult.class, new CopyOptions());
     }
+
 
     /**
      * 添加子工艺产出和产出数量
@@ -429,7 +427,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         setDetail.setSetpsId(stepId);
         setDetail.setType("out");
         setDetail.setSkuId(routeParam.getSkuId());
-        setDetail.setNum(routeParam.getShipNumber());
+//        setDetail.setNum(routeParam.getShipNumber());
         setpSetDetailService.save(setDetail);
     }
 

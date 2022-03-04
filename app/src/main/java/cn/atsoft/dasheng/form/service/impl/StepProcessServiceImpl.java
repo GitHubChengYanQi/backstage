@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.service.impl;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
@@ -49,15 +50,20 @@ public class StepProcessServiceImpl implements StepProcessService {
 
         List<ActivitiSetpSetDetail> details = new ArrayList<>();
         for (ActivitiStepsResult result : stepsResults) {
-            if (stepsResult.getChildren().equals(result.getSetpsId().toString())) {
+            if (ToolUtil.isNotEmpty(stepsResult.getChildrens()) && stepsResult.getChildren().equals(result.getSetpsId().toString())) {
                 List<ActivitiSetpSetDetail> detail = new ArrayList<>();
-                if (result.getStepType().equals("setp")) {
-                    detail = getSetDetail(result.getSetpsId(), setpSetDetails);
-
-                } else if (result.getStepType().equals("ship")) {
-                    detail = getSetDetailSByRouId(result.getFormId());
-
+                switch (result.getStepType()) {
+                    case "setp":
+                        detail = getSetDetail(result.getSetpsId(), setpSetDetails);
+                        break;
+                    case "ship":
+                        detail = getSetDetailSByRouId(result.getFormId());
+                        break;
+                    case "route":
+                        detail = getDetail(result, stepsResults, setpSetDetails);
+                        break;
                 }
+
                 details.addAll(detail);
             }
         }

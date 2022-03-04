@@ -295,10 +295,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         return skuId;
     }
+
     @Override
-    public List<SkuResult> getSkuByMd5(SkuParam param){
-        if (ToolUtil.isEmpty(param.getSpuId())){
-            throw new ServiceException(500,"请传入spuId");
+    public List<SkuResult> getSkuByMd5(SkuParam param) {
+        if (ToolUtil.isEmpty(param.getSpuId())) {
+            throw new ServiceException(500, "请传入spuId");
         }
         List<String> attributeName = new ArrayList<>();
         List<String> attributeValueName = new ArrayList<>();
@@ -354,7 +355,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<SkuResult> results = new ArrayList<>();
         for (Sku sku : skuList) {
             SkuResult result = new SkuResult();
-            ToolUtil.copyProperties(sku,result);
+            ToolUtil.copyProperties(sku, result);
             results.add(result);
         }
         return results;
@@ -680,6 +681,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         return PageFactory.createPageInfo(page);
     }
+
     @Override
     public PageInfo<SkuResult> changePageBySpec(SkuParam param) {
         if (param.getSkuIds() != null) {
@@ -905,7 +907,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SpuResult spuResult = this.backSpu(sku.getSkuId());
         skuResult.setSpuResult(spuResult);
 
-        ProcessRoute one = processRouteService.query().eq("sku_id", id).eq("display", 1).one();
+        ProcessRoute one = processRouteService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).one();
 
         if (ToolUtil.isNotEmpty(one)) {
             ProcessRouteResult processRouteResult = new ProcessRouteResult();

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -14,10 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.bouncycastle.cms.PasswordRecipientId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -57,7 +55,11 @@ public class StepsController extends BaseController {
         return ResponseData.success(detail);
     }
 
-
+    @RequestMapping(value = "/getSetDetailSByRouId", method = RequestMethod.GET)
+    public ResponseData getSetDetailSByRouId(@RequestParam Long id) {
+        List<ActivitiSetpSetDetail> setDetailSByRouId = stepProcessService.getSetDetailSByRouId(id);
+        return ResponseData.success(setDetailSByRouId);
+    }
 
 }
 
