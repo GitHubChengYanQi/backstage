@@ -176,6 +176,20 @@ public class SkuController extends BaseController {
         return this.skuService.changePageBySpec(skuParam);
     }
     /**
+     * 根据md5
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/skuByMd5", method = RequestMethod.POST)
+    @ApiOperation("直接物料列表")
+    public ResponseData skuByMd5(@RequestBody(required = false) SkuParam skuParam) {
+        if (ToolUtil.isEmpty(skuParam)) {
+            skuParam = new SkuParam();
+        }
+        return ResponseData.success(this.skuService.getSkuByMd5(skuParam));
+    }
+    /**
      * 查询列表
      *
      * @author
