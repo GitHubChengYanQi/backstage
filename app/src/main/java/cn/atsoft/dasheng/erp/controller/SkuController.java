@@ -173,7 +173,7 @@ public class SkuController extends BaseController {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
-        return this.skuService.findPageBySpec(skuParam);
+        return this.skuService.changePageBySpec(skuParam);
     }
     /**
      * 查询列表

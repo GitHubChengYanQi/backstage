@@ -144,6 +144,9 @@
         <if test="paramCondition.pid != null">
             and pid = #{paramCondition.pid}
         </if>
+        <if test="paramCondition.status != null">
+            and status = #{paramCondition.status}
+        </if>
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
