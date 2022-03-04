@@ -177,6 +177,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public void updateAdd(PartsParam partsParam) {
+
         judge(partsParam); //防止添加重复数据
         DeadLoopJudge(partsParam);  //防止死循环添加
 
@@ -208,15 +209,17 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      */
     public void updateChildren(Long skuId, String type) {
 
-        List<Parts> partList = this.query().like("children", skuId).eq("display", 1).eq("type", type).list();
+        List<Parts> partList = this.query().like("children", skuId).eq("display", 1).eq("type", type).eq("status", 99).list();
         for (Parts part : partList) {
-            Map<String, List<Long>> childrenMap = getChildrens(skuId, type);
+            Map<String, List<Long>> childrenMap = getChildrens(part.getSkuId(), type);
             part.setChildren(JSON.toJSONString(childrenMap.get("children")));
             part.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
             // update
             QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("parts_id", part.getPartsId());
             this.update(part, queryWrapper);
+
+            updateChildren(part.getSkuId(), type);
         }
     }
 
@@ -240,9 +243,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 childrensSkuIds.add(detail.getSkuId());
                 Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId(), type);
                 childrensSkuIds.addAll(childrenMap.get("childrens"));
-                result.put("children", skuIds);
-                result.put("childrens", childrensSkuIds);
             }
+            result.put("children", skuIds);
+            result.put("childrens", childrensSkuIds);
 
         }
         return result;
@@ -265,9 +268,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             skuIds.add(part.getSkuId());
         }
 
-        List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).eq("status",99).list();
         List<Long> alongs = new ArrayList<>();
-        alongs.add(param.getSkuId());
         for (Parts part : parts) {
             JSONArray jsonArray = JSONUtil.parseArray(part.getChildrens());
             List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
