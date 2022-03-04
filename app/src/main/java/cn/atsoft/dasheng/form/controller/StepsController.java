@@ -57,11 +57,7 @@ public class StepsController extends BaseController {
         return ResponseData.success(detail);
     }
 
-    @RequestMapping(value = "/getStep", method = RequestMethod.GET)
-    public ResponseData getStep(@Param("id") Long id) {
-        List<ActivitiSetpSetResult> step = this.stepProcessService.getStep(id);
-        return ResponseData.success(step);
-    }
+
 
 }
 

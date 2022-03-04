@@ -91,7 +91,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             List<ActivitiSteps> steps = this.query().eq("form_id", param.getProcessRoute().getProcessRouteId()).list();
             ArrayList<Long> list = new ArrayList<Long>() {{
                 for (ActivitiSteps step : steps) {
-                    add(step.getSetpsId());
+                    if (!"ship".equals(step.getStepType())) {
+                        add(step.getSetpsId());
+                    }
                 }
             }};
             setpSetService.remove(new QueryWrapper<ActivitiSetpSet>() {{
@@ -100,6 +102,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             setpSetDetailService.remove(new QueryWrapper<ActivitiSetpSetDetail>() {{
                 in("setps_id", list);
             }});
+
             this.removeByIds(list);
             processRouteId = param.getProcessRoute().getProcessRouteId();
             ProcessRoute route = processRouteService.getEntity(param.getProcessRoute());   //修改工艺
@@ -277,16 +280,49 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param presentId
      */
     private void updateSuperior(Long supperId, Long presentId) {
-//        if (ToolUtil.isEmpty(presentId)) {
-//            throw new ServiceException(500, "子路线id为空");
-//        }
-//        ProcessRoute father = processRouteService.getById(supperId);
-//        ProcessRoute child = processRouteService.getById(presentId);
-//        List<Long> fatherList = JSON.parseArray(father.getChildrens(), Long.class);
-//        List<Long> childList = JSON.parseArray(child.getChildrens(), Long.class);
-//
-//        fatherList.addAll(childList);
-//        processRouteService.updateById(father);
+        if (ToolUtil.isEmpty(presentId)) {
+            throw new ServiceException(500, "子路线id为空");
+        }
+        ProcessRoute father = processRouteService.getById(supperId);
+        ProcessRoute child = processRouteService.getById(presentId);
+        List<Long> fatherList = JSON.parseArray(father.getChildrens(), Long.class);
+        if (ToolUtil.isEmpty(fatherList)) {
+            fatherList = new ArrayList<>();
+        }
+        List<Long> childList = JSON.parseArray(child.getChildrens(), Long.class);
+        if (ToolUtil.isEmpty(childList)) {
+            childList = new ArrayList<>();
+        }
+        for (Long aLong : childList) {
+            if (aLong.equals(supperId)) {
+                throw new ServiceException(500, "请检查路线，请勿循环添加");
+            }
+        }
+        fatherList.add(presentId);
+        fatherList.addAll(childList);
+        String childrens = JSON.toJSONString(fatherList);
+        father.setChildrens(childrens);
+        processRouteService.updateById(father);
+
+        updateFather(father, fatherList);
+    }
+
+    /**
+     * 更新所有上级
+     *
+     * @param father
+     * @param childrensList
+     */
+    private void updateFather(ProcessRoute father, List<Long> childrensList) {
+        List<ProcessRoute> fathers = processRouteService.query().like("childrens", father.getPartsId()).list();
+        for (ProcessRoute children : fathers) {
+            List<Long> list = JSON.parseArray(children.getChildrens(), Long.class);
+            list.addAll(childrensList);
+            String string = JSON.toJSONString(list);
+            children.setChildrens(string);
+            processRouteService.updateById(children);
+            updateFather(children, list);
+        }
     }
 
     private Serializable getKey(ActivitiStepsParam param) {
@@ -363,7 +399,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                 return stepsResult;
             }
         }
-        return null;
+        return new ActivitiStepsResult();
     }
 
 
@@ -375,7 +411,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      */
     @Override
     public List<ActivitiStepsResult> getStepsResultByFormId(Long formId) {
-        List<ActivitiSteps> activitiSteps = this.query().eq("form_id", formId).or().eq("step_type", "ship").list();
+        List<ActivitiSteps> activitiSteps = this.query().eq("form_id", formId).list();
+        List<ActivitiSteps> steps = this.query().eq("step_type", "ship").list();
+        activitiSteps.addAll(steps);
         return BeanUtil.copyToList(activitiSteps, ActivitiStepsResult.class, new CopyOptions());
 
     }
@@ -451,7 +489,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         }
 
         List<ActivitiProcessLog> processLogs = processLogService.query().eq("task_id", processTask.getProcessTaskId()).orderByDesc("update_time").list();
-
+        if (ToolUtil.isEmpty(processLogs)) {
+            return null;
+        }
         ActivitiProcessLog processLog = processLogs.get(0);
         User user = userService.getById(processLog.getUpdateUser());
         ViewUpdate viewUpdate = new ViewUpdate();
@@ -471,11 +511,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         ProcessRoute processRoute = processRouteService.getById(id);
         ProcessRouteResult routeResult = new ProcessRouteResult();
         ToolUtil.copyProperties(processRoute, routeResult);
-        ActivitiStepsResult stepsResult = detail(id);
-        routeResult.setStepsResult(stepsResult);
         routeResult.setType("ship");
-        List<ActivitiSetpSetResult> step = this.stepProcessService.getStep(id);
-        routeResult.setSetpSetResults(step);
         return routeResult;
     }
 

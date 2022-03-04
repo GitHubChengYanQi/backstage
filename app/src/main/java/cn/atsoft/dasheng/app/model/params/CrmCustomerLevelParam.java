@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -13,7 +16,7 @@ import java.util.List;
  * 客户级别表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-30
  */
 @Data
@@ -26,8 +29,10 @@ public class CrmCustomerLevelParam implements Serializable, BaseValidatingParam 
     /**
      * 主键
      */
-    private  Long rank;
+    private Long rank;
 
+
+    private String remake;
     /**
      * 客户级别id
      */
@@ -75,6 +80,7 @@ public class CrmCustomerLevelParam implements Serializable, BaseValidatingParam 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;

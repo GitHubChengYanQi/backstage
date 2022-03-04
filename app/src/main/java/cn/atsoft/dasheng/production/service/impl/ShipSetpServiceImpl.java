@@ -173,7 +173,7 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
         }
         for (ShipSetpBindResult shipSetpBindResult : shipSetpBindResultList) {
             for (ToolResult toolResult : toolResults) {
-                if (shipSetpBindResult.getFromId().equals(toolResult.getToolId())) {
+                if (ToolUtil.isNotEmpty(shipSetpBindResult.getFromId()) && shipSetpBindResult.getFromId().equals(toolResult.getToolId())) {
                     shipSetpBindResult.setToolResult(toolResult);
                 }
             }

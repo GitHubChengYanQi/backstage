@@ -415,7 +415,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      * @return
      */
     private PartsResult recursiveParts(Long skuId, String type) {
-        Parts parts = this.query().eq("sku_id", skuId).eq("type", type).eq("display", 1).one();
+        Parts parts = this.query().eq("sku_id", skuId).eq("type", type).eq("display", 1).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(parts)) {
             PartsResult partsResult = new PartsResult();
             ToolUtil.copyProperties(parts, partsResult);

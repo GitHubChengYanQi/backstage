@@ -896,7 +896,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             ToolUtil.copyProperties(processLog, logResult);
             logResults.add(logResult);
         }
-        List<ActivitiAudit> audits = auditService.query().in("setps_id", stepIds).list();
+        List<ActivitiAudit> audits = stepIds.size() == 0 ? new ArrayList<>() : auditService.query().in("setps_id", stepIds).list();
 
         for (ActivitiProcessLogResult logResult : logResults) {
             for (ActivitiAudit audit : audits) {
@@ -910,7 +910,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     private void loopAddJudgeBranch(ActivitiStepsResult activitiStepsResult, Long taskId, PurchaseAsk purchaseAsk) {
-
+        if (ToolUtil.isEmpty(activitiStepsResult)) {
+            return;
+        }
         Long processId = activitiStepsResult.getProcessId();
 
         /**

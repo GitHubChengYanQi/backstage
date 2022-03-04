@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 客户级别表
@@ -20,7 +24,7 @@ public class CrmCustomerLevelResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private  Long rank;
+    private Long rank;
     /**
      * 主键
      */
@@ -30,6 +34,8 @@ public class CrmCustomerLevelResult implements Serializable {
      */
     @ApiModelProperty("客户级别id")
     private Long customerLevelId;
+
+    private String remake;
 
     /**
      * 级别

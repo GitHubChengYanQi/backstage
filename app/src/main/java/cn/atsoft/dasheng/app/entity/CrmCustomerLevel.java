@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 客户级别表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-30
  */
 @TableName("daoxin_crm_customer_level")
@@ -24,15 +27,20 @@ public class CrmCustomerLevel implements Serializable {
     /**
      * 主键
      */
-      @TableId(value = "customer_level_id", type = IdType.ID_WORKER)
-      private Long customerLevelId;
-      @TableField("rank")
-     private  Long rank;
+    @TableId(value = "customer_level_id", type = IdType.ID_WORKER)
+    private Long customerLevelId;
+
     /**
      * 客户级别id
      */
+    @TableField("rank")
+    private Long rank;
 
-
+    /**
+     * 备注
+     */
+    @TableField("remake")
+    private String remake;
     /**
      * 级别
      */
@@ -48,25 +56,25 @@ public class CrmCustomerLevel implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -74,8 +82,16 @@ public class CrmCustomerLevel implements Serializable {
      */
     @TableField("display")
     private Integer display;
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
+
+    public String getRemake() {
+        return remake;
+    }
+
+    public void setRemake(String remake) {
+        this.remake = remake;
+    }
 
     public Long getDeptId() {
         return deptId;
@@ -161,13 +177,13 @@ public class CrmCustomerLevel implements Serializable {
     public String toString() {
         return "CrmCustomerLevel{" +
 
-        ", customerLevelId=" + customerLevelId +
-        ", level=" + level +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                ", customerLevelId=" + customerLevelId +
+                ", level=" + level +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }
