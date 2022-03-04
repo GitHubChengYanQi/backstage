@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.production.entity.ProcessRoute;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.sun.org.apache.bcel.internal.generic.ANEWARRAY;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,23 +28,40 @@ public class StepProcessServiceImpl implements StepProcessService {
 
     @Override
     public List<ActivitiSetpSetDetail> getSetDetailSByRouId(Long processRouteId) {
-
-        List<ActivitiSteps> steps = stepsService.query().eq("from_id", processRouteId).list();
+        List<ActivitiStepsResult> stepsResults = stepsService.getStepsResultByFormId(processRouteId);   //当前工艺下所有步骤
         List<ActivitiSetpSetDetail> setDetails = setDetailService.list();
-        return getDetail(steps, setDetails);
+        for (ActivitiStepsResult stepsResult : stepsResults) {
+            if (stepsResult.getSupper() == 0) {   //返回顶级
+                return getDetail(stepsResult, stepsResults, setDetails);
 
+            }
+        }
+        return new ArrayList<>();
     }
 
 
-    private List<ActivitiSetpSetDetail> getDetail(List<ActivitiSteps> stepsResults, List<ActivitiSetpSetDetail> setpSetDetails) {
+    /**
+     * 获取所有工序
+     *
+     * @param stepsResults
+     */
+    private List<ActivitiSetpSetDetail> getDetail(ActivitiStepsResult stepsResult, List<ActivitiStepsResult> stepsResults, List<ActivitiSetpSetDetail> setpSetDetails) {
 
-        for (ActivitiSteps result : stepsResults) {
-            if (result.getStepType().equals("setp")) {
-                return getSetDetail(result.getSetpsId(), setpSetDetails);
+        List<ActivitiSetpSetDetail> details = new ArrayList<>();
+        for (ActivitiStepsResult result : stepsResults) {
+            if (stepsResult.getChildren().equals(result.getSetpsId().toString())) {
+                List<ActivitiSetpSetDetail> detail = new ArrayList<>();
+                if (result.getStepType().equals("setp")) {
+                    detail = getSetDetail(result.getSetpsId(), setpSetDetails);
+
+                } else if (result.getStepType().equals("ship")) {
+                    detail = getSetDetailSByRouId(result.getFormId());
+
+                }
+                details.addAll(detail);
             }
-
         }
-        return new ArrayList<>();
+        return details;
     }
 
 
