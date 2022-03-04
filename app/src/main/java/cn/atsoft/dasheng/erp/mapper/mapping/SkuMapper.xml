@@ -187,6 +187,15 @@
             or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
             or standard like CONCAT ('%',#{paramCondition.skuName},'%'))
 
+            <if test="paramCondition.skuId != null">
+                AND goods_sku.sku_id = #{paramCondition.skuId}
+            </if>
+            <if test="paramCondition.spuId != null">
+                and goods_sku.spu_id = #{paramCondition.spuId}
+            </if>
+            <if test="paramCondition.spuClass != null">
+                and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+            </if>
         </if>
         <if test="paramCondition.addMethod != null">
             AND goods_sku.add_method = #{paramCondition.addMethod}
@@ -257,6 +266,16 @@
             and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
             or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
             or standard like CONCAT ('%',#{paramCondition.skuName},'%'))
+
+            <if test="paramCondition.skuId != null">
+                AND goods_sku.sku_id = #{paramCondition.skuId}
+            </if>
+            <if test="paramCondition.spuId != null">
+                and goods_sku.spu_id = #{paramCondition.spuId}
+            </if>
+            <if test="paramCondition.spuClass != null">
+                and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+            </if>
 
         </if>
         <if test="paramCondition.addMethod != null">
