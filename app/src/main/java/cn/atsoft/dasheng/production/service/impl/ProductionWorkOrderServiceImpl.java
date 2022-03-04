@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
+import cn.atsoft.dasheng.form.service.StepProcessService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
@@ -69,6 +70,9 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
     @Autowired
     private ProductionWorkOrderService workOrderService;
+
+    @Autowired
+    private StepProcessService stepProcessService;
 
 
     @Override
@@ -143,8 +147,13 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 //                throw new ServiceException(500, "请先创建" + productionParts.getPartName() + "的工艺路线");
 //            }
             ActivitiStepsResult activitiStepsResult = stepsService.detail(processRouteByparts.getProcessRouteId());
+
+
+            List<ActivitiSetpSetDetail> setDetailSByRouId = stepProcessService.getSetDetailSByRouId(processRouteByparts.getProcessRouteId());
+
+
             List<ActivitiStepsResult> treeListResults = new ArrayList<>();
-            this.getTree2List(activitiStepsResult,treeListResults);
+            getTree2List(activitiStepsResult,treeListResults);
 
 
             List<ActivitiStepsResult> stepsResults = stepsService.getStepsResultByFormId(processRouteByparts.getProcessRouteId());
@@ -154,9 +163,15 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
             List<ProductionWorkOrder> workOrders = new ArrayList<>();
             loopCreateWorkOrder(stepsResultList, productionPlanDetail.getPlanNumber(), workOrders);
-            workOrderService.saveBatch(workOrders);
+//            workOrderService.saveBatch(workOrders);
 
 
+            System.out.println("====================NEW ======================");
+            System.out.println("==============================================");
+            System.out.println(JSON.toJSONString(setDetailSByRouId));
+            System.out.println("==============================================");
+            System.out.println("==============================================");
+            System.out.println("==============================================");
             System.out.println("====================DETAILJSON======================");
             System.out.println("==============================================");
             System.out.println(JSON.toJSONString(activitiStepsResult));
@@ -336,6 +351,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     private void getTree2List(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> results) {
         switch (activitiStepsResult.getStepType()) {
             case "shipStart":
+                results.add(activitiStepsResult);
                 getTree2List(activitiStepsResult.getChildNode(),results);
                 break;
             case "ship":
@@ -343,6 +359,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                 results.add(activitiStepsResult);
                 break;
             case "route":
+                results.add(activitiStepsResult);
 //                results.addAll(activitiStepsResult.getConditionNodeList());
                 for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
                     getTree2List(stepsResult,results);
@@ -357,7 +374,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     }
 
     private void getTree2List2(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> list) {
-
+//        for (list)
     }
 
 
