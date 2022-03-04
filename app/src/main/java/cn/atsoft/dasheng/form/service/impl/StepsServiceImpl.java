@@ -277,16 +277,16 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param presentId
      */
     private void updateSuperior(Long supperId, Long presentId) {
-        if (ToolUtil.isEmpty(presentId)) {
-            throw new ServiceException(500, "子路线id为空");
-        }
-        ProcessRoute father = processRouteService.getById(supperId);
-        ProcessRoute child = processRouteService.getById(presentId);
-        List<Long> fatherList = JSON.parseArray(father.getChildrens(), Long.class);
-        List<Long> childList = JSON.parseArray(child.getChildrens(), Long.class);
-
-        fatherList.addAll(childList);
-        processRouteService.updateById(father);
+//        if (ToolUtil.isEmpty(presentId)) {
+//            throw new ServiceException(500, "子路线id为空");
+//        }
+//        ProcessRoute father = processRouteService.getById(supperId);
+//        ProcessRoute child = processRouteService.getById(presentId);
+//        List<Long> fatherList = JSON.parseArray(father.getChildrens(), Long.class);
+//        List<Long> childList = JSON.parseArray(child.getChildrens(), Long.class);
+//
+//        fatherList.addAll(childList);
+//        processRouteService.updateById(father);
     }
 
     private Serializable getKey(ActivitiStepsParam param) {
