@@ -316,7 +316,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param childrensList
      */
     private void updateFather(ProcessRoute father, List<Long> childrensList) {
-        List<ProcessRoute> fathers = processRouteService.query().like("childrens", father.getPartsId()).list();
+
+        List<ProcessRoute> fathers = processRouteService.query().like("childrens", father.getProcessRouteId()).list();
         for (ProcessRoute children : fathers) {
             List<Long> list = JSON.parseArray(children.getChildrens(), Long.class);
             list.addAll(childrensList);
@@ -428,7 +429,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         setDetail.setSetpsId(stepId);
         setDetail.setType("out");
         setDetail.setSkuId(routeParam.getSkuId());
-        setDetail.setNum(routeParam.getNumber());
+        setDetail.setNum(routeParam.getShipNumber());
         setpSetDetailService.save(setDetail);
     }
 
