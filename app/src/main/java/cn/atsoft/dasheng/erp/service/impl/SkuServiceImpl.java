@@ -623,7 +623,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         Page<SkuResult> pageContext = getPageContext();
-        IPage<SkuResult> page = this.baseMapper.customPageList(new ArrayList<>(), pageContext, param);
+        IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
         format(page.getRecords());
 
 
