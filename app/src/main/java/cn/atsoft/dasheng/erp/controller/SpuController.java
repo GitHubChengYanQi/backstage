@@ -148,7 +148,7 @@ public class SpuController extends BaseController {
             for (Sku sku : skus) {
                 skuIds.add(sku.getSkuId());
             }
-            List<Parts> parts = partsService.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
+            List<Parts> parts = skuIds.size() ==0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
 
             List<List<SkuJson>> requests = new ArrayList<>();
             List<SkuResult> skuResultList = new ArrayList<>();
