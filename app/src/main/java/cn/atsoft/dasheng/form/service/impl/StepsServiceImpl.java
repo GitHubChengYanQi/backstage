@@ -127,7 +127,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     public Long addProcessRoute(ProcessRouteParam param) {
         param.setProcessRouteId(null);
         Integer count = processRouteService.query().eq("sku_id", param.getSkuId()).count();
-        if (count > 1) {
+        if (count >= 1) {
             throw new ServiceException(500, "已有相同工艺路线");
         }
         ProcessRoute routeEntity = new ProcessRoute();
@@ -427,7 +427,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         setDetail.setSetpsId(stepId);
         setDetail.setType("out");
         setDetail.setSkuId(routeParam.getSkuId());
-//        setDetail.setNum(routeParam.getShipNumber());
+        setDetail.setNum(routeParam.getShipNumber());
         setpSetDetailService.save(setDetail);
     }
 

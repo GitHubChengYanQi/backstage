@@ -38,7 +38,7 @@ public class ProcessRouteParam implements Serializable, BaseValidatingParam {
 
     private Long spuId;
 
-//    private Integer shipNumber;
+    private Integer shipNumber;
 
     /**
      * 工艺路线编号

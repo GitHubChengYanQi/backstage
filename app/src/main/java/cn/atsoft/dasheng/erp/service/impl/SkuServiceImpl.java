@@ -907,7 +907,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SpuResult spuResult = this.backSpu(sku.getSkuId());
         skuResult.setSpuResult(spuResult);
 
-        ProcessRoute one = processRouteService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).one();
+        ProcessRoute one = processRouteService.query().eq("sku_id", id).eq("display", 1).one();
 
         if (ToolUtil.isNotEmpty(one)) {
             ProcessRouteResult processRouteResult = new ProcessRouteResult();
