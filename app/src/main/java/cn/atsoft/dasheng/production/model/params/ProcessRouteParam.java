@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -32,6 +33,9 @@ public class ProcessRouteParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("工艺路线id")
     private Long processRouteId;
+
+
+    private Long pid;
 
     @NotNull
     private Long skuId;

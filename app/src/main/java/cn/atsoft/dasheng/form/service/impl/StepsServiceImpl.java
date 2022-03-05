@@ -67,10 +67,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private ActivitiProcessLogService processLogService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private StepProcessService processService;
-    @Autowired
-    private StepProcessService stepProcessService;
+
 
 
     @Override
