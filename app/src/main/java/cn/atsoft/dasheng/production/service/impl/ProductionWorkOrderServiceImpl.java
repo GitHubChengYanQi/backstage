@@ -153,175 +153,53 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
 
             List<ActivitiStepsResult> treeListResults = new ArrayList<>();
-            getTree2List(activitiStepsResult,treeListResults);
-
-
-            List<ActivitiStepsResult> stepsResults = stepsService.getStepsResultByFormId(processRouteByparts.getProcessRouteId());
-            List<ActivitiStepsResult> stepsResultList = formatSetpSetAndDetail(stepsResults);
-            loopChildrenShip(stepsResultList);
-
-
+            getTree2List(activitiStepsResult, treeListResults);
+            getTree2List2(treeListResults);
             List<ProductionWorkOrder> workOrders = new ArrayList<>();
-            loopCreateWorkOrder(stepsResultList, productionPlanDetail.getPlanNumber(), workOrders);
-//            workOrderService.saveBatch(workOrders);
+            this.loopCreateWorkOrder(treeListResults, productionPlanDetail.getPlanNumber(), workOrders);
+            this.saveBatch(workOrders);
 
-
-            System.out.println("====================NEW ======================");
-            System.out.println("==============================================");
-            System.out.println(JSON.toJSONString(setDetailSByRouId));
-            System.out.println("==============================================");
-            System.out.println("==============================================");
-            System.out.println("==============================================");
-            System.out.println("====================DETAILJSON======================");
-            System.out.println("==============================================");
-            System.out.println(JSON.toJSONString(activitiStepsResult));
-            System.out.println("==============================================");
-            System.out.println("==============================================");
-            System.out.println("==============================================");
-            System.out.println("====================JSON======================");
-            System.out.println("==============================================");
-            System.out.println(JSON.toJSONString(stepsResultList));
-            System.out.println("==============================================");
-            System.out.println("==============================================");
-            System.out.println("==============================================");
-            System.out.println("====================WorkOrder======================");
-            System.out.println("==============================================");
-            System.out.println(JSON.toJSONString(workOrders));
-            System.out.println("==============================================");
-            System.out.println("==============================================");
-            System.out.println("==============================================");
 
         }
 
 
-    }
-
-    private void childrenShip(ActivitiStepsResult childrenShip) {
-        List<ActivitiStepsResult> stepsResults = stepsService.getStepsResultByFormId(childrenShip.getFormId());
-        List<ActivitiStepsResult> stepsResultList = formatSetpSetAndDetail(stepsResults);
-        childrenShip.setProcessRoute(stepsResultList);
-    }
-
-    private void loopChildrenShip(List<ActivitiStepsResult> stepsResultList) {
-        for (ActivitiStepsResult stepsResult : stepsResultList) {
-            if (stepsResult.getStepType().equals("ship")) {
-                childrenShip(stepsResult);
-                List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(stepsResult.getProcessRoute()), ActivitiStepsResult.class);
-                loopChildrenShip(list);
-            }
-        }
-    }
-
-    private List<ActivitiStepsResult> formatSetpSetAndDetail(List<ActivitiStepsResult> stepsResults) {
-        List<Long> stepsIds = new ArrayList<>();
-        for (ActivitiStepsResult stepsResult : stepsResults) {
-            stepsIds.add(stepsResult.getSetpsId());
-        }
-        List<ActivitiSetpSet> activitiSetpSets = stepsIds.size() == 0 ? new ArrayList<>() : activitiSetpSetService.query().in("setps_id", stepsIds).eq("display", 1).list();
-
-        List<ActivitiSetpSetDetail> activitiSetpSetDetails = stepsIds.size() == 0 ? new ArrayList<>() : activitiSetpSetDetailService.query().in("setps_id", stepsIds).eq("display", 1).list();
-        for (ActivitiStepsResult stepsResult : stepsResults) {
-            /**
-             * 工序步骤
-             */
-            for (ActivitiSetpSet activitiSetpSet : activitiSetpSets) {
-                if (stepsResult.getSetpsId().equals(activitiSetpSet.getShipSetpId())) {
-                    ActivitiSetpSetResult setpSetResult = new ActivitiSetpSetResult();
-                    ToolUtil.copyProperties(activitiSetpSet, setpSetResult);
-                    stepsResult.setSetpSetResult(setpSetResult);
-                }
-            }
-            /**
-             * 匹配详情
-             */
-            List<ActivitiSetpSetDetailResult> setpSetDetailResults = new ArrayList<>();
-            for (ActivitiSetpSetDetail activitiSetpSetDetail : activitiSetpSetDetails) {
-                ActivitiSetpSetDetailResult activitiSetpSetDetailResult = new ActivitiSetpSetDetailResult();
-                ToolUtil.copyProperties(activitiSetpSetDetail, activitiSetpSetDetailResult);
-                setpSetDetailResults.add(activitiSetpSetDetailResult);
-            }
-            stepsResult.setSetpSetDetailResults(setpSetDetailResults);
-        }
-
-        List<ActivitiStepsResult> allSteps = new ArrayList<>();
-        for (ActivitiStepsResult stepsResult : stepsResults) {
-            if (stepsResult.getSupper() == 0 && ToolUtil.isNotEmpty(stepsResult.getChildren())) {
-                getStepList(stepsResults, stepsResult, allSteps);
-            }
-        }
-        return allSteps;
-
-    }
-
-    private void getStepList(List<ActivitiStepsResult> list, ActivitiStepsResult children, List<ActivitiStepsResult> all) {
-        if (ToolUtil.isNotEmpty(children) && ToolUtil.isNotEmpty(children.getStepType())) {
-            switch (children.getStepType()) {
-                case "route":
-                    List<ActivitiStepsResult> conditionList = new ArrayList<>();
-                    List<Long> childrensIds = Arrays.asList(children.getConditionNodes().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-                    for (Long childrensId : childrensIds) {
-                        for (ActivitiStepsResult activitiStepsResult : list) {
-                            if (childrensId.equals(activitiStepsResult.getSetpsId())) {
-                                conditionList.add(activitiStepsResult);
-                            }
-                        }
-                    }
-                    children.setConditionNodeList(conditionList);
-                    all.addAll(children.getConditionNodeList());
-                    for (ActivitiStepsResult activitiStepsResult : children.getConditionNodeList()) {
-                        getStepList(list, activitiStepsResult, all);
-                    }
-                    if (ToolUtil.isNotEmpty(children.getChildNode())) {
-                        all.add(children.getChildNode());
-                        getStepList(list, children.getChildNode(), all);
-                    }
-                    break;
-
-                default:
-                    for (ActivitiStepsResult activitiStepsResult : list) {
-                        if (children.getSetpsId().equals(activitiStepsResult.getSetpsId())) {
-                            all.add(children);
-                        }
-                    }
-                    for (ActivitiStepsResult activitiStepsResult : list) {
-
-                        if (ToolUtil.isNotEmpty(children.getChildren()) && Long.valueOf(children.getChildren()).equals(activitiStepsResult.getSetpsId())) {
-                            getStepList(list, activitiStepsResult, all);
-                        }
-                    }
-
-                    break;
-            }
-        }
     }
 
 
     private void loopCreateWorkOrder(List<ActivitiStepsResult> stepsResultList, int num, List<ProductionWorkOrder> workOrders) {
         for (ActivitiStepsResult activitiStepsResult : stepsResultList) {
             ProductionWorkOrder workOrder = new ProductionWorkOrder();
-
+//            workOrder.set
             switch (activitiStepsResult.getStepType()) {
                 case "ship":
-                    List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getProcessRoute()), ActivitiStepsResult.class);
+                    List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
 //                    loopCreateWorkOrder(list,num*activitiStepsResult.getSetpSetDetailResults().get(0).getNum(),workOrders);//如果是正常情况下大概这么取
-                    loopCreateWorkOrder(list, num * 1, workOrders);
+                    if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) && activitiStepsResult.getSetpSet().getSetpSetDetails().size() == 1 && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum())){
+                        loopCreateWorkOrder(list, activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum() * num, workOrders);
+
+                    }else {
+                        loopCreateWorkOrder(list, num * 1, workOrders);
+                    }
                     break;
                 case "shipStart":
                 case "setp":
-                    for (ActivitiSetpSetDetailResult setpSetDetailResult : activitiStepsResult.getSetpSetDetailResults()) {
+                    if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) ) {
+                        for (ActivitiSetpSetDetailResult setpSetDetailResult : activitiStepsResult.getSetpSet().getSetpSetDetails()) {
+                            workOrder.setSkuId(setpSetDetailResult.getSkuId());
+                            workOrder.setCount(num);
+                            if (setpSetDetailResult.getType().equals("in")) {
+                                workOrder.setInSkuNumber(num * setpSetDetailResult.getNum());
+                                workOrder.setInSkuId(setpSetDetailResult.getSkuId());
+                            } else if (setpSetDetailResult.getType().equals("out")) {
+                                workOrder.setOutSkuNumber(num * setpSetDetailResult.getNum());
+                                workOrder.setOutSkuId(setpSetDetailResult.getSkuId());
+                            }
 
-                        workOrder.setSkuId(setpSetDetailResult.getSkuId());
-                        workOrder.setCount(num);
-                        if (setpSetDetailResult.getType().equals("in")) {
-                            workOrder.setInSkuNumber(num * setpSetDetailResult.getNum());
-                            workOrder.setInSkuId(setpSetDetailResult.getSkuId());
-                        } else if (setpSetDetailResult.getType().equals("out")) {
-                            workOrder.setOutSkuNumber(num * setpSetDetailResult.getNum());
-                            workOrder.setOutSkuId(setpSetDetailResult.getSkuId());
                         }
-                        workOrders.add(workOrder);
+
                     }
             }
+            workOrders.add(workOrder);
         }
     }
 
@@ -352,7 +230,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
         switch (activitiStepsResult.getStepType()) {
             case "shipStart":
                 results.add(activitiStepsResult);
-                getTree2List(activitiStepsResult.getChildNode(),results);
+                getTree2List(activitiStepsResult.getChildNode(), results);
                 break;
             case "ship":
             case "setp":
@@ -362,19 +240,29 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                 results.add(activitiStepsResult);
 //                results.addAll(activitiStepsResult.getConditionNodeList());
                 for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                    getTree2List(stepsResult,results);
+                    getTree2List(stepsResult, results);
                 }
                 if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
                     results.add(activitiStepsResult.getChildNode());
-                    getTree2List(activitiStepsResult.getChildNode(),results);
+                    getTree2List(activitiStepsResult.getChildNode(), results);
                 }
                 break;
         }
 
     }
 
-    private void getTree2List2(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> list) {
-//        for (list)
+    private void getTree2List2(List<ActivitiStepsResult> list) {
+        for (ActivitiStepsResult activitiStepsResult : list) {
+            if (activitiStepsResult.getStepType().equals("ship")) {
+                ActivitiStepsResult detail = stepsService.detail(activitiStepsResult.getFormId());
+                List<ActivitiStepsResult> treeListResults = new ArrayList<>();
+                getTree2List(detail, treeListResults);
+                activitiStepsResult.setChildRouteSteps(treeListResults);
+
+                getTree2List2(treeListResults);
+
+            }
+        }
     }
 
 

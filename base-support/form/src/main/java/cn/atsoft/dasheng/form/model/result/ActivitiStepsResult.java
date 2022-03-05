@@ -48,6 +48,7 @@ public class ActivitiStepsResult implements Serializable {
     private Object processRoute;
 
     private ActivitiSetpSetResult setpSet;
+    private Object childRouteSteps;
 
 
     private ActivitiSetpSetResult setpSetResult;

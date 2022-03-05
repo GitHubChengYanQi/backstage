@@ -121,7 +121,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
 
-//        String url = param.getUrl().replace("codeId", aLong.toString());
+        String url = param.getUrl().replace("codeId", aLong.toString());
 //        outstockSendTemplate.setSourceId(entity.getOutstockOrderId());
 //        outstockSendTemplate.setUserId(param.getUserId());
 //        outstockSendTemplate.setUrl(url);
@@ -129,14 +129,14 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         User createUser = userService.getById(entity.getCreateUser());
         //新微信推送
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setUrl(url);
         wxCpTemplate.setTitle("新的出库提醒");
-        wxCpTemplate.setDescription(createUser.getName() + "创建了新的入库任务" + entity.getCoding());
+        wxCpTemplate.setDescription(createUser.getName() + "创建了新的出库库任务" + entity.getCoding());
         wxCpTemplate.setUserIds(new ArrayList<Long>() {{
             add(entity.getUserId());
         }});
-        wxCpSendTemplate.setSource("出库");
-        wxCpSendTemplate.setSourceId(entity.getOutstockOrderId());
+        wxCpSendTemplate.setSource("outstockOrder");
+        wxCpSendTemplate.setSourceId(aLong);
         wxCpTemplate.setType(0);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
