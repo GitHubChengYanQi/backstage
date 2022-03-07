@@ -73,6 +73,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
      PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param);
 
+    StorehousePositionsResult getDetail(Long id, List<StorehousePositions> positions);
+
     /**
      * 查询单条数据，Specification模式
      *

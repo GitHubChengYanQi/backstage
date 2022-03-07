@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.*;
@@ -67,7 +66,6 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private ActivitiProcessLogService processLogService;
     @Autowired
     private UserService userService;
-
 
 
     @Override
@@ -117,8 +115,21 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
             luYou(processRouteId, param.getChildNode(), entity.getSetpsId(), entity.getFormId());
         }
+        //-------------------修改路由状态----------------------
+        List<ProcessRoute> routes = processRouteService.list();
+        for (ProcessRoute route : routes) {
+            if (route.getProcessRouteId().equals(processRouteId)) {
+                List<Long> longs = updateFather(processRouteId, routes);
+                String jsonString = JSON.toJSONString(longs);
+                route.setChildrens(jsonString);
+                processRouteService.updateById(route);
+            }
+        }
+
+
         return processRouteId;
     }
+
 
 
     public Long addProcessRoute(ProcessRouteParam param) {
@@ -279,50 +290,38 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param presentId
      */
     private void updateSuperior(Long supperId, Long presentId) {
-        if (ToolUtil.isEmpty(presentId)) {
-            throw new ServiceException(500, "子路线id为空");
-        }
-        ProcessRoute father = processRouteService.getById(supperId);
-        ProcessRoute child = processRouteService.getById(presentId);
-        List<Long> fatherList = JSON.parseArray(father.getChildrens(), Long.class);
-        if (ToolUtil.isEmpty(fatherList)) {
-            fatherList = new ArrayList<>();
-        }
-        List<Long> childList = JSON.parseArray(child.getChildrens(), Long.class);
-        if (ToolUtil.isEmpty(childList)) {
-            childList = new ArrayList<>();
-        }
-        for (Long aLong : childList) {
-            if (aLong.equals(supperId)) {
-                throw new ServiceException(500, "请检查路线，请勿循环添加");
+        ProcessRoute processRoute = processRouteService.getById(presentId);
+        List<Long> list = JSON.parseArray(processRoute.getChildrens(), Long.class);
+        if (ToolUtil.isNotEmpty(list)) {
+            for (Long aLong : list) {
+                if (aLong.equals(supperId)) {
+                    throw new ServiceException(500, "死循环添加，检查路线");
+                }
             }
         }
-        fatherList.add(presentId);
-        fatherList.addAll(childList);
-        String childrens = JSON.toJSONString(fatherList);
-        father.setChildrens(childrens);
-        processRouteService.updateById(father);
-
-        updateFather(father, fatherList);
+        processRoute.setPid(supperId);
+        processRouteService.updateById(processRoute);
     }
 
     /**
      * 更新所有上级
-     *
-     * @param father
-     * @param childrensList
      */
-    private void updateFather(ProcessRoute father, List<Long> childrensList) {
+    private List<Long> updateFather(Long supperId, List<ProcessRoute> routes) {
+        List<Long> ids = new ArrayList<>();
+        for (ProcessRoute route : routes) {
+            if (ToolUtil.isNotEmpty(route.getPid()) && route.getPid().equals(supperId)) {
+                List<Long> list = updateFather(route.getProcessRouteId(), routes);
 
-        List<ProcessRoute> fathers = processRouteService.query().like("childrens", father.getProcessRouteId()).list();
-        for (ProcessRoute children : fathers) {
-            List<Long> list = JSON.parseArray(children.getChildrens(), Long.class);
-            list.addAll(childrensList);
-            String string = JSON.toJSONString(list);
-            children.setChildrens(string);
-            processRouteService.updateById(children);
-            updateFather(children, list);
+                if (ToolUtil.isNotEmpty(list)) {
+                    String jsonString = JSON.toJSONString(list);
+                    route.setChildrens(jsonString);
+                    processRouteService.updateById(route);
+                }
+                ids.add(route.getProcessRouteId());
+                ids.addAll(list);
+            }
         }
+        return ids;
     }
 
     private Serializable getKey(ActivitiStepsParam param) {

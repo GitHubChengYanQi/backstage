@@ -54,6 +54,17 @@ public class OutstockOrderController extends BaseController {
     }
 
     /**
+     * 出库单一键出库
+     *
+     * @param param
+     */
+    @RequestMapping(value = "/AkeyOutbound", method = RequestMethod.POST)
+    public ResponseData AkeyOutbound(@RequestBody OutstockOrderParam param) {
+        this.outstockOrderService.AkeyOutbound(param);
+        return ResponseData.success();
+    }
+
+    /**
      * 自由出库
      *
      * @author cheng
@@ -129,7 +140,6 @@ public class OutstockOrderController extends BaseController {
             return this.outstockOrderService.findPageBySpec(outstockOrderParam, dataScope);
         }
     }
-
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)

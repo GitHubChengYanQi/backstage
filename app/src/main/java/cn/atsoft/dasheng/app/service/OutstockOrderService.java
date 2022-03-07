@@ -29,6 +29,8 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      */
     OutstockOrder add(OutstockOrderParam param);
 
+    void AkeyOutbound(OutstockOrderParam param);
+
     /**
      * 删除
      *

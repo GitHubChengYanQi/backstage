@@ -26,6 +26,11 @@ import java.util.List;
 public class OutstockListingParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private Long customerId;
+
+    private Long positionsId;
+
     private Long deliveryId;
     /**
      * skuId

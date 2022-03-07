@@ -351,7 +351,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             templete = templete.replace("${bind}", stringBuffer.toString());
         }
         if (templete.contains("${name}")) {
-            templete = templete.replace("${name}",param.getName());
+            templete = templete.replace("${name}", param.getName());
         }
         if (templete.contains("${parent}")) {
             templete = templete.replace("${parent}", this.getParent(param.getStorehousePositionsId()));
@@ -362,15 +362,16 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         param.setPrintTemplateResult(printTemplateResult);
     }
 
-    private String getParent(Long id){
+    private String getParent(Long id) {
         StorehousePositions positions = this.getById(id);
         Storehouse storehouse = storehouseService.getById(positions.getStorehouseId());
         List<StorehousePositions> storehousePositionsList = this.query().eq("storehouse_id", positions.getStorehouseId()).eq("display", 1).list();
         StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
-        stringBuffer= new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
+        stringBuffer = new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
         return stringBuffer.toString();
     }
-    private StringBuffer formatParentStringBuffer(StorehousePositions positions,List<StorehousePositions> storehousePositionsList , StringBuffer stringBuffer){
+
+    private StringBuffer formatParentStringBuffer(StorehousePositions positions, List<StorehousePositions> storehousePositionsList, StringBuffer stringBuffer) {
         if (!positions.getPid().equals(0L)) {
             for (StorehousePositions storehousePositions : storehousePositionsList) {
                 if (positions.getPid().equals(storehousePositions.getStorehousePositionsId())) {
@@ -391,9 +392,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param,DataScope dataScope) {
+    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param, DataScope dataScope) {
 
-        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param,dataScope);
+        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param, dataScope);
         List<Long> positionIds = new ArrayList<>();
         for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
             positionIds.add(storehousePositions.getStorehousePositionsId());
@@ -424,6 +425,36 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         Page<StorehousePositionsResult> pageContext = getPageContext();
         IPage<StorehousePositionsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 详情 带结构
+     *
+     * @param id
+     * @param positions
+     * @return
+     */
+    @Override
+    public StorehousePositionsResult getDetail(Long id, List<StorehousePositions> positions) {
+        List<StorehousePositionsResult> results = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        for (StorehousePositionsResult result : results) {
+            if (result.getStorehousePositionsId().equals(id)) {
+                getSupper(result, results);
+                return result;
+            }
+        }
+        return new StorehousePositionsResult();
+    }
+
+    private StorehousePositionsResult getSupper(StorehousePositionsResult result, List<StorehousePositionsResult> data) {
+
+        for (StorehousePositionsResult datum : data) {
+            if (result.getPid().equals(datum.getStorehousePositionsId())) {
+                result.setSupper(datum);
+                getSupper(datum, data);
+            }
+        }
+        return result;
     }
 
     @Override

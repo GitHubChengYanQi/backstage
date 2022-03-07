@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
@@ -35,7 +36,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -66,8 +69,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private InkindService inkindService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
-    @Autowired
-    private OrCodeBindService bindService;
+
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -142,6 +144,80 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         wxCpSendTemplate.sendTemplate();
         return entity;
     }
+
+    /**
+     * 出库单一键出库
+     *
+     * @param param
+     */
+    public void AkeyOutbound(OutstockOrderParam param) {
+        outBound(param.getListingParams()); //出库
+    }
+
+
+    private void outBound(List<OutstockListingParam> listings) {
+
+        List<StockDetails> details = stockDetailsService.query().orderByDesc("create_time").list();
+        Map<Long, List<StockDetails>> listMap = sameSkuWith(details);
+        for (OutstockListingParam listing : listings) {
+            List<StockDetails> stockDetails = listMap.get(listing.getSkuId() + listing.getBrandId() + listing.getPositionsId());
+            long number = 0L;
+            if (ToolUtil.isEmpty(stockDetails)) {
+                throw new ServiceException(500, "库存中没有" + listing.getSkuId() + "此物品");
+            }
+            for (StockDetails stockDetail : stockDetails) {
+                number = number + stockDetail.getNumber();
+            }
+            if (listing.getNumber() > number) {
+                throw new ServiceException(500, listing.getSkuId() + "此物品,数量不足");
+            }
+            for (StockDetails stockDetail : stockDetails) {
+                long inkind;
+                if (stockDetail.getNumber() - listing.getNumber() > 0) {
+                    number = stockDetail.getNumber() - listing.getNumber();
+                    stockDetail.setNumber(number);
+                    stockDetailsService.updateById(stockDetail);
+                    inkind = stockDetail.getInkindId();
+                    listing.setNumber(stockDetail.getNumber() - listing.getNumber());
+                    break;
+                } else {
+                    number = listing.getNumber() - stockDetail.getNumber();
+                    listing.setNumber(number);
+                    stockDetailsService.removeById(stockDetail);
+                    inkind = stockDetail.getInkindId();
+                }
+                Inkind ink = inkindService.getById(inkind);   //出库之后更新实物的数量
+                ink.setNumber(ink.getNumber() - number);
+                inkindService.updateById(ink);
+            }
+        }
+    }
+
+    /**
+     * 库存相同物料合并
+     *
+     * @param details
+     * @return
+     */
+    private Map<Long, List<StockDetails>> sameSkuWith(List<StockDetails> details) {
+        Map<Long, List<StockDetails>> listMap = new HashMap<>();
+
+        for (StockDetails detail : details) {
+            List<StockDetails> stockDetails = new ArrayList<>();
+            stockDetails.add(detail);
+            if (ToolUtil.isNotEmpty(detail.getSkuId()) && ToolUtil.isNotEmpty(detail.getBrandId()) && ToolUtil.isNotEmpty(detail.getStorehousePositionsId())) {
+                List<StockDetails> detailsList = listMap.get(detail.getSkuId() + detail.getBrandId());
+                if (ToolUtil.isEmpty(detailsList)) {
+                    listMap.put(detail.getSkuId() + detail.getBrandId() + detail.getStorehousePositionsId(), stockDetails);
+                } else {
+                    detailsList.addAll(stockDetails);
+                    listMap.put(detail.getSkuId() + detail.getBrandId() + detail.getStorehousePositionsId(), detailsList);
+                }
+            }
+        }
+        return listMap;
+    }
+
 
     @Override
     public void delete(OutstockOrderParam param) {

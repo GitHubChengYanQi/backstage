@@ -22,11 +22,12 @@
         <result column="delivery_id" property="deliveryId"/>
         <result column="sku_id" property="skuId"/>
         <result column="delivery" property="delivery"/>
+        <result column="customer_id" property="customerId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">delivery_id
-    AS "deliveryId",sku_id AS "skuId",delivery AS "delivery",
+    AS "deliveryId",sku_id AS "skuId",delivery AS "delivery", customer_id AS "customerId",
         outstock_listing_id
         AS "outstockListingId", time AS "time", number AS "number", price AS "price", brand_id AS "brandId", deptId AS "deptId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", item_id AS "itemId", state AS "state", outstock_order_id AS "outstockOrderId", outstock_apply_id AS "outstockApplyId"
     </sql>

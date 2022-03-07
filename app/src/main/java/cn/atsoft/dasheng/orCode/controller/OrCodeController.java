@@ -389,10 +389,8 @@ public class OrCodeController extends BaseController {
                         outstockResult.setUserResult(userResult);
                     }
 
-                    OutstockListingParam outstockListingParams = new OutstockListingParam();
-                    outstockListingParams.setOutstockOrderId(outstockOrder.getOutstockOrderId());
-                    PageInfo<OutstockListingResult> listingResultPageInfo = outstockListingService.findPageBySpec(outstockListingParams);
-                    outstockResult.setOutstockListing(listingResultPageInfo.getData());
+                    List<OutstockListingResult> details = outstockListingService.getDetailsByOrderId(outstockOrder.getOutstockOrderId());
+                    outstockResult.setOutstockListing(details);
 
                     OutstockParam outstockParam = new OutstockParam();
                     outstockParam.setOutstockOrderId(outstockOrder.getOutstockOrderId());

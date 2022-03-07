@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -26,6 +27,8 @@ import java.util.List;
 public class OutstockOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private List<OutstockListingParam> listingParams;
 
     /**
      * 主题
