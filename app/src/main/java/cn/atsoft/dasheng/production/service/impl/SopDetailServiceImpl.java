@@ -77,9 +77,11 @@ public class SopDetailServiceImpl extends ServiceImpl<SopDetailMapper, SopDetail
         List<SopDetailResult> details = BeanUtil.copyToList(sopDetails, SopDetailResult.class, new CopyOptions());
 
         for (SopDetailResult detail : details) {
-            Long img = Long.valueOf(detail.getImg());
-            String mediaUrl = mediaService.getMediaUrl(img, 0L);
-            detail.setMediaUrl(mediaUrl);
+            if (ToolUtil.isNotEmpty(detail.getImg())) {
+                Long img = Long.valueOf(detail.getImg());
+                String mediaUrl = mediaService.getMediaUrl(img, 0L);
+                detail.setMediaUrl(mediaUrl);
+            }
         }
         return details;
     }

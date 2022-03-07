@@ -131,7 +131,6 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     }
 
 
-
     public Long addProcessRoute(ProcessRouteParam param) {
         param.setProcessRouteId(null);
         Integer count = processRouteService.query().eq("sku_id", param.getSkuId()).count();
@@ -290,6 +289,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param presentId
      */
     private void updateSuperior(Long supperId, Long presentId) {
+        if (supperId.equals(presentId)) {
+            throw new ServiceException(500, "请仔细检查路线");
+        }
         ProcessRoute processRoute = processRouteService.getById(presentId);
         List<Long> list = JSON.parseArray(processRoute.getChildrens(), Long.class);
         if (ToolUtil.isNotEmpty(list)) {
