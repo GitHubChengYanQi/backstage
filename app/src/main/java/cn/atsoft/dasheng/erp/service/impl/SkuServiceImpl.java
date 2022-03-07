@@ -259,7 +259,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 String json = JSON.toJSONString(list);
                 entity.setSkuValue(json);
 //                entity.setSkuValue(spuId + "," + json);
-                String md5 = SecureUtil.md5(entity.getSpuId() + entity.getSkuValue());
+                String md5 = SecureUtil.md5(entity.getSkuValue());
                 entity.setSkuValueMd5(md5);
                 /**
                  * //TODO 原 SKU防重复判断
@@ -438,7 +438,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         entity.setSpuId(spuId);
         entity.setSkuValue(json);
 
-        String md5 = SecureUtil.md5(categoryId + spuId + entity.getSkuValue());
+        String md5 = SecureUtil.md5(entity.getSkuValue());
 
         entity.setSkuValueMd5(md5);
 //        if (ToolUtil.isNotEmpty(codingRules)) {
@@ -633,7 +633,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
-        String md5 = SecureUtil.md5(categoryId + orSaveSpu.getSpuId() + newEntity.getSkuValue());
+        String md5 = SecureUtil.md5(newEntity.getSkuValue());
 
         newEntity.setSkuValueMd5(md5);
         this.updateById(newEntity);
