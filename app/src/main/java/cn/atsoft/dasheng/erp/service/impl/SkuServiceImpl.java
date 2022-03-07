@@ -914,6 +914,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SkuResult skuResult = new SkuResult();
         ToolUtil.copyProperties(sku, skuResult);
 
+        if (ToolUtil.isEmpty(sku)) {
+            return new SkuResult();
+        }
+
         SpuResult spuResult = this.backSpu(sku.getSkuId());
         skuResult.setSpuResult(spuResult);
 
