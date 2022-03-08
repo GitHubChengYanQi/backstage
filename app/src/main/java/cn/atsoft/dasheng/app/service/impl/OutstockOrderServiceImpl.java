@@ -178,7 +178,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private void AnyBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number;
 
-        for (int i = 0; i < details.size(); i++) {
+        for (int i = 0; i < details.size(); ) {
             if (listingParam.getSkuId().equals(details.get(i).getSkuId()) && details.get(i).getStorehousePositionsId().equals(listingParam.getPositionsId())) {
                 number = details.get(i).getNumber() - listingParam.getNumber();
                 if (number > 0) {
@@ -186,9 +186,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                     break;
                 } else {
                     stockDetailsService.removeById(details.get(i));
-                    details.remove(details.get(i));
                     listingParam.setNumber(listingParam.getNumber() - details.get(i).getNumber());
+                    details.remove(details.get(i));
                 }
+            } else {
+                i++;
             }
         }
 
@@ -196,7 +198,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number;
-        for (int i = 0; i < details.size(); i++) {
+        for (int i = 0; i < details.size(); ) {
             if (details.get(i).getSkuId().equals(listingParam.getSkuId()) && details.get(i).getBrandId().equals(listingParam.getBrandId())
                     && details.get(i).getStorehousePositionsId().equals(listingParam.getPositionsId())) {
                 number = details.get(i).getNumber() - listingParam.getNumber();
@@ -205,9 +207,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                     break;
                 } else {
                     stockDetailsService.removeById(details.get(i));
-                    details.remove(i);
                     listingParam.setNumber(listingParam.getNumber() - details.get(i).getNumber());
+                    details.remove(i);
                 }
+            } else {
+                i++;
             }
         }
     }
