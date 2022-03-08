@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.pojo.Lable;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
@@ -73,5 +74,5 @@ public interface TemplateService extends IService<Template> {
      */
     void batchDelete(List<Long> ids);
 
-    List<String> getLabel(Long id);
+    Lable getLabel(Long id);
 }

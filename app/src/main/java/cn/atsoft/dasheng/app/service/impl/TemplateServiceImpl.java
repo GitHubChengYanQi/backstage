@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.pojo.Lable;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
@@ -13,6 +14,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -126,19 +128,63 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     }
 
     @Override
-    public List<String> getLabel(Long id) {
+    public Lable getLabel(Long id) {
         Template template = this.getById(id);
+        if (ToolUtil.isEmpty(template)) {
+            throw new ServiceException(500, "模板不存在");
+        }
         String content = template.getContent();
-
         List<String> resultList = new ArrayList<>();
-        Pattern p = Pattern.compile("\\<input (.*?)\\>");//匹配<p>开头，</p>结尾的文档
+
+        String regStr = "\\<tr.*data-group=\"物料\"\\>([\\s\\S]*)<\\/tr>";
+        String input = "\\<input (.*?)\\>";
+        String td = "\\<td(.*?)\\/td\\>";
+
+        Pattern p = Pattern.compile(regStr);
         Matcher m = p.matcher(content);//开始编译
-        while (m.find()) {
-            String group = m.group(0);
+
+        Pattern compile = Pattern.compile(input);
+        Matcher matcher = compile.matcher(content);
+
+
+        Lable lable = new Lable();
+
+        while (matcher.find()) {    //input
+            String group = matcher.group(0);
             if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
                 resultList.add(group);
             }
         }
-        return resultList;
+        lable.setStrings(resultList);
+        List<String> inputs = new ArrayList<>();
+        while (m.find()) {     //tr
+            String group = m.group(0);
+            Pattern tdPattern = Pattern.compile(td);
+            Matcher tdMatcher = tdPattern.matcher(group);
+            while (tdMatcher.find()) {
+                String s = tdMatcher.group(0);
+                if (s.contains("${{sku}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{brand}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{skuNumber}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{price}}")) {
+                    inputs.add(s);
+                }
+                Matcher tdMaccher = compile.matcher(s);
+                while (tdMaccher.find()) {
+                    String group1 = tdMaccher.group(0);
+                    if (s.contains(group1)) {
+                        inputs.add(s);
+                    }
+                }
+            }
+        }
+        lable.setInputs(inputs);
+        return lable;
     }
 }
