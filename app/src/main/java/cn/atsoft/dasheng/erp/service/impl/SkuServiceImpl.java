@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.Unit;
@@ -8,11 +9,9 @@ import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.params.Values;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
-import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
-import cn.atsoft.dasheng.app.service.PartsService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -95,6 +94,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Autowired
     private ProcessRouteService processRouteService;
+
+
+    @Autowired
+    private BrandService brandService;
 
     @Transactional
     @Override
@@ -936,6 +939,22 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (ToolUtil.isEmpty(sku)) {
             return new SkuResult();
         }
+        List<SkuBrandBind> skuBrandBindList = skuBrandBindService.query().eq("sku_id", id).eq("display", 1).list();
+        List<Long> brandIds = new ArrayList<>();
+        for (SkuBrandBind skuBrandBind : skuBrandBindList) {
+            brandIds.add(skuBrandBind.getBrandId());
+        }
+        List<Brand> brands =brandIds.size() == 0 ? new ArrayList<>() : brandService.query().in("brand_id", brandIds).list();
+        List<BrandResult> brandResults = new ArrayList<>();
+        for (Brand brand : brands) {
+            BrandResult brandResult = new BrandResult() ;
+            ToolUtil.copyProperties(brand,brandResult);
+            brandResults.add(brandResult);
+        }
+
+        skuResult.setBrandIds(brandIds);
+        skuResult.setBrandResults(brandResults);
+
 
         SpuResult spuResult = this.backSpu(sku.getSkuId());
         skuResult.setSpuResult(spuResult);

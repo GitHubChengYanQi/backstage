@@ -62,6 +62,9 @@ public class SkuResult implements Serializable {
     private User user;
     private Boolean inBom;
     private ProcessRouteResult processRouteResult;
+    private List<Long> brandIds;
+    private List<BrandResult> brandResults;
+
 
     /**
      * 之间方案id
