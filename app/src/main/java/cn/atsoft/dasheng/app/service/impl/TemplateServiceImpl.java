@@ -143,20 +143,10 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         Pattern p = Pattern.compile(regStr);
         Matcher m = p.matcher(content);//开始编译
 
-        Pattern compile = Pattern.compile(input);
-        Matcher matcher = compile.matcher(content);
-
 
         Lable lable = new Lable();
-
-        while (matcher.find()) {    //input
-            String group = matcher.group(0);
-            if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
-                resultList.add(group);
-            }
-        }
-        lable.setStrings(resultList);
         List<String> inputs = new ArrayList<>();
+
         while (m.find()) {     //tr
             String group = m.group(0);
             Pattern tdPattern = Pattern.compile(td);
@@ -175,15 +165,29 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
                 if (s.contains("${{price}}")) {
                     inputs.add(s);
                 }
+                Pattern compile = Pattern.compile(input);
                 Matcher tdMaccher = compile.matcher(s);
                 while (tdMaccher.find()) {
                     String group1 = tdMaccher.group(0);
                     if (s.contains(group1)) {
                         inputs.add(s);
+                        content = content.replace(s, "");
                     }
                 }
             }
         }
+
+        Pattern compile = Pattern.compile(input);
+        Matcher matcher = compile.matcher(content);
+        while (matcher.find()) {    //input
+            String group = matcher.group(0);
+            if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
+                resultList.add(group);
+            }
+        }
+        lable.setStrings(resultList);
+
+
         lable.setInputs(inputs);
         return lable;
     }
