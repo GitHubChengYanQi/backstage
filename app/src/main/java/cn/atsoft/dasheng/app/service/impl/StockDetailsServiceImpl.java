@@ -17,8 +17,11 @@ import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -59,6 +62,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         return entity.getStockItemId();
     }
 
+
     @Override
     public void delete(StockDetailsParam param) {
         this.removeById(getKey(param));
@@ -79,8 +83,27 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public List<StockDetailsResult> findListBySpec(StockDetailsParam param) {
-        List<StockDetailsResult> stockDetailsResults = this.baseMapper.customList(param);
-        return stockDetailsResults;
+        return this.baseMapper.customList(param);
+    }
+
+    @Override
+    public List<StockDetailsResult> getDetailsBySkuId(Long id) {
+        if (ToolUtil.isEmpty(id)) {
+            throw new ServiceException(500, "缺少id");
+        }
+        List<StockDetails> details = this.query().eq("sku_id", id).list();
+        if (ToolUtil.isEmpty(details)) {
+            return null;
+        }
+        List<StockDetailsResult> detailsResults = BeanUtil.copyToList(details, StockDetailsResult.class, new CopyOptions());
+        format(detailsResults);
+        List<StorehousePositions> positions = positionsService.list();
+        for (StockDetailsResult detailsResult : detailsResults) {
+            StorehousePositionsResult serviceDetail = positionsService.getDetail(detailsResult.getStorehousePositionsId(), positions);
+            detailsResult.setPositionsResult(serviceDetail);
+            break;
+        }
+        return detailsResults;
     }
 
     @Override

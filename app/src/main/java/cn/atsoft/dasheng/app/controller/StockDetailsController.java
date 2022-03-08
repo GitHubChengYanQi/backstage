@@ -33,51 +33,12 @@ public class StockDetailsController extends BaseController {
     @Autowired
     private StockDetailsService stockDetailsService;
 
-    /**
-     * 新增接口
-     *
-     * @author
-     * @Date 2021-07-15
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody StockDetailsParam stockDetailsParam) {
-        Long add = this.stockDetailsService.add(stockDetailsParam);
-        return ResponseData.success(add);
+    @RequestMapping(value = "/getDetailsBySkuId", method = RequestMethod.POST)
+    public ResponseData getDetailsBySkuId(@RequestBody StockDetailsParam stockDetailsParam) {
+        List<StockDetailsResult> stockDetails = this.stockDetailsService.getStockDetails(stockDetailsParam.getSkuId());
+        return ResponseData.success(stockDetails);
     }
 
-    /**
-     * 编辑接口
-     *
-     * @author
-     * @Date 2021-07-15
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody StockDetailsParam stockDetailsParam) {
-
-        this.stockDetailsService.update(stockDetailsParam);
-        return ResponseData.success();
-    }
-
-    @RequestMapping(value = "/groupList", method = RequestMethod.POST)
-    public ResponseData groupList(@RequestBody(required = false) StockDetailsParam stockDetailsParam) {
-        List<StockDetailsResult> listBySpec = this.stockDetailsService.findListBySpec(stockDetailsParam);
-        return ResponseData.success(listBySpec);
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author
-     * @Date 2021-07-15
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody StockDetailsParam stockDetailsParam) {
-        this.stockDetailsService.delete(stockDetailsParam);
-        return ResponseData.success();
-    }
 
     /**
      * 查看详情接口
