@@ -21,7 +21,7 @@ import java.util.List;
 public class BrandParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<Long> skuIds;
 
     private List<Long> ids;
     /**

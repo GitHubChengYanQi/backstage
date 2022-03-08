@@ -13,6 +13,10 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.SkuBrandBind;
+import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.erp.model.params.SkuBrandBindParam;
+import cn.atsoft.dasheng.erp.service.SkuBrandBindService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -42,6 +46,9 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     @Autowired
     private PartsService partsService;
 
+    @Autowired
+    private SkuBrandBindService skuBrandBindService;
+
 
     @Override
     public Long add(BrandParam param) {
@@ -50,6 +57,14 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
             throw new ServiceException(500, "名字以重复");
         }
         Brand entity = getEntity(param);
+
+
+        if (ToolUtil.isNotEmpty(param.getSkuIds())){
+            skuBrandBindService.addBatchByBrand(new SkuBrandBindParam(){{
+                setBrandId(param.getBrandId());
+                setSkuIds(param.getSkuIds());
+            }});
+        }
         this.save(entity);
         return entity.getBrandId();
     }
@@ -70,6 +85,17 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         Integer brandName = this.query().eq("brand_name", param.getBrandName()).count();
         if (brandName > 1) {
             throw new ServiceException(500, "名字以重复");
+        }
+        if (ToolUtil.isNotEmpty(param.getSkuIds())){
+            List<SkuBrandBind> brandBinds = skuBrandBindService.query().eq("brand_id", param.getBrandId()).list();
+            for (SkuBrandBind brandBind : brandBinds) {
+                brandBind.setDisplay(0);
+            }
+            skuBrandBindService.updateBatchById(brandBinds);
+            skuBrandBindService.addBatchByBrand(new SkuBrandBindParam(){{
+                setBrandId(param.getBrandId());
+                setSkuIds(param.getSkuIds());
+            }});
         }
         Brand oldEntity = getOldEntity(param);
         Brand newEntity = getEntity(param);

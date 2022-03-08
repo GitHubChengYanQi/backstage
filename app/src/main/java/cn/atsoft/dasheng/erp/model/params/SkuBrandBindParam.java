@@ -24,6 +24,7 @@ public class SkuBrandBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<Long> brandIds;
+    private List<Long> skuIds;
 
     /**
      * 产品品牌绑定表

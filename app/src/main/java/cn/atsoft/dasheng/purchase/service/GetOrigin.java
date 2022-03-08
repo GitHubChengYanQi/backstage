@@ -7,7 +7,9 @@ import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
+import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
@@ -42,6 +44,8 @@ public class GetOrigin {
     private InstockOrderService instockOrderService;
     @Autowired
     private OutstockOrderService outstockOrderService;
+    @Autowired
+    private ProductionPlanService productionPlanService;
 
     public ThemeAndOrigin getOrigin(ThemeAndOrigin themeAndOrigin) {
 //        ThemeAndOrigin themeAndOrigin = JSON.parseObject(Origin, ThemeAndOrigin.class); //将字段中的JSON解析出对象
@@ -237,6 +241,7 @@ public class GetOrigin {
                 break;
             case "order":
                 Order order = orderService.getById(sourceId);
+                json  = order.getOrigin();
                 break;
             case "instockOrder":
                 InstockOrder instockOrder = instockOrderService.getById(sourceId);
@@ -253,13 +258,16 @@ public class GetOrigin {
             case "workOrder":
 
                 break;
+            case "productionPlan":
+                ProductionPlan productionPlan = productionPlanService.getById(sourceId);
+                json = productionPlan.getOrigin();
+
+                break;
             default:
         }
         if (ToolUtil.isNotEmpty(json) && json != ""){
             parent =  JSON.parseObject(json, ThemeAndOrigin.class);
         }
-
-
         List<ThemeAndOrigin> parents = new ArrayList<>();
         parents.add(parent);
         themeAndOrigin.setParent(parents);

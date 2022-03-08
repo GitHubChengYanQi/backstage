@@ -28,6 +28,8 @@ import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -73,6 +75,9 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
     @Autowired
     private StepProcessService stepProcessService;
+
+    @Autowired
+    private GetOrigin origin;
 
 
     @Override
@@ -132,7 +137,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     @Override
     public void microServiceAdd(Object param) {
         List<ProductionPlanDetail> productionPlanDetails = JSON.parseArray(param.toString(), ProductionPlanDetail.class);
-        List<Long> skuIds = new ArrayList<>();  //先取出物料   去bom中查找
+//        List<Long> skuIds = new ArrayList<>();  //先取出物料   去bom中查找
         for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
 //            Parts designParts = partsService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("type", 1).eq("display", 1).eq("status", 99).one();
 //            if (ToolUtil.isEmpty(designParts)) {
@@ -149,36 +154,50 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             ActivitiStepsResult activitiStepsResult = stepsService.detail(processRouteByparts.getProcessRouteId());
 
 
-            List<ActivitiSetpSetDetail> setDetailSByRouId = stepProcessService.getSetDetailSByRouId(processRouteByparts.getProcessRouteId());
 
 
             List<ActivitiStepsResult> treeListResults = new ArrayList<>();
             getTree2List(activitiStepsResult, treeListResults);
             getTree2List2(treeListResults);
             List<ProductionWorkOrder> workOrders = new ArrayList<>();
-            this.loopCreateWorkOrder(treeListResults, productionPlanDetail.getPlanNumber(), workOrders);
+            this.loopCreateWorkOrder(productionPlanDetail,treeListResults, productionPlanDetail.getPlanNumber(), workOrders);
             this.saveBatch(workOrders);
+            for (ProductionWorkOrder workOrder : workOrders) {
+                workOrder.setSource("productionPlan");
+                workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
+                ThemeAndOrigin themeAndOrigin = origin.originFormat(workOrder.getSource(), workOrder.getSourceId());
+                themeAndOrigin.setSourceId(workOrder.getWorkOrderId());
+                themeAndOrigin.setSource("workOrder");
+                workOrder.setOrigin(JSON.toJSONString(themeAndOrigin));
+            }
 
 
         }
 
 
     }
-
-
-    private void loopCreateWorkOrder(List<ActivitiStepsResult> stepsResultList, int num, List<ProductionWorkOrder> workOrders) {
+    //递归添加工单
+    private void loopCreateWorkOrder(ProductionPlanDetail productionPlanDetail,List<ActivitiStepsResult> stepsResultList, int num, List<ProductionWorkOrder> workOrders) {
         for (ActivitiStepsResult activitiStepsResult : stepsResultList) {
             ProductionWorkOrder workOrder = new ProductionWorkOrder();
+            workOrder.setStepsId(activitiStepsResult.getSetpsId());
+            workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
+//            workOrder
+            workOrder.setSource("productionPlan");
 //            workOrder.set
             switch (activitiStepsResult.getStepType()) {
                 case "ship":
+                    workOrder.setCount(num);
+                    if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails())){
+                        workOrder.setShipSetpId(activitiStepsResult.getSetpSet().getShipSetpId());
+                    }
+
                     List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
-//                    loopCreateWorkOrder(list,num*activitiStepsResult.getSetpSetDetailResults().get(0).getNum(),workOrders);//如果是正常情况下大概这么取
                     if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) && activitiStepsResult.getSetpSet().getSetpSetDetails().size() == 1 && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum())){
-                        loopCreateWorkOrder(list, activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum() * num, workOrders);
+                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum() * num, workOrders);
 
                     }else {
-                        loopCreateWorkOrder(list, num * 1, workOrders);
+                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders);
                     }
                     break;
                 case "shipStart":
@@ -186,7 +205,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                     if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) ) {
                         for (ActivitiSetpSetDetailResult setpSetDetailResult : activitiStepsResult.getSetpSet().getSetpSetDetails()) {
                             workOrder.setSkuId(setpSetDetailResult.getSkuId());
-                            workOrder.setCount(num);
+                            workOrder.setCount(num);workOrder.setShipSetpId(activitiStepsResult.getSetpSet().getShipSetpId());
                             if (setpSetDetailResult.getType().equals("in")) {
                                 workOrder.setInSkuNumber(num * setpSetDetailResult.getNum());
                                 workOrder.setInSkuId(setpSetDetailResult.getSkuId());
@@ -204,27 +223,27 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     }
 
 
-    private void createWorkOrder(ProductionPlanDetail productionPlanDetail, List<ActivitiSetpSetResult> activitiSetpSetResults) {
-        List<ProductionWorkOrder> workOrders = new ArrayList<>();
-        for (ActivitiSetpSetResult activitiSetpSetResult : activitiSetpSetResults) {
-            ProductionWorkOrder workOrder = new ProductionWorkOrder();
-            workOrder.setShipSetpId(activitiSetpSetResult.getShipSetpId());
-            workOrder.setSource("productionPlan");
-            workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
-            for (ActivitiSetpSetDetailResult setpSetDetail : activitiSetpSetResult.getSetpSetDetails()) {
-                if (ToolUtil.isNotEmpty(setpSetDetail.getType()) && setpSetDetail.getType().equals("1")) {
-                    workOrder.setInSkuId(setpSetDetail.getSkuId());
-                    workOrder.setInSkuNumber(setpSetDetail.getNum() * productionPlanDetail.getPlanNumber());
-                } else {
-                    workOrder.setOutSkuId(setpSetDetail.getSkuId());
-                    workOrder.setOutSkuNumber(setpSetDetail.getNum() * productionPlanDetail.getPlanNumber());
-                }
-
-            }
-            workOrders.add(workOrder);
-        }
-        this.saveBatch(workOrders);
-    }
+//    private void createWorkOrder(ProductionPlanDetail productionPlanDetail, List<ActivitiSetpSetResult> activitiSetpSetResults) {
+//        List<ProductionWorkOrder> workOrders = new ArrayList<>();
+//        for (ActivitiSetpSetResult activitiSetpSetResult : activitiSetpSetResults) {
+//            ProductionWorkOrder workOrder = new ProductionWorkOrder();
+//            workOrder.setShipSetpId(activitiSetpSetResult.getShipSetpId());
+//            workOrder.setSource("productionPlan");
+//            workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
+//            for (ActivitiSetpSetDetailResult setpSetDetail : activitiSetpSetResult.getSetpSetDetails()) {
+//                if (ToolUtil.isNotEmpty(setpSetDetail.getType()) && setpSetDetail.getType().equals("1")) {
+//                    workOrder.setInSkuId(setpSetDetail.getSkuId());
+//                    workOrder.setInSkuNumber(setpSetDetail.getNum() * productionPlanDetail.getPlanNumber());
+//                } else {
+//                    workOrder.setOutSkuId(setpSetDetail.getSkuId());
+//                    workOrder.setOutSkuNumber(setpSetDetail.getNum() * productionPlanDetail.getPlanNumber());
+//                }
+//
+//            }
+//            workOrders.add(workOrder);
+//        }
+//        this.saveBatch(workOrders);
+//    }
 
     private void getTree2List(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> results) {
         switch (activitiStepsResult.getStepType()) {
@@ -266,4 +285,17 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     }
 
 
+
+
+    @Override
+    public List<ProductionWorkOrderResult> resultsBySourceIds(String source,List<Long> sourceIds){
+        List<ProductionWorkOrder> productionWorkOrders = sourceIds.size() == 0 ? new ArrayList<>() : this.query().eq("source", source).in("source_id", sourceIds).list();
+        List<ProductionWorkOrderResult> results = new ArrayList<>();
+        for (ProductionWorkOrder productionWorkOrder : productionWorkOrders) {
+            ProductionWorkOrderResult result = new ProductionWorkOrderResult();
+            ToolUtil.copyProperties(productionWorkOrder,result);
+            results.add(result);
+        }
+        return results;
+    }
 }

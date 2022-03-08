@@ -203,5 +203,16 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
         }
 
     }
+    @Override
+    public List<ProductionPlanDetailResult> resultsByPlanIds(List<Long> planIds){
+        List<ProductionPlanDetail> details = planIds.size() == 0 ? new ArrayList<>() : this.query().in("production_plan_id", planIds).eq("display", 1).list();
+        List<ProductionPlanDetailResult> productionPlanDetailResults = new ArrayList<>();
+        for (ProductionPlanDetail detail : details) {
+            ProductionPlanDetailResult productionPlanDetailResult = new ProductionPlanDetailResult();
+            ToolUtil.copyProperties(detail,productionPlanDetailResult);
+            productionPlanDetailResults.add(productionPlanDetailResult);
+        }
+        return productionPlanDetailResults;
+    }
 
 }

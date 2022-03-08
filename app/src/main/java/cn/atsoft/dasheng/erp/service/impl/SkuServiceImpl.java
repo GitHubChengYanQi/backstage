@@ -636,7 +636,26 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         String md5 = SecureUtil.md5(newEntity.getSkuValue());
 
         newEntity.setSkuValueMd5(md5);
+
+
+        /**
+         * 更新品牌
+         */
+        if (ToolUtil.isNotEmpty(param.getBrandIds())) {
+            List<SkuBrandBind> binds = skuBrandBindService.query().eq("sku_id", newEntity.getSkuId()).list();
+            for (SkuBrandBind bind : binds) {
+                bind.setDisplay(0);
+            }
+            skuBrandBindService.updateBatchById(binds);
+
+            skuBrandBindService.addBatch(new SkuBrandBindParam() {{
+                setBrandIds(param.getBrandIds());
+                setSkuId(newEntity.getSkuId());
+            }});
+        }
+
         this.updateById(newEntity);
+
 
 
     }

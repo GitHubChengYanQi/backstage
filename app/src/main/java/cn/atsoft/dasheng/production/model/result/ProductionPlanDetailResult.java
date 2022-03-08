@@ -30,6 +30,8 @@ public class ProductionPlanDetailResult implements Serializable {
     private PartsResult partsResult;
 
     private SkuResult skuResult;
+
+    private ProcessRouteResult processRouteResult;
     /**
      * 生产计划子表id
      */
