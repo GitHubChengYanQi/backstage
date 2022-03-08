@@ -175,7 +175,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
+    @Override
     public void format(List<BrandResult> data) {
         List<Long> brandIs = new ArrayList<>();
         for (BrandResult datum : data) {

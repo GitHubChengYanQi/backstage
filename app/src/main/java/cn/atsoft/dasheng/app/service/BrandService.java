@@ -77,4 +77,6 @@ public interface BrandService extends IService<Brand> {
 
 
     BrandResult getBrandResult (Long id );
+
+    void format(List<BrandResult> data);
 }
