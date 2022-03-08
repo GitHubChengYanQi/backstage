@@ -151,71 +151,64 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
      * @param param
      */
     public void AkeyOutbound(OutstockOrderParam param) {
+        OutstockOrder outstockOrder = this.getById(param.getOutstockOrderId());
+
         outBound(param.getListingParams()); //出库
     }
 
 
     private void outBound(List<OutstockListingParam> listings) {
-
         List<StockDetails> details = stockDetailsService.query().orderByDesc("create_time").list();
-        Map<Long, List<StockDetails>> listMap = sameSkuWith(details);
         for (OutstockListingParam listing : listings) {
-            List<StockDetails> stockDetails = listMap.get(listing.getSkuId() + listing.getBrandId() + listing.getPositionsId());
-            long number = 0L;
-            if (ToolUtil.isEmpty(stockDetails)) {
-                throw new ServiceException(500, "库存中没有" + listing.getSkuId() + "此物品");
+            if (listing.getBrandId() == 0) {
+                AnyBrandOutBound(listing, details); //任意品牌
+            } else {
+                SkuBrandOutBound(listing, details);
             }
-            for (StockDetails stockDetail : stockDetails) {
-                number = number + stockDetail.getNumber();
-            }
-            if (listing.getNumber() > number) {
-                throw new ServiceException(500, listing.getSkuId() + "此物品,数量不足");
-            }
-            for (StockDetails stockDetail : stockDetails) {
-                long inkind;
-                if (stockDetail.getNumber() - listing.getNumber() > 0) {
-                    number = stockDetail.getNumber() - listing.getNumber();
-                    stockDetail.setNumber(number);
-                    stockDetailsService.updateById(stockDetail);
-                    inkind = stockDetail.getInkindId();
-                    listing.setNumber(stockDetail.getNumber() - listing.getNumber());
+        }
+        stockDetailsService.updateBatchById(details);
+    }
+
+    /**
+     * 任意品牌出库
+     *
+     * @param listingParam
+     * @param details
+     */
+    private void AnyBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
+        long number;
+        for (StockDetails detail : details) {
+
+            if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                number = detail.getNumber() - listingParam.getNumber();
+                if (number > 0) {
+                    detail.setNumber(number);
                     break;
                 } else {
-                    number = listing.getNumber() - stockDetail.getNumber();
-                    listing.setNumber(number);
-                    stockDetailsService.removeById(stockDetail);
-                    inkind = stockDetail.getInkindId();
+                    stockDetailsService.removeById(detail);
+                    details.remove(detail);
+                    listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
                 }
-                Inkind ink = inkindService.getById(inkind);   //出库之后更新实物的数量
-                ink.setNumber(ink.getNumber() - number);
-                inkindService.updateById(ink);
             }
         }
     }
 
-    /**
-     * 库存相同物料合并
-     *
-     * @param details
-     * @return
-     */
-    private Map<Long, List<StockDetails>> sameSkuWith(List<StockDetails> details) {
-        Map<Long, List<StockDetails>> listMap = new HashMap<>();
-
+    private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
+        long number;
         for (StockDetails detail : details) {
-            List<StockDetails> stockDetails = new ArrayList<>();
-            stockDetails.add(detail);
-            if (ToolUtil.isNotEmpty(detail.getSkuId()) && ToolUtil.isNotEmpty(detail.getBrandId()) && ToolUtil.isNotEmpty(detail.getStorehousePositionsId())) {
-                List<StockDetails> detailsList = listMap.get(detail.getSkuId() + detail.getBrandId());
-                if (ToolUtil.isEmpty(detailsList)) {
-                    listMap.put(detail.getSkuId() + detail.getBrandId() + detail.getStorehousePositionsId(), stockDetails);
+            if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
+                    && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                number = detail.getNumber() - listingParam.getNumber();
+                if (number > 0) {
+                    detail.setNumber(number);
+                    break;
                 } else {
-                    detailsList.addAll(stockDetails);
-                    listMap.put(detail.getSkuId() + detail.getBrandId() + detail.getStorehousePositionsId(), detailsList);
+                    stockDetailsService.removeById(detail);
+                    details.remove(detail);
+                    listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
                 }
             }
         }
-        return listMap;
     }
 
 

@@ -22,6 +22,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -62,7 +63,7 @@ public class ContractController extends BaseController {
         if (contractParam.getTemplateId() != null) {
             TemplateParam templateParam = new TemplateParam();
             templateParam.setTemplateId(contractParam.getTemplateId());
-            PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam,null);
+            PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam, null);
             contractParam.setContent(pageBySpec.getData().get(0).getContent());
         }
         ContractResult contractResult = this.contractService.addResult(contractParam);
@@ -133,12 +134,13 @@ public class ContractController extends BaseController {
             contractParam = new ContractParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
-            return this.contractService.findPageBySpec(contractParam,null);
-        }else{
+            return this.contractService.findPageBySpec(contractParam, null);
+        } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.contractService.findPageBySpec(contractParam,dataScope);
+            return this.contractService.findPageBySpec(contractParam, dataScope);
         }
     }
+
     @Permission
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
@@ -153,7 +155,7 @@ public class ContractController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) ContractParam contractParam) {
         QueryWrapper<Contract> queryWrapper = new QueryWrapper();
         queryWrapper.in("display", 1);
-        if (ToolUtil.isNotEmpty(contractParam) && ToolUtil.isNotEmpty(contractParam.getContractId())){
+        if (ToolUtil.isNotEmpty(contractParam) && ToolUtil.isNotEmpty(contractParam.getContractId())) {
             queryWrapper.in("contract_id", contractParam.getContractId());
         }
         List<Map<String, Object>> list = this.contractService.listMaps(queryWrapper);
@@ -161,13 +163,13 @@ public class ContractController extends BaseController {
         List<Map<String, Object>> result = customerSelectWrapper.wrap();
         return ResponseData.success(result);
     }
+
     @RequestMapping(value = "/pendingProductionPlan", method = RequestMethod.POST)
     @ApiOperation("待生产计划")
-    public ResponseData pendingProductionPlan(){
+    public ResponseData pendingProductionPlan() {
         Set<ContractDetailSetRequest> contractDetailSetRequests = this.contractService.pendingProductionPlan();
         return ResponseData.success(contractDetailSetRequests);
     }
-
 
 
 }

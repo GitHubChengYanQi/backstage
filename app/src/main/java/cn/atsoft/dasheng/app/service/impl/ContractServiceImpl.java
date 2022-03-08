@@ -22,6 +22,8 @@ import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -45,6 +47,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +85,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
     @Autowired
     private GetOrigin getOrigin;
+
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private BrandService brandService;
 
     @Override
     public ContractResult detail(Long id) {
@@ -132,7 +141,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         } else {
             Contract entity = getEntity(param);
             this.save(entity);
-            if (ToolUtil.isNotEmpty(param.getSource()) && ToolUtil.isNotEmpty(param.getSourceId())){
+            if (ToolUtil.isNotEmpty(param.getSource()) && ToolUtil.isNotEmpty(param.getSourceId())) {
                 String origin = getOrigin.newThemeAndOrigin("contract", entity.getContractId(), entity.getSource(), entity.getSourceId());
                 entity.setOrigin(origin);
                 this.updateById(entity);
@@ -439,13 +448,17 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             throw new ServiceException(500, "请选择合同模板");
         }
         Template template = templateService.getById(param.getTemplateId());
+
         if (ToolUtil.isNotEmpty(template)) {
             String content = template.getContent();
-            for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
-                if (content.contains(contractReplace.getOldText())) {
-                    content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+            if (ToolUtil.isNotEmpty(param.getContractReplaces())) {
+                for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
+                    if (content.contains(contractReplace.getOldText())) {
+                        content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+                    }
                 }
             }
+
             contract.setPartyA(orderParam.getBuyerId());
             contract.setPartyB(orderParam.getSellerId());
 
@@ -495,11 +508,58 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             } catch (Exception e) {
 
             }
-            contract.setContent(content);
+            String materialList = materialList(content, orderParam.getDetailParams());
+            contract.setContent(materialList);
             this.save(contract);
             createContractDetail(contract.getContractId(), orderParam);
         }
     }
+
+
+    private String materialList(String content, List<OrderDetailParam> detailParams) {
+
+
+        String regStr = "\\<tr.*data-group=\"物料\"\\>([\\s\\S]*)<\\/tr>";
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher m = pattern.matcher(content);
+        StringBuffer stringBuffer = new StringBuffer();
+        StringBuffer append = stringBuffer.append(content);
+        while (m.find()) {
+            String all = "";
+            for (int i = 0; i < detailParams.size(); i++) {
+                String group = m.group(0);
+                OrderDetailParam detailParam = detailParams.get(i);
+                if (group.contains("${{sku}}") && ToolUtil.isNotEmpty(detailParam.getSkuId())) {
+                    List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                        add(detailParam.getSkuId());
+                    }});
+                    SkuResult skuResult = skuResults.get(0);
+                    group = group.replace("${{sku}}", skuResult.getSpuResult().getName() + " / " + skuResult.getSkuName() + " / " + skuResult.getSpecifications());
+                }
+                if (group.contains("${{brand}}") && ToolUtil.isNotEmpty(detailParam.getBrandId())) {
+                    Brand brand = brandService.getById(detailParam.getBrandId());
+                    group = group.replace("${{brand}}", brand.getBrandName());
+                }
+                if (group.contains("${{skuNumber}}") && ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
+                    group = group.replace("${{skuNumber}}", detailParam.getPurchaseNumber().toString());
+                }
+                if (group.contains("${{price}}") && ToolUtil.isNotEmpty(detailParam.getOnePrice())) {
+                    group = group.replace("${{price}}", detailParam.getOnePrice().toString());
+                }
+                if (group.contains("${{deliveryDate}}") && ToolUtil.isNotEmpty(detailParam.getDeliveryDate())) {
+                    group = group.replace("${{deliveryDate}}", detailParam.getDeliveryDate().toString());
+                }
+                all = all + group;
+            }
+            String group = m.group(0);
+            String string = append.toString();
+            String replaceAll = string.replace(group, all);
+            return replaceAll;
+        }
+
+        return content;
+    }
+
 
     /**
      * 添加合同详情
