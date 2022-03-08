@@ -131,15 +131,11 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         String content = template.getContent();
 
         List<String> resultList = new ArrayList<>();
-        Pattern p = Pattern.compile("\\<p\\>(.*?)\\<\\/p\\>");//匹配<p>开头，</p>结尾的文档
+        Pattern p = Pattern.compile("\\<input (.*?)\\>");//匹配<p>开头，</p>结尾的文档
         Matcher m = p.matcher(content);//开始编译
         while (m.find()) {
-            String group = m.group(1);
-            if (group.contains("<input class=\"inp\" placeholder=\"文本框\" disabled=\"\"/>")
-                    ||
-                    group.contains("<input class=\"number\" placeholder=\"数字框\" disabled=\"\"/>")
-                    ||
-                    group.contains("<input class=\"date\" placeholder=\"时间框\" disabled=\"\"/>")) {
+            String group = m.group(0);
+            if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
                 resultList.add(group);
             }
         }
