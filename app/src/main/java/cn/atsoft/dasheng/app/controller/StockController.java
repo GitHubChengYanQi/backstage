@@ -38,8 +38,6 @@ public class StockController extends BaseController {
     private StockService stockService;
 
 
-
-
     /**
      * 查看详情接口
      *

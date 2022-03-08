@@ -242,7 +242,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
             if (!brandList.isEmpty()) {
                 for (Brand brand : brandList) {
-                    if (datum.getBrandId().equals(brand.getBrandId())) {
+                    if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
                         BrandResult brandResult = new BrandResult();
                         ToolUtil.copyProperties(brand, brandResult);
                         datum.setBrandResult(brandResult);
