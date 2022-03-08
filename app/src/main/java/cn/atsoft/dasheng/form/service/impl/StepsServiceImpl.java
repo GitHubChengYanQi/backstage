@@ -523,6 +523,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         ProcessRouteResult routeResult = new ProcessRouteResult();
         ToolUtil.copyProperties(processRoute, routeResult);
         routeResult.setType("ship");
+        ActivitiStepsResult detail = detail(routeResult.getProcessRouteId());
+        routeResult.setStepsResult(detail);
         return routeResult;
     }
 

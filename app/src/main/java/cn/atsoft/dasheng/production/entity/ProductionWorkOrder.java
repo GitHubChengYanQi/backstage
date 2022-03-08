@@ -51,6 +51,22 @@ public class ProductionWorkOrder implements Serializable {
     @TableField("out_sku_id")
     private Long outSkuId;
 
+    public Long getStepsId() {
+        return stepsId;
+    }
+
+    public void setStepsId(Long stepsId) {
+        this.stepsId = stepsId;
+    }
+
+    /**
+     * 步骤id
+     */
+    @TableField("steps_id")
+    private Long stepsId;
+
+
+
     /**
      * 投入物料
      */

@@ -20,6 +20,8 @@ public class ProductionPlanResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private List<ProductionPlanDetailResult> planDetailResults;
+
 
     /**
      * 生产计划id

@@ -139,4 +139,14 @@ public class ProcessRouteServiceImpl extends ServiceImpl<ProcessRouteMapper, Pro
             }
         }
     }
+    public List<ProcessRouteResult> resultsBySkuIds(List<Long> skuIds){
+        List<ProcessRoute> list = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<ProcessRouteResult> results = new ArrayList<>();
+        for (ProcessRoute route : list) {
+            ProcessRouteResult routeResult = new ProcessRouteResult();
+            ToolUtil.copyProperties(route,routeResult);
+            results.add(routeResult);
+        }
+        return results;
+    }
 }

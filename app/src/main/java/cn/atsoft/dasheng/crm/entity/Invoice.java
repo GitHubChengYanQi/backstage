@@ -52,7 +52,7 @@ public class Invoice implements Serializable {
      * 开户行账号
      */
     @TableField("bank_account")
-    private Long bankAccount;
+    private String bankAccount;
 
     /**
      * 统一社会信用代码
@@ -162,11 +162,11 @@ public class Invoice implements Serializable {
         this.bank = bank;
     }
 
-    public Long getBankAccount() {
+    public String getBankAccount() {
         return bankAccount;
     }
 
-    public void setBankAccount(Long bankAccount) {
+    public void setBankAccount(String bankAccount) {
         this.bankAccount = bankAccount;
     }
 

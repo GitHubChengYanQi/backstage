@@ -63,6 +63,20 @@ public class ProductionTask implements Serializable {
     @TableField("ship_setp_id")
     private Long shipSetpId;
 
+    public Integer getSingleProductionCycle() {
+        return singleProductionCycle;
+    }
+
+    public void setSingleProductionCycle(Integer singleProductionCycle) {
+        this.singleProductionCycle = singleProductionCycle;
+    }
+
+    /**
+     * 单台生产周期（天）
+     */
+    @TableField("single_production_cycle")
+    private Integer singleProductionCycle;
+
     /**
      * 生产时间
      */

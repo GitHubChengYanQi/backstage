@@ -64,6 +64,12 @@ public class ProductionTaskResult implements Serializable {
     private Long shipSetpId;
 
     /**
+     * 单台生产周期(天)
+     */
+    @ApiModelProperty("单台生产周期(天)")
+    private Integer singleProductionCycle;
+
+    /**
      * 生产时间
      */
     @ApiModelProperty("生产时间")

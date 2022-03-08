@@ -13,6 +13,12 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.SkuBrandBind;
+import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.erp.model.params.SkuBrandBindParam;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuBrandBindService;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -42,6 +48,12 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     @Autowired
     private PartsService partsService;
 
+    @Autowired
+    private SkuBrandBindService skuBrandBindService;
+
+    @Autowired
+    private SkuService skuService;
+
 
     @Override
     public Long add(BrandParam param) {
@@ -50,7 +62,14 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
             throw new ServiceException(500, "名字以重复");
         }
         Brand entity = getEntity(param);
+
         this.save(entity);
+        if (ToolUtil.isNotEmpty(param.getSkuIds())){
+            skuBrandBindService.addBatchByBrand(new SkuBrandBindParam(){{
+                setBrandId(entity.getBrandId());
+                setSkuIds(param.getSkuIds());
+            }});
+        }
         return entity.getBrandId();
     }
 
@@ -70,6 +89,17 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         Integer brandName = this.query().eq("brand_name", param.getBrandName()).count();
         if (brandName > 1) {
             throw new ServiceException(500, "名字以重复");
+        }
+        if (ToolUtil.isNotEmpty(param.getSkuIds())){
+            List<SkuBrandBind> brandBinds = skuBrandBindService.query().eq("brand_id", param.getBrandId()).list();
+            for (SkuBrandBind brandBind : brandBinds) {
+                brandBind.setDisplay(0);
+            }
+            skuBrandBindService.updateBatchById(brandBinds);
+            skuBrandBindService.addBatchByBrand(new SkuBrandBindParam(){{
+                setBrandId(param.getBrandId());
+                setSkuIds(param.getSkuIds());
+            }});
         }
         Brand oldEntity = getOldEntity(param);
         Brand newEntity = getEntity(param);
@@ -91,7 +121,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     public PageInfo<BrandResult> findPageBySpec(BrandParam param, DataScope dataScope) {
         Page<BrandResult> pageContext = getPageContext();
         IPage<BrandResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
-//        format(page.getRecords());
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -145,12 +175,18 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
+    @Override
     public void format(List<BrandResult> data) {
-//        List<Long> brandIs = new ArrayList<>();
-//        for (BrandResult datum : data) {
-//            brandIs.add(datum.getBrandId());
-//        }
+        List<Long> brandIs = new ArrayList<>();
+        for (BrandResult datum : data) {
+            brandIs.add(datum.getBrandId());
+        }
+        List<SkuBrandBind> skuBrandBinds = skuBrandBindService.query().in("brand_id", brandIs).eq("display", 1).list();
+        List<Long> skuIds = new ArrayList<>();
+        for (SkuBrandBind skuBrandBind : skuBrandBinds) {
+            skuIds.add(skuBrandBind.getSkuId());
+        }
+        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
 //        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
 //        partsQueryWrapper.in("brand_id", brandIs);
 //        List<Parts> list = partsService.list(partsQueryWrapper);
@@ -166,5 +202,19 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 //                }
 //            }
 //        }
+        for (BrandResult datum : data) {
+            skuIds = new ArrayList<>();
+            List<SkuResult> results = new ArrayList<>();
+            for (SkuBrandBind skuBrandBind : skuBrandBinds) {
+                for (SkuResult skuResult : skuResults) {
+                    if(datum.getBrandId().equals(skuBrandBind.getSkuBrandBind()) && skuBrandBind.getSkuId().equals(skuResult.getSkuId())){
+                        skuIds.add(skuBrandBind.getSkuId());
+                        results.add(skuResult);
+                    }
+                }
+            }
+            datum.setSkuIds(skuIds);
+            datum.setSkuResults(results);
+        }
     }
 }

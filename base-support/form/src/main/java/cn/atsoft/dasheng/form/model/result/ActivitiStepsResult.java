@@ -47,11 +47,18 @@ public class ActivitiStepsResult implements Serializable {
 
     private Object processRoute;
 
+    private Object workOrderResult;
+
     private ActivitiSetpSetResult setpSet;
+    private Object childRouteSteps;
+
+
+    private ActivitiSetpSetResult setpSetResult;
+    private List<ActivitiSetpSetDetailResult> setpSetDetailResults;
 
     private List<ActivitiStepsResult> conditionNodeList;
 
-    private List<ActivitiStepsResult> tree2List;
+    private List<ActivitiStepsResult> childrenSteps;
 
 
     /**
@@ -127,4 +134,6 @@ public class ActivitiStepsResult implements Serializable {
     @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+
 }

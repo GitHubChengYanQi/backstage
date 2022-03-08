@@ -37,14 +37,30 @@ public class SkuBrandBindServiceImpl extends ServiceImpl<SkuBrandBindMapper, Sku
     }
     @Override
     public void addBatch(SkuBrandBindParam param){
-        List<SkuBrandBind> entityList = new ArrayList<>();
-        for (Long brandId : param.getBrandIds()) {
-            SkuBrandBind skuBrandBind = new SkuBrandBind();
-            skuBrandBind.setBrandId(brandId);
-            skuBrandBind.setSkuId(param.getSkuId());
-            entityList.add(skuBrandBind);
+        if (ToolUtil.isNotEmpty(param.getBrandIds()) && ToolUtil.isNotEmpty(param.getSkuId())){
+            List<SkuBrandBind> entityList = new ArrayList<>();
+            for (Long brandId : param.getBrandIds()) {
+                SkuBrandBind skuBrandBind = new SkuBrandBind();
+                skuBrandBind.setBrandId(brandId);
+                skuBrandBind.setSkuId(param.getSkuId());
+                entityList.add(skuBrandBind);
+            }
+            this.saveBatch(entityList);
         }
-        this.saveBatch(entityList);
+    }
+
+    @Override
+    public void addBatchByBrand(SkuBrandBindParam param) {
+        if (ToolUtil.isNotEmpty(param.getSkuIds()) && ToolUtil.isNotEmpty(param.getBrandId())){
+            List<SkuBrandBind> binds = new ArrayList<>();
+            for (Long skuId : param.getSkuIds()) {
+                SkuBrandBind skuBrandBind = new SkuBrandBind();
+                skuBrandBind.setBrandId(param.getBrandId());
+                skuBrandBind.setSkuId(skuId);
+                binds.add(skuBrandBind);
+            }
+            this.saveBatch(binds);
+        }
     }
 
     @Override

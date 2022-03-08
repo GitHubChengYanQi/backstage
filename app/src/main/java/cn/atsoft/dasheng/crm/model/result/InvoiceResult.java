@@ -52,7 +52,7 @@ public class InvoiceResult implements Serializable {
      * 开户行账号
      */
     @ApiModelProperty("开户行账号")
-    private Long bankAccount;
+    private String bankAccount;
 
     /**
      * 统一社会信用代码

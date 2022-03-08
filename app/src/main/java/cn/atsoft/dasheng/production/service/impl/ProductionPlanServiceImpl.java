@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -15,16 +17,21 @@ import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPlanMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
+import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
+import cn.atsoft.dasheng.production.model.result.ProductionPlanDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPlanResult;
+import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
 import cn.atsoft.dasheng.production.service.ProductionPlanDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.rmi.log.LogInputStream;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,7 +55,16 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     private MessageProducer messageProducer;
 
     @Autowired
+    private ProcessRouteServiceImpl processRouteService;
+
+    @Autowired
+    private ProductionWorkOrderService productionWorkOrderService;
+
+    @Autowired
     private PartsService partsService;
+
+    @Autowired
+    private StepsService stepsService;
 
     @Override
     public void add(ProductionPlanParam param){
@@ -115,7 +131,95 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     public PageInfo<ProductionPlanResult> findPageBySpec(ProductionPlanParam param){
         Page<ProductionPlanResult> pageContext = getPageContext();
         IPage<ProductionPlanResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    private void format(List<ProductionPlanResult> param){
+        List<Long> planIds = new ArrayList<>();
+
+        for (ProductionPlanResult productionPlanResult : param) {
+            planIds.add(productionPlanResult.getProductionPlanId());
+        }
+        /**
+         * 查询对应的工单集合
+         */
+        List<ProductionWorkOrderResult> workOrderResults = productionWorkOrderService.resultsBySourceIds("productionPlan", planIds);
+
+        /**
+         * 查询出子表数据
+         */
+        List<ProductionPlanDetailResult> detailResults = planIds.size() == 0 ? new ArrayList<>() : productionPlanDetailService.resultsByPlanIds(planIds);
+        /**
+         * 子表数据取出sku_id 去查找工艺路线  工艺路线去查找步骤树形   然后根据树形去匹配任务
+         */
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionPlanDetailResult detailResult : detailResults) {
+            skuIds.add(detailResult.getSkuId());
+        }
+        List<ProcessRouteResult> routeResults = skuIds.size() == 0 ? new ArrayList<>() : processRouteService.resultsBySkuIds(skuIds);
+        //将步骤set进工艺路线中方便匹配
+        ActivitiStepsResult detail = new ActivitiStepsResult();
+        for (ProcessRouteResult routeResult : routeResults) {
+            detail = stepsService.detail(routeResult.getProcessRouteId());
+            routeResult.setStepsResult(detail);
+        }
+        for (ProductionPlanResult productionPlanResult : param) {
+            List<ProductionPlanDetailResult> results = new ArrayList<>();
+            for (ProductionPlanDetailResult detailResult : detailResults) {
+                if (productionPlanResult.getProductionPlanId().equals(detailResult.getProductionPlanId())){
+                    formatTreeProcessRoute(detail,workOrderResults);
+                    results.add(detailResult);
+                }
+            }
+            for (ProductionPlanDetailResult result : results) {
+                for (ProcessRouteResult routeResult : routeResults) {
+                    if (result.getSkuId().equals(routeResult.getSkuId())){
+                        result.setProcessRouteResult(routeResult);
+                    }
+                }
+            }
+            productionPlanResult.setPlanDetailResults(results);
+        }
+
+    }
+
+
+
+
+    private void formatTreeProcessRoute(ActivitiStepsResult detail, List<ProductionWorkOrderResult> workOrderResults){
+       if(ToolUtil.isNotEmpty(detail)){
+           switch (detail.getStepType()) {
+               case "ship":
+                   for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
+                       if (detail.getSetpsId().equals(workOrderResult.getStepsId())){
+                           detail.setWorkOrderResult(workOrderResult);
+                           break;
+                       }
+                   }
+                   ProcessRouteResult processRoute = (ProcessRouteResult) detail.getProcessRoute();
+                   formatTreeProcessRoute(processRoute.getStepsResult(),workOrderResults);
+                   break;
+               case "shipStart":
+               case "setp":
+                   for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
+                       if (detail.getSetpsId().equals(workOrderResult.getStepsId())){
+                           detail.setWorkOrderResult(workOrderResult);
+                           break;
+                       }
+                   }
+                   if(ToolUtil.isNotEmpty(detail.getChildNode())){
+                       formatTreeProcessRoute(detail.getChildNode(),workOrderResults);
+                   }
+
+                   break;
+               case "route":
+                   for (ActivitiStepsResult activitiStepsResult : detail.getConditionNodeList()) {
+                       formatTreeProcessRoute(activitiStepsResult,workOrderResults);
+                   }
+                   break;
+           }
+       }
     }
 
     private Serializable getKey(ProductionPlanParam param){
