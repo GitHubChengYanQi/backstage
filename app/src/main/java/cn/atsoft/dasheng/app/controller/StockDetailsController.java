@@ -35,7 +35,7 @@ public class StockDetailsController extends BaseController {
 
     @RequestMapping(value = "/getDetailsBySkuId", method = RequestMethod.POST)
     public ResponseData getDetailsBySkuId(@RequestBody StockDetailsParam stockDetailsParam) {
-        List<StockDetailsResult> stockDetails = this.stockDetailsService.getStockDetails(stockDetailsParam.getSkuId());
+        List<StockDetailsResult> stockDetails = this.stockDetailsService.getDetailsBySkuId(stockDetailsParam.getSkuId());
         return ResponseData.success(stockDetails);
     }
 
