@@ -156,9 +156,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         outBound(param.getListingParams()); //出库
     }
 
-
-    private void outBound(List<OutstockListingParam> listings) {
-        List<StockDetails> details = stockDetailsService.query().orderByDesc("create_time").list();
+    @Override
+    public void outBound(List<OutstockListingParam> listings) {
+        List<StockDetails> details = stockDetailsService.query().orderByAsc("create_time").list();
         for (OutstockListingParam listing : listings) {
             if (listing.getBrandId() == 0) {
                 AnyBrandOutBound(listing, details); //任意品牌
@@ -177,35 +177,36 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
      */
     private void AnyBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number;
-        for (StockDetails detail : details) {
 
-            if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
-                number = detail.getNumber() - listingParam.getNumber();
+        for (int i = 0; i < details.size(); i++) {
+            if (listingParam.getSkuId().equals(details.get(i).getSkuId()) && details.get(i).getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                number = details.get(i).getNumber() - listingParam.getNumber();
                 if (number > 0) {
-                    detail.setNumber(number);
+                    details.get(i).setNumber(number);
                     break;
                 } else {
-                    stockDetailsService.removeById(detail);
-                    details.remove(detail);
-                    listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                    stockDetailsService.removeById(details.get(i));
+                    details.remove(details.get(i));
+                    listingParam.setNumber(listingParam.getNumber() - details.get(i).getNumber());
                 }
             }
         }
+
     }
 
     private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number;
-        for (StockDetails detail : details) {
-            if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
-                    && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
-                number = detail.getNumber() - listingParam.getNumber();
+        for (int i = 0; i < details.size(); i++) {
+            if (details.get(i).getSkuId().equals(listingParam.getSkuId()) && details.get(i).getBrandId().equals(listingParam.getBrandId())
+                    && details.get(i).getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                number = details.get(i).getNumber() - listingParam.getNumber();
                 if (number > 0) {
-                    detail.setNumber(number);
+                    details.get(i).setNumber(number);
                     break;
                 } else {
-                    stockDetailsService.removeById(detail);
-                    details.remove(detail);
-                    listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                    stockDetailsService.removeById(details.get(i));
+                    details.remove(i);
+                    listingParam.setNumber(listingParam.getNumber() - details.get(i).getNumber());
                 }
             }
         }

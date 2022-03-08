@@ -70,4 +70,5 @@ public interface StorehouseService extends IService<Storehouse> {
 
     StorehouseResult getDetail(Long Id);
 
+    List<StorehouseResult> getDetails(List<Long> ids);
 }

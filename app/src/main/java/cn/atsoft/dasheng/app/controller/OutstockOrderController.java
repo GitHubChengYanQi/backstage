@@ -64,6 +64,16 @@ public class OutstockOrderController extends BaseController {
         return ResponseData.success();
     }
 
+
+    /**
+     * @param param
+     */
+    @RequestMapping(value = "/outBound", method = RequestMethod.POST)
+    public ResponseData outBound(@RequestBody OutstockOrderParam param) {
+        this.outstockOrderService.outBound(param.getListingParams());
+        return ResponseData.success();
+    }
+
     /**
      * 自由出库
      *

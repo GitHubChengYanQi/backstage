@@ -15,6 +15,8 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -114,4 +116,12 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
         return entity;
     }
 
+    @Override
+    public List<StorehouseResult> getDetails(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<Storehouse> storehouses = this.listByIds(ids);
+        return BeanUtil.copyToList(storehouses, StorehouseResult.class, new CopyOptions());
+    }
 }

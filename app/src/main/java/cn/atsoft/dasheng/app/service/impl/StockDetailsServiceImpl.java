@@ -96,12 +96,34 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             return null;
         }
         List<StockDetailsResult> detailsResults = BeanUtil.copyToList(details, StockDetailsResult.class, new CopyOptions());
-        format(detailsResults);
-        List<StorehousePositions> positions = positionsService.list();
+
+        List<Long> brandIds = new ArrayList<Long>();
+        List<Long> houseIds = new ArrayList<>();
         for (StockDetailsResult detailsResult : detailsResults) {
+            brandIds.add(detailsResult.getBrandId());
+            houseIds.add(detailsResult.getStorehouseId());
+        }
+
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<StorehousePositions> positions = positionsService.list();
+        List<StorehouseResult> storehouseResultList = storehouseService.getDetails(houseIds);
+        for (StockDetailsResult detailsResult : detailsResults) {
+
             StorehousePositionsResult serviceDetail = positionsService.getDetail(detailsResult.getStorehousePositionsId(), positions);
             detailsResult.setPositionsResult(serviceDetail);
-            break;
+            for (StorehouseResult storehouseResult : storehouseResultList) {
+                if (storehouseResult.getStorehouseId().equals(detailsResult.getStorehouseId())) {
+                    detailsResult.setStorehouseResult(storehouseResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(detailsResult.getBrandId()) && brandResult.getBrandId().equals(detailsResult.getBrandId())) {
+                    detailsResult.setBrandResult(brandResult);
+                    break;
+                }
+            }
+
         }
         return detailsResults;
     }
