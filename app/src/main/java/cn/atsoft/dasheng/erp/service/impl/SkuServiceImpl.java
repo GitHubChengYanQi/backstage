@@ -156,10 +156,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              * sku名称（skuName）加型号(spuName)判断防止重复
              */
             Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-//            List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
-//            if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
-//                throw new ServiceException(500, "此物料在产品中已存在");
-//            }
+            List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+            if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
+                throw new ServiceException(500, "此物料在产品中已存在");
+            }
             /**
              * 查询产品，添加产品 在上方spu查询
              */
