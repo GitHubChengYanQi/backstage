@@ -60,7 +60,7 @@ public class OutstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/AkeyOutbound", method = RequestMethod.POST)
     public ResponseData AkeyOutbound(@RequestBody OutstockOrderParam param) {
-        this.outstockOrderService.AkeyOutbound(param);
+        this.outstockOrderService.outBound(param.getListingParams());
         return ResponseData.success();
     }
 

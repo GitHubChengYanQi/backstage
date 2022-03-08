@@ -156,8 +156,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         outBound(param.getListingParams()); //出库
     }
 
-
-    private void outBound(List<OutstockListingParam> listings) {
+    @Override
+    public void outBound(List<OutstockListingParam> listings) {
         List<StockDetails> details = stockDetailsService.query().orderByDesc("create_time").list();
         for (OutstockListingParam listing : listings) {
             if (listing.getBrandId() == 0) {
@@ -195,6 +195,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number;
+        details.forEach();
         for (StockDetails detail : details) {
             if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
                     && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
