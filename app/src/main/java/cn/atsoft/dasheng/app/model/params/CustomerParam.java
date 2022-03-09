@@ -95,7 +95,7 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
      * 注册资本
      */
     @ApiModelProperty("注册资本")
-    private Long registeredCapital;
+    private String registeredCapital;
 
     /**
      * 传真
