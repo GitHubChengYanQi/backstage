@@ -23,6 +23,7 @@ import java.util.List;
 public class InvoiceResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private BankResult bankResult;
 
 
     /**
