@@ -5,10 +5,13 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.mapper.InvoiceMapper;
 import cn.atsoft.dasheng.crm.model.params.InvoiceParam;
+import cn.atsoft.dasheng.crm.model.result.BankResult;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
+import cn.atsoft.dasheng.crm.service.BankService;
 import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -34,7 +37,8 @@ import java.util.List;
  */
 @Service
 public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> implements InvoiceService {
-
+    @Autowired
+    private BankService bankService;
 
     @Override
     public Long add(InvoiceParam param) {
@@ -99,6 +103,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         return entity;
     }
 
+    @Override
     public List<InvoiceResult> getDetails(List<Long> ids) {
         if (ToolUtil.isEmpty(ids)) {
             return new ArrayList<>();
@@ -108,7 +113,21 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             return new ArrayList<>();
         }
         List<InvoiceResult> results = BeanUtil.copyToList(invoices, InvoiceResult.class, new CopyOptions());
+        List<Long> bankIds = new ArrayList<>();
+        for (InvoiceResult result : results) {
+            bankIds.add(result.getBankId());
+        }
+        List<Bank> banks = bankIds.size() == 0 ? new ArrayList<>() : bankService.listByIds(bankIds);
+        List<BankResult> bankResults = BeanUtil.copyToList(banks, BankResult.class);
 
+        for (InvoiceResult result : results) {
+            for (BankResult bankResult : bankResults) {
+                if (ToolUtil.isNotEmpty(result.getBankId()) && bankResult.getBankId().equals(result.getBankId())) {
+                    result.setBankResult(bankResult);
+                    break;
+                }
+            }
+        }
         return results;
     }
 

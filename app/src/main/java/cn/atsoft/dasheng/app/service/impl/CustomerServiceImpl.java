@@ -287,17 +287,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             contactsIds.add(contactsBind.getContactsId());
         }
 
-        List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.query().in("customer_id",customerIds).eq("display",1).list();
-        /**
-         * 查询银行
-         */
-        List<Long> bankIds = new ArrayList<>();
-        for (Invoice invoice : invoices) {
-            if (ToolUtil.isNotEmpty(invoice.getBankId())) {
-                bankIds.add(invoice.getBankId());
-            }
-        }
-        List<BankResult> bankResults = bankService.resultsByBankId(bankIds);
+        List<InvoiceResult> invoiceResultList = invoiceService.getDetails(invoiceIds);
+
 
 
         /***
