@@ -940,14 +940,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SkuResult skuResult = new SkuResult();
         ToolUtil.copyProperties(sku, skuResult);
         //返回附件图片等
-        List<Long> filedIds = Arrays.asList(skuResult.getFileId().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        List<String> filedUrls = new ArrayList<>();
-        for (Long filedId : filedIds) {
-            String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
-            filedUrls.add(mediaUrl);
+        if (ToolUtil.isNotEmpty(skuResult.getFileId())) {
+            List<Long> filedIds = Arrays.asList(skuResult.getFileId().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<String> filedUrls = new ArrayList<>();
+            for (Long filedId : filedIds) {
+                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                filedUrls.add(mediaUrl);
+            }
+            skuResult.setFiledUrls(filedUrls);
         }
-        skuResult.setFiledUrls(filedUrls);
-//        Arrays.asList(skuResult.get().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         if (ToolUtil.isEmpty(sku)) {
             return new SkuResult();
         }
