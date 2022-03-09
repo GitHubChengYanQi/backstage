@@ -45,6 +45,20 @@ public class Adress implements Serializable {
     @TableField("address_remark")
     private String addressRemark;
 
+    public String getAddressName() {
+        return addressName;
+    }
+
+    public void setAddressName(String addressName) {
+        this.addressName = addressName;
+    }
+
+    /**
+     * 地址备注
+     */
+    @TableField("address_name")
+    private String addressName;
+
     @TableField("region")
     private String region;
 

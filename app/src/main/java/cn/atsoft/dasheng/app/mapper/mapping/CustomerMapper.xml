@@ -24,7 +24,7 @@
         <result column="status" property="status"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
-        <result column="origin_id" property="orginId"/>
+        <result column="origin_id" property="originId"/>
         <result column="note" property="note"/>
         <result column="user_id" property="userId"/>
         <result column="status" property="status"/>

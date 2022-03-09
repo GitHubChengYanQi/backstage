@@ -43,6 +43,13 @@ public class AdressResult implements Serializable {
     @ApiModelProperty("地址")
     private String location;
 
+
+    /**
+     * 地址名称
+     */
+    @ApiModelProperty("地址名称")
+    private String addressName;
+
     /**
      * 地址
      */
