@@ -116,12 +116,12 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isNotEmpty(param.getPositionName())) {
             CompanyRole position = roleService.query().eq("position", param.getPositionName()).one();
             if (ToolUtil.isNotEmpty(position)) {
-                entity.setPositionId(position.getCompanyRoleId());
+                entity.setCompanyRole(position.getCompanyRoleId());
             } else {
                 CompanyRole newRole = new CompanyRole();
                 newRole.setPosition(param.getPositionName());
                 roleService.save(newRole);
-                entity.setPositionId(newRole.getCompanyRoleId());
+                entity.setCompanyRole(newRole.getCompanyRoleId());
             }
         }
 
@@ -142,7 +142,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         Contacts contacts;
         DaoxinDept daoxinDept = null;
         CompanyRole companyRole = null;
-        contacts = this.query().eq("contacts_name", param.getContactsName()).one();   //联系人
+        contacts = this.query().eq("contacts_id", param.getContactsName()).one();   //联系人
         if (ToolUtil.isNotEmpty(contacts)) {
             return contacts.getContactsId();
         }
@@ -151,7 +151,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         this.save(contacts);
 
         if (ToolUtil.isNotEmpty(param.getDeptName())) {                             //部门
-            daoxinDept = daoxinDeptService.query().eq("full_name", param.getContactsName()).one();
+            daoxinDept = daoxinDeptService.query().eq("full_name", param.getDeptName()).one();
             if (ToolUtil.isEmpty(daoxinDept)) {
                 daoxinDept = new DaoxinDept();
                 daoxinDept.setFullName(param.getDeptName());
