@@ -158,7 +158,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public void outBound(List<OutstockListingParam> listings) {
-        List<StockDetails> details = stockDetailsService.query().orderByDesc("create_time").list();
+        List<StockDetails> details = stockDetailsService.query().orderByAsc("create_time").list();
         for (OutstockListingParam listing : listings) {
             if (listing.getBrandId() == 0) {
                 AnyBrandOutBound(listing, details); //任意品牌
