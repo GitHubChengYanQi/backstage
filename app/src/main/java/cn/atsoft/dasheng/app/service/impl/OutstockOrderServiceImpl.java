@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,6 +168,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             }
         }
         stockDetailsService.updateBatchById(details);
+        stockDetailsService.remove(new QueryWrapper<StockDetails>() {{
+            eq("stage", 2);
+        }});
     }
 
     /**
@@ -178,18 +182,15 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private void AnyBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number;
         for (StockDetails detail : details) {
-
-            if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
-                number = detail.getNumber() - listingParam.getNumber();
-                if (number > 0) {
-                    detail.setNumber(number);
-                    break;
-                } else {
-                    stockDetailsService.removeById(detail);
-                    listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
-                    details.remove(detail);
-                    if (ToolUtil.isEmpty(details)) {
+            if (detail.getStage() == 1) {
+                if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                    number = detail.getNumber() - listingParam.getNumber();
+                    if (number > 0) {
+                        detail.setNumber(number);
                         break;
+                    } else {
+                        listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                        detail.setStage(2);
                     }
                 }
             }
@@ -199,18 +200,16 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number;
         for (StockDetails detail : details) {
-            if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
-                    && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
-                number = detail.getNumber() - listingParam.getNumber();
-                if (number > 0) {
-                    detail.setNumber(number);
-                    break;
-                } else {
-                    stockDetailsService.removeById(detail);
-                    listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
-                    details.remove(detail);
-                    if (ToolUtil.isEmpty(details)) {
+            if (detail.getStage() == 1) {
+                if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
+                        && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                    number = detail.getNumber() - listingParam.getNumber();
+                    if (number > 0) {
+                        detail.setNumber(number);
                         break;
+                    } else {
+                        listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                        detail.setStage(2);
                     }
                 }
             }
