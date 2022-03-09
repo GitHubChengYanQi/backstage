@@ -74,14 +74,24 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     public PageInfo<InvoiceResult> findPageBySpec(InvoiceParam param) {
         Page<InvoiceResult> pageContext = getPageContext();
         IPage<InvoiceResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
     private void format(List<InvoiceResult> param) {
         List<Long> bankIds = new ArrayList<>();
         for (InvoiceResult invoiceResult : param) {
-
             bankIds.add(invoiceResult.getBankId());
+        }
+        List<Bank> bankList = bankIds.size() == 0 ? new ArrayList<>() : bankService.listByIds(bankIds);
+        List<BankResult> bankResults = BeanUtil.copyToList(bankList, BankResult.class, new CopyOptions());
+        for (InvoiceResult invoiceResult : param) {
+            for (BankResult bankResult : bankResults) {
+                if (ToolUtil.isNotEmpty(invoiceResult.getBankId()) && invoiceResult.getBankId().equals(bankResult.getBankId())) {
+                    invoiceResult.setBankResult(bankResult);
+                    break;
+                }
+            }
         }
     }
 
@@ -102,6 +112,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
     @Override
     public List<InvoiceResult> getDetails(List<Long> ids) {

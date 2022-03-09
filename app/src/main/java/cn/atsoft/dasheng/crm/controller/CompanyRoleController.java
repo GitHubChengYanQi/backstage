@@ -40,76 +40,76 @@ public class CompanyRoleController extends BaseController {
     @Autowired
     private CompanyRoleService companyRoleService;
 
-//    /**
-//     * 新增接口
-//     *
-//     * @author
-//     * @Date 2021-09-06
-//     */
-//    @RequestMapping(value = "/add", method = RequestMethod.POST)
-//    @ApiOperation("新增")
-//    public ResponseData addItem(@RequestBody CompanyRoleParam companyRoleParam) {
-//        CompanyRole add = this.companyRoleService.add(companyRoleParam);
-//        return ResponseData.success(add);
-//    }
-//
-//    /**
-//     * 编辑接口
-//     *
-//     * @author
-//     * @Date 2021-09-06
-//     */
-//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-//    @ApiOperation("编辑")
-//    @BussinessLog(value = "修改公司角色", key = "name", dict = CompanyRoleParam.class)
-//    public ResponseData update(@RequestBody CompanyRoleParam companyRoleParam) {
-//
-//        this.companyRoleService.update(companyRoleParam);
-//        return ResponseData.success();
-//    }
-//
-//    /**
-//     * 删除接口
-//     *
-//     * @author
-//     * @Date 2021-09-06
-//     */
-//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-//    @ApiOperation("删除")
-//    @BussinessLog(value = "删除公司角色", key = "name", dict = CompanyRoleParam.class)
-//    public ResponseData delete(@RequestBody CompanyRoleParam companyRoleParam) {
-//        this.companyRoleService.delete(companyRoleParam);
-//        return ResponseData.success();
-//    }
-//
-//    /**
-//     * 批量删除接口
-//     * @param batchDeleteRequest
-//     * @return
-//     */
-//    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
-//    @ApiOperation("批量删除")
-//    public ResponseData batchDelete(@RequestBody (required = false) BatchDeleteRequest batchDeleteRequest) {
-//        this.companyRoleService.batchDelete(batchDeleteRequest.getIds());
-//        return ResponseData.success();
-//    }
-//    /**
-//     * 查看详情接口
-//     *
-//     * @author
-//     * @Date 2021-09-06
-//     */
-//    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-//    @ApiOperation("详情")
-//    public ResponseData<CompanyRoleResult> detail(@RequestBody CompanyRoleParam companyRoleParam) {
-//        CompanyRole detail = this.companyRoleService.getById(companyRoleParam.getCompanyRoleId());
-//        CompanyRoleResult result = new CompanyRoleResult();
-//        ToolUtil.copyProperties(detail, result);
-//
-//
-//        return ResponseData.success(result);
-//    }
-//
+    /**
+     * 新增接口
+     *
+     * @author
+     * @Date 2021-09-06
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addItem(@RequestBody CompanyRoleParam companyRoleParam) {
+        CompanyRole add = this.companyRoleService.add(companyRoleParam);
+        return ResponseData.success(add);
+    }
+
+    /**
+     * 编辑接口
+     *
+     * @author
+     * @Date 2021-09-06
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData update(@RequestBody CompanyRoleParam companyRoleParam) {
+
+        this.companyRoleService.update(companyRoleParam);
+        return ResponseData.success();
+    }
+
+    /**
+     * 删除接口
+     *
+     * @author
+     * @Date 2021-09-06
+     */
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData delete(@RequestBody CompanyRoleParam companyRoleParam) {
+        this.companyRoleService.delete(companyRoleParam);
+        return ResponseData.success();
+    }
+
+    /**
+     * 批量删除接口
+     *
+     * @param batchDeleteRequest
+     * @return
+     */
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("批量删除")
+    public ResponseData batchDelete(@RequestBody(required = false) BatchDeleteRequest batchDeleteRequest) {
+        this.companyRoleService.batchDelete(batchDeleteRequest.getIds());
+        return ResponseData.success();
+    }
+
+    /**
+     * 查看详情接口
+     *
+     * @author
+     * @Date 2021-09-06
+     */
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData<CompanyRoleResult> detail(@RequestBody CompanyRoleParam companyRoleParam) {
+        CompanyRole detail = this.companyRoleService.getById(companyRoleParam.getCompanyRoleId());
+        CompanyRoleResult result = new CompanyRoleResult();
+        ToolUtil.copyProperties(detail, result);
+
+
+        return ResponseData.success(result);
+    }
+
     /**
      * 查询列表
      *

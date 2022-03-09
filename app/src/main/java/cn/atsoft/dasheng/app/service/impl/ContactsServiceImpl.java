@@ -137,6 +137,10 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isNotEmpty(param.getPositionName())) {                        //职位
             companyRole = roleService.query().eq("company_role_id", param.getPositionName()).one();
             if (ToolUtil.isEmpty(companyRole)) {
+                List<CompanyRole> positions = roleService.query().eq("position", param.getPositionName()).list();
+                if (ToolUtil.isNotEmpty(positions)) {
+                    throw new ServiceException(500, "当前职位以存在");
+                }
                 companyRole = new CompanyRole();
                 companyRole.setPosition(param.getPositionName());
                 roleService.save(companyRole);

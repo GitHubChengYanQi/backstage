@@ -290,7 +290,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<InvoiceResult> invoiceResultList = invoiceService.getDetails(invoiceIds);
 
 
-
         /***
          * 默认地址
          */
@@ -375,37 +374,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             } else if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 0) {
                 record.setClassificationName("代理商");
             }
-            List<InvoiceResult> invoiceResults = new ArrayList<>();
-            for (Invoice invoice : invoices) {      //对比开票
-                if (invoice.getCustomerId().equals(record.getCustomerId())) {
-                    InvoiceResult invoiceResult = new InvoiceResult();
-                    ToolUtil.copyProperties(invoice, invoiceResult);
-//                    record.setInvoiceResult(invoiceResult);
-                    for (BankResult bankResult : bankResults) {
-                        if (ToolUtil.isNotEmpty(invoiceResult.getBankId()) && invoiceResult.getBankId().equals(bankResult.getBankId())){
-                                invoiceResult.setBankResult(bankResult);
-                                break;
-                        }
-                    }
-                    invoiceResults.add(invoiceResult);
-                    record.setInvoiceResults(invoiceResults);
-//                    break;
-                }
-            }
-            record.setInvoiceResults(invoiceResults);
 
 
-
-            for (Invoice invoice : invoices) {      //对比开票
-                if (invoice.getInvoiceId().equals(record.getInvoiceId())) {
-                    InvoiceResult invoiceResult = new InvoiceResult();
-                    ToolUtil.copyProperties(invoice, invoiceResult);
+            for (InvoiceResult invoiceResult : invoiceResultList) {
+                if (ToolUtil.isNotEmpty(record.getInvoiceId()) && record.getInvoiceId().equals(invoiceResult.getInvoiceId())) {
                     record.setInvoiceResult(invoiceResult);
-//                    invoiceResults.add(invoiceResult);
                     break;
                 }
             }
-//            record.setInvoiceResults(invoiceResults);
+
             for (Adress adress : adresses) {
                 if (adress.getAdressId().equals(record.getDefaultAddress())) {
                     record.setAddress(adress);
@@ -438,7 +415,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
             }
             for (UserResult user : userResults) {
-                if (record.getCreateUser().equals(user.getUserId())){
+                if (record.getCreateUser().equals(user.getUserId())) {
                     record.setCreateUserResult(user);
                     break;
                 }

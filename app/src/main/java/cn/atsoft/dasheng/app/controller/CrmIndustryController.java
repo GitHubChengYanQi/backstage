@@ -48,7 +48,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody (required = false) CrmIndustryParam crmIndustryParam) {
+    public ResponseData addItem(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
 //        List<String> pidValue = crmIndustryParam.getPidValue();
 //        crmIndustryParam.setParent_id(pidValue.get(pidValue.size()-1));
         this.crmIndustryService.add(crmIndustryParam);
@@ -63,7 +63,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody(required = false)  CrmIndustryParam crmIndustryParam) {
+    public ResponseData update(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
 
 //        List<String> pidValue = crmIndustryParam.getPidValue();
 //        crmIndustryParam.setParent_id(pidValue.get(pidValue.size()-1));
@@ -79,14 +79,14 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody (required = false) CrmIndustryParam crmIndustryParam) {
+    public ResponseData delete(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
         this.crmIndustryService.delete(crmIndustryParam);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
-    public ResponseData batchDelete(@RequestBody (required = false) BatchDeleteRequest batchDeleteRequest) {
+    public ResponseData batchDelete(@RequestBody(required = false) BatchDeleteRequest batchDeleteRequest) {
         this.crmIndustryService.batchDelete(batchDeleteRequest.getIds());
         return ResponseData.success();
     }
@@ -99,7 +99,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmIndustryResult> detail(@RequestBody (required = false) CrmIndustryParam crmIndustryParam) {
+    public ResponseData<CrmIndustryResult> detail(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
         CrmIndustry detail = this.crmIndustryService.getById(crmIndustryParam.getIndustryId());
         CrmIndustryResult result = new CrmIndustryResult();
         ToolUtil.copyProperties(detail, result);
@@ -144,14 +144,14 @@ public class CrmIndustryController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
-        industryQueryWrapper.in("display",1);
+        industryQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.crmIndustryService.listMaps(industryQueryWrapper);
         CrmIndustrySelectWrapper factory = new CrmIndustrySelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
 
-   /**
+    /**
      * tree列表，treeview格式
      *
      * @author
@@ -160,7 +160,9 @@ public class CrmIndustryController extends BaseController {
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
     public ResponseData<List<TreeNode>> treeView() {
-        List<Map<String, Object>> list = this.crmIndustryService.listMaps();
+        List<Map<String, Object>> list = this.crmIndustryService.listMaps(new QueryWrapper<CrmIndustry>() {{
+            orderByDesc("sort");
+        }});
 
         if (ToolUtil.isEmpty(list)) {
             return ResponseData.success();
@@ -170,8 +172,6 @@ public class CrmIndustryController extends BaseController {
         TreeNode rootTreeNode = new TreeNode();
         rootTreeNode.setKey("0");
         rootTreeNode.setValue("0");
-        rootTreeNode.setLabel("顶级");
-        rootTreeNode.setTitle("顶级");
         rootTreeNode.setParentId("-1");
         treeViewNodes.add(rootTreeNode);
 
@@ -186,7 +186,7 @@ public class CrmIndustryController extends BaseController {
         }
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
-        factory.setRootParentId("-1");
+        factory.setRootParentId("0");
 
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 

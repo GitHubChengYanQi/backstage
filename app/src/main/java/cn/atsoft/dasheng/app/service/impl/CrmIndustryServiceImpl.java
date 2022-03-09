@@ -40,12 +40,8 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
 
     @Override
     public void delete(CrmIndustryParam param) {
-      CrmIndustry byId = this.getById(param.getIndustryId());
-      if (ToolUtil.isEmpty(byId)){
-        throw new ServiceException(500,"删除目标不存在");
-      }
-      param.setDisplay(0);
-      this.update(param);
+        CrmIndustry byId = this.getById(param.getIndustryId());
+        this.removeById(byId);
     }
 
     @Override
@@ -67,9 +63,9 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
     }
 
     @Override
-    public PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param, DataScope dataScope ) {
+    public PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param, DataScope dataScope) {
         Page<CrmIndustryResult> pageContext = getPageContext();
-        IPage<CrmIndustryResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<CrmIndustryResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
 
         List<Long> pids = new ArrayList<>();
         for (CrmIndustryResult item : page.getRecords()) {
@@ -106,12 +102,13 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public void batchDelete(List<Long> ids){
+    public void batchDelete(List<Long> ids) {
         CrmIndustry crmIndustry = new CrmIndustry();
         crmIndustry.setDisplay(0);
         QueryWrapper<CrmIndustry> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("indusry_id");
-        this.update(crmIndustry,queryWrapper);
+        this.update(crmIndustry, queryWrapper);
     }
 }

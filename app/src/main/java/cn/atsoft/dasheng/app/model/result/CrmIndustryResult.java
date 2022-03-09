@@ -1,17 +1,21 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 行业表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-02
  */
 @Data
@@ -27,6 +31,8 @@ public class CrmIndustryResult implements Serializable {
     @ApiModelProperty("行业id")
     private Long industryId;
 
+
+    private Integer sort;
     /**
      * 行业名称
      */

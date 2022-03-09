@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -13,7 +16,7 @@ import java.util.List;
  * 行业表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-02
  */
 @Data
@@ -29,6 +32,8 @@ public class CrmIndustryParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("行业id")
     private Long industryId;
 
+
+    private Integer sort;
     /**
      * 行业名称
      */
@@ -74,6 +79,7 @@ public class CrmIndustryParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;
