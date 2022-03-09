@@ -191,12 +191,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            String oldMd52 = SecureUtil.md5(spuId + entity.getSkuValue());
 
             entity.setSkuValueMd5(md5);
-            if (ToolUtil.isNotEmpty(codingRules)) {
-                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
-                if (skuCount > 0) {
-                    throw new ServiceException(500, "该物料已经存在");
-                }
-            }
+//            if (ToolUtil.isNotEmpty(codingRules)) {
+//                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
+//                if (skuCount > 0) {
+//                    throw new ServiceException(500, "该物料已经存在");
+//                }
+//            }
 //
             /**
              * //TODO 原 SKU防重复判断
