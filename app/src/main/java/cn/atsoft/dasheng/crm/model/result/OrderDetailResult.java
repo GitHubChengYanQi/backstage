@@ -98,7 +98,7 @@ public class OrderDetailResult implements Serializable {
      * 交货日期
      */
     @ApiModelProperty("交货日期")
-    private Date deliveryDate;
+    private Integer deliveryDate;
 
     /**
      * 创建者

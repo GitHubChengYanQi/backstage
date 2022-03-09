@@ -91,7 +91,7 @@ public class OrderDetail implements Serializable {
      * 交货日期
      */
     @TableField("delivery_date")
-    private Date deliveryDate;
+    private Integer deliveryDate;
 
     /**
      * 创建者
@@ -226,11 +226,11 @@ public class OrderDetail implements Serializable {
         this.rate = rate;
     }
 
-    public Date getDeliveryDate() {
+    public Integer getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(Date deliveryDate) {
+    public void setDeliveryDate(Integer deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 
