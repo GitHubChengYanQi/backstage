@@ -165,7 +165,7 @@ public class Order implements Serializable {
      * 乙方开户行账号
      */
     @TableField("party_b_bank_account")
-    private String partyBBankAccount;
+    private String  partyBBankAccount;
 
     /**
      * 乙方法人
