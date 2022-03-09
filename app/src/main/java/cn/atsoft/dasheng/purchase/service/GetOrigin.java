@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
+import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
@@ -46,6 +47,10 @@ public class GetOrigin {
     private OutstockOrderService outstockOrderService;
     @Autowired
     private ProductionPlanService productionPlanService;
+
+    @Autowired
+    private ProductionWorkOrderService workOrderService;
+
 
     public ThemeAndOrigin getOrigin(ThemeAndOrigin themeAndOrigin) {
 //        ThemeAndOrigin themeAndOrigin = JSON.parseObject(Origin, ThemeAndOrigin.class); //将字段中的JSON解析出对象
@@ -256,12 +261,12 @@ public class GetOrigin {
                 json = procurementPlan.getOrigin();
                 break;
             case "workOrder":
-
+                ProductionWorkOrder workOrder = workOrderService.getById(sourceId);
+                json = workOrder.getOrigin();
                 break;
             case "productionPlan":
                 ProductionPlan productionPlan = productionPlanService.getById(sourceId);
                 json = productionPlan.getOrigin();
-
                 break;
             default:
         }

@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -94,6 +95,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Autowired
     private ProcessRouteService processRouteService;
+
+    @Autowired
+    private MediaService mediaService;
 
 
     @Autowired
@@ -935,7 +939,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Sku sku = this.getById(id);
         SkuResult skuResult = new SkuResult();
         ToolUtil.copyProperties(sku, skuResult);
-
+        //返回附件图片等
+        List<Long> filedIds = Arrays.asList(skuResult.getFileId().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        List<String> filedUrls = new ArrayList<>();
+        for (Long filedId : filedIds) {
+            String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+            filedUrls.add(mediaUrl);
+        }
+        skuResult.setFiledUrls(filedUrls);
+//        Arrays.asList(skuResult.get().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         if (ToolUtil.isEmpty(sku)) {
             return new SkuResult();
         }
@@ -953,6 +965,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         skuResult.setBrandIds(brandIds);
+
         skuResult.setBrandResults(brandResults);
 
 

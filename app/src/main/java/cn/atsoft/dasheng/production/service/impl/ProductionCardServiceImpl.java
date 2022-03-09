@@ -114,11 +114,8 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
         this.saveBatch(cardList);
         //更新来源字段
         for (ProductionCard card : cardList) {
-            ThemeAndOrigin themeAndOrigin = getOrigin.originFormat("productionPlan", productionPlanId);
-            themeAndOrigin.setSource("productionCard");
-            themeAndOrigin.setSourceId(card.getProductionCardId());
-            String jsonString = JSON.toJSONString(themeAndOrigin);
-            card.setOrigin(jsonString);
+            String origin = getOrigin.newThemeAndOrigin("productionCard", card.getProductionCardId(), "productionPlan", productionPlanId);
+            card.setOrigin(origin);
         }
         this.updateBatchById(cardList);
     }

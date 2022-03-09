@@ -165,10 +165,8 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             for (ProductionWorkOrder workOrder : workOrders) {
                 workOrder.setSource("productionPlan");
                 workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
-                ThemeAndOrigin themeAndOrigin = origin.originFormat(workOrder.getSource(), workOrder.getSourceId());
-                themeAndOrigin.setSourceId(workOrder.getWorkOrderId());
-                themeAndOrigin.setSource("workOrder");
-                workOrder.setOrigin(JSON.toJSONString(themeAndOrigin));
+                String origin = this.origin.newThemeAndOrigin("workOrder", workOrder.getWorkOrderId(), workOrder.getSource(), workOrder.getSourceId());
+                workOrder.setOrigin(origin);
             }
 
 
