@@ -16,12 +16,10 @@ import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
 import cn.atsoft.dasheng.crm.model.params.InvoiceParam;
+import cn.atsoft.dasheng.crm.model.result.BankResult;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
-import cn.atsoft.dasheng.crm.service.ContactsBindService;
-import cn.atsoft.dasheng.crm.service.InvoiceService;
-import cn.atsoft.dasheng.crm.service.TrackMessageService;
-import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -95,6 +93,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Autowired
     private MessageProducer messageProducer;
+
+    @Autowired
+    private BankService bankService;
 
     @Override
     @FreedLog
@@ -287,6 +288,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
         List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.query().in("customer_id",customerIds).eq("display",1).list();
+        /**
+         * 查询银行
+         */
+        List<Long> bankIds = new ArrayList<>();
+        for (Invoice invoice : invoices) {
+            if (ToolUtil.isNotEmpty(invoice.getBankId())) {
+                bankIds.add(invoice.getBankId());
+            }
+        }
+        List<BankResult> bankResults = bankService.resultsByBankId(bankIds);
+
+
         /***
          * 默认地址
          */
@@ -377,6 +390,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     InvoiceResult invoiceResult = new InvoiceResult();
                     ToolUtil.copyProperties(invoice, invoiceResult);
 //                    record.setInvoiceResult(invoiceResult);
+                    for (BankResult bankResult : bankResults) {
+                        if (ToolUtil.isNotEmpty(invoiceResult.getBankId()) && invoiceResult.getBankId().equals(bankResult.getBankId())){
+                                invoiceResult.setBankResult(bankResult);
+                                break;
+                        }
+                    }
                     invoiceResults.add(invoiceResult);
                     record.setInvoiceResults(invoiceResults);
 //                    break;

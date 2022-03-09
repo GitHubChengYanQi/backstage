@@ -66,4 +66,5 @@ public interface BankService extends IService<Bank> {
      */
      PageInfo<BankResult> findPageBySpec(BankParam param);
 
+    List<BankResult> resultsByBankId(List<Long> ids);
 }

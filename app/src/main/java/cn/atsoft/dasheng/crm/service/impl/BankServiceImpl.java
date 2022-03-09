@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,6 +81,17 @@ public class BankServiceImpl extends ServiceImpl<BankMapper, Bank> implements Ba
         Bank entity = new Bank();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public  List<BankResult> resultsByBankId(List<Long> ids){
+        List<Bank> banks = ids.size() == 0 ? new ArrayList<>() : this.query().in("bank_id", ids).list();
+        List<BankResult> bankResults = new ArrayList<>();
+        for (Bank bank : banks) {
+            BankResult bankResult = new BankResult();
+            ToolUtil.copyProperties(bank,bankResult);
+            bankResults.add(bankResult);
+        }
+        return bankResults;
     }
 
 }
