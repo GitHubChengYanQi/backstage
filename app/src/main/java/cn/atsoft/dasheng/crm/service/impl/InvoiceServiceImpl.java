@@ -12,6 +12,8 @@ import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -70,7 +72,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         IPage<InvoiceResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
-    private void format(List<InvoiceResult> param){
+
+    private void format(List<InvoiceResult> param) {
         List<Long> bankIds = new ArrayList<>();
         for (InvoiceResult invoiceResult : param) {
 
@@ -94,6 +97,19 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         Invoice entity = new Invoice();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    public List<InvoiceResult> getDetails(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<Invoice> invoices = this.listByIds(ids);
+        if (ToolUtil.isEmpty(invoices)) {
+            return new ArrayList<>();
+        }
+        List<InvoiceResult> results = BeanUtil.copyToList(invoices, InvoiceResult.class, new CopyOptions());
+
+        return results;
     }
 
 }
