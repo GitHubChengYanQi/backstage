@@ -483,6 +483,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
     private String materialList(String content, OrderParam orderParam, List<CycleReplace> cycleReplaces) {
 
+        String aa = "";
 
         String regStr = "\\<tr.*data-group=\"物料\"\\>([\\s\\S]*)<\\/tr>";
         Pattern pattern = Pattern.compile(regStr);
@@ -495,12 +496,23 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             for (int i = 0; i < detailParams.size(); i++) {
                 StringBuilder group = new StringBuilder(m.group(0));
                 OrderDetailParam detailParam = detailParams.get(i);
-                if (group.toString().contains("${{sku}}") && ToolUtil.isNotEmpty(detailParam.getSkuId())) {
-                    List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
-                        add(detailParam.getSkuId());
-                    }});
-                    SkuResult skuResult = skuResults.get(0);
-                    group = new StringBuilder(group.toString().replace("${{sku}}", skuResult.getSpuResult().getName() + " / " + skuResult.getSkuName() + " / " + skuResult.getSpecifications()));
+                //-------------------------------------------------------------
+                List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                    add(detailParam.getSkuId());
+                }});
+                //------------------------------------------------------------
+                SkuResult skuResult = skuResults.get(0);
+                if (group.toString().contains("${{coding}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    group = new StringBuilder(group.toString().replace("${{coding}}", skuResult.getStandard()));
+                }
+                if (group.toString().contains("${{spuName}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    group = new StringBuilder(group.toString().replace("${{spuName}}", skuResult.getSpuResult().getName()));
+                }
+                if (group.toString().contains("${{skuName}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    group = new StringBuilder(group.toString().replace("${{skuName}}", skuResult.getSkuName() + "/" + skuResult.getSpecifications()));
+                }
+                if (group.toString().contains("${{skuClass}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    group = new StringBuilder(group.toString().replace("${{skuClass}}", skuResult.getSpuResult().getSpuClassificationResult().getName()));
                 }
                 if (group.toString().contains("${{brand}}") && ToolUtil.isNotEmpty(detailParam.getBrandId())) {
                     Brand brand = brandService.getById(detailParam.getBrandId());
@@ -512,8 +524,12 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 if (group.toString().contains("${{price}}") && ToolUtil.isNotEmpty(detailParam.getOnePrice())) {
                     group = new StringBuilder(group.toString().replace("${{price}}", detailParam.getOnePrice().toString()));
                 }
-                if (group.toString().contains("${{deliveryDate}}") && ToolUtil.isNotEmpty(detailParam.getDeliveryDate())) {
-                    group = new StringBuilder(group.toString().replace("${{deliveryDate}}", detailParam.getDeliveryDate().toString()));
+                if (group.toString().contains("${{deliveryDate}}")) {
+                    if (ToolUtil.isEmpty(detailParam.getDeliveryDate())) {
+                        group = new StringBuilder(group.toString().replace("${{deliveryDate}}", ""));
+                    } else {
+                        group = new StringBuilder(group.toString().replace("${{deliveryDate}}", detailParam.getDeliveryDate().toString()));
+                    }
                 }
                 if (ToolUtil.isNotEmpty(cycleReplaces)) {
                     CycleReplace cycleReplace = cycleReplaces.get(i);

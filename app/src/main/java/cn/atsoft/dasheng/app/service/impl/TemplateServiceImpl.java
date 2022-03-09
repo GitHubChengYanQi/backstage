@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.pojo.Lable;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -153,7 +154,16 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
             Matcher tdMatcher = tdPattern.matcher(group);
             while (tdMatcher.find()) {
                 String s = tdMatcher.group(0);
-                if (s.contains("${{sku}}")) {
+                if (s.contains("${{coding}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{spuName}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{skuName}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{skuClass}}")) {
                     inputs.add(s);
                 }
                 if (s.contains("${{brand}}")) {
@@ -166,6 +176,9 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
                     inputs.add(s);
                 }
                 if (s.contains("${{deliveryDate}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{APhone}}")) {
                     inputs.add(s);
                 }
                 Pattern compile = Pattern.compile(input);
