@@ -165,6 +165,9 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
                 if (s.contains("${{price}}")) {
                     inputs.add(s);
                 }
+                if (s.contains("${{deliveryDate}}")) {
+                    inputs.add(s);
+                }
                 Pattern compile = Pattern.compile(input);
                 Matcher tdMaccher = compile.matcher(s);
                 while (tdMaccher.find()) {

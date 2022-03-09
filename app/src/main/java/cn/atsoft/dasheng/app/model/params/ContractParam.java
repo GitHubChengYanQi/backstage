@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.entity.ContractDetail;
 import cn.atsoft.dasheng.app.pojo.ContractReplace;
+import cn.atsoft.dasheng.app.pojo.CycleReplace;
 import com.baomidou.mybatisplus.annotation.TableField;
 import cn.atsoft.dasheng.crm.pojo.Payment;
 import lombok.Data;
@@ -32,6 +33,8 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     private List<ContractDetail> contractDetailList;
 
     private List<ContractReplace> contractReplaces; //替换
+
+    private List<CycleReplace> cycleReplaces;
     /**
      * 合同分类
      */

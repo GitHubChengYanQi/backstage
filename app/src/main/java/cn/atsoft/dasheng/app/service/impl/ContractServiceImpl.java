@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.pojo.ContractReplace;
+import cn.atsoft.dasheng.app.pojo.CycleReplace;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -508,7 +509,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             } catch (Exception e) {
 
             }
-            String materialList = materialList(content, orderParam.getDetailParams());
+            String materialList = materialList(content, orderParam.getDetailParams(), param.getCycleReplaces());
             contract.setContent(materialList);
             this.save(contract);
             createContractDetail(contract.getContractId(), orderParam);
@@ -516,7 +517,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     }
 
 
-    private String materialList(String content, List<OrderDetailParam> detailParams) {
+    private String materialList(String content, List<OrderDetailParam> detailParams, List<CycleReplace> cycleReplaces) {
 
 
         String regStr = "\\<tr.*data-group=\"物料\"\\>([\\s\\S]*)<\\/tr>";
@@ -525,36 +526,42 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         StringBuffer stringBuffer = new StringBuffer();
         StringBuffer append = stringBuffer.append(content);
         while (m.find()) {
-            String all = "";
+            StringBuilder all = new StringBuilder();
             for (int i = 0; i < detailParams.size(); i++) {
-                String group = m.group(0);
+                StringBuilder group = new StringBuilder(m.group(0));
                 OrderDetailParam detailParam = detailParams.get(i);
-                if (group.contains("${{sku}}") && ToolUtil.isNotEmpty(detailParam.getSkuId())) {
+                if (group.toString().contains("${{sku}}") && ToolUtil.isNotEmpty(detailParam.getSkuId())) {
                     List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
                         add(detailParam.getSkuId());
                     }});
                     SkuResult skuResult = skuResults.get(0);
-                    group = group.replace("${{sku}}", skuResult.getSpuResult().getName() + " / " + skuResult.getSkuName() + " / " + skuResult.getSpecifications());
+                    group = new StringBuilder(group.toString().replace("${{sku}}", skuResult.getSpuResult().getName() + " / " + skuResult.getSkuName() + " / " + skuResult.getSpecifications()));
                 }
-                if (group.contains("${{brand}}") && ToolUtil.isNotEmpty(detailParam.getBrandId())) {
+                if (group.toString().contains("${{brand}}") && ToolUtil.isNotEmpty(detailParam.getBrandId())) {
                     Brand brand = brandService.getById(detailParam.getBrandId());
-                    group = group.replace("${{brand}}", brand.getBrandName());
+                    group = new StringBuilder(group.toString().replace("${{brand}}", brand.getBrandName()));
                 }
-                if (group.contains("${{skuNumber}}") && ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
-                    group = group.replace("${{skuNumber}}", detailParam.getPurchaseNumber().toString());
+                if (group.toString().contains("${{skuNumber}}") && ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
+                    group = new StringBuilder(group.toString().replace("${{skuNumber}}", detailParam.getPurchaseNumber().toString()));
                 }
-                if (group.contains("${{price}}") && ToolUtil.isNotEmpty(detailParam.getOnePrice())) {
-                    group = group.replace("${{price}}", detailParam.getOnePrice().toString());
+                if (group.toString().contains("${{price}}") && ToolUtil.isNotEmpty(detailParam.getOnePrice())) {
+                    group = new StringBuilder(group.toString().replace("${{price}}", detailParam.getOnePrice().toString()));
                 }
-                if (group.contains("${{deliveryDate}}") && ToolUtil.isNotEmpty(detailParam.getDeliveryDate())) {
-                    group = group.replace("${{deliveryDate}}", detailParam.getDeliveryDate().toString());
+                if (group.toString().contains("${{deliveryDate}}") && ToolUtil.isNotEmpty(detailParam.getDeliveryDate())) {
+                    group = new StringBuilder(group.toString().replace("${{deliveryDate}}", detailParam.getDeliveryDate().toString()));
                 }
-                all = all + group;
+                if (ToolUtil.isNotEmpty(cycleReplaces)) {
+                    CycleReplace cycleReplace = cycleReplaces.get(i);
+                    for (CycleReplace.Cycle cycle : cycleReplace.getCycles()) {
+                        group = new StringBuilder(group.toString().replace(cycle.getOldText(), cycle.getNewText()));
+                    }
+                }
+                all.append(group);
             }
+
             String group = m.group(0);
             String string = append.toString();
-            String replaceAll = string.replace(group, all);
-            return replaceAll;
+            return string.replace(group, all.toString());
         }
 
         return content;
@@ -576,7 +583,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             contractDetail.setContractId(param.getSellerId());
             contractDetail.setSkuId(detailParam.getSkuId());
             contractDetail.setBrandId(detailParam.getBrandId());
-            contractDetail.setQuantity(Math.toIntExact(detailParam.getPurchaseNumber()));
+            if (ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
+                contractDetail.setQuantity(Math.toIntExact(detailParam.getPurchaseNumber()));
+            }
             details.add(contractDetail);
         }
         contractDetailService.saveBatch(details);
