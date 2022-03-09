@@ -161,7 +161,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     public void outBound(List<OutstockListingParam> listings) {
         List<StockDetails> details = stockDetailsService.query().orderByAsc("create_time").list();
         for (OutstockListingParam listing : listings) {
-            if (listing.getBrandId() == 0) {
+            if (ToolUtil.isEmpty(listing.getBrandId())) {
                 AnyBrandOutBound(listing, details); //任意品牌
             } else {
                 SkuBrandOutBound(listing, details);
@@ -180,7 +180,17 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
      * @param details
      */
     private void AnyBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
-        long number;
+        long number = 0;
+
+        for (StockDetails detail : details) {
+            if (listingParam.getSkuId().equals(detail.getSkuId()) && listingParam.getPositionsId().equals(detail.getStorehousePositionsId())) {
+                number = number + detail.getNumber();
+            }
+        }
+        if (listingParam.getNumber() > number) {
+            throw new ServiceException(500, "数量不足");
+        }
+        number = 0;
         for (StockDetails detail : details) {
             if (detail.getStage() == 1) {
                 if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
@@ -198,7 +208,18 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
     private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
-        long number;
+        long number = 0;
+        for (StockDetails detail : details) {
+            if (listingParam.getSkuId().equals(detail.getSkuId())
+                    && listingParam.getBrandId().equals(detail.getBrandId())
+                    && listingParam.getPositionsId().equals(detail.getStorehousePositionsId())) {
+                number = number + detail.getNumber();
+            }
+        }
+        if (listingParam.getNumber() > number) {
+            throw new ServiceException(500, "数量不足");
+        }
+        number = 0;
         for (StockDetails detail : details) {
             if (detail.getStage() == 1) {
                 if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
