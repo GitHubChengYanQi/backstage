@@ -186,8 +186,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                     break;
                 } else {
                     stockDetailsService.removeById(detail);
-                    details.remove(detail);
                     listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                    details.remove(detail);
+                    if (ToolUtil.isEmpty(details)) {
+                        break;
+                    }
                 }
             }
         }
@@ -195,7 +198,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number;
-        details.forEach();
         for (StockDetails detail : details) {
             if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
                     && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
@@ -205,8 +207,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                     break;
                 } else {
                     stockDetailsService.removeById(detail);
-                    details.remove(detail);
                     listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                    details.remove(detail);
+                    if (ToolUtil.isEmpty(details)) {
+                        break;
+                    }
                 }
             }
         }
