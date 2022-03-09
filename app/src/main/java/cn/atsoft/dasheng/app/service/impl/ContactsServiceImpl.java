@@ -69,6 +69,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Autowired
     private CompanyRoleService roleService;
 
+
     @Override
     @FreedLog
     public Contacts add(ContactsParam param) {
@@ -82,16 +83,9 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
         }
 
-        Integer count = phoneNumber.size() == 0 ? 0 : phoneService.lambdaQuery().in(Phone::getPhoneNumber, phoneNumber).count();
+        int count = phoneNumber.size() == 0 ? 0 : phoneService.lambdaQuery().in(Phone::getPhoneNumber, phoneNumber).count();
         if (count > 0) {
             throw new ServiceException(500, "电话已经重复");
-        }
-
-        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
-            ContactsBindParam contactsBindParam = new ContactsBindParam();
-            contactsBindParam.setCustomerId(param.getCustomerId());
-            contactsBindParam.setContactsId(entity.getContactsId());
-            contactsBindService.add(contactsBindParam);
         }
 
         // 添加电话号码
@@ -107,18 +101,48 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
         }
 
+        if (ToolUtil.isNotEmpty(param.getDeptName())) {   //部门
+            DaoxinDept daoxinDept = daoxinDeptService.query().eq("full_name", param.getDeptName()).one();
+            if (ToolUtil.isNotEmpty(daoxinDept)) {
+                entity.setDeptId(daoxinDept.getDeptId());
+            } else {
+                DaoxinDept newDept = new DaoxinDept();
+                newDept.setFullName(param.getDeptName());
+                daoxinDeptService.save(newDept);
+                entity.setDeptId(newDept.getDeptId());
+            }
+        }
 
+        if (ToolUtil.isNotEmpty(param.getPositionName())) {
+            CompanyRole position = roleService.query().eq("position", param.getPositionName()).one();
+            if (ToolUtil.isNotEmpty(position)) {
+                entity.setPositionId(position.getCompanyRoleId());
+            } else {
+                CompanyRole newRole = new CompanyRole();
+                newRole.setPosition(param.getPositionName());
+                roleService.save(newRole);
+                entity.setPositionId(newRole.getCompanyRoleId());
+            }
+        }
+
+        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+            ContactsBindParam contactsBindParam = new ContactsBindParam();
+            contactsBindParam.setCustomerId(param.getCustomerId());
+            contactsBindParam.setContactsId(entity.getContactsId());
+            contactsBindService.add(contactsBindParam);
+        }
+
+        this.updateById(entity);
         return entity;
 
     }
 
     @Override
     public Long insert(ContactsParam param) {
-        Contacts contacts = null;
+        Contacts contacts;
         DaoxinDept daoxinDept = null;
-        Position position = null;
         CompanyRole companyRole = null;
-        contacts = this.query().eq("contacts_id", param.getContactsName()).one();   //联系人
+        contacts = this.query().eq("contacts_name", param.getContactsName()).one();   //联系人
         if (ToolUtil.isNotEmpty(contacts)) {
             return contacts.getContactsId();
         }
@@ -127,7 +151,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         this.save(contacts);
 
         if (ToolUtil.isNotEmpty(param.getDeptName())) {                             //部门
-            daoxinDept = daoxinDeptService.query().eq("dept_id", param.getContactsName()).one();
+            daoxinDept = daoxinDeptService.query().eq("full_name", param.getContactsName()).one();
             if (ToolUtil.isEmpty(daoxinDept)) {
                 daoxinDept = new DaoxinDept();
                 daoxinDept.setFullName(param.getDeptName());
@@ -135,7 +159,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
         }
         if (ToolUtil.isNotEmpty(param.getPositionName())) {                        //职位
-            companyRole = roleService.query().eq("company_role_id", param.getPositionName()).one();
+            companyRole = roleService.query().eq("position", param.getPositionName()).one();
             if (ToolUtil.isEmpty(companyRole)) {
                 List<CompanyRole> positions = roleService.query().eq("position", param.getPositionName()).list();
                 if (ToolUtil.isNotEmpty(positions)) {
