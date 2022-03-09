@@ -165,7 +165,7 @@ public class Order implements Serializable {
      * 乙方开户行账号
      */
     @TableField("party_b_bank_account")
-    private Long partyBBankAccount;
+    private String partyBBankAccount;
 
     /**
      * 乙方法人
@@ -201,7 +201,7 @@ public class Order implements Serializable {
      * 甲方开户行账号
      */
     @TableField("party_a_bank_account")
-    private Long partyABankAccount;
+    private String partyABankAccount;
 
     /**
      * 甲方法人
@@ -307,11 +307,11 @@ public class Order implements Serializable {
         this.partyBBankId = partyBBankId;
     }
 
-    public Long getPartyBBankAccount() {
+    public String getPartyBBankAccount() {
         return partyBBankAccount;
     }
 
-    public void setPartyBBankAccount(Long partyBBankAccount) {
+    public void setPartyBBankAccount(String partyBBankAccount) {
         this.partyBBankAccount = partyBBankAccount;
     }
 
@@ -355,11 +355,11 @@ public class Order implements Serializable {
         this.partyABankId = partyABankId;
     }
 
-    public Long getPartyABankAccount() {
+    public String getPartyABankAccount() {
         return partyABankAccount;
     }
 
-    public void setPartyABankAccount(Long partyABankAccount) {
+    public void setPartyABankAccount(String partyABankAccount) {
         this.partyABankAccount = partyABankAccount;
     }
 
