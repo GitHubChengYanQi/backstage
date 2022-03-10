@@ -166,7 +166,7 @@ public class Invoice implements Serializable {
         return bankAccount;
     }
 
-    public void setBankAccount(String bankAccount) {
+    public void setBankAccount(String  bankAccount) {
         this.bankAccount = bankAccount;
     }
 

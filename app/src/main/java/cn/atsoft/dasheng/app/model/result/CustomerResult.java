@@ -98,7 +98,7 @@ public class CustomerResult implements Serializable {
      * 注册资本
      */
     @ApiModelProperty("注册资本")
-    private Long registeredCapital;
+    private String registeredCapital;
 
     /**
      * 传真

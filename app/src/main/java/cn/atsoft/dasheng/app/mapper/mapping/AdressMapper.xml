@@ -9,6 +9,7 @@
         <result column="longitude" property="longitude"/>
         <result column="latitude" property="latitude"/>
         <result column="address_remark" property="addressRemark"/>
+        <result column="address_name" property="addressName"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -24,7 +25,7 @@
     <sql id="Base_Column_List">detail_location
     AS "detailLocation",
         region
-        AS "region" , adress_id AS "adressId", location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
+        AS "region" , adress_id AS "adressId", address_name AS "addressName",location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
     </sql>
 
 

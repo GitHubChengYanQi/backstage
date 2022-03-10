@@ -53,7 +53,7 @@ public class Customer implements Serializable {
      * 注册资本
      */
     @TableField("registered_capital")
-    private Long registeredCapital;
+    private String registeredCapital;
 
     /**
      * 传真
@@ -267,11 +267,11 @@ public class Customer implements Serializable {
         this.defaultAddress = defaultAddress;
     }
 
-    public Long getRegisteredCapital() {
+    public String getRegisteredCapital() {
         return registeredCapital;
     }
 
-    public void setRegisteredCapital(Long registeredCapital) {
+    public void setRegisteredCapital(String registeredCapital) {
         this.registeredCapital = registeredCapital;
     }
 

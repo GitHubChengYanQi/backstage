@@ -43,6 +43,12 @@ public class AdressParam implements Serializable, BaseValidatingParam {
     private String location;
 
     /**
+     * 地址名称
+     */
+    @ApiModelProperty("地址名称")
+    private String addressName;
+
+    /**
      * 地址
      */
     @ApiModelProperty("地址备注")
