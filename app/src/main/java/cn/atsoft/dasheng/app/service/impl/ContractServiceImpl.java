@@ -537,8 +537,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                         group = new StringBuilder(group.toString().replace(cycle.getOldText(), cycle.getNewText()));
                     }
                 }
-                String replace = replace(group.toString(), orderParam);
-                group.append(replace);
                 all.append(group);
             }
 
