@@ -42,6 +42,9 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
     @Override
     public Long add(InvoiceParam param) {
+        if (ToolUtil.isEmpty(param.getBankAccount()) || ToolUtil.isEmpty(param.getBankNo()) || ToolUtil.isEmpty(param.getBankId())) {
+            throw new ServiceException(500, "请填写完整银行信息");
+        }
         Invoice entity = getEntity(param);
         this.save(entity);
         return entity.getInvoiceId();

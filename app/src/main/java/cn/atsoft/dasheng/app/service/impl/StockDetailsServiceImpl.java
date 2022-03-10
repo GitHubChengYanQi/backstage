@@ -31,7 +31,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -53,6 +55,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private SkuService skuService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private PartsService partsService;
 
 
     @Override
@@ -128,7 +132,36 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         return detailsResults;
     }
 
+    public void toBeProduced(List<List<Long>> skuIds) {
+        for (List<Long> skuId : skuIds) {
+
+            for (Long id : skuId) {
+                Parts parts = partsService.query().eq("sku_id", id).eq("status", 99).one();
+                PartsResult bom = partsService.getBOM(parts.getPartsId(), "1");
+            }
+        }
+
+    }
+
+    private Map<Long, Integer> getNumber(PartsResult result, int shu) {
+
+        if (ToolUtil.isNotEmpty(result.getParts())) {
+
+            for (ErpPartsDetailResult part : result.getParts()) {
+
+                if (ToolUtil.isNotEmpty(part)) {
+
+                    Map<Long, Integer> number = getNumber(part.getPartsResult(), part.getNumber());
+                }
+            }
+        }
+
+        return new HashMap<>();
+    }
+
+
     @Override
+
     public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
         Page<StockDetailsResult> pageContext = getPageContext();
         IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);

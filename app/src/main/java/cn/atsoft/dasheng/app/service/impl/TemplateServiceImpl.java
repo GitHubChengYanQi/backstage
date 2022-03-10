@@ -1,15 +1,14 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Contacts;
-import cn.atsoft.dasheng.app.pojo.Lable;
-import cn.atsoft.dasheng.base.pojo.page.PageFactory;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.mapper.TemplateMapper;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
+import cn.atsoft.dasheng.app.pojo.Lable;
 import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.base.pojo.page.PageFactory;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
@@ -175,6 +174,18 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
                 if (s.contains("${{price}}")) {
                     inputs.add(s);
                 }
+                if (s.contains("${{unit}}")) {        //单位
+                    inputs.add(s);
+                }
+                if (s.contains("${{totalPrice}}")) {  //总价
+                    inputs.add(s);
+                }
+                if (s.contains("${{amount}}")) {  //总计
+                    inputs.add(s);
+                }
+                if (s.contains("${{amountStr}}")) { //总计汉字
+                    inputs.add(s);
+                }
                 if (s.contains("${{deliveryDate}}")) {
                     inputs.add(s);
                 }
@@ -207,4 +218,5 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         lable.setInputs(inputs);
         return lable;
     }
+
 }

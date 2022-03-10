@@ -16,13 +16,17 @@ import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
+import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.service.BankService;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
+import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
@@ -35,9 +39,11 @@ import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
+import cn.hutool.core.convert.NumberChineseFormatter;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.unit.DataUnit;
+import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -66,10 +72,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
-
     @Autowired
     private ContractService contractService;
-
     @Autowired
     private ContactsService contactsService;
     @Autowired
@@ -80,17 +84,18 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private CustomerService customerService;
     @Autowired
     private TemplateService templateService;
-
-    @Autowired
-    private MessageProducer messageProducer;
-
     @Autowired
     private GetOrigin getOrigin;
-
     @Autowired
     private SkuService skuService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private BankService bankService;
+    @Autowired
+    private InvoiceService invoiceService;
+    @Autowired
+    private UnitService unitService;
 
     @Override
     public ContractResult detail(Long id) {
@@ -524,6 +529,13 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 if (group.toString().contains("${{price}}") && ToolUtil.isNotEmpty(detailParam.getOnePrice())) {
                     group = new StringBuilder(group.toString().replace("${{price}}", detailParam.getOnePrice().toString()));
                 }
+                if (group.toString().contains("${{unit}}")) {        //单位
+                    Unit unit = unitService.getById(detailParam.getUnitId());
+                    group = new StringBuilder(group.toString().replace("${{unit}}", unit.getUnitName()));
+                }
+                if (group.toString().contains("${{totalPrice}}")) {  //总价
+                    group = new StringBuilder(group.toString().replace("${{totalPrice}}", detailParam.getTotalPrice().toString()));
+                }
                 if (group.toString().contains("${{deliveryDate}}")) {
                     if (ToolUtil.isEmpty(detailParam.getDeliveryDate())) {
                         group = new StringBuilder(group.toString().replace("${{deliveryDate}}", ""));
@@ -539,10 +551,18 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
                 all.append(group);
             }
-
+            String toString = all.toString();
+            if (toString.contains("${{amount}}")) {  //总计
+                toString = toString.replace("${{amount}}", orderParam.getPaymentParam().getMoney().toString());
+            }
+            if (toString.contains("${{amountStr}}")) {  //总计
+                Integer money = orderParam.getPaymentParam().getMoney();
+                String format = NumberChineseFormatter.format(money, true, true);
+                toString = toString.replace("${{amountStr}}", format);
+            }
             String group = m.group(0);
             String string = append.toString();
-            return string.replace(group, all.toString());
+            return string.replace(group, toString);
         }
 
         return content;
@@ -612,6 +632,23 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         if (content.contains("${{BCustomer}}") && ToolUtil.isNotEmpty(orderParam.getSellerId())) {
             Customer customer = customerService.getById(orderParam.getSellerId());
             content = content.replace("${{BCustomer}}", customer.getCustomerName());
+        }
+
+        if (content.contains("${{Abank}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankId())) {
+            Bank bank = bankService.getById(orderParam.getPartyABankId());
+            content = content.replace("${{Abank}}", bank.getBankName());
+        }
+        if (content.contains("${{Bbank}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankId())) {
+            Bank bank = bankService.getById(orderParam.getPartyBBankId());
+            content = content.replace("${{Bbank}}", bank.getBankName());
+        }
+        if (content.contains("${{AAccount}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankAccount())) {
+            Invoice invoice = invoiceService.getById(orderParam.getPartyABankAccount());
+            content = content.replace("${{AAccount}}", invoice.getBankAccount());
+        }
+        if (content.contains("${{BAccount}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankAccount())) {
+            Invoice invoice = invoiceService.getById(orderParam.getPartyBBankAccount());
+            content = content.replace("${{BAccount}}", invoice.getBankAccount());
         }
         return content;
     }
