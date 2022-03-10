@@ -779,10 +779,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             if (payGroup.contains("pay")) {
                 String replace = "";
                 for (PaymentDetailParam detailParam : orderParam.getPaymentParam().getDetailParams()) {
-                    if (content.contains("${{detailMoney}}")) {      //金额
+                    if (content.contains("${{detailMoney}}") && ToolUtil.isNotEmpty(detailParam.getMoney())) {      //金额
                         content = content.replace("${{detailMoney}}", detailParam.getMoney().toString());
                     }
-                    if (content.contains("${{detailPayType}}")) {    //财务详情方式
+                    if (content.contains("${{detailPayType}}") && ToolUtil.isNotEmpty(detailParam.getPayType())) {    //财务详情方式
                         String payType = "";
                         switch (detailParam.getPayType()) {
                             case 0:
@@ -803,7 +803,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                         }
                         content = content.replace("${{detailPayType}}", payType);
                     }
-                    if (content.contains("${{detailDateWay}}")) {     //日期方式
+                    if (content.contains("${{detailDateWay}}") && ToolUtil.isNotEmpty(detailParam.getDateWay())) {     //日期方式
                         String dateWay = "";
                         switch (detailParam.getDateWay()) {
                             case 0:
@@ -818,10 +818,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                         }
                         content = content.replace("${{detailDateWay}}", dateWay);
                     }
-                    if (content.contains("${{percentum}}")) {    //比例
+                    if (content.contains("${{percentum}}") && ToolUtil.isNotEmpty(detailParam.getPercentum())) {    //比例
                         content = content.replace("${{percentum}}", detailParam.getPercentum().toString());
                     }
-                    if (content.contains("${{DetailPayRemark}}")) {    //款项说明
+                    if (content.contains("${{DetailPayRemark}}") && ToolUtil.isNotEmpty(detailParam.getRemark())) {    //款项说明
                         content = content.replace("${{DetailPayRemark}}", detailParam.getRemark());
                     }
                 }
