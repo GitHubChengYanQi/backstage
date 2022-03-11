@@ -10,4 +10,6 @@ public class Lable {
 
     public List<String> inputs;
 
+    public List<String> pays;
+
 }

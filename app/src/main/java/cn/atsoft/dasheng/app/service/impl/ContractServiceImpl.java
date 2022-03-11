@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.pojo.ContractReplace;
 import cn.atsoft.dasheng.app.pojo.CycleReplace;
+import cn.atsoft.dasheng.app.pojo.PayReplace;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -485,7 +486,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             content = replace(content, orderParam);
             String materialList = materialList(content, orderParam, param.getCycleReplaces());  //替换sku
             String replace = replace(materialList, orderParam); //全局替换
-            String payList = payList(replace, orderParam);  //替换付款方式
+            String payList = payList(replace, orderParam, param.getPayReplaces());  //替换付款方式
             contract.setContent(payList);
             this.save(contract);
             createContractDetail(contract.getContractId(), orderParam);
@@ -770,14 +771,15 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
      * @param orderParam
      * @return
      */
-    private String payList(String content, OrderParam orderParam) {
+    private String payList(String content, OrderParam orderParam, List<PayReplace> payReplaces) {
         String regStr = "\\<tr(.*?)\\>([\\w\\W]+?)<\\/tr>";
         Pattern pattern = Pattern.compile(regStr);
         Matcher m = pattern.matcher(content);
         while (m.find()) {
             String payGroup = m.group(0);
             if (payGroup.contains("pay")) {
-                String replace = "";
+                StringBuffer stringBuffer = new StringBuffer();
+                int i = 0;
                 for (PaymentDetailParam detailParam : orderParam.getPaymentParam().getDetailParams()) {
                     if (content.contains("${{detailMoney}}") && ToolUtil.isNotEmpty(detailParam.getMoney())) {      //金额
                         content = content.replace("${{detailMoney}}", detailParam.getMoney().toString());
@@ -828,9 +830,19 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                         DateTime date = DateUtil.date(detailParam.getPayTime());
                         content = content.replace("${{DetailPayDate}}", date.toString());
                     }
+                    if (ToolUtil.isNotEmpty(payReplaces)) {
+
+                        PayReplace payReplace = payReplaces.get(i);
+                        for (PayReplace.PayCycle cycle : payReplace.cycles) {
+                            content = content.replace(cycle.getOldText(), cycle.getNewText());
+                        }
+
+                    }
+                    stringBuffer.append(content);
+                    i++;
                 }
-                replace = replace + content;
-                content = content.replace(payGroup, replace);
+                String string = stringBuffer.toString();
+                content = content.replace(payGroup, string);
             }
         }
         return content;
