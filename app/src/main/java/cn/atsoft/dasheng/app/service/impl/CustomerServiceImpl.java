@@ -384,13 +384,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
 
             }
+            List<InvoiceResult> invoiceResults = new ArrayList<>();
             for (InvoiceResult resultsByCus : invoiceResultsByCus) {
-                List<InvoiceResult> invoiceResults = new ArrayList<>();
                 if (resultsByCus.getCustomerId().equals(record.getCustomerId())) {
                     invoiceResults.add(resultsByCus);
                 }
-                record.setInvoiceResults(invoiceResults);
             }
+            record.setInvoiceResults(invoiceResults);
 
             for (Adress adress : adresses) {
                 if (adress.getAdressId().equals(record.getDefaultAddress())) {
