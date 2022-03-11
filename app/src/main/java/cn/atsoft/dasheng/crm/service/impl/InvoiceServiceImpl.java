@@ -145,4 +145,37 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         return results;
     }
 
+    /**
+     * 通过供应商取
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<InvoiceResult> getDetailsByCustomerIds(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<Invoice> invoices = this.query().in("customer_id", ids).eq("display", 1).list();
+        if (ToolUtil.isEmpty(invoices)) {
+            return new ArrayList<>();
+        }
+        List<InvoiceResult> results = BeanUtil.copyToList(invoices, InvoiceResult.class, new CopyOptions());
+        List<Long> bankIds = new ArrayList<>();
+        for (InvoiceResult result : results) {
+            bankIds.add(result.getBankId());
+        }
+        List<Bank> banks = bankIds.size() == 0 ? new ArrayList<>() : bankService.listByIds(bankIds);
+        List<BankResult> bankResults = BeanUtil.copyToList(banks, BankResult.class);
+
+        for (InvoiceResult result : results) {
+            for (BankResult bankResult : bankResults) {
+                if (ToolUtil.isNotEmpty(result.getBankId()) && bankResult.getBankId().equals(result.getBankId())) {
+                    result.setBankResult(bankResult);
+                    break;
+                }
+            }
+        }
+        return results;
+    }
 }

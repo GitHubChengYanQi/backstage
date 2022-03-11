@@ -776,15 +776,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Pattern pattern = Pattern.compile(regStr);
         Matcher m = pattern.matcher(content);
         while (m.find()) {
-            String payGroup = m.group(0);
-            if (payGroup.contains("pay")) {
+            String Group = m.group(0);
+            if (Group.contains("pay")) {
                 StringBuffer stringBuffer = new StringBuffer();
                 int i = 0;
                 for (PaymentDetailParam detailParam : orderParam.getPaymentParam().getDetailParams()) {
-                    if (content.contains("${{detailMoney}}") && ToolUtil.isNotEmpty(detailParam.getMoney())) {      //金额
-                        content = content.replace("${{detailMoney}}", detailParam.getMoney().toString());
+                    String payGroup = m.group(0);
+                    if (payGroup.contains("${{detailMoney}}") && ToolUtil.isNotEmpty(detailParam.getMoney())) {      //金额
+                        payGroup = payGroup.replace("${{detailMoney}}", detailParam.getMoney().toString());
                     }
-                    if (content.contains("${{detailPayType}}") && ToolUtil.isNotEmpty(detailParam.getPayType())) {    //财务详情方式
+                    if (payGroup.contains("${{detailPayType}}") && ToolUtil.isNotEmpty(detailParam.getPayType())) {    //财务详情方式
                         String payType = "";
                         switch (detailParam.getPayType()) {
                             case 0:
@@ -803,9 +804,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                                 payType = "入库后";
                                 break;
                         }
-                        content = content.replace("${{detailPayType}}", payType);
+                        payGroup = payGroup.replace("${{detailPayType}}", payType);
                     }
-                    if (content.contains("${{detailDateWay}}") && ToolUtil.isNotEmpty(detailParam.getDateWay())) {     //日期方式
+                    if (payGroup.contains("${{detailDateWay}}") && ToolUtil.isNotEmpty(detailParam.getDateWay())) {     //日期方式
                         String dateWay = "";
                         switch (detailParam.getDateWay()) {
                             case 0:
@@ -818,31 +819,37 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                                 dateWay = "年";
                                 break;
                         }
-                        content = content.replace("${{detailDateWay}}", dateWay);
+                        payGroup = payGroup.replace("${{detailDateWay}}", dateWay);
                     }
-                    if (content.contains("${{percentum}}") && ToolUtil.isNotEmpty(detailParam.getPercentum())) {    //比例
-                        content = content.replace("${{percentum}}", detailParam.getPercentum().toString());
+                    if (payGroup.contains("${{percentum}}") && ToolUtil.isNotEmpty(detailParam.getPercentum())) {    //比例
+                        payGroup = payGroup.replace("${{percentum}}", detailParam.getPercentum().toString());
                     }
-                    if (content.contains("${{DetailPayRemark}}") && ToolUtil.isNotEmpty(detailParam.getRemark())) {    //款项说明
-                        content = content.replace("${{DetailPayRemark}}", detailParam.getRemark());
+                    if (payGroup.contains("${{DetailPayRemark}}") && ToolUtil.isNotEmpty(detailParam.getRemark())) {    //款项说明
+                        payGroup = payGroup.replace("${{DetailPayRemark}}", detailParam.getRemark());
                     }
-                    if (content.contains("${{DetailPayDate}}") && ToolUtil.isNotEmpty(detailParam.getPayTime())) {    //付款时间
-                        DateTime date = DateUtil.date(detailParam.getPayTime());
-                        content = content.replace("${{DetailPayDate}}", date.toString());
+                    if (payGroup.contains("${{DetailPayDate}}")) {    //付款时间
+                        if (ToolUtil.isNotEmpty(detailParam.getPayTime())) {
+                            DateTime date = DateUtil.date(detailParam.getPayTime());
+                            payGroup = payGroup.replace("${{DetailPayDate}}", date.toString());
+                        } else {
+                            payGroup = payGroup.replace("${{DetailPayDate}}", "");
+                        }
+
                     }
                     if (ToolUtil.isNotEmpty(payReplaces)) {
 
                         PayReplace payReplace = payReplaces.get(i);
                         for (PayReplace.PayCycle cycle : payReplace.cycles) {
-                            content = content.replace(cycle.getOldText(), cycle.getNewText());
+                            payGroup = payGroup.replace(cycle.getOldText(), cycle.getNewText());
                         }
 
                     }
-                    stringBuffer.append(content);
+                    stringBuffer.append(payGroup);
                     i++;
                 }
                 String string = stringBuffer.toString();
-                content = content.replace(payGroup, string);
+                content = content.replace(Group, string);
+                return content;
             }
         }
         return content;

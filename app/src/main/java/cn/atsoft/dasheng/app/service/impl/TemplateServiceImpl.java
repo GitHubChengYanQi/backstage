@@ -135,10 +135,10 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         }
         String content = template.getContent();
 
-        String regStr = "\\<tr.*data-group=\"物料\"\\>([\\s\\S]*)<\\/tr>";
+        String regStr = "\\<tr.*data-group=\"sku\"\\>([\\w\\W]+?)<\\/tr>";
         String input = "\\<input (.*?)\\>";
         String td = "\\<td(.*?)\\/td\\>";
-        String pay = "\\<tr.*data-group=\"pay\"\\>([\\s\\S]*)<\\/tr>";
+        String pay = "\\<tr.*data-group=\"pay\"\\>([\\w\\W]+?)<\\/tr>";
 
         Pattern p = Pattern.compile(regStr);
         Matcher m = p.matcher(content);//开始编译
@@ -153,32 +153,37 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         List<String> resultList = new ArrayList<>();
 
         while (payMathcer.find()) {
-            String s = payMathcer.group(0);
-            if (s.contains("${{detailMoney}}")) {      //金额
-                pays.add(s);
-            }
-            if (s.contains("${{detailPayType}}")) {      //财务详情方式
-                pays.add(s);
-            }
-            if (s.contains("${{detailDateWay}}")) {      //日期方式
-                pays.add(s);
-            }
-            if (s.contains("${{percentum}}")) {      //比例
-                pays.add(s);
-            }
-            if (s.contains("${{DetailPayRemark}}")) {      //款项说明
-                pays.add(s);
-            }
-            if (s.contains("${{DetailPayDate}}")) {      //付款时间
-                pays.add(s);
-            }
-            Pattern compile = Pattern.compile(input);
-            Matcher tdMaccher = compile.matcher(s);
-            while (tdMaccher.find()) {
-                String group1 = tdMaccher.group(0);
-                if (s.contains(group1)) {
+            String group = payMathcer.group(0);
+            Pattern tdPattern = Pattern.compile(td);
+            Matcher tdMatcher = tdPattern.matcher(group);
+            while (tdMatcher.find()) {
+                String s = tdMatcher.group(0);
+                if (s.contains("${{detailMoney}}")) {      //金额
                     pays.add(s);
-                    content = content.replace(s, "");
+                }
+                if (s.contains("${{detailPayType}}")) {      //财务详情方式
+                    pays.add(s);
+                }
+                if (s.contains("${{detailDateWay}}")) {      //日期方式
+                    pays.add(s);
+                }
+                if (s.contains("${{percentum}}")) {      //比例
+                    pays.add(s);
+                }
+                if (s.contains("${{DetailPayRemark}}")) {      //款项说明
+                    pays.add(s);
+                }
+                if (s.contains("${{DetailPayDate}}")) {      //付款时间
+                    pays.add(s);
+                }
+                Pattern compile = Pattern.compile(input);
+                Matcher tdMaccher = compile.matcher(s);
+                while (tdMaccher.find()) {
+                    String group1 = tdMaccher.group(0);
+                    if (s.contains(group1)) {
+                        pays.add(s);
+                        content = content.replace(s, "");
+                    }
                 }
             }
         }

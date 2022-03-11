@@ -268,7 +268,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             userIds.add(record.getUserId());
             userIds.add(record.getCreateUser());
             industryIds.add(record.getIndustryId());
-//            dycustomerIds.add(record.getCustomerId());
             customerIds.add(record.getCustomerId());
             customerId = record.getCustomerId();
             invoiceIds.add(record.getInvoiceId());
@@ -288,6 +287,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
         List<InvoiceResult> invoiceResultList = invoiceService.getDetails(invoiceIds);
+        List<InvoiceResult> invoiceResultsByCus = invoiceService.getDetailsByCustomerIds(customerIds);
 
 
         /***
@@ -377,10 +377,19 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
 
             for (InvoiceResult invoiceResult : invoiceResultList) {
+
                 if (ToolUtil.isNotEmpty(record.getInvoiceId()) && record.getInvoiceId().equals(invoiceResult.getInvoiceId())) {
                     record.setInvoiceResult(invoiceResult);
                     break;
                 }
+
+            }
+            for (InvoiceResult resultsByCus : invoiceResultsByCus) {
+                List<InvoiceResult> invoiceResults = new ArrayList<>();
+                if (resultsByCus.getCustomerId().equals(record.getCustomerId())) {
+                    invoiceResults.add(resultsByCus);
+                }
+                record.setInvoiceResults(invoiceResults);
             }
 
             for (Adress adress : adresses) {
