@@ -36,10 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -148,137 +145,6 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
 
-    public void getProductionPlan(Long procuntionId) {
-        ProductionPlan productionPlan = productionPlanService.getById(procuntionId);
-        List<ProductionPlanDetail> productionPlanDetails = productionPlanDetailService.list(new QueryWrapper<ProductionPlanDetail>() {{
-            eq("production_plan_id", procuntionId);
-        }});
-        List<Long> skuIds = new ArrayList<>();
-        for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
-            skuIds.add(productionPlanDetail.getSkuId());
-        }
-        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("type", 2).eq("status", 99).list();
-        List<PartsResult> bomList = new ArrayList<>();
-        for (Parts part : parts) {
-            PartsResult bom = partsService.getBOM(part.getPartsId(), "1");
-            bomList.add(bom);
-        }
-        List<List<Long>> skuIdsCollent = new ArrayList<>();
-        skuPartsMakeUp(skuIds, skuIds.size(), 0, skuIdsCollent);
-
-        toBeProduced1(skuIdsCollent, bomList);
-
-
-    }
-
-
-    public void toBeProduced1(List<List<Long>> skuIds, List<PartsResult> bomList) {
-        List<StockDetails> details = merge();
-        for (List<Long> skuId : skuIds) {
-            skuBom(skuId, bomList, details);
-        }
-
-    }
-
-    private void skuBom(List<Long> skuId, List<PartsResult> bomList, List<StockDetails> details) {
-        for (Long id : skuId) {
-            for (PartsResult bom : bomList) {
-                if (bom.getSkuId().equals(id)) {
-                    Parts parts = partsService.query().eq("sku_id", id).eq("status", 99).one();
-                    Map<Long, Integer> map = getNumber(bom, 1, details);
-
-                    List<Integer> enough = new ArrayList<>();
-                    for (Map.Entry<Long, Integer> s : map.entrySet()) {
-                        for (StockDetails detail : details) {
-                            if (detail.getSkuId().equals(s.getKey())) {
-                                int l = (int) (detail.getNumber() / s.getValue());
-                                enough.add(l);
-                            }
-                        }
-                    }
-
-                    Integer min = Collections.min(enough);    //最少能生产几个
-                    for (Map.Entry<Long, Integer> longIntegerEntry : map.entrySet()) {
-                        longIntegerEntry.setValue(longIntegerEntry.getValue() * min);
-                        for (StockDetails detail : details) {
-                            if (detail.getSkuId().equals(longIntegerEntry.getKey())) {
-                                detail.setNumber(detail.getNumber() - longIntegerEntry.getValue());
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-
-    public void toBeProduced(List<List<Long>> skuIds) {
-        List<StockDetails> details = merge();
-        for (List<Long> skuId : skuIds) {
-            for (Long id : skuId) {
-
-                Parts parts = partsService.query().eq("sku_id", id).eq("status", 99).one();
-                PartsResult bom = partsService.getBOM(parts.getPartsId(), "1");
-                Map<Long, Integer> map = getNumber(bom, 1, details);
-
-                List<Integer> enough = new ArrayList<>();
-                for (Map.Entry<Long, Integer> s : map.entrySet()) {
-                    for (StockDetails detail : details) {
-                        if (detail.getSkuId().equals(s.getKey())) {
-                            int l = (int) (detail.getNumber() / s.getValue());
-                            enough.add(l);
-                        }
-                    }
-                }
-
-
-                Integer min = Collections.min(enough);    //最少能生产几个
-                for (Map.Entry<Long, Integer> longIntegerEntry : map.entrySet()) {
-                    longIntegerEntry.setValue(longIntegerEntry.getValue() * min);
-                    for (StockDetails detail : details) {
-                        if (detail.getSkuId().equals(longIntegerEntry.getKey())) {
-                            detail.setNumber(detail.getNumber() - longIntegerEntry.getValue());
-                        }
-                    }
-                }
-
-            }
-        }
-
-    }
-
-    private Map<Long, Integer> getNumber(PartsResult result, int shu, List<StockDetails> details) {
-
-        Map<Long, Integer> map = new HashMap<>();
-        if (ToolUtil.isEmpty(result.getParts())) {
-            int i = result.getNumber() * shu;
-            map.put(result.getSkuId(), i);
-        } else {
-            for (PartsResult partsResult : result.getPartsResults()) {
-                for (StockDetails detail : details) {
-                    if (detail.getSkuId().equals(partsResult.getSkuId())) {
-                        if (detail.getNumber() - partsResult.getNumber() < 0) {
-                            return new HashMap<>();
-                        }
-                        detail.setNum(detail.getNum() - partsResult.getNumber());
-                        break;
-                    }
-                }
-                Map<Long, Integer> number = getNumber(partsResult, partsResult.getNumber(), details);
-                map.putAll(number);
-            }
-        }
-        return map;
-    }
-
-    @Override
-    public List<StockDetails> merge() {
-        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("sku_id", "sum(number) AS num").groupBy("sku_Id");
-        List<StockDetails> stockDetails = this.list(queryWrapper);
-        return stockDetails;
-
-    }
 
     @Override
     public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
