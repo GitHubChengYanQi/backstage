@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.mapper.BankMapper;
 import cn.atsoft.dasheng.crm.model.params.BankParam;
 import cn.atsoft.dasheng.crm.model.result.BankResult;
-import  cn.atsoft.dasheng.crm.service.BankService;
+import cn.atsoft.dasheng.crm.service.BankService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author song
@@ -30,18 +30,19 @@ import java.util.List;
 public class BankServiceImpl extends ServiceImpl<BankMapper, Bank> implements BankService {
 
     @Override
-    public void add(BankParam param){
+    public Bank add(BankParam param) {
         Bank entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override
-    public void delete(BankParam param){
+    public void delete(BankParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(BankParam param){
+    public void update(BankParam param) {
         Bank oldEntity = getOldEntity(param);
         Bank newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -49,23 +50,23 @@ public class BankServiceImpl extends ServiceImpl<BankMapper, Bank> implements Ba
     }
 
     @Override
-    public BankResult findBySpec(BankParam param){
+    public BankResult findBySpec(BankParam param) {
         return null;
     }
 
     @Override
-    public List<BankResult> findListBySpec(BankParam param){
+    public List<BankResult> findListBySpec(BankParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<BankResult> findPageBySpec(BankParam param){
+    public PageInfo<BankResult> findPageBySpec(BankParam param) {
         Page<BankResult> pageContext = getPageContext();
         IPage<BankResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(BankParam param){
+    private Serializable getKey(BankParam param) {
         return param.getBankId();
     }
 
@@ -82,13 +83,14 @@ public class BankServiceImpl extends ServiceImpl<BankMapper, Bank> implements Ba
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public  List<BankResult> resultsByBankId(List<Long> ids){
+    public List<BankResult> resultsByBankId(List<Long> ids) {
         List<Bank> banks = ids.size() == 0 ? new ArrayList<>() : this.query().in("bank_id", ids).list();
         List<BankResult> bankResults = new ArrayList<>();
         for (Bank bank : banks) {
             BankResult bankResult = new BankResult();
-            ToolUtil.copyProperties(bank,bankResult);
+            ToolUtil.copyProperties(bank, bankResult);
             bankResults.add(bankResult);
         }
         return bankResults;

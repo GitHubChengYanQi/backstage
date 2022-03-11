@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +46,8 @@ public class BankController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody BankParam bankParam) {
-        this.bankService.add(bankParam);
-        return ResponseData.success();
+        Bank bank = this.bankService.add(bankParam);
+        return ResponseData.success(bank);
     }
 
     /**
@@ -71,7 +72,7 @@ public class BankController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody BankParam bankParam)  {
+    public ResponseData delete(@RequestBody BankParam bankParam) {
         this.bankService.delete(bankParam);
         return ResponseData.success();
     }
@@ -102,7 +103,7 @@ public class BankController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<BankResult> list(@RequestBody(required = false) BankParam bankParam) {
-        if(ToolUtil.isEmpty(bankParam)){
+        if (ToolUtil.isEmpty(bankParam)) {
             bankParam = new BankParam();
         }
         return this.bankService.findPageBySpec(bankParam);
@@ -122,8 +123,6 @@ public class BankController extends BaseController {
         List<Map<String, Object>> result = dataSelectWrapper.wrap();
         return ResponseData.success(result);
     }
-
-
 
 
 }

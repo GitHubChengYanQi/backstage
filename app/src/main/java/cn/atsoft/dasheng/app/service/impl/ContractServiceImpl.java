@@ -824,6 +824,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     if (content.contains("${{DetailPayRemark}}") && ToolUtil.isNotEmpty(detailParam.getRemark())) {    //款项说明
                         content = content.replace("${{DetailPayRemark}}", detailParam.getRemark());
                     }
+                    if (content.contains("${{DetailPayDate}}") && ToolUtil.isNotEmpty(detailParam.getPayTime())) {    //付款时间
+                        DateTime date = DateUtil.date(detailParam.getPayTime());
+                        content = content.replace("${{DetailPayDate}}", date.toString());
+                    }
                 }
                 replace = replace + content;
                 content = content.replace(payGroup, replace);
