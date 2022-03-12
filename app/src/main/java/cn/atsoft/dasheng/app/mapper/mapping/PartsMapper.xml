@@ -227,9 +227,9 @@
         <if test="paramCondition.partName != null and paramCondition.partName != ''">
             and part_name like CONCAT('%',#{paramCondition.partName},'%')
         </if>
-        <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
-        </if>
+<!--        <if test="paramCondition.type != null and paramCondition.type != ''">-->
+<!--            and type like CONCAT('%',#{paramCondition.type},'%')-->
+<!--        </if>-->
         <if test="paramCondition.note != null and paramCondition.note != ''">
             and note like CONCAT('%',#{paramCondition.note},'%')
         </if>

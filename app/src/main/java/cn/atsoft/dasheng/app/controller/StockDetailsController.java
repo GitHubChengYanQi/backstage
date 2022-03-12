@@ -51,9 +51,11 @@ public class StockDetailsController extends BaseController {
 
     @RequestMapping(value = "/getBom", method = RequestMethod.GET)
     public ResponseData getBom(@RequestParam Long id) {
-        allBom.getBom(id);
-        return ResponseData.success(allBom.getBom());
+        allBom.getBom(id, 1);
+        allBom.getNumber();
+        return ResponseData.success(allBom);
     }
+
 
     /**
      * 查看详情接口

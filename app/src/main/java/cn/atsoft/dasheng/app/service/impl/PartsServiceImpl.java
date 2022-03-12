@@ -367,14 +367,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     @Override
-    public PartsResult getBOM(Long partId, String type) {
+    public PartsResult getBOM(Long partId) {
         Parts parts = this.getById(partId);
         if (ToolUtil.isEmpty(parts)) {
             return null;
         }
         PartsResult partsResult = new PartsResult();
         ToolUtil.copyProperties(parts, partsResult);
-        List<ErpPartsDetailResult> detailResults = recursiveDetails(partsResult.getPartsId(), type);
+        List<ErpPartsDetailResult> detailResults = recursiveDetails(partsResult.getPartsId());
         partsResult.setParts(detailResults);
         List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
             add(partsResult.getSkuId());
@@ -389,7 +389,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      * @param partId
      * @return
      */
-    private List<ErpPartsDetailResult> recursiveDetails(Long partId, String type) {
+    private List<ErpPartsDetailResult> recursiveDetails(Long partId) {
 
         List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", partId).list();
         if (ToolUtil.isNotEmpty(details)) {
@@ -399,7 +399,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     add(detailResult.getSkuId());
                 }});
                 detailResult.setSkuResult(skuResults.get(0));
-                PartsResult partsResult = recursiveParts(detailResult.getSkuId(), type);
+                PartsResult partsResult = recursiveParts(detailResult.getSkuId());
                 detailResult.setPartsResult(partsResult);
             }
             return detailResults;
@@ -414,8 +414,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      * @param skuId
      * @return
      */
-    private PartsResult recursiveParts(Long skuId, String type) {
-        Parts parts = this.query().eq("sku_id", skuId).eq("type", type).eq("display", 1).eq("status", 99).one();
+    private PartsResult recursiveParts(Long skuId) {
+        Parts parts = this.query().eq("sku_id", skuId).eq("display", 1).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(parts)) {
             PartsResult partsResult = new PartsResult();
             ToolUtil.copyProperties(parts, partsResult);
@@ -423,7 +423,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 add(partsResult.getSkuId());
             }});
             partsResult.setSkuResult(skuResults.get(0));
-            List<ErpPartsDetailResult> detailResults = recursiveDetails(partsResult.getPartsId(), type);
+            List<ErpPartsDetailResult> detailResults = recursiveDetails(partsResult.getPartsId());
             partsResult.setParts(detailResults);
             return partsResult;
         }
@@ -431,7 +431,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
 
-        @Override
+    @Override
     public List<ErpPartsDetailResult> backDetails(Long skuId, Long partsId, String type) {
         if (ToolUtil.isEmpty(skuId)) {
             throw new ServiceException(500, "沒傳入skuId");

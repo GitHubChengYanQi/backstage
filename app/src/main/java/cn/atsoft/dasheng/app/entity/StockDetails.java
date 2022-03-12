@@ -25,6 +25,8 @@ public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long num;
+
     @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
@@ -318,6 +320,14 @@ public class StockDetails implements Serializable {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+
+    public Long getNum() {
+        return num;
+    }
+
+    public void setNum(Long num) {
+        this.num = num;
     }
 
     @Override
