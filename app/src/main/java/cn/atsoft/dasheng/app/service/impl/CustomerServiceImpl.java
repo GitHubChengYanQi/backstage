@@ -146,9 +146,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         for (int i = 0; i < param.getInvoiceParams().size(); i++) {
             param.getInvoiceParams().get(i).setCustomerId(entity.getCustomerId());
-            Long add = invoiceService.add(param.getInvoiceParams().get(i));
+            Invoice invoice = invoiceService.add(param.getInvoiceParams().get(i));
             if (i == 0) {
-                entity.setInvoiceId(add);
+                entity.setInvoiceId(invoice.getInvoiceId());
             }
         }
 
@@ -268,7 +268,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             userIds.add(record.getUserId());
             userIds.add(record.getCreateUser());
             industryIds.add(record.getIndustryId());
-//            dycustomerIds.add(record.getCustomerId());
             customerIds.add(record.getCustomerId());
             customerId = record.getCustomerId();
             invoiceIds.add(record.getInvoiceId());
@@ -288,6 +287,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
         List<InvoiceResult> invoiceResultList = invoiceService.getDetails(invoiceIds);
+        List<InvoiceResult> invoiceResultsByCus = invoiceService.getDetailsByCustomerIds(customerIds);
 
 
         /***
@@ -377,11 +377,20 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
 
             for (InvoiceResult invoiceResult : invoiceResultList) {
+
                 if (ToolUtil.isNotEmpty(record.getInvoiceId()) && record.getInvoiceId().equals(invoiceResult.getInvoiceId())) {
                     record.setInvoiceResult(invoiceResult);
                     break;
                 }
+
             }
+            List<InvoiceResult> invoiceResults = new ArrayList<>();
+            for (InvoiceResult resultsByCus : invoiceResultsByCus) {
+                if (resultsByCus.getCustomerId().equals(record.getCustomerId())) {
+                    invoiceResults.add(resultsByCus);
+                }
+            }
+            record.setInvoiceResults(invoiceResults);
 
             for (Adress adress : adresses) {
                 if (adress.getAdressId().equals(record.getDefaultAddress())) {

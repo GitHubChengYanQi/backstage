@@ -31,7 +31,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -53,6 +55,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private SkuService skuService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private PartsService partsService;
 
 
     @Override
@@ -128,7 +132,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         return detailsResults;
     }
 
+
+
+
     @Override
+
     public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
         Page<StockDetailsResult> pageContext = getPageContext();
         IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);

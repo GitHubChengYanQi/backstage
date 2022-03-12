@@ -24,7 +24,7 @@ public interface InvoiceService extends IService<Invoice> {
      * @author song
      * @Date 2021-12-20
      */
-    Long add(InvoiceParam param);
+    Invoice add(InvoiceParam param);
 
     /**
      * 删除
@@ -64,7 +64,9 @@ public interface InvoiceService extends IService<Invoice> {
      * @author song
      * @Date 2021-12-20
      */
-     PageInfo<InvoiceResult> findPageBySpec(InvoiceParam param);
+    PageInfo<InvoiceResult> findPageBySpec(InvoiceParam param);
 
     List<InvoiceResult> getDetails(List<Long> ids);
+
+    List<InvoiceResult> getDetailsByCustomerIds(List<Long> ids);
 }
