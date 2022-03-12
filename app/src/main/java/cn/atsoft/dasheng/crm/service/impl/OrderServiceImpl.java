@@ -80,9 +80,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional
-    public void add(OrderParam param) {
+    public Order add(OrderParam param) {
         Order entity = getEntity(param);
-        this.save(entity);
 
         String orderType = null;
         switch (param.getType()) {
@@ -94,15 +93,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 break;
         }
 
-        detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());
-        paymentService.add(param.getPaymentParam(), orderType);
-
-        supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
-
 
         if (param.getGenerateContract() == 1) {   //创建合同
-            contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param, orderType);
+            Contract contract = contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param, orderType);
+            if (ToolUtil.isNotEmpty(contract.getContractId())) {
+                entity.setContractId(contract.getContractId());
+            }
         }
+        this.save(entity);
+        param.getPaymentParam().setOrderId(entity.getOrderId());
+        supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
+        detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());
+        paymentService.add(param.getPaymentParam(), orderType);
+        return entity;
 
 //        String type = null;
 //        String source = null;
@@ -198,13 +201,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = this.getById(id);
         OrderResult orderResult = new OrderResult();
         ToolUtil.copyProperties(order, orderResult);
-
+        List<OrderDetailResult> details = new ArrayList<>();
         PaymentResult paymentResult = paymentService.getDetail(orderResult.getOrderId());
-        List<OrderDetailResult> details = detailService.getDetails(paymentResult.getOrderId());
+        if (ToolUtil.isNotEmpty(paymentResult) && ToolUtil.isNotEmpty(paymentResult.getOrderId())) {
+            details = detailService.getDetails(paymentResult.getOrderId());
+        }
         orderResult.setDetailResults(details);
         orderResult.setPaymentResult(paymentResult);
         detailFormat(orderResult);
         return orderResult;
+
     }
 
     private void detailFormat(OrderResult result) {

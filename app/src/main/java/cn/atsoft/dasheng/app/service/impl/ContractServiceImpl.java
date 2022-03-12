@@ -16,13 +16,17 @@ import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
+import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.service.BankService;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
+import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
@@ -35,6 +39,9 @@ import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
+import cn.atsoft.dasheng.template.entity.PaymentTemplate;
+import cn.atsoft.dasheng.template.service.PaymentTemplateService;
+import cn.hutool.core.convert.NumberChineseFormatter;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.unit.DataUnit;
@@ -68,7 +75,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private PhoneService phoneService;
 
     @Autowired
+    private BankService bankService;
+
+    @Autowired
+    private PaymentTemplateService paymentTemplateService;
+
+    @Autowired
     private ContractService contractService;
+
+    @Autowired
+    private InvoiceService invoiceService;
 
     @Autowired
     private ContactsService contactsService;
@@ -437,7 +453,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
      * @param param
      */
     @Override
-    public void orderAddContract(Long orderId, ContractParam param, OrderParam orderParam, String orderType) {
+    public Contract orderAddContract(Long orderId, ContractParam param, OrderParam orderParam, String orderType) {
         if (ToolUtil.isEmpty(param)) {
             throw new ServiceException(500, "合同对象为空");
         }
@@ -477,7 +493,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             contract.setContent(materialList);
             this.save(contract);
             createContractDetail(contract.getContractId(), orderParam);
+            return contract;
         }
+        return contract;
     }
 
 
@@ -582,36 +600,137 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private String replace(String content, OrderParam orderParam) {
         if (content.contains("${{Acontacts}}") && ToolUtil.isNotEmpty(orderParam.getPartyAContactsId())) {
             Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
-            content = content.replace("${{Acontacts}}", contacts.getContactsName());
+            content = content.replace("${{Acontacts}}", ToolUtil.isNotEmpty(contacts.getContactsName()) ? contacts.getContactsName() : "");
         }
         if (content.contains("${{Bcontacts}}") && ToolUtil.isNotEmpty(orderParam.getPartyBContactsId())) {
             Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
-            content = content.replace("${{Bcontacts}}", contacts.getContactsName());
+            content = content.replace("${{Bcontacts}}", ToolUtil.isNotEmpty(contacts.getContactsName()) ? contacts.getContactsName() : "");
         }
         if (content.contains("${{AAddress}}") && ToolUtil.isNotEmpty(orderParam.getPartyAAdressId())) {
             Adress adress = adressService.getById(orderParam.getPartyAAdressId());
-            content = content.replace("${{AAddress}}", adress.getLocation());
+            content = content.replace("${{AAddress}}", ToolUtil.isNotEmpty(adress.getLocation()) ? adress.getLocation() : "");
         }
         if (content.contains("${{BAddress}}") && ToolUtil.isNotEmpty(orderParam.getPartyBAdressId())) {
             Adress adress = adressService.getById(orderParam.getPartyBAdressId());
-            content = content.replace("${{BAddress}}", adress.getLocation());
+            content = content.replace("${{BAddress}}", ToolUtil.isNotEmpty(adress.getLocation()) ? adress.getLocation() : "");
         }
         if (content.contains("${{APhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyAPhone())) {
             Phone phone = phoneService.getById(orderParam.getPartyAPhone());
-            content = content.replace("${{APhone}}", phone.getPhoneNumber().toString());
+            content = content.replace("${{APhone}}", ToolUtil.isNotEmpty(phone.getPhoneNumber()) ? phone.getPhoneNumber().toString() : "");
         }
         if (content.contains("${{BPhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyBPhone())) {
             Phone phone = phoneService.getById(orderParam.getPartyBPhone());
-            content = content.replace("${{BPhone}}", phone.getPhoneNumber().toString());
+            content = content.replace("${{BPhone}}", ToolUtil.isNotEmpty(phone.getPhoneNumber()) ? phone.getPhoneNumber().toString() : "");
         }
 
         if (content.contains("${{ACustomer}}") && ToolUtil.isNotEmpty(orderParam.getBuyerId())) {
             Customer customer = customerService.getById(orderParam.getBuyerId());
-            content = content.replace("${{ACustomer}}", customer.getCustomerName());
+            content = content.replace("${{ACustomer}}", ToolUtil.isNotEmpty(customer.getCustomerName()) ? customer.getCustomerName() : "");
         }
         if (content.contains("${{BCustomer}}") && ToolUtil.isNotEmpty(orderParam.getSellerId())) {
             Customer customer = customerService.getById(orderParam.getSellerId());
-            content = content.replace("${{BCustomer}}", customer.getCustomerName());
+            content = content.replace("${{BCustomer}}", ToolUtil.isNotEmpty(customer.getCustomerName()) ? customer.getCustomerName() : "");
+        }
+
+        if (content.contains("${{ABank}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankId())) {
+            Bank bank = bankService.getById(orderParam.getPartyABankId());
+            content = content.replace("${{ABank}}", ToolUtil.isNotEmpty(bank.getBankName()) ? bank.getBankName() : "");
+        }
+        if (content.contains("${{BBank}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankId())) {
+            Bank bank = bankService.getById(orderParam.getPartyBBankId());
+            content = content.replace("${{BBank}}",ToolUtil.isNotEmpty(bank.getBankName()) ? bank.getBankName() : "");
+        }
+        if (content.contains("${{AAccount}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankAccount())) {
+            Invoice invoice = invoiceService.getById(orderParam.getPartyABankAccount());
+            content = content.replace("${{AAccount}}", ToolUtil.isNotEmpty(invoice.getBankAccount()) ? invoice.getBankAccount() : "");
+        }
+        if (content.contains("${{BAccount}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankAccount())) {
+            Invoice invoice = invoiceService.getById(orderParam.getPartyBBankAccount());
+            content = content.replace("${{BAccount}}", ToolUtil.isNotEmpty(invoice.getBankAccount()) ? invoice.getBankAccount() : "");
+        }
+        if (content.contains("${{amount}}")) {  //总计
+            content = content.replace("${{amount}}", orderParam.getPaymentParam().getMoney().toString());
+        }
+        if (content.contains("${{amountStr}}")) {  //总计
+            Integer money = orderParam.getPaymentParam().getMoney();
+            String format = NumberChineseFormatter.format(money, true, true);
+            content = content.replace("${{amountStr}}", format);
+        }
+        if (content.contains("${{askCoding}}") && ToolUtil.isNotEmpty(orderParam.getCoding())) {  //采购编号
+            content = content.replace("${{askCoding}}", orderParam.getCoding());
+        }
+        if (content.contains("${{askDate}}") && ToolUtil.isNotEmpty(orderParam.getDate())) {  //采购日期
+            DateTime date = DateUtil.date(orderParam.getDate());
+            content = content.replace("${{askDate}}", date.toString());
+        }
+        if (content.contains("${{askRemake}}") && ToolUtil.isNotEmpty(orderParam.getRemark())) {  //采购日期
+            content = content.replace("${{askRemake}}", orderParam.getRemark());
+        }
+        if (content.contains("${{Alegal}}") && ToolUtil.isNotEmpty(orderParam.getPartyALegalPerson())) {  //A法定代表人
+            content = content.replace("${{Alegal}}", orderParam.getPartyALegalPerson());
+        }
+        if (content.contains("${{Blegal}}") && ToolUtil.isNotEmpty(orderParam.getPartyBLegalPerson())) {  //B法定代表人
+            content = content.replace("${{Blegal}}", orderParam.getPartyBLegalPerson());
+        }
+        if (content.contains("${{ABankNo}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankNo())) {  //A开户行号
+            content = content.replace("${{ABankNo}}", orderParam.getPartyABankNo().toString());
+        }
+        if (content.contains("${{BBankNo}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankNo())) {  //B开户行号
+            content = content.replace("${{BBankNo}}", orderParam.getPartyBBankNo().toString());
+        }
+        if (content.contains("${{AFax}}") && ToolUtil.isNotEmpty(orderParam.getPartyAFax())) {  //A传真
+            content = content.replace("${{AFax}}", orderParam.getPartyAFax());
+        }
+        if (content.contains("${{BFax}}") && ToolUtil.isNotEmpty(orderParam.getPartyBFax())) {  //B传真
+            content = content.replace("${{BFax}}", orderParam.getPartyBFax());
+        }
+        if (content.contains("${{AZipCOde}}") && ToolUtil.isNotEmpty(orderParam.getPartyAZipcode())) {  //A邮编
+            content = content.replace("${{AZipCOde}}", orderParam.getPartyAZipcode());
+        }
+        if (content.contains("${{BZipCOde}}") && ToolUtil.isNotEmpty(orderParam.getPartyBZipcode())) {  //B邮编
+            content = content.replace("${{BZipCOde}}", orderParam.getPartyBZipcode());
+        }
+        if (content.contains("${{ACompanyPhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyACompanyPhone())) {  //A公司电话
+            content = content.replace("${{ACompanyPhone}}", orderParam.getPartyACompanyPhone());
+        }
+        if (content.contains("${{BCompanyPhone}}") && ToolUtil.isNotEmpty(orderParam.getPartyBCompanyPhone())) {  //B公司电话
+            content = content.replace("${{BCompanyPhone}}", orderParam.getPartyBCompanyPhone());
+        }
+        if (content.contains("${{freight}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //是否含运费
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getFreight())) {
+                if (orderParam.getPaymentParam().getFreight() == 1) {
+                    content = content.replace("${{freight}}", "含运");
+                } else {
+                    content = content.replace("${{freight}}", "不含运");
+                }
+            }
+        }
+        if (content.contains("${{payMethod}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //结算方式
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getPayMethod())) {
+                content = content.replace("${{payMethod}}", orderParam.getPaymentParam().getPayMethod());
+            }
+        }
+        if (content.contains("${{deliveryWay}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //交货方式
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getDeliveryWay())) {
+                content = content.replace("${{deliveryWay}}", orderParam.getPaymentParam().getDeliveryWay());
+            }
+        }
+        if (content.contains("${{deliveryAddress}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //交货地址
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getAdressId())) {
+                Adress adress = adressService.getById(orderParam.getPaymentParam().getAdressId());
+                content = content.replace("${{deliveryAddress}}", adress.getLocation());
+            }
+        }
+        if (content.contains("${{payPlan}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //付款计划
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getPayPlan())) {
+                PaymentTemplate paymentTemplate = paymentTemplateService.getById(orderParam.getPaymentParam().getPayPlan());
+                content = content.replace("${{payPlan}}", paymentTemplate.getName());
+            }
+        }
+        if (content.contains("${{PaymentRemark}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //财务备注
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getRemark())) {
+                content = content.replace("${{PaymentRemark}}", orderParam.getPaymentParam().getRemark());
+            }
         }
         return content;
     }
