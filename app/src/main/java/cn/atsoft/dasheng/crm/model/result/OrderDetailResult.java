@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.taxRate.entity.TaxRate;
 import lombok.Data;
 
 import java.util.Date;
@@ -30,6 +32,8 @@ public class OrderDetailResult implements Serializable {
     private SkuResult skuResult;
     private BrandResult brandResult;
     private CustomerResult customerResult;
+    private Unit unit;
+    private TaxRate taxRate;
 
     /**
      * 详情id

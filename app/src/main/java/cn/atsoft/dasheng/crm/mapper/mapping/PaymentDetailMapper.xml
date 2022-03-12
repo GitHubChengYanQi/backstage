@@ -14,6 +14,11 @@
         <result column="date_number" property="dateNumber"/>
         <result column="remark" property="remark"/>
         <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
         <result column="real_pay" property="realPay"/>
     </resultMap>
 
@@ -21,7 +26,8 @@
     <sql id="Base_Column_List"> status
     AS "status",real_pay AS "realPay",
         detail_id
-        AS "detailId", payment_id AS "paymentId", money AS "money", percentum AS "percentum", pay_type AS "payType", pay_time AS "payTime", date_way AS "dateWay", date_number AS "dateNumber", remark AS "remark"
+        AS "detailId", payment_id AS "paymentId", money AS "money", percentum AS "percentum", pay_type AS "payType", pay_time AS "payTime", date_way AS "dateWay", date_number AS "dateNumber", remark AS "remark",
+create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 

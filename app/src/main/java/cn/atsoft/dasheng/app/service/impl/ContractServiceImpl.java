@@ -464,6 +464,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         ToolUtil.copyProperties(param, contract);
         contract.setSource(orderType);
         contract.setSourceId(orderId);
+
         if (ToolUtil.isEmpty(param.getTemplateId())) {
             throw new ServiceException(500, "请选择合同模板");
         }

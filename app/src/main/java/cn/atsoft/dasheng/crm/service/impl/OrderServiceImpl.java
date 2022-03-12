@@ -93,33 +93,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 break;
         }
 
+        this.save(entity);
 
         if (param.getGenerateContract() == 1) {   //创建合同
             Contract contract = contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param, orderType);
+            entity.setContractId(contract.getContractId());
             if (ToolUtil.isNotEmpty(contract.getContractId())) {
                 entity.setContractId(contract.getContractId());
             }
         }
-        this.save(entity);
+
         param.getPaymentParam().setOrderId(entity.getOrderId());
         supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
         detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());
         paymentService.add(param.getPaymentParam(), orderType);
+        this.updateById(entity);
         return entity;
 
-//        String type = null;
-//        String source = null;
-//        switch (param.getType()) {
-//            case 1:
-//                type = "purchaseAsk";
-//                source = "采购";
-//                break;
-//            case 2:
-//                type = "销售申请";
-//                source = "销售申请";
-//                break;
-//            default:
-//        }
 
         //发起审批流程
 //        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", param.getProcessType()).eq("status", 99).eq("module", "purchaseAsk").one();
