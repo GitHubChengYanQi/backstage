@@ -98,6 +98,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     public PageInfo<OrderDetailResult> findPageBySpec(OrderDetailParam param) {
         Page<OrderDetailResult> pageContext = getPageContext();
         IPage<OrderDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -170,14 +171,15 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
         return detailResults;
     }
+
     @Override
-    public void format(List<OrderDetailResult> param){
+    public void format(List<OrderDetailResult> param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
         for (OrderDetailResult orderDetailResult : param) {
             skuIds.add(orderDetailResult.getSkuId());
-            brandIds.add(orderDetailResult.getDetailId());
+            brandIds.add(orderDetailResult.getBrandId());
             customerIds.add(orderDetailResult.getCustomerId());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);

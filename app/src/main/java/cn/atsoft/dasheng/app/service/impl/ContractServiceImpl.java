@@ -105,16 +105,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private SkuService skuService;
     @Autowired
     private BrandService brandService;
-    @Autowired
-    private BankService bankService;
-    @Autowired
-    private InvoiceService invoiceService;
+
     @Autowired
     private UnitService unitService;
     @Autowired
     private TaxRateService rateService;
-    @Autowired
-    private PaymentTemplateService paymentTemplateService;
 
     @Override
     public ContractResult detail(Long id) {
