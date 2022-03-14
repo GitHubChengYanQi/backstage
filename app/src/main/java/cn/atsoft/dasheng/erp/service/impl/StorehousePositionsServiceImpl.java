@@ -368,6 +368,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<StorehousePositions> storehousePositionsList = this.query().eq("storehouse_id", positions.getStorehouseId()).eq("display", 1).list();
         StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
         stringBuffer = new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
+
         return stringBuffer.toString();
     }
 
@@ -381,6 +382,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 }
 
             }
+        }else {
+            StringBuffer now = new StringBuffer().append(positions.getName()).append("/").append(stringBuffer);
+            stringBuffer = now;
         }
         return stringBuffer;
     }
