@@ -108,8 +108,12 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     public Media getMediaId(String type, Long userId) {
 //        String sname = type.substring(type.lastIndexOf("."));//后缀
 //        String fileName=type.substring(0,type.lastIndexOf("."));//文件名称
-        String fileName = FilenameUtils.getBaseName(type);
-        String sname = FilenameUtils.getExtension(type);
+//        String fileName = FilenameUtils.getBaseName(type);
+//        String sname = FilenameUtils.getExtension(type);
+        List<String> collect = Arrays.stream(type.split("\\.(?=[^\\.]+$)")).collect(Collectors.toList());
+        String fileName = collect.get(0);
+       String sname = collect.get(1);
+
         if (!userId.equals(0L) && ToolUtil.isNotEmpty(sname)) {
             List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
             if (!types.contains(sname)) {
