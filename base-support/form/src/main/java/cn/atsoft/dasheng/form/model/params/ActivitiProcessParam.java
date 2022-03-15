@@ -30,6 +30,8 @@ public class ActivitiProcessParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private ActivitiAuditParam activitiAuditParam;
+
+    private Integer shipNumber;
     /**
      * 模块
      */

@@ -23,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -50,12 +51,18 @@ public class StockDetailsController extends BaseController {
 
 
     @RequestMapping(value = "/getBom", method = RequestMethod.GET)
-    public ResponseData getBom(@RequestParam Long id) {
+    public ResponseData getBom(@RequestParam Long id, Long processId) {
         allBom.getBom(id, 1);
         allBom.getNumber();
         return ResponseData.success(allBom);
     }
 
+    @RequestMapping(value = "/getAllSkuIds", method = RequestMethod.GET)
+    public ResponseData getAllSkuIds(@RequestParam Long processId) {
+        allBom.getAllShip(processId);
+        allBom.start(processId);
+        return ResponseData.success(allBom);
+    }
 
     /**
      * 查看详情接口

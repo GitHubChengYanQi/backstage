@@ -45,7 +45,7 @@ public class ActivitiStepsResult implements Serializable {
 
     private Boolean permissions;
 
-    private Object processRoute;
+    private ActivitiProcessResult activitiProcessResult;
 
     private Object workOrderResult;
 
