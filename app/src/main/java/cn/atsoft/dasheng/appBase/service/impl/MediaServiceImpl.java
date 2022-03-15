@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.common.utils.BinaryUtil;
+import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
@@ -106,12 +107,9 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public Media getMediaId(String type, Long userId) {
-//        String sname = type.substring(type.lastIndexOf("."));//后缀
-//        String fileName=type.substring(0,type.lastIndexOf("."));//文件名称
-//        String fileName = FilenameUtils.getBaseName(type);
-//        String sname = FilenameUtils.getExtension(type);
+
         List<String> collect = Arrays.stream(type.split("\\.(?=[^\\.]+$)")).collect(Collectors.toList());
-        String fileName = collect.get(0);
+        String fileName = type;
        String sname = collect.get(1);
 
         if (!userId.equals(0L) && ToolUtil.isNotEmpty(sname)) {
@@ -205,6 +203,12 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     @Override
     public String getMediaUrl(Long mediaId, Long userId) {
 
+
+        return getMediaUrlAddUseData(mediaId, userId,null);
+    }
+
+    @Override
+    public String getMediaUrlAddUseData(Long mediaId, Long userId, String useData) {
         if (ToolUtil.isEmpty(mediaId) || mediaId <= 0) {
             return null;
         }
@@ -221,9 +225,48 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
         Date expiration = new Date(expireEndTime);
         generatePresignedUrlRequest.setExpiration(expiration);
+        if (ToolUtil.isNotEmpty(useData)){
+            generatePresignedUrlRequest.setQueryParameter(new HashMap<String,String>(){{
+                put("x-oss-process",useData);
+            }});
+        }
+
         URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
         return url.toString();
     }
+
+    @Override
+    public String getMediaPathPublic(Long mediaId, Long userId) {
+        if (ToolUtil.isEmpty(mediaId) || mediaId <= 0) {
+            return null;
+        }
+        Media result = this.getById(mediaId);
+        if (ToolUtil.isEmpty(result)) {
+            throw new ServiceException(500, "媒体不存在");
+        }
+//        if (ToolUtil.isNotEmpty(result.getUserId()) && !result.getUserId().equals(userId)) {
+//            throw new ServiceException(500, "媒体信息错误");
+//        }
+        OSS ossClient = aliyunService.getOssClient();
+        ossClient.setObjectAcl(result.getBucket(), result.getPath(), CannedAccessControlList.PublicRead);
+
+//        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(result.getBucket(), result.getPath(), HttpMethod.GET);
+//        long expireTime = 86400 * 15;
+//        long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+//        Date expiration = new Date(expireEndTime);
+//        generatePresignedUrlRequest.setExpiration(expiration);
+//        if (ToolUtil.isNotEmpty(useData)){
+//            generatePresignedUrlRequest.setQueryParameter(new HashMap<String,String>(){{
+//                put("x-oss-process",useData);
+//            }});
+//        }
+
+//        URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
+        return "https://"+result.getBucket()+"."+result.getEndpoint()+"/"+result.getPath();
+    }
+
+
+
 
     private Serializable getKey(MediaParam param) {
         return param.getMediaId();

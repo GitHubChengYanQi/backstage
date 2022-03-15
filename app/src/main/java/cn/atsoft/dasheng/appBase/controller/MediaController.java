@@ -22,11 +22,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -160,6 +160,38 @@ public class MediaController extends BaseController {
         }
         return this.mediaService.findPageBySpecMyself(mediaParam);
     }
+     /**
+     * 查询列表
+     *
+     * @author Sing
+     * @Date 2021-04-21
+     */
+    @RequestMapping(value = "/getUrlByMediaId", method = RequestMethod.GET)
+    @ApiOperation("单个媒体地址301跳转By媒体Id")
+    public void getUrlByMediaId(HttpServletRequest request, HttpServletResponse response, @RequestParam Long mediaId,@RequestParam(required = false) String xOssProcess) throws IOException {
+        if(ToolUtil.isEmpty(mediaId)){
+            throw new ServiceException(500,"媒体id不能为空");
+        }
+        String url = this.mediaService.getMediaUrlAddUseData(mediaId,0L,xOssProcess);
+        response.sendRedirect(url);
+
+    }
+
+    /**
+     * 查询列表
+     *
+     * @author Sing
+     * @Date 2021-04-21
+     */
+    @RequestMapping(value = "/getMediaPathById", method = RequestMethod.GET)
+    @ApiOperation("单个媒体地址301跳转By媒体Id")
+    public String getMediaPathById( @RequestParam Long mediaId){
+        if(ToolUtil.isEmpty(mediaId)){
+            throw new ServiceException(500,"媒体id不能为空");
+        }
+        return this.mediaService.getMediaPathPublic(mediaId,0L);
+    }
+
 
 }
 

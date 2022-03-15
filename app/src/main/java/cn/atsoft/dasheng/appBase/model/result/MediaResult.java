@@ -33,7 +33,7 @@ public class MediaResult implements Serializable {
       * 媒体ID
     */
     @ApiModelProperty("媒体名称")
-    private Long fieldName;
+    private String filedName;
     /**
      * 媒体ID
      */
