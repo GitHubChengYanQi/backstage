@@ -122,7 +122,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         }
 
         String date = DateUtil.format(DateUtil.date(), "yyyyMMdd");
-        String path = aliyunService.getConfig().getOss().getPath() + type + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + sname;
+        String path = aliyunService.getConfig().getOss().getPath() + sname + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + sname;
         String endpoint = aliyunService.getConfig().getOss().getEndpoint();
         String bucket = aliyunService.getConfig().getOss().getBucket();
 
