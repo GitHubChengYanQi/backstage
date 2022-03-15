@@ -76,40 +76,45 @@ public class AllBom {
 
     private Map<Long, Long> stockNumber = new HashMap<>();
 
-    private List<Long> skuIds = new ArrayList<>();   //所有
+    private Map<Long, Integer> shipSku = new HashMap<>();   //所有子工艺sku
 
 
-    public void start(Long processId) {
-        for (Long skuId : skuIds) {
-            getBom(skuId, 1);
+    public void start() {
+        for (Map.Entry<Long, Integer> integerEntry : shipSku.entrySet()) {
+            getBom(integerEntry.getKey(), integerEntry.getValue());
         }
     }
 
 
-    public List<Long> getAllShip(Long processId) {
-        List<Long> allSku = new ArrayList<>();
+    public Map<Long, Integer> getAllShip(Long processId, int num) {
+        Map<Long, Integer> map = new HashMap<>();
         ActivitiStepsResult stepsResult = stepsService.detail(processId);//树形结构
-        this.loopGetProcessList(stepsResult, allSku);
-        this.skuIds = allSku;
-        return allSku;
+        this.loopGetProcessList(stepsResult, 1, map);
+        this.shipSku = map;
+        return map;
     }
 
 
-    private void loopGetProcessList(ActivitiStepsResult stepsResult, List<Long> skuIds) {
+    private void loopGetProcessList(ActivitiStepsResult stepsResult, int num, Map<Long, Integer> shipSku) {
         if (ToolUtil.isNotEmpty(stepsResult)) {
             switch (stepsResult.getStepType()) {
                 case "ship":
-                    skuIds.add(stepsResult.getActivitiProcessResult().getFormId());
-                    skuIds.addAll(getAllShip(stepsResult.getActivitiProcessResult().getProcessId()));
-//                stepsResult.get
+                    ActivitiSetpSetDetail setDetail = setDetailService.query().eq("setps_id", stepsResult.getSetpsId()).one();
+                    if (ToolUtil.isNotEmpty(setDetail)) {
+                        num = num * setDetail.getNum();
+                        shipSku.put(setDetail.getSkuId(), setDetail.getNum());
+                    } else {
+                        shipSku.put(stepsResult.getActivitiProcessResult().getFormId(), 1);
+                    }
+                    shipSku.putAll(getAllShip(stepsResult.getActivitiProcessResult().getProcessId(), num));
                     break;
                 case "shipStart":
                 case "setp":
-                    loopGetProcessList(stepsResult.getChildNode(), skuIds);
+                    loopGetProcessList(stepsResult.getChildNode(), num, shipSku);
                     break;
                 case "route":
                     for (ActivitiStepsResult activitiStepsResult : stepsResult.getConditionNodeList()) {
-                        loopGetProcessList(activitiStepsResult, skuIds);
+                        loopGetProcessList(activitiStepsResult, num, shipSku);
                     }
                     break;
             }
@@ -148,11 +153,16 @@ public class AllBom {
 
             for (ErpPartsDetail erpPartsDetail : details) {
                 tmp.putAll(this.getBom(erpPartsDetail.getSkuId(), erpPartsDetail.getNumber() * number));
+
             }
 
             this.Bom.put(skuId, new ArrayList<Map<Long, Object>>() {{
-                add(tmp2);
-                add(tmp);
+                if (ToolUtil.isNotEmpty(tmp2)) {
+                    add(tmp2);
+                }
+                if (ToolUtil.isNotEmpty(tmp)) {
+                    add(tmp);
+                }
             }});
         } else {
             Integer num = 0;
@@ -160,6 +170,7 @@ public class AllBom {
                 num = skuList.get(skuId);
             }
             skuList.put(skuId, number + num);
+
         }
         return tmp;
 
