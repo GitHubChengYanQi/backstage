@@ -105,25 +105,24 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public Media getMediaId(String type, Long userId) {
-        List<String> filedNameAndType = Arrays.stream(type.split("\\.")).collect(Collectors.toList());
-        if (filedNameAndType.size() >2){
-            throw new ServiceException(500, "上传文件不可以使用多个文件后缀");
-        }
-        if (!userId.equals(0L) && filedNameAndType.size() == 2) {
+        String sname = type.substring(type.lastIndexOf("."));//后缀
+        String fileName=type.substring(0,type.lastIndexOf("."));//文件名称
+
+        if (!userId.equals(0L) && ToolUtil.isNotEmpty(sname)) {
             List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
-            if (!types.contains(filedNameAndType.get(1))) {
+            if (!types.contains(sname)) {
                 throw new ServiceException(500, "数据类型错误");
             }
         }
 
         String date = DateUtil.format(DateUtil.date(), "yyyyMMdd");
-        String path = aliyunService.getConfig().getOss().getPath() + type + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + type;
+        String path = aliyunService.getConfig().getOss().getPath() + type + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + sname;
         String endpoint = aliyunService.getConfig().getOss().getEndpoint();
         String bucket = aliyunService.getConfig().getOss().getBucket();
 
         Media media = new Media();
-        media.setFiledName(filedNameAndType.get(0));
-        media.setType(filedNameAndType.get(1));
+        media.setFiledName(fileName);
+        media.setType(sname);
         media.setPath(path);
         media.setEndpoint(endpoint);
         media.setBucket(bucket);
