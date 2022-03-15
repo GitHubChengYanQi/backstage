@@ -20,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        media_id AS "mediaId", path AS "path", endpoint AS "endpoint", bucket AS "bucket", status AS "status", user_id AS "userId", create_time AS "createTime", create_user AS "createUser", update_user AS "updateUser", update_time AS "updateTime"
+        media_id AS "mediaId", path AS "path",type AS "type",filed_name AS "filedName",endpoint AS "endpoint", bucket AS "bucket", status AS "status", user_id AS "userId", create_time AS "createTime", create_user AS "createUser", update_user AS "updateUser", update_time AS "updateTime"
     </sql>
 
 
