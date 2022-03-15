@@ -83,6 +83,21 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     }
 
     @Override
+    public PageInfo<MediaResult> findPageBySpecMyself(MediaParam param) {
+        Page<MediaResult> pageContext = getPageContext();
+        IPage<MediaResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.formatUrl(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+    private void formatUrl(List<MediaResult> param){
+        for (MediaResult mediaResult : param) {
+            Long mediaId = mediaResult.getMediaId();
+            String mediaUrl = this.getMediaUrl(mediaId, 1L);
+            mediaResult.setUrl(mediaUrl);
+        }
+    }
+
+    @Override
     public Media getMediaId(String type) {
         return getMediaId(type, 0L);
     }

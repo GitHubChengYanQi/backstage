@@ -68,6 +68,8 @@ public interface MediaService extends IService<Media> {
      */
      PageInfo<MediaResult> findPageBySpec(MediaParam param);
 
+    PageInfo<MediaResult> findPageBySpecMyself(MediaParam param);
+
     Media getMediaId(String type);
 
     Media getMediaId(String type ,Long userId);

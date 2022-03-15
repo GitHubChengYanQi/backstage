@@ -48,64 +48,64 @@ public class MediaController extends BaseController {
 
     @Autowired
     private AliyunService aliyunService;
-    /**
-     * 编辑接口
-     *
-     * @author Sing
-     * @Date 2021-04-21
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody MediaParam mediaParam) {
-
-        this.mediaService.update(mediaParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author Sing
-     * @Date 2021-04-21
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody MediaParam mediaParam)  {
-        this.mediaService.delete(mediaParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 查看详情接口
-     *
-     * @author Sing
-     * @Date 2021-04-21
-     */
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<MediaResult> detail(@RequestBody MediaParam mediaParam) {
-        Media detail = this.mediaService.getById(mediaParam.getMediaId());
-        MediaResult result = new MediaResult();
-        ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
-    }
-
-    /**
-     * 查询列表
-     *
-     * @author Sing
-     * @Date 2021-04-21
-     */
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<MediaResult> list(@RequestBody(required = false) MediaParam mediaParam) {
-        if(ToolUtil.isEmpty(mediaParam)){
-            mediaParam = new MediaParam();
-        }
-        return this.mediaService.findPageBySpec(mediaParam);
-    }
+//    /**
+//     * 编辑接口
+//     *
+//     * @author Sing
+//     * @Date 2021-04-21
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody MediaParam mediaParam) {
+//
+//        this.mediaService.update(mediaParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 删除接口
+//     *
+//     * @author Sing
+//     * @Date 2021-04-21
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody MediaParam mediaParam)  {
+//        this.mediaService.delete(mediaParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 查看详情接口
+//     *
+//     * @author Sing
+//     * @Date 2021-04-21
+//     */
+//    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+//    @ApiOperation("详情")
+//    public ResponseData<MediaResult> detail(@RequestBody MediaParam mediaParam) {
+//        Media detail = this.mediaService.getById(mediaParam.getMediaId());
+//        MediaResult result = new MediaResult();
+//        ToolUtil.copyProperties(detail, result);
+//
+////        result.setValue(parentValue);
+//        return ResponseData.success(result);
+//    }
+//
+//    /**
+//     * 查询列表
+//     *
+//     * @author Sing
+//     * @Date 2021-04-21
+//     */
+//    @RequestMapping(value = "/list", method = RequestMethod.POST)
+//    @ApiOperation("列表")
+//    public PageInfo<MediaResult> list(@RequestBody(required = false) MediaParam mediaParam) {
+//        if(ToolUtil.isEmpty(mediaParam)){
+//            mediaParam = new MediaParam();
+//        }
+//        return this.mediaService.findPageBySpec(mediaParam);
+//    }
 
 
     @RequestMapping(value = "/getToken", method = RequestMethod.GET)
@@ -145,6 +145,22 @@ public class MediaController extends BaseController {
         ToolUtil.copyProperties(objectMetadata, mediaObjectResult);
         return ResponseData.success(mediaObjectResult);
     }
+
+    /**
+     * 查询列表
+     *
+     * @author Sing
+     * @Date 2021-04-21
+     */
+    @RequestMapping(value = "/sortPagelist", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<MediaResult> sortPagelist(@RequestBody(required = false) MediaParam mediaParam) {
+        if(ToolUtil.isEmpty(mediaParam)){
+            mediaParam = new MediaParam();
+        }
+        return this.mediaService.findPageBySpecMyself(mediaParam);
+    }
+
 }
 
 
