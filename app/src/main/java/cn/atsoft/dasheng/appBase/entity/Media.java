@@ -42,6 +42,34 @@ public class Media implements Serializable {
     @TableField("bucket")
     private String bucket;
 
+    public String getFiledName() {
+        return filedName;
+    }
+
+    public void setFiledName(String filedName) {
+        this.filedName = filedName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * OSS储存块
+     */
+    @TableField("filed_name")
+    private String filedName;
+
+    /**
+     * OSS储存块
+     */
+    @TableField("type")
+    private String type;
+
     /**
      * 上传状态
      */

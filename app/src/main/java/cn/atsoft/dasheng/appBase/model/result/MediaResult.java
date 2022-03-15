@@ -29,6 +29,16 @@ public class MediaResult implements Serializable {
      */
     @ApiModelProperty("媒体ID")
     private Long mediaId;
+    /**
+      * 媒体ID
+    */
+    @ApiModelProperty("媒体名称")
+    private Long fieldName;
+    /**
+     * 媒体ID
+     */
+    @ApiModelProperty("媒体类型")
+    private Long type;
 
     /**
      * 文件路径
@@ -76,6 +86,7 @@ public class MediaResult implements Serializable {
     @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+    @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

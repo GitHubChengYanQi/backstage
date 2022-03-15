@@ -12,7 +12,6 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.appBase.config.AliyunService;
-import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -31,6 +30,8 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -104,9 +105,13 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public Media getMediaId(String type, Long userId) {
-        if (!userId.equals(0L)) {
+        List<String> filedNameAndType = Arrays.stream(type.split("\\.")).collect(Collectors.toList());
+        if (filedNameAndType.size() >2){
+            throw new ServiceException(500, "上传文件不可以使用多个文件后缀");
+        }
+        if (!userId.equals(0L) && filedNameAndType.size() == 2) {
             List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
-            if (!types.contains(type)) {
+            if (!types.contains(filedNameAndType.get(1))) {
                 throw new ServiceException(500, "数据类型错误");
             }
         }
@@ -117,6 +122,8 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         String bucket = aliyunService.getConfig().getOss().getBucket();
 
         Media media = new Media();
+        media.setFiledName(filedNameAndType.get(0));
+        media.setType(filedNameAndType.get(1));
         media.setPath(path);
         media.setEndpoint(endpoint);
         media.setBucket(bucket);
