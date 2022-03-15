@@ -38,7 +38,7 @@ public class MediaResult implements Serializable {
      * 媒体ID
      */
     @ApiModelProperty("媒体类型")
-    private Long type;
+    private String type;
 
     /**
      * 文件路径

@@ -59,13 +59,13 @@ public class Media implements Serializable {
     }
 
     /**
-     * OSS储存块
+     *
      */
     @TableField("filed_name")
     private String filedName;
 
     /**
-     * OSS储存块
+     *
      */
     @TableField("type")
     private String type;

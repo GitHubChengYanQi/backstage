@@ -4,208 +4,211 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.appBase.entity.Media">
-        <id column="media_id" property="mediaId" />
-        <result column="path" property="path" />
-        <result column="endpoint" property="endpoint" />
-        <result column="bucket" property="bucket" />
-        <result column="status" property="status" />
-        <result column="user_id" property="userId" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="type" property="type" />
-        <result column="filed_name" property="filedName" />
+        <id column="media_id" property="mediaId"/>
+        <result column="path" property="path"/>
+        <result column="endpoint" property="endpoint"/>
+        <result column="bucket" property="bucket"/>
+        <result column="status" property="status"/>
+        <result column="user_id" property="userId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="type" property="type"/>
+        <result column="filed_name" property="filedName"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        media_id AS "mediaId", path AS "path",type AS "type",filed_name AS "filedName",endpoint AS "endpoint", bucket AS "bucket", status AS "status", user_id AS "userId", create_time AS "createTime", create_user AS "createUser", update_user AS "updateUser", update_time AS "updateTime"
+        media_id
+        AS "mediaId", path AS "path",type AS "type",filed_name AS "filedName",endpoint AS "endpoint", bucket AS "bucket", status AS "status", user_id AS "userId", create_time AS "createTime", create_user AS "createUser", update_user AS "updateUser", update_time AS "updateTime"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.appBase.model.result.MediaResult" parameterType="cn.atsoft.dasheng.appBase.model.params.MediaParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.appBase.model.result.MediaResult"
+            parameterType="cn.atsoft.dasheng.appBase.model.params.MediaParam">
         select
         <include refid="Base_Column_List"/>
         from common_media where 1 = 1
-            <if test="paramCondition.mediaId != null">
-                and media_id like CONCAT('%',#{paramCondition.mediaId},'%')
-            </if>
-            <if test="paramCondition.path != null and paramCondition.path != ''">
-                and path like CONCAT('%',#{paramCondition.path},'%')
-            </if>
-            <if test="paramCondition.endpoint != null and paramCondition.endpoint != ''">
-                and endpoint like CONCAT('%',#{paramCondition.endpoint},'%')
-            </if>
-            <if test="paramCondition.bucket != null and paramCondition.bucket != ''">
-                and bucket like CONCAT('%',#{paramCondition.bucket},'%')
-            </if>
-            <if test="paramCondition.status != null">
-                and status like CONCAT('%',#{paramCondition.status},'%')
-            </if>
-            <if test="paramCondition.userId != null">
-                and user_id like CONCAT('%',#{paramCondition.userId},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.types != null and paramCondition.types.size>0">
-                and type in
-                <foreach collection="types" index="index" item="types" separator="," close=")" open="(">
-                    #{types}
-                </foreach>
-            </if>
+        <if test="paramCondition.mediaId != null">
+            and media_id like CONCAT('%',#{paramCondition.mediaId},'%')
+        </if>
+        <if test="paramCondition.path != null and paramCondition.path != ''">
+            and path like CONCAT('%',#{paramCondition.path},'%')
+        </if>
+        <if test="paramCondition.endpoint != null and paramCondition.endpoint != ''">
+            and endpoint like CONCAT('%',#{paramCondition.endpoint},'%')
+        </if>
+        <if test="paramCondition.bucket != null and paramCondition.bucket != ''">
+            and bucket like CONCAT('%',#{paramCondition.bucket},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.types != null and paramCondition.types.size>0">
+            and type in
+            <foreach collection="types" index="index" item="types" separator="," close=")" open="(">
+                #{types}
+            </foreach>
+        </if>
 
-            <if test="paramCondition.fieldName != null and paramCondition.fieldName != ''">
-                and field_name like CONCAT('%',#{paramCondition.fieldName},'%')
-            </if>
+        <if test="paramCondition.fieldName != null and paramCondition.fieldName != ''">
+            and filed_name like CONCAT('%',#{paramCondition.fieldName},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.appBase.model.params.MediaParam">
         select
         <include refid="Base_Column_List"/>
         from common_media where 1 = 1
-                <if test="paramCondition.mediaId != null">
-                        and media_id like CONCAT('%',#{paramCondition.mediaId},'%')
-                </if>
-                <if test="paramCondition.path != null and paramCondition.path != ''">
-                        and path like CONCAT('%',#{paramCondition.path},'%')
-                </if>
-                <if test="paramCondition.endpoint != null and paramCondition.endpoint != ''">
-                        and endpoint like CONCAT('%',#{paramCondition.endpoint},'%')
-                </if>
-                <if test="paramCondition.bucket != null and paramCondition.bucket != ''">
-                        and bucket like CONCAT('%',#{paramCondition.bucket},'%')
-                </if>
-                <if test="paramCondition.status != null">
-                        and status like CONCAT('%',#{paramCondition.status},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.types != null and paramCondition.types.size>0">
-                    and type in
-                    <foreach collection="types" index="index" item="types" separator="," close=")" open="(">
-                        #{types}
-                    </foreach>
-                </if>
-                <if test="paramCondition.fieldName != null and paramCondition.fieldName != ''">
-                    and field_name like CONCAT('%',#{paramCondition.fieldName},'%')
-                </if>
+        <if test="paramCondition.mediaId != null">
+            and media_id like CONCAT('%',#{paramCondition.mediaId},'%')
+        </if>
+        <if test="paramCondition.path != null and paramCondition.path != ''">
+            and path like CONCAT('%',#{paramCondition.path},'%')
+        </if>
+        <if test="paramCondition.endpoint != null and paramCondition.endpoint != ''">
+            and endpoint like CONCAT('%',#{paramCondition.endpoint},'%')
+        </if>
+        <if test="paramCondition.bucket != null and paramCondition.bucket != ''">
+            and bucket like CONCAT('%',#{paramCondition.bucket},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.types != null and paramCondition.types.size>0">
+            and type in
+            <foreach collection="types" index="index" item="types" separator="," close=")" open="(">
+                #{types}
+            </foreach>
+        </if>
+        <if test="paramCondition.fieldName != null and paramCondition.fieldName != ''">
+            and filed_name like CONCAT('%',#{paramCondition.fieldName},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.appBase.model.result.MediaResult" parameterType="cn.atsoft.dasheng.appBase.model.params.MediaParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.appBase.model.result.MediaResult"
+            parameterType="cn.atsoft.dasheng.appBase.model.params.MediaParam">
         select
         <include refid="Base_Column_List"/>
         from common_media where 1 = 1
-                <if test="paramCondition.mediaId != null">
-                        and media_id like CONCAT('%',#{paramCondition.mediaId},'%')
-                </if>
-                <if test="paramCondition.path != null and paramCondition.path != ''">
-                        and path like CONCAT('%',#{paramCondition.path},'%')
-                </if>
-                <if test="paramCondition.endpoint != null and paramCondition.endpoint != ''">
-                        and endpoint like CONCAT('%',#{paramCondition.endpoint},'%')
-                </if>
-                <if test="paramCondition.bucket != null and paramCondition.bucket != ''">
-                        and bucket like CONCAT('%',#{paramCondition.bucket},'%')
-                </if>
-                <if test="paramCondition.status != null">
-                        and status like CONCAT('%',#{paramCondition.status},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.types != null and paramCondition.types.size>0">
-                    and type in
-                    <foreach collection="types" index="index" item="types" separator="," close=")" open="(">
-                        #{types}
-                    </foreach>
-                </if>
+        <if test="paramCondition.mediaId != null">
+            and media_id like CONCAT('%',#{paramCondition.mediaId},'%')
+        </if>
+        <if test="paramCondition.path != null and paramCondition.path != ''">
+            and path like CONCAT('%',#{paramCondition.path},'%')
+        </if>
+        <if test="paramCondition.endpoint != null and paramCondition.endpoint != ''">
+            and endpoint like CONCAT('%',#{paramCondition.endpoint},'%')
+        </if>
+        <if test="paramCondition.bucket != null and paramCondition.bucket != ''">
+            and bucket like CONCAT('%',#{paramCondition.bucket},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.types != null and paramCondition.types.size>0">
+            and type in
+            <foreach collection="paramCondition.types" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
 
-                <if test="paramCondition.fieldName != null and paramCondition.fieldName != ''">
-                        and field_name like CONCAT('%',#{paramCondition.fieldName},'%')
-                </if>
-                order by create_time DESC
+        <if test="paramCondition.fieldName != null and paramCondition.fieldName != ''">
+            and filed_name like CONCAT('%',#{paramCondition.fieldName},'%')
+        </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.appBase.model.params.MediaParam">
         select
         <include refid="Base_Column_List"/>
         from common_media where 1 = 1
-                <if test="paramCondition.mediaId != null">
-                        and media_id like CONCAT('%',#{paramCondition.mediaId},'%')
-                </if>
-                <if test="paramCondition.path != null and paramCondition.path != ''">
-                        and path like CONCAT('%',#{paramCondition.path},'%')
-                </if>
-                <if test="paramCondition.endpoint != null and paramCondition.endpoint != ''">
-                        and endpoint like CONCAT('%',#{paramCondition.endpoint},'%')
-                </if>
-                <if test="paramCondition.bucket != null and paramCondition.bucket != ''">
-                        and bucket like CONCAT('%',#{paramCondition.bucket},'%')
-                </if>
-                <if test="paramCondition.status != null">
-                        and status like CONCAT('%',#{paramCondition.status},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.types != null and paramCondition.types.size>0">
-                    and type in
-                    <foreach collection="types" index="index" item="types" separator="," close=")" open="(">
-                        #{types}
-                    </foreach>
-                </if>
+        <if test="paramCondition.mediaId != null">
+            and media_id like CONCAT('%',#{paramCondition.mediaId},'%')
+        </if>
+        <if test="paramCondition.path != null and paramCondition.path != ''">
+            and path like CONCAT('%',#{paramCondition.path},'%')
+        </if>
+        <if test="paramCondition.endpoint != null and paramCondition.endpoint != ''">
+            and endpoint like CONCAT('%',#{paramCondition.endpoint},'%')
+        </if>
+        <if test="paramCondition.bucket != null and paramCondition.bucket != ''">
+            and bucket like CONCAT('%',#{paramCondition.bucket},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.types != null and paramCondition.types.size>0">
+            and type in
+            <foreach collection="types" index="index" item="types" separator="," close=")" open="(">
+                #{types}
+            </foreach>
+        </if>
 
-                <if test="paramCondition.fieldName != null and paramCondition.fieldName != ''">
-                    and field_name like CONCAT('%',#{paramCondition.fieldName},'%')
-                </if>
+        <if test="paramCondition.fieldName != null and paramCondition.fieldName != ''">
+            and filed_name like CONCAT('%',#{paramCondition.fieldName},'%')
+        </if>
     </select>
 
 </mapper>
