@@ -22,7 +22,7 @@ import java.util.List;
 public class MediaParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<String> types;
 
     /**
      * 媒体ID
