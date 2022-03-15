@@ -24,6 +24,7 @@ import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -105,9 +106,10 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public Media getMediaId(String type, Long userId) {
-        String sname = type.substring(type.lastIndexOf("."));//后缀
-        String fileName=type.substring(0,type.lastIndexOf("."));//文件名称
-
+//        String sname = type.substring(type.lastIndexOf("."));//后缀
+//        String fileName=type.substring(0,type.lastIndexOf("."));//文件名称
+        String fileName = FilenameUtils.getBaseName(type);
+        String sname = FilenameUtils.getExtension(type);
         if (!userId.equals(0L) && ToolUtil.isNotEmpty(sname)) {
             List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
             if (!types.contains(sname)) {
