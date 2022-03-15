@@ -80,10 +80,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private PhoneService phoneService;
     @Autowired
     private BankService bankService;
-
-    @Autowired
-    private PaymentTemplateService paymentTemplateService;
-
     @Autowired
     private ContractService contractService;
     @Autowired
@@ -382,51 +378,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
     @Override
     public Set<ContractDetailSetRequest> pendingProductionPlan() {
-//        List<Contract> contracts = this.query().eq("source", "销售").eq("display", 1).list();
-//        List<Long> contractIds = new ArrayList<>();
-//        for (Contract contract : contracts) {
-//            contractIds.add(contract.getContractId());
-//        }
-//        List<ContractDetail> contractDetails = contractIds.size() == 0 ? new ArrayList<>() : contractDetailService.query().eq("display", 1).in("contract_id", contractIds).list();
-//        List<ContractDetailResult> contractDetailResults = new ArrayList<>();
-//
-//        /**
-//         * 返回合并后的数据
-//         */
-//        Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
-//        for (ContractDetail contractDetail : contractDetails) {
-//            ContractDetailSetRequest request = new ContractDetailSetRequest();
-//            ToolUtil.copyProperties(contractDetail, request);
-//            contractDetailSet.add(request);
-//        }
-//        for (ContractDetail contractDetail : contractDetails) {
-//            ContractDetailResult contractDetailResult = new ContractDetailResult();
-//            ToolUtil.copyProperties(contractDetail, contractDetailResult);
-//            contractDetailResults.add(contractDetailResult);
-//        }
-//        this.contractDetailService.format(contractDetailResults);
-//        for (ContractDetailSetRequest request : contractDetailSet) {
-//            Long quantity = 0L;
-//            List<OrderDetailResult> results = new ArrayList<>();
-//            for (OrderDetailResult contractDetailResult : contractDetailResults) {
-//                if (
-//                        ToolUtil.isNotEmpty(contractDetailResult.getBrandId()) && ToolUtil.isNotEmpty(contractDetailResult.getSkuId()) && ToolUtil.isNotEmpty(contractDetailResult.getCustomerId()) &&
-//                                ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
-//                                contractDetailResult.getBrandId().equals(request.getBrandId()) && contractDetailResult.getSkuId().equals(request.getSkuId()) && contractDetailResult.getCustomerId().equals(request.getCustomerId())
-//                ) {
-//                    quantity += contractDetailResult.getQuantity();
-//                    results.add(contractDetailResult);
-//                    request.setSkuId(contractDetailResult.getSkuId());
-//                    request.setBrandId(contractDetailResult.getBrandId());
-//                    request.setCustomerId(contractDetailResult.getCustomerId());
-//                }
-//                request.setChildren(results);
-//                request.setQuantity(quantity);
-//            }
-//        }
-
         return null;
-
     }
 
 
@@ -528,60 +480,59 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     }});
                     //------------------------------------------------------------
                     SkuResult skuResult = skuResults.get(0);
-                    if (group.toString().contains("${{coding}}") && ToolUtil.isNotEmpty(skuResult)) {
-                        group = new StringBuilder(group.toString().replace("${{coding}}", skuResult.getStandard()));
+                    if (group.toString().contains("${{物料编码}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{物料编码}}", skuResult.getStandard()));
                     }
-                    if (group.toString().contains("${{spuName}}") && ToolUtil.isNotEmpty(skuResult)) {
-                        group = new StringBuilder(group.toString().replace("${{spuName}}", skuResult.getSpuResult().getName()));
+                    if (group.toString().contains("${{产品名称}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{产品名称}}", skuResult.getSpuResult().getName()));
                     }
-                    if (group.toString().contains("${{skuName}}") && ToolUtil.isNotEmpty(skuResult)) {
-                        group = new StringBuilder(group.toString().replace("${{skuName}}", skuResult.getSkuName() + "/" + skuResult.getSpecifications()));
+                    if (group.toString().contains("${{型号规格}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{型号规格}}", skuResult.getSkuName() + "/" + skuResult.getSpecifications()));
                     }
-                    if (group.toString().contains("${{skuClass}}") && ToolUtil.isNotEmpty(skuResult)) {
-                        group = new StringBuilder(group.toString().replace("${{skuClass}}", skuResult.getSpuResult().getSpuClassificationResult().getName()));
-                    }
-                    if (group.toString().contains("${{brand}}") && ToolUtil.isNotEmpty(detailParam.getBrandId())) {
+                    if (group.toString().contains("${{品牌厂家}}") && ToolUtil.isNotEmpty(detailParam.getBrandId())) {
                         Brand brand = brandService.getById(detailParam.getBrandId());
-                        group = new StringBuilder(group.toString().replace("${{brand}}", brand.getBrandName()));
+                        group = new StringBuilder(group.toString().replace("${{品牌厂家}}", brand.getBrandName()));
                     }
-                    if (group.toString().contains("${{skuNumber}}") && ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
-                        group = new StringBuilder(group.toString().replace("${{skuNumber}}", detailParam.getPurchaseNumber().toString()));
+                    if (group.toString().contains("${{数量}}")) {
+                        if (ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
+                            group = new StringBuilder(group.toString().replace("${{数量}}", detailParam.getPurchaseNumber().toString()));
+                        } else {
+                            group = new StringBuilder(group.toString().replace("${{数量}}", ""));
+                        }
+
                     }
-                    if (group.toString().contains("${{price}}") && ToolUtil.isNotEmpty(detailParam.getOnePrice())) {
-                        group = new StringBuilder(group.toString().replace("${{price}}", detailParam.getOnePrice().toString()));
+                    if (group.toString().contains("${{单位}}")) {        //单位
+                        if (ToolUtil.isNotEmpty(detailParam.getUnitId())) {
+                            Unit unit = unitService.getById(detailParam.getUnitId());
+                            group = new StringBuilder(group.toString().replace("${{单位}}", unit.getUnitName()));
+                        } else {
+                            group = new StringBuilder(group.toString().replace("${{单位}}", ""));
+                        }
+
                     }
-                    if (group.toString().contains("${{unit}}") && ToolUtil.isNotEmpty(detailParam.getUnitId())) {        //单位
-                        Unit unit = unitService.getById(detailParam.getUnitId());
-                        group = new StringBuilder(group.toString().replace("${{unit}}", unit.getUnitName()));
+                    if (group.toString().contains("${{总价}}")) {  //总价
+                        if (ToolUtil.isNotEmpty(detailParam.getTotalPrice())) {
+                            group = new StringBuilder(group.toString().replace("${{总价}}", detailParam.getTotalPrice().toString()));
+                        } else {
+                            group = new StringBuilder(group.toString().replace("${{总价}}", ""));
+                        }
+
                     }
-                    if (group.toString().contains("${{totalPrice}}") && ToolUtil.isNotEmpty(detailParam.getTotalPrice())) {  //总价
-                        group = new StringBuilder(group.toString().replace("${{totalPrice}}", detailParam.getTotalPrice().toString()));
-                    }
-                    if (group.toString().contains("${{preOrder}}") && ToolUtil.isNotEmpty(detailParam.getPreordeNumber())) {  //预购数量
-                        group = new StringBuilder(group.toString().replace("${{preOrder}}", detailParam.getPreordeNumber().toString()));
-                    }
-                    if (group.toString().contains("${{rate}}") && ToolUtil.isNotEmpty(detailParam.getRate())) {  //税率
-                        TaxRate taxRate = rateService.getById(detailParam.getRate());
-                        group = new StringBuilder(group.toString().replace("${{rate}}", taxRate.getTaxRateValue().toString()));
-                    }
-                    if (group.toString().contains("${{deliveryDate}}") && ToolUtil.isNotEmpty(detailParam.getDeliveryDate())) {  //交货期
-                        group = new StringBuilder(group.toString().replace("${{deliveryDate}}", detailParam.getDeliveryDate().toString()));
-                    }
-                    if (group.toString().contains("${{paperType}}")) {  //票据类型
-                        String paperType;
+                    if (group.toString().contains("${{发票类型}}")) {  //票据类型
+                        String paperType = "";
                         if (detailParam.getPaperType() == 0) {
                             paperType = "普票";
                         } else {
                             paperType = "专票";
                         }
-                        group = new StringBuilder(group.toString().replace("${{paperType}}", paperType));
+                        group = new StringBuilder(group.toString().replace("${{发票类型}}", paperType));
                     }
 
-                    if (group.toString().contains("${{deliveryDate}}")) {
+                    if (group.toString().contains("${{交货日期}}")) {
                         if (ToolUtil.isEmpty(detailParam.getDeliveryDate())) {
-                            group = new StringBuilder(group.toString().replace("${{deliveryDate}}", ""));
+                            group = new StringBuilder(group.toString().replace("${{交货日期}}", ""));
                         } else {
-                            group = new StringBuilder(group.toString().replace("${{deliveryDate}}", detailParam.getDeliveryDate().toString()));
+                            group = new StringBuilder(group.toString().replace("${{交货日期}}", detailParam.getDeliveryDate().toString()));
                         }
                     }
                     if (ToolUtil.isNotEmpty(cycleReplaces)) {
@@ -675,7 +626,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         if (content.contains("${{供方开户银行}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankId())) {
             Bank bank = bankService.getById(orderParam.getPartyBBankId());
-            content = content.replace("${{供方开户银行}}",ToolUtil.isNotEmpty(bank.getBankName()) ? bank.getBankName() : "");
+            content = content.replace("${{供方开户银行}}", ToolUtil.isNotEmpty(bank.getBankName()) ? bank.getBankName() : "");
         }
         if (content.contains("${{需方银行账号}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankAccount())) {
             Invoice invoice = invoiceService.getById(orderParam.getPartyABankAccount());
@@ -693,54 +644,96 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             String format = NumberChineseFormatter.format(money, true, true);
             content = content.replace("${{总计金额大写}}", format);
         }
-        if (content.contains("${{askCoding}}") && ToolUtil.isNotEmpty(orderParam.getCoding())) {  //采购编号
-            content = content.replace("${{askCoding}}", orderParam.getCoding());
+        if (content.contains("${{需方法人代表}}")) {  //A法定代表人
+            if (ToolUtil.isNotEmpty(orderParam.getPartyALegalPerson())) {
+                content = content.replace("${{需方法人代表}}", orderParam.getPartyALegalPerson());
+            } else {
+                content = content.replace("${{需方法人代表}}", "");
+            }
+
         }
-        if (content.contains("${{askRemake}}") && ToolUtil.isNotEmpty(orderParam.getRemark())) {  //采购日期
-            content = content.replace("${{askRemake}}", orderParam.getRemark());
+        if (content.contains("${{供方法人代表}}")) {  //B法定代表人
+            if (ToolUtil.isNotEmpty(orderParam.getPartyBLegalPerson())) {
+                content = content.replace("${{供方法人代表}}", orderParam.getPartyBLegalPerson());
+            } else {
+                content = content.replace("${{供方法人代表}}", "");
+            }
+
         }
-        if (content.contains("${{需方法人代表}}") && ToolUtil.isNotEmpty(orderParam.getPartyALegalPerson())) {  //A法定代表人
-            content = content.replace("${{需方法人代表}}", orderParam.getPartyALegalPerson());
+        if (content.contains("${{需方开户行号}}")) {  //A开户行号
+            if (ToolUtil.isNotEmpty(orderParam.getPartyABankNo())) {
+                content = content.replace("${{需方开户行号}}", orderParam.getPartyABankNo().toString());
+            } else {
+                content = content.replace("${{需方开户行号}}", "");
+            }
+
         }
-        if (content.contains("${{供方法人代表}}") && ToolUtil.isNotEmpty(orderParam.getPartyBLegalPerson())) {  //B法定代表人
-            content = content.replace("${{供方法人代表}}", orderParam.getPartyBLegalPerson());
+        if (content.contains("${{供方开户行号}}")) {  //B开户行号
+            if (ToolUtil.isNotEmpty(orderParam.getPartyBBankNo())) {
+                content = content.replace("${{供方开户行号}}", orderParam.getPartyBBankNo().toString());
+            } else {
+                content = content.replace("${{供方开户行号}}", "");
+            }
+
         }
-        if (content.contains("${{需方开户行号}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankNo())) {  //A开户行号
-            content = content.replace("${{需方开户行号}}", orderParam.getPartyABankNo().toString());
+        if (content.contains("${{需方公司传真}}")) {  //A传真
+            if (ToolUtil.isNotEmpty(orderParam.getPartyAFax())) {
+                content = content.replace("${{需方公司传真}}", orderParam.getPartyAFax());
+            } else {
+                content = content.replace("${{需方公司传真}}", orderParam.getPartyAFax());
+            }
         }
-        if (content.contains("${{供方开户行号}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankNo())) {  //B开户行号
-            content = content.replace("${{供方开户行号}}", orderParam.getPartyBBankNo().toString());
+
+        if (content.contains("${{供方公司传真}}")) {  //B传真
+            if (ToolUtil.isNotEmpty(orderParam.getPartyBFax())) {
+                content = content.replace("${{供方公司传真}}", orderParam.getPartyBFax());
+            } else {
+                content = content.replace("${{供方公司传真}}", "");
+            }
+
         }
-        if (content.contains("${{需方公司传真}}") && ToolUtil.isNotEmpty(orderParam.getPartyAFax())) {  //A传真
-            content = content.replace("${{需方公司传真}}", orderParam.getPartyAFax());
+        if (content.contains("${{需方邮政编码}}")) {  //A邮编
+            if (ToolUtil.isNotEmpty(orderParam.getPartyAZipcode())) {
+                content = content.replace("${{需方邮政编码}}", orderParam.getPartyAZipcode());
+            } else {
+                content = content.replace("${{需方邮政编码}}", "");
+            }
+
         }
-        if (content.contains("${{供方公司传真}}") && ToolUtil.isNotEmpty(orderParam.getPartyBFax())) {  //B传真
-            content = content.replace("${{供方公司传真}}", orderParam.getPartyBFax());
+        if (content.contains("${{供方邮政编码}}")) {  //B邮编
+            if (ToolUtil.isNotEmpty(orderParam.getPartyBZipcode())) {
+                content = content.replace("${{供方邮政编码}}", orderParam.getPartyBZipcode());
+            } else {
+                content = content.replace("${{供方邮政编码}}", "");
+            }
+
         }
-        if (content.contains("${{需方邮政编码}}") && ToolUtil.isNotEmpty(orderParam.getPartyAZipcode())) {  //A邮编
-            content = content.replace("${{需方邮政编码}}", orderParam.getPartyAZipcode());
+        if (content.contains("${{需方公司电话}}")) {  //A公司电话
+            if (ToolUtil.isNotEmpty(orderParam.getPartyACompanyPhone())) {
+                content = content.replace("${{需方公司电话}}", orderParam.getPartyACompanyPhone());
+            } else {
+                content = content.replace("${{需方公司电话}}", "");
+            }
+
         }
-        if (content.contains("${{供方邮政编码}}") && ToolUtil.isNotEmpty(orderParam.getPartyBZipcode())) {  //B邮编
-            content = content.replace("${{供方邮政编码}}", orderParam.getPartyBZipcode());
+        if (content.contains("${{供方公司电话}}")) {  //B公司电话
+            if (ToolUtil.isNotEmpty(orderParam.getPartyBCompanyPhone())) {
+                content = content.replace("${{供方公司电话}}", orderParam.getPartyBCompanyPhone());
+            } else {
+                content = content.replace("${{供方公司电话}}", "");
+            }
+
         }
-        if (content.contains("${{需方公司电话}}") && ToolUtil.isNotEmpty(orderParam.getPartyACompanyPhone())) {  //A公司电话
-            content = content.replace("${{需方公司电话}}", orderParam.getPartyACompanyPhone());
-        }
-        if (content.contains("${{供方公司电话}}") && ToolUtil.isNotEmpty(orderParam.getPartyBCompanyPhone())) {  //B公司电话
-            content = content.replace("${{供方公司电话}}", orderParam.getPartyBCompanyPhone());
-        }
-        if (content.contains("${{运费承担}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //是否含运费
+        if (content.contains("${{运费承担}}")) {  //是否含运费
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {
+
+            }
             if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getFreight())) {
                 if (orderParam.getPaymentParam().getFreight() == 1) {
                     content = content.replace("${{运费承担}}", "含运");
                 } else {
                     content = content.replace("${{运费承担}}", "不含运");
                 }
-            }
-        }
-        if (content.contains("${{payMethod}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //结算方式
-            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getPayMethod())) {
-                content = content.replace("${{payMethod}}", orderParam.getPaymentParam().getPayMethod());
             }
         }
         if (content.contains("${{运输方式}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //交货方式
@@ -754,12 +747,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 content = content.replace("${{提取(交付)地点}}", adress.getLocation());
             }
         }
-        if (content.contains("${{PaymentRemark}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //财务备注
-            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getRemark())) {
-                content = content.replace("${{PaymentRemark}}", orderParam.getPaymentParam().getRemark());
-            }
-        }
-
 
         return content;
     }
@@ -782,31 +769,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 int i = 0;
                 for (PaymentDetailParam detailParam : orderParam.getPaymentParam().getDetailParams()) {
                     String payGroup = m.group(0);
-                    if (payGroup.contains("${{detailMoney}}") && ToolUtil.isNotEmpty(detailParam.getMoney())) {      //金额
-                        payGroup = payGroup.replace("${{detailMoney}}", detailParam.getMoney().toString());
+                    if (payGroup.contains("${{付款金额}}") && ToolUtil.isNotEmpty(detailParam.getMoney())) {      //金额
+                        payGroup = payGroup.replace("${{付款金额}}", detailParam.getMoney().toString());
                     }
-                    if (payGroup.contains("${{detailPayType}}") && ToolUtil.isNotEmpty(detailParam.getPayType())) {    //财务详情方式
-                        String payType = "";
-                        switch (detailParam.getPayType()) {
-                            case 0:
-                                payType = "订单创建后";
-                                break;
-                            case 1:
-                                payType = "合同签订后";
-                                break;
-                            case 2:
-                                payType = "订单发货前";
-                                break;
-                            case 3:
-                                payType = "订单发货后";
-                                break;
-                            case 4:
-                                payType = "入库后";
-                                break;
-                        }
-                        payGroup = payGroup.replace("${{detailPayType}}", payType);
-                    }
-                    if (payGroup.contains("${{detailDateWay}}") && ToolUtil.isNotEmpty(detailParam.getDateWay())) {     //日期方式
+                    if (payGroup.contains("${{日期方式}}") && ToolUtil.isNotEmpty(detailParam.getDateWay())) {     //日期方式
                         String dateWay = "";
                         switch (detailParam.getDateWay()) {
                             case 0:
@@ -819,20 +785,18 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                                 dateWay = "年";
                                 break;
                         }
-                        payGroup = payGroup.replace("${{detailDateWay}}", dateWay);
+                        payGroup = payGroup.replace("${{日期方式}}", dateWay);
                     }
-                    if (payGroup.contains("${{percentum}}") && ToolUtil.isNotEmpty(detailParam.getPercentum())) {    //比例
-                        payGroup = payGroup.replace("${{percentum}}", detailParam.getPercentum().toString());
+                    if (payGroup.contains("${{付款比例}}") && ToolUtil.isNotEmpty(detailParam.getPercentum())) {    //比例
+                        payGroup = payGroup.replace("${{付款比例}}", detailParam.getPercentum().toString());
                     }
-                    if (payGroup.contains("${{DetailPayRemark}}") && ToolUtil.isNotEmpty(detailParam.getRemark())) {    //款项说明
-                        payGroup = payGroup.replace("${{DetailPayRemark}}", detailParam.getRemark());
-                    }
-                    if (payGroup.contains("${{DetailPayDate}}")) {    //付款时间
+
+                    if (payGroup.contains("${{付款日期}}")) {    //付款时间
                         if (ToolUtil.isNotEmpty(detailParam.getPayTime())) {
                             DateTime date = DateUtil.date(detailParam.getPayTime());
-                            payGroup = payGroup.replace("${{DetailPayDate}}", date.toString());
+                            payGroup = payGroup.replace("${{付款日期}}", date.toString());
                         } else {
-                            payGroup = payGroup.replace("${{DetailPayDate}}", "");
+                            payGroup = payGroup.replace("${{付款日期}}", "");
                         }
 
                     }
