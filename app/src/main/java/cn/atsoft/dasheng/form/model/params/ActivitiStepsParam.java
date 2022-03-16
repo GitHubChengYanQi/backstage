@@ -33,8 +33,9 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private QualityRules rule;
 
-
     private String stepType;
+
+    private AuditType auditType;
 
     private Long processRouteId;
 
