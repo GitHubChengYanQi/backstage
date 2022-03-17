@@ -65,6 +65,13 @@ public class OutstockOrderController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/getOrder", method = RequestMethod.POST)
+    public ResponseData getOrder(@RequestBody OutstockOrderParam param) {
+        OutstockOrderResult order = this.outstockOrderService.getOrder(param.getOutstockOrderId());
+        return ResponseData.success(order);
+    }
+
+
     /**
      * @param param
      */

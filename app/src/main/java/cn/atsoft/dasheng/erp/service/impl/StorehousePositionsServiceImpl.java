@@ -382,7 +382,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 }
 
             }
-        }else {
+        } else {
             StringBuffer now = new StringBuffer().append(positions.getName()).append("/").append(stringBuffer);
             stringBuffer = now;
         }
@@ -527,9 +527,55 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         List<StorehousePositions> storehousePositions = this.listByIds(ids);
 
-        List<StorehousePositionsResult> storehousePositionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
+        return BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
+    }
 
-        return storehousePositionsResults;
+    /**
+     *
+     * @param skuId
+     * @return
+     */
+    @Override
+    public List<StorehousePositionsResult> getSupperBySkuId(Long skuId) {
+        List<StorehousePositionsResult> results = new ArrayList<>();
+
+        QueryWrapper<StockDetails> stockDetailsQW = new QueryWrapper<>();
+        stockDetailsQW.select("sku_id,storehouse_positions_id,sum(number) as num").eq("sku_id", skuId).groupBy("sku_id,storehouse_positions_id");
+        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQW);
+
+        Map<Long, Integer> map = new HashMap<>();
+        for (StockDetails stockDetail : stockDetails) {
+            map.put(stockDetail.getStorehousePositionsId(), stockDetail.getNum());
+        }
+        List<StorehousePositions> positionsList = this.list();
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positionsList, StorehousePositionsResult.class, new CopyOptions());
+
+        for (StorehousePositionsResult positionsResult : positionsResults) {
+            for (Long id : map.keySet()) {
+                if (id.equals(positionsResult.getStorehousePositionsId())) {
+                    loopSuppler(positionsResult, positionsResults);
+                    Integer skuNumber = map.get(id);
+                    positionsResult.setSkuNumber(skuNumber);
+                    results.add(positionsResult);
+                    break;
+                }
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * 递归取上级
+     */
+    private void loopSuppler(StorehousePositionsResult positionsResult, List<StorehousePositionsResult> positionsResults) {
+        for (StorehousePositionsResult result : positionsResults) {
+            if (positionsResult.getPid().equals(result.getStorehousePositionsId())) {
+                positionsResult.setSupper(result);
+                loopSuppler(result, positionsResults);
+            }
+        }
+
     }
 
     /**

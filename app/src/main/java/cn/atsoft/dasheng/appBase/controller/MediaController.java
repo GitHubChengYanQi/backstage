@@ -22,11 +22,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,64 +48,64 @@ public class MediaController extends BaseController {
 
     @Autowired
     private AliyunService aliyunService;
-    /**
-     * 编辑接口
-     *
-     * @author Sing
-     * @Date 2021-04-21
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody MediaParam mediaParam) {
-
-        this.mediaService.update(mediaParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author Sing
-     * @Date 2021-04-21
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody MediaParam mediaParam)  {
-        this.mediaService.delete(mediaParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 查看详情接口
-     *
-     * @author Sing
-     * @Date 2021-04-21
-     */
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<MediaResult> detail(@RequestBody MediaParam mediaParam) {
-        Media detail = this.mediaService.getById(mediaParam.getMediaId());
-        MediaResult result = new MediaResult();
-        ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
-    }
-
-    /**
-     * 查询列表
-     *
-     * @author Sing
-     * @Date 2021-04-21
-     */
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<MediaResult> list(@RequestBody(required = false) MediaParam mediaParam) {
-        if(ToolUtil.isEmpty(mediaParam)){
-            mediaParam = new MediaParam();
-        }
-        return this.mediaService.findPageBySpec(mediaParam);
-    }
+//    /**
+//     * 编辑接口
+//     *
+//     * @author Sing
+//     * @Date 2021-04-21
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody MediaParam mediaParam) {
+//
+//        this.mediaService.update(mediaParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 删除接口
+//     *
+//     * @author Sing
+//     * @Date 2021-04-21
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody MediaParam mediaParam)  {
+//        this.mediaService.delete(mediaParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 查看详情接口
+//     *
+//     * @author Sing
+//     * @Date 2021-04-21
+//     */
+//    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+//    @ApiOperation("详情")
+//    public ResponseData<MediaResult> detail(@RequestBody MediaParam mediaParam) {
+//        Media detail = this.mediaService.getById(mediaParam.getMediaId());
+//        MediaResult result = new MediaResult();
+//        ToolUtil.copyProperties(detail, result);
+//
+////        result.setValue(parentValue);
+//        return ResponseData.success(result);
+//    }
+//
+//    /**
+//     * 查询列表
+//     *
+//     * @author Sing
+//     * @Date 2021-04-21
+//     */
+//    @RequestMapping(value = "/list", method = RequestMethod.POST)
+//    @ApiOperation("列表")
+//    public PageInfo<MediaResult> list(@RequestBody(required = false) MediaParam mediaParam) {
+//        if(ToolUtil.isEmpty(mediaParam)){
+//            mediaParam = new MediaParam();
+//        }
+//        return this.mediaService.findPageBySpec(mediaParam);
+//    }
 
 
     @RequestMapping(value = "/getToken", method = RequestMethod.GET)
@@ -145,6 +145,54 @@ public class MediaController extends BaseController {
         ToolUtil.copyProperties(objectMetadata, mediaObjectResult);
         return ResponseData.success(mediaObjectResult);
     }
+
+    /**
+     * 查询列表
+     *
+     * @author Sing
+     * @Date 2021-04-21
+     */
+    @RequestMapping(value = "/sortPagelist", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<MediaResult> sortPagelist(@RequestBody(required = false) MediaParam mediaParam) {
+        if(ToolUtil.isEmpty(mediaParam)){
+            mediaParam = new MediaParam();
+        }
+        return this.mediaService.findPageBySpecMyself(mediaParam);
+    }
+     /**
+     * 查询列表
+     *
+     * @author Sing
+     * @Date 2021-04-21
+     */
+    @RequestMapping(value = "/getUrlByMediaId", method = RequestMethod.GET)
+    @ApiOperation("单个媒体地址301跳转By媒体Id")
+    public void getUrlByMediaId(HttpServletRequest request, HttpServletResponse response, @RequestParam Long mediaId,@RequestParam(required = false) String xOssProcess) throws IOException {
+        if(ToolUtil.isEmpty(mediaId)){
+            throw new ServiceException(500,"媒体id不能为空");
+        }
+        String url = this.mediaService.getMediaUrlAddUseData(mediaId,0L,xOssProcess);
+        response.sendRedirect(url);
+
+    }
+
+    /**
+     * 查询列表
+     *
+     * @author Sing
+     * @Date 2021-04-21
+     */
+    @RequestMapping(value = "/getMediaPathById", method = RequestMethod.GET)
+    @ApiOperation("单个媒体地址301跳转By媒体Id")
+    public String getMediaPathById( @RequestParam Long mediaId){
+        if(ToolUtil.isEmpty(mediaId)){
+            throw new ServiceException(500,"媒体id不能为空");
+        }
+        return this.mediaService.getMediaPathPublic(mediaId,0L);
+    }
+
+
 }
 
 

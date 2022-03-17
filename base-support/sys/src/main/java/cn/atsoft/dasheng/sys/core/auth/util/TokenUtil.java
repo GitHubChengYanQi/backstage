@@ -42,6 +42,10 @@ public class TokenUtil {
                 }
             }
         }
+        if (ToolUtil.isEmpty(authToken)) {
+            authToken = request.getParameter("authorization");
+        }
+
 
         return authToken;
     }

@@ -129,6 +129,12 @@ public class StorehousePositionsController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/getSupperBySkuId", method = RequestMethod.GET)
+    public ResponseData getSupperBySkuId(@RequestParam Long id) {
+        List<StorehousePositionsResult> supperBySkuId = this.storehousePositionsService.getSupperBySkuId(id);
+        return ResponseData.success(supperBySkuId);
+    }
+
     /**
      * 查看详情接口
      *
@@ -209,7 +215,6 @@ public class StorehousePositionsController extends BaseController {
         queryWrapper.orderByAsc("sort");
         if (ToolUtil.isNotEmpty(ids)) {
             queryWrapper.in("storehouse_id", ids);
-
         }
         if (ToolUtil.isNotEmpty(name)) {  //模糊查询
             queryWrapper.like("name", name);

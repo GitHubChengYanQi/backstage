@@ -12,25 +12,28 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.appBase.config.AliyunService;
-import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.common.utils.BinaryUtil;
+import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -83,25 +86,47 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     }
 
     @Override
+    public PageInfo<MediaResult> findPageBySpecMyself(MediaParam param) {
+        Page<MediaResult> pageContext = getPageContext();
+        IPage<MediaResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.formatUrl(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+    private void formatUrl(List<MediaResult> param){
+        for (MediaResult mediaResult : param) {
+            Long mediaId = mediaResult.getMediaId();
+            String mediaUrl = this.getMediaUrl(mediaId, 1L);
+            mediaResult.setUrl(mediaUrl);
+        }
+    }
+
+    @Override
     public Media getMediaId(String type) {
         return getMediaId(type, 0L);
     }
 
     @Override
     public Media getMediaId(String type, Long userId) {
-        if (!userId.equals(0L)) {
+
+        List<String> collect = Arrays.stream(type.split("\\.(?=[^\\.]+$)")).collect(Collectors.toList());
+        String fileName = type;
+       String sname = collect.get(1);
+
+        if (!userId.equals(0L) && ToolUtil.isNotEmpty(sname)) {
             List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
-            if (!types.contains(type)) {
+            if (!types.contains(sname)) {
                 throw new ServiceException(500, "数据类型错误");
             }
         }
 
         String date = DateUtil.format(DateUtil.date(), "yyyyMMdd");
-        String path = aliyunService.getConfig().getOss().getPath() + type + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + type;
+        String path = aliyunService.getConfig().getOss().getPath() + sname + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + sname;
         String endpoint = aliyunService.getConfig().getOss().getEndpoint();
         String bucket = aliyunService.getConfig().getOss().getBucket();
 
         Media media = new Media();
+        media.setFiledName(fileName);
+        media.setType(sname);
         media.setPath(path);
         media.setEndpoint(endpoint);
         media.setBucket(bucket);
@@ -178,6 +203,12 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     @Override
     public String getMediaUrl(Long mediaId, Long userId) {
 
+
+        return getMediaUrlAddUseData(mediaId, userId,null);
+    }
+
+    @Override
+    public String getMediaUrlAddUseData(Long mediaId, Long userId, String useData) {
         if (ToolUtil.isEmpty(mediaId) || mediaId <= 0) {
             return null;
         }
@@ -194,9 +225,48 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
         Date expiration = new Date(expireEndTime);
         generatePresignedUrlRequest.setExpiration(expiration);
+        if (ToolUtil.isNotEmpty(useData)){
+            generatePresignedUrlRequest.setQueryParameter(new HashMap<String,String>(){{
+                put("x-oss-process",useData);
+            }});
+        }
+
         URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
         return url.toString();
     }
+
+    @Override
+    public String getMediaPathPublic(Long mediaId, Long userId) {
+        if (ToolUtil.isEmpty(mediaId) || mediaId <= 0) {
+            return null;
+        }
+        Media result = this.getById(mediaId);
+        if (ToolUtil.isEmpty(result)) {
+            throw new ServiceException(500, "媒体不存在");
+        }
+//        if (ToolUtil.isNotEmpty(result.getUserId()) && !result.getUserId().equals(userId)) {
+//            throw new ServiceException(500, "媒体信息错误");
+//        }
+        OSS ossClient = aliyunService.getOssClient();
+        ossClient.setObjectAcl(result.getBucket(), result.getPath(), CannedAccessControlList.PublicRead);
+
+//        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(result.getBucket(), result.getPath(), HttpMethod.GET);
+//        long expireTime = 86400 * 15;
+//        long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+//        Date expiration = new Date(expireEndTime);
+//        generatePresignedUrlRequest.setExpiration(expiration);
+//        if (ToolUtil.isNotEmpty(useData)){
+//            generatePresignedUrlRequest.setQueryParameter(new HashMap<String,String>(){{
+//                put("x-oss-process",useData);
+//            }});
+//        }
+
+//        URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
+        return "https://"+result.getBucket()+"."+result.getEndpoint()+"/"+result.getPath();
+    }
+
+
+
 
     private Serializable getKey(MediaParam param) {
         return param.getMediaId();

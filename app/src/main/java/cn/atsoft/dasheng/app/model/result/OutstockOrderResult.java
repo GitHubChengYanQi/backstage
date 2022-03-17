@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.pojo.Listing;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
@@ -25,6 +26,9 @@ import java.util.List;
 public class OutstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+
+    private  List<Listing> listing;
 
     /**
      * 主题
@@ -63,6 +67,7 @@ public class OutstockOrderResult implements Serializable {
     private StorehouseResult storehouseResult;
 
     private List<OutstockListingResult> outstockListing;
+
     private List<OutstockResult> outstockResults;
     /**
      * 出库状态

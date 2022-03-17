@@ -71,7 +71,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      * @author song
      * @Date 2021-10-29
      */
-     PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param);
+    PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param);
 
     StorehousePositionsResult getDetail(Long id, List<StorehousePositions> positions);
 
@@ -82,10 +82,18 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      * @Date 2021-10-29
      */
 
-    Map<String, Map<String,Object>> takeStock (StorehousePositionsParam param);
+    Map<String, Map<String, Object>> takeStock(StorehousePositionsParam param);
 
 
     StorehousePositionsResult detail(Long id);
 
     List<StorehousePositionsResult> positionsResults(List<Long> ids);
+
+    /**
+     * 从下找上级库位 通过sku
+     *
+     * @param skuId
+     * @return
+     */
+    List<StorehousePositionsResult> getSupperBySkuId(Long skuId);
 }

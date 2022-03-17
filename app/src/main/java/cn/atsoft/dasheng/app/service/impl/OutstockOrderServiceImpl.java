@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
+import cn.atsoft.dasheng.app.pojo.Listing;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -14,9 +15,12 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
+import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.erp.service.impl.OutstockSendTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
@@ -27,11 +31,15 @@ import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +78,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private InkindService inkindService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
 
     @Override
@@ -125,10 +135,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         Long aLong = orCodeService.backCode(backCodeRequest);
 
         String url = param.getUrl().replace("codeId", aLong.toString());
-//        outstockSendTemplate.setSourceId(entity.getOutstockOrderId());
-//        outstockSendTemplate.setUserId(param.getUserId());
-//        outstockSendTemplate.setUrl(url);
-
         User createUser = userService.getById(entity.getCreateUser());
         //新微信推送
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -156,6 +162,63 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         outBound(param.getListingParams()); //出库
     }
+
+    @Override
+    public OutstockOrderResult getOrder(Long id) {
+        OutstockOrder outstockOrder = this.getById(id);
+        if (ToolUtil.isEmpty(outstockOrder)) {
+            throw new ServiceException(500, "当前数据不存在");
+        }
+        OutstockOrderResult outstockResult = new OutstockOrderResult();
+        ToolUtil.copyProperties(outstockOrder, outstockResult);
+
+        Storehouse outStockStorehouse = storehouseService.getById(outstockResult.getStorehouseId());
+        if (ToolUtil.isNotEmpty(outStockStorehouse)) {
+            StorehouseResult storehouseResult1 = new StorehouseResult();
+            ToolUtil.copyProperties(outStockStorehouse, storehouseResult1);
+            outstockResult.setStorehouseResult(storehouseResult1);
+        }
+        User outStockUser = userService.getById(outstockOrder.getUserId());
+        if (ToolUtil.isNotEmpty(outStockUser)) {
+            UserResult userResult = new UserResult();
+            ToolUtil.copyProperties(outStockUser, userResult);
+            outstockResult.setUserResult(userResult);
+        }
+
+        getListing(outstockResult);
+        return outstockResult;
+    }
+
+    private void getListing(OutstockOrderResult result) {
+        List<OutstockListing> outstockListings = outstockListingService.query().eq("outstock_order_id", result.getOutstockOrderId()).list();
+        List<OutstockListingResult> resultList = BeanUtil.copyToList(outstockListings, OutstockListingResult.class, new CopyOptions());
+        outstockListingService.format(resultList);
+
+
+        Map<Long, List<StorehousePositionsResult>> supperMap = new HashMap<>();
+        for (OutstockListingResult outstockListingResult : resultList) {
+            List<StorehousePositionsResult> supper = positionsService.getSupperBySkuId(outstockListingResult.getSkuId());
+
+            supperMap.put(outstockListingResult.getSkuId(), supper);
+        }
+
+
+        List<Listing> list = new ArrayList<>();
+        for (OutstockListingResult outstockListingResult : resultList) {
+            Listing listing = new Listing();
+            List<StorehousePositionsResult> positionsResults = supperMap.get(outstockListingResult.getSkuId());
+            listing.setListingResult(outstockListingResult);
+            listing.setPositionsResults(positionsResults);
+            list.add(listing);
+        }
+
+        result.setListing(list);
+    }
+
+    private void mergePosition(List<Long> positionIds) {
+    
+    }
+
 
     @Override
     public void outBound(List<OutstockListingParam> listings) {

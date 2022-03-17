@@ -73,4 +73,6 @@ public interface OutstockListingService extends IService<OutstockListing> {
     List<OutstockListingResult> getDetailsByOrderId(Long id);
 
     OutstockListing getEntity(OutstockListingParam param);
+
+    void format(List<OutstockListingResult> data);
 }

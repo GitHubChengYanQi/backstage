@@ -113,7 +113,6 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
         List<StorehousePositions> storehousePositions = positionsService.list();
         format(resultList);
         List<StockDetails> details = stockDetailsService.list();
-
         if (ToolUtil.isNotEmpty(storehousePositions)) {
             for (OutstockListingResult data : resultList) {
                 List<StorehousePositionsResult> positionsResults = new ArrayList<>();
@@ -151,7 +150,8 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
         return entity;
     }
 
-    private void format(List<OutstockListingResult> data) {
+    @Override
+    public void format(List<OutstockListingResult> data) {
         List<Long> brandIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
         for (OutstockListingResult record : data) {
