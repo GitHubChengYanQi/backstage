@@ -51,18 +51,16 @@ public class StockDetailsController extends BaseController {
     }
 
 
-//    @RequestMapping(value = "/getBom", method = RequestMethod.GET)
-//    public ResponseData getBom(@RequestParam Long id, Long processId) {
-//        allBom.getBom(id, 1);
-//        allBom.getNumber();
-//        return ResponseData.success(allBom);
-//    }
-
     @RequestMapping(value = "/getAllSkuIds", method = RequestMethod.GET)
-    public ResponseData getAllSkuIds(@RequestParam Long processId) {
+    public ResponseData getAllSkuIds(@RequestParam Long processId, Integer num) {
         allBom.getSkuList().clear();
+        allBom.getStockNumber().clear();
+        allBom.getNotEnough().clear();
+        allBom.getEnough().clear();
         allBom.getAllShip(processId, 1);
         allBom.start();
+        allBom.getNumber(num);
+        allBom.getMix(num);
         return ResponseData.success(allBom);
     }
 

@@ -3,34 +3,24 @@ package cn.atsoft.dasheng.app.pojo;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.AllBomService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.pojo.StepsType;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.form.service.StepsService;
-import cn.atsoft.dasheng.production.entity.ProcessRoute;
-import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
-import cn.atsoft.dasheng.production.service.ProcessRouteService;
+import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.swagger.models.auth.In;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.html.HTMLParagraphElement;
-import sun.util.resources.cldr.mg.LocaleNames_mg;
 
 import java.util.*;
 
@@ -57,24 +47,32 @@ public class AllBom {
     @Autowired
     @JSONField(serialize = false)
     private ActivitiProcessService processService;
+
     @Autowired
     @JSONField(serialize = false)
     private StepsService stepsService;
+
     @Autowired
     @JSONField(serialize = false)
     private ActivitiSetpSetDetailService setDetailService;
+
     @Autowired
     @JSONField(serialize = false)
     private ActivitiSetpSetService setService;
 
+    private Map<Long, Integer> notEnough = new HashMap<>();  //缺料数
+
+    private Map<Long, Integer> enough = new HashMap<>(); //够料
 
     private Map<Long, ArrayList<Map<Long, Object>>> Bom = new HashMap<>();
 
-    private Map<Long, Integer> skuList = new HashMap<>();
+    private Map<Long, Integer> skuList = new HashMap<>();  //生产一套所需要的物料和数量
 
-    private Map<Long, Long> stockNumber = new HashMap<>();
+    private Map<Long, Long> stockNumber = new HashMap<>();  //库存数量
 
     private Map<Long, Integer> shipSku = new HashMap<>();  //所有子工艺sku
+
+    private Integer mix;   //最少可生产数量;
 
 
     public void start() {
@@ -91,7 +89,7 @@ public class AllBom {
             ActivitiProcess process = processService.getById(stepsResult.getProcess().getProcessId());
             map.put(process.getFormId(), num);
         }
-        this.loopGetProcessList(stepsResult, 1, map);
+        this.loopGetProcessList(stepsResult, num, map);
         this.shipSku = map;
         return map;
     }
@@ -177,35 +175,74 @@ public class AllBom {
     }
 
 
-    public void getNumber() {
-
-        List<Long> skuIds = new ArrayList<>();
+    public void getNumber(int number) {
 
         /**
          * 查询库存
          */
-
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("*", "sum(number) AS num").in("sku_id", skuIds).groupBy("sku_id");
-        List<StockDetails> details = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.list(queryWrapper);
-
-        Set<Long> stockNumberKey = skuList.keySet();
+        queryWrapper.select("*", "sum(number) AS num").groupBy("sku_id");
+        List<StockDetails> details = stockDetailsService.list(queryWrapper);
         for (StockDetails detail : details) {
-            for (Long aLong : stockNumberKey) {
-                if (aLong.equals(detail.getSkuId())) {
-                    Integer needNum = skuList.get(detail.getSkuId());
-                    Long haveNumber = detail.getNum();
-                    Long reduceNum = haveNumber - Long.valueOf(needNum);
-                    stockNumber.put(detail.getSkuId(), reduceNum);
-                    detail.setNum(detail.getNum() - needNum);
-                    //TODO 记录
+            stockNumber.put(detail.getSkuId(), detail.getNum());
+        }
+
+        /**
+         * 所有子工艺的最下级
+         */
+
+        Map<Long, Integer> allBomNumber = new HashMap<>();
+
+        for (Map.Entry<Long, ArrayList<Map<Long, Object>>> bom : Bom.entrySet()) {
+            ArrayList<Map<Long, Object>> bomValue = bom.getValue();
+            for (Map<Long, Object> objectMap : bomValue) {
+                for (Map.Entry<Long, Object> longObjectEntry : objectMap.entrySet()) {
+                    ErpPartsDetail detail = (ErpPartsDetail) longObjectEntry.getValue();
+                    allBomNumber.put(detail.getSkuId(), detail.getNumber() * number);
                 }
             }
-            if (stockNumberKey.stream().noneMatch(i -> i.equals(detail.getSkuId()))) {
+        }
 
-                //TODO 新增一行缺料数据  库存中没有 用 0- skuList Value
+        Set<Long> keySet = allBomNumber.keySet();
+        for (Long aLong : keySet) {
+            Long stockNum = stockNumber.get(aLong);
+            if (ToolUtil.isNotEmpty(stockNum)) {
+                stockNumber.put(aLong, allBomNumber.get(aLong) + stockNumber.get(aLong));
+            } else {
+                stockNumber.put(aLong, Long.valueOf(allBomNumber.get(aLong)));
             }
         }
+
+
     }
 
+    public void getMix(int number) {
+        List<Integer> mix = new ArrayList<>();
+        List<Integer> max = new ArrayList<>();
+        for (Long aLong : skuList.keySet()) {
+            Integer skuNumber = skuList.get(aLong);
+            skuNumber = skuNumber * number;
+            Long stockSkuNumber = stockNumber.get(aLong);
+            if (ToolUtil.isEmpty(stockSkuNumber)) {    //库存没有 直接缺料
+                notEnough.put(aLong, skuNumber);
+            } else if (skuNumber - stockSkuNumber > 0) {  //缺料
+//                int need = Math.toIntExact(skuNumber - stockSkuNumber);
+                int i = Math.toIntExact((skuNumber / stockSkuNumber));//不能生产数量
+                mix.add(i);
+                notEnough.put(aLong, Math.toIntExact((skuNumber - stockSkuNumber)));
+            } else if (stockSkuNumber - skuNumber >= 0) {
+                enough.put(aLong, Math.toIntExact(stockSkuNumber - (long) skuNumber));
+                int l = Math.toIntExact(stockSkuNumber / skuNumber);
+                max.add(l);
+            }
+        }
+        if (ToolUtil.isNotEmpty(mix)) {
+            this.mix = Collections.min(mix);    //最少可生产；
+        }
+        if (ToolUtil.isEmpty(mix) && ToolUtil.isNotEmpty(max)) {
+            this.mix = Collections.min(max);
+        }
+    }
 }
+
+
