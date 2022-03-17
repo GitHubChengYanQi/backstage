@@ -32,6 +32,8 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
 
     void AkeyOutbound(OutstockOrderParam param);
 
+    OutstockOrderResult getOrder(Long id);
+
     void outBound(List<OutstockListingParam> listings);
 
     /**

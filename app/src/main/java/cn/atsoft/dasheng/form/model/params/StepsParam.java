@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.form.model.params;
 
-import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -23,13 +22,13 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
+public class StepsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ActivitiStepsParam> conditionNodeList;
+    private List<StepsParam> conditionNodeList;
 
-    private ActivitiStepsParam childNode;
+    private StepsParam childNode;
 
     private QualityRules rule;
 

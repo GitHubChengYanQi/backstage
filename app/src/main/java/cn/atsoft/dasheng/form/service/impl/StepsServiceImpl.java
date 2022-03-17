@@ -8,7 +8,7 @@ import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam;
-import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
+import cn.atsoft.dasheng.form.model.params.StepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -70,7 +70,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
     @Override
     @Transactional
-    public Long add(ActivitiStepsParam param) {
+    public Long add(StepsParam param) {
 
         ActivitiSteps entity = getEntity(param);
         entity.setType(START);
@@ -150,7 +150,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param node
      * @param supper
      */
-    public void luYou(Long processRouteId, ActivitiStepsParam node, Long supper, Long formId) {
+    public void luYou(Long processRouteId, StepsParam node, Long supper, Long formId) {
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
 
@@ -230,9 +230,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param stepsParams
      * @param supper
      */
-    public void recursiveAdd(Long processRouteId, List<ActivitiStepsParam> stepsParams, Long supper, Long formId) {
+    public void recursiveAdd(Long processRouteId, List<StepsParam> stepsParams, Long supper, Long formId) {
         //分支遍历
-        for (ActivitiStepsParam stepsParam : stepsParams) {
+        for (StepsParam stepsParam : stepsParams) {
             //获取super
             stepsParam.setSupper(supper);
             //存分支
@@ -326,12 +326,12 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return ids;
     }
 
-    private Serializable getKey(ActivitiStepsParam param) {
+    private Serializable getKey(StepsParam param) {
         return param.getSetpsId();
     }
 
 
-    private ActivitiSteps getEntity(ActivitiStepsParam param) {
+    private ActivitiSteps getEntity(StepsParam param) {
         ActivitiSteps entity = new ActivitiSteps();
         ToolUtil.copyProperties(param, entity);
         return entity;
