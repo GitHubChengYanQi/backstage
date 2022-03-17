@@ -390,26 +390,26 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             throw new ServiceException(500, "物料必须添加在最底级分类中");
         }
 
-        //生成编码
-        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
-        if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-//                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
-            SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
-            if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
-                String replace = "";
-                if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
-                    replace = backCoding.replace("${skuClass}", classification.getCodingClass());
-                } else {
-                    replace = backCoding.replace("${skuClass}", "");
-                }
-
-                param.setStandard(replace);
-                param.setCoding(replace);
-
-            }
-
-        }
+//        //生成编码
+//        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
+//        if (ToolUtil.isNotEmpty(codingRules)) {
+//            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+////                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
+//            SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
+//            if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
+//                String replace = "";
+//                if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
+//                    replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+//                } else {
+//                    replace = backCoding.replace("${skuClass}", "");
+//                }
+//
+//                param.setStandard(replace);
+//                param.setCoding(replace);
+//
+//            }
+//
+//        }
         /**
          * 判断成品码是否重复
          */
@@ -1232,7 +1232,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (ToolUtil.isNotEmpty(param.getSpu().getCategoryId())) {
             category = categoryService.getById(param.getSpu().getCategoryId());
         } else {
-            String trim = param.getSpu().getName().trim();
+            String trim = param.getSpu().getName().trim(); //去空格
             category = categoryService.query().eq("category_name", trim).eq("display", 1).one();
         }
         ToolUtil.copyProperties(category, entity);
@@ -1247,12 +1247,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     private Spu getOrSaveSpu(SkuParam param, Long spuClassificationId, Long categoryId) {
         Spu spu = new Spu();
-        Long spuId = param.getSpu().getSpuId();
 
         if (ToolUtil.isNotEmpty(param.getSpu().getSpuId())) {
-            spu = spuService.lambdaQuery().eq(Spu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+            spu = spuService.lambdaQuery().eq(Spu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(Spu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(Spu::getDisplay, 1)).one();
         } else if (ToolUtil.isNotEmpty(param.getSpu().getName())) {
-            spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+            spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(Spu::getDisplay, 1)).one();
         }
         Spu spuEntity = new Spu();
         ToolUtil.copyProperties(spu, spuEntity);
