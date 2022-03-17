@@ -452,6 +452,30 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         return contract;
     }
 
+
+    /**
+     * 添加合同详情
+     *
+     * @param contractId
+     * @param
+     */
+    private void createContractDetail(Long contractId, OrderParam param) {
+
+        List<ContractDetail> details = new ArrayList<>();
+        for (OrderDetailParam detailParam : param.getDetailParams()) {
+            ContractDetail contractDetail = new ContractDetail();
+            contractDetail.setContractId(contractId);
+            contractDetail.setContractId(param.getSellerId());
+            contractDetail.setSkuId(detailParam.getSkuId());
+            contractDetail.setBrandId(detailParam.getBrandId());
+            if (ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
+                contractDetail.setQuantity(Math.toIntExact(detailParam.getPurchaseNumber()));
+            }
+            details.add(contractDetail);
+        }
+        contractDetailService.saveBatch(details);
+    }
+
     /**
      * 循环替换
      *
@@ -492,6 +516,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     if (group.toString().contains("${{品牌厂家}}") && ToolUtil.isNotEmpty(detailParam.getBrandId())) {
                         Brand brand = brandService.getById(detailParam.getBrandId());
                         group = new StringBuilder(group.toString().replace("${{品牌厂家}}", brand.getBrandName()));
+                    }
+                    if (group.toString().contains("${{序号}}")) {
+                        group = new StringBuilder(group.toString().replace("${{序号}}", i + 1 + ""));
                     }
                     if (group.toString().contains("${{数量}}")) {
                         if (ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
@@ -553,30 +580,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         return content;
     }
 
-
-    /**
-     * 添加合同详情
-     *
-     * @param contractId
-     * @param
-     */
-    private void createContractDetail(Long contractId, OrderParam param) {
-
-        List<ContractDetail> details = new ArrayList<>();
-        for (OrderDetailParam detailParam : param.getDetailParams()) {
-            ContractDetail contractDetail = new ContractDetail();
-            contractDetail.setContractId(contractId);
-            contractDetail.setContractId(param.getSellerId());
-            contractDetail.setSkuId(detailParam.getSkuId());
-            contractDetail.setBrandId(detailParam.getBrandId());
-            if (ToolUtil.isNotEmpty(detailParam.getPurchaseNumber())) {
-                contractDetail.setQuantity(Math.toIntExact(detailParam.getPurchaseNumber()));
-            }
-            details.add(contractDetail);
-        }
-        contractDetailService.saveBatch(details);
-    }
-
     /**
      * 替换
      *
@@ -585,7 +588,14 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
      * @return
      */
     private String replace(String content, OrderParam orderParam) {
-
+        Customer buyer = customerService.getById(orderParam.getBuyerId());  //甲方
+        Customer seller = customerService.getById(orderParam.getSellerId());  //乙方
+        if (ToolUtil.isEmpty(buyer)) {
+            throw new ServiceException(500, "请确定需方存在");
+        }
+        if (ToolUtil.isEmpty(seller)) {
+            throw new ServiceException(500, "请确定乙方存在");
+        }
         if (content.contains("${{需方委托代表}}") && ToolUtil.isNotEmpty(orderParam.getPartyAContactsId())) {
             Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
             content = content.replace("${{需方委托代表}}", ToolUtil.isNotEmpty(contacts.getContactsName()) ? contacts.getContactsName() : "");
@@ -650,8 +660,14 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             } else {
                 content = content.replace("${{需方法人代表}}", "");
             }
-
         }
+        if (content.contains("${{需方法人电话}}")) {  //A法定代表人
+            content = content.replace("${{需方法人电话}}", "");
+        }
+        if (content.contains("${{供方法人电话}}")) {  //A法定代表人
+            content = content.replace("${{供方法人电话}}", "");
+        }
+
         if (content.contains("${{供方法人代表}}")) {  //B法定代表人
             if (ToolUtil.isNotEmpty(orderParam.getPartyBLegalPerson())) {
                 content = content.replace("${{供方法人代表}}", orderParam.getPartyBLegalPerson());
@@ -676,6 +692,42 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             }
 
         }
+        if (content.contains("${{需方代表电话}}")) {
+            if (ToolUtil.isNotEmpty(buyer.getTelephone())) {
+                content = content.replace("${{需方代表电话}}", buyer.getTelephone());
+            } else {
+                content = content.replace("${{需方代表电话}}", "");
+            }
+        }
+        if (content.contains("${{供方代表电话}}")) {
+            if (ToolUtil.isNotEmpty(seller.getTelephone())) {
+                content = content.replace("${{供方代表电话}}", seller.getTelephone());
+            } else {
+                content = content.replace("${{供方代表电话}}", "");
+            }
+        }
+        if (content.contains("${{需方公司电邮}}")) {
+            if (ToolUtil.isNotEmpty(buyer.getEmall())) {
+                content = content.replace("${{需方公司电邮}}", buyer.getEmall());
+            } else {
+                content = content.replace("${{需方公司电邮}}", "");
+            }
+        }
+        if (content.contains("${{供方公司电邮}}")) {
+            if (ToolUtil.isNotEmpty(seller.getEmall())) {
+                content = content.replace("${{供方公司电邮}}", seller.getEmall());
+            } else {
+                content = content.replace("${{供方公司电邮}}", "");
+            }
+        }
+        if (content.contains("${{需方税号}}")) {
+            content = content.replace("${{需方税号}}", "");
+        }
+        if (content.contains("${{供方税号}}")) {
+            content = content.replace("${{供方税号}}", "");
+        }
+
+
         if (content.contains("${{需方公司传真}}")) {  //A传真
             if (ToolUtil.isNotEmpty(orderParam.getPartyAFax())) {
                 content = content.replace("${{需方公司传真}}", orderParam.getPartyAFax());
@@ -725,29 +777,71 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
         }
         if (content.contains("${{运费承担}}")) {  //是否含运费
-            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {
-
-            }
             if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getFreight())) {
                 if (orderParam.getPaymentParam().getFreight() == 1) {
                     content = content.replace("${{运费承担}}", "含运");
                 } else {
                     content = content.replace("${{运费承担}}", "不含运");
                 }
-            }
-        }
-        if (content.contains("${{运输方式}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //交货方式
-            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getDeliveryWay())) {
-                content = content.replace("${{运输方式}}", orderParam.getPaymentParam().getDeliveryWay());
-            }
-        }
-        if (content.contains("${{提取(交付)地点}}") && ToolUtil.isNotEmpty(orderParam.getPaymentParam())) {  //交货地址
-            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getAdressId())) {
-                Adress adress = adressService.getById(orderParam.getPaymentParam().getAdressId());
-                content = content.replace("${{提取(交付)地点}}", adress.getLocation());
+            } else {
+                content = content.replace("${{运费承担}}", "");
             }
         }
 
+        if (content.contains("${{运输方式}}")) {  //交货方式
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getDeliveryWay())) {
+                content = content.replace("${{运输方式}}", orderParam.getPaymentParam().getDeliveryWay());
+            } else {
+                content = content.replace("${{运输方式}}", "");
+            }
+        }
+        if (content.contains("${{提货人员}}")) {
+            content = content.replace("${{提货人员}}", "");
+        }
+        if (content.contains("${{接货人电话}}")) {
+            content = content.replace("${{接货人电话}}", "");
+        }
+        if (content.contains("${{质量标准}}")) {
+            content = content.replace("${{质量标准}}", "");
+        }
+        if (content.contains("${{质量要求}}")) {
+            content = content.replace("${{质量要求}}", "");
+        }
+        if (content.contains("${{质保起始方式}}")) {
+            content = content.replace("${{质保起始方式}}", "");
+        }
+        if (content.contains("${{质保周期}}")) {
+            content = content.replace("${{质保周期}}", "");
+        }
+        if (content.contains("${{其他约定事项}}")) {
+            content = content.replace("${{其他约定事项}}", "");
+        }
+        if (content.contains("${{提取(交付)地点}}")) {  //交货地址
+            if (ToolUtil.isNotEmpty(orderParam.getPaymentParam().getAdressId())) {
+                Adress adress = adressService.getById(orderParam.getPaymentParam().getAdressId());
+                if (ToolUtil.isEmpty(adress)) {
+                    content = content.replace("${{提取(交付)地点}}", "");
+                } else {
+                    content = content.replace("${{提取(交付)地点}}", ToolUtil.isNotEmpty(adress.getLocation()) ? adress.getLocation() : "");
+                }
+            }
+        }
+
+        if (content.contains("${{采购合同编号}}")) {
+            if (ToolUtil.isNotEmpty(orderParam.getContractParam().getContractCoding())) {
+                content = content.replace("${{采购合同编号}}", orderParam.getContractParam().getContractCoding());
+            } else {
+                content = content.replace("${{采购合同编号}}", "");
+            }
+        }
+
+        if (content.contains("${{合同签订时间}}")) {
+            Date date = new DateTime();
+            content = content.replace("${{合同签订时间}}", date.toString());
+        }
+        if (content.contains("${{合同签订地点}}")) {
+            content = content.replace("${{合同签订地点}}", "");
+        }
         return content;
     }
 
