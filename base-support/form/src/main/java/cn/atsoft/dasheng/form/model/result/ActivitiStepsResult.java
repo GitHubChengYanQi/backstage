@@ -45,15 +45,19 @@ public class ActivitiStepsResult implements Serializable {
 
     private Boolean permissions;
 
-    private ActivitiProcessResult activitiProcessResult;
+    private ActivitiProcessResult process;
 
     private Object workOrderResult;
 
     private ActivitiSetpSetResult setpSet;
+
+    private Object processRoute;
+
     private Object childRouteSteps;
 
 
     private ActivitiSetpSetResult setpSetResult;
+
     private List<ActivitiSetpSetDetailResult> setpSetDetailResults;
 
     private List<ActivitiStepsResult> conditionNodeList;

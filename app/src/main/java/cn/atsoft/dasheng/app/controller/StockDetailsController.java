@@ -38,9 +38,10 @@ import java.util.Map;
 public class StockDetailsController extends BaseController {
 
     @Autowired
-    private StockDetailsService stockDetailsService;
-    @Autowired
     private AllBom allBom;
+
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
 
     @RequestMapping(value = "/getDetailsBySkuId", method = RequestMethod.POST)
@@ -59,7 +60,8 @@ public class StockDetailsController extends BaseController {
 
     @RequestMapping(value = "/getAllSkuIds", method = RequestMethod.GET)
     public ResponseData getAllSkuIds(@RequestParam Long processId) {
-        allBom.getAllShip(processId,1);
+        allBom.getSkuList().clear();
+        allBom.getAllShip(processId, 1);
         allBom.start();
         return ResponseData.success(allBom);
     }

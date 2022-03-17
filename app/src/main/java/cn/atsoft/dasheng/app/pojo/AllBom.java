@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
+import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -31,10 +32,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.html.HTMLParagraphElement;
 import sun.util.resources.cldr.mg.LocaleNames_mg;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @Service
@@ -76,7 +74,7 @@ public class AllBom {
 
     private Map<Long, Long> stockNumber = new HashMap<>();
 
-    private Map<Long, Integer> shipSku = new HashMap<>();   //所有子工艺sku
+    private Map<Long, Integer> shipSku = new HashMap<>();  //所有子工艺sku
 
 
     public void start() {
@@ -89,6 +87,10 @@ public class AllBom {
     public Map<Long, Integer> getAllShip(Long processId, int num) {
         Map<Long, Integer> map = new HashMap<>();
         ActivitiStepsResult stepsResult = stepsService.detail(processId);//树形结构
+        if (ToolUtil.isNotEmpty(stepsResult.getProcess())) {   //当前工艺
+            ActivitiProcess process = processService.getById(stepsResult.getProcess().getProcessId());
+            map.put(process.getFormId(), num);
+        }
         this.loopGetProcessList(stepsResult, 1, map);
         this.shipSku = map;
         return map;
@@ -103,10 +105,8 @@ public class AllBom {
                     if (ToolUtil.isNotEmpty(setDetail)) {
                         num = num * setDetail.getNum();
                         shipSku.put(setDetail.getSkuId(), setDetail.getNum());
-                    } else {
-                        shipSku.put(stepsResult.getActivitiProcessResult().getFormId(), 1);
                     }
-                    shipSku.putAll(getAllShip(stepsResult.getActivitiProcessResult().getProcessId(), num));
+                    shipSku.putAll(getAllShip(stepsResult.getProcess().getProcessId(), num));
                     break;
                 case "shipStart":
                 case "setp":
@@ -180,9 +180,7 @@ public class AllBom {
     public void getNumber() {
 
         List<Long> skuIds = new ArrayList<>();
-        for (Map.Entry<Long, ArrayList<Map<Long, Object>>> longArrayListEntry : Bom.entrySet()) {
-            skuIds.add(longArrayListEntry.getKey());
-        }
+
         /**
          * 查询库存
          */
@@ -191,14 +189,23 @@ public class AllBom {
         queryWrapper.select("*", "sum(number) AS num").in("sku_id", skuIds).groupBy("sku_id");
         List<StockDetails> details = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.list(queryWrapper);
 
+        Set<Long> stockNumberKey = skuList.keySet();
         for (StockDetails detail : details) {
-            for (Long skuId : skuIds) {
-                if (skuId.equals(detail.getSkuId())) {
-                    stockNumber.put(detail.getSkuId(), detail.getNum());
+            for (Long aLong : stockNumberKey) {
+                if (aLong.equals(detail.getSkuId())) {
+                    Integer needNum = skuList.get(detail.getSkuId());
+                    Long haveNumber = detail.getNum();
+                    Long reduceNum = haveNumber - Long.valueOf(needNum);
+                    stockNumber.put(detail.getSkuId(), reduceNum);
+                    detail.setNum(detail.getNum() - needNum);
+                    //TODO 记录
                 }
             }
-        }
+            if (stockNumberKey.stream().noneMatch(i -> i.equals(detail.getSkuId()))) {
 
+                //TODO 新增一行缺料数据  库存中没有 用 0- skuList Value
+            }
+        }
     }
 
 }

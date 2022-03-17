@@ -32,6 +32,10 @@ public class ActivitiProcessParam implements Serializable, BaseValidatingParam {
     private ActivitiAuditParam activitiAuditParam;
 
     private Integer shipNumber;
+
+    private Integer num;  //子工艺产出数量
+
+    private Long skuId;
     /**
      * 模块
      */
