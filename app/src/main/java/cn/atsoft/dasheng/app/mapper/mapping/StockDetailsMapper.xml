@@ -46,7 +46,8 @@ stage
         stock_id AS "stockId",
         display AS "display" ,
         stage AS "stage",
-        sum(number) AS "skuSum"
+        stage AS "stage"
+
     </sql>
 
 
@@ -152,14 +153,13 @@ stage
     </select>
 
 <!--EXCEL导出查询-->
-    <select id="excelList" resultType="cn.atsoft.dasheng.Excel.pojo.StockDetailExcel"
+    <select id="stockDetailExcelExport" resultType="cn.atsoft.dasheng.Excel.pojo.StockDetailExcel"
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Excel_List"/>
 
         from daoxin_erp_stock_details where 1 = 1
 
-        GROUP BY sku_id,brand_id,customer_id
     </select>
 
 </mapper>

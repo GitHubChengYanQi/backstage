@@ -30,7 +30,7 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
      */
     List<StockDetailsResult> customList(@Param("paramCondition") StockDetailsParam paramCondition);
 
-    List<StockDetailExcel> stockDetailExcelExport(@Param("paramCondition") StockDetailsParam paramCondition);
+    List<StockDetailExcel> stockDetailExcelExport();
 
     /**
      * 获取map列表

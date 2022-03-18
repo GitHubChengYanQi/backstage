@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
@@ -13,6 +14,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -306,7 +308,57 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         }
     }
     @Override
-    public void getStockDetail(){
-        this.baseMapper.customList()
+    public List<StockDetailExcel> getStockDetail(){
+        List<StockDetailExcel> stockDetailExcels = this.baseMapper.stockDetailExcelExport();
+        List<Long>  skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
+        List<Long> storeHousePositionIds = new ArrayList<>();
+
+        /**
+         * 添加id查询
+         */
+        for (StockDetailExcel stockDetailExcel : stockDetailExcels) {
+            if (ToolUtil.isNotEmpty(stockDetailExcel.getSkuId())) {
+                skuIds.add(stockDetailExcel.getSkuId());
+            }
+            if (ToolUtil.isNotEmpty(stockDetailExcel.getBrandId())) {
+                brandIds.add(stockDetailExcel.getBrandId());
+            }
+            if (ToolUtil.isNotEmpty(stockDetailExcel.getCustomerId())) {
+                customerIds.add(stockDetailExcel.getCustomerId());
+            }
+            if (ToolUtil.isNotEmpty(stockDetailExcel.getStorehousePositionsId())){
+                storeHousePositionIds.add(stockDetailExcel.getStorehousePositionsId());
+            }
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<CustomerResult> customerResults = customerService.getResults(customerIds);
+        List<StorehousePositionsResult> storehousePositionsResults = positionsService.positionsResults(storeHousePositionIds);
+        for (StockDetailExcel stockDetailExcel : stockDetailExcels) {
+            for (SkuResult skuResult : skuResults) {
+                if (stockDetailExcel.getSkuId().equals(skuResult.getSkuId())) {
+                    stockDetailExcel.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(stockDetailExcel.getBrandId()) && stockDetailExcel.getBrandId().equals(brandResult.getBrandId())) {
+                    stockDetailExcel.setBrandResult(brandResult);
+                }
+            }
+            for (CustomerResult customerResult : customerResults) {
+                if (ToolUtil.isNotEmpty(stockDetailExcel.getCustomerId()) && stockDetailExcel.getBrandId().equals(customerResult.getCustomerId())) {
+                    stockDetailExcel.setCustomerResult(customerResult);
+                }
+            }
+            for (StorehousePositionsResult storehousePositionsResult : storehousePositionsResults) {
+                if (ToolUtil.isNotEmpty(stockDetailExcel.getStorehousePositionsId()) && stockDetailExcel.getStorehousePositionsId().equals(storehousePositionsResult.getStorehousePositionsId())) {
+                    stockDetailExcel.setStorehousePositionsResult(storehousePositionsResult);
+                }
+            }
+        }
+        return stockDetailExcels;
     }
 }
