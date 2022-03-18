@@ -305,8 +305,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             ToolUtil.copyProperties(orderDetail, orderDetailResult);
             orderDetailResults.add(orderDetailResult);
         }
-         contractDetailSet = new HashSet<ContractDetailSetRequest>(contractDetailSet.stream().collect(Collectors.toMap(ContractDetailSetRequest::getSkuId, a -> a, (o1, o2) -> {
-
+        contractDetailSet = new HashSet<ContractDetailSetRequest>(contractDetailSet.stream().collect(Collectors.toMap(ContractDetailSetRequest::getSkuId, a -> a, (o1, o2) -> {
+            if (ToolUtil.isEmpty(o1.getQuantity())) {
+               o1.setQuantity(0L);
+            }
+            if (ToolUtil.isEmpty(o2.getQuantity())){
+                o2.setQuantity(0L);
+            }
             o1.setQuantity(o1.getQuantity() + o2.getQuantity());
             return o1;
 
