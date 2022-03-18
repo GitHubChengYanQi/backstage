@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -304,7 +305,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             ToolUtil.copyProperties(orderDetail, orderDetailResult);
             orderDetailResults.add(orderDetailResult);
         }
+         contractDetailSet = new HashSet<ContractDetailSetRequest>(contractDetailSet.stream().collect(Collectors.toMap(ContractDetailSetRequest::getSkuId, a -> a, (o1, o2) -> {
+
+            o1.setQuantity(o1.getQuantity() + o2.getQuantity());
+            return o1;
+
+        })).values());
+
+
         this.detailService.format(orderDetailResults);
+
+
         for (ContractDetailSetRequest request : contractDetailSet) {
             Long quantity = 0L;
             List<OrderDetailResult> results = new ArrayList<>();
