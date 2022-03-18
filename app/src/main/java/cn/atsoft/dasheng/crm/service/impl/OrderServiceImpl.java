@@ -309,34 +309,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             Long quantity = 0L;
             List<OrderDetailResult> results = new ArrayList<>();
             for (OrderDetailResult orderDetailResult : orderDetailResults) {
-                if (
-                        ToolUtil.isNotEmpty(orderDetailResult.getBrandId())
-                                &&
-                                ToolUtil.isNotEmpty(orderDetailResult.getSkuId())
-                                &&
-                                ToolUtil.isNotEmpty(orderDetailResult.getCustomerId())
-                                &&
-                                ToolUtil.isNotEmpty(request.getBrandId())
-                                &&
-                                ToolUtil.isNotEmpty(request.getSkuId())
-                                &&
-                                ToolUtil.isNotEmpty(request.getCustomerId())
-                                &&
-                                orderDetailResult.getSkuId().equals(request.getSkuId())
-//                                &&
-//                                orderDetailResult.getBrandId().equals(request.getBrandId())
-//                                &&
-//                                orderDetailResult.getCustomerId().equals(request.getCustomerId())
-                ) {
-                    quantity += orderDetailResult.getPreordeNumber();
+                if (ToolUtil.isNotEmpty(orderDetailResult.getSkuId()) && ToolUtil.isNotEmpty(request.getSkuId()) && orderDetailResult.getSkuId().equals(request.getSkuId())) {
+                    quantity += orderDetailResult.getPreordeNumber(); //fix 预购数量与采购数量
                     results.add(orderDetailResult);
                     request.setSkuId(orderDetailResult.getSkuId());
                     request.setBrandId(orderDetailResult.getBrandId());
                     request.setCustomerId(orderDetailResult.getCustomerId());
                 }
-                request.setChildren(results);
-                request.setQuantity(quantity);
+
             }
+            request.setChildren(results);
+            request.setQuantity(quantity);
             for (SkuResult skuResult : skuResults) {
                 if (request.getSkuId().equals(skuResult.getSkuId())) {
                     request.setSkuResult(skuResult);
