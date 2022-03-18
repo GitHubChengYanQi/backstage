@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.crm.service.impl;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
@@ -23,7 +24,9 @@ import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
 import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
@@ -77,6 +80,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private SupplyService supplyService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private BrandService brandService;
 
     @Override
     @Transactional
@@ -237,9 +244,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderResult> orderResults = this.baseMapper.customList(orderParam);
         List<Long> orderIds = new ArrayList<>();
         for (OrderResult orderResult : orderResults) {
-            orderIds.add(orderResult.getContractId());
+            orderIds.add(orderResult.getOrderId());
         }
-        List<OrderDetail> orderDetails = detailService.query().in("order_id", orderIds).eq("display", 1).list();
+        List<OrderDetail> orderDetails = orderIds.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", orderIds).eq("display", 1).list();
         List<OrderDetailResult> orderDetailResults = new ArrayList<>();
         for (OrderDetail orderDetail : orderDetails) {
             OrderDetailResult result = new OrderDetailResult();
@@ -256,6 +263,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
             orderResult.setDetailResults(results);
         }
+        format(orderResults);
         return orderResults;
     }
 
@@ -265,7 +273,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderResult> orderResults = this.baseMapper.customList(orderParam);
         List<Long> orderIds = new ArrayList<>();
         for (OrderResult orderResult : orderResults) {
-            orderIds.add(orderResult.getContractId());
+            orderIds.add(orderResult.getOrderId());
         }
         List<OrderDetail> orderDetails = detailService.query().in("order_id", orderIds).eq("display", 1).list();
         List<OrderDetailResult> orderDetailResults = new ArrayList<>();
@@ -273,12 +281,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         /**
          * 返回合并后的数据
          */
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
         for (OrderDetail orderDetail : orderDetails) {
             ContractDetailSetRequest request = new ContractDetailSetRequest();
             ToolUtil.copyProperties(orderDetail, request);
+            skuIds.add(request.getSkuId());
+            brandIds.add(request.getBrandId());
             contractDetailSet.add(request);
         }
+        /**
+         * 查询sku
+         */
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
+
+
         for (OrderDetail orderDetail : orderDetails) {
             OrderDetailResult orderDetailResult = new OrderDetailResult();
             ToolUtil.copyProperties(orderDetail, orderDetailResult);
@@ -290,9 +310,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             List<OrderDetailResult> results = new ArrayList<>();
             for (OrderDetailResult orderDetailResult : orderDetailResults) {
                 if (
-                        ToolUtil.isNotEmpty(orderDetailResult.getBrandId()) && ToolUtil.isNotEmpty(orderDetailResult.getSkuId()) && ToolUtil.isNotEmpty(orderDetailResult.getCustomerId()) &&
-                                ToolUtil.isNotEmpty(request.getBrandId()) && ToolUtil.isNotEmpty(request.getSkuId()) && ToolUtil.isNotEmpty(request.getCustomerId()) &&
-                                orderDetailResult.getBrandId().equals(request.getBrandId()) && orderDetailResult.getSkuId().equals(request.getSkuId()) && orderDetailResult.getCustomerId().equals(request.getCustomerId())
+                        ToolUtil.isNotEmpty(orderDetailResult.getBrandId())
+                                &&
+                                ToolUtil.isNotEmpty(orderDetailResult.getSkuId())
+                                &&
+                                ToolUtil.isNotEmpty(orderDetailResult.getCustomerId())
+                                &&
+                                ToolUtil.isNotEmpty(request.getBrandId())
+                                &&
+                                ToolUtil.isNotEmpty(request.getSkuId())
+                                &&
+                                ToolUtil.isNotEmpty(request.getCustomerId())
+                                &&
+                                orderDetailResult.getSkuId().equals(request.getSkuId())
+//                                &&
+//                                orderDetailResult.getBrandId().equals(request.getBrandId())
+//                                &&
+//                                orderDetailResult.getCustomerId().equals(request.getCustomerId())
                 ) {
                     quantity += orderDetailResult.getPreordeNumber();
                     results.add(orderDetailResult);
@@ -302,6 +336,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
                 request.setChildren(results);
                 request.setQuantity(quantity);
+            }
+            for (SkuResult skuResult : skuResults) {
+                if (request.getSkuId().equals(skuResult.getSkuId())) {
+                    request.setSkuResult(skuResult);
+                }
+            }
+            BrandResult brandResult = new BrandResult();
+            for (Brand brand : brands) {
+                if (request.getBrandId().equals(brand.getBrandId())) {
+                    ToolUtil.copyProperties(brand, brandResult);
+                    request.setBrandResult(brandResult);
+                }
             }
         }
 
