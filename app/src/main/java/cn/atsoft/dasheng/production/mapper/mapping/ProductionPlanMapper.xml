@@ -5,6 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.ProductionPlan">
         <id column="production_plan_id" property="productionPlanId" />
+        <result column="coding" property="coding" />
         <result column="theme" property="theme" />
         <result column="origin" property="origin" />
         <result column="execution_time" property="executionTime" />
@@ -20,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        production_plan_id AS "productionPlanId", theme AS "theme", origin AS "origin", execution_time AS "executionTime", user_id AS "userId", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        production_plan_id AS "productionPlanId",coding AS "coding", theme AS "theme", origin AS "origin", execution_time AS "executionTime", user_id AS "userId", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
     </sql>
 
 

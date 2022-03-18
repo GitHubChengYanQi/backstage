@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
@@ -70,16 +71,16 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     public void add(ProductionPlanParam param){
         ProductionPlan entity = getEntity(param);
         this.save(entity);
-        List<Long> skuIds = new ArrayList<>();
+//        List<Long> skuIds = new ArrayList<>();
 
         List<ProductionPlanDetail> details = new ArrayList<>();
-        for (ProductionPlanDetailParam productionPlanDetailParam : param.getProductionPlanDetailParams()) {
-            ProductionPlanDetail detail = new ProductionPlanDetail();
-            ToolUtil.copyProperties(productionPlanDetailParam,detail);
-            detail.setProductionPlanId(entity.getProductionPlanId());
-            skuIds.add(detail.getSkuId());
-            details.add(detail);
-        }
+//        for (ProductionPlanDetailParam productionPlanDetailParam : param.getProductionPlanDetailParams()) {
+//            ProductionPlanDetail detail = new ProductionPlanDetail();
+//            ToolUtil.copyProperties(productionPlanDetailParam,detail);
+//            detail.setProductionPlanId(entity.getProductionPlanId());
+//            skuIds.add(detail.getSkuId());
+//            details.add(detail);
+//        }
 //        Integer designParts = partsService.query().in("sku_id", skuIds).eq("type", 1).eq("display", 1).eq("status", 99).count();
 //        if (designParts<skuIds.size()) {
 //            int i = skuIds.size() - designParts;
@@ -90,6 +91,13 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 //            int i = skuIds.size() - productionParts;
 //            throw new ServiceException(500, "有"+i+"个物品你没有生产bom,请先创建生产bom");
 //        }
+        for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
+            ProductionPlanDetail detail = new ProductionPlanDetail();
+            detail.setProductionPlanId(entity.getProductionPlanId());
+//            skuIds.add(detail.getSkuId());
+            detail.setPlanNumber(Math.toIntExact(orderDetailParam.getPurchaseNumber()));
+            details.add(detail);
+        }
         productionPlanDetailService.saveBatch(details);
         if (details.size() > 0) {    //调用消息队列
             MicroServiceEntity serviceEntity = new MicroServiceEntity();

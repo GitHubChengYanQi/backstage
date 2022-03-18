@@ -30,6 +30,12 @@ public class ProductionPlanResult implements Serializable {
     private Long productionPlanId;
 
     /**
+     * 生产计划id
+     */
+    @ApiModelProperty("编码")
+    private String coding;
+
+    /**
      * 主题
      */
     @ApiModelProperty("主题")

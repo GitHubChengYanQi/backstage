@@ -6,6 +6,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
 /**
@@ -26,6 +28,12 @@ public class ProductionPlan implements Serializable {
      */
       @TableId(value = "production_plan_id", type = IdType.ID_WORKER)
     private Long productionPlanId;
+
+    /**
+     * 编码
+     */
+    @TableField("coding")
+    private String coding;
 
     /**
      * 主题
@@ -93,6 +101,14 @@ public class ProductionPlan implements Serializable {
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
 
     public Long getProductionPlanId() {
         return productionPlanId;
