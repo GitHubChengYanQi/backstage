@@ -16,12 +16,10 @@ import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
 import cn.atsoft.dasheng.crm.model.params.InvoiceParam;
+import cn.atsoft.dasheng.crm.model.result.BankResult;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
-import cn.atsoft.dasheng.crm.service.ContactsBindService;
-import cn.atsoft.dasheng.crm.service.InvoiceService;
-import cn.atsoft.dasheng.crm.service.TrackMessageService;
-import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -96,6 +94,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Autowired
     private MessageProducer messageProducer;
 
+    @Autowired
+    private BankService bankService;
+
     @Override
     @FreedLog
     @Transactional
@@ -145,9 +146,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         for (int i = 0; i < param.getInvoiceParams().size(); i++) {
             param.getInvoiceParams().get(i).setCustomerId(entity.getCustomerId());
-            Long add = invoiceService.add(param.getInvoiceParams().get(i));
+            Invoice invoice = invoiceService.add(param.getInvoiceParams().get(i));
             if (i == 0) {
-                entity.setInvoiceId(add);
+                entity.setInvoiceId(invoice.getInvoiceId());
             }
         }
 
@@ -267,7 +268,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             userIds.add(record.getUserId());
             userIds.add(record.getCreateUser());
             industryIds.add(record.getIndustryId());
-//            dycustomerIds.add(record.getCustomerId());
             customerIds.add(record.getCustomerId());
             customerId = record.getCustomerId();
             invoiceIds.add(record.getInvoiceId());
@@ -286,7 +286,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             contactsIds.add(contactsBind.getContactsId());
         }
 
-        List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.query().in("customer_id",customerIds).eq("display",1).list();
+        List<InvoiceResult> invoiceResultList = invoiceService.getDetails(invoiceIds);
+        List<InvoiceResult> invoiceResultsByCus = invoiceService.getDetailsByCustomerIds(customerIds);
+
+
         /***
          * 默认地址
          */
@@ -371,31 +374,24 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             } else if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 0) {
                 record.setClassificationName("代理商");
             }
+
+
+            for (InvoiceResult invoiceResult : invoiceResultList) {
+
+                if (ToolUtil.isNotEmpty(record.getInvoiceId()) && record.getInvoiceId().equals(invoiceResult.getInvoiceId())) {
+                    record.setInvoiceResult(invoiceResult);
+                    break;
+                }
+
+            }
             List<InvoiceResult> invoiceResults = new ArrayList<>();
-            for (Invoice invoice : invoices) {      //对比开票
-                if (invoice.getCustomerId().equals(record.getCustomerId())) {
-                    InvoiceResult invoiceResult = new InvoiceResult();
-                    ToolUtil.copyProperties(invoice, invoiceResult);
-//                    record.setInvoiceResult(invoiceResult);
-                    invoiceResults.add(invoiceResult);
-                    record.setInvoiceResults(invoiceResults);
-//                    break;
+            for (InvoiceResult resultsByCus : invoiceResultsByCus) {
+                if (resultsByCus.getCustomerId().equals(record.getCustomerId())) {
+                    invoiceResults.add(resultsByCus);
                 }
             }
             record.setInvoiceResults(invoiceResults);
 
-
-
-            for (Invoice invoice : invoices) {      //对比开票
-                if (invoice.getInvoiceId().equals(record.getInvoiceId())) {
-                    InvoiceResult invoiceResult = new InvoiceResult();
-                    ToolUtil.copyProperties(invoice, invoiceResult);
-                    record.setInvoiceResult(invoiceResult);
-//                    invoiceResults.add(invoiceResult);
-                    break;
-                }
-            }
-//            record.setInvoiceResults(invoiceResults);
             for (Adress adress : adresses) {
                 if (adress.getAdressId().equals(record.getDefaultAddress())) {
                     record.setAddress(adress);
@@ -428,7 +424,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
             }
             for (UserResult user : userResults) {
-                if (record.getCreateUser().equals(user.getUserId())){
+                if (record.getCreateUser().equals(user.getUserId())) {
                     record.setCreateUserResult(user);
                     break;
                 }

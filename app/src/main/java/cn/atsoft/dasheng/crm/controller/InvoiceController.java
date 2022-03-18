@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,8 @@ public class InvoiceController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody InvoiceParam invoiceParam) {
-        this.invoiceService.add(invoiceParam);
-        return ResponseData.success();
+        Invoice invoice = this.invoiceService.add(invoiceParam);
+        return ResponseData.success(invoice);
     }
 
     /**
@@ -67,7 +68,7 @@ public class InvoiceController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InvoiceParam invoiceParam)  {
+    public ResponseData delete(@RequestBody InvoiceParam invoiceParam) {
         this.invoiceService.delete(invoiceParam);
         return ResponseData.success();
     }
@@ -98,13 +99,11 @@ public class InvoiceController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InvoiceResult> list(@RequestBody(required = false) InvoiceParam invoiceParam) {
-        if(ToolUtil.isEmpty(invoiceParam)){
+        if (ToolUtil.isEmpty(invoiceParam)) {
             invoiceParam = new InvoiceParam();
         }
         return this.invoiceService.findPageBySpec(invoiceParam);
     }
-
-
 
 
 }

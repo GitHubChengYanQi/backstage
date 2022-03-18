@@ -54,6 +54,34 @@ public class OutstockOrderController extends BaseController {
     }
 
     /**
+     * 出库单一键出库
+     *
+     * @param param
+     */
+    @RequestMapping(value = "/AkeyOutbound", method = RequestMethod.POST)
+    public ResponseData AkeyOutbound(@RequestBody OutstockOrderParam param) {
+        this.outstockOrderService.AkeyOutbound(param);
+        return ResponseData.success();
+    }
+
+
+    @RequestMapping(value = "/getOrder", method = RequestMethod.POST)
+    public ResponseData getOrder(@RequestBody OutstockOrderParam param) {
+        OutstockOrderResult order = this.outstockOrderService.getOrder(param.getOutstockOrderId());
+        return ResponseData.success(order);
+    }
+
+
+    /**
+     * @param param
+     */
+    @RequestMapping(value = "/outBound", method = RequestMethod.POST)
+    public ResponseData outBound(@RequestBody @Valid OutstockOrderParam param) {
+        this.outstockOrderService.outBound(param.getListingParams());
+        return ResponseData.success();
+    }
+
+    /**
      * 自由出库
      *
      * @author cheng
@@ -129,7 +157,6 @@ public class OutstockOrderController extends BaseController {
             return this.outstockOrderService.findPageBySpec(outstockOrderParam, dataScope);
         }
     }
-
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)

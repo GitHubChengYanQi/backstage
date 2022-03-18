@@ -50,6 +50,7 @@ public class PaymentDetailServiceImpl extends ServiceImpl<PaymentDetailMapper, P
         for (PaymentDetailParam param : params) {
             PaymentDetail paymentDetail = new PaymentDetail();
             ToolUtil.copyProperties(param, paymentDetail);
+            paymentDetail.setDetailId(null);
             paymentDetail.setPaymentId(paymentId);
             details.add(paymentDetail);
         }

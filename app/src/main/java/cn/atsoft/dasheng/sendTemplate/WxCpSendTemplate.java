@@ -90,7 +90,7 @@ public class WxCpSendTemplate {
                     String randomString = ToolUtil.getRandomString(5);
                     String s = messageEntity.getCpData().getDescription() + randomString;
                     messageEntity.getCpData().setDescription(s);
-//                    logger.info("微信消息"+messageEntity.getCpData().getDescription());
+                    logger.info("微信消息"+messageEntity.getCpData().getDescription());
                     messageProducer.sendMessage(messageEntity);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -109,7 +109,7 @@ public class WxCpSendTemplate {
                 message.setSource(getSource());
                 message.setUrl(wxCpTemplate.getUrl());
                 messageEntity.setMessage(message);
-//                logger.info("铃铛发送"+messageEntity.getCpData().getDescription());
+                logger.info("铃铛发送"+messageEntity.getCpData().getDescription());
                 messageProducer.sendMessage(messageEntity);
             }
         }

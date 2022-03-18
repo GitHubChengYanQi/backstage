@@ -17,8 +17,11 @@ import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,7 +31,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -50,6 +55,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private SkuService skuService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private PartsService partsService;
 
 
     @Override
@@ -58,6 +65,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         this.save(entity);
         return entity.getStockItemId();
     }
+
 
     @Override
     public void delete(StockDetailsParam param) {
@@ -79,11 +87,56 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public List<StockDetailsResult> findListBySpec(StockDetailsParam param) {
-        List<StockDetailsResult> stockDetailsResults = this.baseMapper.customList(param);
-        return stockDetailsResults;
+        return this.baseMapper.customList(param);
     }
 
     @Override
+    public List<StockDetailsResult> getDetailsBySkuId(Long id) {
+        if (ToolUtil.isEmpty(id)) {
+            throw new ServiceException(500, "缺少id");
+        }
+        List<StockDetails> details = this.query().eq("sku_id", id).list();
+        if (ToolUtil.isEmpty(details)) {
+            return null;
+        }
+        List<StockDetailsResult> detailsResults = BeanUtil.copyToList(details, StockDetailsResult.class, new CopyOptions());
+
+        List<Long> brandIds = new ArrayList<Long>();
+        List<Long> houseIds = new ArrayList<>();
+        for (StockDetailsResult detailsResult : detailsResults) {
+            brandIds.add(detailsResult.getBrandId());
+            houseIds.add(detailsResult.getStorehouseId());
+        }
+
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<StorehousePositions> positions = positionsService.list();
+        List<StorehouseResult> storehouseResultList = storehouseService.getDetails(houseIds);
+        for (StockDetailsResult detailsResult : detailsResults) {
+
+            StorehousePositionsResult serviceDetail = positionsService.getDetail(detailsResult.getStorehousePositionsId(), positions);
+            detailsResult.setPositionsResult(serviceDetail);
+            for (StorehouseResult storehouseResult : storehouseResultList) {
+                if (storehouseResult.getStorehouseId().equals(detailsResult.getStorehouseId())) {
+                    detailsResult.setStorehouseResult(storehouseResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(detailsResult.getBrandId()) && brandResult.getBrandId().equals(detailsResult.getBrandId())) {
+                    detailsResult.setBrandResult(brandResult);
+                    break;
+                }
+            }
+
+        }
+        return detailsResults;
+    }
+
+
+
+
+    @Override
+
     public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
         Page<StockDetailsResult> pageContext = getPageContext();
         IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
@@ -242,7 +295,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
             if (!brandList.isEmpty()) {
                 for (Brand brand : brandList) {
-                    if (datum.getBrandId().equals(brand.getBrandId())) {
+                    if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
                         BrandResult brandResult = new BrandResult();
                         ToolUtil.copyProperties(brand, brandResult);
                         datum.setBrandResult(brandResult);

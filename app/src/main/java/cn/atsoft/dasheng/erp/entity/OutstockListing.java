@@ -31,6 +31,11 @@ public class OutstockListing implements Serializable {
     private Long outstockListingId;
 
     /**
+     * 供应商id
+     */
+    @TableField("customer_id")
+    private Long customerId;
+    /**
      * 出库数量
      */
     @TableField("delivery")
@@ -97,6 +102,14 @@ public class OutstockListing implements Serializable {
      */
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 
     /**
      * 状态

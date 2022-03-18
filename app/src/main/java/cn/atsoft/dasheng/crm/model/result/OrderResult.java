@@ -217,7 +217,7 @@ public class OrderResult implements Serializable {
      * 乙方开户行账号
      */
     @ApiModelProperty("乙方开户行账号")
-    private Long partyBBankAccount;
+    private String partyBBankAccount;
 
     /**
      * 乙方法人
@@ -253,7 +253,7 @@ public class OrderResult implements Serializable {
      * 甲方开户行账号
      */
     @ApiModelProperty("甲方开户行账号")
-    private Long partyABankAccount;
+    private String partyABankAccount;
 
     /**
      * 甲方开户行号

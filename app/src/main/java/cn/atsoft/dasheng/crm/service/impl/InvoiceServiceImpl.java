@@ -5,13 +5,18 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.mapper.InvoiceMapper;
 import cn.atsoft.dasheng.crm.model.params.InvoiceParam;
+import cn.atsoft.dasheng.crm.model.result.BankResult;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
+import cn.atsoft.dasheng.crm.service.BankService;
 import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -32,13 +37,17 @@ import java.util.List;
  */
 @Service
 public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> implements InvoiceService {
-
+    @Autowired
+    private BankService bankService;
 
     @Override
-    public Long add(InvoiceParam param) {
+    public Invoice add(InvoiceParam param) {
+        if (ToolUtil.isEmpty(param.getBankAccount()) || ToolUtil.isEmpty(param.getBankNo()) || ToolUtil.isEmpty(param.getBankId())) {
+            throw new ServiceException(500, "请填写完整银行信息");
+        }
         Invoice entity = getEntity(param);
         this.save(entity);
-        return entity.getInvoiceId();
+        return entity;
     }
 
     @Override
@@ -68,13 +77,24 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     public PageInfo<InvoiceResult> findPageBySpec(InvoiceParam param) {
         Page<InvoiceResult> pageContext = getPageContext();
         IPage<InvoiceResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-    private void format(List<InvoiceResult> param){
+
+    private void format(List<InvoiceResult> param) {
         List<Long> bankIds = new ArrayList<>();
         for (InvoiceResult invoiceResult : param) {
-
             bankIds.add(invoiceResult.getBankId());
+        }
+        List<Bank> bankList = bankIds.size() == 0 ? new ArrayList<>() : bankService.listByIds(bankIds);
+        List<BankResult> bankResults = BeanUtil.copyToList(bankList, BankResult.class, new CopyOptions());
+        for (InvoiceResult invoiceResult : param) {
+            for (BankResult bankResult : bankResults) {
+                if (ToolUtil.isNotEmpty(invoiceResult.getBankId()) && invoiceResult.getBankId().equals(bankResult.getBankId())) {
+                    invoiceResult.setBankResult(bankResult);
+                    break;
+                }
+            }
         }
     }
 
@@ -96,4 +116,66 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         return entity;
     }
 
+
+    @Override
+    public List<InvoiceResult> getDetails(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<Invoice> invoices = this.listByIds(ids);
+        if (ToolUtil.isEmpty(invoices)) {
+            return new ArrayList<>();
+        }
+        List<InvoiceResult> results = BeanUtil.copyToList(invoices, InvoiceResult.class, new CopyOptions());
+        List<Long> bankIds = new ArrayList<>();
+        for (InvoiceResult result : results) {
+            bankIds.add(result.getBankId());
+        }
+        List<Bank> banks = bankIds.size() == 0 ? new ArrayList<>() : bankService.listByIds(bankIds);
+        List<BankResult> bankResults = BeanUtil.copyToList(banks, BankResult.class);
+
+        for (InvoiceResult result : results) {
+            for (BankResult bankResult : bankResults) {
+                if (ToolUtil.isNotEmpty(result.getBankId()) && bankResult.getBankId().equals(result.getBankId())) {
+                    result.setBankResult(bankResult);
+                    break;
+                }
+            }
+        }
+        return results;
+    }
+
+    /**
+     * 通过供应商取
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<InvoiceResult> getDetailsByCustomerIds(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<Invoice> invoices = this.query().in("customer_id", ids).eq("display", 1).list();
+        if (ToolUtil.isEmpty(invoices)) {
+            return new ArrayList<>();
+        }
+        List<InvoiceResult> results = BeanUtil.copyToList(invoices, InvoiceResult.class, new CopyOptions());
+        List<Long> bankIds = new ArrayList<>();
+        for (InvoiceResult result : results) {
+            bankIds.add(result.getBankId());
+        }
+        List<Bank> banks = bankIds.size() == 0 ? new ArrayList<>() : bankService.listByIds(bankIds);
+        List<BankResult> bankResults = BeanUtil.copyToList(banks, BankResult.class);
+
+        for (InvoiceResult result : results) {
+            for (BankResult bankResult : bankResults) {
+                if (ToolUtil.isNotEmpty(result.getBankId()) && bankResult.getBankId().equals(result.getBankId())) {
+                    result.setBankResult(bankResult);
+                    break;
+                }
+            }
+        }
+        return results;
+    }
 }

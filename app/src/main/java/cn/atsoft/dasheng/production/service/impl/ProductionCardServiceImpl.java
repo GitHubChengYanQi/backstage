@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
+import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionCardMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionCardParam;
@@ -11,10 +12,14 @@ import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.model.result.ProductionCardResult;
 import  cn.atsoft.dasheng.production.service.ProductionCardService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.production.service.ProductionPlanService;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -31,6 +36,12 @@ import java.util.List;
  */
 @Service
 public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper, ProductionCard> implements ProductionCardService {
+
+    @Autowired
+    private GetOrigin getOrigin;
+
+    @Autowired
+    private ProductionPlanService productionPlanService;
 
     @Override
     public void add(ProductionCardParam param){
@@ -89,17 +100,24 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
     public void addBatchCardByProductionPlan(Object param){
         List<ProductionPlanDetail> productionPlanDetails = JSON.parseArray(param.toString(), ProductionPlanDetail.class);
         List<ProductionCard> cardList = new ArrayList<>();
+        Long productionPlanId = 0L;
         for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
+            productionPlanId = productionPlanDetail.getProductionPlanId();
             for (int i = 0; i < productionPlanDetail.getPlanNumber(); i++) {
                 ProductionCard card = new ProductionCard();
                 card.setSkuId(productionPlanDetail.getSkuId());
                 card.setSource("productionPlan");
                 card.setSourceId(productionPlanDetail.getProductionPlanId());
-                //TODO 增加来源JSON
                 cardList.add(card);
             }
         }
         this.saveBatch(cardList);
+        //更新来源字段
+        for (ProductionCard card : cardList) {
+            String origin = getOrigin.newThemeAndOrigin("productionCard", card.getProductionCardId(), "productionPlan", productionPlanId);
+            card.setOrigin(origin);
+        }
+        this.updateBatchById(cardList);
     }
 
 }

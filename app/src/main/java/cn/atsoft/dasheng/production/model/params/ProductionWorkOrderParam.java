@@ -74,6 +74,12 @@ public class ProductionWorkOrderParam implements Serializable, BaseValidatingPar
     private Integer display;
 
     /**
+     * 步骤id
+     */
+    @ApiModelProperty("步骤id")
+    private Long stepsId;
+
+    /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)

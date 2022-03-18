@@ -24,6 +24,10 @@ public class ProcessRoute implements Serializable {
     @TableId(value = "process_route_id", type = IdType.ID_WORKER)
 
     private Long processRouteId;
+
+
+    @TableField("pid")
+    private Long pid;
     /**
      * sku
      */
@@ -100,6 +104,14 @@ public class ProcessRoute implements Serializable {
      */
     @TableField("deptId")
     private Long deptId;
+
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
+    }
 
     public String getChildren() {
         return children;

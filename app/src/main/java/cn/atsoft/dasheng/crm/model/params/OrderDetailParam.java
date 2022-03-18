@@ -1,9 +1,12 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.atsoft.dasheng.app.pojo.CycleReplace;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -97,7 +100,7 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
      * 交货日期
      */
     @ApiModelProperty("交货日期")
-    private Date deliveryDate;
+    private Integer deliveryDate;
 
     /**
      * 创建者

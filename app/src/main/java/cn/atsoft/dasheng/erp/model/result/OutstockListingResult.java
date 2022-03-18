@@ -32,6 +32,8 @@ public class OutstockListingResult implements Serializable {
     private SkuResult skuResult;
     private List<BackSku> backSkus;
     private SpuResult spuResult;
+    private List<StorehousePositionsResult> positionsResults;
+    private Long customerId;
     /**
      * 出库数量
      */

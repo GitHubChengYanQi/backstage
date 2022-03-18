@@ -351,7 +351,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             templete = templete.replace("${bind}", stringBuffer.toString());
         }
         if (templete.contains("${name}")) {
-            templete = templete.replace("${name}",param.getName());
+            templete = templete.replace("${name}", param.getName());
         }
         if (templete.contains("${parent}")) {
             templete = templete.replace("${parent}", this.getParent(param.getStorehousePositionsId()));
@@ -362,15 +362,17 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         param.setPrintTemplateResult(printTemplateResult);
     }
 
-    private String getParent(Long id){
+    private String getParent(Long id) {
         StorehousePositions positions = this.getById(id);
         Storehouse storehouse = storehouseService.getById(positions.getStorehouseId());
         List<StorehousePositions> storehousePositionsList = this.query().eq("storehouse_id", positions.getStorehouseId()).eq("display", 1).list();
         StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
-        stringBuffer= new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
+        stringBuffer = new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
+
         return stringBuffer.toString();
     }
-    private StringBuffer formatParentStringBuffer(StorehousePositions positions,List<StorehousePositions> storehousePositionsList , StringBuffer stringBuffer){
+
+    private StringBuffer formatParentStringBuffer(StorehousePositions positions, List<StorehousePositions> storehousePositionsList, StringBuffer stringBuffer) {
         if (!positions.getPid().equals(0L)) {
             for (StorehousePositions storehousePositions : storehousePositionsList) {
                 if (positions.getPid().equals(storehousePositions.getStorehousePositionsId())) {
@@ -380,6 +382,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 }
 
             }
+        } else {
+            StringBuffer now = new StringBuffer().append(positions.getName()).append("/").append(stringBuffer);
+            stringBuffer = now;
         }
         return stringBuffer;
     }
@@ -391,9 +396,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param,DataScope dataScope) {
+    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param, DataScope dataScope) {
 
-        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param,dataScope);
+        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param, dataScope);
         List<Long> positionIds = new ArrayList<>();
         for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
             positionIds.add(storehousePositions.getStorehousePositionsId());
@@ -424,6 +429,36 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         Page<StorehousePositionsResult> pageContext = getPageContext();
         IPage<StorehousePositionsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 详情 带结构
+     *
+     * @param id
+     * @param positions
+     * @return
+     */
+    @Override
+    public StorehousePositionsResult getDetail(Long id, List<StorehousePositions> positions) {
+        List<StorehousePositionsResult> results = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        for (StorehousePositionsResult result : results) {
+            if (result.getStorehousePositionsId().equals(id)) {
+                getSupper(result, results);
+                return result;
+            }
+        }
+        return new StorehousePositionsResult();
+    }
+
+    private StorehousePositionsResult getSupper(StorehousePositionsResult result, List<StorehousePositionsResult> data) {
+
+        for (StorehousePositionsResult datum : data) {
+            if (result.getPid().equals(datum.getStorehousePositionsId())) {
+                result.setSupper(datum);
+                getSupper(datum, data);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -492,9 +527,55 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         List<StorehousePositions> storehousePositions = this.listByIds(ids);
 
-        List<StorehousePositionsResult> storehousePositionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
+        return BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
+    }
 
-        return storehousePositionsResults;
+    /**
+     *
+     * @param skuId
+     * @return
+     */
+    @Override
+    public List<StorehousePositionsResult> getSupperBySkuId(Long skuId) {
+        List<StorehousePositionsResult> results = new ArrayList<>();
+
+        QueryWrapper<StockDetails> stockDetailsQW = new QueryWrapper<>();
+        stockDetailsQW.select("sku_id,storehouse_positions_id,sum(number) as num").eq("sku_id", skuId).groupBy("sku_id,storehouse_positions_id");
+        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQW);
+
+        Map<Long, Integer> map = new HashMap<>();
+        for (StockDetails stockDetail : stockDetails) {
+            map.put(stockDetail.getStorehousePositionsId(), stockDetail.getNum());
+        }
+        List<StorehousePositions> positionsList = this.list();
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positionsList, StorehousePositionsResult.class, new CopyOptions());
+
+        for (StorehousePositionsResult positionsResult : positionsResults) {
+            for (Long id : map.keySet()) {
+                if (id.equals(positionsResult.getStorehousePositionsId())) {
+                    loopSuppler(positionsResult, positionsResults);
+                    Integer skuNumber = map.get(id);
+                    positionsResult.setSkuNumber(skuNumber);
+                    results.add(positionsResult);
+                    break;
+                }
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * 递归取上级
+     */
+    private void loopSuppler(StorehousePositionsResult positionsResult, List<StorehousePositionsResult> positionsResults) {
+        for (StorehousePositionsResult result : positionsResults) {
+            if (positionsResult.getPid().equals(result.getStorehousePositionsId())) {
+                positionsResult.setSupper(result);
+                loopSuppler(result, positionsResults);
+            }
+        }
+
     }
 
     /**

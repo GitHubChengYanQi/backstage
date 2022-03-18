@@ -853,7 +853,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         BackObject object = new BackObject();
         switch (codeBind.getSource()) {
             case "item":
-                StockDetails stockDetail = stockDetailsService.query().in("qr_code_id", codeId).one();
+                StockDetails stockDetail = stockDetailsService.query().in("inkind_id", codeBind.getFormId()).one();
                 if (ToolUtil.isEmpty(stockDetail)) {
                     throw new ServiceException(500, "没有此物料");
                 }

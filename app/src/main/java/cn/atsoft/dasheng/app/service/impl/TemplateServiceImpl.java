@@ -1,18 +1,20 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.base.pojo.page.PageFactory;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.mapper.TemplateMapper;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
+import cn.atsoft.dasheng.app.pojo.Lable;
 import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.base.pojo.page.PageFactory;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -126,23 +128,137 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     }
 
     @Override
-    public List<String> getLabel(Long id) {
+    public Lable getLabel(Long id) {
         Template template = this.getById(id);
+        if (ToolUtil.isEmpty(template)) {
+            throw new ServiceException(500, "模板不存在");
+        }
         String content = template.getContent();
 
-        List<String> resultList = new ArrayList<>();
-        Pattern p = Pattern.compile("\\<p\\>(.*?)\\<\\/p\\>");//匹配<p>开头，</p>结尾的文档
+        String regStr = "\\<tr.*data-group=\"sku\"\\>([\\w\\W]+?)<\\/tr>";
+        String input = "\\<input (.*?)\\>";
+        String td = "\\<td(.*?)\\/td\\>";
+        String pay = "\\<tr.*data-group=\"pay\"\\>([\\w\\W]+?)<\\/tr>";
+
+        Pattern p = Pattern.compile(regStr);
         Matcher m = p.matcher(content);//开始编译
-        while (m.find()) {
-            String group = m.group(1);
-            if (group.contains("<input class=\"inp\" placeholder=\"文本框\" disabled=\"\"/>")
-                    ||
-                    group.contains("<input class=\"number\" placeholder=\"数字框\" disabled=\"\"/>")
-                    ||
-                    group.contains("<input class=\"date\" placeholder=\"时间框\" disabled=\"\"/>")) {
+
+        Pattern payPattern = Pattern.compile(pay);
+        Matcher payMathcer = payPattern.matcher(content);
+
+
+        Lable lable = new Lable();
+        List<String> pays = new ArrayList<>();
+        List<String> inputs = new ArrayList<>();
+        List<String> resultList = new ArrayList<>();
+
+        while (payMathcer.find()) {
+            String group = payMathcer.group(0);
+            Pattern tdPattern = Pattern.compile(td);
+            Matcher tdMatcher = tdPattern.matcher(group);
+            while (tdMatcher.find()) {
+                String s = tdMatcher.group(0);
+                if (s.contains("${{detailMoney}}")) {      //金额
+                    pays.add(s);
+                }
+                if (s.contains("${{detailPayType}}")) {      //财务详情方式
+                    pays.add(s);
+                }
+                if (s.contains("${{detailDateWay}}")) {      //日期方式
+                    pays.add(s);
+                }
+                if (s.contains("${{percentum}}")) {      //比例
+                    pays.add(s);
+                }
+                if (s.contains("${{DetailPayRemark}}")) {      //款项说明
+                    pays.add(s);
+                }
+                if (s.contains("${{DetailPayDate}}")) {      //付款时间
+                    pays.add(s);
+                }
+                Pattern compile = Pattern.compile(input);
+                Matcher tdMaccher = compile.matcher(s);
+                while (tdMaccher.find()) {
+                    String group1 = tdMaccher.group(0);
+                    if (s.contains(group1)) {
+                        pays.add(s);
+                        content = content.replace(s, "");
+                    }
+                }
+            }
+        }
+
+
+        while (m.find()) {     //tr
+            String group = m.group(0);
+            Pattern tdPattern = Pattern.compile(td);
+            Matcher tdMatcher = tdPattern.matcher(group);
+            while (tdMatcher.find()) {
+                String s = tdMatcher.group(0);
+                if (s.contains("${{coding}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{spuName}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{skuName}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{skuClass}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{brand}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{skuNumber}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{price}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{unit}}")) {        //单位
+                    inputs.add(s);
+                }
+                if (s.contains("${{totalPrice}}")) {  //总价
+                    inputs.add(s);
+                }
+                if (s.contains("${{amount}}")) {  //总计
+                    inputs.add(s);
+                }
+                if (s.contains("${{amountStr}}")) { //总计汉字
+                    inputs.add(s);
+                }
+                if (s.contains("${{deliveryDate}}")) {
+                    inputs.add(s);
+                }
+                if (s.contains("${{APhone}}")) {
+                    inputs.add(s);
+                }
+                Pattern compile = Pattern.compile(input);
+                Matcher tdMaccher = compile.matcher(s);
+                while (tdMaccher.find()) {
+                    String group1 = tdMaccher.group(0);
+                    if (s.contains(group1)) {
+                        inputs.add(s);
+                        content = content.replace(s, "");
+                    }
+                }
+            }
+        }
+
+        Pattern compile = Pattern.compile(input);
+        Matcher matcher = compile.matcher(content);
+        while (matcher.find()) {    //input
+            String group = matcher.group(0);
+            if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
                 resultList.add(group);
             }
         }
-        return resultList;
+        lable.setStrings(resultList);
+
+        lable.setPays(pays);
+        lable.setInputs(inputs);
+        return lable;
     }
+
 }

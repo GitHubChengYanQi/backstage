@@ -61,6 +61,8 @@ public interface StockDetailsService extends IService<StockDetails> {
      */
     List<StockDetailsResult> findListBySpec(StockDetailsParam param);
 
+    List<StockDetailsResult> getDetailsBySkuId(Long id);
+
     /**
      * 查询分页数据，Specification模式
      *

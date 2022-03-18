@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
+import cn.atsoft.dasheng.app.pojo.Lable;
 import cn.atsoft.dasheng.app.wrapper.TemplateSelectWrapper;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -141,7 +142,7 @@ public class TemplateController extends BaseController {
 
     @RequestMapping(value = "/getLabel", method = RequestMethod.GET)
     public ResponseData getLabel(@RequestParam Long id) {
-        List<String> label = this.templateService.getLabel(id);
+        Lable label = this.templateService.getLabel(id);
         return ResponseData.success(label);
     }
 }

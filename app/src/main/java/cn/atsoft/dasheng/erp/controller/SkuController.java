@@ -173,6 +173,8 @@ public class SkuController extends BaseController {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
+        //ServiceMapper中区别于普通list因为排序方式不相同
+
         return this.skuService.changePageBySpec(skuParam);
     }
     /**
@@ -196,7 +198,7 @@ public class SkuController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/changeSkuPageList", method = RequestMethod.POST)
-    @ApiOperation("直接物料列表")
+    @ApiOperation("直接选择物料列表")
     public PageInfo<SkuResult> changeList(@RequestBody(required = false) SkuParam skuParam) {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();

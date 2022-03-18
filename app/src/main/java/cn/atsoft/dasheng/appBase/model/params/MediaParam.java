@@ -22,7 +22,8 @@ import java.util.List;
 public class MediaParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<String> types;
+    private String fieldName;
 
     /**
      * 媒体ID
@@ -53,6 +54,14 @@ public class MediaParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("上传状态")
     private Integer status;
+
+    /**
+     * 上传状态
+     */
+    @ApiModelProperty("类型")
+    private String type;
+
+
 
     /**
      * 用户ID

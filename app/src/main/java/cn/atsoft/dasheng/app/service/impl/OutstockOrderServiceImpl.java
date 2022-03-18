@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
+import cn.atsoft.dasheng.app.pojo.Listing;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -13,9 +14,13 @@ import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
+import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.erp.service.impl.OutstockSendTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
@@ -26,16 +31,23 @@ import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -67,7 +79,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
-    private OrCodeBindService bindService;
+    private StorehousePositionsService positionsService;
+
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -121,27 +134,172 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
 
-//        String url = param.getUrl().replace("codeId", aLong.toString());
-//        outstockSendTemplate.setSourceId(entity.getOutstockOrderId());
-//        outstockSendTemplate.setUserId(param.getUserId());
-//        outstockSendTemplate.setUrl(url);
-
+        String url = param.getUrl().replace("codeId", aLong.toString());
         User createUser = userService.getById(entity.getCreateUser());
         //新微信推送
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setUrl(url);
         wxCpTemplate.setTitle("新的出库提醒");
-        wxCpTemplate.setDescription(createUser.getName() + "创建了新的入库任务" + entity.getCoding());
+        wxCpTemplate.setDescription(createUser.getName() + "创建了新的出库库任务" + entity.getCoding());
         wxCpTemplate.setUserIds(new ArrayList<Long>() {{
             add(entity.getUserId());
         }});
-        wxCpSendTemplate.setSource("出库");
-        wxCpSendTemplate.setSourceId(entity.getOutstockOrderId());
+        wxCpSendTemplate.setSource("outstockOrder");
+        wxCpSendTemplate.setSourceId(aLong);
         wxCpTemplate.setType(0);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
         return entity;
     }
+
+    /**
+     * 出库单一键出库
+     *
+     * @param param
+     */
+    public void AkeyOutbound(OutstockOrderParam param) {
+        OutstockOrder outstockOrder = this.getById(param.getOutstockOrderId());
+
+        outBound(param.getListingParams()); //出库
+    }
+
+    @Override
+    public OutstockOrderResult getOrder(Long id) {
+        OutstockOrder outstockOrder = this.getById(id);
+        if (ToolUtil.isEmpty(outstockOrder)) {
+            throw new ServiceException(500, "当前数据不存在");
+        }
+        OutstockOrderResult outstockResult = new OutstockOrderResult();
+        ToolUtil.copyProperties(outstockOrder, outstockResult);
+
+        Storehouse outStockStorehouse = storehouseService.getById(outstockResult.getStorehouseId());
+        if (ToolUtil.isNotEmpty(outStockStorehouse)) {
+            StorehouseResult storehouseResult1 = new StorehouseResult();
+            ToolUtil.copyProperties(outStockStorehouse, storehouseResult1);
+            outstockResult.setStorehouseResult(storehouseResult1);
+        }
+        User outStockUser = userService.getById(outstockOrder.getUserId());
+        if (ToolUtil.isNotEmpty(outStockUser)) {
+            UserResult userResult = new UserResult();
+            ToolUtil.copyProperties(outStockUser, userResult);
+            outstockResult.setUserResult(userResult);
+        }
+
+        getListing(outstockResult);
+        return outstockResult;
+    }
+
+    private void getListing(OutstockOrderResult result) {
+        List<OutstockListing> outstockListings = outstockListingService.query().eq("outstock_order_id", result.getOutstockOrderId()).list();
+        List<OutstockListingResult> resultList = BeanUtil.copyToList(outstockListings, OutstockListingResult.class, new CopyOptions());
+        outstockListingService.format(resultList);
+
+
+        Map<Long, List<StorehousePositionsResult>> supperMap = new HashMap<>();
+        for (OutstockListingResult outstockListingResult : resultList) {
+            List<StorehousePositionsResult> supper = positionsService.getSupperBySkuId(outstockListingResult.getSkuId());
+
+            supperMap.put(outstockListingResult.getSkuId(), supper);
+        }
+
+
+        List<Listing> list = new ArrayList<>();
+        for (OutstockListingResult outstockListingResult : resultList) {
+            Listing listing = new Listing();
+            List<StorehousePositionsResult> positionsResults = supperMap.get(outstockListingResult.getSkuId());
+            listing.setListingResult(outstockListingResult);
+            listing.setPositionsResults(positionsResults);
+            list.add(listing);
+        }
+
+        result.setListing(list);
+    }
+
+    private void mergePosition(List<Long> positionIds) {
+    
+    }
+
+
+    @Override
+    public void outBound(List<OutstockListingParam> listings) {
+        List<StockDetails> details = stockDetailsService.query().orderByAsc("create_time").list();
+        for (OutstockListingParam listing : listings) {
+            if (ToolUtil.isEmpty(listing.getBrandId())) {
+                AnyBrandOutBound(listing, details); //任意品牌
+            } else {
+                SkuBrandOutBound(listing, details);
+            }
+        }
+        stockDetailsService.updateBatchById(details);
+        stockDetailsService.remove(new QueryWrapper<StockDetails>() {{
+            eq("stage", 2);
+        }});
+    }
+
+    /**
+     * 任意品牌出库
+     *
+     * @param listingParam
+     * @param details
+     */
+    private void AnyBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
+        long number = 0;
+
+        for (StockDetails detail : details) {
+            if (listingParam.getSkuId().equals(detail.getSkuId()) && listingParam.getPositionsId().equals(detail.getStorehousePositionsId())) {
+                number = number + detail.getNumber();
+            }
+        }
+        if (listingParam.getNumber() > number) {
+            throw new ServiceException(500, "数量不足");
+        }
+        number = 0;
+        for (StockDetails detail : details) {
+            if (detail.getStage() == 1) {
+                if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                    number = detail.getNumber() - listingParam.getNumber();
+                    if (number > 0) {
+                        detail.setNumber(number);
+                        break;
+                    } else {
+                        listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                        detail.setStage(2);
+                    }
+                }
+            }
+        }
+    }
+
+    private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
+        long number = 0;
+        for (StockDetails detail : details) {
+            if (listingParam.getSkuId().equals(detail.getSkuId())
+                    && listingParam.getBrandId().equals(detail.getBrandId())
+                    && listingParam.getPositionsId().equals(detail.getStorehousePositionsId())) {
+                number = number + detail.getNumber();
+            }
+        }
+        if (listingParam.getNumber() > number) {
+            throw new ServiceException(500, "数量不足");
+        }
+        number = 0;
+        for (StockDetails detail : details) {
+            if (detail.getStage() == 1) {
+                if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
+                        && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                    number = detail.getNumber() - listingParam.getNumber();
+                    if (number > 0) {
+                        detail.setNumber(number);
+                        break;
+                    } else {
+                        listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                        detail.setStage(2);
+                    }
+                }
+            }
+        }
+    }
+
 
     @Override
     public void delete(OutstockOrderParam param) {

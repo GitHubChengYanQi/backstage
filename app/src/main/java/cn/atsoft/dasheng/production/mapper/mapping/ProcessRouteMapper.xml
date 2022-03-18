@@ -17,11 +17,12 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="sku_id" property="skuId"/>
+        <result column="pid" property="pid"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sku_id
-    AS "sku_id",
+    AS "sku_id",pid AS "pid",
         process_route_id
         AS "processRouteId", process_route_coding AS "processRouteCoding", process_rote_name AS "processRoteName", parts_id AS "partsId", version AS "version", status AS "status", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
@@ -155,52 +156,52 @@
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
         <if test="paramCondition.spuId != null and paramCondition.spuId!= '' ">
-        and sku_id in (select sku_id from goods_sku where spu_id =#{paramCondition.spuId} )
+            and sku_id in (select sku_id from goods_sku where spu_id =#{paramCondition.spuId} )
 
-    </if>
-</select>
+        </if>
+    </select>
 
-<select id="customPageMapList" resultType="map"
-        parameterType="cn.atsoft.dasheng.production.model.params.ProcessRouteParam">
-select
-<include refid="Base_Column_List"/>
-from activiti_process_route where 1 = 1 and display = 1
-<if test="paramCondition.processRouteId != null">
-    and process_route_id like CONCAT('%',#{paramCondition.processRouteId},'%')
-</if>
-<if test="paramCondition.processRouteCoding != null and paramCondition.processRouteCoding != ''">
-    and process_route_coding like CONCAT('%',#{paramCondition.processRouteCoding},'%')
-</if>
-<if test="paramCondition.processRoteName != null and paramCondition.processRoteName != ''">
-    and process_rote_name like CONCAT('%',#{paramCondition.processRoteName},'%')
-</if>
-<if test="paramCondition.partsId != null">
-    and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
-</if>
-<if test="paramCondition.version != null">
-    and version like CONCAT('%',#{paramCondition.version},'%')
-</if>
-<if test="paramCondition.status != null">
-    and status like CONCAT('%',#{paramCondition.status},'%')
-</if>
-<if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-    and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-</if>
-<if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-    and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-</if>
-<if test="paramCondition.createUser != null">
-    and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-</if>
-<if test="paramCondition.updateUser != null">
-    and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-</if>
-<if test="paramCondition.display != null">
-    and display like CONCAT('%',#{paramCondition.display},'%')
-</if>
-<if test="paramCondition.deptId != null">
-    and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-</if>
-</select>
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProcessRouteParam">
+        select
+        <include refid="Base_Column_List"/>
+        from activiti_process_route where 1 = 1 and display = 1
+        <if test="paramCondition.processRouteId != null">
+            and process_route_id like CONCAT('%',#{paramCondition.processRouteId},'%')
+        </if>
+        <if test="paramCondition.processRouteCoding != null and paramCondition.processRouteCoding != ''">
+            and process_route_coding like CONCAT('%',#{paramCondition.processRouteCoding},'%')
+        </if>
+        <if test="paramCondition.processRoteName != null and paramCondition.processRoteName != ''">
+            and process_rote_name like CONCAT('%',#{paramCondition.processRoteName},'%')
+        </if>
+        <if test="paramCondition.partsId != null">
+            and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
+        </if>
+        <if test="paramCondition.version != null">
+            and version like CONCAT('%',#{paramCondition.version},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
 
-        </mapper>
+</mapper>

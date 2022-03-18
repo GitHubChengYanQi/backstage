@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * sku详情表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @TableName("daoxin_erp_sku_values")
@@ -21,7 +24,7 @@ public class SkuValues implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "sku_detail_id", type = IdType.ID_WORKER)
+    @TableId(value = "sku_detail_id", type = IdType.ID_WORKER)
     private Long skuDetailId;
 
     @TableField("sku_id")
@@ -42,25 +45,25 @@ public class SkuValues implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -145,15 +148,15 @@ public class SkuValues implements Serializable {
     @Override
     public String toString() {
         return "SkuValues{" +
-        "skuDetailId=" + skuDetailId +
-        ", skuId=" + skuId +
-        ", attributeId=" + attributeId +
-        ", attributeValuesId=" + attributeValuesId +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "skuDetailId=" + skuDetailId +
+                ", skuId=" + skuId +
+                ", attributeId=" + attributeId +
+                ", attributeValuesId=" + attributeValuesId +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                "}";
     }
 }

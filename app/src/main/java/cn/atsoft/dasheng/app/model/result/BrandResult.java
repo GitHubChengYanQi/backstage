@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,6 +26,8 @@ public class BrandResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 //     private PartsResult partsResult;
+    private List<Long> skuIds;
+    private List<SkuResult> skuResults;
     /**
      * 品牌id
      */

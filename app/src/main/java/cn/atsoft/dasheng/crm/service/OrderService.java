@@ -26,7 +26,7 @@ public interface OrderService extends IService<Order> {
      * @author song
      * @Date 2022-02-23
      */
-    void add(OrderParam param);
+    Order add(OrderParam param);
 
     /**
      * 删除

@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -28,6 +29,12 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      * @Date 2021-08-16
      */
     OutstockOrder add(OutstockOrderParam param);
+
+    void AkeyOutbound(OutstockOrderParam param);
+
+    OutstockOrderResult getOrder(Long id);
+
+    void outBound(List<OutstockListingParam> listings);
 
     /**
      * 删除

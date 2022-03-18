@@ -33,7 +33,12 @@ public class StorehousePositionsResult implements Serializable {
 
     private StorehousePositionsResult storehousePositionsResult;
 
+    private StorehousePositionsResult supper;
+
     private SkuResult skuResult;
+
+    private Integer skuNumber;
+
 
     private PrintTemplateResult printTemplateResult;
 

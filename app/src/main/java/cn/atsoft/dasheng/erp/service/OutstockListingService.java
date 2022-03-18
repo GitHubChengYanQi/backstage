@@ -69,8 +69,10 @@ public interface OutstockListingService extends IService<OutstockListing> {
      */
     PageInfo<OutstockListingResult> findPageBySpec(OutstockListingParam param);
 
-    void addList(List<ApplyDetailsParam> applyDetails);
 
+    List<OutstockListingResult> getDetailsByOrderId(Long id);
 
+    OutstockListing getEntity(OutstockListingParam param);
 
+    void format(List<OutstockListingResult> data);
 }

@@ -23,7 +23,7 @@ import java.util.List;
 public class ProductionTaskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<ProductionTaskParam> productionTaskParam;
 
     /**
      * 生产任务id
@@ -66,6 +66,12 @@ public class ProductionTaskParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("工序id")
     private Long shipSetpId;
+
+    /**
+     * 单台生产周期(天)
+     */
+    @ApiModelProperty("单台生产周期(天)")
+    private Integer singleProductionCycle;
 
     /**
      * 生产时间

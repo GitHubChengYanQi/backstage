@@ -208,7 +208,7 @@ public class OrderParam implements Serializable, BaseValidatingParam {
      * 乙方开户行账号
      */
     @ApiModelProperty("乙方开户行账号")
-    private Long partyBBankAccount;
+    private String partyBBankAccount;
 
     /**
      * 乙方法人
@@ -253,7 +253,7 @@ public class OrderParam implements Serializable, BaseValidatingParam {
      * 甲方开户行账号
      */
     @ApiModelProperty("甲方开户行账号")
-    private Long partyABankAccount;
+    private String partyABankAccount;
 
     /**
      * 甲方法人

@@ -53,7 +53,7 @@ public class SkuResult implements Serializable {
     private QualityPlan qualityPlan;
     private Unit unit;
     private SpuClassification spuClassification;
-    private Long fileId;
+    private String fileId;
     private Integer batch;
     private SkuRequest skuTree;
     private SpuClassification skuClass;
@@ -62,6 +62,10 @@ public class SkuResult implements Serializable {
     private User user;
     private Boolean inBom;
     private ProcessRouteResult processRouteResult;
+    private List<Long> brandIds;
+    private List<BrandResult> brandResults;
+    private List<String> filedUrls;
+
 
     /**
      * 之间方案id

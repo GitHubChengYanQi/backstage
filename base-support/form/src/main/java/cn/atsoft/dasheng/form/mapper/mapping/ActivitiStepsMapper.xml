@@ -30,20 +30,20 @@
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiStepsResult"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
+            parameterType="cn.atsoft.dasheng.form.model.params.StepsParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_steps where 1 = 1
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.StepsParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_steps where 1 = 1
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiStepsResult"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
+            parameterType="cn.atsoft.dasheng.form.model.params.StepsParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_steps where display = 1
@@ -51,7 +51,7 @@
 
 
     <select id="customPageMapList" resultType="map"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
+            parameterType="cn.atsoft.dasheng.form.model.params.StepsParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_steps where 1 = 1

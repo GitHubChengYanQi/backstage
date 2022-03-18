@@ -4,86 +4,90 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmIndustry">
-        <id column="industry_id" property="industryId" />
-        <result column="industry_name" property="industryName" />
-        <result column="parent_id" property="parentId" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="industry_id" property="industryId"/>
+        <result column="industry_name" property="industryName"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
         <result column="deptId" property="deptId"/>
-        <result column="display" property="display" />
+        <result column="display" property="display"/>
+        <result column="sort" property="sort"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">deptId AS "deptId",
+    <sql id="Base_Column_List">deptId
+    AS "deptId",sort AS "sort",
         industry_id AS "industryId", industry_name AS "industryName", parent_id AS "parentId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmIndustryResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmIndustryResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_industry where display = 1
-            <if test="paramCondition.industryId != null">
-                and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
-            </if>
-            <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
-                and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
-            </if>
-            <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
-                    and parent_id = #{paramCondition.parentId}
-            </if>
+        <if test="paramCondition.industryId != null">
+            and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
+        </if>
+        <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
+            and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
+        </if>
+        <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
+            and parent_id = #{paramCondition.parentId}
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_industry where display = 1
-                <if test="paramCondition.industryId != null">
-                        and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
-                </if>
-                <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
-                        and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
-                </if>
-                <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
-                            and parent_id = #{paramCondition.parentId}
-                </if>
+        <if test="paramCondition.industryId != null">
+            and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
+        </if>
+        <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
+            and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
+        </if>
+        <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
+            and parent_id = #{paramCondition.parentId}
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmIndustryResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmIndustryResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_industry where display = 1
-                <if test="paramCondition.industryId != null">
-                        and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
-                </if>
-                <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
-                        and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
-                </if>
-                <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
-                            and parent_id = #{paramCondition.parentId}
-                </if>
+        <if test="paramCondition.industryId != null">
+            and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
+        </if>
+        <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
+            and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
+        </if>
+        <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
+            and parent_id = #{paramCondition.parentId}
+        </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-
+        order by sort desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_industry where display = 1
-                <if test="paramCondition.industryId != null">
-                        and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
-                </if>
-                <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
-                        and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
-                </if>
-                <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
-                        and parent_id = #{paramCondition.parentId}
-                </if>
+        <if test="paramCondition.industryId != null">
+            and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
+        </if>
+        <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
+            and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
+        </if>
+        <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
+            and parent_id = #{paramCondition.parentId}
+        </if>
     </select>
 
 </mapper>

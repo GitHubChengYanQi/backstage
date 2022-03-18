@@ -1,10 +1,12 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Order;
@@ -16,8 +18,11 @@ import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.taxRate.entity.TaxRate;
+import cn.atsoft.dasheng.taxRate.service.TaxRateService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.log.Log;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,6 +49,10 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private BrandService brandService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private UnitService unitService;
+    @Autowired
+    private TaxRateService rateService;
 
     @Override
     public void add(OrderDetailParam param) {
@@ -98,6 +107,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     public PageInfo<OrderDetailResult> findPageBySpec(OrderDetailParam param) {
         Page<OrderDetailResult> pageContext = getPageContext();
         IPage<OrderDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -170,34 +180,57 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
         return detailResults;
     }
+
     @Override
-    public void format(List<OrderDetailResult> param){
+    public void format(List<OrderDetailResult> param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
+        List<Long> unitIds = new ArrayList<>();
+        List<Long> taxIds = new ArrayList<>();
+
         for (OrderDetailResult orderDetailResult : param) {
             skuIds.add(orderDetailResult.getSkuId());
-            brandIds.add(orderDetailResult.getDetailId());
+            brandIds.add(orderDetailResult.getBrandId());
             customerIds.add(orderDetailResult.getCustomerId());
+            unitIds.add(orderDetailResult.getUnitId());
+            taxIds.add(orderDetailResult.getRate());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
+        List<Unit> unitList = unitIds.size() == 0 ? new ArrayList<>() : unitService.listByIds(unitIds);
+        List<TaxRate> taxRates = taxIds.size() == 0 ? new ArrayList<>() : rateService.listByIds(taxIds);
 
         for (OrderDetailResult orderDetailResult : param) {
             for (SkuResult skuResult : skuResults) {
                 if (orderDetailResult.getSkuId().equals(skuResult.getSkuId())) {
                     orderDetailResult.setSkuResult(skuResult);
+                    break;
                 }
             }
             for (BrandResult brandResult : brandResults) {
                 if (orderDetailResult.getBrandId().equals(brandResult.getBrandId())) {
                     orderDetailResult.setBrandResult(brandResult);
+                    break;
                 }
             }
             for (CustomerResult customerResult : customerResults) {
                 if (orderDetailResult.getCustomerId().equals(customerResult.getCustomerId())) {
                     orderDetailResult.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+            for (Unit unit : unitList) {
+                if (ToolUtil.isNotEmpty(orderDetailResult.getUnitId()) && orderDetailResult.getUnitId().equals(unit.getUnitId())) {
+                    orderDetailResult.setUnit(unit);
+                    break;
+                }
+            }
+            for (TaxRate taxRate : taxRates) {
+                if (ToolUtil.isNotEmpty(orderDetailResult.getRate()) && orderDetailResult.getRate().equals(taxRate.getTaxRateId())) {
+                    orderDetailResult.setTaxRate(taxRate);
+                    break;
                 }
             }
         }

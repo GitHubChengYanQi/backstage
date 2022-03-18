@@ -8,7 +8,7 @@ import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam;
-import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
+import cn.atsoft.dasheng.form.model.params.StepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.*;
@@ -67,15 +66,11 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private ActivitiProcessLogService processLogService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private StepProcessService processService;
-    @Autowired
-    private StepProcessService stepProcessService;
 
 
     @Override
     @Transactional
-    public Long add(ActivitiStepsParam param) {
+    public Long add(StepsParam param) {
 
         ActivitiSteps entity = getEntity(param);
         entity.setType(START);
@@ -120,6 +115,18 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
             luYou(processRouteId, param.getChildNode(), entity.getSetpsId(), entity.getFormId());
         }
+        //-------------------修改路由状态----------------------
+        List<ProcessRoute> routes = processRouteService.list();
+        for (ProcessRoute route : routes) {
+            if (route.getProcessRouteId().equals(processRouteId)) {
+                List<Long> longs = updateFather(processRouteId, routes);
+                String jsonString = JSON.toJSONString(longs);
+                route.setChildrens(jsonString);
+                processRouteService.updateById(route);
+            }
+        }
+
+
         return processRouteId;
     }
 
@@ -143,7 +150,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param node
      * @param supper
      */
-    public void luYou(Long processRouteId, ActivitiStepsParam node, Long supper, Long formId) {
+    public void luYou(Long processRouteId, StepsParam node, Long supper, Long formId) {
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
 
@@ -223,9 +230,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param stepsParams
      * @param supper
      */
-    public void recursiveAdd(Long processRouteId, List<ActivitiStepsParam> stepsParams, Long supper, Long formId) {
+    public void recursiveAdd(Long processRouteId, List<StepsParam> stepsParams, Long supper, Long formId) {
         //分支遍历
-        for (ActivitiStepsParam stepsParam : stepsParams) {
+        for (StepsParam stepsParam : stepsParams) {
             //获取super
             stepsParam.setSupper(supper);
             //存分支
@@ -282,58 +289,49 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param presentId
      */
     private void updateSuperior(Long supperId, Long presentId) {
-        if (ToolUtil.isEmpty(presentId)) {
-            throw new ServiceException(500, "子路线id为空");
+        if (supperId.equals(presentId)) {
+            throw new ServiceException(500, "请仔细检查路线");
         }
-        ProcessRoute father = processRouteService.getById(supperId);
-        ProcessRoute child = processRouteService.getById(presentId);
-        List<Long> fatherList = JSON.parseArray(father.getChildrens(), Long.class);
-        if (ToolUtil.isEmpty(fatherList)) {
-            fatherList = new ArrayList<>();
-        }
-        List<Long> childList = JSON.parseArray(child.getChildrens(), Long.class);
-        if (ToolUtil.isEmpty(childList)) {
-            childList = new ArrayList<>();
-        }
-        for (Long aLong : childList) {
-            if (aLong.equals(supperId)) {
-                throw new ServiceException(500, "请检查路线，请勿循环添加");
+        ProcessRoute processRoute = processRouteService.getById(presentId);
+        List<Long> list = JSON.parseArray(processRoute.getChildrens(), Long.class);
+        if (ToolUtil.isNotEmpty(list)) {
+            for (Long aLong : list) {
+                if (aLong.equals(supperId)) {
+                    throw new ServiceException(500, "死循环添加，检查路线");
+                }
             }
         }
-        fatherList.add(presentId);
-        fatherList.addAll(childList);
-        String childrens = JSON.toJSONString(fatherList);
-        father.setChildrens(childrens);
-        processRouteService.updateById(father);
-
-        updateFather(father, fatherList);
+        processRoute.setPid(supperId);
+        processRouteService.updateById(processRoute);
     }
 
     /**
      * 更新所有上级
-     *
-     * @param father
-     * @param childrensList
      */
-    private void updateFather(ProcessRoute father, List<Long> childrensList) {
+    private List<Long> updateFather(Long supperId, List<ProcessRoute> routes) {
+        List<Long> ids = new ArrayList<>();
+        for (ProcessRoute route : routes) {
+            if (ToolUtil.isNotEmpty(route.getPid()) && route.getPid().equals(supperId)) {
+                List<Long> list = updateFather(route.getProcessRouteId(), routes);
 
-        List<ProcessRoute> fathers = processRouteService.query().like("childrens", father.getProcessRouteId()).list();
-        for (ProcessRoute children : fathers) {
-            List<Long> list = JSON.parseArray(children.getChildrens(), Long.class);
-            list.addAll(childrensList);
-            String string = JSON.toJSONString(list);
-            children.setChildrens(string);
-            processRouteService.updateById(children);
-            updateFather(children, list);
+                if (ToolUtil.isNotEmpty(list)) {
+                    String jsonString = JSON.toJSONString(list);
+                    route.setChildrens(jsonString);
+                    processRouteService.updateById(route);
+                }
+                ids.add(route.getProcessRouteId());
+                ids.addAll(list);
+            }
         }
+        return ids;
     }
 
-    private Serializable getKey(ActivitiStepsParam param) {
+    private Serializable getKey(StepsParam param) {
         return param.getSetpsId();
     }
 
 
-    private ActivitiSteps getEntity(ActivitiStepsParam param) {
+    private ActivitiSteps getEntity(StepsParam param) {
         ActivitiSteps entity = new ActivitiSteps();
         ToolUtil.copyProperties(param, entity);
         return entity;
@@ -525,6 +523,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         ProcessRouteResult routeResult = new ProcessRouteResult();
         ToolUtil.copyProperties(processRoute, routeResult);
         routeResult.setType("ship");
+        ActivitiStepsResult detail = detail(routeResult.getProcessRouteId());
+        routeResult.setStepsResult(detail);
         return routeResult;
     }
 

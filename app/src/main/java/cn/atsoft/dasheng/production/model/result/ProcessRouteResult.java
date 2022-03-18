@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -39,6 +40,8 @@ public class ProcessRouteResult implements Serializable {
     private Long skuId;
 
     private String type;
+
+    private Long pid;
 
     /**
      * 工艺路线编号

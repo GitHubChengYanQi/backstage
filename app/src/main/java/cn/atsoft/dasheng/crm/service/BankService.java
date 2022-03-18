@@ -24,7 +24,7 @@ public interface BankService extends IService<Bank> {
      * @author song
      * @Date 2022-02-24
      */
-    void add(BankParam param);
+    Bank add(BankParam param);
 
     /**
      * 删除
@@ -66,4 +66,5 @@ public interface BankService extends IService<Bank> {
      */
      PageInfo<BankResult> findPageBySpec(BankParam param);
 
+    List<BankResult> resultsByBankId(List<Long> ids);
 }

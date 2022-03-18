@@ -89,6 +89,9 @@ public class BrandController extends BaseController {
         Brand detail = this.brandService.getById(brandParam.getBrandId());
         BrandResult result = new BrandResult();
         ToolUtil.copyProperties(detail, result);
+        brandService.format(new ArrayList<BrandResult>(){{
+            add(result);
+        }});
         return ResponseData.success(result);
     }
 

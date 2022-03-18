@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.mapper.OutstockListingMapper;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
@@ -23,8 +24,11 @@ import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -48,14 +52,15 @@ import java.util.List;
 public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMapper, OutstockListing> implements OutstockListingService {
     @Autowired
     private BrandService brandService;
-    @Autowired
-    private ItemsService itemsService;
+
     @Autowired
     private SkuService skuService;
-    @Autowired
-    private SpuService spuService;
+
     @Autowired
     private StockDetailsService stockDetailsService;
+
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Override
     public void add(OutstockListingParam param) {
@@ -68,23 +73,12 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
 
     public void delete(OutstockListingParam param) {
         throw new ServiceException(500, "不可以删除");
-//        OutstockListing byId = this.getById(param.getOutstockListingId());
-//        if (ToolUtil.isEmpty(byId)) {
-//            throw new ServiceException(500, "所删除目标不存在");
-//        } else {
-//            param.setDisplay(0);
-//            this.update(param);
-//        }
     }
 
     @Override
 
     public void update(OutstockListingParam param) {
         throw new ServiceException(500, "不可以修改");
-//        OutstockListing oldEntity = getOldEntity(param);
-//        OutstockListing newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
-//        this.updateById(newEntity);
     }
 
     @Override
@@ -101,19 +95,76 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     public PageInfo<OutstockListingResult> findPageBySpec(OutstockListingParam param) {
         Page<OutstockListingResult> pageContext = getPageContext();
         IPage<OutstockListingResult> page = this.baseMapper.customPageList(pageContext, param);
+
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 通过订单获取清单
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<OutstockListingResult> getDetailsByOrderId(Long id) {
+        List<OutstockListing> outstockListings = this.query().eq("outstock_order_id", id).list();
+        List<OutstockListingResult> resultList = BeanUtil.copyToList(outstockListings, OutstockListingResult.class, new CopyOptions());
+        List<StorehousePositions> storehousePositions = positionsService.list();
+        format(resultList);
+        List<StockDetails> details = stockDetailsService.list();
+        if (ToolUtil.isNotEmpty(storehousePositions)) {
+            for (OutstockListingResult data : resultList) {
+                List<StorehousePositionsResult> positionsResults = new ArrayList<>();
+                for (StockDetails detail : details) {
+                    if (ToolUtil.isNotEmpty(detail.getBrandId()) && data.getSkuId().equals(detail.getSkuId()) && data.getBrandId().equals(detail.getBrandId())) {
+                        StorehousePositionsResult positionsResult = positionsService.getDetail(detail.getStorehousePositionsId(), storehousePositions);
+                        positionsResult.setNumber(detail.getNumber());
+                        positionsResults.add(positionsResult);
+                    }
+                }
+                data.setPositionsResults(positionsResults);
+            }
+        }
+
+
+        return resultList;
+    }
+
+    private Serializable getKey(OutstockListingParam param) {
+        return param.getOutstockListingId();
+    }
+
+    private Page<OutstockListingResult> getPageContext() {
+        return PageFactory.defaultPage();
+    }
+
+    private OutstockListing getOldEntity(OutstockListingParam param) {
+        return this.getById(getKey(param));
+    }
+
+    @Override
+    public OutstockListing getEntity(OutstockListingParam param) {
+        OutstockListing entity = new OutstockListing();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
+    @Override
+    public void format(List<OutstockListingResult> data) {
         List<Long> brandIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
-        for (OutstockListingResult record : page.getRecords()) {
+        for (OutstockListingResult record : data) {
             brandIds.add(record.getBrandId());
             skuIds.add(record.getSkuId());
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.lambda().in(Brand::getBrandId, brandIds);
         List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
-
         List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
 
-        for (OutstockListingResult record : page.getRecords()) {
+
+        for (OutstockListingResult record : data) {
             List<BackSku> backSkus = skuService.backSku(record.getSkuId());
             SpuResult result = skuService.backSpu(record.getSkuId());
             record.setBackSkus(backSkus);
@@ -142,41 +193,6 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
                 }
             }
         }
-
-        return PageFactory.createPageInfo(page);
     }
-
-    @Override
-    public void addList(List<ApplyDetailsParam> applyDetails) {
-//        for (ApplyDetailsParam applyDetail : applyDetails) {
-//            ApplyDetails details = new ApplyDetails();
-//            int number = Math.toIntExact(applyDetail.getNumber());
-//            for (int i = 0; i < number; i++) {
-//                details.setItemId(applyDetail.getItemId());
-//                details.setBrandId(details.getBrandId());
-//                details.setNumber(1L);
-//            }
-//        }
-    }
-
-
-    private Serializable getKey(OutstockListingParam param) {
-        return param.getOutstockListingId();
-    }
-
-    private Page<OutstockListingResult> getPageContext() {
-        return PageFactory.defaultPage();
-    }
-
-    private OutstockListing getOldEntity(OutstockListingParam param) {
-        return this.getById(getKey(param));
-    }
-
-    private OutstockListing getEntity(OutstockListingParam param) {
-        OutstockListing entity = new OutstockListing();
-        ToolUtil.copyProperties(param, entity);
-        return entity;
-    }
-
 
 }
