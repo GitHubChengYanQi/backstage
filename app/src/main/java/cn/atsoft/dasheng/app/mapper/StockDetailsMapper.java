@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.mapper;
 
+import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
@@ -28,6 +29,8 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
      * @Date 2021-07-15
      */
     List<StockDetailsResult> customList(@Param("paramCondition") StockDetailsParam paramCondition);
+
+    List<StockDetailExcel> stockDetailExcelExport(@Param("paramCondition") StockDetailsParam paramCondition);
 
     /**
      * 获取map列表

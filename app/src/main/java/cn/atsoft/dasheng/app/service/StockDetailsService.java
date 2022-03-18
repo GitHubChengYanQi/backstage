@@ -95,4 +95,5 @@ public interface StockDetailsService extends IService<StockDetails> {
     void preorder(List<ListingPlan> plans);
 
 
+    void getStockDetail();
 }

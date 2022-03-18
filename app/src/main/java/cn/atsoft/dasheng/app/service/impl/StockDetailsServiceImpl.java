@@ -305,4 +305,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
         }
     }
+    @Override
+    public void getStockDetail(){
+        this.baseMapper.customList()
+    }
 }
