@@ -148,7 +148,7 @@ public class StockExcel {
         response.setContentType("application/octet-stream");
 
         //这后面可以设置导出Excel的名称
-        response.setHeader("Content-disposition", "attachment;filename=qrCode.xls");
+        response.setHeader("Content-disposition", "attachment;filename=stock.xls");
 
         //刷新缓冲
         response.flushBuffer();
