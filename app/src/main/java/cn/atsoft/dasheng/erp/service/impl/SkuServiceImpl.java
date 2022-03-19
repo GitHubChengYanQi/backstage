@@ -985,7 +985,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             skuResult.setProcessResult(processResult);
         }
 
-        Parts parts = partsService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).one();
+        Parts parts = partsService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).eq("type", 1).one();
 
         if (ToolUtil.isNotEmpty(parts)) {
             skuResult.setInBom(true);

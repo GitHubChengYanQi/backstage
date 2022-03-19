@@ -1,7 +1,12 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
+import cn.atsoft.dasheng.app.model.params.PartsParam;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.*;
@@ -38,8 +43,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.*;
 
@@ -70,6 +74,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private UserService userService;
     @Autowired
     private ActivitiProcessService processService;
+    @Autowired
+    private PartsService partsService;
 
 
     @Override
@@ -110,9 +116,44 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         this.save(entity);
 
 
+        Map<Long, Integer> skuNum = new HashMap<>();
+
+
         //添加节点
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
-            luYou(processId, param.getChildNode(), entity.getSetpsId(), entity.getFormId());
+            skuNum = luYou(processId, param.getChildNode(), entity.getSetpsId(), entity.getFormId());
+        }
+
+        /**
+         * 生成bom
+         */
+        if (ToolUtil.isNotEmpty(skuNum)) {
+            PartsParam parts = new PartsParam();
+            parts.setSkuId(param.getProcess().getSkuId());
+            Sku sku = skuService.getById(param.getProcess().getSkuId());
+            if (ToolUtil.isEmpty(sku)) {
+                throw new ServiceException(500, "物料不存在");
+            }
+            parts.setSpuId(sku.getSpuId());
+            parts.setType("1");
+            Set<Long> longSet = filterBom(entity.getProcessId(), skuNum.keySet());
+
+            List<ErpPartsDetailParam> params = new ArrayList<>();
+            for (Long aLong : longSet) {
+                ErpPartsDetailParam detailParam = new ErpPartsDetailParam();
+                Integer integer = skuNum.get(aLong);
+                detailParam.setNumber(integer);
+                detailParam.setSkuId(aLong);
+                params.add(detailParam);
+            }
+            parts.setParts(params);
+            Parts one = partsService.query().eq("sku_id", parts.getSkuId())
+                    .eq("type", 1)
+                    .eq("status", 99).eq("display", 1).one();
+            if (ToolUtil.isEmpty(one)) {
+                partsService.add(parts);
+            }
+
         }
         return processId;
     }
@@ -143,7 +184,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param node
      * @param supper
      */
-    public void luYou(Long processId, ActivitiStepsParam node, Long supper, Long formId) {
+    public Map<Long, Integer> luYou(Long processId, ActivitiStepsParam node, Long supper, Long formId) {
+        Map<Long, Integer> skuNum = new HashMap<>();
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
 
@@ -166,7 +208,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         //判断配置
         switch (node.getStepType()) {
             case "setp":
-                addSetpSet(node.getSetpSet(), activitiSteps.getSetpsId());
+
+                Map<Long, Integer> map = addSetpSet(node.getSetpSet(), activitiSteps.getSetpsId());
+                skuNum.putAll(map);
+
                 break;
             case "route":
                 break;
@@ -175,7 +220,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                     throw new ServiceException(500, "请确定子路线");
                 }
                 activitiSteps.setFormId(node.getProcess().getProcessId());
-                setDetailaddProcess(activitiSteps.getSetpsId(), node.getProcess());  //添加子工艺产出 和 数量
+                Map<Long, Integer> shipMap = setDetailaddProcess(activitiSteps.getSetpsId(), node.getProcess());//添加子工艺产出 和 数量
+                skuNum.putAll(shipMap);
 
                 this.updateById(activitiSteps);
                 break;
@@ -190,16 +236,20 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
         //添加ChildNode
         if (ToolUtil.isNotEmpty(node.getChildNode())) {
-            luYou(processId, node.getChildNode(), activitiSteps.getSetpsId(), formId);
+            Map<Long, Integer> map = luYou(processId, node.getChildNode(), activitiSteps.getSetpsId(), formId);
+            skuNum.putAll(map);
         }
         //添加分支
         if (ToolUtil.isNotEmpty(node.getConditionNodeList())) {
-            recursiveAdd(processId, node.getConditionNodeList(), activitiSteps.getSetpsId(), formId);
+            Map<Long, Integer> branchMap = recursiveAdd(processId, node.getConditionNodeList(), activitiSteps.getSetpsId(), formId);
+            skuNum.putAll(branchMap);
         }
-
+        return skuNum;
     }
 
-    private void addSetpSet(ActivitiSetpSetParam param, Long stepId) {
+    private Map<Long, Integer> addSetpSet(ActivitiSetpSetParam param, Long stepId) {
+        Map<Long, Integer> map = new HashMap<>();
+
         ActivitiSetpSet activitiSetpSet = new ActivitiSetpSet();
         ToolUtil.copyProperties(param, activitiSetpSet);
         activitiSetpSet.setSetpsId(stepId);
@@ -210,10 +260,26 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             ToolUtil.copyProperties(activitiSetpSetDetailParam, detail);
             detail.setSetpsId(stepId);
             details.add(detail);
+            map.put(detail.getSkuId(), detail.getNum());
         }
         setpSetDetailService.saveBatch(details);
 
+        return map;
     }
+
+    /**
+     * 结构判断
+     */
+    private void judgeDiedLoop(Long supper, Long children) {
+        List<ActivitiSteps> steps = this.query().eq("process_id", children).list();
+        for (ActivitiSteps step : steps) {
+            if (ToolUtil.isNotEmpty(step.getFormId()) && step.getFormId().equals(supper)) {
+                throw new ServiceException(500, "请检查路线，请勿画圈");
+            }
+        }
+
+    }
+
 
     /**
      * 递归添加
@@ -221,7 +287,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param stepsParams
      * @param supper
      */
-    public void recursiveAdd(Long processId, List<ActivitiStepsParam> stepsParams, Long supper, Long formId) {
+    public Map<Long, Integer> recursiveAdd(Long processId, List<ActivitiStepsParam> stepsParams, Long supper, Long formId) {
+        Map<Long, Integer> skuNum = new HashMap<>();
         //分支遍历
         for (ActivitiStepsParam stepsParam : stepsParams) {
             //获取super
@@ -234,7 +301,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             this.save(activitiSteps);
             switch (stepsParam.getStepType()) {
                 case "setp":
-                    addSetpSet(stepsParam.getSetpSet(), activitiSteps.getSetpsId());
+                    Map<Long, Integer> setpMap = addSetpSet(stepsParam.getSetpSet(), activitiSteps.getSetpsId());
+                    skuNum.putAll(setpMap);
                     break;
                 case "ship":
                     if (ToolUtil.isEmpty(stepsParam.getProcess())) {
@@ -242,7 +310,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                     }
                     activitiSteps.setFormId(stepsParam.getProcess().getProcessId());
                     this.updateById(activitiSteps);
-                    setDetailaddProcess(activitiSteps.getSetpsId(), stepsParam.getProcess());
+                    Map<Long, Integer> shipMap = setDetailaddProcess(activitiSteps.getSetpsId(), stepsParam.getProcess());
+                    skuNum.putAll(shipMap);
                     break;
                 default:
                     throw new ServiceException(500, "请确定类型");
@@ -268,7 +337,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             }
 
         }
-
+        return skuNum;
     }
 
     private Serializable getKey(ActivitiStepsParam param) {
@@ -368,7 +437,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     /**
      * 添加子工艺产出和产出数量
      */
-    private void setDetailaddProcess(Long stepId, ActivitiProcessParam param) {
+    private Map<Long, Integer> setDetailaddProcess(Long stepId, ActivitiProcessParam param) {
+        Map<Long, Integer> map = new HashMap<>();
+
         ActivitiProcess process = processService.getById(param.getProcessId());
         if (ToolUtil.isEmpty(process)) {
             throw new ServiceException(500, "子工艺不存在");
@@ -379,6 +450,9 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         setDetail.setSkuId(process.getFormId());
         setDetail.setNum(param.getNum());
         setpSetDetailService.save(setDetail);
+
+        map.put(setDetail.getSkuId(), setDetail.getNum());
+        return map;
     }
 
     /**
@@ -487,14 +561,29 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return processResult;
     }
 
-
     /**
-     * 启用
-     *
-     * @param processRouteId
+     * 过滤bom
      */
-    public void invoke(Long processRouteId) {
+    private Set<Long> filterBom(Long processId, Set<Long> skuIds) {
+        List<ActivitiSteps> steps = this.query().eq("process_id", processId).isNotNull("form_id").list();
 
+        List<Long> processIds = new ArrayList<>();
+        for (ActivitiSteps step : steps) {
+            processIds.add(step.getFormId());
+        }
+        List<ActivitiProcess> processes = processIds.size() == 0 ? new ArrayList<>() : processService.listByIds(processIds);
+        List<Long> skus = new ArrayList<>();
+        for (ActivitiProcess process : processes) {
+            skus.add(process.getFormId());
+        }
+        List<Parts> parts = skus.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skus).eq("status", 99).list();
+        for (Parts part : parts) {
+            List<Long> longs = JSON.parseArray(part.getChildrens(), Long.class);
+            for (Long aLong : longs) {
+                skuIds.removeIf(i -> i.equals(aLong));
+            }
+        }
+        return skuIds;
     }
 }
 

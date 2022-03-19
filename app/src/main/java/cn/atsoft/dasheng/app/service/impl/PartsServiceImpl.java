@@ -153,6 +153,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         erpPartsDetailService.saveBatch(details);
 
+//        updateStatue(parts, skuIds);
         updateStatue(entity, skuIds);  // 更新上级状态
 
         return entity;
@@ -415,7 +416,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      * @return
      */
     private PartsResult recursiveParts(Long skuId) {
-        Parts parts = this.query().eq("sku_id", skuId).eq("display", 1).eq("status", 99).one();
+        Parts parts = this.query().eq("sku_id", skuId).eq("display", 1).eq("status", 99).eq("type", 1).one();
         if (ToolUtil.isNotEmpty(parts)) {
             PartsResult partsResult = new PartsResult();
             ToolUtil.copyProperties(parts, partsResult);

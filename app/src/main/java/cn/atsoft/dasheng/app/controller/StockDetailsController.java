@@ -52,15 +52,14 @@ public class StockDetailsController extends BaseController {
 
 
     @RequestMapping(value = "/getAllSkuIds", method = RequestMethod.GET)
-    public ResponseData getAllSkuIds(@RequestParam Long processId, Integer num) {
+    public ResponseData getAllSkuIds(@RequestParam Long skuId, Integer num) {
         allBom.getSkuList().clear();
         allBom.getStockNumber().clear();
         allBom.getNotEnough().clear();
         allBom.getEnough().clear();
-        allBom.getAllShip(processId, 1);
-        allBom.start();
-        allBom.getNumber(num);
-        allBom.getMix(num);
+        allBom.getBom().clear();
+        allBom.getBom(skuId, num);
+        allBom.getNumber(skuId);
         return ResponseData.success(allBom);
     }
 
