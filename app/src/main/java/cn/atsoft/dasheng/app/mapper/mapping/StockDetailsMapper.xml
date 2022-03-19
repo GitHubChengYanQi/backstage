@@ -46,8 +46,8 @@ stage
         stock_id AS "stockId",
         display AS "display" ,
         stage AS "stage",
-        stage AS "stage"
-
+        stage AS "stage",
+        sum(number) AS "skuSum"
     </sql>
 
 
@@ -159,7 +159,7 @@ stage
         <include refid="Excel_List"/>
 
         from daoxin_erp_stock_details where 1 = 1
-
+        GROUP BY sku_id,storehouse_positions_id
     </select>
 
 </mapper>

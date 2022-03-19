@@ -17,10 +17,6 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.view.model.params.ViewStockDetailsParam;
-import cn.atsoft.dasheng.view.model.result.ViewStockDetailsResult;
-import cn.atsoft.dasheng.view.service.ViewStockDetailsService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -30,7 +26,6 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -62,9 +57,6 @@ public class StockExcel {
 
     @Autowired
     private StorehouseService storehouseService;
-
-    @Autowired
-    private ViewStockDetailsService viewStockDetailsService;
     /**
      * 库存Excel导出
      */
@@ -72,18 +64,19 @@ public class StockExcel {
 
     @RequestMapping(value = "/stockExport", method = RequestMethod.GET)
     @ApiOperation("导出")
-    public void stockExport(HttpServletResponse response, @RequestBody ViewStockDetailsParam viewStockDetailsParam) throws IOException {
-        if(ToolUtil.isEmpty(viewStockDetailsParam)){
-            throw new ServiceException(500,"请传入正确值");
-        }
-        
+    public void stockExport(HttpServletResponse response, Long type, String url) throws IOException {
+         List<Storehouse> storehouses = storehouseService.list();
+         List<StorehousePositionsResult> storehousePositionsList = storehousePositionsService.findListBySpec(new StorehousePositionsParam(),null);
         String title = "库存EXCEL";
-        String[] header = {"物料编码", "名称型号", "描述", "库存数量"};
+        String[] header = {"分类","物料编码", "名称","型号","规格","总数","库位","数量",};
+
+
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("库存EXCEL");
         sheet.setDefaultColumnWidth(40);
-        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 4);
+        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 6);
         sheet.addMergedRegion(region);
+//        sheet.setColumnWidth(0, 10);
         HSSFRow titleRow = sheet.createRow(0);
         HSSFCell ti = titleRow.createCell(0);
         ti.setCellValue(title);
@@ -103,6 +96,7 @@ public class StockExcel {
             //创建一个内容对象
             HSSFRichTextString text = new HSSFRichTextString(header[i]);
 
+
             HSSFCellStyle headerStyle = workbook.createCellStyle();
             headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
             headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -111,35 +105,40 @@ public class StockExcel {
             cell.setCellValue(text);
             cell.setCellStyle(headerStyle);
         }
+        List<StockDetailExcel> stockDetail = stockDetailsService.getStockDetail();
 
-        List<ViewStockDetailsResult> listBySpec = viewStockDetailsService.findListBySpec(viewStockDetailsParam);
+
         int i = 1;
-        for (ViewStockDetailsResult detail : listBySpec) {
+
+        for (StockDetailExcel detail : stockDetail) {
             i++;
             HSSFRow row1 = sheet.createRow(i);
-            HSSFCell standard = row1.createCell(0);
-            HSSFCell skuName = row1.createCell(1);
-            HSSFCell attribute = row1.createCell(2);
-            HSSFCell number = row1.createCell(3);
-            standard.setCellValue(new HSSFRichTextString(detail.getSkuResult().getStandard()));
-            skuName.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getName()+"/"+detail.getSkuResult().getSkuName()));
 
-
-
-            StringBuffer sb = new StringBuffer();
-            sb.append(detail.getSkuResult().getSpuResult().getName()).append("/").append(detail.getSkuResult().getSkuName());
-            String attributeAndValues = null;
-            if (ToolUtil.isNotEmpty(detail.getSkuResult().getSkuJsons())){
+            HSSFCell spuClass = row1.createCell(0);
+            HSSFCell coding = row1.createCell(1);
+            HSSFCell spuName = row1.createCell(2);
+            HSSFCell skuName = row1.createCell(3);
+            HSSFCell attribute = row1.createCell(4);
+            HSSFCell count = row1.createCell(5);
+            HSSFCell storeHousePositionName = row1.createCell(6);
+            HSSFCell num = row1.createCell(7);
+            spuClass.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getSpuClassificationResult().getName()));
+            count.setCellValue(detail.getSkuSum().toString());
+            if (ToolUtil.isNotEmpty(detail.getSkuResult())) {
+                coding.setCellValue(new HSSFRichTextString(detail.getSkuResult().getStandard()));
+                spuName.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getName()));
+                skuName.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSkuName()));
+                StringBuffer sb = new StringBuffer();
                 for (SkuJson skuJson : detail.getSkuResult().getSkuJsons()) {
                     sb.append(skuJson.getAttribute().getAttribute()).append(":").append(skuJson.getValues().getAttributeValues()).append(",");
-
                 }
-                if (sb.length()>1) {
-                    attributeAndValues= sb.substring(0, sb.length() - 1);
+                if(sb.length()>1){
+                    attribute.setCellValue(new HSSFRichTextString(sb.substring(0, sb.length() - 1)));
                 }
             }
-            attribute.setCellValue(new HSSFRichTextString(attributeAndValues));
-            number.setCellValue(new HSSFRichTextString(detail.getNumber().toString()));
+            storeHousePositionName.setCellValue( new HSSFRichTextString(this.getParent(detail.getStorehousePositionsResult(),storehouses,storehousePositionsList)));
+            num.setCellValue(detail.getNumber());
+
 
         }
 
@@ -155,6 +154,36 @@ public class StockExcel {
 
         //workbook将Excel写入到response的输出流中，供页面下载
         workbook.write(response.getOutputStream());
+//        System.out.println(workbook.write(response.getOutputStream()));
     }
 
+    private String getParent(StorehousePositionsResult positions,List<Storehouse> storehouses, List<StorehousePositionsResult> storehousePositionsList) {
+
+        StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
+//
+        for (Storehouse storehouse : storehouses) {
+            if(positions.getStorehouseId().equals(storehouse.getStorehouseId())){
+                stringBuffer = new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
+                break;
+            }
+        }
+        return stringBuffer.toString();
+    }
+
+    private StringBuffer formatParentStringBuffer(StorehousePositionsResult positions, List<StorehousePositionsResult> storehousePositionsList, StringBuffer stringBuffer) {
+        if (!positions.getPid().equals(0L)) {
+            for (StorehousePositionsResult storehousePositions : storehousePositionsList) {
+                if (positions.getPid().equals(storehousePositions.getStorehousePositionsId())) {
+                    StringBuffer now = new StringBuffer().append(positions.getName()).append("/").append(stringBuffer);
+                    stringBuffer = now;
+                    stringBuffer = this.formatParentStringBuffer(storehousePositions, storehousePositionsList, stringBuffer);
+                }
+
+            }
+        } else {
+            StringBuffer now = new StringBuffer().append(positions.getName()).append("/").append(stringBuffer);
+            stringBuffer = now;
+        }
+        return stringBuffer;
+    }
 }
