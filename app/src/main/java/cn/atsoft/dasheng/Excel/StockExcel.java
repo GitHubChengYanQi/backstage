@@ -68,13 +68,13 @@ public class StockExcel {
          List<Storehouse> storehouses = storehouseService.list();
          List<StorehousePositionsResult> storehousePositionsList = storehousePositionsService.findListBySpec(new StorehousePositionsParam(),null);
         String title = "库存EXCEL";
-        String[] header = {"分类","物料编码", "名称","型号","规格","总数","库位","数量",};
+        String[] header = {"分类","物料编码", "名称","型号","规格","总数","库位","数量"};
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("库存EXCEL");
         sheet.setDefaultColumnWidth(40);
-        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 6);
+        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 5);
         sheet.addMergedRegion(region);
 //        sheet.setColumnWidth(0, 10);
         HSSFRow titleRow = sheet.createRow(0);
@@ -136,7 +136,9 @@ public class StockExcel {
                     attribute.setCellValue(new HSSFRichTextString(sb.substring(0, sb.length() - 1)));
                 }
             }
-            storeHousePositionName.setCellValue( new HSSFRichTextString(this.getParent(detail.getStorehousePositionsResult(),storehouses,storehousePositionsList)));
+            if(ToolUtil.isNotEmpty(detail.getStorehousePositionsResult()) && ToolUtil.isNotEmpty(detail.getStorehousePositionsResult().getStorehousePositionsId())){
+                storeHousePositionName.setCellValue( new HSSFRichTextString(this.getParent(detail.getStorehousePositionsResult(),storehouses,storehousePositionsList)));
+            }
             num.setCellValue(detail.getNumber());
 
 
