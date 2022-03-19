@@ -23,6 +23,9 @@ import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -102,6 +105,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private ActivitiProcessService processService;
 
     @Transactional
     @Override
@@ -664,7 +669,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         this.updateById(newEntity);
 
 
-
     }
 
     @Override
@@ -812,14 +816,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (Parts part : parts) {
             partsIds.add(part.getPartsId());
         }
-        List<ProcessRoute> processRoutes = skuIds.size() == 0 ? new ArrayList<>() : processRouteService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").list();
 
         for (SkuResult skuResult : param) {
-            for (ProcessRoute processRoute : processRoutes) {
-                if (processRoute.getSkuId().equals(skuResult.getSkuId())) {
-                    ProcessRouteResult processRouteResult = new ProcessRouteResult();
-                    ToolUtil.copyProperties(processRoute, processRouteResult);
-                    skuResult.setProcessRouteResult(processRouteResult);
+            for (ActivitiProcess process : processes) {
+                if (process.getFormId().equals(skuResult.getSkuId())) {
+                    ActivitiProcessResult processResult = new ActivitiProcessResult();
+                    ToolUtil.copyProperties(process, processResult);
+                    skuResult.setProcessResult(processResult);
                 }
             }
             skuResult.setInBom(false);
@@ -957,11 +961,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuBrandBind skuBrandBind : skuBrandBindList) {
             brandIds.add(skuBrandBind.getBrandId());
         }
-        List<Brand> brands =brandIds.size() == 0 ? new ArrayList<>() : brandService.query().in("brand_id", brandIds).list();
+        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.query().in("brand_id", brandIds).list();
         List<BrandResult> brandResults = new ArrayList<>();
         for (Brand brand : brands) {
-            BrandResult brandResult = new BrandResult() ;
-            ToolUtil.copyProperties(brand,brandResult);
+            BrandResult brandResult = new BrandResult();
+            ToolUtil.copyProperties(brand, brandResult);
             brandResults.add(brandResult);
         }
 
@@ -972,16 +976,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         SpuResult spuResult = this.backSpu(sku.getSkuId());
         skuResult.setSpuResult(spuResult);
+        ActivitiProcess process = processService.query().eq("form_id", id).eq("type", "ship").eq("display", 1).one();
 
-        ProcessRoute one = processRouteService.query().eq("sku_id", id).eq("display", 1).one();
 
-        if (ToolUtil.isNotEmpty(one)) {
-            ProcessRouteResult processRouteResult = new ProcessRouteResult();
-            ToolUtil.copyProperties(one, processRouteResult);
-            skuResult.setProcessRouteResult(processRouteResult);
+        if (ToolUtil.isNotEmpty(process)) {
+            ActivitiProcessResult processResult = new ActivitiProcessResult();
+            ToolUtil.copyProperties(process, processResult);
+            skuResult.setProcessResult(processResult);
         }
 
-        Parts parts = partsService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).one();
+        Parts parts = partsService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).eq("type", 1).one();
 
         if (ToolUtil.isNotEmpty(parts)) {
             skuResult.setInBom(true);

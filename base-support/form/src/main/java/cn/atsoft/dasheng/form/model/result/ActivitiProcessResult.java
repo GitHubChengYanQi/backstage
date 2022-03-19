@@ -27,6 +27,9 @@ public class ActivitiProcessResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long skuId;
+
+    private Integer num;
     /**
      * 模块
      */

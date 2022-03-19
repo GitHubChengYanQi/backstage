@@ -33,52 +33,6 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
-        select
-        <include refid="Base_Column_List"/>
-        from daoxin_erp_parts where 1 = 1
-        <if test="paramCondition.partsId != null">
-            and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
-        </if>
-        <if test="paramCondition.spuId != null">
-            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
-        </if>
-        <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
-            and attribute like CONCAT('%',#{paramCondition.attribute},'%')
-        </if>
-        <if test="paramCondition.pid != null">
-            and pid = #{paramCondition.pid}
-        </if>
-        <if test="paramCondition.number != null">
-            and number like CONCAT('%',#{paramCondition.number},'%')
-        </if>
-        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-        </if>
-        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-        </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-        </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
-        <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
-        </if>
-        <if test="paramCondition.deptId != null">
-            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-        </if>
-        <if test="paramCondition.partName != null and paramCondition.partName != ''">
-            and part_name like CONCAT('%',#{paramCondition.partName},'%')
-        </if>
-        <if test="paramCondition.note != null and paramCondition.note != ''">
-            and note like CONCAT('%',#{paramCondition.note},'%')
-        </if>
-    </select>
-
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="Base_Column_List"/>
@@ -177,8 +131,15 @@
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type like CONCAT('%',#{paramCondition.type},'%')
         </if>
-
-  </select>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_id in (
+            select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
+            CONCAT('%',#{paramCondition.skuName},'%') )
+            )
+        </if>
+    </select>
 
     <select id="oldCustomPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
             parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
@@ -227,12 +188,13 @@
         <if test="paramCondition.partName != null and paramCondition.partName != ''">
             and part_name like CONCAT('%',#{paramCondition.partName},'%')
         </if>
-        <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
-        </if>
+<!--        <if test="paramCondition.type != null and paramCondition.type != ''">-->
+<!--            and type like CONCAT('%',#{paramCondition.type},'%')-->
+<!--        </if>-->
         <if test="paramCondition.note != null and paramCondition.note != ''">
             and note like CONCAT('%',#{paramCondition.note},'%')
         </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
@@ -279,5 +241,6 @@
             and note like CONCAT('%',#{paramCondition.note},'%')
         </if>
     </select>
+
 
 </mapper>
