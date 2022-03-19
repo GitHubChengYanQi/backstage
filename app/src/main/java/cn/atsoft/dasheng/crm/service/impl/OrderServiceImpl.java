@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
@@ -241,21 +242,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public List<OrderResult> pendingProductionPlanByContracts(OrderParam orderParam) {
-        orderParam.setType(2);
-        List<OrderResult> orderResults = this.baseMapper.customList(orderParam);
         List<Long> orderIds = new ArrayList<>();
-        for (OrderResult orderResult : orderResults) {
-            orderIds.add(orderResult.getOrderId());
+        /**
+         * 取出orderDetail 循环取出 orderId
+         */
+        List<OrderDetailResult> orderDetailResults = detailService.getOrderDettailProductionIsNull(new OrderDetailParam());
+        for (OrderDetailResult orderDetailResult : orderDetailResults) {
+            orderIds.add(orderDetailResult.getOrderId());
         }
-        List<OrderDetail> orderDetails = orderIds.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", orderIds).eq("display", 1).list();
-        List<OrderDetailResult> orderDetailResults = new ArrayList<>();
-        for (OrderDetail orderDetail : orderDetails) {
-            OrderDetailResult result = new OrderDetailResult();
-            ToolUtil.copyProperties(orderDetail, result);
-            orderDetailResults.add(result);
+
+        /**
+         * 查询Order
+         */
+        List<Order> orders = this.query().in("order_Id", orderIds).eq("type", 2).list();
+        List<OrderResult> orderResults = new ArrayList<>();
+        for (Order order : orders) {
+            OrderResult orderResult = new OrderResult();
+            ToolUtil.copyProperties(order,orderResult);
+            orderResults.add(orderResult);
         }
         detailService.format(orderDetailResults);
+        /**
+         * 匹配order与orderDetail
+         */
         for (OrderResult orderResult : orderResults) {
+            orderIds.add(orderResult.getOrderId());
             List<OrderDetailResult> results = new ArrayList<>();
             for (OrderDetailResult orderDetailResult : orderDetailResults) {
                 if (orderResult.getOrderId().equals(orderDetailResult.getOrderId())) {

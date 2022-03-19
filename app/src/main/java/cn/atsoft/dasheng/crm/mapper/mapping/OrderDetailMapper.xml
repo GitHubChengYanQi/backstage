@@ -29,6 +29,29 @@
     <sql id="Base_Column_List">
         detail_id AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
+    <!-- 查询未被加入生产计划的销售订单 -->
+    <sql id="ProductionPlanByOrder">
+        orderDetail.detail_id AS "detailId",
+	    orderDetail.order_id AS "orderId",
+	    orderDetail.sku_id AS "skuId",
+	    orderDetail.brand_id AS "brandId",
+	    orderDetail.customer_id AS "customerId",
+	    orderDetail.preorde_number AS "preordeNumber",
+	    orderDetail.purchase_number AS "purchaseNumber",
+	    orderDetail.unit_id AS "unitId",
+        orderDetail.one_price AS "onePrice",
+        orderDetail.total_price AS "totalPrice",
+        orderDetail.paper_type AS "paperType",
+        orderDetail.rate AS "rate",
+        orderDetail.delivery_date AS "deliveryDate",
+        orderDetail.create_user AS "createUser",
+        orderDetail.update_user AS "updateUser",
+        orderDetail.create_time AS "createTime",
+        orderDetail.update_time AS "updateTime",
+        orderDetail.display AS "display",
+        orderDetail.deptId AS "deptId" ,
+        planDetail.production_plan_detail_id AS "planDetailId"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.OrderDetailResult" parameterType="cn.atsoft.dasheng.crm.model.params.OrderDetailParam">
@@ -102,6 +125,13 @@
                         and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
                 </if>
     </select>
+    <select id="pendingProductionPlanByOrder" resultType="cn.atsoft.dasheng.crm.model.result.OrderDetailResult" parameterType="cn.atsoft.dasheng.crm.model.params.OrderDetailParam">
+            select
+            <include refid="ProductionPlanByOrder"/>
+            daoxin_crm_order_detail orderDetail
+            LEFT JOIN daoxin_production_plan_detail planDetail on planDetail.order_detail_id = orderDetail.detail_id
+            WHERE  ISNULL(planDetail.production_plan_detail_id)
+        </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.OrderDetailParam">
         select

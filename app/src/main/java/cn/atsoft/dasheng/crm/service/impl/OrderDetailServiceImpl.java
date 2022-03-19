@@ -236,5 +236,13 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         }
 
     }
+    @Override
+    public  List<OrderDetailResult> getOrderDettailProductionIsNull( OrderDetailParam paramCondition){
+        if (ToolUtil.isEmpty(paramCondition)) {
+            return new ArrayList<>();
+        }
+        List<OrderDetailResult> detailResults = this.baseMapper.pendingProductionPlanByOrder(paramCondition);
+        return detailResults;
+    }
 
 }
