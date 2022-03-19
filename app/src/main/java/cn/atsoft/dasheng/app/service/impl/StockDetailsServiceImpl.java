@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.pojo.AllBom;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -19,9 +20,14 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
+import cn.atsoft.dasheng.production.entity.ProductionPlan;
+import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
+import cn.atsoft.dasheng.production.service.ProductionPlanDetailService;
+import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -57,6 +63,12 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private CustomerService customerService;
     @Autowired
     private PartsService partsService;
+    @Autowired
+    private ProductionPlanService productionPlanService;
+    @Autowired
+    private ProductionPlanDetailService productionPlanDetailService;
+    @Autowired
+    private ErpPartsDetailService erpPartsDetailService;
 
 
     @Override
@@ -89,6 +101,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public List<StockDetailsResult> findListBySpec(StockDetailsParam param) {
         return this.baseMapper.customList(param);
     }
+
+
+
 
     @Override
     public List<StockDetailsResult> getDetailsBySkuId(Long id) {
@@ -302,6 +317,27 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                         break;
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * 排列组合sku
+     */
+    public static Stack<Long> stack = new Stack<Long>();
+
+    private void skuPartsMakeUp(List<Long> skuIds, int count, int now, List<List<Long>> skuIdsCell) {
+        if (now == count) {
+            List<Long> stacks = new ArrayList<Long>(stack);
+            skuIdsCell.add(stacks);
+
+            return;
+        }
+        for (int i = 0; i < skuIds.size(); i++) {
+            if (!stack.contains(skuIds.get(i))) {
+                stack.add(skuIds.get(i));
+                skuPartsMakeUp(skuIds, count, now + 1, skuIdsCell);
+                stack.pop();
             }
         }
     }

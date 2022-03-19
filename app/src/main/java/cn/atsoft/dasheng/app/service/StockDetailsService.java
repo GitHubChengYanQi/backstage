@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.pojo.AllBom;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
@@ -60,6 +61,8 @@ public interface StockDetailsService extends IService<StockDetails> {
      * @Date 2021-07-15
      */
     List<StockDetailsResult> findListBySpec(StockDetailsParam param);
+
+
 
     List<StockDetailsResult> getDetailsBySkuId(Long id);
 
