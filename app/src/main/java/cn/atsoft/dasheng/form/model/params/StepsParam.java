@@ -25,13 +25,13 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
+public class StepsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ActivitiStepsParam> conditionNodeList;
+    private List<StepsParam> conditionNodeList;
 
-    private ActivitiStepsParam childNode;
+    private StepsParam childNode;
 
     private QualityRules rule;
 

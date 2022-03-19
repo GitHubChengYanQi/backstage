@@ -11,10 +11,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
-import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
-import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetParam;
-import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
+import cn.atsoft.dasheng.form.model.params.*;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
@@ -80,7 +77,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
     @Override
     @Transactional
-    public Long add(ActivitiStepsParam param) {
+    public Long add(StepsParam param) {
 
         Long processId = null;
         if (!"shipStart".equals(param.getStepType())) {
@@ -158,6 +155,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return processId;
     }
 
+
+
     @Override
     public Long addProcessRoute(ProcessRouteParam param) {
         return null;
@@ -184,7 +183,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param node
      * @param supper
      */
-    public Map<Long, Integer> luYou(Long processId, ActivitiStepsParam node, Long supper, Long formId) {
+    public Map<Long, Integer> luYou(Long processId, StepsParam node, Long supper, Long formId) {
         Map<Long, Integer> skuNum = new HashMap<>();
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
@@ -287,10 +286,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
      * @param stepsParams
      * @param supper
      */
-    public Map<Long, Integer> recursiveAdd(Long processId, List<ActivitiStepsParam> stepsParams, Long supper, Long formId) {
+    public Map<Long, Integer> recursiveAdd(Long processId, List<StepsParam> stepsParams, Long supper, Long formId) {
         Map<Long, Integer> skuNum = new HashMap<>();
         //分支遍历
-        for (ActivitiStepsParam stepsParam : stepsParams) {
+        for (StepsParam stepsParam : stepsParams) {
             //获取super
             stepsParam.setSupper(supper);
             //存分支
@@ -345,7 +344,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     }
 
 
-    private ActivitiSteps getEntity(ActivitiStepsParam param) {
+    private ActivitiSteps getEntity(StepsParam param) {
         ActivitiSteps entity = new ActivitiSteps();
         ToolUtil.copyProperties(param, entity);
         return entity;
