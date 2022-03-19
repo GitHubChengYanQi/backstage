@@ -59,13 +59,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private CustomerService customerService;
     @Autowired
     private PartsService partsService;
-    @Autowired
-    private ProductionPlanService productionPlanService;
-    @Autowired
-    private ProductionPlanDetailService productionPlanDetailService;
+
     @Autowired
     private ErpPartsDetailService erpPartsDetailService;
-
 
     @Override
     public Long add(StockDetailsParam param) {
