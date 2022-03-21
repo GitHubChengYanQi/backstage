@@ -172,6 +172,9 @@
         <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
             and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
         </if>
+        <if test="paramCondition.coding != null and paramCondition.coding != ''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.OrderParam">

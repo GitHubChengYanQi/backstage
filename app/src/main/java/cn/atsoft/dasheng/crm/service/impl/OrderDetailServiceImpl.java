@@ -13,9 +13,12 @@ import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.mapper.OrderDetailMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
+import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.taxRate.entity.TaxRate;
@@ -45,6 +48,8 @@ import java.util.List;
 public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, OrderDetail> implements OrderDetailService {
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private OrderService orderService;
     @Autowired
     private BrandService brandService;
     @Autowired
@@ -201,8 +206,15 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
         List<Unit> unitList = unitIds.size() == 0 ? new ArrayList<>() : unitService.listByIds(unitIds);
         List<TaxRate> taxRates = taxIds.size() == 0 ? new ArrayList<>() : rateService.listByIds(taxIds);
+        List<OrderResult> orderResults = orderService.findListBySpec(new OrderParam());
 
         for (OrderDetailResult orderDetailResult : param) {
+            for (OrderResult orderResult : orderResults) {
+                if (orderResult.getOrderId().equals(orderDetailResult.getOrderId())){
+                    orderDetailResult.setOrderResult(orderResult);
+                    break;
+                }
+            }
             for (SkuResult skuResult : skuResults) {
                 if (orderDetailResult.getSkuId().equals(skuResult.getSkuId())) {
                     orderDetailResult.setSkuResult(skuResult);

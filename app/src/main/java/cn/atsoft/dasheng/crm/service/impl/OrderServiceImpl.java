@@ -166,7 +166,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public List<OrderResult> findListBySpec(OrderParam param) {
-        return null;
+        List<OrderResult> orderResults = this.baseMapper.customList(param);
+        format(orderResults);
+        return orderResults;
     }
 
     @Override
@@ -247,7 +249,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         /**
          * 取出orderDetail 循环取出 orderId
          */
-        List<OrderDetailResult> orderDetailResults = detailService.getOrderDettailProductionIsNull(new OrderDetailParam());
+        OrderDetailParam orderDetailParam = new OrderDetailParam();
+        orderDetailParam.setType(2);
+        List<OrderDetailResult> orderDetailResults = detailService.getOrderDettailProductionIsNull(orderDetailParam);
         for (OrderDetailResult orderDetailResult : orderDetailResults) {
             orderIds.add(orderDetailResult.getOrderId());
         }
@@ -259,7 +263,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderResult> orderResults = new ArrayList<>();
         for (Order order : orders) {
             OrderResult orderResult = new OrderResult();
-            ToolUtil.copyProperties(order,orderResult);
+            ToolUtil.copyProperties(order, orderResult);
             orderResults.add(orderResult);
         }
         detailService.format(orderDetailResults);
@@ -282,46 +286,43 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public Set<ContractDetailSetRequest> pendingProductionPlan(OrderParam orderParam) {
-        orderParam.setType(2);
-        List<OrderResult> orderResults = this.baseMapper.customList(orderParam);
         List<Long> orderIds = new ArrayList<>();
-        for (OrderResult orderResult : orderResults) {
-            orderIds.add(orderResult.getOrderId());
-        }
-        List<OrderDetail> orderDetails = detailService.query().in("order_id", orderIds).eq("display", 1).list();
-        List<OrderDetailResult> orderDetailResults = new ArrayList<>();
-
         /**
+         * 取出orderDetail 循环取出 orderId
+         */
+        OrderDetailParam orderDetailParam = new OrderDetailParam();
+        orderDetailParam.setType(2);
+        List<OrderDetailResult> orderDetailResults = detailService.getOrderDettailProductionIsNull(orderDetailParam);
+        for (OrderDetailResult orderDetailResult : orderDetailResults) {
+            orderIds.add(orderDetailResult.getOrderId());
+        }
+
+        /*
          * 返回合并后的数据
          */
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
-        for (OrderDetail orderDetail : orderDetails) {
+        for (OrderDetailResult orderDetail : orderDetailResults) {
             ContractDetailSetRequest request = new ContractDetailSetRequest();
             ToolUtil.copyProperties(orderDetail, request);
             skuIds.add(request.getSkuId());
             brandIds.add(request.getBrandId());
             contractDetailSet.add(request);
         }
-        /**
-         * 查询sku
-         */
 
+        /*
+          查询sku
+         */
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
 
 
-        for (OrderDetail orderDetail : orderDetails) {
-            OrderDetailResult orderDetailResult = new OrderDetailResult();
-            ToolUtil.copyProperties(orderDetail, orderDetailResult);
-            orderDetailResults.add(orderDetailResult);
-        }
         contractDetailSet = new HashSet<ContractDetailSetRequest>(contractDetailSet.stream().collect(Collectors.toMap(ContractDetailSetRequest::getSkuId, a -> a, (o1, o2) -> {
             if (ToolUtil.isEmpty(o1.getQuantity())) {
-               o1.setQuantity(0L);
+                o1.setQuantity(0L);
             }
-            if (ToolUtil.isEmpty(o2.getQuantity())){
+            if (ToolUtil.isEmpty(o2.getQuantity())) {
                 o2.setQuantity(0L);
             }
             o1.setQuantity(o1.getQuantity() + o2.getQuantity());
@@ -392,7 +393,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             for (User user : userList) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user,userResult);
+                    ToolUtil.copyProperties(user, userResult);
                     datum.setUser(userResult);
                     break;
                 }

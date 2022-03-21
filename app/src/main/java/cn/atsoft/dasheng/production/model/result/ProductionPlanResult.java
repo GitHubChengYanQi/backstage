@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -21,6 +22,8 @@ public class ProductionPlanResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<ProductionPlanDetailResult> planDetailResults;
+
+    private UserResult userResult;
 
 
     /**

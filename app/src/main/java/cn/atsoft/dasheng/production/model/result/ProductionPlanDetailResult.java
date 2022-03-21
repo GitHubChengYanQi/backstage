@@ -74,7 +74,7 @@ public class ProductionPlanDetailResult implements Serializable {
      * 交付时间
      */
     @ApiModelProperty("交付时间")
-    private Date deliveryDate;
+    private Integer deliveryDate;
 
     /**
      * 创建者
