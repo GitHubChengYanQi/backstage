@@ -151,8 +151,8 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-
-    private void format(List<ProductionPlanResult> param) {
+    @Override
+    public void format(List<ProductionPlanResult> param) {
         List<Long> planIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
 

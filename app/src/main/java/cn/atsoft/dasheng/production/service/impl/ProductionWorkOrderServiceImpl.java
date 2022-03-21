@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
@@ -12,10 +13,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
-import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
-import cn.atsoft.dasheng.form.service.StepProcessService;
-import cn.atsoft.dasheng.form.service.StepsService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
 import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
@@ -58,7 +56,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     private PartsService partsService;
 
     @Autowired
-    private ProcessRouteService processRouteService;
+    private ActivitiProcessService processService;
 
 
     @Autowired
@@ -139,19 +137,10 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
         List<ProductionPlanDetail> productionPlanDetails = JSON.parseArray(param.toString(), ProductionPlanDetail.class);
 //        List<Long> skuIds = new ArrayList<>();  //先取出物料   去bom中查找
         for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
-//            Parts designParts = partsService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("type", 1).eq("display", 1).eq("status", 99).one();
-//            if (ToolUtil.isEmpty(designParts)) {
-//                throw new ServiceException(500, "请先创建设计bom");
-//            }
-//            Parts productionParts = partsService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("type", 2).eq("display", 1).eq("status", 99).one();
-//            if (ToolUtil.isEmpty(productionParts)) {
-//                throw new ServiceException(500, "请先创建生产bom");
-//            }
-            ProcessRoute processRouteByparts = processRouteService.query().eq("sku_id", productionPlanDetail.getSkuId()).eq("status", 99).one();
-//            if (ToolUtil.isEmpty(processRouteByparts)) {
-//                throw new ServiceException(500, "请先创建" + productionParts.getPartName() + "的工艺路线");
-//            }
-            ActivitiStepsResult activitiStepsResult = stepsService.detail(processRouteByparts.getProcessRouteId());
+
+              ActivitiProcess process = processService.query().eq("form_id", productionPlanDetail.getSkuId()).eq("status", 99).eq("type","ship").one();
+
+            ActivitiStepsResult activitiStepsResult = stepsService.detail(process.getProcessId());
 
 
 
@@ -177,18 +166,9 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     //递归添加工单
     private void loopCreateWorkOrder(ProductionPlanDetail productionPlanDetail,List<ActivitiStepsResult> stepsResultList, int num, List<ProductionWorkOrder> workOrders) {
         for (ActivitiStepsResult activitiStepsResult : stepsResultList) {
-            ProductionWorkOrder workOrder = new ProductionWorkOrder();
-            workOrder.setStepsId(activitiStepsResult.getSetpsId());
-            workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
-//            workOrder
-            workOrder.setSource("productionPlan");
-//            workOrder.set
+
             switch (activitiStepsResult.getStepType()) {
                 case "ship":
-                    workOrder.setCount(num);
-                    if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails())){
-                        workOrder.setShipSetpId(activitiStepsResult.getSetpSet().getShipSetpId());
-                    }
 
                     List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
                     if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) && activitiStepsResult.getSetpSet().getSetpSetDetails().size() == 1 && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum())){
@@ -198,8 +178,12 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                         loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders);
                     }
                     break;
-                case "shipStart":
+//                case "shipStart":
                 case "setp":
+                    ProductionWorkOrder workOrder = new ProductionWorkOrder();
+                    workOrder.setStepsId(activitiStepsResult.getSetpsId());
+                    workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
+                    workOrder.setSource("productionPlan");
                     if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) ) {
                         for (ActivitiSetpSetDetailResult setpSetDetailResult : activitiStepsResult.getSetpSet().getSetpSetDetails()) {
                             workOrder.setSkuId(setpSetDetailResult.getSkuId());
@@ -215,8 +199,10 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                         }
 
                     }
+                    workOrders.add(workOrder);
+                    break;
             }
-            workOrders.add(workOrder);
+
         }
     }
 

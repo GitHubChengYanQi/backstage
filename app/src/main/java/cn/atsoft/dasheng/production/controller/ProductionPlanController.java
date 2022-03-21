@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
+
 
 /**
  * 生产计划主表控制器
@@ -80,6 +82,9 @@ public class ProductionPlanController extends BaseController {
         ProductionPlan detail = this.productionPlanService.getById(productionPlanParam.getProductionPlanId());
         ProductionPlanResult result = new ProductionPlanResult();
         ToolUtil.copyProperties(detail, result);
+        productionPlanService.format(new ArrayList<ProductionPlanResult>(){{
+            add(result);
+        }});
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);
