@@ -128,6 +128,7 @@
     <select id="pendingProductionPlanByOrder" resultType="cn.atsoft.dasheng.crm.model.result.OrderDetailResult" parameterType="cn.atsoft.dasheng.crm.model.params.OrderDetailParam">
             select
             <include refid="ProductionPlanByOrder"/>
+                   from
             daoxin_crm_order_detail orderDetail
             LEFT JOIN daoxin_production_plan_detail planDetail on planDetail.order_detail_id = orderDetail.detail_id
             WHERE  ISNULL(planDetail.production_plan_detail_id)

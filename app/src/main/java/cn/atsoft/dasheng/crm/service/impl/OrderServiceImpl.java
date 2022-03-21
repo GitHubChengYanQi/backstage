@@ -35,6 +35,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -254,7 +255,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         /**
          * 查询Order
          */
-        List<Order> orders = this.query().in("order_Id", orderIds).eq("type", 2).list();
+        List<Order> orders = orderIds.size() == 0 ? new ArrayList<>() : this.query().in("order_Id", orderIds.stream().distinct().collect(Collectors.toList())).eq("type", 2).list();
         List<OrderResult> orderResults = new ArrayList<>();
         for (Order order : orders) {
             OrderResult orderResult = new OrderResult();
@@ -390,7 +391,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
             for (User user : userList) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
-                    datum.setUser(user);
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user,userResult);
+                    datum.setUser(userResult);
                     break;
                 }
             }
