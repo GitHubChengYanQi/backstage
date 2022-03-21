@@ -196,38 +196,38 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 
 
     private void formatTreeProcessRoute(ActivitiStepsResult detail, List<ProductionWorkOrderResult> workOrderResults){
-       if(ToolUtil.isNotEmpty(detail)){
-           switch (detail.getStepType()) {
-               case "ship":
-                   for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
-                       if (detail.getSetpsId().equals(workOrderResult.getStepsId())){
-                           detail.setWorkOrderResult(workOrderResult);
-                           break;
-                       }
-                   }
-                   ProcessRouteResult processRoute = (ProcessRouteResult) detail.getProcessRoute();
-                   formatTreeProcessRoute(processRoute.getStepsResult(),workOrderResults);
-                   break;
-               case "shipStart":
-               case "setp":
-                   for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
-                       if (detail.getSetpsId().equals(workOrderResult.getStepsId())){
-                           detail.setWorkOrderResult(workOrderResult);
-                           break;
-                       }
-                   }
-                   if(ToolUtil.isNotEmpty(detail.getChildNode())){
-                       formatTreeProcessRoute(detail.getChildNode(),workOrderResults);
-                   }
-
-                   break;
-               case "route":
-                   for (ActivitiStepsResult activitiStepsResult : detail.getConditionNodeList()) {
-                       formatTreeProcessRoute(activitiStepsResult,workOrderResults);
-                   }
-                   break;
-           }
-       }
+//       if(ToolUtil.isNotEmpty(detail)){
+//           switch (detail.getStepType()) {
+//               case "ship":
+//                   for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
+//                       if (detail.getSetpsId().equals(workOrderResult.getStepsId())){
+//                           detail.setWorkOrderResult(workOrderResult);
+//                           break;
+//                       }
+//                   }
+//                   ProcessRouteResult processRoute = (ProcessRouteResult) detail.getProcessRoute();
+//                   formatTreeProcessRoute(processRoute.getStepsResult(),workOrderResults);
+//                   break;
+//               case "shipStart":
+//               case "setp":
+//                   for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
+//                       if (detail.getSetpsId().equals(workOrderResult.getStepsId())){
+//                           detail.setWorkOrderResult(workOrderResult);
+//                           break;
+//                       }
+//                   }
+//                   if(ToolUtil.isNotEmpty(detail.getChildNode())){
+//                       formatTreeProcessRoute(detail.getChildNode(),workOrderResults);
+//                   }
+//
+//                   break;
+//               case "route":
+//                   for (ActivitiStepsResult activitiStepsResult : detail.getConditionNodeList()) {
+//                       formatTreeProcessRoute(activitiStepsResult,workOrderResults);
+//                   }
+//                   break;
+//           }
+//       }
     }
 
     private Serializable getKey(ProductionPlanParam param){

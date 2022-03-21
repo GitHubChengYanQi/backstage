@@ -24,12 +24,14 @@ import java.io.Serializable;
 public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField(exist = false)
+    private Long num;//用来分组查询求相同sku总库存数量
 
     @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
-    @TableField(exist = false)
-    private Integer num; //用来分组查询求相同sku总库存数量
+
+
 
     /**
      * 供应商
@@ -142,13 +144,6 @@ public class StockDetails implements Serializable {
     @TableField("display")
     private Integer display;
 
-    public Integer getNum() {
-        return num;
-    }
-
-    public void setNum(Integer num) {
-        this.num = num;
-    }
 
     public Long getNumber() {
         return number;
@@ -329,6 +324,14 @@ public class StockDetails implements Serializable {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+
+    public Long getNum() {
+        return num;
+    }
+
+    public void setNum(Long num) {
+        this.num = num;
     }
 
     @Override

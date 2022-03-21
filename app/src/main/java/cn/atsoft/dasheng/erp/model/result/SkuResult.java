@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -61,7 +62,7 @@ public class SkuResult implements Serializable {
     private BrandResult brandResult;
     private User user;
     private Boolean inBom;
-    private ProcessRouteResult processRouteResult;
+    private ActivitiProcessResult processResult;
     private List<Long> brandIds;
     private List<BrandResult> brandResults;
     private List<String> filedUrls;

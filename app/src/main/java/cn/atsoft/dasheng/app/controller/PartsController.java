@@ -128,7 +128,7 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/getBOM", method = RequestMethod.GET)
     public ResponseData getBOM(@Param("partId") Long partId, String type) {
-        PartsResult bom = this.partsService.getBOM(partId, type);
+        PartsResult bom = this.partsService.getBOM(partId);
         return ResponseData.success(bom);
     }
 

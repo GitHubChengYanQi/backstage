@@ -1,14 +1,22 @@
 package cn.atsoft.dasheng.Excel;
 
+import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
+import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -24,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -41,20 +50,31 @@ public class StockExcel {
 
     @Autowired
     private SkuService skuService;
+
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
+
+
+    @Autowired
+    private StorehouseService storehouseService;
     /**
      * 库存Excel导出
      */
+
+
     @RequestMapping(value = "/stockExport", method = RequestMethod.GET)
     @ApiOperation("导出")
     public void stockExport(HttpServletResponse response, Long type, String url) throws IOException {
+         List<Storehouse> storehouses = storehouseService.list();
+         List<StorehousePositionsResult> storehousePositionsList = storehousePositionsService.findListBySpec(new StorehousePositionsParam(),null);
         String title = "库存EXCEL";
-        String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量", "规格"};
+        String[] header = {"分类","物料编码", "名称","型号","规格","总数","库位","数量"};
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("库存EXCEL");
         sheet.setDefaultColumnWidth(40);
-        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 7);
+        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 5);
         sheet.addMergedRegion(region);
 //        sheet.setColumnWidth(0, 10);
         HSSFRow titleRow = sheet.createRow(0);
@@ -85,37 +105,43 @@ public class StockExcel {
             cell.setCellValue(text);
             cell.setCellStyle(headerStyle);
         }
-        List<StockDetails> stockDetails = this.stockDetailsService.query().eq("display", 1).list();
-        List<StockDetailsResult> stockDetailsResults = new ArrayList<>();
-        for (StockDetails stockDetail : stockDetails) {
-            StockDetailsResult result = new StockDetailsResult();
-            ToolUtil.copyProperties(stockDetail,stockDetail);
-        }
-        List<Long> skuIds = new ArrayList<>();
-        List<Long> brandIds = new ArrayList<>();
-        List<Long> customerIds = new ArrayList<>();
-        List<Long> storehouseIds = new ArrayList<>();
-        for (StockDetailsResult stockDetailsResult : stockDetailsResults) {
-            skuIds.add(stockDetailsResult.getSkuId());
-            brandIds.add(stockDetailsResult.getBrandId());
-            customerIds.add(stockDetailsResult.getCustomerId());
-            storehouseIds.add(stockDetailsResult.getStorehouseId());
-        }
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<StockDetailExcel> stockDetail = stockDetailsService.getStockDetail();
 
 
         int i = 1;
 
-        for (SkuResult skuResult : skuResults) {
+        for (StockDetailExcel detail : stockDetail) {
             i++;
             HSSFRow row1 = sheet.createRow(i);
-            HSSFCell coding = row1.createCell(0);
-            HSSFCell classes = row1.createCell(1);
+
+            HSSFCell spuClass = row1.createCell(0);
+            HSSFCell coding = row1.createCell(1);
             HSSFCell spuName = row1.createCell(2);
-            HSSFCell sku = row1.createCell(3);
-            HSSFCell unit = row1.createCell(4);
-            HSSFCell isAll = row1.createCell(5);
-            HSSFCell attributeValue = row1.createCell(6);
+            HSSFCell skuName = row1.createCell(3);
+            HSSFCell attribute = row1.createCell(4);
+            HSSFCell count = row1.createCell(5);
+            HSSFCell storeHousePositionName = row1.createCell(6);
+            HSSFCell num = row1.createCell(7);
+            spuClass.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getSpuClassificationResult().getName()));
+            count.setCellValue(detail.getSkuSum().toString());
+            if (ToolUtil.isNotEmpty(detail.getSkuResult())) {
+                coding.setCellValue(new HSSFRichTextString(detail.getSkuResult().getStandard()));
+                spuName.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getName()));
+                skuName.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSkuName()));
+                StringBuffer sb = new StringBuffer();
+                for (SkuJson skuJson : detail.getSkuResult().getSkuJsons()) {
+                    sb.append(skuJson.getAttribute().getAttribute()).append(":").append(skuJson.getValues().getAttributeValues()).append(",");
+                }
+                if(sb.length()>1){
+                    attribute.setCellValue(new HSSFRichTextString(sb.substring(0, sb.length() - 1)));
+                }
+            }
+            if(ToolUtil.isNotEmpty(detail.getStorehousePositionsResult()) && ToolUtil.isNotEmpty(detail.getStorehousePositionsResult().getStorehousePositionsId())){
+                storeHousePositionName.setCellValue( new HSSFRichTextString(this.getParent(detail.getStorehousePositionsResult(),storehouses,storehousePositionsList)));
+            }
+            num.setCellValue(detail.getNumber());
+
+
         }
 
         //准备将Excel的输出流通过response输出到页面下载
@@ -123,7 +149,7 @@ public class StockExcel {
         response.setContentType("application/octet-stream");
 
         //这后面可以设置导出Excel的名称
-        response.setHeader("Content-disposition", "attachment;filename=qrCode.xls");
+        response.setHeader("Content-disposition", "attachment;filename=stock.xls");
 
         //刷新缓冲
         response.flushBuffer();
@@ -131,5 +157,35 @@ public class StockExcel {
         //workbook将Excel写入到response的输出流中，供页面下载
         workbook.write(response.getOutputStream());
 //        System.out.println(workbook.write(response.getOutputStream()));
+    }
+
+    private String getParent(StorehousePositionsResult positions,List<Storehouse> storehouses, List<StorehousePositionsResult> storehousePositionsList) {
+
+        StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
+//
+        for (Storehouse storehouse : storehouses) {
+            if(positions.getStorehouseId().equals(storehouse.getStorehouseId())){
+                stringBuffer = new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
+                break;
+            }
+        }
+        return stringBuffer.toString();
+    }
+
+    private StringBuffer formatParentStringBuffer(StorehousePositionsResult positions, List<StorehousePositionsResult> storehousePositionsList, StringBuffer stringBuffer) {
+        if (!positions.getPid().equals(0L)) {
+            for (StorehousePositionsResult storehousePositions : storehousePositionsList) {
+                if (positions.getPid().equals(storehousePositions.getStorehousePositionsId())) {
+                    StringBuffer now = new StringBuffer().append(positions.getName()).append("/").append(stringBuffer);
+                    stringBuffer = now;
+                    stringBuffer = this.formatParentStringBuffer(storehousePositions, storehousePositionsList, stringBuffer);
+                }
+
+            }
+        } else {
+            StringBuffer now = new StringBuffer().append(positions.getName()).append("/").append(stringBuffer);
+            stringBuffer = now;
+        }
+        return stringBuffer;
     }
 }

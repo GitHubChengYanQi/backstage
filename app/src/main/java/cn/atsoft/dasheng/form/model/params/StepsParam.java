@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.form.model.params;
 
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
+import cn.atsoft.dasheng.form.pojo.ProcessParam;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
@@ -32,16 +35,15 @@ public class StepsParam implements Serializable, BaseValidatingParam {
 
     private QualityRules rule;
 
-    private String stepType;
 
-    private AuditType auditType;
+    private String stepType;
 
     private Long processRouteId;
 
     private ActivitiSetpSetParam setpSet;   //工序步骤
 
 
-    private ProcessRouteParam processRoute;
+    private ActivitiProcessParam process;
 
 
     /**

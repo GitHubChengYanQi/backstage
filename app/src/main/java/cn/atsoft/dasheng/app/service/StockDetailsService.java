@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
@@ -95,4 +96,5 @@ public interface StockDetailsService extends IService<StockDetails> {
     void preorder(List<ListingPlan> plans);
 
 
+    List<StockDetailExcel> getStockDetail();
 }

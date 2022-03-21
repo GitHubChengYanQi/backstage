@@ -545,7 +545,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         Map<Long, Integer> map = new HashMap<>();
         for (StockDetails stockDetail : stockDetails) {
-            map.put(stockDetail.getStorehousePositionsId(), stockDetail.getNum());
+            map.put(stockDetail.getStorehousePositionsId(), Math.toIntExact(stockDetail.getNum()));
         }
         List<StorehousePositions> positionsList = this.list();
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positionsList, StorehousePositionsResult.class, new CopyOptions());

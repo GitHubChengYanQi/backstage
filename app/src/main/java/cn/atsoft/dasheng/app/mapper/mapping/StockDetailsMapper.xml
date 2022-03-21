@@ -35,6 +35,20 @@ stage
     AS "stage",sku_id AS "skuId",storehouse_positions_id AS "storehousePositionsId",
         barcode AS "barcode", brand_id AS "brandId", item_id AS "itemId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
+    <sql id="Excel_List">
+        number AS "number",
+        customer_id AS "customerId",
+        sku_id AS "skuId",
+        storehouse_positions_id AS "storehousePositionsId",
+        brand_id AS "brandId",
+        storehouse_id AS "storehouseId",
+        stock_item_id AS "stockItemId",
+        stock_id AS "stockId",
+        display AS "display" ,
+        stage AS "stage",
+        stage AS "stage",
+        sum(number) AS "skuSum"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.StockDetailsResult"
@@ -136,6 +150,16 @@ stage
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
         </if>
+    </select>
+
+<!--EXCEL导出查询-->
+    <select id="stockDetailExcelExport" resultType="cn.atsoft.dasheng.Excel.pojo.StockDetailExcel"
+            parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+        select
+        <include refid="Excel_List"/>
+
+        from daoxin_erp_stock_details where 1 = 1
+        GROUP BY sku_id,storehouse_positions_id
     </select>
 
 </mapper>
