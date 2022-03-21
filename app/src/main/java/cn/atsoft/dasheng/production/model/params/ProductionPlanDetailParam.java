@@ -24,7 +24,11 @@ import java.util.List;
 public class ProductionPlanDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    /**
+     * orderDetailId
+     */
+    @ApiModelProperty("orderDetailId")
+    private Long orderDetailId;
 
     /**
      * 生产计划子表id

@@ -40,6 +40,15 @@ public class ProductionPlanDetailResult implements Serializable {
 
     private Long stockNumber;
 
+
+
+    /**
+     * orderDetailId
+     */
+    @ApiModelProperty("orderDetailId")
+    private Long orderDetailId;
+
+
     /**
      * 生产计划id
      */

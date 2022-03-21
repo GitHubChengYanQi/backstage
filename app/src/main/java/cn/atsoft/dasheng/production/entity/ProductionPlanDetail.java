@@ -95,6 +95,21 @@ public class ProductionPlanDetail implements Serializable {
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+    public Long getOrderDetailId() {
+        return orderDetailId;
+    }
+
+    public void setOrderDetailId(Long orderDetailId) {
+        this.orderDetailId = orderDetailId;
+    }
+
+    /**
+     * orderDetailId
+     */
+    @TableField("order_detail_id")
+    private Long orderDetailId;
+
+
 
     public Long getProductionPlanDetailId() {
         return productionPlanDetailId;

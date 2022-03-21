@@ -94,7 +94,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
             ProductionPlanDetail detail = new ProductionPlanDetail();
             detail.setProductionPlanId(entity.getProductionPlanId());
-//            skuIds.add(detail.getSkuId());
+            detail.setOrderDetailId(orderDetailParam.getDetailId());
             detail.setPlanNumber(Math.toIntExact(orderDetailParam.getPurchaseNumber()));
             details.add(detail);
         }
