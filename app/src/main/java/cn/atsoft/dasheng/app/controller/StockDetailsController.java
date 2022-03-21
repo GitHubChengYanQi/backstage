@@ -58,8 +58,9 @@ public class StockDetailsController extends BaseController {
         allBom.getNotEnough().clear();
         allBom.getEnough().clear();
         allBom.getBom().clear();
-        allBom.getBom(skuId, num);
-        allBom.getNumber(skuId);
+        allBom.getBom(skuId, num, 0);
+        allBom.getNumber();
+        allBom.getMix(skuId, num);
         return ResponseData.success(allBom);
     }
 
