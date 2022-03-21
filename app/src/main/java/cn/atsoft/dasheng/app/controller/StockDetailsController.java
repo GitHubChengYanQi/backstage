@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.pojo.AllBom;
+import cn.atsoft.dasheng.app.pojo.AllBomParam;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -58,11 +59,25 @@ public class StockDetailsController extends BaseController {
         allBom.getNotEnough().clear();
         allBom.getEnough().clear();
         allBom.getBom().clear();
+        allBom.getMix().clear();
         allBom.getBom(skuId, num, 0);
         allBom.getNumber();
-        allBom.getMix(skuId, num);
+        allBom.getMix(skuId);
         return ResponseData.success(allBom);
     }
+
+    @RequestMapping(value = "/getBoms", method = RequestMethod.POST)
+    public ResponseData getBoms(@RequestBody AllBomParam param) {
+        allBom.getSkuList().clear();
+        allBom.getStockNumber().clear();
+        allBom.getNotEnough().clear();
+        allBom.getEnough().clear();
+        allBom.getBom().clear();
+        allBom.getMix().clear();
+        allBom.start(param.getSkuIds());
+        return ResponseData.success(allBom);
+    }
+
 
     /**
      * 查看详情接口

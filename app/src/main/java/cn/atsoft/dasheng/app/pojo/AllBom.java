@@ -67,9 +67,9 @@ public class AllBom {
     @JSONField(serialize = false)
     private ActivitiSetpSetService setService;
 
-    private Map<Long, Integer> notEnough = new HashMap<>();  //缺料数
+    private Map<Long, Long> notEnough = new HashMap<>();  //缺料数
 
-    private Map<Long, Integer> enough = new HashMap<>(); //够料
+    private Map<Long, Long> enough = new HashMap<>(); //够料
 
     private Map<Long, Map<String, Map<Long, Object>>> Bom = new HashMap<>();
 
@@ -77,8 +77,31 @@ public class AllBom {
 
     private Map<Long, Long> stockNumber = new HashMap<>();  //库存数量
 
-    private Map<Long, Long> mix;   //最少可生产数量;
+    private Map<Long, Long> mix = new HashMap<>();   //最少可生产数量;
 
+
+    public void start(List<Long> skuIds) {
+
+        /**
+         * 获取bom
+         */
+
+        for (Long skuId : skuIds) {
+            getBom(skuId, 1, 0);
+        }
+
+        /**
+         * 计算库存
+         */
+        getNumber();
+
+        /**
+         *  开始计算
+         */
+        for (Long skuId : skuIds) {
+            getMix(skuId);
+        }
+    }
 
     /**
      * 1=>[
@@ -86,7 +109,6 @@ public class AllBom {
      * {5=>{},6=>{},7=>{}}
      * ]
      */
-
     public Map<Long, Object> getBom(Long skuId, int number, int selfNum) {
 
         Map<Long, Object> tmp = new HashMap<>();
@@ -143,18 +165,7 @@ public class AllBom {
                 skuNumber.setNum(o.getNum() * selfNum);
                 tmp.put(aLong, skuNumber);
             }
-//            for (Map<Long, Object> objectMap : list) {
-//                for (Long aLong : objectMap.keySet()) {
-//                    SkuNumber sn = (SkuNumber) objectMap.get(aLong);
-//                    if (ToolUtil.isNotEmpty(tmp.get(aLong))) {
-//                        SkuNumber sk = (SkuNumber) tmp.get(aLong);
-//                        sk.setNum(sk.getNum() + sn.getNum()*number);
-//                        tmp.put(aLong, sk);
-//                    } else {
-//                        tmp.put(aLong, sn);
-//                    }
-//                }
-//            }
+
 
         } else {
             Integer num = 0;
@@ -192,10 +203,15 @@ public class AllBom {
         for (Long bomSkuId : longs) {
             Map<String, Map<Long, Object>> map = Bom.get(bomSkuId);
             Long number = stockNumber.get(bomSkuId);
+
             if (ToolUtil.isNotEmpty(number)) {
                 Map<Long, Object> child = map.get("lastChild");
                 for (Long skuId : child.keySet()) {
-                    
+                    Long noNum = stockNumber.get(skuId);   //库存没有 添加
+                    if (ToolUtil.isEmpty(noNum)) {
+                        stockNumber.put(skuId, 0L);
+                    }
+
                     SkuNumber skuNumber = (SkuNumber) child.get(skuId);
                     long l = number * skuNumber.getNum();
                     Long lastNum = stockNumber.get(skuId);
@@ -205,6 +221,13 @@ public class AllBom {
                 }
             } else {
                 stockNumber.put(bomSkuId, 0L);
+                Map<Long, Object> child = map.get("lastChild");
+                for (Long id : child.keySet()) {
+                    if (ToolUtil.isEmpty(stockNumber.get(id))) {
+                        stockNumber.put(id, 0L);
+                    }
+
+                }
             }
         }
 
@@ -212,25 +235,37 @@ public class AllBom {
     }
 
 
-    public void getMix(Long skuId, int number) {
+    public void getMix(Long skuId) {
 
         Map<String, Map<Long, Object>> bomMap = Bom.get(skuId);
         List<Long> noEnough = new ArrayList<>();
 
         Map<Long, Object> lastChild = bomMap.get("lastChild");
         for (Long id : lastChild.keySet()) {
-
-            SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
-            int count = skuNumber.getNum() * number;   //总够需要的
             Long stockNum = stockNumber.get(id);
-            if (count > stockNum) {                   //缺料
-                long noNumber = count - stockNum;
-                long mix = skuNumber.getNum() / noNumber;
-                noEnough.add(mix);
-                stockNumber.put(id, noNumber);
+            SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
+            if (ToolUtil.isNotEmpty(skuNumber)) {
+                if (stockNum == 0) {
+                    noEnough.add(0L);
+                } else {
+                    long mix = stockNum / skuNumber.getNum();
+                    noEnough.add(mix);
+                }
             }
-            Long min = Collections.min(noEnough);
-            mix.put(skuId, min);
+        }
+        Long min = Collections.min(noEnough);
+        mix.put(skuId, min);
+
+/**
+ * 如果这个物料不够生产  不更新库
+ */
+        if (min > 0) {
+            for (Long id : lastChild.keySet()) {
+                SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
+                long num = skuNumber.getNum() * min;
+                Long stockNum = stockNumber.get(id);
+                stockNumber.put(id, stockNum - num);
+            }
         }
 
     }
