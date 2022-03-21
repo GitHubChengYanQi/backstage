@@ -168,16 +168,16 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
         for (ActivitiStepsResult activitiStepsResult : stepsResultList) {
 
             switch (activitiStepsResult.getStepType()) {
-                case "ship":
-
-                    List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
-                    if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) && activitiStepsResult.getSetpSet().getSetpSetDetails().size() == 1 && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum())){
-                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum() * num, workOrders);
-
-                    }else {
-                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders);
-                    }
-                    break;
+//                case "ship":
+//
+//                    List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
+//                    if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) && activitiStepsResult.getSetpSet().getSetpSetDetails().size() == 1 && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum())){
+//                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum() * num, workOrders);
+//
+//                    }else {
+//                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders);
+//                    }
+//                    break;
 //                case "shipStart":
                 case "setp":
                     ProductionWorkOrder workOrder = new ProductionWorkOrder();
@@ -187,7 +187,8 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                     if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) ) {
                         for (ActivitiSetpSetDetailResult setpSetDetailResult : activitiStepsResult.getSetpSet().getSetpSetDetails()) {
                             workOrder.setSkuId(setpSetDetailResult.getSkuId());
-                            workOrder.setCount(num);workOrder.setShipSetpId(activitiStepsResult.getSetpSet().getShipSetpId());
+                            workOrder.setCount(num);
+                            workOrder.setShipSetpId(activitiStepsResult.getSetpSet().getShipSetpId());
                             if (setpSetDetailResult.getType().equals("in")) {
                                 workOrder.setInSkuNumber(num * setpSetDetailResult.getNum());
                                 workOrder.setInSkuId(setpSetDetailResult.getSkuId());
@@ -232,15 +233,15 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     private void getTree2List(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> results) {
         switch (activitiStepsResult.getStepType()) {
             case "shipStart":
-                results.add(activitiStepsResult);
-                getTree2List(activitiStepsResult.getChildNode(), results);
-                break;
             case "ship":
             case "setp":
                 results.add(activitiStepsResult);
+                if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())){
+                    getTree2List(activitiStepsResult.getChildNode(), results);
+                }
                 break;
             case "route":
-                results.add(activitiStepsResult);
+//                results.add(activitiStepsResult);
 //                results.addAll(activitiStepsResult.getConditionNodeList());
                 for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
                     getTree2List(stepsResult, results);
