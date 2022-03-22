@@ -122,7 +122,7 @@ public class StockExcel {
             HSSFCell storeHousePositionName = row1.createCell(5);
             HSSFCell num = row1.createCell(6);
             HSSFCell unit = row1.createCell(7);
-            unit.setCellValue(detail.getSkuResult().getUnit().getUnitName());
+            unit.setCellValue(detail.getSkuResult().getSpuResult().getUnitResult().getUnitName());
             spuClass.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getSpuClassificationResult().getName()));
             if (ToolUtil.isNotEmpty(detail.getSkuResult())) {
                 coding.setCellValue(new HSSFRichTextString(detail.getSkuResult().getStandard()));
