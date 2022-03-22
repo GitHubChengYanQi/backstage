@@ -367,7 +367,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             skuIds.add(storehousePositionsBind.getSkuId());
         }
         templete = replace(templete, skuIds);
-
+        templete = templete.replaceAll("\\n", "");
 
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();
         ToolUtil.copyProperties(printTemplate, printTemplateResult);
