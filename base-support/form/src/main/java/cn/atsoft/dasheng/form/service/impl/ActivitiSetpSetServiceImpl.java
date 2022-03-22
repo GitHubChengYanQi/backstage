@@ -86,7 +86,7 @@ public class ActivitiSetpSetServiceImpl extends ServiceImpl<ActivitiSetpSetMappe
     }
     @Override
     public List<ActivitiSetpSetResult> getResultByStepsId(List<Long> stepsIds){
-        List<ActivitiSetpSet> activitiSetpSets = stepsIds.size() == 0 ? new ArrayList<>() : this.query().in("steps_id", stepsIds).eq("display", 1).list();
+        List<ActivitiSetpSet> activitiSetpSets = stepsIds.size() == 0 ? new ArrayList<>() : this.query().in("setps_id", stepsIds).eq("display", 1).list();
         List<ActivitiSetpSetResult> results = new ArrayList<>();
         for (ActivitiSetpSet activitiSetpSet : activitiSetpSets) {
             ActivitiSetpSetResult result = new ActivitiSetpSetResult();
