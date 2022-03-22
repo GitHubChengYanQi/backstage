@@ -38,6 +38,8 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     private List<CycleReplace> cycleReplaces;
 
     private List<PayReplace> payReplaces;
+
+    private String contractCoding;
     /**
      * 合同分类
      */
