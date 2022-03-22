@@ -46,7 +46,7 @@ public class PrintTemplateServiceImpl extends ServiceImpl<PrintTemplateMapper, P
     @Override
     public void delete(PrintTemplateParam param) {
         PrintTemplate printTemplate =  this.getEntity(param);
-        printTemplate.setDisplay(1);
+        printTemplate.setDisplay(0);
         this.updateById(printTemplate);
     }
 
