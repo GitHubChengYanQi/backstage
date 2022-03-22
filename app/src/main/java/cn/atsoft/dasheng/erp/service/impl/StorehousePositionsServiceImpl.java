@@ -304,6 +304,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private void returnPrintTemplate(StorehousePositionsResult param) {
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", POSITIONS);
+            eq("display", 1);
         }});
 
         if (ToolUtil.isEmpty(printTemplate)) {
@@ -454,8 +455,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 }
                 String toString = all.toString();
                 String group = m.group(0);
-                String string = append.toString();
-                return string.replace(group, toString);
+//                String string = append.toString();
+                templete = templete.replace(group, toString);
             }
         }
         return templete;
