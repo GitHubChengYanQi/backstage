@@ -68,7 +68,7 @@ public class AllBom {
     @JSONField(serialize = false)
     private ActivitiSetpSetService setService;
 
-    private Map<Long, Map<Long, Long>> notEnough = new HashMap<>();  //缺料数
+    private Map<Long, Long> notEnough = new HashMap<>();  //缺料数
 
     private Map<Long, Map<String, Map<Long, Object>>> Bom = new HashMap<>();
 
@@ -76,9 +76,9 @@ public class AllBom {
 
     private Map<Long, Long> stockNumber = new HashMap<>();  //库存数量
 
-    private Map<Long, Long> mix = new HashMap<>();   //最少可生产数量;
+    private Map<Long, Long> mix = new LinkedHashMap<>();   //最少可生产数量;
 
-    private Map<Long, List<Object>> owe = new HashMap<>();  //缺料信息
+    private List<Object> owe = new ArrayList<>();  //缺料信息
 
 
     public void start(List<AllBomParam.skuNumberParam> params) {
@@ -106,24 +106,13 @@ public class AllBom {
          * 返回结构
          */
         for (AllBomParam.skuNumberParam param : params) {
-            Map<Long, Long> notMap = notEnough.get(param.getSkuId());
 
-            List<Object> objects = new ArrayList<>();
-
-            if (ToolUtil.isNotEmpty(notMap)) {
-                List<Long> skuIds = new ArrayList<>(notMap.keySet());
-                List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-                for (Long skuId : notMap.keySet()) {
-                    for (SkuResult skuResult : skuResults) {
-                        if (skuId.equals(skuResult.getSkuId())) {
-                            objects.add(skuResult);
-                            break;
-                        }
-                    }
-                }
-
+            if (ToolUtil.isNotEmpty(notEnough.get(param.getSkuId()))) {
+                List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                    add(param.getSkuId());
+                }});
+                owe.add(skuResults.get(0));
             }
-            owe.put(param.getSkuId(), objects);
         }
 
     }
@@ -154,7 +143,7 @@ public class AllBom {
             /**
              * 递归 取下级 作 1下表元素
              */
-//            Map<Long, Object> map = new HashMap<>();
+
             List<Map<Long, Object>> list = new ArrayList<>();
             for (ErpPartsDetail erpPartsDetail : details) {
                 list.add(this.getBom(erpPartsDetail.getSkuId(), erpPartsDetail.getNumber() * number, erpPartsDetail.getNumber()));
@@ -304,9 +293,7 @@ public class AllBom {
             for (Long id : lastChild.keySet()) {
                 Long num = stockNumber.get(id);
                 SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
-                notEnough.put(skuId, new HashMap<Long, Long>() {{
-                    put(id, skuNumber.getNum() - num);
-                }});
+                this.notEnough.put(skuId, skuNumber.getNum() - num);
             }
         }
     }
