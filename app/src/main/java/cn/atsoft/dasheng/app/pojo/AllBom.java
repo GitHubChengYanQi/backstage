@@ -114,6 +114,22 @@ public class AllBom {
                 owe.add(skuResults.get(0));
             }
         }
+        /**
+         *  返回数据
+         */
+        List<Map.Entry<Long, Long>> list = new ArrayList<>();
+        Collections.sort(list, new Comparator<Map.Entry<Long, Long>>() {
+            @Override
+            public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
+
+                //按照value值，从大到小排序
+                return Math.toIntExact(o2.getValue() - o1.getValue());
+
+            }
+        });
+        for (Long id : mix.keySet()) {
+
+        }
 
     }
 
