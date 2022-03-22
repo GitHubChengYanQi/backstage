@@ -3,10 +3,14 @@ package cn.atsoft.dasheng.Excel;
 import cn.atsoft.dasheng.Excel.pojo.Bom;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
+import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.lang.Console;
@@ -30,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,35 +63,33 @@ public class BomController {
             file.transferTo(excelFile);
             workbook = new XSSFWorkbook(excelFile);
 
-            Parts parts = null;
 
             for (Sheet sheet : workbook) {
-                parts = new Parts();
                 String sheetName = sheet.getSheetName();
-                for (Sku sku : skuList) {
-                    if (sku.getStandard().equals(sheetName)) {
-                        parts.setSkuId(sku.getSkuId());
-                        break;
+                PartsParam param = new PartsParam();
+                Sku sku = skuService.query().eq("standard", sheetName).one();
+                param.setSkuId(sku.getSkuId());
+
+                ExcelReader reader = ExcelUtil.getReader(excelFile, sheetName);
+                reader.addHeaderAlias("序号", "line");
+                reader.addHeaderAlias("物料编号", "strand");
+                reader.addHeaderAlias("名称", "spuName");
+                reader.addHeaderAlias("规格", "spc");
+                reader.addHeaderAlias("数量", "num");
+                reader.addHeaderAlias("单位", "unit");
+
+                List<ErpPartsDetailParam> details = new ArrayList<>();
+                List<Bom> boms = reader.readAll(Bom.class);
+                for (Bom bom : boms) {
+                    ErpPartsDetailParam detailParam = new ErpPartsDetailParam();
+                    Sku skus = skuService.query().eq("standard", bom.getStrand()).one();
+                    if (ToolUtil.isEmpty(sku)) {
                     }
-                    partsService.save(parts);
+                    detailParam.setSkuId(sku.getSkuId());
+                    detailParam.setNumber(Integer.valueOf(bom.getNum()));
+
                 }
-                List<ErpPartsDetail> details = new ArrayList<>();
-                for (int i = 0; i < sheet.getLastRowNum() + 1; i++) {
-                    Row sheetRow = sheet.getRow(i);
-                    Cell cell = sheetRow.getCell(0);
-                    cell.setCellType(CellType.STRING);
-                    String value = cell.getStringCellValue();
-                    for (Sku sku : skuList) {
-                        if (sku.getStandard().equals(value)) {
-                            ErpPartsDetail partsDetail = new ErpPartsDetail();
-                            partsDetail.setSkuId(sku.getSkuId());
-                            partsDetail.setPartsId(parts.getPartsId());
-                            details.add(partsDetail);
-                            break;
-                        }
-                    }
-                }
-                detailService.saveBatch(details);
+
             }
 
         } catch (IOException | InvalidFormatException e) {
