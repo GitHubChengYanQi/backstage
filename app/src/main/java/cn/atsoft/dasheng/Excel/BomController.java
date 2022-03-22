@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,35 +59,24 @@ public class BomController {
             file.transferTo(excelFile);
             workbook = new XSSFWorkbook(excelFile);
 
-            Parts parts = null;
 
             for (Sheet sheet : workbook) {
-                parts = new Parts();
                 String sheetName = sheet.getSheetName();
-                for (Sku sku : skuList) {
-                    if (sku.getStandard().equals(sheetName)) {
-                        parts.setSkuId(sku.getSkuId());
-                        break;
-                    }
-                    partsService.save(parts);
-                }
-                List<ErpPartsDetail> details = new ArrayList<>();
+                System.out.println(sheetName);
+
                 for (int i = 0; i < sheet.getLastRowNum() + 1; i++) {
                     Row sheetRow = sheet.getRow(i);
-                    Cell cell = sheetRow.getCell(0);
-                    cell.setCellType(CellType.STRING);
-                    String value = cell.getStringCellValue();
-                    for (Sku sku : skuList) {
-                        if (sku.getStandard().equals(value)) {
-                            ErpPartsDetail partsDetail = new ErpPartsDetail();
-                            partsDetail.setSkuId(sku.getSkuId());
-                            partsDetail.setPartsId(parts.getPartsId());
-                            details.add(partsDetail);
-                            break;
-                        }
+                    Iterator<Cell> iterator = sheetRow.cellIterator();
+                    while (iterator.hasNext()) {
+                        Cell cell = iterator.next();
+                        cell.setCellType(CellType.STRING);
+                        String value = cell.getStringCellValue();
+                        System.out.println(value);
                     }
+
+
                 }
-                detailService.saveBatch(details);
+
             }
 
         } catch (IOException | InvalidFormatException e) {

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.AllBomService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -67,9 +68,7 @@ public class AllBom {
     @JSONField(serialize = false)
     private ActivitiSetpSetService setService;
 
-    private Map<Long, Long> notEnough = new HashMap<>();  //缺料数
-
-    private Map<Long, Long> enough = new HashMap<>(); //够料
+    private Map<Long, Map<Long, Long>> notEnough = new HashMap<>();  //缺料数
 
     private Map<Long, Map<String, Map<Long, Object>>> Bom = new HashMap<>();
 
@@ -79,15 +78,16 @@ public class AllBom {
 
     private Map<Long, Long> mix = new HashMap<>();   //最少可生产数量;
 
+    private Map<Long, List<Object>> owe = new HashMap<>();  //缺料信息
 
-    public void start(List<Long> skuIds) {
+
+    public void start(List<AllBomParam.skuNumberParam> params) {
 
         /**
          * 获取bom
          */
-
-        for (Long skuId : skuIds) {
-            getBom(skuId, 1, 0);
+        for (AllBomParam.skuNumberParam param : params) {
+            getBom(param.getSkuId(), 1, 0);
         }
 
         /**
@@ -98,9 +98,34 @@ public class AllBom {
         /**
          *  开始计算
          */
-        for (Long skuId : skuIds) {
-            getMix(skuId);
+        for (AllBomParam.skuNumberParam param : params) {
+            getMix(param.getSkuId(), param.getNumber());
         }
+
+        /**
+         * 返回结构
+         */
+        for (AllBomParam.skuNumberParam param : params) {
+            Map<Long, Long> notMap = notEnough.get(param.getSkuId());
+
+            List<Object> objects = new ArrayList<>();
+
+            if (ToolUtil.isNotEmpty(notMap)) {
+                List<Long> skuIds = new ArrayList<>(notMap.keySet());
+                List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+                for (Long skuId : notMap.keySet()) {
+                    for (SkuResult skuResult : skuResults) {
+                        if (skuId.equals(skuResult.getSkuId())) {
+                            objects.add(skuResult);
+                            break;
+                        }
+                    }
+                }
+
+            }
+            owe.put(param.getSkuId(), objects);
+        }
+
     }
 
     /**
@@ -234,8 +259,13 @@ public class AllBom {
 
     }
 
-
-    public void getMix(Long skuId) {
+    /**
+     * 计算最小可生产
+     *
+     * @param skuId
+     * @param number
+     */
+    public void getMix(Long skuId, Long number) {
 
         Map<String, Map<Long, Object>> bomMap = Bom.get(skuId);
         List<Long> noEnough = new ArrayList<>();
@@ -254,11 +284,15 @@ public class AllBom {
             }
         }
         Long min = Collections.min(noEnough);
+        if (min > number) {
+            min = number;
+        }
         mix.put(skuId, min);
 
-/**
- * 如果这个物料不够生产  不更新库
- */
+
+        /**
+         * 如果这个物料不够生产  不更新库
+         */
         if (min > 0) {
             for (Long id : lastChild.keySet()) {
                 SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
@@ -266,9 +300,17 @@ public class AllBom {
                 Long stockNum = stockNumber.get(id);
                 stockNumber.put(id, stockNum - num);
             }
+        } else if (min == 0) {    //缺料
+            for (Long id : lastChild.keySet()) {
+                Long num = stockNumber.get(id);
+                SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
+                notEnough.put(skuId, new HashMap<Long, Long>() {{
+                    put(id, skuNumber.getNum() - num);
+                }});
+            }
         }
-
     }
+
 }
 
 
