@@ -51,6 +51,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
@@ -358,6 +360,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();
         ToolUtil.copyProperties(printTemplate, printTemplateResult);
+
         printTemplateResult.setTemplete(templete);
         param.setPrintTemplateResult(printTemplateResult);
     }
@@ -369,8 +372,40 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
         stringBuffer = new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
 
+
         return stringBuffer.toString();
     }
+
+    private String replace(String templete, List<Long> skuIds) {
+        String regStr = "\\<tr(.*?)\\>([\\w\\W]+?)<\\/tr>";
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher m = pattern.matcher(templete);
+        StringBuffer stringBuffer = new StringBuffer();
+        StringBuffer append = stringBuffer.append(templete);
+
+        while (m.find()) {
+            String skuGroup = m.group(0);
+            if (skuGroup.contains("sku")) {
+                List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+                for (SkuResult skuResult : skuResults) {
+                    StringBuilder group = new StringBuilder(m.group(0));
+
+                    if (group.toString().contains("${{物料编码}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{coding}}", skuResult.getStandard()));
+                    }
+                    if (group.toString().contains("${{spuName}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{spuName}}", skuResult.getSpuResult().getName()));
+                    }
+                    if (group.toString().contains("${{skuName}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{skuName}}", skuResult.getSkuName() + "/" + skuResult.getSpecifications()));
+                    }
+
+                }
+            }
+        }
+        return templete;
+    }
+
 
     private StringBuffer formatParentStringBuffer(StorehousePositions positions, List<StorehousePositions> storehousePositionsList, StringBuffer stringBuffer) {
         if (!positions.getPid().equals(0L)) {
@@ -531,7 +566,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     /**
-     *
      * @param skuId
      * @return
      */
