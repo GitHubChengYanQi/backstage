@@ -5,6 +5,11 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.QualityCheck;
+import cn.atsoft.dasheng.erp.model.result.QualityCheckResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.QualityCheckService;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
@@ -84,6 +89,12 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
     @Autowired
     private ProductionStationService productionStationService;
+
+    @Autowired
+    private SkuService skuService;
+
+    @Autowired
+    private QualityCheckService qualityCheckService;
 
 
 
@@ -181,16 +192,16 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
         for (ActivitiStepsResult activitiStepsResult : stepsResultList) {
 
             switch (activitiStepsResult.getStepType()) {
-//                case "ship":
-//
-//                    List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
-//                    if ( ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails()) && activitiStepsResult.getSetpSet().getSetpSetDetails().size() == 1 && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum())){
-//                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getSetpSet().getSetpSetDetails().get(0).getNum() * num, workOrders);
-//
-//                    }else {
-//                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders);
-//                    }
-//                    break;
+                case "ship":
+
+                    List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
+                    if ( ToolUtil.isNotEmpty(activitiStepsResult.getProcess()) && ToolUtil.isNotEmpty(activitiStepsResult.getProcess().getNum()) ){
+                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getProcess().getNum() * num, workOrders);
+
+                    }else {
+                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders);
+                    }
+                    break;
 //                case "shipStart":
                 case "setp":
                     ProductionWorkOrder workOrder = new ProductionWorkOrder();
@@ -304,11 +315,21 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             shipSetpIds.add(setpSetResult.getShipSetpId());
         }
 
-
-//        activitiSetpSetDetailService;
-
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> qualityCheckIds = new ArrayList<>();
         List<ProductionStationResult> stations = productionStationService.getResultsByIds(stationIds);
         List<ShipSetpResult> shipSetps = shipSetpService.getResultsByids(shipSetpIds);
+        List<ActivitiSetpSetDetailResult> shipSetDetails = activitiSetpSetDetailService.getResultByStepsIds(stepsIds);
+        for (ActivitiSetpSetDetailResult shipSetDetail : shipSetDetails) {
+            skuIds.add(shipSetDetail.getSkuId());
+            qualityCheckIds.add(shipSetDetail.getQualityId());
+            qualityCheckIds.add(shipSetDetail.getMyQualityId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<QualityCheckResult> qualityChecks = qualityCheckService.getChecks(qualityCheckIds);
+        /**
+         * 匹配数据
+         */
         for (ActivitiSetpSetResult setpSetResult : setpSetsResult) {
             for (ProductionStationResult station : stations) {
                 if (setpSetResult.getProductionStationId().equals(station.getProductionStationId())){
@@ -320,8 +341,29 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                     setpSetResult.setShipSetpResult(shipSetp);
                 }
             }
+            List<ActivitiSetpSetDetailResult> shipSetDetailResult = new ArrayList<>();
+            for (ActivitiSetpSetDetailResult shipSetDetail : shipSetDetails) {
+                if (setpSetResult.getSetpsId().equals(shipSetDetail.getSetpsId()) && shipSetDetail.getType().equals("out")){
+                    for (SkuResult skuResult : skuResults) {
+                        if (skuResult.getSkuId().equals(shipSetDetail.getSkuId())){
+                            shipSetDetail.setSkuResult(skuResult);
+                        }
+                    }
+                    shipSetDetailResult.add(shipSetDetail);
+                }
+            }
+            setpSetResult.setSetpSetDetails(shipSetDetailResult);
+
         }
 
+
+        for (ProductionWorkOrderResult result : results) {
+            for (ActivitiSetpSetResult setpSetResult : setpSetsResult) {
+                if(result.getStepsId().equals(setpSetResult.getSetpsId())){
+                    result.setSetpSetResult(setpSetResult);
+                }
+            }
+        }
         return results;
     }
 }

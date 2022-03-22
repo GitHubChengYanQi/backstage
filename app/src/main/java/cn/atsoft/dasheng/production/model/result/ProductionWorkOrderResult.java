@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class ProductionWorkOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private ActivitiSetpSetResult setpSetResult;
 
     @ApiModelProperty("")
     private Long workOrderId;
