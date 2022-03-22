@@ -68,7 +68,7 @@ public class StockExcel {
          List<Storehouse> storehouses = storehouseService.list();
          List<StorehousePositionsResult> storehousePositionsList = storehousePositionsService.findListBySpec(new StorehousePositionsParam(),null);
         String title = "库存EXCEL";
-        String[] header = {"分类","物料编码", "名称","型号","规格","总数","库位","数量"};
+        String[] header = {"分类","物料编码", "名称","型号","规格","库位","数量","单位"};
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -119,11 +119,11 @@ public class StockExcel {
             HSSFCell spuName = row1.createCell(2);
             HSSFCell skuName = row1.createCell(3);
             HSSFCell attribute = row1.createCell(4);
-            HSSFCell count = row1.createCell(5);
-            HSSFCell storeHousePositionName = row1.createCell(6);
-            HSSFCell num = row1.createCell(7);
+            HSSFCell storeHousePositionName = row1.createCell(5);
+            HSSFCell num = row1.createCell(6);
+            HSSFCell unit = row1.createCell(7);
+            unit.setCellValue(detail.getSkuResult().getUnit().getUnitName());
             spuClass.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getSpuClassificationResult().getName()));
-            count.setCellValue(detail.getSkuSum().toString());
             if (ToolUtil.isNotEmpty(detail.getSkuResult())) {
                 coding.setCellValue(new HSSFRichTextString(detail.getSkuResult().getStandard()));
                 spuName.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getName()));
