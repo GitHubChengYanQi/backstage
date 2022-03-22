@@ -192,6 +192,13 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             routeResult.setStepsResult(detail);
         }
         for (ProductionPlanResult productionPlanResult : param) {
+            List<ProductionWorkOrderResult> workOrderResultList = new ArrayList<>();
+            for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
+                if (workOrderResult.getSource().equals("productionPlan") && workOrderResult.getSourceId().equals(productionPlanResult.getProductionPlanId())){
+                    workOrderResultList.add(workOrderResult);
+                }
+            }
+            productionPlanResult.setWorkOrderResults(workOrderResultList);
             List<ProductionPlanDetailResult> results = new ArrayList<>();
             for (UserResult userResultsById : userResultsByIds) {
                 if (userResultsById.getUserId().equals(productionPlanResult.getUserId())){

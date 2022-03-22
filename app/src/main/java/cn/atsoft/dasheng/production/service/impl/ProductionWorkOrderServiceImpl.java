@@ -17,15 +17,20 @@ import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
 import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
+import cn.atsoft.dasheng.production.entity.ProductionStation;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.mapper.ProductionWorkOrderMapper;
 import cn.atsoft.dasheng.production.model.ProcessRouteActivitiStepsRequest;
 import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
+import cn.atsoft.dasheng.production.model.result.ProductionStationResult;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
+import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
+import cn.atsoft.dasheng.production.service.ProductionStationService;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import com.alibaba.fastjson.JSON;
@@ -73,6 +78,14 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
     @Autowired
     private StepProcessService stepProcessService;
+
+    @Autowired
+    private ShipSetpService shipSetpService;
+
+    @Autowired
+    private ProductionStationService productionStationService;
+
+
 
     @Autowired
     private GetOrigin origin;
@@ -276,11 +289,39 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     public List<ProductionWorkOrderResult> resultsBySourceIds(String source,List<Long> sourceIds){
         List<ProductionWorkOrder> productionWorkOrders = sourceIds.size() == 0 ? new ArrayList<>() : this.query().eq("source", source).in("source_id", sourceIds).list();
         List<ProductionWorkOrderResult> results = new ArrayList<>();
+        List<Long> stepsIds  = new ArrayList<>();
         for (ProductionWorkOrder productionWorkOrder : productionWorkOrders) {
             ProductionWorkOrderResult result = new ProductionWorkOrderResult();
             ToolUtil.copyProperties(productionWorkOrder,result);
             results.add(result);
+            stepsIds.add(productionWorkOrder.getStepsId());
         }
+        List<ActivitiSetpSetResult> setpSetsResult = activitiSetpSetService.getResultByStepsId(stepsIds);
+        List<Long> stationIds = new ArrayList<>();
+        List<Long> shipSetpIds = new ArrayList<>();
+        for (ActivitiSetpSetResult setpSetResult : setpSetsResult) {
+            stationIds.add(setpSetResult.getProductionStationId());
+            shipSetpIds.add(setpSetResult.getShipSetpId());
+        }
+
+
+//        activitiSetpSetDetailService;
+
+        List<ProductionStationResult> stations = productionStationService.getResultsByIds(stationIds);
+        List<ShipSetpResult> shipSetps = shipSetpService.getResultsByids(shipSetpIds);
+        for (ActivitiSetpSetResult setpSetResult : setpSetsResult) {
+            for (ProductionStationResult station : stations) {
+                if (setpSetResult.getProductionStationId().equals(station.getProductionStationId())){
+                    setpSetResult.setProductionStation(station);
+                }
+            }
+            for (ShipSetpResult shipSetp : shipSetps) {
+                if (setpSetResult.getShipSetpId().equals(shipSetp.getShipSetpId())){
+                    setpSetResult.setShipSetpResult(shipSetp);
+                }
+            }
+        }
+
         return results;
     }
 }

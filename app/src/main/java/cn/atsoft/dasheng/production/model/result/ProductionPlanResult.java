@@ -25,6 +25,8 @@ public class ProductionPlanResult implements Serializable {
 
     private UserResult userResult;
 
+    private List<ProductionWorkOrderResult> workOrderResults;
+
 
     /**
      * 生产计划id
