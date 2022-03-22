@@ -192,7 +192,6 @@ public class StorehousePositionsController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect() {
 
 
-
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
         StorehousePositionsSelectWrapper factory = new StorehousePositionsSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
