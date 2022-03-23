@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.app.pojo;
 
+
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -21,68 +24,94 @@ import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.swagger.models.auth.In;
 import lombok.Data;
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Data
-@Service
+
 public class AllBom {
 
-    @Autowired
-    @JSONField(serialize = false)
-    private AllBomService allBomService;
+    private final PartsService partsService = SpringContextHolder.getBean(PartsService.class);
 
-    @Autowired
-    @JSONField(serialize = false)
-    private PartsService partsService;
 
-    @Autowired
-    @JSONField(serialize = false)
-    private ErpPartsDetailService detailService;
+    private final ErpPartsDetailService detailService = SpringContextHolder.getBean(ErpPartsDetailService.class);
 
-    @Autowired
-    @JSONField(serialize = false)
-    private StockDetailsService stockDetailsService;
 
-    @Autowired
-    @JSONField(serialize = false)
-    private ActivitiProcessService processService;
+    private final StockDetailsService stockDetailsService = SpringContextHolder.getBean(StockDetailsService.class);
 
-    @Autowired
-    @JSONField(serialize = false)
-    private StepsService stepsService;
 
-    @Autowired
-    @JSONField(serialize = false)
-    private ActivitiSetpSetDetailService setDetailService;
+    private final SkuService skuService = SpringContextHolder.getBean(SkuService.class);
 
-    @Autowired
-    @JSONField(serialize = false)
-    private SkuService skuService;
 
-    @Autowired
-    @JSONField(serialize = false)
-    private ActivitiSetpSetService setService;
+    private final Map<Long, Long> notEnough = new HashMap<>();  //缺料数
 
-    private Map<Long, Long> notEnough = new HashMap<>();  //缺料数
+    private final Map<Long, Map<String, Map<Long, Object>>> Bom = new HashMap<>();
 
-    private Map<Long, Map<String, Map<Long, Object>>> Bom = new HashMap<>();
+    private final Map<Long, Integer> skuList = new HashMap<>();  //生产一套所需要的物料和数量
 
-    private Map<Long, Integer> skuList = new HashMap<>();  //生产一套所需要的物料和数量
+    private final Map<Long, Long> stockNumber = new HashMap<>();  //库存数量
 
-    private Map<Long, Long> stockNumber = new HashMap<>();  //库存数量
+    private final Map<Long, Long> mix = new LinkedHashMap<>();   //最少可生产数量;
 
-    private Map<Long, Long> mix = new LinkedHashMap<>();   //最少可生产数量;
+    private final Map<Long, Object> result = new LinkedHashMap<>();
 
-    private Map<Long, Object> result = new LinkedHashMap<>();
 
-    private List<Object> owe = new ArrayList<>();  //缺料信息
+    public AllBomResult getResult() {
+        AllBomResult allBomResult = new AllBomResult();
+        List<Object> canProduce = new ArrayList<>();
+        BomOrder bomOrder = new BomOrder();
 
-    private List<Object> canProduce = new ArrayList<>();
+        /**
+         * 可生产数量排序
+         */
+        List<Map.Entry<Long, Long>> list = new ArrayList<>(mix.entrySet());
+        list.sort(new Comparator<Map.Entry<Long, Long>>() {
+            @Override
+            public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
+
+                //按照value值，从大到小排序
+                return Math.toIntExact(o2.getValue() - o1.getValue());
+
+            }
+        });
+
+        int num = 0;
+        for (Map.Entry<Long, Long> longLongEntry : list) {
+
+            Long skuId = longLongEntry.getKey();
+            List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                add(skuId);
+            }});
+            SkuResult skuResult = skuResults.get(0);
+            skuResult.setProduceMix(longLongEntry.getValue());
+            canProduce.add(skuResult);
+            num = Math.toIntExact(num + longLongEntry.getValue());
+        }
+        bomOrder.setResult(canProduce);
+        bomOrder.setNum(num);
+
+        /**
+         * 缺料
+         */
+        Set<Long> ids = notEnough.keySet();
+        List<Long> skuIds = new ArrayList<>(ids);
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+
+        allBomResult.setResult(new ArrayList<BomOrder>() {{
+            add(bomOrder);
+        }});
+        allBomResult.setOwe(skuResults);
+        return allBomResult;
+    }
 
 
     public void start(List<AllBomParam.skuNumberParam> params) {
@@ -105,43 +134,6 @@ public class AllBom {
         for (AllBomParam.skuNumberParam param : params) {
             getMix(param.getSkuId(), param.getNumber());
         }
-
-        /**
-         * 返回结构
-         */
-        for (AllBomParam.skuNumberParam param : params) {
-
-            if (ToolUtil.isNotEmpty(notEnough.get(param.getSkuId()))) {
-                List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
-                    add(param.getSkuId());
-                }});
-                owe.add(skuResults.get(0));
-            }
-        }
-        /**
-         *  返回数据
-         */
-        List<Map.Entry<Long, Long>> list = new ArrayList<>(mix.entrySet());
-        list.sort(new Comparator<Map.Entry<Long, Long>>() {
-            @Override
-            public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
-
-                //按照value值，从大到小排序
-                return Math.toIntExact(o2.getValue() - o1.getValue());
-
-            }
-        });
-
-        for (Map.Entry<Long, Long> longLongEntry : list) {
-            Long skuId = longLongEntry.getKey();
-            List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
-                add(skuId);
-            }});
-            SkuResult skuResult = skuResults.get(0);
-            skuResult.setProduceMix(longLongEntry.getValue());
-            canProduce.add(skuResult);
-        }
-
 
     }
 

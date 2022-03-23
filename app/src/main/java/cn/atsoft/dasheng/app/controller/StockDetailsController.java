@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.pojo.AllBom;
 import cn.atsoft.dasheng.app.pojo.AllBomParam;
+import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -38,11 +39,10 @@ import java.util.Map;
 @Api(tags = "仓库物品明细表")
 public class StockDetailsController extends BaseController {
 
-    @Autowired
-    private AllBom allBom;
 
     @Autowired
     private StockDetailsService stockDetailsService;
+
 
 
     @RequestMapping(value = "/getDetailsBySkuId", method = RequestMethod.POST)
@@ -54,15 +54,11 @@ public class StockDetailsController extends BaseController {
 
     @RequestMapping(value = "/getBoms", method = RequestMethod.POST)
     public ResponseData getBoms(@RequestBody AllBomParam param) {
-        allBom.getSkuList().clear();
-        allBom.getStockNumber().clear();
-        allBom.getNotEnough().clear();
-        allBom.getBom().clear();
-        allBom.getSkuList().clear();
-        allBom.getMix().clear();
-        allBom.getCanProduce().clear();
+
+        AllBom allBom = new AllBom();
         allBom.start(param.getParams());
-        return ResponseData.success(allBom);
+        AllBomResult allBomResult = allBom.getResult();
+        return ResponseData.success(allBomResult);
     }
 
 
