@@ -54,6 +54,12 @@ public class ProductionPlan implements Serializable {
     private Date executionTime;
 
     /**
+     * 结束时间
+     */
+    @TableField("end_time")
+    private Date endTime;
+
+    /**
      * 负责人
      */
     @TableField("user_id")
@@ -176,6 +182,14 @@ public class ProductionPlan implements Serializable {
 
     public Integer getDisplay() {
         return display;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
     public void setDisplay(Integer display) {

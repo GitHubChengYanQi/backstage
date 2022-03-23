@@ -59,6 +59,12 @@ public class ProductionPlanResult implements Serializable {
     private Date executionTime;
 
     /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    private Date endTime;
+
+    /**
      * 负责人
      */
     @ApiModelProperty("负责人")

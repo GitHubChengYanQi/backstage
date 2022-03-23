@@ -33,6 +33,13 @@ public class ProductionTaskResult implements Serializable {
     @ApiModelProperty("编码")
     private String coding;
 
+
+    /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    private Date endTime;
+
     /**
      * 生产任务名称
      */

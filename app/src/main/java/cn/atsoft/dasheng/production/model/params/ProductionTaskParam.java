@@ -90,6 +90,12 @@ public class ProductionTaskParam implements Serializable, BaseValidatingParam {
     private Date productionTime;
 
     /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    private Date endTime;
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

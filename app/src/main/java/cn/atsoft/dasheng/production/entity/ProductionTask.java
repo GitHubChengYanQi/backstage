@@ -89,6 +89,12 @@ public class ProductionTask implements Serializable {
     private Date productionTime;
 
     /**
+     * 结束时间
+     */
+    @TableField("end_time")
+    private Date endTime;
+
+    /**
      * 创建者
      */
       @TableField(value = "create_user", fill = FieldFill.INSERT)
@@ -270,6 +276,14 @@ public class ProductionTask implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
     public Date getCreateTime() {

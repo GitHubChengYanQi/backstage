@@ -54,10 +54,16 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
     private String origin;
 
     /**
-     * 执行时间
+     * 开始时间
      */
     @ApiModelProperty("执行时间")
     private Date executionTime;
+
+    /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    private Date endTime;
 
     /**
      * 负责人
