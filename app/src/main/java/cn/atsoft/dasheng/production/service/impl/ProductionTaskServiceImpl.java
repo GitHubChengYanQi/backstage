@@ -159,8 +159,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             /**
              * 如果有审批则进行审批  没有直接推送微信消息
              */
-//            entity.setStatus(2);
-//            this.updateById(entity);
+            entity.setStatus(98);
+            this.updateById(entity);
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
             wxCpTemplate.setTitle("新的生产任务");
