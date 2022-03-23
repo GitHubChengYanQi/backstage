@@ -87,8 +87,9 @@ public class BomController {
                     }
                     detailParam.setSkuId(sku.getSkuId());
                     detailParam.setNumber(Integer.valueOf(bom.getNum()));
-
+                    details.add(detailParam);
                 }
+                param.setParts(details);
 
             }
 
