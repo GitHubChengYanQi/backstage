@@ -480,6 +480,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
             }
 
+
             contract.setPartyA(orderParam.getBuyerId());
             contract.setPartyB(orderParam.getSellerId());
             contract.setPartyAPhone(orderParam.getPartyAPhone());
@@ -674,7 +675,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         if (content.contains("${{BBank}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankId())) {
             Bank bank = bankService.getById(orderParam.getPartyBBankId());
-            content = content.replace("${{BBank}}",ToolUtil.isNotEmpty(bank.getBankName()) ? bank.getBankName() : "");
+            content = content.replace("${{BBank}}", ToolUtil.isNotEmpty(bank.getBankName()) ? bank.getBankName() : "");
         }
         if (content.contains("${{AAccount}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankAccount())) {
             Invoice invoice = invoiceService.getById(orderParam.getPartyABankAccount());
