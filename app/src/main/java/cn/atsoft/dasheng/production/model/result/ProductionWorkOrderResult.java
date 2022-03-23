@@ -32,6 +32,14 @@ public class ProductionWorkOrderResult implements Serializable {
     @ApiModelProperty("工序id")
     private Long shipSetpId;
 
+
+    /**
+     * 生产卡片id
+     */
+    @ApiModelProperty("生产卡片id")
+    private Long cardId;
+
+
     @ApiModelProperty("")
     private Long skuId;
 

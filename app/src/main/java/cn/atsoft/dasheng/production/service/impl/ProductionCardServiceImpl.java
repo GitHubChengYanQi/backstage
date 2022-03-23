@@ -97,7 +97,7 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
         return entity;
     }
     @Override
-    public void addBatchCardByProductionPlan(Object param){
+    public  List<ProductionCard> addBatchCardByProductionPlan(Object param){
         List<ProductionPlanDetail> productionPlanDetails = JSON.parseArray(param.toString(), ProductionPlanDetail.class);
         List<ProductionCard> cardList = new ArrayList<>();
         Long productionPlanId = 0L;
@@ -118,6 +118,8 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
             card.setOrigin(origin);
         }
         this.updateBatchById(cardList);
+
+        return cardList;
     }
 
 }

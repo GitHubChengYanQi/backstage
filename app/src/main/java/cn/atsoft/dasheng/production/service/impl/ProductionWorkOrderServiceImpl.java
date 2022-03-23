@@ -20,10 +20,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.production.entity.ProcessRoute;
-import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
-import cn.atsoft.dasheng.production.entity.ProductionStation;
-import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
+import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionWorkOrderMapper;
 import cn.atsoft.dasheng.production.model.ProcessRouteActivitiStepsRequest;
 import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
@@ -157,7 +154,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     }
 
     @Override
-    public void microServiceAdd(Object param) {
+    public void microServiceAdd(Object param, List<ProductionCard> cardList) {
         List<ProductionPlanDetail> productionPlanDetails = JSON.parseArray(param.toString(), ProductionPlanDetail.class);
 //        List<Long> skuIds = new ArrayList<>();  //先取出物料   去bom中查找
         for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
@@ -173,22 +170,24 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             getTree2List(activitiStepsResult, treeListResults);
             getTree2List2(treeListResults);
             List<ProductionWorkOrder> workOrders = new ArrayList<>();
-            this.loopCreateWorkOrder(productionPlanDetail,treeListResults, productionPlanDetail.getPlanNumber(), workOrders);
-            this.saveBatch(workOrders);
+            for (ProductionCard card : cardList) {
+                if  (card.getSkuId().equals(productionPlanDetail.getSkuId())){
+                    this.loopCreateWorkOrder(productionPlanDetail,treeListResults, 1, workOrders,card.getProductionCardId());
+                }
+            }
             for (ProductionWorkOrder workOrder : workOrders) {
                 workOrder.setSource("productionPlan");
                 workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
                 String origin = this.origin.newThemeAndOrigin("workOrder", workOrder.getWorkOrderId(), workOrder.getSource(), workOrder.getSourceId());
                 workOrder.setOrigin(origin);
             }
-
-
+            this.saveBatch(workOrders);
         }
 
 
     }
     //递归添加工单
-    private void loopCreateWorkOrder(ProductionPlanDetail productionPlanDetail,List<ActivitiStepsResult> stepsResultList, int num, List<ProductionWorkOrder> workOrders) {
+    private void loopCreateWorkOrder(ProductionPlanDetail productionPlanDetail,List<ActivitiStepsResult> stepsResultList, int num, List<ProductionWorkOrder> workOrders,Long cardId) {
         for (ActivitiStepsResult activitiStepsResult : stepsResultList) {
 
             switch (activitiStepsResult.getStepType()) {
@@ -196,10 +195,10 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
                     List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
                     if ( ToolUtil.isNotEmpty(activitiStepsResult.getProcess()) && ToolUtil.isNotEmpty(activitiStepsResult.getProcess().getNum()) ){
-                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getProcess().getNum() * num, workOrders);
+                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getProcess().getNum() * num, workOrders,cardId);
 
                     }else {
-                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders);
+                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders,cardId);
                     }
                     break;
 //                case "shipStart":
@@ -212,6 +211,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                         for (ActivitiSetpSetDetailResult setpSetDetailResult : activitiStepsResult.getSetpSet().getSetpSetDetails()) {
                             workOrder.setSkuId(setpSetDetailResult.getSkuId());
                             workOrder.setCount(num);
+                            workOrder.setCardId(cardId);
                             workOrder.setShipSetpId(activitiStepsResult.getSetpSet().getShipSetpId());
                             if (setpSetDetailResult.getType().equals("in")) {
                                 workOrder.setInSkuNumber(num * setpSetDetailResult.getNum());

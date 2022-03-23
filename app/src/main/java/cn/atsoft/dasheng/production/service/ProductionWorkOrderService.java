@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.production.entity.ProductionCard;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
@@ -67,7 +68,7 @@ public interface ProductionWorkOrderService extends IService<ProductionWorkOrder
      PageInfo<ProductionWorkOrderResult> findPageBySpec(ProductionWorkOrderParam param);
 
 
-    void microServiceAdd(Object param);
+    void microServiceAdd(Object param, List<ProductionCard> cardList);
 
     List<ProductionWorkOrderResult> resultsBySourceIds(String source, List<Long> sourceIds);
 }

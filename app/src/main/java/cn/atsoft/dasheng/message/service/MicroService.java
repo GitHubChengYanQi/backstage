@@ -15,6 +15,8 @@ import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MicroService {
 
@@ -67,9 +69,9 @@ public class MicroService {
             case WORK_ORDER:
                 switch (microServiceEntity.getOperationType()) {
                     case ADD:
+                        List<ProductionCard> cardList = productionCardService.addBatchCardByProductionPlan(microServiceEntity.getObject());
+                        productionWorkOrderService.microServiceAdd(microServiceEntity.getObject(),cardList);
 
-                        productionWorkOrderService.microServiceAdd(microServiceEntity.getObject());
-                        productionCardService.addBatchCardByProductionPlan(microServiceEntity.getObject());
 
                 }
                 break;

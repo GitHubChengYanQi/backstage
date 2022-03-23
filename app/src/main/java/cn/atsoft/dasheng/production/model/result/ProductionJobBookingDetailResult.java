@@ -1,65 +1,56 @@
-package cn.atsoft.dasheng.production.model.params;
+package cn.atsoft.dasheng.production.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
- * 工单
+ * 报工详情表
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-23
  */
 @Data
 @ApiModel
-public class ProductionWorkOrderParam implements Serializable, BaseValidatingParam {
+public class ProductionJobBookingDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
-    @ApiModelProperty("")
-    private Long workOrderId;
+    /**
+     * 报工详情表
+     */
+    @ApiModelProperty("报工详情表")
+    private Long jobBookingDetailId;
 
     /**
-     * 工序id
+     * 生成的实物id
      */
-    @ApiModelProperty("工序id")
-    private Long shipSetpId;
+    @ApiModelProperty("生成的实物id")
+    private Long inkindId;
 
     /**
-     * 生产卡片id
+     * 物料id
      */
-    @ApiModelProperty("生产卡片id")
-    private Long cardId;
-
-    @ApiModelProperty("")
+    @ApiModelProperty("物料id")
     private Long skuId;
 
-    /**
-     * 生产数量
-     */
-    @ApiModelProperty("生产数量")
-    private Integer count;
 
     /**
-     * 来源
+     * 步骤id
      */
-    @ApiModelProperty("来源")
-    private String source;
+    @ApiModelProperty("步骤id")
+    private Long stepsId;
 
     /**
-     * 来源id
+     * 主表id
      */
-    @ApiModelProperty("来源id")
-    private Long sourceId;
+    @ApiModelProperty("主表id")
+    private Long jobBookingId;
 
     /**
      * 创建者
@@ -80,12 +71,6 @@ public class ProductionWorkOrderParam implements Serializable, BaseValidatingPar
     private Integer display;
 
     /**
-     * 步骤id
-     */
-    @ApiModelProperty("步骤id")
-    private Long stepsId;
-
-    /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
@@ -104,6 +89,18 @@ public class ProductionWorkOrderParam implements Serializable, BaseValidatingPar
     private Long updateUser;
 
     /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @ApiModelProperty("来源id")
+    private Long sourceId;
+
+    /**
      * 主题
      */
     @ApiModelProperty("主题")
@@ -114,13 +111,6 @@ public class ProductionWorkOrderParam implements Serializable, BaseValidatingPar
      */
     @ApiModelProperty("来源Json字符串")
     private String origin;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

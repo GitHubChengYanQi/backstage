@@ -10,60 +10,28 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 工单
+ * 报工表
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-23
  */
-@TableName("daoxin_production_work_order")
-public class ProductionWorkOrder implements Serializable {
+@TableName("daoxin_production_job_booking")
+public class ProductionJobBooking implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "work_order_id", type = IdType.ID_WORKER)
-    private Long workOrderId;
+    /**
+     * 报工id
+     */
+      @TableId(value = "job_booking_id", type = IdType.ID_WORKER)
+    private Long jobBookingId;
 
     /**
-     * 工序id
+     * 生产任务id
      */
-    @TableField("ship_setp_id")
-    private Long shipSetpId;
-    /**
-     * 生产卡片id
-     */
-    @TableField("card_id")
-    private Long cardId;
-
-
-    @TableField("sku_id")
-    private Long skuId;
-
-    /**
-     * 生产数量
-     */
-    @TableField("count")
-    private Integer count;
-
-    /**
-     * 投入物料
-     */
-    @TableField("in_sku_id")
-    private Long inSkuId;
-
-    /**
-     * 产出物料
-     */
-    @TableField("out_sku_id")
-    private Long outSkuId;
-
-    public Long getStepsId() {
-        return stepsId;
-    }
-
-    public void setStepsId(Long stepsId) {
-        this.stepsId = stepsId;
-    }
+    @TableField("production_task_id")
+    private Long productionTaskId;
 
     /**
      * 步骤id
@@ -71,63 +39,17 @@ public class ProductionWorkOrder implements Serializable {
     @TableField("steps_id")
     private Long stepsId;
 
-
+    /**
+     * 数量
+     */
+    @TableField("number")
+    private Integer number;
 
     /**
-     * 投入物料
+     * 工单数量
      */
-    @TableField("in_sku_number")
-    private Integer inSkuNumber;
-
-    public Long getInSkuId() {
-        return inSkuId;
-    }
-
-    public void setInSkuId(Long inSkuId) {
-        this.inSkuId = inSkuId;
-    }
-
-    public Long getOutSkuId() {
-        return outSkuId;
-    }
-
-    public void setOutSkuId(Long outSkuId) {
-        this.outSkuId = outSkuId;
-    }
-
-    public Integer getInSkuNumber() {
-        return inSkuNumber;
-    }
-
-    public void setInSkuNumber(Integer inSkuNumber) {
-        this.inSkuNumber = inSkuNumber;
-    }
-
-    public Integer getOutSkuNumber() {
-        return outSkuNumber;
-    }
-
-    public void setOutSkuNumber(Integer outSkuNumber) {
-        this.outSkuNumber = outSkuNumber;
-    }
-
-    /**
-     * 产出物料
-     */
-    @TableField("out_sku_number")
-    private Integer outSkuNumber;
-
-    /**
-     * 来源
-     */
-    @TableField("source")
-    private String source;
-
-    /**
-     * 来源id
-     */
-    @TableField("source_id")
-    private Long sourceId;
+    @TableField("work_order_id")
+    private Long workOrderId;
 
     /**
      * 创建者
@@ -166,6 +88,18 @@ public class ProductionWorkOrder implements Serializable {
     private Long updateUser;
 
     /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private Long sourceId;
+
+    /**
      * 主题
      */
     @TableField("theme")
@@ -178,13 +112,36 @@ public class ProductionWorkOrder implements Serializable {
     private String origin;
 
 
-
-    public Long getCardId() {
-        return cardId;
+    public Long getJobBookingId() {
+        return jobBookingId;
     }
 
-    public void setCardId(Long cardId) {
-        this.cardId = cardId;
+    public void setJobBookingId(Long jobBookingId) {
+        this.jobBookingId = jobBookingId;
+    }
+
+    public Long getProductionTaskId() {
+        return productionTaskId;
+    }
+
+    public void setProductionTaskId(Long productionTaskId) {
+        this.productionTaskId = productionTaskId;
+    }
+
+    public Long getStepsId() {
+        return stepsId;
+    }
+
+    public void setStepsId(Long stepsId) {
+        this.stepsId = stepsId;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     public Long getWorkOrderId() {
@@ -193,46 +150,6 @@ public class ProductionWorkOrder implements Serializable {
 
     public void setWorkOrderId(Long workOrderId) {
         this.workOrderId = workOrderId;
-    }
-
-    public Long getShipSetpId() {
-        return shipSetpId;
-    }
-
-    public void setShipSetpId(Long shipSetpId) {
-        this.shipSetpId = shipSetpId;
-    }
-
-    public Long getSkuId() {
-        return skuId;
-    }
-
-    public void setSkuId(Long skuId) {
-        this.skuId = skuId;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public Long getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
     }
 
     public Long getCreateUser() {
@@ -283,6 +200,22 @@ public class ProductionWorkOrder implements Serializable {
         this.updateUser = updateUser;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
     public String getTheme() {
         return theme;
     }
@@ -301,19 +234,20 @@ public class ProductionWorkOrder implements Serializable {
 
     @Override
     public String toString() {
-        return "ProductionWorkOrder{" +
-        "workOrderId=" + workOrderId +
-        ", shipSetpId=" + shipSetpId +
-        ", skuId=" + skuId +
-        ", count=" + count +
-        ", source=" + source +
-        ", sourceId=" + sourceId +
+        return "ProductionJobBooking{" +
+        "jobBookingId=" + jobBookingId +
+        ", productionTaskId=" + productionTaskId +
+        ", stepsId=" + stepsId +
+        ", number=" + number +
+        ", workOrderId=" + workOrderId +
         ", createUser=" + createUser +
         ", deptId=" + deptId +
         ", display=" + display +
         ", updateTime=" + updateTime +
         ", createTime=" + createTime +
         ", updateUser=" + updateUser +
+        ", source=" + source +
+        ", sourceId=" + sourceId +
         ", theme=" + theme +
         ", origin=" + origin +
         "}";
