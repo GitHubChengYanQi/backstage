@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -121,5 +122,19 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
 
         return cardList;
     }
+    @Override
+    public List<ProductionCardResult> resultsByProductionPlanId(List<Long> productionPlanId){
+        if (ToolUtil.isNotEmpty(productionPlanId) || productionPlanId.size() == 0){
+            return  new ArrayList<>();
+        }
+        List<ProductionCardResult> productionCards = this.baseMapper.grupByProductionPlan(new ProductionCardParam(){{
+            setProductionPlanIds(productionPlanId);
+        }});
+
+
+
+        return  productionCards;
+    }
+
 
 }

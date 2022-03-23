@@ -67,4 +67,6 @@ public interface ProductionCardService extends IService<ProductionCard> {
      PageInfo<ProductionCardResult> findPageBySpec(ProductionCardParam param);
 
     List<ProductionCard>  addBatchCardByProductionPlan(Object o);
+
+    List<ProductionCardResult> resultsByProductionPlanId(List<Long> productionPlanId);
 }

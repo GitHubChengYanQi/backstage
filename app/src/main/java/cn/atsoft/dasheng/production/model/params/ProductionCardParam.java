@@ -23,7 +23,7 @@ import java.util.List;
 public class ProductionCardParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<Long> productionPlanIds;
 
     /**
      * 生产卡片id

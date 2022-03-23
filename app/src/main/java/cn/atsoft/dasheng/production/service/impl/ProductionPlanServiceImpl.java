@@ -20,10 +20,8 @@ import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPlanMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
-import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
-import cn.atsoft.dasheng.production.model.result.ProductionPlanDetailResult;
-import cn.atsoft.dasheng.production.model.result.ProductionPlanResult;
-import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
+import cn.atsoft.dasheng.production.model.result.*;
+import cn.atsoft.dasheng.production.service.ProductionCardService;
 import cn.atsoft.dasheng.production.service.ProductionPlanDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -73,6 +71,9 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProductionCardService productionCardService;
 
     @Override
     public void add(ProductionPlanParam param) {
@@ -181,10 +182,11 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         for (ProductionPlanDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
         }
-
+        List<ProductionCardResult> cardResults = productionCardService.resultsByProductionPlanId(planIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
 
         List<ProcessRouteResult> routeResults = skuIds.size() == 0 ? new ArrayList<>() : processRouteService.resultsBySkuIds(skuIds);
+
         //将步骤set进工艺路线中方便匹配
         ActivitiStepsResult detail = new ActivitiStepsResult();
         for (ProcessRouteResult routeResult : routeResults) {
@@ -194,6 +196,9 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         for (ProductionPlanResult productionPlanResult : param) {
             List<ProductionWorkOrderResult> workOrderResultList = new ArrayList<>();
             for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
+//                for (ProductionCardResult cardResult : cardResults) {
+//                    if (cardResult.getSkuId().equals())
+//                }
                 if (workOrderResult.getSource().equals("productionPlan") && workOrderResult.getSourceId().equals(productionPlanResult.getProductionPlanId())){
                     workOrderResultList.add(workOrderResult);
                 }

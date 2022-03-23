@@ -214,8 +214,8 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                                 workOrder.setInSkuNumber(num * setpSetDetailResult.getNum());
                                 workOrder.setInSkuId(setpSetDetailResult.getSkuId());
                             } else if (setpSetDetailResult.getType().equals("out")) {
-                                workOrder.setOutSkuNumber(num * setpSetDetailResult.getNum());
-                                workOrder.setOutSkuId(setpSetDetailResult.getSkuId());
+                                workOrder.setOutSkuNumber(productionPlanDetail.getPlanNumber());
+                                workOrder.setOutSkuId(productionPlanDetail.getSkuId());
                             }
 
                         }

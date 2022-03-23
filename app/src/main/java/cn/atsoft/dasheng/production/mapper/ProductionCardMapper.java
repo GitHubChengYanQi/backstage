@@ -29,6 +29,9 @@ public interface ProductionCardMapper extends BaseMapper<ProductionCard> {
      */
     List<ProductionCardResult> customList(@Param("paramCondition") ProductionCardParam paramCondition);
 
+
+    List<ProductionCardResult> grupByProductionPlan(@Param("paramCondition") ProductionCardParam paramCondition);
+
     /**
      * 获取map列表
      *
