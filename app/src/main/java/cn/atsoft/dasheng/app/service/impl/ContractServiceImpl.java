@@ -434,6 +434,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                         }
                     }
                 }
+            } else {
+                String input = "\\<input (.*?)\\>";
+                Pattern compile = Pattern.compile(input);
+                Matcher matcher = compile.matcher(content);
+                while (matcher.find()) {    //input
+                    String group = matcher.group(0);
+                    if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
+                        content = content.replace(group, "");
+                    }
+                }
             }
 
             contract.setPartyA(orderParam.getBuyerId());
@@ -697,11 +707,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 content = content.replace("${{需方银行账号}}", invoice.getBankAccount());
             }
         }
-        if (content.contains("${{供方银行账号}}") ) {
+        if (content.contains("${{供方银行账号}}")) {
             Invoice invoice = orderParam.getPartyBBankAccount() == null ? new Invoice() : invoiceService.getById(orderParam.getPartyBBankAccount());
-            if (ToolUtil.isEmpty(invoice)||ToolUtil.isEmpty(invoice.getBankAccount())) {
+            if (ToolUtil.isEmpty(invoice) || ToolUtil.isEmpty(invoice.getBankAccount())) {
                 content = content.replace("${{供方银行账号}}", "");
-            }else {
+            } else {
                 content = content.replace("${{供方银行账号}}", invoice.getBankAccount());
             }
         }
