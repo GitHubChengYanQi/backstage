@@ -15,8 +15,8 @@ import java.util.List;
  * 
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-22
  */
 @Data
 @ApiModel
@@ -36,12 +36,6 @@ public class ProductionTaskDetailParam implements Serializable, BaseValidatingPa
      */
     @ApiModelProperty("主表id")
     private Long productionTaskId;
-
-    /**
-     * 生产卡片id
-     */
-    @ApiModelProperty("生产卡片id")
-    private Long productionCardId;
 
     /**
      * 创建者
@@ -78,6 +72,15 @@ public class ProductionTaskDetailParam implements Serializable, BaseValidatingPa
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 实物
+     */
+    @ApiModelProperty("实物")
+    private Long inkindId;
+
+    private Long outSkuNumber;
+    private Integer number;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

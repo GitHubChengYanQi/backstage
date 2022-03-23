@@ -82,7 +82,8 @@ public class UserinfoController extends BaseController {
      */
     @RequestMapping(value = "/ticket", method = RequestMethod.GET)
     public ResponseData getTicket(@RequestParam String url) throws WxErrorException {
-        WxJsapiSignature jsapiSignature = wxCpService.getWxCpClient().createJsapiSignature(url);
+        String[] split = url.split("#");
+        WxJsapiSignature jsapiSignature = wxCpService.getWxCpClient().createJsapiSignature(split[0]);
         return ResponseData.success(jsapiSignature);
     }
 }

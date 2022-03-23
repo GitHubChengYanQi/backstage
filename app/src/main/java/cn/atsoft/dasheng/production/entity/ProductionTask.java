@@ -13,8 +13,8 @@ import java.io.Serializable;
  * 生产任务
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-22
  */
 @TableName("daoxin_production_task")
 public class ProductionTask implements Serializable {
@@ -38,6 +38,19 @@ public class ProductionTask implements Serializable {
      */
     @TableField("production_task_name")
     private String productionTaskName;
+
+    @TableField("sku_id")
+    private Long skuId;
+
+    @TableField("sku_id")
+    private Integer status;
+
+
+    /**
+     * 数量
+     */
+    @TableField("number")
+    private Integer number;
 
     /**
      * 备注
@@ -63,16 +76,8 @@ public class ProductionTask implements Serializable {
     @TableField("ship_setp_id")
     private Long shipSetpId;
 
-    public Integer getSingleProductionCycle() {
-        return singleProductionCycle;
-    }
-
-    public void setSingleProductionCycle(Integer singleProductionCycle) {
-        this.singleProductionCycle = singleProductionCycle;
-    }
-
     /**
-     * 单台生产周期（天）
+     * 单台生产周期(天)
      */
     @TableField("single_production_cycle")
     private Integer singleProductionCycle;
@@ -131,6 +136,21 @@ public class ProductionTask implements Serializable {
     @TableField("origin")
     private String origin;
 
+    /**
+     * 成员
+     */
+    @TableField("user_ids")
+    private String userIds;
+
+
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Long getProductionTaskId() {
         return productionTaskId;
@@ -154,6 +174,22 @@ public class ProductionTask implements Serializable {
 
     public void setProductionTaskName(String productionTaskName) {
         this.productionTaskName = productionTaskName;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     public String getRemark() {
@@ -186,6 +222,14 @@ public class ProductionTask implements Serializable {
 
     public void setShipSetpId(Long shipSetpId) {
         this.shipSetpId = shipSetpId;
+    }
+
+    public Integer getSingleProductionCycle() {
+        return singleProductionCycle;
+    }
+
+    public void setSingleProductionCycle(Integer singleProductionCycle) {
+        this.singleProductionCycle = singleProductionCycle;
     }
 
     public Date getProductionTime() {
@@ -260,16 +304,27 @@ public class ProductionTask implements Serializable {
         this.origin = origin;
     }
 
+    public String getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(String userIds) {
+        this.userIds = userIds;
+    }
+
     @Override
     public String toString() {
         return "ProductionTask{" +
         "productionTaskId=" + productionTaskId +
         ", coding=" + coding +
         ", productionTaskName=" + productionTaskName +
+        ", skuId=" + skuId +
+        ", number=" + number +
         ", remark=" + remark +
         ", userId=" + userId +
         ", workOrderId=" + workOrderId +
         ", shipSetpId=" + shipSetpId +
+        ", singleProductionCycle=" + singleProductionCycle +
         ", productionTime=" + productionTime +
         ", createUser=" + createUser +
         ", deptId=" + deptId +
@@ -279,6 +334,7 @@ public class ProductionTask implements Serializable {
         ", updateUser=" + updateUser +
         ", theme=" + theme +
         ", origin=" + origin +
+        ", userIds=" + userIds +
         "}";
     }
 }

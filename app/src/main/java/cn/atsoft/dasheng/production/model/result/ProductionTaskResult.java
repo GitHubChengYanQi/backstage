@@ -11,8 +11,8 @@ import java.util.List;
  * 生产任务
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-22
  */
 @Data
 @ApiModel
@@ -38,6 +38,15 @@ public class ProductionTaskResult implements Serializable {
      */
     @ApiModelProperty("生产任务名称")
     private String productionTaskName;
+
+    @ApiModelProperty("")
+    private Long skuId;
+
+    /**
+     * 数量
+     */
+    @ApiModelProperty("数量")
+    private Integer number;
 
     /**
      * 备注
@@ -122,6 +131,14 @@ public class ProductionTaskResult implements Serializable {
      */
     @ApiModelProperty("来源Json字符串")
     private String origin;
+
+    private Integer status;
+
+    /**
+     * 成员
+     */
+    @ApiModelProperty("成员")
+    private String userIds;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
