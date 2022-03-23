@@ -154,7 +154,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     }
 
     @Override
-    public void microServiceAdd(Object param, List<ProductionCard> cardList) {
+    public void microServiceAdd(Object param) {
         List<ProductionPlanDetail> productionPlanDetails = JSON.parseArray(param.toString(), ProductionPlanDetail.class);
 //        List<Long> skuIds = new ArrayList<>();  //先取出物料   去bom中查找
         for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
@@ -170,24 +170,22 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             getTree2List(activitiStepsResult, treeListResults);
             getTree2List2(treeListResults);
             List<ProductionWorkOrder> workOrders = new ArrayList<>();
-            for (ProductionCard card : cardList) {
-                if  (card.getSkuId().equals(productionPlanDetail.getSkuId())){
-                    this.loopCreateWorkOrder(productionPlanDetail,treeListResults, 1, workOrders,card.getProductionCardId());
-                }
-            }
+            this.loopCreateWorkOrder(productionPlanDetail,treeListResults, productionPlanDetail.getPlanNumber(), workOrders);
+            this.saveBatch(workOrders);
             for (ProductionWorkOrder workOrder : workOrders) {
                 workOrder.setSource("productionPlan");
                 workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
                 String origin = this.origin.newThemeAndOrigin("workOrder", workOrder.getWorkOrderId(), workOrder.getSource(), workOrder.getSourceId());
                 workOrder.setOrigin(origin);
             }
-            this.saveBatch(workOrders);
+
+
         }
 
 
     }
     //递归添加工单
-    private void loopCreateWorkOrder(ProductionPlanDetail productionPlanDetail,List<ActivitiStepsResult> stepsResultList, int num, List<ProductionWorkOrder> workOrders,Long cardId) {
+    private void loopCreateWorkOrder(ProductionPlanDetail productionPlanDetail,List<ActivitiStepsResult> stepsResultList, int num, List<ProductionWorkOrder> workOrders) {
         for (ActivitiStepsResult activitiStepsResult : stepsResultList) {
 
             switch (activitiStepsResult.getStepType()) {
@@ -195,10 +193,10 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
                     List<ActivitiStepsResult> list = JSON.parseArray(JSON.toJSONString(activitiStepsResult.getChildRouteSteps()), ActivitiStepsResult.class);
                     if ( ToolUtil.isNotEmpty(activitiStepsResult.getProcess()) && ToolUtil.isNotEmpty(activitiStepsResult.getProcess().getNum()) ){
-                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getProcess().getNum() * num, workOrders,cardId);
+                        loopCreateWorkOrder(productionPlanDetail,list, activitiStepsResult.getProcess().getNum() * num, workOrders);
 
                     }else {
-                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders,cardId);
+                        loopCreateWorkOrder(productionPlanDetail,list, num * 1, workOrders);
                     }
                     break;
 //                case "shipStart":
@@ -211,7 +209,6 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                         for (ActivitiSetpSetDetailResult setpSetDetailResult : activitiStepsResult.getSetpSet().getSetpSetDetails()) {
                             workOrder.setSkuId(setpSetDetailResult.getSkuId());
                             workOrder.setCount(num);
-                            workOrder.setCardId(cardId);
                             workOrder.setShipSetpId(activitiStepsResult.getSetpSet().getShipSetpId());
                             if (setpSetDetailResult.getType().equals("in")) {
                                 workOrder.setInSkuNumber(num * setpSetDetailResult.getNum());

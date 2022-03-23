@@ -70,7 +70,7 @@ public class MicroService {
                 switch (microServiceEntity.getOperationType()) {
                     case ADD:
                         List<ProductionCard> cardList = productionCardService.addBatchCardByProductionPlan(microServiceEntity.getObject());
-                        productionWorkOrderService.microServiceAdd(microServiceEntity.getObject(),cardList);
+                        productionWorkOrderService.microServiceAdd(microServiceEntity.getObject());
 
 
                 }
