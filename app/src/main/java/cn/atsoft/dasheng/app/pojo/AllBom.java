@@ -78,7 +78,11 @@ public class AllBom {
 
     private Map<Long, Long> mix = new LinkedHashMap<>();   //最少可生产数量;
 
+    private Map<Long, Object> result = new LinkedHashMap<>();
+
     private List<Object> owe = new ArrayList<>();  //缺料信息
+
+    private List<Object> canProduce = new ArrayList<>();
 
 
     public void start(List<AllBomParam.skuNumberParam> params) {
@@ -117,8 +121,8 @@ public class AllBom {
         /**
          *  返回数据
          */
-        List<Map.Entry<Long, Long>> list = new ArrayList<>();
-        Collections.sort(list, new Comparator<Map.Entry<Long, Long>>() {
+        List<Map.Entry<Long, Long>> list = new ArrayList<>(mix.entrySet());
+        list.sort(new Comparator<Map.Entry<Long, Long>>() {
             @Override
             public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
 
@@ -127,9 +131,17 @@ public class AllBom {
 
             }
         });
-        for (Long id : mix.keySet()) {
 
+        for (Map.Entry<Long, Long> longLongEntry : list) {
+            Long skuId = longLongEntry.getKey();
+            List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                add(skuId);
+            }});
+            SkuResult skuResult = skuResults.get(0);
+            skuResult.setProduceMix(longLongEntry.getValue());
+            canProduce.add(skuResult);
         }
+
 
     }
 
@@ -276,6 +288,7 @@ public class AllBom {
         List<Long> noEnough = new ArrayList<>();
 
         Map<Long, Object> lastChild = bomMap.get("lastChild");
+
         for (Long id : lastChild.keySet()) {
             Long stockNum = stockNumber.get(id);
             SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
