@@ -537,6 +537,14 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                         }
 
                     }
+                    if (group.toString().contains("${{单价}}")) {
+                        if (ToolUtil.isEmpty(detailParam.getOnePrice())) {
+                            group = new StringBuilder(group.toString().replace("${{单价}}", ""));
+                        } else {
+                            group = new StringBuilder(group.toString().replace("${{单价}}", detailParam.getOnePrice().toString()));
+                        }
+
+                    }
                     if (group.toString().contains("${{总价}}")) {  //总价
                         if (ToolUtil.isNotEmpty(detailParam.getTotalPrice())) {
                             group = new StringBuilder(group.toString().replace("${{总价}}", detailParam.getTotalPrice().toString()));
@@ -646,13 +654,21 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             Invoice invoice = invoiceService.getById(orderParam.getPartyBBankAccount());
             content = content.replace("${{供方银行账号}}", ToolUtil.isNotEmpty(invoice.getBankAccount()) ? invoice.getBankAccount() : "");
         }
-        if (content.contains("${{总计金额小写}}")) {  //总计
-            content = content.replace("${{总计金额小写}}", orderParam.getPaymentParam().getMoney().toString());
+        if (content.contains("${{合计金额小写}}")) {  //总计
+            if (ToolUtil.isEmpty(orderParam.getPaymentParam().getMoney())) {
+                content = content.replace("${{合计金额小写}}", "");
+            } else {
+                content = content.replace("${{合计金额小写}}", orderParam.getPaymentParam().getMoney().toString());
+            }
         }
-        if (content.contains("${{总计金额大写}}")) {  //总计
-            Integer money = orderParam.getPaymentParam().getMoney();
-            String format = NumberChineseFormatter.format(money, true, true);
-            content = content.replace("${{总计金额大写}}", format);
+        if (content.contains("${{合计金额大写}}")) {  //总计
+            if (ToolUtil.isEmpty(orderParam.getPaymentParam().getMoney())) {
+                content = content.replace("${{合计金额大写}}", "");
+            } else {
+                Integer money = orderParam.getPaymentParam().getMoney();
+                String format = NumberChineseFormatter.format(money, true, true);
+                content = content.replace("${{合计金额大写}}", format);
+            }
         }
         if (content.contains("${{需方法人代表}}")) {  //A法定代表人
             if (ToolUtil.isNotEmpty(orderParam.getPartyALegalPerson())) {
