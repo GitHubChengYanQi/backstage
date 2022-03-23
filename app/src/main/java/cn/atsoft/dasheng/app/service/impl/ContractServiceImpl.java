@@ -427,7 +427,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             if (ToolUtil.isNotEmpty(param.getContractReplaces())) {
                 for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
                     if (content.contains(contractReplace.getOldText())) {
-                        content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+                        if (contractReplace.getNewText().equals(contractReplace.getOldText())) {
+                            content = content.replace(contractReplace.getOldText(), "");
+                        } else {
+                            content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+                        }
                     }
                 }
             }
@@ -504,16 +508,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     }});
                     //------------------------------------------------------------
                     SkuResult skuResult = skuResults.get(0);
-                    if (group.toString().contains("${{物料编码}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    if (group.toString().contains("${{物料编码}}")) {
                         group = new StringBuilder(group.toString().replace("${{物料编码}}", skuResult.getStandard()));
                     }
-                    if (group.toString().contains("${{产品名称}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    if (group.toString().contains("${{产品名称}}")) {
                         group = new StringBuilder(group.toString().replace("${{产品名称}}", skuResult.getSpuResult().getName()));
                     }
-                    if (group.toString().contains("${{型号规格}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    if (group.toString().contains("${{型号规格}}")) {
                         group = new StringBuilder(group.toString().replace("${{型号规格}}", skuResult.getSkuName() + "/" + skuResult.getSpecifications()));
                     }
-                    if (group.toString().contains("${{品牌厂家}}") && ToolUtil.isNotEmpty(detailParam.getBrandId())) {
+                    if (group.toString().contains("${{品牌厂家}}")) {
                         Brand brand = brandService.getById(detailParam.getBrandId());
                         group = new StringBuilder(group.toString().replace("${{品牌厂家}}", brand.getBrandName()));
                     }
@@ -604,55 +608,102 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         if (ToolUtil.isEmpty(seller)) {
             throw new ServiceException(500, "请确定乙方存在");
         }
-        if (content.contains("${{需方委托代表}}") && ToolUtil.isNotEmpty(orderParam.getPartyAContactsId())) {
-            Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
-            content = content.replace("${{需方委托代表}}", ToolUtil.isNotEmpty(contacts.getContactsName()) ? contacts.getContactsName() : "");
+        if (content.contains("${{需方委托代表}}")) {
+            Contacts contacts = orderParam.getPartyAContactsId() == null ? new Contacts() : contactsService.getById(orderParam.getPartyAContactsId());
+            if (ToolUtil.isEmpty(contacts) || ToolUtil.isEmpty(contacts.getContactsName())) {
+                content = content.replace("${{需方委托代表}}", "");
+            } else {
+                content = content.replace("${{需方委托代表}}", contacts.getContactsName());
+            }
         }
-        if (content.contains("${{供方委托代表}}") && ToolUtil.isNotEmpty(orderParam.getPartyBContactsId())) {
-            Contacts contacts = contactsService.getById(orderParam.getPartyAContactsId());
-            content = content.replace("${{供方委托代表}}", ToolUtil.isNotEmpty(contacts.getContactsName()) ? contacts.getContactsName() : "");
+        if (content.contains("${{供方委托代表}}")) {
+            Contacts contacts = orderParam.getPartyBContactsId() == null ? new Contacts() : contactsService.getById(orderParam.getPartyAContactsId());
+            if (ToolUtil.isEmpty(contacts) || ToolUtil.isEmpty(contacts.getContactsName())) {
+                content = content.replace("${{供方委托代表}}", "");
+            } else {
+                content = content.replace("${{供方委托代表}}", contacts.getContactsName());
+            }
         }
-        if (content.contains("${{需方公司地址}}") && ToolUtil.isNotEmpty(orderParam.getPartyAAdressId())) {
-            Adress adress = adressService.getById(orderParam.getPartyAAdressId());
-            content = content.replace("${{需方公司地址}}", ToolUtil.isNotEmpty(adress.getLocation()) ? adress.getLocation() : "");
+        if (content.contains("${{需方公司地址}}")) {
+            Adress adress = orderParam.getPartyAAdressId() == null ? new Adress() : adressService.getById(orderParam.getPartyAAdressId());
+            if (ToolUtil.isEmpty(adress) || ToolUtil.isEmpty(adress.getLocation())) {
+                content = content.replace("${{需方公司地址}}", "");
+            } else {
+                content = content.replace("${{需方公司地址}}", (adress.getLocation()));
+            }
         }
-        if (content.contains("${{供方公司地址}}") && ToolUtil.isNotEmpty(orderParam.getPartyBAdressId())) {
-            Adress adress = adressService.getById(orderParam.getPartyBAdressId());
-            content = content.replace("${{供方公司地址}}", ToolUtil.isNotEmpty(adress.getLocation()) ? adress.getLocation() : "");
+        if (content.contains("${{供方公司地址}}")) {
+            Adress adress = orderParam.getPartyBAdressId() == null ? new Adress() : adressService.getById(orderParam.getPartyBAdressId());
+            if (ToolUtil.isEmpty(adress) || ToolUtil.isEmpty(adress.getLocation())) {
+                content = content.replace("${{供方公司地址}}", "");
+            } else {
+                content = content.replace("${{供方公司地址}}", adress.getLocation());
+            }
+
         }
-        if (content.contains("${{需方公司电话}}") && ToolUtil.isNotEmpty(orderParam.getPartyAPhone())) {
-            Phone phone = phoneService.getById(orderParam.getPartyAPhone());
-            content = content.replace("${{需方公司电话}}", ToolUtil.isNotEmpty(phone.getPhoneNumber()) ? phone.getPhoneNumber().toString() : "");
+        if (content.contains("${{需方公司电话}}")) {
+            Phone phone = orderParam.getPartyAPhone() == null ? new Phone() : phoneService.getById(orderParam.getPartyAPhone());
+            if (ToolUtil.isEmpty(phone) || ToolUtil.isEmpty(phone.getPhoneNumber())) {
+                content = content.replace("${{需方公司电话}}", "");
+            } else {
+                content = content.replace("${{需方公司电话}}", phone.getPhoneNumber().toString());
+            }
         }
-        if (content.contains("${{供方公司电话}}") && ToolUtil.isNotEmpty(orderParam.getPartyBPhone())) {
-            Phone phone = phoneService.getById(orderParam.getPartyBPhone());
-            content = content.replace("${{供方公司电话}}", ToolUtil.isNotEmpty(phone.getPhoneNumber()) ? phone.getPhoneNumber().toString() : "");
+        if (content.contains("${{供方公司电话}}")) {
+            Phone phone = orderParam.getPartyBPhone() == null ? new Phone() : phoneService.getById(orderParam.getPartyBPhone());
+            if (ToolUtil.isEmpty(phone) || ToolUtil.isEmpty(phone.getPhoneNumber())) {
+                content = content.replace("${{供方公司电话}}", "");
+            } else {
+                content = content.replace("${{供方公司电话}}", phone.getPhoneNumber().toString());
+            }
         }
 
-        if (content.contains("${{需方公司名称}}") && ToolUtil.isNotEmpty(orderParam.getBuyerId())) {
-            Customer customer = customerService.getById(orderParam.getBuyerId());
-            content = content.replace("${{需方公司名称}}", ToolUtil.isNotEmpty(customer.getCustomerName()) ? customer.getCustomerName() : "");
+        if (content.contains("${{需方公司名称}}")) {
+            Customer customer = orderParam.getBuyerId() == null ? new Customer() : customerService.getById(orderParam.getBuyerId());
+            if (ToolUtil.isEmpty(customer)) {
+                throw new ServiceException(500, "请确认买方");
+            }
+            content = content.replace("${{需方公司名称}}", customer.getCustomerName());
         }
-        if (content.contains("${{供方公司名称}}") && ToolUtil.isNotEmpty(orderParam.getSellerId())) {
-            Customer customer = customerService.getById(orderParam.getSellerId());
-            content = content.replace("${{供方公司名称}}", ToolUtil.isNotEmpty(customer.getCustomerName()) ? customer.getCustomerName() : "");
+        if (content.contains("${{供方公司名称}}")) {
+            Customer customer = orderParam.getSellerId() == null ? new Customer() : customerService.getById(orderParam.getSellerId());
+            if (ToolUtil.isEmpty(customer)) {
+                throw new ServiceException(500, "请确认供方公司");
+            }
+            content = content.replace("${{供方公司名称}}", customer.getCustomerName());
         }
 
-        if (content.contains("${{需方开户银行}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankId())) {
-            Bank bank = bankService.getById(orderParam.getPartyABankId());
-            content = content.replace("${{需方开户银行}}", ToolUtil.isNotEmpty(bank.getBankName()) ? bank.getBankName() : "");
+        if (content.contains("${{需方开户银行}}")) {
+            Bank bank = orderParam.getPartyABankId() == null ? new Bank() : bankService.getById(orderParam.getPartyABankId());
+            if (ToolUtil.isEmpty(bank) || ToolUtil.isEmpty(bank.getBankName())) {
+                content = content.replace("${{需方开户银行}}", "");
+            } else {
+                content = content.replace("${{需方开户银行}}", bank.getBankName());
+            }
         }
-        if (content.contains("${{供方开户银行}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankId())) {
-            Bank bank = bankService.getById(orderParam.getPartyBBankId());
-            content = content.replace("${{供方开户银行}}", ToolUtil.isNotEmpty(bank.getBankName()) ? bank.getBankName() : "");
+        if (content.contains("${{供方开户银行}}")) {
+            Bank bank = orderParam.getPartyBBankId() == null ? new Bank() : bankService.getById(orderParam.getPartyBBankId());
+            if (ToolUtil.isEmpty(bank) || ToolUtil.isEmpty(bank.getBankName())) {
+                content = content.replace("${{供方开户银行}}", "");
+            } else {
+                content = content.replace("${{供方开户银行}}", bank.getBankName());
+            }
         }
-        if (content.contains("${{需方银行账号}}") && ToolUtil.isNotEmpty(orderParam.getPartyABankAccount())) {
-            Invoice invoice = invoiceService.getById(orderParam.getPartyABankAccount());
-            content = content.replace("${{需方银行账号}}", ToolUtil.isNotEmpty(invoice.getBankAccount()) ? invoice.getBankAccount() : "");
+        if (content.contains("${{需方银行账号}}")) {
+            Invoice invoice = orderParam.getPartyABankAccount() == null ? new Invoice() : invoiceService.getById(orderParam.getPartyABankAccount());
+            if (ToolUtil.isEmpty(invoice) || ToolUtil.isEmpty(invoice.getBankAccount())) {
+                content = content.replace("${{需方银行账号}}", "");
+            } else {
+                content = content.replace("${{需方银行账号}}", invoice.getBankAccount());
+            }
         }
-        if (content.contains("${{供方银行账号}}") && ToolUtil.isNotEmpty(orderParam.getPartyBBankAccount())) {
-            Invoice invoice = invoiceService.getById(orderParam.getPartyBBankAccount());
-            content = content.replace("${{供方银行账号}}", ToolUtil.isNotEmpty(invoice.getBankAccount()) ? invoice.getBankAccount() : "");
+        if (content.contains("${{供方银行账号}}") ) {
+            Invoice invoice = orderParam.getPartyBBankAccount() == null ? new Invoice() : invoiceService.getById(orderParam.getPartyBBankAccount());
+            if (ToolUtil.isEmpty(invoice)||ToolUtil.isEmpty(invoice.getBankAccount())) {
+                content = content.replace("${{供方银行账号}}", "");
+            }else {
+                content = content.replace("${{供方银行账号}}", invoice.getBankAccount());
+            }
         }
         if (content.contains("${{合计金额小写}}")) {  //总计
             if (ToolUtil.isEmpty(orderParam.getPaymentParam().getMoney())) {
@@ -911,12 +962,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
                     }
                     if (ToolUtil.isNotEmpty(payReplaces)) {
-
                         PayReplace payReplace = payReplaces.get(i);
                         for (PayReplace.PayCycle cycle : payReplace.cycles) {
                             payGroup = payGroup.replace(cycle.getOldText(), cycle.getNewText());
                         }
-
                     }
                     stringBuffer.append(payGroup);
                     i++;
