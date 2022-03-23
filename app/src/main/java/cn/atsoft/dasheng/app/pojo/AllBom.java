@@ -132,7 +132,7 @@ public class AllBom {
          *  开始计算
          */
         for (AllBomParam.skuNumberParam param : params) {
-            getMix(param.getSkuId(), param.getNumber());
+            getMix(param.getSkuId(), param.getNum());
         }
 
     }

@@ -7,11 +7,12 @@ import java.util.List;
 @Data
 public class AllBomParam {
 
-    private List<skuNumberParam> params;
+    private List<skuNumberParam> skuIds;
 
     @Data
     public class skuNumberParam {
         private Long skuId;
-        private Long number;
+        private Long num;
+        private boolean fixed;
     }
 }

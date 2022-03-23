@@ -44,7 +44,6 @@ public class StockDetailsController extends BaseController {
     private StockDetailsService stockDetailsService;
 
 
-
     @RequestMapping(value = "/getDetailsBySkuId", method = RequestMethod.POST)
     public ResponseData getDetailsBySkuId(@RequestBody StockDetailsParam stockDetailsParam) {
         List<StockDetailsResult> stockDetails = this.stockDetailsService.getDetailsBySkuId(stockDetailsParam.getSkuId());
@@ -56,7 +55,7 @@ public class StockDetailsController extends BaseController {
     public ResponseData getBoms(@RequestBody AllBomParam param) {
 
         AllBom allBom = new AllBom();
-        allBom.start(param.getParams());
+        allBom.start(param.getSkuIds());
         AllBomResult allBomResult = allBom.getResult();
         return ResponseData.success(allBomResult);
     }
