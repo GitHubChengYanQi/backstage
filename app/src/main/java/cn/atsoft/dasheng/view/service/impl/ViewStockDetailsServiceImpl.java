@@ -51,29 +51,30 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
     }
 
     @Override
-    public List<ViewStockDetailsResult> findListBySpec(ViewStockDetailsParam param) {
-        List<ViewStockDetailsResult> results = null;
+    public PageInfo<ViewStockDetailsResult> findListBySpec(ViewStockDetailsParam param) {
+        Page<ViewStockDetailsResult> results = null;
+        Page<ViewStockDetailsResult> page = getPageContext();
         switch (param.getType()) {
             case "sku":
-                results = this.baseMapper.skuList(param);
+                results = this.baseMapper.skuList(page, param);
                 break;
             case "className":
-                results = this.baseMapper.classNameList(param);
+                results = this.baseMapper.classNameList(page, param);
                 break;
             case "spu":
-                results = this.baseMapper.spuList(param);
+                results = this.baseMapper.spuList(page, param);
                 break;
             case "bom":
                 Parts parts = partsService.getById(param.getPartId());
                 List<Long> skuIds = JSON.parseArray(parts.getChildrens(), Long.class);
                 param.setSkuIds(skuIds);
-                results = this.baseMapper.bomList(param);
+                results = this.baseMapper.bomList(page, param);
                 break;
             default:
                 return null;
         }
-        format(results);
-        return results;
+        format(results.getRecords());
+        return PageFactory.createPageInfo(page);
     }
 
     @Override

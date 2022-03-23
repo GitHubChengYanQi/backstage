@@ -18,7 +18,7 @@ import java.util.Map;
  * VIEW Mapper 接口
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-01-27
  */
 public interface ViewStockDetailsMapper extends BaseMapper<ViewStockDetails> {
@@ -29,7 +29,7 @@ public interface ViewStockDetailsMapper extends BaseMapper<ViewStockDetails> {
      * @author
      * @Date 2021-11-04
      */
-    List<ViewStockDetailsResult> classNameList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+    Page<ViewStockDetailsResult> classNameList(@Param("page") Page page, @Param("paramCondition") ViewStockDetailsParam paramCondition);
 
     /**
      * 获取型号列表
@@ -37,7 +37,7 @@ public interface ViewStockDetailsMapper extends BaseMapper<ViewStockDetails> {
      * @author
      * @Date 2021-11-04
      */
-    List<ViewStockDetailsResult> spuList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+    Page<ViewStockDetailsResult> spuList(@Param("page") Page page, @Param("paramCondition") ViewStockDetailsParam paramCondition);
 
     /**
      * 获取物料列表
@@ -45,27 +45,28 @@ public interface ViewStockDetailsMapper extends BaseMapper<ViewStockDetails> {
      * @author
      * @Date 2021-11-04
      */
-    List<ViewStockDetailsResult> skuList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+    Page<ViewStockDetailsResult> skuList(@Param("page") Page page, @Param("paramCondition") ViewStockDetailsParam paramCondition);
 
-    /**  获取bom列表
+    /**
+     * 获取bom列表
      *
      * @param paramCondition
      * @return
      */
-    List<ViewStockDetailsResult> bomList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+    Page<ViewStockDetailsResult> bomList(@Param("page") Page page, @Param("paramCondition") ViewStockDetailsParam paramCondition);
 
     /**
      * 获取map列表
      *
-     * @author 
+     * @author
      * @Date 2022-01-27
      */
-    List<Map<String, Object>> customMapList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+    List<Map<String, Object>> customMapList(@Param("page") Page page, @Param("paramCondition") ViewStockDetailsParam paramCondition);
 
     /**
      * 获取分页实体列表
      *
-     * @author 
+     * @author
      * @Date 2022-01-27
      */
     Page<ViewStockDetailsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ViewStockDetailsParam paramCondition);
@@ -73,7 +74,7 @@ public interface ViewStockDetailsMapper extends BaseMapper<ViewStockDetails> {
     /**
      * 获取分页map列表
      *
-     * @author 
+     * @author
      * @Date 2022-01-27
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ViewStockDetailsParam paramCondition);
