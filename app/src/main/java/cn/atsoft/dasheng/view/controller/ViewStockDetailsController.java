@@ -42,12 +42,11 @@ public class ViewStockDetailsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData list(@RequestBody ViewStockDetailsParam viewStockDetailsParam) {
+    public PageInfo<ViewStockDetailsResult> list(@RequestBody ViewStockDetailsParam viewStockDetailsParam) {
         if (ToolUtil.isEmpty(viewStockDetailsParam)) {
             viewStockDetailsParam = new ViewStockDetailsParam();
         }
-        List<ViewStockDetailsResult> listBySpec = viewStockDetailsService.findListBySpec(viewStockDetailsParam);
-        return ResponseData.success(listBySpec);
+        return this.viewStockDetailsService.findListBySpec(viewStockDetailsParam);
     }
 
 

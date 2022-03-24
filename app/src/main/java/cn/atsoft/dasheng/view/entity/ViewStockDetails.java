@@ -2,14 +2,16 @@ package cn.atsoft.dasheng.view.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
  * VIEW
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-01-27
  */
 @TableName("view_stock_details")
@@ -74,6 +76,16 @@ public class ViewStockDetails implements Serializable {
     @TableField("brand_id")
     private Long brandId;
 
+    @TableField("create_time")
+    private Date createTime;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public Long getSkuId() {
         return skuId;
@@ -158,16 +170,16 @@ public class ViewStockDetails implements Serializable {
     @Override
     public String toString() {
         return "ViewStockDetails{" +
-        "skuId=" + skuId +
-        ", spuId=" + spuId +
-        ", spuClassificationId=" + spuClassificationId +
-        ", className=" + className +
-        ", number=" + number +
-        ", storehousePositionsId=" + storehousePositionsId +
-        ", spuName=" + spuName +
-        ", storehouseId=" + storehouseId +
-        ", stockId=" + stockId +
-        ", brandId=" + brandId +
-        "}";
+                "skuId=" + skuId +
+                ", spuId=" + spuId +
+                ", spuClassificationId=" + spuClassificationId +
+                ", className=" + className +
+                ", number=" + number +
+                ", storehousePositionsId=" + storehousePositionsId +
+                ", spuName=" + spuName +
+                ", storehouseId=" + storehouseId +
+                ", stockId=" + stockId +
+                ", brandId=" + brandId +
+                "}";
     }
 }
