@@ -84,10 +84,9 @@ public class BomController {
                 Parts newParts = new Parts();
                 Sku sku = skuService.query().eq("standard", sheetName).eq("display", 1).one();
                 if (ToolUtil.isEmpty(sku)) {
-                    sku = new Sku();
-                    sku.setSkuId(null);
+                    throw new ServiceException(500, "没有当前此物料" + sheetName);
                 }
-                Parts parts = sku.getSkuId() == null ? new Parts() : partsService.query().eq("sku_id", sku.getSkuId()).eq("status", 99).eq("type", 1).one();
+                Parts parts = partsService.query().eq("sku_id", sku.getSkuId()).eq("status", 99).eq("type", 1).one();
                 //如果当前物料有bom 不添加
                 if (ToolUtil.isEmpty(parts)) {
 
