@@ -3,11 +3,22 @@ package cn.atsoft.dasheng.Excel;
 import cn.atsoft.dasheng.Excel.pojo.Bom;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
+import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
-import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.SkuParam;
+import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.SpuClassificationService;
+import cn.atsoft.dasheng.erp.service.SpuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.lang.Console;
 import cn.hutool.poi.excel.ExcelReader;
@@ -30,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,56 +55,126 @@ public class BomController {
     private PartsService partsService;
     @Autowired
     private ErpPartsDetailService detailService;
+    @Autowired
+    private UnitService unitService;
+    @Autowired
+    private SpuService spuService;
+    @Autowired
+    private SpuClassificationService classificationService;
+    @Autowired
+    private CategoryService categoryService;
 
     @RequestMapping("/importBom")
     @ResponseBody
     public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
 
-        List<Sku> skuList = skuService.list();
-
+        List<String> errorList = new ArrayList<>();
         XSSFWorkbook workbook = null;
         try {
             String name = file.getOriginalFilename();
             String fileSavePath = ConstantsContext.getFileUploadPath();
             File excelFile = new File(fileSavePath + name);
             file.transferTo(excelFile);
-            workbook = new XSSFWorkbook(excelFile);
-
-            Parts parts = null;
+            workbook = new XSSFWorkbook(excelFile.getPath());
 
             for (Sheet sheet : workbook) {
-                parts = new Parts();
+
+
                 String sheetName = sheet.getSheetName();
-                for (Sku sku : skuList) {
-                    if (sku.getStandard().equals(sheetName)) {
-                        parts.setSkuId(sku.getSkuId());
-                        break;
-                    }
-                    partsService.save(parts);
+                Parts newParts = new Parts();
+                Sku sku = skuService.query().eq("standard", sheetName).eq("display", 1).one();
+                if (ToolUtil.isEmpty(sku)) {
+                    sku = new Sku();
+                    sku.setSkuId(null);
                 }
-                List<ErpPartsDetail> details = new ArrayList<>();
-                for (int i = 0; i < sheet.getLastRowNum() + 1; i++) {
-                    Row sheetRow = sheet.getRow(i);
-                    Cell cell = sheetRow.getCell(0);
-                    cell.setCellType(CellType.STRING);
-                    String value = cell.getStringCellValue();
-                    for (Sku sku : skuList) {
-                        if (sku.getStandard().equals(value)) {
-                            ErpPartsDetail partsDetail = new ErpPartsDetail();
-                            partsDetail.setSkuId(sku.getSkuId());
-                            partsDetail.setPartsId(parts.getPartsId());
-                            details.add(partsDetail);
-                            break;
+                Parts parts = sku.getSkuId() == null ? new Parts() : partsService.query().eq("sku_id", sku.getSkuId()).eq("status", 99).eq("type", 1).one();
+                //如果当前物料有bom 不添加
+                if (ToolUtil.isEmpty(parts)) {
+
+                    newParts.setSkuId(sku.getSkuId());
+                    newParts.setSpuId(sku.getSpuId());
+
+                    ExcelReader reader = ExcelUtil.getReader(excelFile, sheetName);
+                    reader.addHeaderAlias("序号", "line");
+                    reader.addHeaderAlias("物料编号", "strand");
+                    reader.addHeaderAlias("名称", "spuName");
+                    reader.addHeaderAlias("规格", "spc");
+                    reader.addHeaderAlias("数量", "num");
+                    reader.addHeaderAlias("单位", "unit");
+                    reader.addHeaderAlias("型号", "skuName");
+                    reader.addHeaderAlias("分类", "spuClass");
+
+                    List<ErpPartsDetail> details = new ArrayList<>();
+                    List<Bom> boms = reader.readAll(Bom.class);
+                    for (Bom bom : boms) {
+
+                        ErpPartsDetail detail = new ErpPartsDetail();
+                        Sku detailSku = skuService.query().eq("standard", bom.getStrand()).eq("display", 1).one();
+
+                        if (ToolUtil.isEmpty(detailSku)) {    //没有sku添加
+                            detailSku = new Sku();
+                            detailSku.setSkuName(bom.getSkuName());
+                            detailSku.setSpecifications(bom.getSpc());
+                            detailSku.setStandard(bom.getStrand());
+                            /**
+                             * 单位
+                             */
+                            Long unitId;
+                            Unit unit = unitService.query().eq("unit_name", bom.getUnit()).eq("display", 1).one();
+                            if (ToolUtil.isEmpty(unit)) {
+                                Unit newUnit = new Unit();
+                                newUnit.setUnitName(bom.getUnit());
+                                unitService.save(newUnit);
+                                unitId = newUnit.getUnitId();
+                            } else {
+                                unitId = unit.getUnitId();
+                            }
+                            /**
+                             * 分类
+                             */
+                            SpuClassification classification = classificationService.query().eq("name", bom.getSpuClass()).eq("display", 1).one();
+                            if (ToolUtil.isEmpty(classification)) {
+                                throw new ServiceException(500, sheetName + "物料下的" + bom.getStrand() + "分类不存在");
+                            }
+                            Spu spu = spuService.query().eq("name", bom.getSpuName()).eq("display", 1).one();
+                            if (ToolUtil.isNotEmpty(spu)) {
+                                detailSku.setSpuId(spu.getSpuId());
+                            } else {
+                                Category category = new Category();
+                                category.setCategoryName(bom.getSpuName());
+                                categoryService.save(category);
+
+                                spu = new Spu();
+                                spu.setName(bom.getSpuName());
+                                spu.setUnitId(unitId);
+                                spu.setSpuClassificationId(classification.getSpuClassificationId());
+                                spu.setCategoryId(category.getCategoryId());
+                                spuService.save(spu);
+                                detailSku.setSpuId(spu.getSpuId());
+                            }
+                            skuService.save(detailSku);
+                            detail.setSkuId(detailSku.getSkuId());
+                        } else {
+                            detail.setSkuId(detailSku.getSkuId());
                         }
+                        detail.setNumber(Integer.valueOf(bom.getNum()));
+                        details.add(detail);
                     }
+
+                    newParts.setStatus(99);
+                    partsService.save(newParts);
+                    for (ErpPartsDetail detail : details) {
+                        detail.setPartsId(newParts.getPartsId());
+                    }
+                    detailService.saveBatch(details);
                 }
-                detailService.saveBatch(details);
             }
 
-        } catch (IOException | InvalidFormatException e) {
-            e.printStackTrace();
+
+        } catch (IOException e) {
+            errorList.add(e.getMessage());
         }
-        return ResponseData.success();
+        return ResponseData.success(errorList);
     }
 
 
