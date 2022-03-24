@@ -70,16 +70,20 @@ public class BomController {
 
         List<String> errorList = new ArrayList<>();
         XSSFWorkbook workbook = null;
+
+        String name = file.getOriginalFilename();
+        String fileSavePath = ConstantsContext.getFileUploadPath();
+        File excelFile = new File(fileSavePath + name);
+
         try {
-            String name = file.getOriginalFilename();
-            String fileSavePath = ConstantsContext.getFileUploadPath();
-            File excelFile = new File(fileSavePath + name);
-            file.transferTo(excelFile);
             workbook = new XSSFWorkbook(excelFile.getPath());
+            file.transferTo(excelFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            for (Sheet sheet : workbook) {
-
-
+        for (Sheet sheet : workbook) {
+            try {
                 String sheetName = sheet.getSheetName();
                 Parts newParts = new Parts();
                 Sku sku = skuService.query().eq("standard", sheetName).eq("display", 1).one();
@@ -89,7 +93,6 @@ public class BomController {
                 Parts parts = partsService.query().eq("sku_id", sku.getSkuId()).eq("status", 99).eq("type", 1).one();
                 //如果当前物料有bom 不添加
                 if (ToolUtil.isEmpty(parts)) {
-
                     newParts.setSkuId(sku.getSkuId());
                     newParts.setSpuId(sku.getSpuId());
 
@@ -167,11 +170,9 @@ public class BomController {
                     }
                     detailService.saveBatch(details);
                 }
+            } catch (Exception e) {
+                errorList.add(e.getMessage());
             }
-
-
-        } catch (IOException e) {
-            errorList.add(e.getMessage());
         }
         return ResponseData.success(errorList);
     }
