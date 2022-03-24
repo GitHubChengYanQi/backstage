@@ -2,12 +2,17 @@ package cn.atsoft.dasheng.view.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.view.entity.ViewStockDetails;
 import cn.atsoft.dasheng.view.mapper.ViewStockDetailsMapper;
@@ -15,6 +20,8 @@ import cn.atsoft.dasheng.view.model.params.ViewStockDetailsParam;
 import cn.atsoft.dasheng.view.model.result.ViewStockDetailsResult;
 import cn.atsoft.dasheng.view.service.ViewStockDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -43,6 +50,10 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
     private SkuService skuService;
     @Autowired
     private PartsService partsService;
+    @Autowired
+    private StorehousePositionsService positionsService;
+    @Autowired
+    private StorehouseService storehouseService;
 
 
     @Override
@@ -104,11 +115,20 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
 
     private void format(List<ViewStockDetailsResult> data) {
         List<Long> skuIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+        List<Long> houseIds = new ArrayList<>();
 
         for (ViewStockDetailsResult dutm : data) {
             skuIds.add(dutm.getSkuId());
+            positionIds.add(dutm.getStorehousePositionsId());
+            houseIds.add(dutm.getStorehouseId());
         }
+        List<StorehousePositionsResult> positionsResultList = positionsService.getDetails(positionIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        List<Storehouse> storehouses = houseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(houseIds);
+        List<StorehouseResult> storehouseResults = BeanUtil.copyToList(storehouses, StorehouseResult.class, new CopyOptions());
+
         for (ViewStockDetailsResult datum : data) {
             for (SkuResult skuResult : skuResults) {
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {
@@ -116,6 +136,19 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
                     break;
                 }
             }
+            for (StorehousePositionsResult positionsResult : positionsResultList) {
+                if (ToolUtil.isNotEmpty(datum.getStorehousePositionsId()) && positionsResult.getStorehousePositionsId().equals(datum.getStorehousePositionsId())) {
+                    datum.setPositionsResult(positionsResult);
+                    break;
+                }
+            }
+            for (StorehouseResult storehouseResult : storehouseResults) {
+                if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && storehouseResult.getStorehouseId().equals(datum.getStorehouseId())) {
+                    datum.setStorehouseResult(storehouseResult);
+                    break;
+                }
+            }
+
         }
     }
 

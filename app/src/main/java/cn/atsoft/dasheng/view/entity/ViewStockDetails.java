@@ -76,7 +76,7 @@ public class ViewStockDetails implements Serializable {
     @TableField("brand_id")
     private Long brandId;
 
-    @TableField(exist = false)
+    @TableField("create_time")
     private Date createTime;
 
     public Date getCreateTime() {
