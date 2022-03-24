@@ -667,6 +667,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 content = content.replace("${{供方公司电话}}", phone.getPhoneNumber().toString());
             }
         }
+        //-----------------------------------------------需要改动-----------------------------------------------------------------------
         if (content.contains("${{提取(交付)地点}}")) {
             Adress adress = orderParam.getPartyAAdressId() == null ? new Adress() : adressService.getById(orderParam.getPartyAAdressId());
             if (ToolUtil.isEmpty(adress) || ToolUtil.isEmpty(adress.getLocation())) {
@@ -690,7 +691,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 content = content.replace("${{接货人电话}}", "");
             }
         }
-
+//-------------------------------------------------------------------------------------------------------------------------
         if (content.contains("${{需方公司名称}}")) {
             Customer customer = orderParam.getBuyerId() == null ? new Customer() : customerService.getById(orderParam.getBuyerId());
             if (ToolUtil.isEmpty(customer)) {
