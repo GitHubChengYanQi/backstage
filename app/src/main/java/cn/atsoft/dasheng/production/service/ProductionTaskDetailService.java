@@ -66,4 +66,5 @@ public interface ProductionTaskDetailService extends IService<ProductionTaskDeta
      */
      PageInfo<ProductionTaskDetailResult> findPageBySpec(ProductionTaskDetailParam param);
 
+    List<ProductionTaskDetailResult> resultsByTaskId(Long taskId);
 }

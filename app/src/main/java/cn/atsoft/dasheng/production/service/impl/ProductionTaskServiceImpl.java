@@ -133,6 +133,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             for (ProductionTaskDetailParam detailParam : param.getDetailParams()) {
                 ProductionTaskDetail productionTaskDetail = new ProductionTaskDetail();
                 ToolUtil.copyProperties(detailParam, productionTaskDetail);
+                productionTaskDetail.setProductionTaskId(entity.getProductionTaskId());
                 productionTaskDetail.setNumber(productionTaskDetail.getNumber() * entity.getNumber());
                 detailEntitys.add(productionTaskDetail);
             }

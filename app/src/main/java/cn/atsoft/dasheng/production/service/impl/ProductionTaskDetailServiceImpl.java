@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -96,5 +97,15 @@ public class ProductionTaskDetailServiceImpl extends ServiceImpl<ProductionTaskD
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
+    @Override
+    public List<ProductionTaskDetailResult> resultsByTaskId(Long taskId){
+        List<ProductionTaskDetail> productionTaskDetails = this.query().eq("production_task_id", taskId).list();
+        List<ProductionTaskDetailResult> results = new ArrayList<>();
+        for (ProductionTaskDetail productionTaskDetail : productionTaskDetails) {
+            ProductionTaskDetailResult result = new ProductionTaskDetailResult();
+            ToolUtil.copyProperties(productionTaskDetail,result);
+            results.add(result);
+        }
+        return results;
+    }
 }

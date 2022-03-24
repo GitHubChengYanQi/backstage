@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -88,6 +89,7 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
@@ -100,6 +102,7 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 

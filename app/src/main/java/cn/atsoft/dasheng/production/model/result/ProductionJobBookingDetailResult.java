@@ -19,7 +19,7 @@ import java.util.List;
 public class ProductionJobBookingDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private Integer Number;
 
     /**
      * 报工详情表

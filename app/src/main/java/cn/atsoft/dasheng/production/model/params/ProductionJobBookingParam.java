@@ -24,7 +24,7 @@ public class ProductionJobBookingParam implements Serializable, BaseValidatingPa
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<ProductionJobBookingDetailParam> detailParams;
     /**
      * 报工id
      */
