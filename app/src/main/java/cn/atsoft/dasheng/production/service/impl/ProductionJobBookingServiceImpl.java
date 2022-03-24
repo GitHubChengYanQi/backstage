@@ -125,7 +125,7 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
                 if (detailResult.getOutSkuId().equals(jobBookingDetailResult.getSkuId()) && detailResult.getNumber()<jobBookingDetailResult.getNumber()){
                     throw new ServiceException(500,"报工物料的总数量不得超过任务中物料数量");
                 }
-                if (detailResult.getOutSkuNumber().equals(jobBookingDetailResult.getSkuId()) && detailResult.getNumber() == jobBookingDetailResult.getNumber()){
+                if (detailResult.getOutSkuId().equals(jobBookingDetailResult.getSkuId()) && detailResult.getNumber() == jobBookingDetailResult.getNumber()){
                     booleans.add(true);
                 }
             }
