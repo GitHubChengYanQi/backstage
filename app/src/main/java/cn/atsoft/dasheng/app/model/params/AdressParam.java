@@ -36,6 +36,8 @@ public class AdressParam implements Serializable, BaseValidatingParam {
     private CustomerMap map;
 
     private String detailLocation;
+
+    private String type;
     /**
      * 地址
      */

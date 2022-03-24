@@ -29,6 +29,12 @@ public class Adress implements Serializable {
      */
     @TableId(value = "adress_id", type = IdType.ID_WORKER)
     private Long adressId;
+
+    /**
+     * 地址类型
+     */
+    @TableField("type")
+    private String type;
     /**
      * 详情地址
      */
@@ -228,6 +234,14 @@ public class Adress implements Serializable {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
