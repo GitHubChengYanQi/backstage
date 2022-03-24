@@ -53,7 +53,6 @@ public class BomController {
     @ResponseBody
     public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
 
-        List<Sku> skuList = skuService.list();
 
         XSSFWorkbook workbook = null;
         try {
@@ -84,13 +83,14 @@ public class BomController {
                     ErpPartsDetailParam detailParam = new ErpPartsDetailParam();
                     Sku skus = skuService.query().eq("standard", bom.getStrand()).one();
                     if (ToolUtil.isEmpty(sku)) {
+
                     }
                     detailParam.setSkuId(sku.getSkuId());
                     detailParam.setNumber(Integer.valueOf(bom.getNum()));
                     details.add(detailParam);
                 }
                 param.setParts(details);
-
+                partsService.add(param);
             }
 
         } catch (IOException | InvalidFormatException e) {
