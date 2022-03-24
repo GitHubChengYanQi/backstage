@@ -42,7 +42,7 @@ public class ProductionTask implements Serializable {
     @TableField("sku_id")
     private Long skuId;
 
-    @TableField("sku_id")
+    @TableField("status")
     private Integer status;
 
 
