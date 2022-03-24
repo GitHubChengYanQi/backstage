@@ -81,7 +81,9 @@ public class BomController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        if (ToolUtil.isEmpty(workbook)) {
+            workbook = new XSSFWorkbook();
+        }
         for (Sheet sheet : workbook) {
             try {
                 String sheetName = sheet.getSheetName();
@@ -160,9 +162,11 @@ public class BomController {
                             detail.setSkuId(detailSku.getSkuId());
                         }
                         detail.setNumber(Integer.valueOf(bom.getNum()));
-                        details.add(detail);
-                    }
 
+                        if (details.stream().noneMatch(i->i.getSkuId().equals(detail.getSkuId()))) {
+                            details.add(detail);
+                        }
+                    }
                     newParts.setStatus(99);
                     partsService.save(newParts);
                     for (ErpPartsDetail detail : details) {
