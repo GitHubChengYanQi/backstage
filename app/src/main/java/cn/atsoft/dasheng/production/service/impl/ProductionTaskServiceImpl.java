@@ -15,18 +15,20 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionJobBooking;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
+import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
+import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
+import cn.atsoft.dasheng.production.model.result.ProductionTaskDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
-import cn.atsoft.dasheng.production.service.ProductionTaskDetailService;
-import cn.atsoft.dasheng.production.service.ProductionTaskService;
+import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -76,6 +78,12 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProductionJobBookingDetailService jobBookingDetailService;
+
+    @Autowired
+    private ProductionJobBookingService jobBookingService;
 
     @Override
     public void add(ProductionTaskParam param) {
@@ -221,7 +229,10 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     public void format(List<ProductionTaskResult> param) {
         List<Long> userIds = new ArrayList<>();
         List<Long> workOrderIds = new ArrayList<>();
+        List<Long> taskIds = new ArrayList<>();
+
         for (ProductionTaskResult productionTaskResult : param) {
+            taskIds.add(productionTaskResult.getProductionTaskId());
             /**
              * 添加工单id
              */
@@ -244,7 +255,11 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 查询工单
          */
         List<ProductionWorkOrderResult> workOrderResults = productionWorkOrderService.resultsByIds(workOrderIds);
-
+        /**
+         * 查询子表以及报工表
+         */
+        List<ProductionTaskDetailResult> productionTaskDetailResults = productionTaskDetailService.resultsByTaskIds(taskIds);
+        List<JobBookingDetailCount> counts = jobBookingDetailService.resultsByProductionTaskIds(taskIds);
 
         for (ProductionTaskResult productionTaskResult : param) {
             List<UserResult> userResultList = new ArrayList<>();
@@ -266,6 +281,24 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 }
 
             }
+            /**
+             * 返回报工数量
+             */
+            List<ProductionTaskDetailResult> detailResults = new ArrayList<>();
+            for (ProductionTaskDetailResult productionTaskDetailResult : productionTaskDetailResults) {
+                if (productionTaskDetailResult.getProductionTaskId().equals(productionTaskResult.getProductionTaskId())){
+                    detailResults.add(productionTaskDetailResult);
+                }
+            }
+            for (ProductionTaskDetailResult productionTaskDetailResult : detailResults) {
+                for (JobBookingDetailCount count : counts) {
+                    if (count.getSourceId().equals(productionTaskDetailResult.getProductionTaskId()) && count.getSkuId().equals(productionTaskDetailResult.getOutSkuId())){
+                        productionTaskDetailResult.setJobBookingDetailCount(count);
+                    }
+                }
+            }
+            productionTaskResult.setTaskDetailResults(detailResults);
+
             productionTaskResult.setUserResults(userResultList);
             /**
              * 匹配返回工单数据

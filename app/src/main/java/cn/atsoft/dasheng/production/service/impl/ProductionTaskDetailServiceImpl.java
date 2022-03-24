@@ -108,4 +108,18 @@ public class ProductionTaskDetailServiceImpl extends ServiceImpl<ProductionTaskD
         }
         return results;
     }
+    @Override
+    public List<ProductionTaskDetailResult> resultsByTaskIds(List<Long> taskIds){
+        if (ToolUtil.isEmpty(taskIds) || taskIds.size() == 0){
+            return new ArrayList<>();
+        }
+        List<ProductionTaskDetail> productionTaskDetails = this.query().in("production_task_id", taskIds).list();
+        List<ProductionTaskDetailResult> results = new ArrayList<>();
+        for (ProductionTaskDetail productionTaskDetail : productionTaskDetails) {
+            ProductionTaskDetailResult result = new ProductionTaskDetailResult();
+            ToolUtil.copyProperties(productionTaskDetail,result);
+            results.add(result);
+        }
+        return results;
+    }
 }

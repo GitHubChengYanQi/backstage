@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,6 +20,7 @@ import java.util.List;
 public class ProductionTaskDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private JobBookingDetailCount jobBookingDetailCount;
 
 
     /**
@@ -78,6 +80,10 @@ public class ProductionTaskDetailResult implements Serializable {
      */
     @ApiModelProperty("实物")
     private Long inkindId;
+
+    private Long outSkuId;
+
+    private Long skuId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

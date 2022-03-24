@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,9 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
     @Override
     public void add(ProductionJobBookingParam param) {
         ProductionJobBooking entity = getEntity(param);
+        entity.setSource("productionTask");
+        entity.setSourceId(param.getProductionTaskId());
+        this.save(entity);
         /**
          * 查询所处任务
          * 取出任务数量等数据
@@ -75,7 +79,7 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
         /**
          * 查询出已经报工的数量
          */
-        
+
         ProductionTask productionTask = productionTaskService.getById(param.getProductionTaskId());
         if (ToolUtil.isEmpty(productionTask)){
             throw new ServiceException(500,"未查询到此任务");
@@ -155,6 +159,8 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
             jobBookingdetail.setSkuId(inkind.getSkuId());
             jobBookingdetail.setInkindId(inkind.getInkindId());
             jobBookingdetail.setJobBookingId(entity.getJobBookingId());
+            jobBookingdetail.setSource("productionTask");
+            jobBookingdetail.setSourceId(productionTask.getProductionTaskId());
             jobBookingDetailsEntity.add(jobBookingdetail);
         }
 

@@ -28,6 +28,8 @@ public class ProductionTaskResult implements Serializable {
 
     private ProductionWorkOrderResult workOrderResult;
 
+    private List<ProductionTaskDetailResult> taskDetailResults;
+
 
     /**
      * 生产任务id

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionJobBookingDetail;
 import cn.atsoft.dasheng.production.model.params.ProductionJobBookingDetailParam;
+import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -66,4 +67,7 @@ public interface ProductionJobBookingDetailService extends IService<ProductionJo
      */
      PageInfo<ProductionJobBookingDetailResult> findPageBySpec(ProductionJobBookingDetailParam param);
 
+    List<ProductionJobBookingDetailResult> resultsByJobBookingIds(List<Long> jobBookingIds);
+
+    List<JobBookingDetailCount> resultsByProductionTaskIds(List<Long> productionTaskIds);
 }
