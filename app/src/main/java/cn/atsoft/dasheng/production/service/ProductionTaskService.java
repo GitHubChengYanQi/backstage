@@ -40,7 +40,7 @@ public interface ProductionTaskService extends IService<ProductionTask> {
      * @author Captain_Jazz
      * @Date 2022-03-22
      */
-    void update(ProductionTaskParam param);
+    ProductionTask update(ProductionTaskParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -65,5 +65,7 @@ public interface ProductionTaskService extends IService<ProductionTask> {
      * @Date 2022-03-22
      */
      PageInfo<ProductionTaskResult> findPageBySpec(ProductionTaskParam param);
+
+    void format(List<ProductionTaskResult> param);
 
 }

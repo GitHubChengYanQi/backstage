@@ -190,11 +190,12 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     }
 
     @Override
-    public void update(ProductionTaskParam param) {
+    public ProductionTask update(ProductionTaskParam param) {
         ProductionTask oldEntity = getOldEntity(param);
         ProductionTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override
@@ -215,6 +216,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
     public void format(List<ProductionTaskResult> param) {
         List<Long> userIds = new ArrayList<>();
         List<Long> workOrderIds = new ArrayList<>();
@@ -268,7 +270,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
              * 匹配返回工单数据
              */
             for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
-                if (workOrderResult.getWorkOrderId().equals(productionTaskResult.getWorkOrderId())){
+                if (workOrderResult.getWorkOrderId().equals(productionTaskResult.getWorkOrderId())) {
                     productionTaskResult.setWorkOrderResult(workOrderResult);
                 }
             }
