@@ -51,6 +51,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
@@ -91,9 +93,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     public void add(StorehousePositionsParam param) {
         if (ToolUtil.isNotEmpty(param.getPid())) {
             List<StockDetails> stockDetails = stockDetailsService.query().eq("storehouse_positions_id", param.getPid()).list();
-            if (ToolUtil.isNotEmpty(stockDetails)) {
-                throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
-            }
+//            if (ToolUtil.isNotEmpty(stockDetails)) {
+//                throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
+//            }
         }
 
         Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
@@ -302,6 +304,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private void returnPrintTemplate(StorehousePositionsResult param) {
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", POSITIONS);
+            eq("display", 1);
         }});
 
         if (ToolUtil.isEmpty(printTemplate)) {
@@ -356,8 +359,20 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         if (templete.contains("${parent}")) {
             templete = templete.replace("${parent}", this.getParent(param.getStorehousePositionsId()));
         }
+        /**
+         * 物料替换
+         */
+        List<StorehousePositionsBind> storehousePositionsBinds = storehousePositionsBindService.query().eq("position_id", param.getStorehousePositionsId()).eq("display", 1).list();
+        List<Long> skuIds = new ArrayList<>();
+        for (StorehousePositionsBind storehousePositionsBind : storehousePositionsBinds) {
+            skuIds.add(storehousePositionsBind.getSkuId());
+        }
+        templete = replace(templete, skuIds);
+        templete = templete.replaceAll("\\n", "");
+
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();
         ToolUtil.copyProperties(printTemplate, printTemplateResult);
+
         printTemplateResult.setTemplete(templete);
         param.setPrintTemplateResult(printTemplateResult);
     }
@@ -369,8 +384,84 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
         stringBuffer = new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
 
+
         return stringBuffer.toString();
     }
+
+    /**
+     * 模板替换
+     *
+     * @param templete
+     * @param skuIds
+     * @return
+     */
+    private String replace(String templete, List<Long> skuIds) {
+
+        if (ToolUtil.isEmpty(skuIds)) {
+            if (templete.contains("${{序号}}")) {
+                templete = templete.replace("${{序号}}", "");
+            }
+            if (templete.contains("${{物料编码}}")) {
+                templete = templete.replace("${{物料编码}}", "");
+            }
+            if (templete.contains("${{产品名称}}")) {
+                templete = templete.replace("${{产品名称}}", "");
+            }
+            if (templete.contains("${{型号}}")) {
+                templete = templete.replace("${{型号}}", "");
+            }
+            if (templete.contains("${{规格}}")) {
+                templete = templete.replace("${{规格}}", "");
+            }
+            return templete;
+        }
+
+        String regStr = "\\<tr(.*?)\\>([\\w\\W]+?)<\\/tr>";
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher m = pattern.matcher(templete);
+        StringBuffer stringBuffer = new StringBuffer();
+        StringBuffer append = stringBuffer.append(templete);
+
+        while (m.find()) {
+            String skuGroup = m.group(0);
+            if (skuGroup.contains("sku")) {
+                StringBuilder all = new StringBuilder();
+                List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+                int i = 0;
+                for (SkuResult skuResult : skuResults) {
+                    StringBuilder group = new StringBuilder(m.group(0));
+                    i++;
+                    if (group.toString().contains("${{序号}}")) {
+                        group = new StringBuilder(group.toString().replace("${{序号}}", i + ""));
+                    }
+                    if (group.toString().contains("${{物料编码}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{物料编码}}", skuResult.getStandard()));
+                    }
+                    if (group.toString().contains("${{产品名称}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{产品名称}}", skuResult.getSpuResult().getName()));
+                    }
+                    if (group.toString().contains("${{型号}}") && ToolUtil.isNotEmpty(skuResult)) {
+                        group = new StringBuilder(group.toString().replace("${{型号}}", skuResult.getSkuName()));
+                    }
+                    if (group.toString().contains("${{规格}}")) {
+                        if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isNotEmpty(skuResult.getSpecifications())) {
+                            group = new StringBuilder(group.toString().replace("${{规格}}", skuResult.getSpecifications()));
+                        } else {
+                            group = new StringBuilder(group.toString().replace("${{规格}}", ""));
+                        }
+                    }
+
+                    all.append(group);
+                }
+                String toString = all.toString();
+                String group = m.group(0);
+//                String string = append.toString();
+                templete = templete.replace(group, toString);
+            }
+        }
+        return templete;
+    }
+
 
     private StringBuffer formatParentStringBuffer(StorehousePositions positions, List<StorehousePositions> storehousePositionsList, StringBuffer stringBuffer) {
         if (!positions.getPid().equals(0L)) {
@@ -531,7 +622,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     /**
-     *
      * @param skuId
      * @return
      */
