@@ -14,4 +14,6 @@ public class Bom {
     private String spc;
     private String num;
     private String unit;
+    private String skuName;
+    private String spuClass;
 }
