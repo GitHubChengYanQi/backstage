@@ -71,4 +71,6 @@ public interface ProductionWorkOrderService extends IService<ProductionWorkOrder
     void microServiceAdd(Object paramt);
 
     List<ProductionWorkOrderResult> resultsBySourceIds(String source, List<Long> sourceIds);
+
+    List<ProductionWorkOrderResult> resultsByIds(List<Long> ids);
 }

@@ -22,12 +22,15 @@ import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
+import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
 import cn.atsoft.dasheng.production.service.ProductionTaskDetailService;
 import cn.atsoft.dasheng.production.service.ProductionTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,7 +39,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -69,6 +74,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     @Autowired
     private ActivitiSetpSetDetailService activitiSetpSetDetailService;
 
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(ProductionTaskParam param) {
@@ -91,12 +98,12 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 保存
          */
         ProductionTask entity = getEntity(param);
-        if(ToolUtil.isNotEmpty(param.getUserIdList())){
+        if (ToolUtil.isNotEmpty(param.getUserIdList())) {
             StringBuffer stringBuffer = new StringBuffer();
             for (Long userId : param.getUserIdList()) {
                 stringBuffer.append(userId).append(",");
             }
-           entity.setUserIds( stringBuffer.substring(0,stringBuffer.length()-1));
+            entity.setUserIds(stringBuffer.substring(0, stringBuffer.length() - 1));
         }
         this.save(entity);
         List<ProductionTaskDetail> detailEntitys = new ArrayList<>();
@@ -155,7 +162,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
 
-        } else if(ToolUtil.isNotEmpty(param.getUserId())) {
+        } else if (ToolUtil.isNotEmpty(param.getUserId())) {
             /**
              * 如果有审批则进行审批  没有直接推送微信消息
              */
@@ -204,7 +211,69 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     public PageInfo<ProductionTaskResult> findPageBySpec(ProductionTaskParam param) {
         Page<ProductionTaskResult> pageContext = getPageContext();
         IPage<ProductionTaskResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    public void format(List<ProductionTaskResult> param) {
+        List<Long> userIds = new ArrayList<>();
+        List<Long> workOrderIds = new ArrayList<>();
+        for (ProductionTaskResult productionTaskResult : param) {
+            /**
+             * 添加工单id
+             */
+            workOrderIds.add(productionTaskResult.getWorkOrderId());
+            /**
+             * 把所有人员id添加list查询
+             */
+            if (ToolUtil.isNotEmpty(productionTaskResult.getUserId())) {
+                userIds.add(productionTaskResult.getUserId());
+            }
+            if (ToolUtil.isNotEmpty(productionTaskResult.getUserIds())) {
+                userIds.addAll(Arrays.stream(productionTaskResult.getUserIds().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+            }
+            userIds.add(productionTaskResult.getCreateUser());
+        }
+        userIds = userIds.stream().distinct().collect(Collectors.toList());
+        List<UserResult> userResults = userService.getUserResultsByIds(userIds);
+
+        /**
+         * 查询工单
+         */
+        List<ProductionWorkOrderResult> workOrderResults = productionWorkOrderService.resultsByIds(workOrderIds);
+
+
+        for (ProductionTaskResult productionTaskResult : param) {
+            List<UserResult> userResultList = new ArrayList<>();
+            for (UserResult userResult : userResults) {
+                if (productionTaskResult.getCreateUser().equals(userResult.getUserId())) {
+                    productionTaskResult.setCreateUserResult(userResult);
+                }
+                if (ToolUtil.isNotEmpty(productionTaskResult.getUserId()) && productionTaskResult.getUserId().equals(userResult.getUserId())) {
+                    productionTaskResult.setUserResult(userResult);
+                }
+
+                if (ToolUtil.isNotEmpty(productionTaskResult.getUserIds())) {
+                    List<Long> collect = Arrays.stream(productionTaskResult.getUserIds().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                    for (Long aLong : collect) {
+                        if (aLong.equals(userResult.getUserId())) {
+                            userResultList.add(userResult);
+                        }
+                    }
+                }
+
+            }
+            productionTaskResult.setUserResults(userResultList);
+            /**
+             * 匹配返回工单数据
+             */
+            for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
+                if (workOrderResult.getWorkOrderId().equals(productionTaskResult.getWorkOrderId())){
+                    productionTaskResult.setWorkOrderResult(workOrderResult);
+                }
+            }
+        }
+
     }
 
     private Serializable getKey(ProductionTaskParam param) {
