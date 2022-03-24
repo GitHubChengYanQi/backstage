@@ -62,6 +62,10 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         if (ToolUtil.isNotEmpty(positions)) {
             throw new ServiceException(500, "当前库位不是最下级");
         }
+        StorehousePositionsBind positionsBind = this.query().eq("position_id", param.getPositionId()).eq("sku_id", param.getSkuId()).one();
+        if (ToolUtil.isNotEmpty(positionsBind)) {
+            throw new ServiceException(500, "以绑定");
+        }
         StorehousePositionsBind entity = getEntity(param);
         this.save(entity);
         return entity;
@@ -182,7 +186,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         positionIds.clear();
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
         for (StorehousePositionsDeptBindResult bindByPositionId : bindByPositionIds) {
-            if (bindByPositionId.getDeptIds().stream().anyMatch(i->i.equals(deptId))){
+            if (bindByPositionId.getDeptIds().stream().anyMatch(i -> i.equals(deptId))) {
                 positionIds.add(bindByPositionId.getStorehousePositionsId());
             }
         }
