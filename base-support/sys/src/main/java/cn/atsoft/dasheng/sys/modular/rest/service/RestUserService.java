@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.sys.core.util.SaltUtil;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestUser;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestUserPos;
 import cn.atsoft.dasheng.sys.modular.rest.mapper.RestUserMapper;
+import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
 import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -25,6 +26,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -313,6 +315,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         result.put("name", user.getName());
         result.put("id", user.getId());
 
+        result.put("MobileUrl", MobileUrl.prefix);
         return result;
     }
 
@@ -333,6 +336,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
         hashMap.put("positionIds", ConstantFactory.me().getPositionIds(userId).split(","));
         hashMap.put("positionNames", ConstantFactory.me().getPositionName(userId));
+
 
         return hashMap;
     }
