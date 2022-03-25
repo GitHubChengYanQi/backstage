@@ -44,6 +44,9 @@
             or standard like CONCAT('%',#{paramCondition.skuName},'%')
             or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
         </if>
+        <if test="paramCondition.storehousePositionsId != null and paramCondition.storehousePositionsId != ''">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
+        </if>
         group by spu_classification_id
     </select>
 
@@ -57,6 +60,9 @@
             and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
             or standard like CONCAT('%',#{paramCondition.skuName},'%')
             or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null and paramCondition.storehousePositionsId != ''">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
         </if>
         group by spu_id
     </select>
@@ -81,6 +87,9 @@
             or standard like CONCAT('%',#{paramCondition.skuName},'%')
             or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
 
+        </if>
+        <if test="paramCondition.storehousePositionsId != null and paramCondition.storehousePositionsId != ''">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
         </if>
         group by sku_id
     </select>
@@ -107,6 +116,9 @@
             and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
             or standard like CONCAT('%',#{paramCondition.skuName},'%')
             or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null and paramCondition.storehousePositionsId != ''">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
         </if>
         group by sku_id
     </select>
