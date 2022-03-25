@@ -368,7 +368,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
     @Override
     public List<ProductionTaskResult> resultsByWorkOrderIds(List<Long> workOrderIds){
-        if (ToolUtil.isNotEmpty(workOrderIds) || workOrderIds.size() == 0) {
+        if (ToolUtil.isEmpty(workOrderIds) || workOrderIds.size() == 0) {
             return new ArrayList<>();
         }
         List<ProductionTask> productionTasks = this.query().in("work_order_id", workOrderIds).list();
