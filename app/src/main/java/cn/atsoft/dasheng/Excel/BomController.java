@@ -76,8 +76,8 @@ public class BomController {
         File excelFile = new File(fileSavePath + name);
 
         try {
-            workbook = new XSSFWorkbook(excelFile.getPath());
             file.transferTo(excelFile);
+            workbook = new XSSFWorkbook(excelFile.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
