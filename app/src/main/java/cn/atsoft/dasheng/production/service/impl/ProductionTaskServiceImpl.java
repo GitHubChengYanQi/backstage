@@ -223,7 +223,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         return newEntity;
     }
     @Override
-    public void Receive(ProductionTaskParam param) {
+    public ProductionTask Receive(ProductionTaskParam param) {
         ProductionTask entity = new ProductionTask();
         entity.setProductionTaskId(param.getProductionTaskId());
         entity.setStatus(98);
@@ -240,6 +240,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         wxCpTemplate.setType(0);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
+        return entity;
     }
 
     @Override

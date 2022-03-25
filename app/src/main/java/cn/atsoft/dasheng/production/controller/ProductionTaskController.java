@@ -67,10 +67,10 @@ public class ProductionTaskController extends BaseController {
      */
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData Receive(@RequestBody ProductionTaskParam productionTaskParam) {
+    public ProductionTask Receive(@RequestBody ProductionTaskParam productionTaskParam) {
 
-        this.productionTaskService.Receive(productionTaskParam);
-        return ResponseData.success();
+        ProductionTask receive = this.productionTaskService.Receive(productionTaskParam);
+        return receive;
     }
 
 //    /**
