@@ -31,6 +31,8 @@ public class ViewStockDetailsParam implements Serializable, BaseValidatingParam 
 
     private String type;
 
+    private String skuName;
+
     private Long partId;
 
     private List<Long> skuIds;

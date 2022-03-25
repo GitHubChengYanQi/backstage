@@ -39,6 +39,11 @@
         <if test="paramCondition.spuId !=null ">
             and spu_id = #{paramCondition.spuId}
         </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT('%',#{paramCondition.skuName},'%')
+            or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
         group by spu_classification_id
     </select>
 
@@ -48,6 +53,11 @@
         <include refid="Base_Column_List"/>
         ,sum(number) AS number
         from view_stock_details where 1 = 1
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT('%',#{paramCondition.skuName},'%')
+            or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
         group by spu_id
     </select>
 
@@ -65,6 +75,12 @@
         </if>
         <if test="paramCondition.spuId !=null ">
             and spu_id = #{paramCondition.spuId}
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT('%',#{paramCondition.skuName},'%')
+            or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+
         </if>
         group by sku_id
     </select>
@@ -86,6 +102,11 @@
         </if>
         <if test="paramCondition.spuId !=null ">
             and spu_id = #{paramCondition.spuId}
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT('%',#{paramCondition.skuName},'%')
+            or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
         </if>
         group by sku_id
     </select>
