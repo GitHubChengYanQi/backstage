@@ -66,4 +66,5 @@ public interface ActivitiSetpSetService extends IService<ActivitiSetpSet> {
      */
      PageInfo<ActivitiSetpSetResult> findPageBySpec(ActivitiSetpSetParam param);
 
+    List<ActivitiSetpSetResult> getResultByStepsId(List<Long> stepsIds);
 }

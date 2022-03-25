@@ -69,6 +69,9 @@
         <if test="paramCondition.orderId != null">
             and order_id like CONCAT('%',#{paramCondition.orderId},'%')
         </if>
+        <if test="paramCondition.coding != null">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
         <if test="paramCondition.contractId != null">
             and contract_id like CONCAT('%',#{paramCondition.contractId},'%')
         </if>
@@ -168,6 +171,9 @@
         </if>
         <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
             and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
+        </if>
+        <if test="paramCondition.coding != null and paramCondition.coding != ''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
     </select>
 

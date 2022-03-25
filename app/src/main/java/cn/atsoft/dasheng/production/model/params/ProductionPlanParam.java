@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.params;
 
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,6 +25,8 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     List<ProductionPlanDetailParam> productionPlanDetailParams;
+    List<OrderDetailParam> orderDetailParams;
+
 
 
     /**
@@ -31,6 +34,12 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("生产计划id")
     private Long productionPlanId;
+
+    /**
+     * 生产计划id
+     */
+    @ApiModelProperty("编码")
+    private String coding;
 
     /**
      * 主题
@@ -45,10 +54,16 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
     private String origin;
 
     /**
-     * 执行时间
+     * 开始时间
      */
     @ApiModelProperty("执行时间")
     private Date executionTime;
+
+    /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    private Date endTime;
 
     /**
      * 负责人

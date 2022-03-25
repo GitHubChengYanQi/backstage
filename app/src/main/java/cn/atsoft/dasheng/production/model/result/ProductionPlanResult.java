@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -22,12 +23,22 @@ public class ProductionPlanResult implements Serializable {
 
     private List<ProductionPlanDetailResult> planDetailResults;
 
+    private UserResult userResult;
+
+    private List<ProductionWorkOrderResult> workOrderResults;
+
 
     /**
      * 生产计划id
      */
     @ApiModelProperty("生产计划id")
     private Long productionPlanId;
+
+    /**
+     * 生产计划id
+     */
+    @ApiModelProperty("编码")
+    private String coding;
 
     /**
      * 主题
@@ -46,6 +57,12 @@ public class ProductionPlanResult implements Serializable {
      */
     @ApiModelProperty("执行时间")
     private Date executionTime;
+
+    /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    private Date endTime;
 
     /**
      * 负责人

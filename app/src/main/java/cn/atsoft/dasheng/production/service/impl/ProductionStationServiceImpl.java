@@ -155,4 +155,16 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
             }
         }
     }
+    @Override
+    public List<ProductionStationResult> getResultsByIds(List<Long> ids){
+        List<ProductionStation> productionStations = ids.size() == 0 ? new ArrayList<>() : this.query().in("production_station_id", ids).eq("display", 1).list();
+        List<ProductionStationResult> results = new ArrayList<>();
+        for (ProductionStation productionStation : productionStations) {
+            ProductionStationResult result = new ProductionStationResult();
+            ToolUtil.copyProperties(productionStation,result);
+            results.add(result);
+        }
+        this.format(results);
+        return results;
+    }
 }

@@ -13,6 +13,7 @@
         <result column="create_user" property="createUser"/>
         <result column="deptId" property="deptId"/>
         <result column="display" property="display"/>
+        <result column="order_detail_id" property="orderDetailId" />
         <result column="update_time" property="updateTime"/>
         <result column="create_time" property="createTime"/>
         <result column="update_user" property="updateUser"/>
@@ -22,7 +23,7 @@
     <sql id="Base_Column_List">plan_number
     AS "planNumber",making_number AS "makingNumber",
         production_plan_detail_id
-        AS "productionPlanDetailId", production_plan_id AS "productionPlanId", sku_id AS "skuId", delivery_date AS "deliveryDate", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        AS "productionPlanDetailId", production_plan_id AS "productionPlanId",order_detail_id AS "orderDetailId", sku_id AS "skuId", delivery_date AS "deliveryDate", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
     </sql>
 
 

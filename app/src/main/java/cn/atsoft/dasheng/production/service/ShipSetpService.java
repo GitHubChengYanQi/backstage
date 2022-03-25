@@ -68,4 +68,6 @@ public interface ShipSetpService extends IService<ShipSetp> {
      PageInfo<ShipSetpResult> findPageBySpec(ShipSetpParam param, DataScope dataScope);
 
     void format(List<ShipSetpResult> param);
+
+    List<ShipSetpResult> getResultsByids(List<Long> ids);
 }
