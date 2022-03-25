@@ -71,4 +71,6 @@ public interface OrderDetailService extends IService<OrderDetail> {
     List<OrderDetailResult> getDetails(Long orderId);
 
     void format(List<OrderDetailResult> param);
+
+    List<OrderDetailResult> getOrderDettailProductionIsNull(OrderDetailParam paramCondition);
 }

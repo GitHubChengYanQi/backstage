@@ -30,6 +30,13 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
     List<OrderDetailResult> customList(@Param("paramCondition") OrderDetailParam paramCondition);
 
     /**
+     * 查询未加入生产计划的待生产任务
+     * @param paramCondition
+     * @return
+     */
+    List<OrderDetailResult> pendingProductionPlanByOrder(@Param("paramCondition") OrderDetailParam paramCondition);
+
+    /**
      * 获取map列表
      *
      * @author song

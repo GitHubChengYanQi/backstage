@@ -15,15 +15,16 @@ import java.util.List;
  * 生产任务
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-22
  */
 @Data
 @ApiModel
 public class ProductionTaskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<ProductionTaskParam> productionTaskParam;
+    List<ProductionTaskDetailParam> detailParams;
+    List<Long> userIdList;
 
     /**
      * 生产任务id
@@ -42,6 +43,15 @@ public class ProductionTaskParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("生产任务名称")
     private String productionTaskName;
+
+    @ApiModelProperty("")
+    private Long skuId;
+
+    /**
+     * 数量
+     */
+    @ApiModelProperty("数量")
+    private Integer number;
 
     /**
      * 备注
@@ -78,6 +88,12 @@ public class ProductionTaskParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("生产时间")
     private Date productionTime;
+
+    /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    private Date endTime;
 
     /**
      * 创建者
@@ -127,8 +143,16 @@ public class ProductionTaskParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("来源Json字符串")
     private String origin;
 
+    /**
+     * 成员
+     */
+    @ApiModelProperty("成员")
+    private String userIds;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    private Integer status;
 
     @Override
     public String checkParam() {

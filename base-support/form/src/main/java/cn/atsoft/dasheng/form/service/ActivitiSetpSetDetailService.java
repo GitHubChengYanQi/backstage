@@ -66,4 +66,5 @@ public interface ActivitiSetpSetDetailService extends IService<ActivitiSetpSetDe
      */
      PageInfo<ActivitiSetpSetDetailResult> findPageBySpec(ActivitiSetpSetDetailParam param);
 
+    List<ActivitiSetpSetDetailResult> getResultByStepsIds(List<Long> ids);
 }
