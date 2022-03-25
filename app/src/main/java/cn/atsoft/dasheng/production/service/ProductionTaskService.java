@@ -42,6 +42,8 @@ public interface ProductionTaskService extends IService<ProductionTask> {
      */
     ProductionTask update(ProductionTaskParam param);
 
+    ProductionTask Receive(ProductionTaskParam param);
+
     /**
      * 查询单条数据，Specification模式
      *
@@ -68,4 +70,5 @@ public interface ProductionTaskService extends IService<ProductionTask> {
 
     void format(List<ProductionTaskResult> param);
 
+    List<ProductionTaskResult> resultsByWorkOrderIds(List<Long> workOrderIds);
 }
