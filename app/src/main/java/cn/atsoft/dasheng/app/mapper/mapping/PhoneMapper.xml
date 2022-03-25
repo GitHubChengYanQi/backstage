@@ -4,57 +4,61 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Phone">
-        <id column="phone_id" property="phoneId" />
-        <result column="contacts_id" property="contactsId" />
-        <result column="phone_number" property="phoneNumber" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="phone_id" property="phoneId"/>
+        <result column="contacts_id" property="contactsId"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
         <result column="deptId" property="deptId"/>
-        <result column="display" property="display" />
+        <result column="display" property="display"/>
+        <result column="telephone" property="telephone"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">deptId AS "deptId",
+    <sql id="Base_Column_List">deptId
+    AS "deptId",telephone AS "telephone",
         phone_id AS "phoneId", contacts_id AS "contactsId", phone_number AS "phoneNumber", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.PhoneResult" parameterType="cn.atsoft.dasheng.app.model.params.PhoneParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.PhoneResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.PhoneParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_phone where 1 = 1
-            <if test="paramCondition.contactsId != null">
-                and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-            </if>
-            <if test="paramCondition.phoneNumber != null">
-                and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
-            </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.phoneNumber != null">
+            and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PhoneParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_phone where 1 = 1
-                <if test="paramCondition.contactsId != null">
-                        and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-                </if>
-                <if test="paramCondition.phoneNumber != null">
-                        and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
-                </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.phoneNumber != null">
+            and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PhoneResult" parameterType="cn.atsoft.dasheng.app.model.params.PhoneParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PhoneResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.PhoneParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_phone where display = 1
-                <if test="paramCondition.contactsId != null">
-                        and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-                </if>
-                <if test="paramCondition.phoneNumber != null">
-                        and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
-                </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.phoneNumber != null">
+            and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
+        </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
@@ -66,12 +70,12 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_phone where 1 = 1
-                <if test="paramCondition.contactsId != null">
-                        and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-                </if>
-                <if test="paramCondition.phoneNumber != null">
-                        and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
-                </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.phoneNumber != null">
+            and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
+        </if>
     </select>
 
 </mapper>

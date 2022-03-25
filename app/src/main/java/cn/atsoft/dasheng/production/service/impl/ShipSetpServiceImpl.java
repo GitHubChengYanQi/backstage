@@ -226,7 +226,18 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
 
 
     }
-
+    @Override
+    public List<ShipSetpResult> getResultsByids(List<Long> ids){
+        List<ShipSetp> list = ids.size() == 0 ? new ArrayList<>() : this.query().in("ship_setp_id", ids).eq("display", 1).list();
+        List<ShipSetpResult> shipSetpResults = new ArrayList<>();
+        for (ShipSetp shipSetp : list) {
+            ShipSetpResult shipSetpResult = new ShipSetpResult();
+            ToolUtil.copyProperties(shipSetp,shipSetpResult);
+            shipSetpResults.add(shipSetpResult);
+        }
+        this.format(shipSetpResults);
+        return shipSetpResults;
+    }
     private Serializable getKey(ShipSetpParam param) {
         return param.getShipSetpId();
     }

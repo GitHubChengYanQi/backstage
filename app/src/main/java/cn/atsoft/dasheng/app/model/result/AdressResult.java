@@ -31,6 +31,8 @@ public class AdressResult implements Serializable {
     private CustomerMap map;
 
     private String detailLocation;
+
+    private String type;
     /**
      * 地址id
      */

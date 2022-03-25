@@ -36,6 +36,8 @@ public class PhoneParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("电话id")
     private Long phoneId;
 
+    private String telephone;
+
     /**
      * 联系人id
      */

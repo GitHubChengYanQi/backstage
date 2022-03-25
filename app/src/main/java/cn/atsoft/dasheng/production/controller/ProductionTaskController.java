@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +22,8 @@ import java.util.Map;
 /**
  * 生产任务控制器
  *
- * @author 
- * @Date 2022-02-28 13:51:24
+ * @author Captain_Jazz
+ * @Date 2022-03-22 15:16:11
  */
 @RestController
 @RequestMapping("/productionTask")
@@ -35,8 +36,8 @@ public class ProductionTaskController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -48,26 +49,26 @@ public class ProductionTaskController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody ProductionTaskParam productionTaskParam) {
+    public ProductionTask update(@RequestBody ProductionTaskParam productionTaskParam) {
 
-        this.productionTaskService.update(productionTaskParam);
-        return ResponseData.success();
+        ProductionTask productionTask = this.productionTaskService.update(productionTaskParam);
+        return productionTask;
     }
 
     /**
      * 删除接口
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProductionTaskParam productionTaskParam)  {
+    public ResponseData delete(@RequestBody ProductionTaskParam productionTaskParam) {
         this.productionTaskService.delete(productionTaskParam);
         return ResponseData.success();
     }
@@ -75,8 +76,8 @@ public class ProductionTaskController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
@@ -84,27 +85,27 @@ public class ProductionTaskController extends BaseController {
         ProductionTask detail = this.productionTaskService.getById(productionTaskParam.getProductionTaskId());
         ProductionTaskResult result = new ProductionTaskResult();
         ToolUtil.copyProperties(detail, result);
-
+        List<ProductionTaskResult> list = new ArrayList<>();
+        list.add(result);
+        this.productionTaskService.format(list);
 //        result.setValue(parentValue);
-        return ResponseData.success(result);
+        return ResponseData.success(list.size() > 0 ? list.get(0) : null);
     }
 
     /**
      * 查询列表
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ProductionTaskResult> list(@RequestBody(required = false) ProductionTaskParam productionTaskParam) {
-        if(ToolUtil.isEmpty(productionTaskParam)){
+        if (ToolUtil.isEmpty(productionTaskParam)) {
             productionTaskParam = new ProductionTaskParam();
         }
         return this.productionTaskService.findPageBySpec(productionTaskParam);
     }
-
-
 
 
 }

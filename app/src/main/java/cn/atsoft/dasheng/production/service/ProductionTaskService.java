@@ -13,57 +13,59 @@ import java.util.List;
  * 生产任务 服务类
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-22
  */
 public interface ProductionTaskService extends IService<ProductionTask> {
 
     /**
      * 新增
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     void add(ProductionTaskParam param);
 
     /**
      * 删除
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     void delete(ProductionTaskParam param);
 
     /**
      * 更新
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
-    void update(ProductionTaskParam param);
+    ProductionTask update(ProductionTaskParam param);
 
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     ProductionTaskResult findBySpec(ProductionTaskParam param);
 
     /**
      * 查询列表，Specification模式
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
     List<ProductionTaskResult> findListBySpec(ProductionTaskParam param);
 
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
-     * @Date 2022-02-28
+     * @author Captain_Jazz
+     * @Date 2022-03-22
      */
      PageInfo<ProductionTaskResult> findPageBySpec(ProductionTaskParam param);
+
+    void format(List<ProductionTaskResult> param);
 
 }
