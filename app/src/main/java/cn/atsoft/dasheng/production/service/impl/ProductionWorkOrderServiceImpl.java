@@ -125,6 +125,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     public PageInfo<ProductionWorkOrderResult> findPageBySpec(ProductionWorkOrderParam param) {
         Page<ProductionWorkOrderResult> pageContext = getPageContext();
         IPage<ProductionWorkOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -302,6 +303,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                 if (productionWorkOrderResult.getSource().equals("productionPlan")){
                     productionPlanId.add(productionWorkOrderResult.getSourceId());
                 }
+                workOrderIds.add(productionWorkOrderResult.getWorkOrderId());
             }
             List<ActivitiSetpSetResult> setpSetsResult = activitiSetpSetService.getResultByStepsId(stepsIds);
             List<Long> stationIds = new ArrayList<>();
