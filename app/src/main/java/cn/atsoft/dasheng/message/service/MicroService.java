@@ -83,7 +83,7 @@ public class MicroService {
             case PRODUCTION_PICKLISTS:
                 switch (microServiceEntity.getOperationType()) {
                     case ADD:
-
+                        productionPickListsService.addByProductionTask(microServiceEntity.getObject());
                 }
                 break;
             default:

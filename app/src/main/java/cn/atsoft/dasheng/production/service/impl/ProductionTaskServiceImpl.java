@@ -268,7 +268,21 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         wxCpTemplate.setType(0);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
+
+        MicroServiceEntity serviceEntity = new MicroServiceEntity();
+        serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
+        serviceEntity.setOperationType(OperationType.ADD);
+        String jsonString = JSON.toJSONString(new SavePickListsObject(){{
+//            setDetails(detailEntitys);
+            setProductionTask(entity);
+        }});
+        serviceEntity.setObject(jsonString);
+        serviceEntity.setMaxTimes(2);
+        serviceEntity.setTimes(0);
+        messageProducer.microService(serviceEntity);
+
         return entity;
+
     }
 
     @Override

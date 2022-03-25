@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,6 +20,9 @@ import java.util.List;
 public class ProductionPickListsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private ProductionTaskResult productionTaskResult;
+    private UserResult createUserResult;
+    private UserResult userResult;
 
 
     /**

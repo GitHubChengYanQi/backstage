@@ -33,8 +33,8 @@
             <if test="paramCondition.userId != null">
                 and user_id like CONCAT('%',#{paramCondition.userId},'%')
             </if>
-            <if test="paramCondition.suorce != null and paramCondition.suorce != ''">
-                and suorce like CONCAT('%',#{paramCondition.suorce},'%')
+            <if test="paramCondition.source != null and paramCondition.source != ''">
+                and source like CONCAT('%',#{paramCondition.source},'%')
             </if>
             <if test="paramCondition.sourceId != null">
                 and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
@@ -72,8 +72,8 @@
                 <if test="paramCondition.userId != null">
                         and user_id like CONCAT('%',#{paramCondition.userId},'%')
                 </if>
-                <if test="paramCondition.suorce != null and paramCondition.suorce != ''">
-                        and suorce like CONCAT('%',#{paramCondition.suorce},'%')
+                <if test="paramCondition.source != null and paramCondition.source != ''">
+                        and source like CONCAT('%',#{paramCondition.source},'%')
                 </if>
                 <if test="paramCondition.sourceId != null">
                         and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
@@ -111,8 +111,8 @@
                 <if test="paramCondition.userId != null">
                         and user_id like CONCAT('%',#{paramCondition.userId},'%')
                 </if>
-                <if test="paramCondition.suorce != null and paramCondition.suorce != ''">
-                        and suorce like CONCAT('%',#{paramCondition.suorce},'%')
+                <if test="paramCondition.source != null and paramCondition.source != ''">
+                        and source like CONCAT('%',#{paramCondition.source},'%')
                 </if>
                 <if test="paramCondition.sourceId != null">
                         and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
@@ -150,8 +150,8 @@
                 <if test="paramCondition.userId != null">
                         and user_id like CONCAT('%',#{paramCondition.userId},'%')
                 </if>
-                <if test="paramCondition.suorce != null and paramCondition.suorce != ''">
-                        and suorce like CONCAT('%',#{paramCondition.suorce},'%')
+                <if test="paramCondition.source != null and paramCondition.source != ''">
+                        and source like CONCAT('%',#{paramCondition.source},'%')
                 </if>
                 <if test="paramCondition.sourceId != null">
                         and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
