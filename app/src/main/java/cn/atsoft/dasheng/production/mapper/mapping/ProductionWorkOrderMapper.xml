@@ -7,6 +7,7 @@
         <id column="work_order_id" property="workOrderId" />
         <result column="ship_setp_id" property="shipSetpId" />
         <result column="sku_id" property="skuId" />
+        <result column="card_id" property="cardId" />
         <result column="count" property="count" />
         <result column="source" property="source" />
         <result column="source_id" property="sourceId" />

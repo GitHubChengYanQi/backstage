@@ -28,6 +28,7 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer type;
 
     /**
      * 详情id

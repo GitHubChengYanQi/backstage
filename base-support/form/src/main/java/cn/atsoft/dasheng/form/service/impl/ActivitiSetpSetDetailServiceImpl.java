@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,6 +81,18 @@ public class ActivitiSetpSetDetailServiceImpl extends ServiceImpl<ActivitiSetpSe
         ActivitiSetpSetDetail entity = new ActivitiSetpSetDetail();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public List<ActivitiSetpSetDetailResult> getResultByStepsIds(List<Long> ids){
+        List<ActivitiSetpSetDetail> setpSetDetails =ids.size() == 0 ? new ArrayList<>() :  this.query().in("setps_id", ids).list();
+        List<ActivitiSetpSetDetailResult> results = new ArrayList<>();
+
+        for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
+            ActivitiSetpSetDetailResult result = new ActivitiSetpSetDetailResult();
+            ToolUtil.copyProperties(setpSetDetail,result);
+            results.add(result);
+        }
+        return results;
     }
 
 }

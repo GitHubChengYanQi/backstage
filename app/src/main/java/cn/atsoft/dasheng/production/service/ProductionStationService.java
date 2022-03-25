@@ -67,4 +67,6 @@ public interface ProductionStationService extends IService<ProductionStation> {
      PageInfo<ProductionStationResult> findPageBySpec(ProductionStationParam param);
 
     void format(List<ProductionStationResult> data);
+
+    List<ProductionStationResult> getResultsByIds(List<Long> ids);
 }

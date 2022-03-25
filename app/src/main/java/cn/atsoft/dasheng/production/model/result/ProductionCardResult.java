@@ -19,7 +19,7 @@ import java.util.List;
 public class ProductionCardResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private Integer grupByPlanId;
 
     /**
      * 生产卡片id
