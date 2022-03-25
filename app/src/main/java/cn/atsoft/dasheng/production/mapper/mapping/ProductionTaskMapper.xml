@@ -234,9 +234,13 @@
         <if test="paramCondition.userIds != null and paramCondition.userIds != ''">
             and user_ids like CONCAT('%',#{paramCondition.userIds},'%')
         </if>
+        <if test="paramCondition.status != null and paramCondition.status != ''">
+            and status  = #{paramCondition.status}
+        </if>
         <if test="paramCondition.noUser != null">
             and user_id is null
         </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map"
