@@ -248,10 +248,12 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         this.updateById(newEntity);
         return newEntity;
     }
+
     @Override
-    public void Receive(ProductionTaskParam param) {
+    public ProductionTask Receive(ProductionTaskParam param) {
         ProductionTask entity = new ProductionTask();
         entity.setProductionTaskId(param.getProductionTaskId());
+        entity.setUserId(param.getUserId());
         entity.setStatus(98);
         this.updateById(entity);
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -266,6 +268,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         wxCpTemplate.setType(0);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
+        return entity;
     }
 
     @Override
@@ -347,13 +350,13 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
              */
             List<ProductionTaskDetailResult> detailResults = new ArrayList<>();
             for (ProductionTaskDetailResult productionTaskDetailResult : productionTaskDetailResults) {
-                if (productionTaskDetailResult.getProductionTaskId().equals(productionTaskResult.getProductionTaskId())){
+                if (productionTaskDetailResult.getProductionTaskId().equals(productionTaskResult.getProductionTaskId())) {
                     detailResults.add(productionTaskDetailResult);
                 }
             }
             for (ProductionTaskDetailResult productionTaskDetailResult : detailResults) {
                 for (JobBookingDetailCount count : counts) {
-                    if (count.getSourceId().equals(productionTaskDetailResult.getProductionTaskId()) && count.getSkuId().equals(productionTaskDetailResult.getOutSkuId())){
+                    if (count.getSourceId().equals(productionTaskDetailResult.getProductionTaskId()) && count.getSkuId().equals(productionTaskDetailResult.getOutSkuId())) {
                         productionTaskDetailResult.setJobBookingDetailCount(count);
                     }
                 }
@@ -392,7 +395,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     }
 
     @Override
-    public List<ProductionTaskResult> resultsByWorkOrderIds(List<Long> workOrderIds){
+    public List<ProductionTaskResult> resultsByWorkOrderIds(List<Long> workOrderIds) {
         if (ToolUtil.isEmpty(workOrderIds) || workOrderIds.size() == 0) {
             return new ArrayList<>();
         }
@@ -400,7 +403,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         List<ProductionTaskResult> results = new ArrayList<>();
         for (ProductionTask productionTask : productionTasks) {
             ProductionTaskResult result = new ProductionTaskResult();
-            ToolUtil.copyProperties(productionTask,result);
+            ToolUtil.copyProperties(productionTask, result);
             results.add(result);
         }
         return results;
