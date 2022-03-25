@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -25,6 +26,8 @@ public class ProductionTaskParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     List<ProductionTaskDetailParam> detailParams;
     List<Long> userIdList;
+
+    private Boolean noUser;
 
     /**
      * 生产任务id
