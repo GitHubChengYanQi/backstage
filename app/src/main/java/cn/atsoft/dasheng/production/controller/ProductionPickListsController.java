@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
@@ -101,6 +102,21 @@ public class ProductionPickListsController extends BaseController {
         if(ToolUtil.isEmpty(productionPickListsParam)){
             productionPickListsParam = new ProductionPickListsParam();
         }
+        return this.productionPickListsService.findPageBySpec(productionPickListsParam);
+    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/selfList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<ProductionPickListsResult> selfList(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+        if(ToolUtil.isEmpty(productionPickListsParam)){
+            productionPickListsParam = new ProductionPickListsParam();
+        }
+        productionPickListsParam.setUserId(LoginContextHolder.getContext().getUserId());
         return this.productionPickListsService.findPageBySpec(productionPickListsParam);
     }
 

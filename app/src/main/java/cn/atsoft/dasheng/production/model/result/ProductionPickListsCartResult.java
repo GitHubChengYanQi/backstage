@@ -31,7 +31,7 @@ public class ProductionPickListsCartResult implements Serializable {
      * 主表id
      */
     @ApiModelProperty("主表id")
-    private Long productionTaskId;
+    private Long pickListsId;
 
     /**
      * 物料id

@@ -4,11 +4,15 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import  cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -62,6 +66,21 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         Page<ProductionPickListsResult> pageContext = getPageContext();
         IPage<ProductionPickListsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public String addByProductionTask(Object param) {
+        SavePickListsObject savePickListsObject = JSON.parseObject(param.toString(), SavePickListsObject.class);
+        Long taskId = savePickListsObject.getProductionTask().getProductionTaskId();
+
+        ProductionPickLists productionPickLists = new ProductionPickLists();
+        productionPickLists.setStatus(97);
+        productionPickLists.setSourceId(taskId);
+        productionPickLists.setSource("productionTask");
+        productionPickLists.setUserId(productionPickLists.getUserId());
+        this.save(productionPickLists);
+
+        return null;
     }
 
     private Serializable getKey(ProductionPickListsParam param){

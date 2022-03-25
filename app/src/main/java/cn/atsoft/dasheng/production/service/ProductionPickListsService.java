@@ -66,4 +66,5 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      */
      PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param);
 
+     String addByProductionTask(Object param);
 }

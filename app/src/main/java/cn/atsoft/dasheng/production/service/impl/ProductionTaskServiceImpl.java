@@ -13,6 +13,10 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
@@ -21,6 +25,7 @@ import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
+import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
@@ -30,6 +35,7 @@ import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -82,6 +88,9 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     @Autowired
     private ProductionJobBookingService jobBookingService;
 
+    @Autowired
+    private MessageProducer messageProducer;
+
     @Override
     public void add(ProductionTaskParam param) {
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(param.getWorkOrderId());
@@ -123,6 +132,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
             ProductionTaskDetail productionTaskDetail = new ProductionTaskDetail();
             productionTaskDetail.setOutSkuId(setpSetDetail.getSkuId());
+            productionTaskDetail.setProductionTaskId(entity.getProductionTaskId());
             productionTaskDetail.setNumber(setpSetDetail.getNum() * param.getNumber());
             if (ToolUtil.isNotEmpty(setpSetDetail.getQualityId())) {
                 productionTaskDetail.setQualityId(setpSetDetail.getQualityId());
@@ -134,15 +144,15 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             detailEntitys.add(productionTaskDetail);
         }
 
-        if (ToolUtil.isNotEmpty(param.getDetailParams())) {
-            for (ProductionTaskDetailParam detailParam : param.getDetailParams()) {
-                ProductionTaskDetail productionTaskDetail = new ProductionTaskDetail();
-                ToolUtil.copyProperties(detailParam, productionTaskDetail);
-                productionTaskDetail.setProductionTaskId(entity.getProductionTaskId());
-                productionTaskDetail.setNumber(productionTaskDetail.getNumber() * entity.getNumber());
-                detailEntitys.add(productionTaskDetail);
-            }
-        }
+//        if (ToolUtil.isNotEmpty(param.getDetailParams())) {
+//            for (ProductionTaskDetailParam detailParam : param.getDetailParams()) {
+//                ProductionTaskDetail productionTaskDetail = new ProductionTaskDetail();
+//                ToolUtil.copyProperties(detailParam, productionTaskDetail);
+//                productionTaskDetail.setProductionTaskId(entity.getProductionTaskId());
+//                productionTaskDetail.setNumber(productionTaskDetail.getNumber() * entity.getNumber());
+//                detailEntitys.add(productionTaskDetail);
+//            }
+//        }
         productionTaskDetailService.saveBatch(detailEntitys);
 
 
@@ -186,6 +196,22 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             wxCpTemplate.setType(0);
             wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
             wxCpSendTemplate.sendTemplate();
+
+            /**
+             * 生成领料单
+             */
+            MicroServiceEntity serviceEntity = new MicroServiceEntity();
+            serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
+            serviceEntity.setOperationType(OperationType.ADD);
+            String jsonString = JSON.toJSONString(new SavePickListsObject(){{
+                setDetails(detailEntitys);
+                setProductionTask(entity);
+            }});
+            serviceEntity.setObject(jsonString);
+            serviceEntity.setMaxTimes(2);
+            serviceEntity.setTimes(0);
+            messageProducer.microService(serviceEntity);
+
         }else if (ToolUtil.isEmpty(param.getUserId())) {
             /**
              * 如果有审批则进行审批  没有直接推送微信消息

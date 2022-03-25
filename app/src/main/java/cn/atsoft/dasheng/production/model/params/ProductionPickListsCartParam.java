@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -35,8 +36,8 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
      * 主表id
      */
     @ApiModelProperty("主表id")
-    private Long productionTaskId;
 
+    private Long pickListsId;
     /**
      * 物料id
      */

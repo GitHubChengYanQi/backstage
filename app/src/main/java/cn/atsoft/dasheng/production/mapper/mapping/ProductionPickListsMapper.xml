@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.ProductionPickLists">
         <id column="pick_lists_id" property="pickListsId" />
         <result column="user_id" property="userId" />
-        <result column="suorce" property="suorce" />
+        <result column="source" property="source" />
         <result column="source_id" property="sourceId" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_id AS "pickListsId", user_id AS "userId", suorce AS "suorce", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
+        pick_lists_id AS "pickListsId", user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
     </sql>
 
 

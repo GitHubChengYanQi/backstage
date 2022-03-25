@@ -34,7 +34,7 @@ public class ProductionPickListsResult implements Serializable {
      * 来源
      */
     @ApiModelProperty("来源")
-    private String suorce;
+    private String source;
 
     /**
      * 来源id

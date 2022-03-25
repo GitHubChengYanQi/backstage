@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.ProductionPickListsCart">
         <id column="pick_lists_cart" property="pickListsCart" />
-        <result column="production_task_id" property="productionTaskId" />
+        <result column="pick_lists_id" property="pickListsId" />
         <result column="sku_id" property="skuId" />
         <result column="number" property="number" />
         <result column="create_user" property="createUser" />
@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_cart AS "pickListsCart", production_task_id AS "productionTaskId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        pick_lists_cart AS "pickListsCart", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 

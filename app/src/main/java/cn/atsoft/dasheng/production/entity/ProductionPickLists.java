@@ -33,8 +33,8 @@ public class ProductionPickLists implements Serializable {
     /**
      * 来源
      */
-    @TableField("suorce")
-    private String suorce;
+    @TableField("source")
+    private String source;
 
     /**
      * 来源id
@@ -101,12 +101,12 @@ public class ProductionPickLists implements Serializable {
         this.userId = userId;
     }
 
-    public String getSuorce() {
-        return suorce;
+    public String getSource() {
+        return source;
     }
 
-    public void setSuorce(String suorce) {
-        this.suorce = suorce;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public Long getSourceId() {
@@ -178,7 +178,7 @@ public class ProductionPickLists implements Serializable {
         return "ProductionPickLists{" +
         "pickListsId=" + pickListsId +
         ", userId=" + userId +
-        ", suorce=" + suorce +
+        ", source=" + source +
         ", sourceId=" + sourceId +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +

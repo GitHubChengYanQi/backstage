@@ -24,20 +24,20 @@ public class ProductionPickListsCart implements Serializable {
     /**
      * 子表id
      */
-      @TableId(value = "pick_lists_cart", type = IdType.ID_WORKER)
+    @TableId(value = "pick_lists_cart", type = IdType.ID_WORKER)
     private Long pickListsCart;
-
-    /**
-     * 主表id
-     */
-    @TableField("production_task_id")
-    private Long productionTaskId;
 
     /**
      * 物料id
      */
     @TableField("sku_id")
     private Long skuId;
+    /**
+     * 主表id
+     */
+    @TableField("pick_lists_id")
+    private Long pickListsId;
+
 
     @TableField("number")
     private Integer number;
@@ -78,6 +78,13 @@ public class ProductionPickListsCart implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Long getPickListsId() {
+        return pickListsId;
+    }
+
+    public void setPickListsId(Long pickListsId) {
+        this.pickListsId = pickListsId;
+    }
 
     public Long getPickListsCart() {
         return pickListsCart;
@@ -87,13 +94,6 @@ public class ProductionPickListsCart implements Serializable {
         this.pickListsCart = pickListsCart;
     }
 
-    public Long getProductionTaskId() {
-        return productionTaskId;
-    }
-
-    public void setProductionTaskId(Long productionTaskId) {
-        this.productionTaskId = productionTaskId;
-    }
 
     public Long getSkuId() {
         return skuId;
@@ -163,7 +163,6 @@ public class ProductionPickListsCart implements Serializable {
     public String toString() {
         return "ProductionPickListsCart{" +
         "pickListsCart=" + pickListsCart +
-        ", productionTaskId=" + productionTaskId +
         ", skuId=" + skuId +
         ", number=" + number +
         ", createUser=" + createUser +
