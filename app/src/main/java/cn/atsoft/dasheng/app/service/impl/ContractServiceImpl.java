@@ -667,7 +667,33 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 content = content.replace("${{供方公司电话}}", phone.getPhoneNumber().toString());
             }
         }
-
+        //-----------------------------------------------需要改动-----------------------------------------------------------------------
+        if (content.contains("${{提取(交付)地点}}")) {
+            Adress adress = orderParam.getPartyAAdressId() == null ? new Adress() : adressService.getById(orderParam.getPartyAAdressId());
+            if (ToolUtil.isEmpty(adress) || ToolUtil.isEmpty(adress.getLocation())) {
+                content = content.replace("${{提取(交付)地点}}", "");
+            } else {
+                content = content.replace("${{提取(交付)地点}}", (adress.getLocation()));
+                adress.setType("收获地址");
+                adressService.updateById(adress);
+            }
+        }
+        if (content.contains("${{接货人员}}")) {
+            Contacts contacts = orderParam.getPartyAContactsId() == null ? new Contacts() : contactsService.getById(orderParam.getPartyAContactsId());
+            if (ToolUtil.isEmpty(contacts) || ToolUtil.isEmpty(contacts.getContactsName())) {
+                content = content.replace("${{接货人员}}", "");
+            } else {
+                content = content.replace("${{接货人员}}", contacts.getContactsName());
+            }
+        }
+        if (content.contains("${{接货人电话}}")) {
+            if (ToolUtil.isNotEmpty(buyer.getTelephone())) {
+                content = content.replace("${{接货人电话}}", buyer.getTelephone());
+            } else {
+                content = content.replace("${{接货人电话}}", "");
+            }
+        }
+//-------------------------------------------------------------------------------------------------------------------------
         if (content.contains("${{需方公司名称}}")) {
             Customer customer = orderParam.getBuyerId() == null ? new Customer() : customerService.getById(orderParam.getBuyerId());
             if (ToolUtil.isEmpty(customer)) {
