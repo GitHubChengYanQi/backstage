@@ -17,9 +17,11 @@ import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionWorkOrderMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.model.result.ProductionStationResult;
+import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.service.ProductionStationService;
+import cn.atsoft.dasheng.production.service.ProductionTaskService;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.production.service.ShipSetpService;
@@ -83,6 +85,9 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
     @Autowired
     private GetOrigin origin;
+
+    @Autowired
+    private ProductionTaskService productionTaskService;
 
 
     @Override
@@ -214,27 +219,6 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     }
 
 
-//    private void createWorkOrder(ProductionPlanDetail productionPlanDetail, List<ActivitiSetpSetResult> activitiSetpSetResults) {
-//        List<ProductionWorkOrder> workOrders = new ArrayList<>();
-//        for (ActivitiSetpSetResult activitiSetpSetResult : activitiSetpSetResults) {
-//            ProductionWorkOrder workOrder = new ProductionWorkOrder();
-//            workOrder.setShipSetpId(activitiSetpSetResult.getShipSetpId());
-//            workOrder.setSource("productionPlan");
-//            workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
-//            for (ActivitiSetpSetDetailResult setpSetDetail : activitiSetpSetResult.getSetpSetDetails()) {
-//                if (ToolUtil.isNotEmpty(setpSetDetail.getType()) && setpSetDetail.getType().equals("1")) {
-//                    workOrder.setInSkuId(setpSetDetail.getSkuId());
-//                    workOrder.setInSkuNumber(setpSetDetail.getNum() * productionPlanDetail.getPlanNumber());
-//                } else {
-//                    workOrder.setOutSkuId(setpSetDetail.getSkuId());
-//                    workOrder.setOutSkuNumber(setpSetDetail.getNum() * productionPlanDetail.getPlanNumber());
-//                }
-//
-//            }
-//            workOrders.add(workOrder);
-//        }
-//        this.saveBatch(workOrders);
-//    }
 
     private void getTree2List(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> results) {
         switch (activitiStepsResult.getStepType()) {
@@ -309,6 +293,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
         public void format (List < ProductionWorkOrderResult > param) {
             List<Long> stepsIds = new ArrayList<>();
+            List<Long> workOrderIds = new ArrayList<>();
             for (ProductionWorkOrderResult productionWorkOrderResult : param) {
                 stepsIds.add(productionWorkOrderResult.getStepsId());
             }
@@ -331,11 +316,16 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                 qualityCheckIds.add(shipSetDetail.getMyQualityId());
             }
             List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-            List<QualityCheckResult> qualityChecks = qualityCheckService.getChecks(qualityCheckIds);
+
+            /**
+             * 查询工单对应派发任务
+             */
+            List<ProductionTaskResult> taskResults = productionTaskService.resultsByWorkOrderIds(workOrderIds);
             /**
              * 匹配数据
              */
             for (ActivitiSetpSetResult setpSetResult : setpSetsResult) {
+
                 for (ProductionStationResult station : stations) {
                     if (setpSetResult.getProductionStationId().equals(station.getProductionStationId())) {
                         setpSetResult.setProductionStation(station);
@@ -368,6 +358,19 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                         result.setSetpSetResult(setpSetResult);
                     }
                 }
+                int completeNum = 0;
+                int toDoNum = 0;
+                for (ProductionTaskResult taskResult : taskResults) {
+
+                    if (taskResult.getWorkOrderId().equals(result.getWorkOrderId()) && taskResult.getStatus().equals(99)){
+                        completeNum+=taskResult.getNumber();
+                    }
+                    if (taskResult.getWorkOrderId().equals(result.getWorkOrderId()) && !taskResult.getStatus().equals(99)){
+                        toDoNum+=taskResult.getNumber();
+                    }
+                }
+                result.setCompleteNum(completeNum);
+                result.setToDoNum(toDoNum);
             }
 
         }

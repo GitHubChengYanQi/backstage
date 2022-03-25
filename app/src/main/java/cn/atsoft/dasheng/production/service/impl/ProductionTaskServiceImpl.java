@@ -9,13 +9,11 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
-import cn.atsoft.dasheng.form.model.params.ActivitiSetpSetDetailParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.production.entity.ProductionJobBooking;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
@@ -23,7 +21,6 @@ import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
-import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
@@ -189,6 +186,24 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             wxCpTemplate.setType(0);
             wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
             wxCpSendTemplate.sendTemplate();
+        }else if (ToolUtil.isEmpty(param.getUserId())) {
+            /**
+             * 如果有审批则进行审批  没有直接推送微信消息
+             */
+            entity.setStatus(0);
+            this.updateById(entity);
+            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+            wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
+            wxCpTemplate.setTitle("新的生产任务");
+            wxCpTemplate.setDescription("您被分派了新的生产任务" + entity.getCoding());
+            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+                add(entity.getUserId());
+            }});
+            wxCpSendTemplate.setSource("productionTask");
+            wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
+            wxCpTemplate.setType(0);
+            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+            wxCpSendTemplate.sendTemplate();
         }
 
     }
@@ -203,8 +218,28 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         ProductionTask oldEntity = getOldEntity(param);
         ProductionTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        newEntity.setDisplay(null);
         this.updateById(newEntity);
         return newEntity;
+    }
+    @Override
+    public void Receive(ProductionTaskParam param) {
+        ProductionTask entity = new ProductionTask();
+        entity.setProductionTaskId(param.getProductionTaskId());
+        entity.setStatus(98);
+        this.updateById(entity);
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
+        wxCpTemplate.setTitle("新的生产任务");
+        wxCpTemplate.setDescription("您领取了新的生产任务" + entity.getCoding());
+        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+            add(entity.getUserId());
+        }});
+        wxCpSendTemplate.setSource("productionTask");
+        wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
+        wxCpTemplate.setType(0);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
     }
 
     @Override
@@ -328,6 +363,21 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         ProductionTask entity = new ProductionTask();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    @Override
+    public List<ProductionTaskResult> resultsByWorkOrderIds(List<Long> workOrderIds){
+        if (ToolUtil.isNotEmpty(workOrderIds) || workOrderIds.size() == 0) {
+            return new ArrayList<>();
+        }
+        List<ProductionTask> productionTasks = this.query().in("work_order_id", workOrderIds).list();
+        List<ProductionTaskResult> results = new ArrayList<>();
+        for (ProductionTask productionTask : productionTasks) {
+            ProductionTaskResult result = new ProductionTaskResult();
+            ToolUtil.copyProperties(productionTask,result);
+            results.add(result);
+        }
+        return results;
     }
 
 }

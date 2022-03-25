@@ -59,19 +59,32 @@ public class ProductionTaskController extends BaseController {
         ProductionTask productionTask = this.productionTaskService.update(productionTaskParam);
         return productionTask;
     }
-
     /**
-     * 删除接口
+     * 编辑接口
      *
      * @author Captain_Jazz
      * @Date 2022-03-22
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProductionTaskParam productionTaskParam) {
-        this.productionTaskService.delete(productionTaskParam);
+    @RequestMapping(value = "/receive", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData Receive(@RequestBody ProductionTaskParam productionTaskParam) {
+
+        this.productionTaskService.Receive(productionTaskParam);
         return ResponseData.success();
     }
+
+//    /**
+//     * 删除接口
+//     *
+//     * @author Captain_Jazz
+//     * @Date 2022-03-22
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody ProductionTaskParam productionTaskParam) {
+//        this.productionTaskService.delete(productionTaskParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口
