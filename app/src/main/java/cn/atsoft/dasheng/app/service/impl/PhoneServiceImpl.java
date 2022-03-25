@@ -33,8 +33,11 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
 
     @Override
     public Phone add(PhoneParam param) {
+        if (ToolUtil.isEmpty(param.getPhoneNumber()) || ToolUtil.isEmpty(param.getTelephone())) {
+            throw new ServiceException(500, "手机号或者电话号 必须填写一个");
+        }
         //防止添加重复电话号
-        Integer count = this.query().eq("phone_number", param.getPhoneNumber()).and(i->i.eq("display",1)).count();
+        Integer count = this.query().eq("phone_number", param.getPhoneNumber()).and(i -> i.eq("display", 1)).count();
         if (count > 0) {
             throw new ServiceException(500, "不用重复添加手机号 或者  电话已经存在");
         }
@@ -70,7 +73,7 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
     @Override
     public PageInfo<PhoneResult> findPageBySpec(PhoneParam param, DataScope dataScope) {
         Page<PhoneResult> pageContext = getPageContext();
-        IPage<PhoneResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<PhoneResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         return PageFactory.createPageInfo(page);
     }
 
