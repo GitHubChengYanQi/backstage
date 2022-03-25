@@ -315,6 +315,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         result.put("name", user.getName());
         result.put("id", user.getId());
 
+        result.put("MobileUrl", MobileUrl.prefix);
         return result;
     }
 
@@ -335,9 +336,6 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
         hashMap.put("positionIds", ConstantFactory.me().getPositionIds(userId).split(","));
         hashMap.put("positionNames", ConstantFactory.me().getPositionName(userId));
-
-
-        hashMap.put("MobileUrl", MobileUrl.prefix);
 
 
         return hashMap;
