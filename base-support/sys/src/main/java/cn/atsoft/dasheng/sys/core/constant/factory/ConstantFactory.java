@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserPosService;
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -55,6 +56,8 @@ public class ConstantFactory implements IConstantFactory {
     private NoticeMapper noticeMapper = SpringContextHolder.getBean(NoticeMapper.class);
     private UserPosService userPosService = SpringContextHolder.getBean(UserPosService.class);
     private PositionService positionService = SpringContextHolder.getBean(PositionService.class);
+
+
 
     public static IConstantFactory me() {
         return SpringContextHolder.getBean("constantFactory");
