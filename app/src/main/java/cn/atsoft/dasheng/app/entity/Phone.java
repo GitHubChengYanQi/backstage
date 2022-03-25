@@ -2,15 +2,18 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author cheng
@@ -24,20 +27,16 @@ public class Phone implements Serializable {
     /**
      * 电话id
      */
-      @TableId(value = "phone_id", type = IdType.ID_WORKER)
+    @TableId(value = "phone_id", type = IdType.ID_WORKER)
     private Long phoneId;
 
 
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
-    public Long getDeptId() {
-        return deptId;
-    }
 
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
+    @TableField("telephone")
+    private String telephone;
 
     /**
      * 联系人id
@@ -54,25 +53,25 @@ public class Phone implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -146,17 +145,33 @@ public class Phone implements Serializable {
         this.display = display;
     }
 
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
     @Override
     public String toString() {
         return "Phone{" +
-        "phoneId=" + phoneId +
-        ", contactsId=" + contactsId +
-        ", phoneNumber=" + phoneNumber +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "phoneId=" + phoneId +
+                ", contactsId=" + contactsId +
+                ", phoneNumber=" + phoneNumber +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }
