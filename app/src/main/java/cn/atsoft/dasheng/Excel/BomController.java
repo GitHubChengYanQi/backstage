@@ -66,7 +66,7 @@ public class BomController {
 
     @RequestMapping("/importBom")
     @ResponseBody
-    public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
+    public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) throws IOException {
 
         List<String> errorList = new ArrayList<>();
         XSSFWorkbook workbook = null;
@@ -76,8 +76,8 @@ public class BomController {
         File excelFile = new File(fileSavePath + name);
 
         try {
-            workbook = new XSSFWorkbook(excelFile.getPath());
             file.transferTo(excelFile);
+            workbook = new XSSFWorkbook(excelFile.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,7 +90,7 @@ public class BomController {
                 Parts newParts = new Parts();
                 Sku sku = skuService.query().eq("standard", sheetName).eq("display", 1).one();
                 if (ToolUtil.isEmpty(sku)) {
-                    throw new ServiceException(500, "没有当前此物料" + sheetName);
+                    throw new ServiceException(500, "没有当前此物料:   " + sheetName);
                 }
                 Parts parts = partsService.query().eq("sku_id", sku.getSkuId()).eq("status", 99).eq("type", 1).one();
                 //如果当前物料有bom 不添加
@@ -163,7 +163,7 @@ public class BomController {
                         }
                         detail.setNumber(Integer.valueOf(bom.getNum()));
 
-                        if (details.stream().noneMatch(i->i.getSkuId().equals(detail.getSkuId()))) {
+                        if (details.stream().noneMatch(i -> i.getSkuId().equals(detail.getSkuId()))) {
                             details.add(detail);
                         }
                     }
@@ -178,6 +178,7 @@ public class BomController {
                 errorList.add(e.getMessage());
             }
         }
+        workbook.close();
         return ResponseData.success(errorList);
     }
 
