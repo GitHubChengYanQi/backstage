@@ -326,8 +326,8 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             /**
              * 查询生产计划  获取卡片数量
              */
-            List<ProductionPlan> productionPlans = productionPlanService.query().in("production_plan_id", productionPlanId).list();
-            List<ProductionPlanDetail> productionPlanDetails = productionPlanDetailService.query().in("production_plan_id", productionPlanId).list();
+
+            List<ProductionPlanDetail> productionPlanDetails = productionPlanId.size() == 0 ? new ArrayList<>() : productionPlanDetailService.query().in("production_plan_id", productionPlanId).list();
             /**
              * 查询工单对应派发任务
              */
