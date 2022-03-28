@@ -124,7 +124,7 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
     }
     @Override
     public List<ProductionCardResult> resultsByProductionPlanId(List<Long> productionPlanId){
-        if (ToolUtil.isNotEmpty(productionPlanId) || productionPlanId.size() == 0){
+        if (ToolUtil.isEmpty(productionPlanId) || productionPlanId.size() == 0){
             return  new ArrayList<>();
         }
         List<ProductionCardResult> productionCards = this.baseMapper.grupByProductionPlan(new ProductionCardParam(){{

@@ -17,12 +17,11 @@ import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionWorkOrderMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.model.result.ProductionStationResult;
+import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
-import cn.atsoft.dasheng.production.service.ProductionStationService;
-import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
+import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -84,6 +83,14 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     @Autowired
     private GetOrigin origin;
 
+    @Autowired
+    private ProductionTaskService productionTaskService;
+
+    @Autowired
+    private ProductionPlanService productionPlanService;
+    @Autowired
+    private ProductionPlanDetailService productionPlanDetailService;
+
 
     @Override
     public void add(ProductionWorkOrderParam param) {
@@ -118,6 +125,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     public PageInfo<ProductionWorkOrderResult> findPageBySpec(ProductionWorkOrderParam param) {
         Page<ProductionWorkOrderResult> pageContext = getPageContext();
         IPage<ProductionWorkOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -196,8 +204,8 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                             workOrder.setCount(num);
                             workOrder.setShipSetpId(activitiStepsResult.getSetpSet().getShipSetpId());
                             if (setpSetDetailResult.getType().equals("in")) {
-                                workOrder.setInSkuNumber(num * setpSetDetailResult.getNum());
-                                workOrder.setInSkuId(setpSetDetailResult.getSkuId());
+                                workOrder.setInSkuNumber(productionPlanDetail.getPlanNumber());
+                                workOrder.setInSkuId(productionPlanDetail.getSkuId());
                             } else if (setpSetDetailResult.getType().equals("out")) {
                                 workOrder.setOutSkuNumber(productionPlanDetail.getPlanNumber());
                                 workOrder.setOutSkuId(productionPlanDetail.getSkuId());
@@ -214,27 +222,6 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
     }
 
 
-//    private void createWorkOrder(ProductionPlanDetail productionPlanDetail, List<ActivitiSetpSetResult> activitiSetpSetResults) {
-//        List<ProductionWorkOrder> workOrders = new ArrayList<>();
-//        for (ActivitiSetpSetResult activitiSetpSetResult : activitiSetpSetResults) {
-//            ProductionWorkOrder workOrder = new ProductionWorkOrder();
-//            workOrder.setShipSetpId(activitiSetpSetResult.getShipSetpId());
-//            workOrder.setSource("productionPlan");
-//            workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
-//            for (ActivitiSetpSetDetailResult setpSetDetail : activitiSetpSetResult.getSetpSetDetails()) {
-//                if (ToolUtil.isNotEmpty(setpSetDetail.getType()) && setpSetDetail.getType().equals("1")) {
-//                    workOrder.setInSkuId(setpSetDetail.getSkuId());
-//                    workOrder.setInSkuNumber(setpSetDetail.getNum() * productionPlanDetail.getPlanNumber());
-//                } else {
-//                    workOrder.setOutSkuId(setpSetDetail.getSkuId());
-//                    workOrder.setOutSkuNumber(setpSetDetail.getNum() * productionPlanDetail.getPlanNumber());
-//                }
-//
-//            }
-//            workOrders.add(workOrder);
-//        }
-//        this.saveBatch(workOrders);
-//    }
 
     private void getTree2List(ActivitiStepsResult activitiStepsResult, List<ActivitiStepsResult> results) {
         switch (activitiStepsResult.getStepType()) {
@@ -309,8 +296,14 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
         public void format (List < ProductionWorkOrderResult > param) {
             List<Long> stepsIds = new ArrayList<>();
+            List<Long> workOrderIds = new ArrayList<>();
+            List<Long> productionPlanId = new ArrayList<>();
             for (ProductionWorkOrderResult productionWorkOrderResult : param) {
                 stepsIds.add(productionWorkOrderResult.getStepsId());
+                if (productionWorkOrderResult.getSource().equals("productionPlan")){
+                    productionPlanId.add(productionWorkOrderResult.getSourceId());
+                }
+                workOrderIds.add(productionWorkOrderResult.getWorkOrderId());
             }
             List<ActivitiSetpSetResult> setpSetsResult = activitiSetpSetService.getResultByStepsId(stepsIds);
             List<Long> stationIds = new ArrayList<>();
@@ -319,7 +312,6 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                 stationIds.add(setpSetResult.getProductionStationId());
                 shipSetpIds.add(setpSetResult.getShipSetpId());
             }
-
             List<Long> skuIds = new ArrayList<>();
             List<Long> qualityCheckIds = new ArrayList<>();
             List<ProductionStationResult> stations = productionStationService.getResultsByIds(stationIds);
@@ -331,11 +323,20 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                 qualityCheckIds.add(shipSetDetail.getMyQualityId());
             }
             List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-            List<QualityCheckResult> qualityChecks = qualityCheckService.getChecks(qualityCheckIds);
+            /**
+             * 查询生产计划  获取卡片数量
+             */
+
+            List<ProductionPlanDetail> productionPlanDetails = productionPlanId.size() == 0 ? new ArrayList<>() : productionPlanDetailService.query().in("production_plan_id", productionPlanId).list();
+            /**
+             * 查询工单对应派发任务
+             */
+            List<ProductionTaskResult> taskResults = productionTaskService.resultsByWorkOrderIds(workOrderIds);
             /**
              * 匹配数据
              */
             for (ActivitiSetpSetResult setpSetResult : setpSetsResult) {
+
                 for (ProductionStationResult station : stations) {
                     if (setpSetResult.getProductionStationId().equals(station.getProductionStationId())) {
                         setpSetResult.setProductionStation(station);
@@ -366,6 +367,24 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                 for (ActivitiSetpSetResult setpSetResult : setpSetsResult) {
                     if (result.getStepsId().equals(setpSetResult.getSetpsId())) {
                         result.setSetpSetResult(setpSetResult);
+                    }
+                }
+                int completeNum = 0;
+                int toDoNum = 0;
+                for (ProductionTaskResult taskResult : taskResults) {
+
+                    if (taskResult.getWorkOrderId().equals(result.getWorkOrderId()) && taskResult.getStatus().equals(99)){
+                        completeNum+=taskResult.getNumber();
+                    }
+                    if (taskResult.getWorkOrderId().equals(result.getWorkOrderId()) && !taskResult.getStatus().equals(99)){
+                        toDoNum+=taskResult.getNumber();
+                    }
+                }
+                result.setCompleteNum(completeNum);
+                result.setToDoNum(toDoNum);
+                for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
+                    if (productionPlanDetail.getProductionPlanId().equals(result.getSourceId()) && result.getSource().equals("productionPlan") && result.getOutSkuId().equals(productionPlanDetail.getSkuId())){
+                        result.setCardNumber(productionPlanDetail.getPlanNumber());
                     }
                 }
             }
