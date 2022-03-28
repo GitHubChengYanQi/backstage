@@ -71,4 +71,6 @@ public interface ProductionTaskService extends IService<ProductionTask> {
     void format(List<ProductionTaskResult> param);
 
     List<ProductionTaskResult> resultsByWorkOrderIds(List<Long> workOrderIds);
+
+    List<ProductionTaskResult> resultsByIds(List<Long> taskIds);
 }

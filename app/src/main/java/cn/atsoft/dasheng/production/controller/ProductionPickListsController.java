@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.production.controller;
 
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -85,8 +87,15 @@ public class ProductionPickListsController extends BaseController {
         ProductionPickLists detail = this.productionPickListsService.getById(productionPickListsParam.getPickListsId());
         ProductionPickListsResult result = new ProductionPickListsResult();
         ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
+        productionPickListsService.format(new ArrayList<ProductionPickListsResult>(){{
+            add(result);
+        }});
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionPickListsDetailResult detailResult : result.getDetailResults()) {
+            skuIds.add(detailResult.getSkuId());
+        }
+        List<StorehouseResult> stockSkus = productionPickListsService.getStockSkus(skuIds);
+        result.setStorehouseResults(stockSkus);
         return ResponseData.success(result);
     }
 

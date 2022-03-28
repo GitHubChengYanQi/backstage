@@ -22,7 +22,6 @@ import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
-import cn.atsoft.dasheng.production.model.params.ProductionTaskDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
@@ -418,6 +417,20 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         for (ProductionTask productionTask : productionTasks) {
             ProductionTaskResult result = new ProductionTaskResult();
             ToolUtil.copyProperties(productionTask, result);
+            results.add(result);
+        }
+        return results;
+    }
+    @Override
+    public List<ProductionTaskResult> resultsByIds(List<Long> taskIds){
+        if (ToolUtil.isEmpty(taskIds) || taskIds.size() == 0) {
+            return new ArrayList<>();
+        }
+        List<ProductionTask> productionTasks = this.listByIds(taskIds);
+        List<ProductionTaskResult> results = new ArrayList<>();
+        for (ProductionTask productionTask : productionTasks) {
+            ProductionTaskResult result =  new ProductionTaskResult();
+            ToolUtil.copyProperties(productionTask,result);
             results.add(result);
         }
         return results;

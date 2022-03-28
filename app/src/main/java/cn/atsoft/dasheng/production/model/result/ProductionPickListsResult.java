@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
@@ -7,6 +8,8 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 领料单
@@ -23,13 +26,20 @@ public class ProductionPickListsResult implements Serializable {
     private ProductionTaskResult productionTaskResult;
     private UserResult createUserResult;
     private UserResult userResult;
-
+    private List<ProductionPickListsDetailResult> detailResults;
+    private List<StorehouseResult> storehouseResults;
 
     /**
      * 领料单
      */
     @ApiModelProperty("领料单")
     private Long pickListsId;
+
+    /**
+     * 领取物料码
+     */
+    @ApiModelProperty("领取物料码")
+    private Long code;
 
     @ApiModelProperty("")
     private Long userId;

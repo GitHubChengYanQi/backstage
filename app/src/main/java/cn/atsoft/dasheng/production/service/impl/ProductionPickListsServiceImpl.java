@@ -1,23 +1,44 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
+import cn.atsoft.dasheng.app.model.result.PartsResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
+import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.production.entity.ProductionPickLists;
-import cn.atsoft.dasheng.production.entity.ProductionTask;
-import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
+import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsMapper;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
+import cn.atsoft.dasheng.production.model.request.SkuInStockTree;
+import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
-import  cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.production.service.ProductionTaskService;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,8 +46,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -44,6 +65,36 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private ProductionTaskService productionTaskService;
+
+    @Autowired
+    private ProductionWorkOrderService  workOrderService;
+
+    @Autowired
+    private ActivitiSetpSetService setpSetService;
+
+    @Autowired
+    private ProductionTaskDetailService taskDetailService;
+
+    @Autowired
+    private ProductionPickListsDetailService pickListsDetailService;
+
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
+
+    @Autowired
+    private SkuService skuService;
+
+    @Autowired
+    private PartsService partsService;
+
+    @Autowired
+    private ErpPartsDetailService partsDetailService;
+
+    @Autowired
+    private StockDetailsService stockDetailsService;
+
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
 
 
     @Override
@@ -79,34 +130,60 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param){
         Page<ProductionPickListsResult> pageContext = getPageContext();
         IPage<ProductionPickListsResult> page = this.baseMapper.customPageList(pageContext, param);
-        this.format(page.getRecords());
+        if (ToolUtil.isNotEmpty(page.getRecords())){
+            this.format(page.getRecords());
+        }
         return PageFactory.createPageInfo(page);
     }
-    private void format(List<ProductionPickListsResult> results){
+    @Override
+    public void format(List<ProductionPickListsResult> results){
+        List<Long> pickListsIds = new ArrayList<>();
         List<Long> productionTaskIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         for (ProductionPickListsResult result : results) {
+            pickListsIds.add(result.getPickListsId());
             userIds.add(result.getUserId());
             userIds.add(result.getCreateUser());
             productionTaskIds.add(result.getSourceId());
         }
 
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
-
-        List<ProductionTask> productionTasks = productionTaskIds.size() == 0 ? new ArrayList<>() : productionTaskService.listByIds(productionTaskIds);
-        List<ProductionTaskResult> productionTaskResults = new ArrayList<>();
-        for (ProductionTask productionTask : productionTasks) {
-            ProductionTaskResult productionTaskResult = new ProductionTaskResult();
-            ToolUtil.copyProperties(productionTask,productionTaskResult);
-            productionTaskResults.add(productionTaskResult);
+        /**
+         * 查询备料单与领料单
+         */
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.findListBySpec(new ProductionPickListsDetailParam());
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionPickListsDetailResult detailResult : detailResults) {
+            skuIds.add(detailResult.getSkuId());
         }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        for (ProductionPickListsDetailResult detailResult : detailResults) {
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(detailResult.getSkuId())){
+                    detailResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+
+
+
+
+        List<ProductionTaskResult> productionTaskResults = productionTaskIds.size() == 0 ? new ArrayList<>() : productionTaskService.resultsByIds(productionTaskIds);
+
         for (ProductionPickListsResult result : results) {
             for (ProductionTaskResult productionTaskResult : productionTaskResults) {
                 if (result.getSource().equals("productionTask") && result.getSourceId().equals(productionTaskResult.getProductionTaskId())){
                     result.setProductionTaskResult(productionTaskResult);
                 }
             }
-
+            List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
+            for (ProductionPickListsDetailResult detailResult : detailResults) {
+                if (result.getPickListsId().equals(detailResult.getPickListsId())){
+                    detailResultList.add(detailResult);
+                }
+            }
+            result.setDetailResults(detailResultList);
             for (UserResult userResultsById : userResultsByIds) {
                 if (result.getUserId().equals(userResultsById.getUserId())){
                     result.setUserResult(userResultsById);
@@ -122,15 +199,73 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public String addByProductionTask(Object param) {
         SavePickListsObject savePickListsObject = JSON.parseObject(param.toString(), SavePickListsObject.class);
         Long taskId = savePickListsObject.getProductionTask().getProductionTaskId();
+        long radomCode = RandomUtil.randomLong(4);
 
         ProductionPickLists productionPickLists = new ProductionPickLists();
+        productionPickLists.setCode(radomCode);
         productionPickLists.setStatus(97);
         productionPickLists.setSourceId(taskId);
         productionPickLists.setSource("productionTask");
         productionPickLists.setUserId(savePickListsObject.getProductionTask().getUserId());
         this.save(productionPickLists);
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
+            skuIds.add(detail.getOutSkuId());
+        }
+        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("status", 99).list();
+        List<Long> partIds = new ArrayList<>();
+        List<PartsResult> partsResults = new ArrayList<>();
+        for (Parts part : parts) {
+            partIds.add(part.getPartsId());
+            PartsResult partsResult = new PartsResult();
+            ToolUtil.copyProperties(part,partsResult);
+            partsResults.add(partsResult);
+        }
+        List<ErpPartsDetailResult> partsDetailResults = partsDetailService.getDetails(partIds);
+        for (PartsResult partsResult : partsResults) {
+            List<ErpPartsDetailResult> partsDetailResultList = new ArrayList<>();
+            for (ErpPartsDetailResult partsDetailResult : partsDetailResults) {
+                if (partsDetailResult.getPartsId().equals(partsResult.getPartsId())){
+                    partsDetailResultList.add(partsDetailResult);
+                }
+            }
+            partsResult.setParts(partsDetailResultList);
+        }
+
+        List<ProductionPickListsDetail> details = new ArrayList<>();
+
+        for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
+            for (PartsResult partsResult : partsResults) {
+                if (detail.getOutSkuId().equals(partsResult.getSkuId())) {
+                    for (ErpPartsDetailResult part : partsResult.getParts()) {
+                        ProductionPickListsDetail productionPickListsDetail = new ProductionPickListsDetail();
+                        productionPickListsDetail.setNumber(detail.getNumber()*part.getNumber());
+                        productionPickListsDetail.setSkuId(part.getSkuId());
+                        productionPickListsDetail.setPickListsId(productionPickLists.getPickListsId());
+                        details.add(productionPickListsDetail);
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        pickListsDetailService.saveBatch(details);
 
         return null;
+    }
+
+    public void takePick(ProductionPickListsParam param){
+        ProductionPickLists pickLists = this.getById(param.getPickListsId());
+        if (!param.getCode().equals(pickLists.getCode())){
+            throw new ServiceException(500,"您的验证码与单据不符");
+        }
+        if (!pickLists.getStatus().equals(98)){
+            throw new ServiceException(500,"您的领料单还没有准备好");
+        }
+        pickLists.setStatus(99);
+        this.updateById(pickLists);
+
     }
 
     private Serializable getKey(ProductionPickListsParam param){
@@ -150,5 +285,41 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+    @Override
+    public List<StorehouseResult> getStockSkus(List<Long> skuIds){
+        List<StockDetails> stockSkus = stockDetailsService.query().in("sku_id", skuIds).list();
+
+        List<StockSkuTotal> stockDetails = new ArrayList<>();
+        for (StockDetails skus : stockSkus) {
+            StockSkuTotal stockSkuTotal = new StockSkuTotal();
+            stockSkuTotal.setSkuId(skus.getSkuId());
+            stockSkuTotal.setStorehousePositionsId(skus.getStorehousePositionsId());
+            stockSkuTotal.setNumber(skus.getNumber());
+            stockDetails.add(stockSkuTotal);
+        }
+        List<StockSkuTotal> totalList = new ArrayList<>();
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+'_'+item.getStorehousePositionsId(),Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockSkuTotal(a.getSkuId(),a.getStorehousePositionsId(), a.getNumber() + b.getNumber(),new StorehousePositionsResult())).ifPresent(totalList::add);
+                }
+        );
+
+        /**
+         * 查找库位
+         */
+        List<StorehousePositions> storehousePositions = storehousePositionsService.list();
+        List<StorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
+        for (StorehousePositions storehousePosition : storehousePositions) {
+            StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePosition,storehousePositionsResult);
+            storehousePositionsResults.add(storehousePositionsResult);
+        }
+
+        return  null;
+    }
+
+
+
+
 
 }
