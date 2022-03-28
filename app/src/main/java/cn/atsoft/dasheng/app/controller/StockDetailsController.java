@@ -61,26 +61,7 @@ public class StockDetailsController extends BaseController {
         AllBomResult allBomResult = allBom.getResult();
         return ResponseData.success(allBomResult);
     }
-    /**
-     * 排列组合sku
-     */
-    public static Stack<Long> stack = new Stack<Long>();
 
-    private void skuPartsMakeUp(List<Long> skuIds, int count, int now, List<List<Long>> skuIdsCell) {
-        if (now == count) {
-            List<Long> stacks = new ArrayList<Long>(stack);
-            skuIdsCell.add(stacks);
-
-            return;
-        }
-        for (int i = 0; i < skuIds.size(); i++) {
-            if (!stack.contains(skuIds.get(i))) {
-                stack.add(skuIds.get(i));
-                skuPartsMakeUp(skuIds, count, now + 1, skuIdsCell);
-                stack.pop();
-            }
-        }
-    }
 
     /**
      * 查看详情接口
