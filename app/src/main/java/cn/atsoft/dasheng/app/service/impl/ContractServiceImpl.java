@@ -587,7 +587,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     if (ToolUtil.isNotEmpty(cycleReplaces)) {
                         CycleReplace cycleReplace = cycleReplaces.get(i);
                         for (CycleReplace.Cycle cycle : cycleReplace.getCycles()) {
-                            group = new StringBuilder(group.toString().replace(cycle.getOldText(), cycle.getNewText()));
+                            if (cycle.getOldText().equals(cycle.getNewText())) {
+                                group = new StringBuilder(group.toString().replace(cycle.getOldText(), ""));
+                            } else {
+                                group = new StringBuilder(group.toString().replace(cycle.getOldText(), cycle.getNewText()));
+                            }
                         }
                     }
                     all.append(group);
