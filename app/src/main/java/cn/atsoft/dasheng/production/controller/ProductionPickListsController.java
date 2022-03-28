@@ -3,6 +3,9 @@ package cn.atsoft.dasheng.production.controller;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
@@ -34,6 +37,9 @@ public class ProductionPickListsController extends BaseController {
 
     @Autowired
     private ProductionPickListsService productionPickListsService;
+
+    @Autowired
+    private StorehousePositionsBindService storehousePositionsBindService;
 
     /**
      * 新增接口
@@ -94,8 +100,9 @@ public class ProductionPickListsController extends BaseController {
         for (ProductionPickListsDetailResult detailResult : result.getDetailResults()) {
             skuIds.add(detailResult.getSkuId());
         }
-        List<StorehouseResult> stockSkus = productionPickListsService.getStockSkus(skuIds);
-        result.setStorehouseResults(stockSkus);
+
+        List<StorehousePositionsResult> storehousePositionsResults = storehousePositionsBindService.treeView(skuIds);
+        result.setStorehousePositionsResults(storehousePositionsResults);
         return ResponseData.success(result);
     }
 

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
@@ -28,6 +29,7 @@ public class ProductionPickListsResult implements Serializable {
     private UserResult userResult;
     private List<ProductionPickListsDetailResult> detailResults;
     private List<StorehouseResult> storehouseResults;
+    private List<StorehousePositionsResult> storehousePositionsResults;
 
     /**
      * 领料单
