@@ -677,7 +677,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             if (ToolUtil.isEmpty(adress) || ToolUtil.isEmpty(adress.getLocation())) {
                 content = content.replace("${{提取(交付)地点}}", "");
             } else {
-                content = content.replace("${{提取(交付)地点}}", (adress.getLocation()));
+                content = content.replace("${{提取(交付)地点}}", (adress.getLocation()+(adress.getDetailLocation()==null?"":adress.getDetailLocation())));
                 adress.setType("收获地址");
                 adressService.updateById(adress);
             }
