@@ -131,7 +131,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
     @Override
     public List<StorehousePositionsResult> treeView(List<Long> skuIds) {
         List<StorehousePositionsResult> topResults = new ArrayList<>();
-
+        List<SkuResult> skuResultList = skuService.formatSkuResult(skuIds);
 
         List<Long> positionIds = new ArrayList<>();
         List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).list();
@@ -141,15 +141,32 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
 
         List<StockDetails> totalList = new ArrayList<>();
 
-        stockDetails.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+'_'+item.getStorehousePositionsId(),Collectors.toList())).forEach(
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + item.getStorehousePositionsId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new StockDetails(){{
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setStorehousePositionsId(a.getStorehousePositionsId());
                         setSkuId(a.getSkuId());
-                        setNumber(a.getNumber()+b.getNumber());
+                        setNumber(a.getNumber() + b.getNumber());
                     }}).ifPresent(totalList::add);
                 }
         );
+
+        Map<Long, List<SkuResult>> skuMap = new HashMap<>();
+        for (StockDetails details : totalList) {
+            for (SkuResult skuResult : skuResultList) {
+                List<SkuResult> results = skuMap.get(details.getStorehousePositionsId());
+                if (ToolUtil.isEmpty(results)) {
+                    results = new ArrayList<>();
+                    results.add(skuResult);
+                    skuMap.put(details.getStorehousePositionsId(), results);
+                    break;
+                } else {
+                    results.add(skuResult);
+                    skuMap.put(details.getStorehousePositionsId(), results);
+                    break;
+                }
+            }
+        }
 
 
         List<StorehousePositions> positions = positionsService.list();
@@ -165,12 +182,20 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         /**
          * 查出最下级库位 进行比对
          */
-        List<StorehousePositions> storehousePositions = positionsService.listByIds(positionIds);
+        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
+
 
         for (StorehousePositionsResult positionsResult : positionsResults) {
             StorehousePositionsResult supper = allMap.get(positionsResult.getPid());
-            if (ToolUtil.isNotEmpty(supper)) {       //找到最下级的直属上级
+
+            List<SkuResult> skuResults = skuMap.get(positionsResult.getStorehousePositionsId());
+            positionsResult.setSkuResults(skuResults);
+
+            if (ToolUtil.isNotEmpty(supper)) {
+
+
+                //找到最下级的直属上级
                 List<StorehousePositionsResult> results = supper.getStorehousePositionsResults();
                 if (ToolUtil.isEmpty(results)) {
                     results = new ArrayList<>();
@@ -179,7 +204,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                 results.add(positionsResult);
                 supper.setStorehousePositionsResults(results);
                 StorehousePositionsResult parent = new StorehousePositionsResult();//直属上级 找到所有上级
-                StorehousePositionsResult result = getSupper(supper, allResult, parent);
+                StorehousePositionsResult result = getSupper(supper, allResult, parent, skuResults);
                 if (topResults.stream().noneMatch(i -> i.getStorehousePositionsId().equals(result.getStorehousePositionsId()))) {
                     topResults.add(result);
                 }
@@ -197,11 +222,17 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
      * @param results
      * @return
      */
-    private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results, StorehousePositionsResult result) {
+    private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results, StorehousePositionsResult result, List<SkuResult> skuResults) {
         if (!now.getPid().equals(0L)) {
             for (StorehousePositionsResult storehousePositionsResult : results) {
 
                 if (now.getPid().equals(storehousePositionsResult.getStorehousePositionsId())) {
+                    List<SkuResult> skuResultList = now.getSkuResults();
+                    if (ToolUtil.isEmpty(skuResultList)) {
+                        now.setSkuResults(skuResults);
+                    } else {
+                        skuResultList.addAll(skuResults);
+                    }
 
                     List<StorehousePositionsResult> positionsResults = storehousePositionsResult.getStorehousePositionsResults();
                     if (ToolUtil.isEmpty(positionsResults)) {
@@ -210,7 +241,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                     positionsResults.add(now);
                     storehousePositionsResult.setStorehousePositionsResults(positionsResults);
 
-                    result = getSupper(storehousePositionsResult, results, result);
+                    result = getSupper(storehousePositionsResult, results, result, skuResults);
                 }
             }
         } else {
