@@ -24,20 +24,39 @@ public class AllBomController {
         List<AllBomResult> bomResults = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
 
-        for (AllBomParam.skuNumberParam skuId : param.getSkuIds()) {
+        for (AllBomParam.SkuNumberParam skuId : param.getSkuIds()) {
             ids.add(skuId.getSkuId());
         }
 
 
         List<List<Long>> lists = skuIdsList(ids);
-        for (List<Long> list : lists) {
+        List<List<AllBomParam.SkuNumberParam>> allSkus = new ArrayList<>();
 
+
+        for (List<Long> list : lists) {
+            List<AllBomParam.SkuNumberParam> skuNumberParams = new ArrayList<>();
+            for (Long aLong : list) {
+                for (AllBomParam.SkuNumberParam numberParam : param.getSkuIds()) {
+                    if (aLong.equals(numberParam.getSkuId())) {
+                        skuNumberParams.add(numberParam);
+                        break;
+                    }
+                }
+            }
+            allSkus.add(skuNumberParams);
         }
 
-//            AllBom allBom = new AllBom();
-//            allBom.start(param.getSkuIds());
-//            AllBomResult allBomResult = allBom.getResult();
-//            bomResults.add(allBomResult);
+        AllBomResult allBomResult = new AllBomResult();
+        for (List<AllBomParam.SkuNumberParam> skus : allSkus) {
+            AllBom allBom = new AllBom();
+            allBom.start(skus);
+            AllBomResult bom = allBom.getResult();
+            allBomResult.setResult(bom.getResult());
+            allBomResult.setOwe(bom.getOwe());
+            bomResults.add(allBomResult);
+        }
+
+
         return ResponseData.success(bomResults);
     }
 

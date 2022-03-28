@@ -114,12 +114,12 @@ public class AllBom {
     }
 
 
-    public void start(List<AllBomParam.skuNumberParam> params) {
+    public void start(List<AllBomParam.SkuNumberParam> params) {
 
         /**
          * 获取bom
          */
-        for (AllBomParam.skuNumberParam param : params) {
+        for (AllBomParam.SkuNumberParam param : params) {
             getBom(param.getSkuId(), 1, 0);
         }
 
@@ -131,7 +131,7 @@ public class AllBom {
         /**
          *  开始计算
          */
-        for (AllBomParam.skuNumberParam param : params) {
+        for (AllBomParam.SkuNumberParam param : params) {
             getMix(param.getSkuId(), param.getNum());
         }
 
@@ -280,7 +280,7 @@ public class AllBom {
         List<Long> noEnough = new ArrayList<>();
 
         Map<Long, Object> lastChild = bomMap.get("lastChild");
-
+        
         for (Long id : lastChild.keySet()) {
             Long stockNum = stockNumber.get(id);
             SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
