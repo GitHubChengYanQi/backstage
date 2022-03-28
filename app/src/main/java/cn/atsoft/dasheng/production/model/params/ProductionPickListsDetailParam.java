@@ -24,6 +24,9 @@ public class ProductionPickListsDetailParam implements Serializable, BaseValidat
 
     private static final long serialVersionUID = 1L;
 
+    private Long storehousePositionsId;
+    private Long storehouseId;
+
 
     /**
      * 子表id

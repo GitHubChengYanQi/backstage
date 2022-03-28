@@ -33,6 +33,18 @@ public class ProductionPickListsDetail implements Serializable {
     @TableField("pick_lists_id")
     private Long pickListsId;
 
+
+
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
+
+
+
+    @TableField("storehouse_id")
+    private Long storehouseId;
+
+
+
     /**
      * 物料id
      */
@@ -79,6 +91,22 @@ public class ProductionPickListsDetail implements Serializable {
     private Long deptId;
 
 
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
+    }
+    
     public Long getPickListsDetailId() {
         return pickListsDetailId;
     }

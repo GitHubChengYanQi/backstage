@@ -26,6 +26,12 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
     private static final long serialVersionUID = 1L;
 
 
+
+
+
+    private Long storehousePositionsId;
+    private Long storehouseId;
+
     /**
      * 子表id
      */

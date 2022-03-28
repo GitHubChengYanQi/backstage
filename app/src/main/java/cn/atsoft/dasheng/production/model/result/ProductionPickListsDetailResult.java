@@ -24,6 +24,9 @@ public class ProductionPickListsDetailResult implements Serializable {
     private SkuResult skuResult;
 
 
+    private Long storehousePositionsId;
+    private Long storehouseId;
+
     /**
      * 子表id
      */
