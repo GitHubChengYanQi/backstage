@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.production.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsCartMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
@@ -12,9 +14,11 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +31,10 @@ import java.util.List;
  */
 @Service
 public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPickListsCartMapper, ProductionPickListsCart> implements ProductionPickListsCartService {
+
+
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public void add(ProductionPickListsCartParam param){
@@ -54,7 +62,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Override
     public List<ProductionPickListsCartResult> findListBySpec(ProductionPickListsCartParam param){
-        return null;
+        List<ProductionPickListsCartResult> productionPickListsCartResults = this.baseMapper.customList(param);
+        this.format(productionPickListsCartResults);
+
+        return productionPickListsCartResults;
     }
 
     @Override
@@ -63,6 +74,23 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         IPage<ProductionPickListsCartResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
+    private void format(List<ProductionPickListsCartResult> param){
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionPickListsCartResult productionPickListsCartResult : param) {
+            skuIds.add(productionPickListsCartResult.getSkuId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        for (ProductionPickListsCartResult productionPickListsCartResult : param) {
+            for (SkuResult skuResult : skuResults) {
+                if (productionPickListsCartResult.getSkuId().equals(skuResult.getSkuId())){
+                    productionPickListsCartResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+    }
+
+
 
     private Serializable getKey(ProductionPickListsCartParam param){
         return param.getPickListsCart();

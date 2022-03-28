@@ -35,6 +35,12 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
     private Long userId;
 
     /**
+     * 领取物料码
+     */
+    @ApiModelProperty("领取物料码")
+    private Long code;
+
+    /**
      * 来源
      */
     @ApiModelProperty("来源")

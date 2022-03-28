@@ -25,7 +25,7 @@ import java.util.Map;
  * @Date 2022-03-25 16:18:02
  */
 @RestController
-@RequestMapping("/productionPickListsCart")
+    @RequestMapping("/productionPickListsCart")
 @Api(tags = "领料单详情表")
 public class ProductionPickListsCartController extends BaseController {
 
@@ -97,11 +97,11 @@ public class ProductionPickListsCartController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ProductionPickListsCartResult> list(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
+    public List<ProductionPickListsCartResult> list(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
         if(ToolUtil.isEmpty(productionPickListsCartParam)){
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
-        return this.productionPickListsCartService.findPageBySpec(productionPickListsCartParam);
+        return this.productionPickListsCartService.findListBySpec(productionPickListsCartParam);
     }
 
 

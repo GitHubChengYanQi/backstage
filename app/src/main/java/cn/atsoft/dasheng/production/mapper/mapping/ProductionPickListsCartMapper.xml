@@ -29,8 +29,8 @@
             <if test="paramCondition.pickListsCart != null">
                 and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
             </if>
-            <if test="paramCondition.productionTaskId != null">
-                and production_task_id like CONCAT('%',#{paramCondition.productionTaskId},'%')
+            <if test="paramCondition.pickListsId != null">
+                and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
             </if>
             <if test="paramCondition.skuId != null">
                 and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
@@ -65,8 +65,8 @@
                 <if test="paramCondition.pickListsCart != null">
                         and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
                 </if>
-                <if test="paramCondition.productionTaskId != null">
-                        and production_task_id like CONCAT('%',#{paramCondition.productionTaskId},'%')
+                <if test="paramCondition.pickListsId != null">
+                    and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
                 </if>
                 <if test="paramCondition.skuId != null">
                         and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
@@ -101,8 +101,8 @@
                 <if test="paramCondition.pickListsCart != null">
                         and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
                 </if>
-                <if test="paramCondition.productionTaskId != null">
-                        and production_task_id like CONCAT('%',#{paramCondition.productionTaskId},'%')
+                <if test="paramCondition.pickListsId != null">
+                    and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
                 </if>
                 <if test="paramCondition.skuId != null">
                         and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
@@ -137,8 +137,8 @@
                 <if test="paramCondition.pickListsCart != null">
                         and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
                 </if>
-                <if test="paramCondition.productionTaskId != null">
-                        and production_task_id like CONCAT('%',#{paramCondition.productionTaskId},'%')
+                <if test="paramCondition.pickListsId != null">
+                    and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
                 </if>
                 <if test="paramCondition.skuId != null">
                         and sku_id like CONCAT('%',#{paramCondition.skuId},'%')

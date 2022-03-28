@@ -20,6 +20,18 @@
     <sql id="Base_Column_List">
         pick_lists_detail_id AS "pickListsDetailId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
+    <sql id="Base_Column_List2">
+        a.pick_lists_detail_id AS "pickListsDetailId",
+	    a.pick_lists_id AS "pickListsId",
+	    a.sku_id AS "skuId",
+	    a.number AS "number",
+	    a.create_user AS "createUser",
+	    a.update_user AS "updateUser",
+	    a.create_time AS "createTime",
+	    a.update_time AS "updateTime",
+	    a.display AS "display",
+	    a.deptId AS "deptId"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam">
@@ -56,6 +68,13 @@
             <if test="paramCondition.deptId != null">
                 and deptId like CONCAT('%',#{paramCondition.deptId},'%')
             </if>
+    </select>
+    <select id="customList2" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam">
+        select
+        <include refid="Base_Column_List2"/>
+        FROM `daoxin_production_pick_lists_detail`  a
+        LEFT JOIN daoxin_production_pick_lists_cart b ON a.pick_lists_id = b.pick_lists_id
+        WHERE b.sku_id is NULL
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam">
