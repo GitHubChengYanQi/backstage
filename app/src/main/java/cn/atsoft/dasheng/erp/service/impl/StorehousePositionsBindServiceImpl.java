@@ -246,7 +246,13 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             }
         } else {
             result = now;
-            result.setSkuResults(skuResults);
+            List<SkuResult> skuResultList = result.getSkuResults();
+            if (ToolUtil.isEmpty(skuResultList)) {
+                result.setSkuResults(skuResults);
+            } else {
+                skuResultList.addAll(skuResults);
+            }
+
         }
         return result;
     }
