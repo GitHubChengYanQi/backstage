@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -22,6 +24,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsDeptBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -35,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -57,6 +61,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
 
     @Autowired
     private StorehousePositionsDeptBindService storehousePositionsDeptBindService;
+
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public StorehousePositionsBind add(StorehousePositionsBindParam param) {
@@ -125,11 +132,25 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
     public List<StorehousePositionsResult> treeView(List<Long> skuIds) {
         List<StorehousePositionsResult> topResults = new ArrayList<>();
 
-        List<StorehousePositionsBind> positionsBinds = this.query().in("sku_id", skuIds).list();
+
         List<Long> positionIds = new ArrayList<>();
-        for (StorehousePositionsBind positionsBind : positionsBinds) {
-            positionIds.add(positionsBind.getPositionId());
+        List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).list();
+        for (StockDetails stockDetail : stockDetails) {
+            positionIds.add(stockDetail.getStorehousePositionsId());
         }
+
+        List<StockDetails> totalList = new ArrayList<>();
+
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+'_'+item.getStorehousePositionsId(),Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails(){{
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber()+b.getNumber());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+
 
         List<StorehousePositions> positions = positionsService.list();
         List<StorehousePositionsResult> allResult = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
@@ -158,7 +179,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                 results.add(positionsResult);
                 supper.setStorehousePositionsResults(results);
                 StorehousePositionsResult parent = new StorehousePositionsResult();//直属上级 找到所有上级
-                StorehousePositionsResult result = getSupper(supper, allResult,parent);
+                StorehousePositionsResult result = getSupper(supper, allResult, parent);
                 if (topResults.stream().noneMatch(i -> i.getStorehousePositionsId().equals(result.getStorehousePositionsId()))) {
                     topResults.add(result);
                 }
@@ -176,7 +197,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
      * @param results
      * @return
      */
-    private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results,StorehousePositionsResult result) {
+    private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results, StorehousePositionsResult result) {
         if (!now.getPid().equals(0L)) {
             for (StorehousePositionsResult storehousePositionsResult : results) {
 
@@ -189,11 +210,11 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                     positionsResults.add(now);
                     storehousePositionsResult.setStorehousePositionsResults(positionsResults);
 
-                    result = getSupper(storehousePositionsResult, results,result);
+                    result = getSupper(storehousePositionsResult, results, result);
                 }
             }
-        }else {
-           result = now;
+        } else {
+            result = now;
         }
         return result;
     }
