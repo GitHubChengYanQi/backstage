@@ -246,6 +246,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             }
         } else {
             result = now;
+            result.setSkuResults(skuResults);
         }
         return result;
     }
