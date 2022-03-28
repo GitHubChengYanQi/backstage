@@ -43,7 +43,7 @@ public class ContractExcel {
         String noteName = "d:/";
         String reportDirName = "合同.doc";
         htmlToWord(reportDirName, noteName, contract.getContent());
-        return ResponseData.success();
+        return ResponseData.success("保存路径：" + noteName + reportDirName);
     }
 
 
