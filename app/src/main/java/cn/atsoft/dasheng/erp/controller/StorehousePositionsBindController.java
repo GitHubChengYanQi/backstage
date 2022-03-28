@@ -96,6 +96,19 @@ public class StorehousePositionsBindController extends BaseController {
     }
 
     /**
+     * 删除接口
+     *
+     * @author song
+     * @Date 2022-01-20
+     */
+    @RequestMapping(value = "/treeView", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData treeView(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
+        List<StorehousePositionsResult> results = this.storehousePositionsBindService.treeView(storehousePositionsBindParam.getSkuIds());
+        return ResponseData.success(results);
+    }
+
+    /**
      * 查看详情接口
      *
      * @author song
