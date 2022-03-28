@@ -156,8 +156,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                 }
 
                 results.add(positionsResult);
-                supper.setStorehousePositionsResults(results);       //直属上级 找到所有上级
-                StorehousePositionsResult result = getSupper(supper, allResult);
+                supper.setStorehousePositionsResults(results);
+                StorehousePositionsResult parent = new StorehousePositionsResult();//直属上级 找到所有上级
+                StorehousePositionsResult result = getSupper(supper, allResult,parent);
                 if (topResults.stream().noneMatch(i -> i.getStorehousePositionsId().equals(result.getStorehousePositionsId()))) {
                     topResults.add(result);
                 }
@@ -175,18 +176,24 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
      * @param results
      * @return
      */
-    private StorehousePositionsResult getSupper(StorehousePositionsResult result, List<StorehousePositionsResult> results) {
+    private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results,StorehousePositionsResult result) {
+        if (!now.getPid().equals(0L)) {
+            for (StorehousePositionsResult storehousePositionsResult : results) {
 
-        for (StorehousePositionsResult storehousePositionsResult : results) {
-            if (result.getPid().equals(storehousePositionsResult.getStorehousePositionsId())) {
-                List<StorehousePositionsResult> positionsResults = storehousePositionsResult.getStorehousePositionsResults();
-                if (ToolUtil.isEmpty(positionsResults)) {
-                    positionsResults = new ArrayList<>();
+                if (now.getPid().equals(storehousePositionsResult.getStorehousePositionsId())) {
+
+                    List<StorehousePositionsResult> positionsResults = storehousePositionsResult.getStorehousePositionsResults();
+                    if (ToolUtil.isEmpty(positionsResults)) {
+                        positionsResults = new ArrayList<>();
+                    }
+                    positionsResults.add(now);
+                    storehousePositionsResult.setStorehousePositionsResults(positionsResults);
+
+                    result = getSupper(storehousePositionsResult, results,result);
                 }
-                positionsResults.add(result);
-                storehousePositionsResult.setStorehousePositionsResults(positionsResults);
-                getSupper(storehousePositionsResult, results);
             }
+        }else {
+           result = now;
         }
         return result;
     }
