@@ -77,7 +77,7 @@
         select
         <include refid="Base_Column_List2"/>
         FROM `daoxin_production_pick_lists_detail`  a
-        LEFT JOIN daoxin_production_pick_lists_cart b ON a.pick_lists_id = b.pick_lists_id
+        LEFT JOIN daoxin_production_pick_lists_cart b ON a.pick_lists_id = b.pick_lists_id  and a.sku_id = b.sku_id2
         WHERE b.sku_id is NULL
     </select>
 

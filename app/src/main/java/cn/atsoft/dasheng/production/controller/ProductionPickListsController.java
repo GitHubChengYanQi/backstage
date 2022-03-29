@@ -101,7 +101,7 @@ public class ProductionPickListsController extends BaseController {
             skuIds.add(detailResult.getSkuId());
         }
 
-        List<StorehousePositionsResult> storehousePositionsResults = storehousePositionsBindService.treeView(skuIds);
+        List<StorehousePositionsResult> storehousePositionsResults = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.treeView(skuIds);
         result.setStorehousePositionsResults(storehousePositionsResults);
         return ResponseData.success(result);
     }

@@ -72,4 +72,6 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     String addByProductionTask(Object param);
 
     List<StorehouseResult> getStockSkus(List<Long> skuIds);
+
+    void outStock(ProductionPickListsParam param);
 }

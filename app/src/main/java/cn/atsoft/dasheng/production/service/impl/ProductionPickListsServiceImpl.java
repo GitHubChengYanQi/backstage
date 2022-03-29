@@ -3,17 +3,17 @@ package cn.atsoft.dasheng.production.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
+import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
+import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -21,13 +21,11 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
-import cn.atsoft.dasheng.production.model.request.SkuInStockTree;
 import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
@@ -36,7 +34,6 @@ import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -95,6 +92,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+
+    @Autowired
+    private OutstockOrderService outstockOrderService;
+
+    @Autowired
+    private ProductionPickCodeService pickCodeService;
 
 
     @Override
@@ -156,7 +159,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
         }
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(detailResult.getSkuId())){
@@ -318,6 +321,52 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return  null;
     }
 
+    @Override
+    public void outStock(ProductionPickListsParam param){
+        List<Long> stockIds = new ArrayList<>();
+        List<Long> pickListsIds = new ArrayList<>();
+        for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
+            stockIds.add(pickListsDetailParam.getStorehouseId());
+            pickListsIds.add(pickListsDetailParam.getPickListsId());
+        }
+        List<ProductionPickCode> productionPickCodes = new ArrayList<>();
+        for (Long pickListsId : pickListsIds) {
+            ProductionPickCode productionPickCode = new ProductionPickCode();
+            productionPickCode.setCode(param.getCode());
+            productionPickCode.setPickListsId(pickListsId);
+            productionPickCodes.add(productionPickCode);
+        }
+        pickCodeService.saveBatch(productionPickCodes);
+
+
+        List<ProductionPickLists> pickLists = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).list();
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickLists).list();
+        for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+            for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
+                if (pickListsDetailParam.getPickListsId().equals(pickListsDetail.getPickListsId()) && pickListsDetailParam.getSkuId().equals(pickListsDetail.getSkuId()) && pickListsDetailParam.getNumber().equals(pickListsDetail.getNumber())){
+                    pickListsDetail.setStatus(99);
+                }
+            }
+        }
+        pickListsDetailService.updateBatchById(pickListsDetails);
+
+        stockIds = stockIds.stream().distinct().collect(Collectors.toList());
+        for (Long stockId : stockIds) {
+            OutstockOrderParam outstockOrder = new OutstockOrderParam();
+            outstockOrder.setStorehouseId(stockId);
+            List<ApplyDetails> applyDetails = new ArrayList<>();
+            for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
+                if (pickListsDetailParam.getStorehouseId().equals(stockId)){
+                    ApplyDetails applyDetail = new ApplyDetails();
+                    applyDetail.setNumber(Long.valueOf(pickListsDetailParam.getNumber()));
+                    applyDetail.setSkuId(pickListsDetailParam.getSkuId());
+                    applyDetails.add(applyDetail);
+                }
+            }
+            outstockOrder.setApplyDetails(applyDetails);
+            outstockOrderService.add(outstockOrder);
+        }
+    }
 
 
 

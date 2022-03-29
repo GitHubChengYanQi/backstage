@@ -5,12 +5,18 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsCartMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
+import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import  cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,6 +41,12 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Autowired
     private SkuService skuService;
+
+    @Autowired
+    private ProductionPickListsService pickListsService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(ProductionPickListsCartParam param){
@@ -108,6 +120,59 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         ProductionPickListsCart entity = new ProductionPickListsCart();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public  List<CartGroupByUserListRequest> groupByUser(ProductionPickListsCartParam param){
+
+        List<ProductionPickLists> productionPickLists = param.getPickListsIds().size() == 0 ? new ArrayList<>() : pickListsService.listByIds(param.getPickListsIds());
+        List<ProductionPickListsResult> pickListsResults = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        List<Long> pickListsId = new ArrayList<>();
+        for (ProductionPickLists productionPickList : productionPickLists) {
+            ProductionPickListsResult productionPickListsResult = new ProductionPickListsResult();
+            ToolUtil.copyProperties(productionPickList,productionPickListsResult);
+            pickListsResults.add(productionPickListsResult);
+            userIds.add(productionPickList.getUserId());
+            pickListsId.add(productionPickList.getPickListsId());
+        }
+
+
+        List<ProductionPickListsCart> pickListsCart = pickListsId.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsId).list();
+        List<ProductionPickListsCartResult> results = new ArrayList<>();
+        for (ProductionPickListsCart productionPickListsCart : pickListsCart) {
+            ProductionPickListsCartResult result = new ProductionPickListsCartResult();
+            ToolUtil.copyProperties(productionPickListsCart,result);
+            results.add(result);
+        }
+
+        this.format(results);
+
+
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+        List<CartGroupByUserListRequest> requests = new ArrayList<>();
+        for (UserResult userResult : userResultsByIds) {
+            CartGroupByUserListRequest request = new CartGroupByUserListRequest();
+            request.setName(userResult.getName());
+            request.setUserId(userResult.getUserId());
+            for (ProductionPickListsResult pickListsResult : pickListsResults) {
+                if (userResult.getUserId().equals(pickListsResult.getUserId())){
+                    List<ProductionPickListsCartResult> pickListsCartResults = new ArrayList<>();
+                    for (ProductionPickListsCartResult result : results) {
+                        if (result.getPickListsId().equals(pickListsResult.getPickListsId())){
+                            pickListsCartResults.add(result);
+                        }
+                    }
+                    request.setCartResults(pickListsCartResults);
+                }
+            }
+            requests.add(request);
+        }
+
+
+
+
+
+        return requests;
     }
 
 }
