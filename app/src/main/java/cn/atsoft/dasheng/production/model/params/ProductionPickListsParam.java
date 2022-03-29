@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.params;
 
+import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,6 +25,12 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
 
     private static final long serialVersionUID = 1L;
 
+    private List<ProductionPickListsDetailParam> pickListsDetailParams;
+    private List<Long> pickListsIds;
+
+
+
+
 
     /**
      * 领料单
@@ -33,6 +40,12 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
 
     @ApiModelProperty("")
     private Long userId;
+
+    /**
+     * 领取物料码
+     */
+    @ApiModelProperty("领取物料码")
+    private Long code;
 
     /**
      * 来源

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
+import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -25,7 +26,7 @@ import java.util.Map;
  * @Date 2022-03-25 16:18:02
  */
 @RestController
-@RequestMapping("/productionPickListsCart")
+    @RequestMapping("/productionPickListsCart")
 @Api(tags = "领料单详情表")
 public class ProductionPickListsCartController extends BaseController {
 
@@ -97,11 +98,25 @@ public class ProductionPickListsCartController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ProductionPickListsCartResult> list(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
+    public List<ProductionPickListsCartResult> list(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
         if(ToolUtil.isEmpty(productionPickListsCartParam)){
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
-        return this.productionPickListsCartService.findPageBySpec(productionPickListsCartParam);
+        return this.productionPickListsCartService.findListBySpec(productionPickListsCartParam);
+    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/groupByUserList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<CartGroupByUserListRequest> groupByUserList(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
+        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+            productionPickListsCartParam = new ProductionPickListsCartParam();
+        }
+        return this.productionPickListsCartService.groupByUser(productionPickListsCartParam);
     }
 
 

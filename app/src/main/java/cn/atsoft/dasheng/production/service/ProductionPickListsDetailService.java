@@ -58,6 +58,8 @@ public interface ProductionPickListsDetailService extends IService<ProductionPic
      */
     List<ProductionPickListsDetailResult> findListBySpec(ProductionPickListsDetailParam param);
 
+    List<ProductionPickListsDetailResult> getByTask(ProductionPickListsDetailParam param);
+
     /**
      * 查询分页数据，Specification模式
      *

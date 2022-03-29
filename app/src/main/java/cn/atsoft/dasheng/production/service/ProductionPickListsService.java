@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.service;
 
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
@@ -66,5 +67,13 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      */
      PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param);
 
-     String addByProductionTask(Object param);
+    void format(List<ProductionPickListsResult> results);
+
+    void formatStatus99(List<ProductionPickListsResult> results);
+
+    String addByProductionTask(Object param);
+
+    List<StorehouseResult> getStockSkus(List<Long> skuIds);
+
+    void outStock(ProductionPickListsParam param);
 }

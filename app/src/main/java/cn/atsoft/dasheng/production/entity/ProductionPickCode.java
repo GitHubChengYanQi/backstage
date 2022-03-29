@@ -1,54 +1,51 @@
 package cn.atsoft.dasheng.production.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.annotations.ApiModelProperty;
+import com.baomidou.mybatisplus.annotation.*;
 
+import java.util.Date;
 import java.io.Serializable;
 
 /**
  * <p>
- * 领料单
+ * 领取物料码
  * </p>
  *
- * @author Captain_Jazz
- * @since 2022-03-25
+ * @author cheng
+ * @since 2022-03-29
  */
-@TableName("daoxin_production_pick_lists")
-public class ProductionPickLists implements Serializable {
+@TableName("daoxin_production_pick_code")
+public class ProductionPickCode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 领料单
+     * 取件码id
      */
-      @TableId(value = "pick_lists_id", type = IdType.ID_WORKER)
-    private Long pickListsId;
+    @TableId(value = "pick_code_id", type = IdType.ID_WORKER)
+    private Long pickCodeId;
 
     /**
-     * 领取物料码
+     * 取件码
      */
     @TableField("code")
     private Long code;
-
+    /**
+     * 任务id
+     */
+    @TableField("production_task_id")
+    private Long productionTaskId;
+    
+    /**
+     * 取件码
+     */
     @TableField("user_id")
     private Long userId;
 
     /**
-     * 来源
+     * 关联领料单id
      */
-    @TableField("source")
-    private String source;
-
-    /**
-     * 来源id
-     */
-    @TableField("source_id")
-    private Long sourceId;
+    @TableField("pick_lists_id")
+    private Long pickListsId;
 
     /**
      * 创建者
@@ -86,19 +83,13 @@ public class ProductionPickLists implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
-    /**
-     * 状态
-     */
-    @TableField("status")
-    private Integer status;
 
-
-    public Long getPickListsId() {
-        return pickListsId;
+    public Long getPickCodeId() {
+        return pickCodeId;
     }
 
-    public void setPickListsId(Long pickListsId) {
-        this.pickListsId = pickListsId;
+    public void setPickCodeId(Long pickCodeId) {
+        this.pickCodeId = pickCodeId;
     }
 
     public Long getCode() {
@@ -109,28 +100,12 @@ public class ProductionPickLists implements Serializable {
         this.code = code;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getPickListsId() {
+        return pickListsId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public Long getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
+    public void setPickListsId(Long pickListsId) {
+        this.pickListsId = pickListsId;
     }
 
     public Long getCreateUser() {
@@ -157,6 +132,22 @@ public class ProductionPickLists implements Serializable {
         this.createTime = createTime;
     }
 
+    public Long getProductionTaskId() {
+        return productionTaskId;
+    }
+
+    public void setProductionTaskId(Long productionTaskId) {
+        this.productionTaskId = productionTaskId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public Date getUpdateTime() {
         return updateTime;
     }
@@ -181,28 +172,18 @@ public class ProductionPickLists implements Serializable {
         this.deptId = deptId;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
     @Override
     public String toString() {
-        return "ProductionPickLists{" +
-        "pickListsId=" + pickListsId +
-        ", userId=" + userId +
-        ", source=" + source +
-        ", sourceId=" + sourceId +
+        return "ProductionPickCode{" +
+        "pickCodeId=" + pickCodeId +
+        ", code=" + code +
+        ", pickListsId=" + pickListsId +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
         ", display=" + display +
         ", deptId=" + deptId +
-        ", status=" + status +
         "}";
     }
 }

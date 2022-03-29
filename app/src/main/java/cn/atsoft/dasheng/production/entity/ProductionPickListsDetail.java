@@ -27,11 +27,26 @@ public class ProductionPickListsDetail implements Serializable {
       @TableId(value = "pick_lists_detail_id", type = IdType.ID_WORKER)
     private Long pickListsDetailId;
 
+
+    @TableField("status")
+    private Integer status;
+
     /**
      * 主表id
      */
     @TableField("pick_lists_id")
     private Long pickListsId;
+
+
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
+
+
+
+    @TableField("storehouse_id")
+    private Long storehouseId;
+
+
 
     /**
      * 物料id
@@ -79,6 +94,30 @@ public class ProductionPickListsDetail implements Serializable {
     private Long deptId;
 
 
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
+    }
+    
     public Long getPickListsDetailId() {
         return pickListsDetailId;
     }
