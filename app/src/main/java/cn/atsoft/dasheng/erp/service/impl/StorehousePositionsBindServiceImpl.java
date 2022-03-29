@@ -168,21 +168,21 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             }
         }
 
-
-        List<StorehousePositions> positions = positionsService.list();
-        List<StorehousePositionsResult> allResult = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
         /**
          *  查出所有库位放进map 里
          */
+        List<StorehousePositions> positions = positionsService.list();
+        List<StorehousePositionsResult> allResult = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+
         Map<Long, StorehousePositionsResult> allMap = new HashMap<>();
         for (StorehousePositionsResult storehousePositionsResult : allResult) {
             allMap.put(storehousePositionsResult.getStorehousePositionsId(), storehousePositionsResult);
         }
 
         /**
-         * 查出最下级库位 进行比对
+         * 查出需要的库位 进行比对
          */
-        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
+        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id",positionIds).orderByDesc("sort").list();
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
 
 
