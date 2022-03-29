@@ -154,16 +154,18 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         Map<Long, List<SkuResult>> skuMap = new HashMap<>();
         for (StockDetails details : totalList) {
             for (SkuResult skuResult : skuResultList) {
-                List<SkuResult> results = skuMap.get(details.getStorehousePositionsId());
-                if (ToolUtil.isEmpty(results)) {
-                    results = new ArrayList<>();
-                    results.add(skuResult);
-                    skuMap.put(details.getStorehousePositionsId(), results);
-                    break;
-                } else {
-                    results.add(skuResult);
-                    skuMap.put(details.getStorehousePositionsId(), results);
-                    break;
+                if (details.getSkuId().equals(skuResult.getSkuId())) {
+                    List<SkuResult> results = skuMap.get(details.getStorehousePositionsId());
+                    if (ToolUtil.isEmpty(results)) {
+                        results = new ArrayList<>();
+                        results.add(skuResult);
+                        skuMap.put(details.getStorehousePositionsId(), results);
+                        break;
+                    } else {
+                        results.add(skuResult);
+                        skuMap.put(details.getStorehousePositionsId(), results);
+                        break;
+                    }
                 }
             }
         }
@@ -182,7 +184,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         /**
          * 查出需要的库位 进行比对
          */
-        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", positionIds).orderByDesc("sort").list();
+        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", positionIds).orderByAsc("sort").list();
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
 
 
