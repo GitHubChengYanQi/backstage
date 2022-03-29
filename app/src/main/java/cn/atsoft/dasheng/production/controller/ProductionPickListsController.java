@@ -135,6 +135,15 @@ public class ProductionPickListsController extends BaseController {
         productionPickListsParam.setUserId(LoginContextHolder.getContext().getUserId());
         return this.productionPickListsService.findPageBySpec(productionPickListsParam);
     }
+    @RequestMapping(value = "/createOutStockOrder", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData createOutStockOrder(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+        if(ToolUtil.isEmpty(productionPickListsParam)){
+            productionPickListsParam = new ProductionPickListsParam();
+        }
+        this.productionPickListsService.outStock(productionPickListsParam);
+        return ResponseData.success();
+    }
 
 
 
