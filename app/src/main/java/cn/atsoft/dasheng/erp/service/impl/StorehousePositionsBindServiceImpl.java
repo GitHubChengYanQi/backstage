@@ -154,18 +154,16 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         Map<Long, List<SkuResult>> skuMap = new HashMap<>();
         for (StockDetails details : totalList) {
             for (SkuResult skuResult : skuResultList) {
-                if (details.getSkuId().equals(skuResult.getSkuId())) {
-                    List<SkuResult> results = skuMap.get(details.getStorehousePositionsId());
-                    if (ToolUtil.isEmpty(results)) {
-                        results = new ArrayList<>();
-                        results.add(skuResult);
-                        skuMap.put(details.getStorehousePositionsId(), results);
-                        break;
-                    } else {
-                        results.add(skuResult);
-                        skuMap.put(details.getStorehousePositionsId(), results);
-                        break;
-                    }
+                List<SkuResult> results = skuMap.get(details.getStorehousePositionsId());
+                if (ToolUtil.isEmpty(results)) {
+                    results = new ArrayList<>();
+                    results.add(skuResult);
+                    skuMap.put(details.getStorehousePositionsId(), results);
+                    break;
+                } else {
+                    results.add(skuResult);
+                    skuMap.put(details.getStorehousePositionsId(), results);
+                    break;
                 }
             }
         }
@@ -246,13 +244,6 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             }
         } else {
             result = now;
-            List<SkuResult> skuResultList = result.getSkuResults();
-            if (ToolUtil.isEmpty(skuResultList)) {
-                result.setSkuResults(skuResults);
-            } else {
-                skuResultList.addAll(skuResults);
-            }
-
         }
         return result;
     }
