@@ -229,10 +229,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                 if (now.getPid().equals(storehousePositionsResult.getStorehousePositionsId())) {
                     List<SkuResult> skuResultList = now.getSkuResults();
                     if (ToolUtil.isEmpty(skuResultList)) {
-                        now.setSkuResults(skuResults);
-                    } else {
-                        skuResultList.addAll(skuResults);
+                        skuResultList = new ArrayList<>();
                     }
+                    skuResultList.addAll(skuResults);
 
                     List<StorehousePositionsResult> positionsResults = storehousePositionsResult.getStorehousePositionsResults();
                     if (ToolUtil.isEmpty(positionsResults)) {
