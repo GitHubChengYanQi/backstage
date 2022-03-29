@@ -364,7 +364,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
             }
             outstockOrder.setApplyDetails(applyDetails);
-            outstockOrderService.add(outstockOrder);
+            outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
         }
     }
 
