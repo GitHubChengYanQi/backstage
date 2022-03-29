@@ -154,18 +154,16 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         Map<Long, List<SkuResult>> skuMap = new HashMap<>();
         for (StockDetails details : totalList) {
             for (SkuResult skuResult : skuResultList) {
-                if (details.getSkuId().equals(skuResult.getSkuId())) {
-                    List<SkuResult> results = skuMap.get(details.getStorehousePositionsId());
-                    if (ToolUtil.isEmpty(results)) {
-                        results = new ArrayList<>();
-                        results.add(skuResult);
-                        skuMap.put(details.getStorehousePositionsId(), results);
-                        break;
-                    } else {
-                        results.add(skuResult);
-                        skuMap.put(details.getStorehousePositionsId(), results);
-                        break;
-                    }
+                List<SkuResult> results = skuMap.get(details.getStorehousePositionsId());
+                if (ToolUtil.isEmpty(results)) {
+                    results = new ArrayList<>();
+                    results.add(skuResult);
+                    skuMap.put(details.getStorehousePositionsId(), results);
+                    break;
+                } else {
+                    results.add(skuResult);
+                    skuMap.put(details.getStorehousePositionsId(), results);
+                    break;
                 }
             }
         }
@@ -184,7 +182,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         /**
          * 查出需要的库位 进行比对
          */
-        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id",positionIds).orderByDesc("sort").list();
+        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", positionIds).orderByDesc("sort").list();
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
 
 
@@ -224,35 +222,29 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
      * @return
      */
     private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results, StorehousePositionsResult result, List<SkuResult> skuResults) {
+
+        List<SkuResult> skuResultList = now.getSkuResults();
+        if (ToolUtil.isEmpty(skuResultList)) {
+            skuResultList = new ArrayList<>();
+        }
+        skuResultList.addAll(skuResults);
+        now.setSkuResults(skuResultList);
+
         if (!now.getPid().equals(0L)) {
             for (StorehousePositionsResult storehousePositionsResult : results) {
 
                 if (now.getPid().equals(storehousePositionsResult.getStorehousePositionsId())) {
-                    List<SkuResult> skuResultList = now.getSkuResults();
-                    if (ToolUtil.isEmpty(skuResultList)) {
-                        skuResultList = new ArrayList<>();
-                    }
-                    skuResultList.addAll(skuResults);
-
                     List<StorehousePositionsResult> positionsResults = storehousePositionsResult.getStorehousePositionsResults();
                     if (ToolUtil.isEmpty(positionsResults)) {
                         positionsResults = new ArrayList<>();
                     }
                     positionsResults.add(now);
                     storehousePositionsResult.setStorehousePositionsResults(positionsResults);
-
                     result = getSupper(storehousePositionsResult, results, result, skuResults);
                 }
             }
         } else {
             result = now;
-            List<SkuResult> skuResultList = result.getSkuResults();
-            if (ToolUtil.isEmpty(skuResultList)) {
-                result.setSkuResults(skuResults);
-            } else {
-                skuResultList.addAll(skuResults);
-            }
-
         }
         return result;
     }
