@@ -8,11 +8,13 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
 
@@ -34,11 +37,10 @@ public class ContractExcel {
     private ContractService contractService;
 
 
-    @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseData exportContract(@Param("id") Long id) throws Exception {
-        Contract contract = contractService.getById(id);
 
+    @ResponseBody
+    public ResponseData exportContract(HttpServletResponse response, @Param("id") Long id) throws Exception {
+        Contract contract = contractService.getById(id);
 
         String noteName = "d:/";
         String reportDirName = "合同.doc";
@@ -79,6 +81,33 @@ public class ContractExcel {
         fs.writeFilesystem(os);
         os.close();
         is.close();
+    }
+
+    @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
+    public void test(HttpServletResponse response, Long id) {
+        try {
+            Contract contract = contractService.getById(id);
+            //word内容
+            byte b[] = contract.getContent().getBytes("utf-8");  //这里是必须要设置编码的，不然导出中文就会乱码。
+            ByteArrayInputStream bais = new ByteArrayInputStream(b);//将字节数组包装到流中
+            /*
+             * 关键地方
+             * 生成word格式 */
+            POIFSFileSystem poifs = new POIFSFileSystem();
+            DirectoryEntry directory = poifs.getRoot();
+            DocumentEntry documentEntry = directory.createDocument("文档名称", bais);
+            //输出文件
+            response.setContentType("application/msword");//导出word格式
+            response.addHeader("Content-Disposition", "p_w_upload;filename=" +
+                    new String((documentEntry.getName() + ".doc").getBytes(), "iso-8859-1"));
+            OutputStream ostream = response.getOutputStream();
+            poifs.writeFilesystem(ostream);
+            bais.close();
+            ostream.close();
+        } catch (Exception e) {
+            //异常处理
+        }
+
     }
 
 }
