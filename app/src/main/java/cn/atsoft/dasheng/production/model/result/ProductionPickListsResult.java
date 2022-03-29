@@ -25,6 +25,7 @@ public class ProductionPickListsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private ProductionTaskResult productionTaskResult;
+    private List<ProductionTaskResult> productionTaskResults;
     private UserResult createUserResult;
     private UserResult userResult;
     private List<ProductionPickListsDetailResult> detailResults;

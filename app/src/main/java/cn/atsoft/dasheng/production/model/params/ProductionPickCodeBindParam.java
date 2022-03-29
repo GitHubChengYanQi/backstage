@@ -12,43 +12,36 @@ import java.util.List;
 
 /**
  * <p>
- * 领料单详情表
+ * 
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-03-25
+ * @since 2022-03-29
  */
 @Data
 @ApiModel
-public class ProductionPickListsDetailParam implements Serializable, BaseValidatingParam {
+public class ProductionPickCodeBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private Long storehousePositionsId;
-    private Long storehouseId;
-    private Long pickListsCartId;
 
-    private Integer status;
-    /**
-     * 子表id
-     */
-    @ApiModelProperty("子表id")
-    private Long pickListsDetailId;
+    @ApiModelProperty("")
+    private Long pickCodeBindId;
 
-    /**
-     * 主表id
-     */
-    @ApiModelProperty("主表id")
-    private Long pickListsId;
+    @ApiModelProperty("")
+    private Long pickCodeId;
 
-    /**
-     * 物料id
-     */
-    @ApiModelProperty("物料id")
+    @ApiModelProperty("")
     private Long skuId;
 
     @ApiModelProperty("")
     private Integer number;
+
+    @ApiModelProperty("")
+    private Long productionTaskId;
+
+    @ApiModelProperty("")
+    private Long pickListsId;
 
     /**
      * 创建者

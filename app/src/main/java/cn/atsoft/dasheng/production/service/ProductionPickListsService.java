@@ -69,6 +69,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     void format(List<ProductionPickListsResult> results);
 
+    void formatStatus99(List<ProductionPickListsResult> results);
+
     String addByProductionTask(Object param);
 
     List<StorehouseResult> getStockSkus(List<Long> skuIds);

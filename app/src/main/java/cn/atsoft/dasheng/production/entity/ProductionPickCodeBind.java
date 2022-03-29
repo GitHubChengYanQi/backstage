@@ -1,49 +1,41 @@
 package cn.atsoft.dasheng.production.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 
 /**
  * <p>
- * 领取物料码
+ * 
  * </p>
  *
- * @author cheng
+ * @author Captain_Jazz
  * @since 2022-03-29
  */
-@TableName("daoxin_production_pick_code")
-public class ProductionPickCode implements Serializable {
+@TableName("daoxin_production_pick_code_bind")
+public class ProductionPickCodeBind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 取件码id
-     */
-    @TableId(value = "pick_code_id", type = IdType.ID_WORKER)
+      @TableId(value = "pick_code_bind_id", type = IdType.ID_WORKER)
+    private Long pickCodeBindId;
+
+    @TableField("pick_code_id")
     private Long pickCodeId;
 
-    /**
-     * 取件码
-     */
-    @TableField("code")
-    private Long code;
-    /**
-     * 任务id
-     */
+    @TableField("sku_id")
+    private Long skuId;
+
+    @TableField("number")
+    private Integer number;
+
     @TableField("production_task_id")
     private Long productionTaskId;
-    
-    /**
-     * 取件码
-     */
-    @TableField("user_id")
-    private Long userId;
 
-    /**
-     * 关联领料单id
-     */
     @TableField("pick_lists_id")
     private Long pickListsId;
 
@@ -84,6 +76,14 @@ public class ProductionPickCode implements Serializable {
     private Long deptId;
 
 
+    public Long getPickCodeBindId() {
+        return pickCodeBindId;
+    }
+
+    public void setPickCodeBindId(Long pickCodeBindId) {
+        this.pickCodeBindId = pickCodeBindId;
+    }
+
     public Long getPickCodeId() {
         return pickCodeId;
     }
@@ -92,12 +92,28 @@ public class ProductionPickCode implements Serializable {
         this.pickCodeId = pickCodeId;
     }
 
-    public Long getCode() {
-        return code;
+    public Long getSkuId() {
+        return skuId;
     }
 
-    public void setCode(Long code) {
-        this.code = code;
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public Long getProductionTaskId() {
+        return productionTaskId;
+    }
+
+    public void setProductionTaskId(Long productionTaskId) {
+        this.productionTaskId = productionTaskId;
     }
 
     public Long getPickListsId() {
@@ -132,22 +148,6 @@ public class ProductionPickCode implements Serializable {
         this.createTime = createTime;
     }
 
-    public Long getProductionTaskId() {
-        return productionTaskId;
-    }
-
-    public void setProductionTaskId(Long productionTaskId) {
-        this.productionTaskId = productionTaskId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public Date getUpdateTime() {
         return updateTime;
     }
@@ -174,9 +174,12 @@ public class ProductionPickCode implements Serializable {
 
     @Override
     public String toString() {
-        return "ProductionPickCode{" +
-        "pickCodeId=" + pickCodeId +
-        ", code=" + code +
+        return "ProductionPickCodeBind{" +
+        "pickCodeBindId=" + pickCodeBindId +
+        ", pickCodeId=" + pickCodeId +
+        ", skuId=" + skuId +
+        ", number=" + number +
+        ", productionTaskId=" + productionTaskId +
         ", pickListsId=" + pickListsId +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +

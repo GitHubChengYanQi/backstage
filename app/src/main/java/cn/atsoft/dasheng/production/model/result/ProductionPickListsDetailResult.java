@@ -22,7 +22,7 @@ public class ProductionPickListsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private SkuResult skuResult;
-
+    private Integer status;
 
     private Long storehousePositionsId;
     private Long storehouseId;

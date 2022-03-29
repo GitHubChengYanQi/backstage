@@ -26,6 +26,8 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
     private static final long serialVersionUID = 1L;
 
     private List<ProductionPickListsDetailParam> pickListsDetailParams;
+    private List<Long> pickListsIds;
+
 
 
 

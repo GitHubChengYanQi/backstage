@@ -250,11 +250,43 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
     @Override
     public ProductionTask Receive(ProductionTaskParam param) {
-        ProductionTask entity = new ProductionTask();
+        ProductionTask entity = this.getById(param.getProductionTaskId());
         entity.setProductionTaskId(param.getProductionTaskId());
         entity.setUserId(param.getUserId());
         entity.setStatus(98);
         this.updateById(entity);
+        /**
+         * 创建任务单详情
+         */
+        ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
+        List<ProductionTaskDetail> detailEntitys = new ArrayList<>();
+        /**
+         * 保存子表信息
+         * 从activitiSetpSetDetail表中取出产出物料信息
+         * 然后与任务数量相乘
+         * 保存进子表
+         */
+        List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
+
+        for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
+            ProductionTaskDetail productionTaskDetail = new ProductionTaskDetail();
+            productionTaskDetail.setOutSkuId(setpSetDetail.getSkuId());
+            productionTaskDetail.setProductionTaskId(entity.getProductionTaskId());
+            productionTaskDetail.setNumber(setpSetDetail.getNum() * entity.getNumber());
+            if (ToolUtil.isNotEmpty(setpSetDetail.getQualityId())) {
+                productionTaskDetail.setQualityId(setpSetDetail.getQualityId());
+            }
+            if (ToolUtil.isNotEmpty(setpSetDetail.getMyQualityId())) {
+                productionTaskDetail.setMyQualityId(setpSetDetail.getMyQualityId());
+            }
+
+            detailEntitys.add(productionTaskDetail);
+        }
+
+        productionTaskDetailService.saveBatch(detailEntitys);
+
+
+
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
         wxCpTemplate.setTitle("新的生产任务");
@@ -272,7 +304,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
         serviceEntity.setOperationType(OperationType.ADD);
         String jsonString = JSON.toJSONString(new SavePickListsObject(){{
-//            setDetails(detailEntitys);
+            setDetails(detailEntitys);
             setProductionTask(entity);
         }});
         serviceEntity.setObject(jsonString);

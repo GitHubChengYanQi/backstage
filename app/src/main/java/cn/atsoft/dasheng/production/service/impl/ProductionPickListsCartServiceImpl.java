@@ -50,8 +50,13 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Override
     public void add(ProductionPickListsCartParam param){
-        ProductionPickListsCart entity = getEntity(param);
-        this.save(entity);
+        List<ProductionPickListsCart> entitys = new ArrayList<>();
+        for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
+            ProductionPickListsCart entity = getEntity(productionPickListsCartParam);
+            entitys.add(entity);
+        }
+
+        this.saveBatch(entitys);
     }
 
     @Override
@@ -136,7 +141,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             pickListsId.add(productionPickList.getPickListsId());
         }
 
-
+        pickListsService.format(pickListsResults);
         List<ProductionPickListsCart> pickListsCart = pickListsId.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsId).list();
         List<ProductionPickListsCartResult> results = new ArrayList<>();
         for (ProductionPickListsCart productionPickListsCart : pickListsCart) {
@@ -154,22 +159,23 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             CartGroupByUserListRequest request = new CartGroupByUserListRequest();
             request.setName(userResult.getName());
             request.setUserId(userResult.getUserId());
+            List<ProductionPickListsCartResult> pickListsCartAll = new ArrayList<>();
             for (ProductionPickListsResult pickListsResult : pickListsResults) {
                 if (userResult.getUserId().equals(pickListsResult.getUserId())){
                     List<ProductionPickListsCartResult> pickListsCartResults = new ArrayList<>();
                     for (ProductionPickListsCartResult result : results) {
                         if (result.getPickListsId().equals(pickListsResult.getPickListsId())){
                             pickListsCartResults.add(result);
+                            result.setProductionPickListsResult(pickListsResult);
                         }
                     }
-                    request.setCartResults(pickListsCartResults);
+
+                    pickListsCartAll.addAll(pickListsCartResults);
                 }
             }
+            request.setCartResults(pickListsCartAll);
             requests.add(request);
         }
-
-
-
 
 
         return requests;

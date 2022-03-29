@@ -153,7 +153,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 //        List<Long> skuIds = new ArrayList<>();  //先取出物料   去bom中查找
         for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
 
-            ActivitiProcess process = processService.query().eq("form_id", productionPlanDetail.getSkuId()).eq("status", 99).eq("type", "ship").one();
+            ActivitiProcess process = processService.query().eq("form_id", productionPlanDetail.getSkuId()).eq("display", 1).eq("type", "ship").one();
 
             ActivitiStepsResult activitiStepsResult = stepsService.detail(process.getProcessId());
 

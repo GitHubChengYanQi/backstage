@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
@@ -75,7 +76,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private StorehousePositionsService positionsService;
-
+    @Autowired
+    private MobileService mobileService;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -129,7 +131,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
 
-        String url = param.getUrl().replace("codeId", aLong.toString());
+        String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/OrCode?id=" + aLong;
         User createUser = userService.getById(entity.getCreateUser());
         //新微信推送
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -150,22 +152,13 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public void saveOutStockOrderByPickLists(OutstockOrderParam param){
-        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
-        if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-            Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
-            if (ToolUtil.isNotEmpty(storehouse)) {
-                String replace = "";
-                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
-                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
-                } else {
-                    replace = backCoding.replace("${storehouse}", "");
-                }
-                param.setCoding(replace);
-            }
-        }
+
+
+        String encoding = codingRulesService.encoding(2);
+
 
         OutstockOrder entity = getEntity(param);
+        entity.setCoding(encoding);
         this.save(entity);
 
         if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
@@ -192,7 +185,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
 
-        String url = param.getUrl().replace("codeId", aLong.toString());
+        String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/OrCode?id=" + aLong;
         User createUser = userService.getById(entity.getCreateUser());
         //新微信推送
         WxCpTemplate wxCpTemplate = new WxCpTemplate();

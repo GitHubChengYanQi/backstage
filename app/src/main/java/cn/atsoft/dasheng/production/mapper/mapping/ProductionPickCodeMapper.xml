@@ -7,6 +7,8 @@
         <id column="pick_code_id" property="pickCodeId" />
         <result column="code" property="code" />
         <result column="pick_lists_id" property="pickListsId" />
+        <result column="production_task_id" property="productionTaskId" />
+        <result column="user_id" property="userId" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -17,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_code_id AS "pickCodeId", code AS "code", pick_lists_id AS "pickListsId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        pick_code_id AS "pickCodeId", production_task_id AS "productionTaskId",user_id AS "userId",code AS "code", pick_lists_id AS "pickListsId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
