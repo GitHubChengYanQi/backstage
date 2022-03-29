@@ -200,7 +200,6 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                 if (ToolUtil.isEmpty(results)) {
                     results = new ArrayList<>();
                 }
-
                 results.add(positionsResult);
                 supper.setStorehousePositionsResults(results);
                 StorehousePositionsResult parent = new StorehousePositionsResult();//直属上级 找到所有上级
