@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 
 @Controller
@@ -35,7 +37,6 @@ public class ContractExcel {
 
     @Autowired
     private ContractService contractService;
-
 
 
     @ResponseBody
@@ -84,11 +85,11 @@ public class ContractExcel {
     }
 
     @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
-    public void test(HttpServletResponse response, Long id) {
+    public void test(HttpServletRequest request, HttpServletResponse response, Long id) {
         try {
             Contract contract = contractService.getById(id);
             //word内容
-            byte b[] = contract.getContent().getBytes("utf-8");  //这里是必须要设置编码的，不然导出中文就会乱码。
+            byte b[] = contract.getContent().getBytes(StandardCharsets.UTF_8);  //这里是必须要设置编码的，不然导出中文就会乱码。
             ByteArrayInputStream bais = new ByteArrayInputStream(b);//将字节数组包装到流中
             /*
              * 关键地方
@@ -97,9 +98,10 @@ public class ContractExcel {
             DirectoryEntry directory = poifs.getRoot();
             DocumentEntry documentEntry = directory.createDocument("文档名称", bais);
             //输出文件
-            response.setContentType("application/msword");//导出word格式
-            response.addHeader("Content-Disposition", "p_w_upload;filename=" +
-                    new String((documentEntry.getName() + ".doc").getBytes(), "iso-8859-1"));
+            request.setCharacterEncoding("utf-8");
+            response.setContentType("application/contractWord");//导出word格式
+            response.setHeader("Content-disposition", "attachment;filename=contract.doc");
+
             OutputStream ostream = response.getOutputStream();
             poifs.writeFilesystem(ostream);
             bais.close();
