@@ -13,6 +13,7 @@
         <result column="source_id" property="sourceId" />
         <result column="in_sku_id" property="inSkuId" />
         <result column="out_sku_id" property="outSkuId" />
+        <result column="card_sku_id" property="cardSkuId" />
         <result column="in_sku_number" property="inSkuNumber" />
         <result column="out_sku_id" property="outSkuNumber" />
         <result column="create_user" property="createUser" />
@@ -28,7 +29,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        work_order_id AS "workOrderId", steps_id AS "stepsId" ,ship_setp_id AS "shipSetpId", sku_id AS "skuId",in_sku_id AS "inSkuId",out_sku_id AS "outSkuId",in_sku_number AS "inSkuNumber",out_sku_number AS "outNumber", count AS "count", source AS "source", source_id AS "sourceId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", theme AS "theme", origin AS "origin"
+        work_order_id AS "workOrderId", card_sku_id AS "cardSkuId",steps_id AS "stepsId" ,ship_setp_id AS "shipSetpId", sku_id AS "skuId",in_sku_id AS "inSkuId",out_sku_id AS "outSkuId",in_sku_number AS "inSkuNumber",out_sku_number AS "outNumber", count AS "count", source AS "source", source_id AS "sourceId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", theme AS "theme", origin AS "origin"
     </sql>
 
 

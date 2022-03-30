@@ -205,6 +205,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
                     workOrder.setStepsId(activitiStepsResult.getSetpsId());
                     workOrder.setSourceId(productionPlanDetail.getProductionPlanId());
                     workOrder.setSource("productionPlan");
+                    workOrder.setCardSkuId(productionPlanDetail.getSkuId());
                     if (ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet()) && ToolUtil.isNotEmpty(activitiStepsResult.getSetpSet().getSetpSetDetails())) {
                         for (ActivitiSetpSetDetailResult setpSetDetailResult : activitiStepsResult.getSetpSet().getSetpSetDetails()) {
                             workOrder.setSkuId(setpSetDetailResult.getSkuId());
@@ -405,7 +406,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             result.setCompleteNum(completeNum);
             result.setToDoNum(toDoNum);
             for (ProductionPlanDetail productionPlanDetail : productionPlanDetails) {
-                if (productionPlanDetail.getProductionPlanId().equals(result.getSourceId()) && result.getSource().equals("productionPlan") && result.getOutSkuId().equals(productionPlanDetail.getSkuId())) {
+                if (productionPlanDetail.getProductionPlanId().equals(result.getSourceId()) && result.getSource().equals("productionPlan") && result.getCardSkuId().equals(productionPlanDetail.getSkuId())) {
                     result.setCardNumber(productionPlanDetail.getPlanNumber());
                 }
             }
