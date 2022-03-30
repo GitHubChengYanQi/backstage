@@ -143,15 +143,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             detailEntitys.add(productionTaskDetail);
         }
 
-//        if (ToolUtil.isNotEmpty(param.getDetailParams())) {
-//            for (ProductionTaskDetailParam detailParam : param.getDetailParams()) {
-//                ProductionTaskDetail productionTaskDetail = new ProductionTaskDetail();
-//                ToolUtil.copyProperties(detailParam, productionTaskDetail);
-//                productionTaskDetail.setProductionTaskId(entity.getProductionTaskId());
-//                productionTaskDetail.setNumber(productionTaskDetail.getNumber() * entity.getNumber());
-//                detailEntitys.add(productionTaskDetail);
-//            }
-//        }
         productionTaskDetailService.saveBatch(detailEntitys);
 
 
