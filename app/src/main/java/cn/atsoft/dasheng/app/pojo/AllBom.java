@@ -172,7 +172,7 @@ public class AllBom {
              */
 
             for (ErpPartsDetail erpPartsDetail : details) {
-                tmp.putAll(this.getBom(erpPartsDetail.getSkuId(), erpPartsDetail.getNumber() * number));
+                tmp.putAll(this.getBom(erpPartsDetail.getSkuId(), (int) (erpPartsDetail.getNumber() * number)));
             }
 
             this.Bom.put(skuId, new ArrayList<Map<Long, Object>>() {{
@@ -227,7 +227,7 @@ public class AllBom {
                             ErpPartsDetail detail = (ErpPartsDetail) map.get(id);
 
                             SkuNumber skuNumber = (SkuNumber) childMap.get(id);
-                            long l = detail.getNumber() * number;
+                            long l = (long) (detail.getNumber() * number);
 
                             if (ToolUtil.isNotEmpty(this.stockNumber.get(skuNumber.getSkuId()))) {
                                 stockNumber.put(skuNumber.getSkuId(), stockNumber.get(skuNumber.getSkuId()) + l);

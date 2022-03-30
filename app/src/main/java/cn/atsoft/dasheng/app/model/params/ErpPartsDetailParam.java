@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -54,7 +55,7 @@ public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
      * 零件数量
      */
     @ApiModelProperty("零件数量")
-    private Integer number;
+    private Double number;
 
     /**
      * 创建时间

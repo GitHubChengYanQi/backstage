@@ -139,7 +139,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             for (Long aLong : longSet) {
                 ErpPartsDetailParam detailParam = new ErpPartsDetailParam();
                 Integer integer = skuNum.get(aLong);
-                detailParam.setNumber(integer);
+                detailParam.setNumber(Double.valueOf(integer));
                 detailParam.setSkuId(aLong);
                 params.add(detailParam);
             }

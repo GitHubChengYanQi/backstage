@@ -168,7 +168,7 @@ public class BomController {
                         } else {
                             detail.setSkuId(detailSku.getSkuId());
                         }
-                        detail.setNumber(Integer.valueOf(bom.getNum()));
+                        detail.setNumber(bom.getNum());
 
                         if (details.stream().noneMatch(i -> i.getSkuId().equals(detail.getSkuId()))) {
                             details.add(detail);
