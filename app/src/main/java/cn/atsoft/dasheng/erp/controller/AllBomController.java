@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.app.pojo.AllBom;
 import cn.atsoft.dasheng.app.pojo.AllBomParam;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
+import cn.atsoft.dasheng.app.pojo.BomOrder;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,15 +49,18 @@ public class AllBomController {
         }
 
         AllBomResult allBomResult = new AllBomResult();
+        List<BomOrder> results = new ArrayList<>();
+        List<SkuResult> owes = new ArrayList<>();
+
         for (List<AllBomParam.SkuNumberParam> skus : allSkus) {
             AllBom allBom = new AllBom();
             allBom.start(skus);
             AllBomResult bom = allBom.getResult();
-            allBomResult.setResult(bom.getResult());
-            allBomResult.setOwe(bom.getOwe());
-            bomResults.add(allBomResult);
+            results.addAll(bom.getResult());
+            owes.addAll(bom.getOwe());
         }
-
+        allBomResult.setResult(results);
+        allBomResult.setOwe(owes);
 
         return ResponseData.success(bomResults);
     }
