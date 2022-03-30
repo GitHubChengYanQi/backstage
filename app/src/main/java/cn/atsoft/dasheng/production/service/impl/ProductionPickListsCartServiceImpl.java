@@ -144,7 +144,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
 
         pickListsService.format(pickListsResults);
-        List<ProductionPickListsCart> pickListsCart = pickListsId.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsId).ne("status",99).list();
+        List<ProductionPickListsCart> pickListsCart = pickListsId.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsId).list();
         List<ProductionPickListsCartResult> results = new ArrayList<>();
         for (ProductionPickListsCart productionPickListsCart : pickListsCart) {
             ProductionPickListsCartResult result = new ProductionPickListsCartResult();
