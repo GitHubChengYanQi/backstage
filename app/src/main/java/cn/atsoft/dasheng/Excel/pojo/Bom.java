@@ -16,4 +16,5 @@ public class Bom {
     private String unit;
     private String skuName;
     private String spuClass;
+    private String batch;
 }
