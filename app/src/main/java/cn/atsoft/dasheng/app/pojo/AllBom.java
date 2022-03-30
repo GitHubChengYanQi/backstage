@@ -87,89 +87,89 @@ public class AllBom {
      * ]
      */
 
-    public Map<Long, Object> getBom(Long skuId, int number, int selfNum) {
-
-        Map<Long, Object> tmp = new HashMap<>();
-
-
-        Parts one = partsService.query().eq("sku_id", skuId).eq("status", 99).eq("type", 1).one();
-
-
-        if (ToolUtil.isNotEmpty(one)) {
-            List<ErpPartsDetail> details = detailService.query().eq("parts_id", one.getPartsId()).list();
-            /**
-             * 循环bom 作为 0 下标元素
-             */
-            Map<Long, Object> tmp2 = new HashMap<>();
-            for (ErpPartsDetail detail : details) {
-                tmp2.put(detail.getSkuId(), detail);
-            }
-            /**
-             * 递归 取下级 作 1下表元素
-             */
+//    public Map<Long, Object> getBom(Long skuId, Double number, Double selfNum) {
+//
+//        Map<Long, Object> tmp = new HashMap<>();
+//
+//
+//        Parts one = partsService.query().eq("sku_id", skuId).eq("status", 99).eq("type", 1).one();
+//
+//
+//        if (ToolUtil.isNotEmpty(one)) {
+//            List<ErpPartsDetail> details = detailService.query().eq("parts_id", one.getPartsId()).list();
+//            /**
+//             * 循环bom 作为 0 下标元素
+//             */
+//            Map<Long, Object> tmp2 = new HashMap<>();
+//            for (ErpPartsDetail detail : details) {
+//                tmp2.put(detail.getSkuId(), detail);
+//            }
+//            /**
+//             * 递归 取下级 作 1下表元素
+//             */
+////            Map<Long, Object> map = new HashMap<>();
+//            List<Map<Long, Object>> list = new ArrayList<>();
+//            for (ErpPartsDetail erpPartsDetail : details) {
+//                list.add(this.getBom(erpPartsDetail.getSkuId(), erpPartsDetail.getNumber() * number, erpPartsDetail.getNumber()));
+//            }
+//
+//            // 循环相加
 //            Map<Long, Object> map = new HashMap<>();
-            List<Map<Long, Object>> list = new ArrayList<>();
-            for (ErpPartsDetail erpPartsDetail : details) {
-                list.add(this.getBom(erpPartsDetail.getSkuId(), erpPartsDetail.getNumber() * number, erpPartsDetail.getNumber()));
-            }
-
-            // 循环相加
-            Map<Long, Object> map = new HashMap<>();
-            for (Map<Long, Object> objectMap : list) {
-
-                for (Long aLong : objectMap.keySet()) {
-                    SkuNumber sn = (SkuNumber) objectMap.get(aLong);
-                    if (ToolUtil.isNotEmpty(map.get(aLong))) {
-                        SkuNumber sk = (SkuNumber) map.get(aLong);
-                        sk.setNum(sk.getNum() + sn.getNum());
-                        map.put(aLong, sk);
-                    } else {
-                        map.put(aLong, sn);
-                    }
-                }
-            }
-            this.Bom.put(skuId, new HashMap<String, Map<Long, Object>>() {{
-                put("lastChild", map);
-                put("child", tmp2);
-            }});
-
-            // 循环相乘，之后相加，放到tmp里
-
-
-            for (Long aLong : map.keySet()) {
-                SkuNumber o = (SkuNumber) map.get(aLong);
-                SkuNumber skuNumber = new SkuNumber();
-                ToolUtil.copyProperties(o, skuNumber);
-                skuNumber.setNum(o.getNum() * selfNum);
-                tmp.put(aLong, skuNumber);
-            }
 //            for (Map<Long, Object> objectMap : list) {
+//
 //                for (Long aLong : objectMap.keySet()) {
 //                    SkuNumber sn = (SkuNumber) objectMap.get(aLong);
-//                    if (ToolUtil.isNotEmpty(tmp.get(aLong))) {
-//                        SkuNumber sk = (SkuNumber) tmp.get(aLong);
-//                        sk.setNum(sk.getNum() + sn.getNum()*number);
-//                        tmp.put(aLong, sk);
+//                    if (ToolUtil.isNotEmpty(map.get(aLong))) {
+//                        SkuNumber sk = (SkuNumber) map.get(aLong);
+//                        sk.setNum(sk.getNum() + sn.getNum());
+//                        map.put(aLong, sk);
 //                    } else {
-//                        tmp.put(aLong, sn);
+//                        map.put(aLong, sn);
 //                    }
 //                }
 //            }
-
-        } else {
-            Integer num = 0;
-            if (ToolUtil.isNotEmpty(skuList.get(skuId))) {
-                num = skuList.get(skuId);
-            }
-            skuList.put(skuId, number + num);
-            SkuNumber skuNumber = new SkuNumber();
-            skuNumber.setNum(selfNum);
-            skuNumber.setSkuId(skuId);
-            tmp.put(skuId, skuNumber);
-        }
-        return tmp;
-
-    }
+//            this.Bom.put(skuId, new HashMap<String, Map<Long, Object>>() {{
+//                put("lastChild", map);
+//                put("child", tmp2);
+//            }});
+//
+//            // 循环相乘，之后相加，放到tmp里
+//
+//
+//            for (Long aLong : map.keySet()) {
+//                SkuNumber o = (SkuNumber) map.get(aLong);
+//                SkuNumber skuNumber = new SkuNumber();
+//                ToolUtil.copyProperties(o, skuNumber);
+//                skuNumber.setNum(o.getNum() * selfNum);
+//                tmp.put(aLong, skuNumber);
+//            }
+////            for (Map<Long, Object> objectMap : list) {
+////                for (Long aLong : objectMap.keySet()) {
+////                    SkuNumber sn = (SkuNumber) objectMap.get(aLong);
+////                    if (ToolUtil.isNotEmpty(tmp.get(aLong))) {
+////                        SkuNumber sk = (SkuNumber) tmp.get(aLong);
+////                        sk.setNum(sk.getNum() + sn.getNum()*number);
+////                        tmp.put(aLong, sk);
+////                    } else {
+////                        tmp.put(aLong, sn);
+////                    }
+////                }
+////            }
+//
+//        } else {
+//            Integer num = 0;
+//            if (ToolUtil.isNotEmpty(skuList.get(skuId))) {
+//                num = skuList.get(skuId);
+//            }
+//            skuList.put(skuId, number + num);
+//            SkuNumber skuNumber = new SkuNumber();
+//            skuNumber.setNum(selfNum);
+//            skuNumber.setSkuId(skuId);
+//            tmp.put(skuId, skuNumber);
+//        }
+//        return tmp;
+//
+//    }
 
 
     public void getNumber() {

@@ -51,18 +51,7 @@ public class StockDetailsController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/getAllSkuIds", method = RequestMethod.GET)
-    public ResponseData getAllSkuIds(@RequestParam Long skuId, Integer num) {
-        allBom.getSkuList().clear();
-        allBom.getStockNumber().clear();
-        allBom.getNotEnough().clear();
-        allBom.getEnough().clear();
-        allBom.getBom().clear();
-        allBom.getBom(skuId, num, 0);
-        allBom.getNumber();
-        allBom.getMix(skuId, num);
-        return ResponseData.success(allBom);
-    }
+
 
     /**
      * 查看详情接口
