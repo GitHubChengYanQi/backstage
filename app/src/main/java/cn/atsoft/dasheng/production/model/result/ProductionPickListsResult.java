@@ -42,7 +42,7 @@ public class ProductionPickListsResult implements Serializable {
      * 领取物料码
      */
     @ApiModelProperty("领取物料码")
-    private Long code;
+    private String coding;
 
     @ApiModelProperty("")
     private Long userId;

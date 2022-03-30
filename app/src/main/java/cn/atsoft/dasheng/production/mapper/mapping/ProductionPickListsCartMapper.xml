@@ -10,6 +10,7 @@
         <result column="storehouse_positions_id" property="storehousePositionsId" />
         <result column="storehouse_id" property="storehouseId" />
         <result column="number" property="number" />
+        <result column="status" property="status" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -20,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_cart AS "pickListsCart", storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        pick_lists_cart AS "pickListsCart",status AS "status", storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 

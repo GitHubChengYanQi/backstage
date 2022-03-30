@@ -182,6 +182,18 @@ public class ProductionPickListsController extends BaseController {
         }
         return this.productionPickListsService.findPageBySpec(productionPickListsParam);
     }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/sendPersonPick", method = RequestMethod.POST)
+    @ApiOperation("通知领料")
+    public ResponseData sendPersonPick(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+        this.productionPickListsService.sendPersonPick(productionPickListsParam);
+        return ResponseData.success();
+    }
 
     /**
      * 查询列表

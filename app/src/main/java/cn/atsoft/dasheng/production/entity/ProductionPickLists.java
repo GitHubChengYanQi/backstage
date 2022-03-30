@@ -32,8 +32,8 @@ public class ProductionPickLists implements Serializable {
     /**
      * 领取物料码
      */
-    @TableField("code")
-    private Long code;
+    @TableField("coding")
+    private String coding;
 
     @TableField("user_id")
     private Long userId;
@@ -101,12 +101,12 @@ public class ProductionPickLists implements Serializable {
         this.pickListsId = pickListsId;
     }
 
-    public Long getCode() {
-        return code;
+    public String getCoding() {
+        return coding;
     }
 
-    public void setCode(Long code) {
-        this.code = code;
+    public void setCoding(String coding) {
+        this.coding = coding;
     }
 
     public Long getUserId() {

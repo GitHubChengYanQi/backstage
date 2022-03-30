@@ -118,6 +118,20 @@ public class ProductionPickListsCartController extends BaseController {
         }
         return this.productionPickListsCartService.groupByUser(productionPickListsCartParam);
     }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/getSelfCarts", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getSelfList(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
+        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+            productionPickListsCartParam = new ProductionPickListsCartParam();
+        }
+        return ResponseData.success(this.productionPickListsCartService.getSelfCarts(productionPickListsCartParam));
+    }
 
 
 

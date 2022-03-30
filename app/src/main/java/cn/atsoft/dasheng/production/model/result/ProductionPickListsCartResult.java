@@ -50,6 +50,9 @@ public class ProductionPickListsCartResult implements Serializable {
     @ApiModelProperty("")
     private Integer number;
 
+    @ApiModelProperty("")
+    private Integer status;
+
     /**
      * 创建者
      */

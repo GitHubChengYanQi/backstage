@@ -26,7 +26,7 @@ public class ProductionPickListsDetailParam implements Serializable, BaseValidat
 
     private Long storehousePositionsId;
     private Long storehouseId;
-    private Long pickListsCartId;
+    private Long pickListsCart;
 
     private Integer status;
     /**
