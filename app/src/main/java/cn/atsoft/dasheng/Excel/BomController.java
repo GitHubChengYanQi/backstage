@@ -107,6 +107,7 @@ public class BomController {
                     reader.addHeaderAlias("单位", "unit");
                     reader.addHeaderAlias("型号", "skuName");
                     reader.addHeaderAlias("分类", "spuClass");
+                    reader.addHeaderAlias("是否批量", "batch");
 
                     List<ErpPartsDetail> details = new ArrayList<>();
                     List<Bom> boms = reader.readAll(Bom.class);
@@ -120,6 +121,12 @@ public class BomController {
                             detailSku.setSkuName(bom.getSkuName());
                             detailSku.setSpecifications(bom.getSpc());
                             detailSku.setStandard(bom.getStrand());
+                            /**
+                             * 批量
+                             */
+                            if (ToolUtil.isNotEmpty(bom.getBatch()) && bom.getBatch().equals("是")) {
+                                detailSku.setBatch(1);
+                            }
                             /**
                              * 单位
                              */
