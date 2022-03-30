@@ -366,7 +366,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             }
             List<ActivitiSetpSetDetailResult> shipSetDetailResult = new ArrayList<>();
             for (ActivitiSetpSetDetailResult shipSetDetail : shipSetDetails) {
-                if (setpSetResult.getSetpsId().equals(shipSetDetail.getSetpsId()) && shipSetDetail.getType().equals("out")) {
+                if (setpSetResult.getSetpsId().equals(shipSetDetail.getSetpsId())) {
                     for (SkuResult skuResult : skuResults) {
                         if (skuResult.getSkuId().equals(shipSetDetail.getSkuId())) {
                             shipSetDetail.setSkuResult(skuResult);
