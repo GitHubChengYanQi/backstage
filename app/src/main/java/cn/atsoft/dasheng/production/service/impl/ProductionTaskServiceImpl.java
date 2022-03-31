@@ -118,6 +118,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             }
             entity.setUserIds(stringBuffer.substring(0, stringBuffer.length() - 1));
         }
+        entity.setShipSetpId(productionWorkOrder.getShipSetpId());
         this.save(entity);
         List<ProductionTaskDetail> detailEntitys = new ArrayList<>();
         /**

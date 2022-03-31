@@ -22,6 +22,8 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
+import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.*;
@@ -34,6 +36,7 @@ import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
+import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -70,7 +73,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ProductionTaskService productionTaskService;
 
     @Autowired
-    private ProductionWorkOrderService  workOrderService;
+    private ProductionWorkOrderService workOrderService;
 
     @Autowired
     private ActivitiSetpSetService setpSetService;
@@ -115,21 +118,25 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private CodingRulesService codingRulesService;
+    @Autowired
+    private ActivitiSetpSetDetailService setpSetDetailService;
+    @Autowired
+    private ShipSetpService shipSetpService;
 
 
     @Override
-    public void add(ProductionPickListsParam param){
+    public void add(ProductionPickListsParam param) {
         ProductionPickLists entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(ProductionPickListsParam param){
+    public void delete(ProductionPickListsParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(ProductionPickListsParam param){
+    public void update(ProductionPickListsParam param) {
         ProductionPickLists oldEntity = getOldEntity(param);
         ProductionPickLists newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -137,26 +144,27 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
 
     @Override
-    public ProductionPickListsResult findBySpec(ProductionPickListsParam param){
+    public ProductionPickListsResult findBySpec(ProductionPickListsParam param) {
         return null;
     }
 
     @Override
-    public List<ProductionPickListsResult> findListBySpec(ProductionPickListsParam param){
+    public List<ProductionPickListsResult> findListBySpec(ProductionPickListsParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param){
+    public PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param) {
         Page<ProductionPickListsResult> pageContext = getPageContext();
         IPage<ProductionPickListsResult> page = this.baseMapper.customPageList(pageContext, param);
-        if (ToolUtil.isNotEmpty(page.getRecords())){
+        if (ToolUtil.isNotEmpty(page.getRecords())) {
             this.format(page.getRecords());
         }
         return PageFactory.createPageInfo(page);
     }
+
     @Override
-    public void format(List<ProductionPickListsResult> results){
+    public void format(List<ProductionPickListsResult> results) {
         List<Long> pickListsIds = new ArrayList<>();
         List<Long> productionTaskIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
@@ -171,7 +179,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 查询备料单与领料单
          */
-        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.findListBySpec(new ProductionPickListsDetailParam(){{
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.findListBySpec(new ProductionPickListsDetailParam() {{
             setStatus(0);
         }});
         List<Long> skuIds = new ArrayList<>();
@@ -181,32 +189,43 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             for (SkuResult skuResult : skuResults) {
-                if (skuResult.getSkuId().equals(detailResult.getSkuId())){
+                if (skuResult.getSkuId().equals(detailResult.getSkuId())) {
                     detailResult.setSkuResult(skuResult);
                     break;
                 }
             }
         }
+        List<Long> shipSetpIds = new ArrayList<>();
         List<ProductionTaskResult> productionTaskResults = productionTaskIds.size() == 0 ? new ArrayList<>() : productionTaskService.resultsByIds(productionTaskIds);
+        for (ProductionTaskResult productionTaskResult : productionTaskResults) {
+            shipSetpIds.add(productionTaskResult.getShipSetpId());
+        }
+        List<ShipSetpResult> shipSetpResults = shipSetpIds.size() == 0 ? new ArrayList<>() : shipSetpService.getResultsByids(shipSetpIds);
+
 
         for (ProductionPickListsResult result : results) {
             for (ProductionTaskResult productionTaskResult : productionTaskResults) {
-                if (result.getSource().equals("productionTask") && result.getSourceId().equals(productionTaskResult.getProductionTaskId())){
+                if (result.getSource().equals("productionTask") && result.getSourceId().equals(productionTaskResult.getProductionTaskId())) {
+                    for (ShipSetpResult shipSetpResult : shipSetpResults) {
+                        if  (productionTaskResult.getShipSetpId().equals(shipSetpResult.getShipSetpId())){
+                            productionTaskResult.setShipSetpResult(shipSetpResult);
+                        }
+                    }
                     result.setProductionTaskResult(productionTaskResult);
                 }
             }
 
             for (UserResult userResultsById : userResultsByIds) {
-                if (result.getUserId().equals(userResultsById.getUserId())){
+                if (result.getUserId().equals(userResultsById.getUserId())) {
                     result.setUserResult(userResultsById);
                 }
-                if (result.getCreateUser().equals(userResultsById.getUserId())){
+                if (result.getCreateUser().equals(userResultsById.getUserId())) {
                     result.setUserResult(userResultsById);
                 }
             }
             List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
-                if (result.getPickListsId().equals(detailResult.getPickListsId())){
+                if (result.getPickListsId().equals(detailResult.getPickListsId())) {
                     detailResult.setUserResult(result.getUserResult());
                     detailResult.setPickListsCoding(result.getCoding());
                     detailResultList.add(detailResult);
@@ -216,8 +235,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
 
     }
+
     @Override
-    public void formatStatus99(List<ProductionPickListsResult> results){
+    public void formatStatus99(List<ProductionPickListsResult> results) {
         List<Long> pickListsIds = new ArrayList<>();
         List<Long> productionTaskIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
@@ -232,7 +252,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 查询备料单与领料单
          */
-        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.getByTask(new ProductionPickListsDetailParam(){{
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.getByTask(new ProductionPickListsDetailParam() {{
         }});
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {
@@ -241,7 +261,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             for (SkuResult skuResult : skuResults) {
-                if (skuResult.getSkuId().equals(detailResult.getSkuId())){
+                if (skuResult.getSkuId().equals(detailResult.getSkuId())) {
                     detailResult.setSkuResult(skuResult);
                     break;
                 }
@@ -253,27 +273,28 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
         for (ProductionPickListsResult result : results) {
             for (ProductionTaskResult productionTaskResult : productionTaskResults) {
-                if (result.getSource().equals("productionTask") && result.getSourceId().equals(productionTaskResult.getProductionTaskId())){
+                if (result.getSource().equals("productionTask") && result.getSourceId().equals(productionTaskResult.getProductionTaskId())) {
                     result.setProductionTaskResult(productionTaskResult);
                 }
             }
             List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
-                if (result.getPickListsId().equals(detailResult.getPickListsId())){
+                if (result.getPickListsId().equals(detailResult.getPickListsId())) {
                     detailResultList.add(detailResult);
                 }
             }
             result.setDetailResults(detailResultList);
             for (UserResult userResultsById : userResultsByIds) {
-                if (result.getUserId().equals(userResultsById.getUserId())){
+                if (result.getUserId().equals(userResultsById.getUserId())) {
                     result.setUserResult(userResultsById);
                 }
-                if (result.getCreateUser().equals(userResultsById.getUserId())){
+                if (result.getCreateUser().equals(userResultsById.getUserId())) {
                     result.setUserResult(userResultsById);
                 }
             }
         }
     }
+
     @Override
     public String addByProductionTask(Object param) {
         SavePickListsObject savePickListsObject = JSON.parseObject(param.toString(), SavePickListsObject.class);
@@ -287,84 +308,117 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         productionPickLists.setSource("productionTask");
         productionPickLists.setUserId(savePickListsObject.getProductionTask().getUserId());
         this.save(productionPickLists);
-        List<Long> skuIds = new ArrayList<>();
-        for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
-            skuIds.add(detail.getOutSkuId());
+//        for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
+//            outskuIds.add(detail.getOutSkuId());
+//        }
+        ProductionTask task = productionTaskService.getById(taskId);
+        Long workOrderId = task.getWorkOrderId();
+        ProductionWorkOrder workOrder = workOrderService.getById(workOrderId);
+        Long stepsId = workOrder.getStepsId();
+        List<ActivitiSetpSetDetailResult> resultByStepsIds = setpSetDetailService.getResultByStepsIds(new ArrayList<Long>() {{
+            add(stepsId);
+        }});
+        List<Long> outSkuIds = new ArrayList<>();
+        List<Long> inSkuIds = new ArrayList<>();
+        for (ActivitiSetpSetDetailResult resultByStepsId : resultByStepsIds) {
+            if (resultByStepsId.getType().equals("out")) {
+                outSkuIds.add(resultByStepsId.getSkuId());
+            } else if (resultByStepsId.getType().equals("in")) {
+                inSkuIds.add(resultByStepsId.getSkuId());
+            }
         }
-        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("status", 99).list();
-        List<Long> partIds = new ArrayList<>();
-        List<PartsResult> partsResults = new ArrayList<>();
-        for (Parts part : parts) {
-            partIds.add(part.getPartsId());
-            PartsResult partsResult = new PartsResult();
-            ToolUtil.copyProperties(part,partsResult);
-            partsResults.add(partsResult);
-        }
-        List<ErpPartsDetailResult> partsDetailResults = partsDetailService.getDetails(partIds);
-        for (PartsResult partsResult : partsResults) {
-            List<ErpPartsDetailResult> partsDetailResultList = new ArrayList<>();
-            for (ErpPartsDetailResult partsDetailResult : partsDetailResults) {
-                if (partsDetailResult.getPartsId().equals(partsResult.getPartsId())){
-                    partsDetailResultList.add(partsDetailResult);
+        if (outSkuIds.size() > 0) {
+            List<Parts> parts = outSkuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", outSkuIds).eq("status", 99).list();
+            List<Long> partIds = new ArrayList<>();
+            List<PartsResult> partsResults = new ArrayList<>();
+            for (Parts part : parts) {
+                partIds.add(part.getPartsId());
+                PartsResult partsResult = new PartsResult();
+                ToolUtil.copyProperties(part, partsResult);
+                partsResults.add(partsResult);
+            }
+            List<ErpPartsDetailResult> partsDetailResults = partsDetailService.getDetails(partIds);
+            for (PartsResult partsResult : partsResults) {
+                List<ErpPartsDetailResult> partsDetailResultList = new ArrayList<>();
+                for (ErpPartsDetailResult partsDetailResult : partsDetailResults) {
+                    if (partsDetailResult.getPartsId().equals(partsResult.getPartsId())) {
+                        partsDetailResultList.add(partsDetailResult);
+                    }
+                }
+                partsResult.setParts(partsDetailResultList);
+            }
+
+            List<ProductionPickListsDetail> details = new ArrayList<>();
+
+            for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
+                for (PartsResult partsResult : partsResults) {
+                    if (detail.getOutSkuId().equals(partsResult.getSkuId())) {
+                        for (ErpPartsDetailResult part : partsResult.getParts()) {
+                            ProductionPickListsDetail productionPickListsDetail = new ProductionPickListsDetail();
+                            productionPickListsDetail.setNumber(detail.getNumber() * part.getNumber());
+                            productionPickListsDetail.setSkuId(part.getSkuId());
+                            productionPickListsDetail.setPickListsId(productionPickLists.getPickListsId());
+                            details.add(productionPickListsDetail);
+                        }
+                        break;
+                    }
                 }
             }
-            partsResult.setParts(partsDetailResultList);
-        }
 
-        List<ProductionPickListsDetail> details = new ArrayList<>();
 
-        for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
-            for (PartsResult partsResult : partsResults) {
-                if (detail.getOutSkuId().equals(partsResult.getSkuId())) {
-                    for (ErpPartsDetailResult part : partsResult.getParts()) {
+            pickListsDetailService.saveBatch(details);
+        } else if (inSkuIds.size() > 0) {
+            List<ProductionPickListsDetail> details = new ArrayList<>();
+            for (Long inSkuId : inSkuIds) {
+                for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
+                    if (detail.getOutSkuId().equals(inSkuId)) {
                         ProductionPickListsDetail productionPickListsDetail = new ProductionPickListsDetail();
-                        productionPickListsDetail.setNumber(detail.getNumber()*part.getNumber());
-                        productionPickListsDetail.setSkuId(part.getSkuId());
+                        productionPickListsDetail.setNumber(detail.getNumber());
+                        productionPickListsDetail.setSkuId(inSkuId);
                         productionPickListsDetail.setPickListsId(productionPickLists.getPickListsId());
                         details.add(productionPickListsDetail);
                     }
-                    break;
                 }
             }
+            pickListsDetailService.saveBatch(details);
         }
-
-
-        pickListsDetailService.saveBatch(details);
 
         return null;
     }
 
-    public void takePick(ProductionPickListsParam param){
+    public void takePick(ProductionPickListsParam param) {
         ProductionPickLists pickLists = this.getById(param.getPickListsId());
 
-        if (!pickLists.getStatus().equals(98)){
-            throw new ServiceException(500,"您的领料单还没有准备好");
+        if (!pickLists.getStatus().equals(98)) {
+            throw new ServiceException(500, "您的领料单还没有准备好");
         }
         pickLists.setStatus(99);
         this.updateById(pickLists);
 
     }
+
     @Override
-    public void sendPersonPick(ProductionPickListsParam param){
+    public void sendPersonPick(ProductionPickListsParam param) {
         List<ProductionPickListsCart> carts = new ArrayList<>();
         for (ProductionPickListsCartParam cartsParam : param.getCartsParams()) {
             ProductionPickListsCart cart = new ProductionPickListsCart();
-            ToolUtil.copyProperties(cartsParam,cart);
+            ToolUtil.copyProperties(cartsParam, cart);
             cart.setStatus(99);
             carts.add(cart);
         }
         pickListsCartService.updateBatchById(carts);
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl()+"/#/Work/Production/MyCart");
+        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Production/MyCart");
         wxCpTemplate.setTitle("新的生产任务");
         wxCpTemplate.setDescription("库管那里有新的物料待领取");
         wxCpTemplate.setUserIds(param.getUserIds().stream().distinct().collect(Collectors.toList()));
         wxCpTemplate.setType(0);
+        wxCpSendTemplate.setSource("selfPick");
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
     }
 
-    private Serializable getKey(ProductionPickListsParam param){
+    private Serializable getKey(ProductionPickListsParam param) {
         return param.getPickListsId();
     }
 
@@ -381,8 +435,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public List<StorehouseResult> getStockSkus(List<Long> skuIds){
+    public List<StorehouseResult> getStockSkus(List<Long> skuIds) {
         List<StockDetails> stockSkus = stockDetailsService.query().in("sku_id", skuIds).list();
 
         List<StockSkuTotal> stockDetails = new ArrayList<>();
@@ -394,9 +449,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             stockDetails.add(stockSkuTotal);
         }
         List<StockSkuTotal> totalList = new ArrayList<>();
-        stockDetails.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+'_'+item.getStorehousePositionsId(),Collectors.toList())).forEach(
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + item.getStorehousePositionsId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new StockSkuTotal(a.getSkuId(),a.getStorehousePositionsId(), a.getNumber() + b.getNumber(),new StorehousePositionsResult())).ifPresent(totalList::add);
+                    transfer.stream().reduce((a, b) -> new StockSkuTotal(a.getSkuId(), a.getStorehousePositionsId(), a.getNumber() + b.getNumber(), new StorehousePositionsResult())).ifPresent(totalList::add);
                 }
         );
 
@@ -407,22 +462,22 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<StorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
         for (StorehousePositions storehousePosition : storehousePositions) {
             StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-            ToolUtil.copyProperties(storehousePosition,storehousePositionsResult);
+            ToolUtil.copyProperties(storehousePosition, storehousePositionsResult);
             storehousePositionsResults.add(storehousePositionsResult);
         }
 
-        return  null;
+        return null;
     }
 
     @Override
-    public void outStock(ProductionPickListsParam param){
+    public void outStock(ProductionPickListsParam param) {
         List<Long> stockIds = new ArrayList<>();
         List<Long> pickListsIds = new ArrayList<>();
         List<Long> pickListsCartIds = new ArrayList<>();
         for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
             stockIds.add(pickListsDetailParam.getStorehouseId());
             pickListsIds.add(pickListsDetailParam.getPickListsId());
-            if (ToolUtil.isNotEmpty(pickListsDetailParam.getPickListsCart())){
+            if (ToolUtil.isNotEmpty(pickListsDetailParam.getPickListsCart())) {
                 pickListsCartIds.add(pickListsDetailParam.getPickListsCart());
             }
         }
@@ -467,7 +522,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).list();
         for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
             for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
-                if (pickListsDetailParam.getPickListsId().equals(pickListsDetail.getPickListsId()) && pickListsDetailParam.getSkuId().equals(pickListsDetail.getSkuId()) && pickListsDetailParam.getNumber().equals(pickListsDetail.getNumber())){
+                if (pickListsDetailParam.getPickListsId().equals(pickListsDetail.getPickListsId()) && pickListsDetailParam.getSkuId().equals(pickListsDetail.getSkuId()) && pickListsDetailParam.getNumber().equals(pickListsDetail.getNumber())) {
                     pickListsDetail.setStatus(99);
                 }
             }
@@ -477,9 +532,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 更新领料单状态
          */
-        List<ProductionPickListsDetail> update = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).ne("status",99).list();
+        List<ProductionPickListsDetail> update = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).ne("status", 99).list();
         for (ProductionPickLists pickList : pickLists) {
-            if (update.stream().noneMatch(i->i.getPickListsId().equals(pickList.getPickListsId()))) {
+            if (update.stream().noneMatch(i -> i.getPickListsId().equals(pickList.getPickListsId()))) {
                 pickList.setStatus(99);
             }
         }
@@ -495,7 +550,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             outstockOrder.setUserId(LoginContextHolder.getContext().getUserId());
             List<ApplyDetails> applyDetails = new ArrayList<>();
             for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
-                if (pickListsDetailParam.getStorehouseId().equals(stockId)){
+                if (pickListsDetailParam.getStorehouseId().equals(stockId)) {
                     ApplyDetails applyDetail = new ApplyDetails();
                     applyDetail.setNumber(Long.valueOf(pickListsDetailParam.getNumber()));
                     applyDetail.setSkuId(pickListsDetailParam.getSkuId());
@@ -507,8 +562,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             pickListsCartService.removeByIds(pickListsCartIds);
         }
     }
-
-
 
 
 }
