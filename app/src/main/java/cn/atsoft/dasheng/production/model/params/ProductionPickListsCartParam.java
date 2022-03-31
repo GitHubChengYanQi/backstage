@@ -55,6 +55,9 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
     @ApiModelProperty("")
     private Integer number;
 
+    @ApiModelProperty("")
+    private Integer status;
+
     /**
      * 创建者
      */

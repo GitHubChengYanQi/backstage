@@ -14,16 +14,19 @@ import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsMapper;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
@@ -33,6 +36,8 @@ import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.util.RandomUtil;
@@ -102,6 +107,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private ProductionPickCodeBindService codeBindService;
+
+    @Autowired
+    private MobileService mobileService;
+
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private CodingRulesService codingRulesService;
 
 
     @Override
@@ -182,13 +195,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     result.setProductionTaskResult(productionTaskResult);
                 }
             }
-            List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
-            for (ProductionPickListsDetailResult detailResult : detailResults) {
-                if (result.getPickListsId().equals(detailResult.getPickListsId())){
-                    detailResultList.add(detailResult);
-                }
-            }
-            result.setDetailResults(detailResultList);
+
             for (UserResult userResultsById : userResultsByIds) {
                 if (result.getUserId().equals(userResultsById.getUserId())){
                     result.setUserResult(userResultsById);
@@ -197,6 +204,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     result.setUserResult(userResultsById);
                 }
             }
+            List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
+            for (ProductionPickListsDetailResult detailResult : detailResults) {
+                if (result.getPickListsId().equals(detailResult.getPickListsId())){
+                    detailResult.setUserResult(result.getUserResult());
+                    detailResult.setPickListsCoding(result.getCoding());
+                    detailResultList.add(detailResult);
+                }
+            }
+            result.setDetailResults(detailResultList);
         }
 
     }
@@ -265,7 +281,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         long radomCode = RandomUtil.randomLong(4);
 
         ProductionPickLists productionPickLists = new ProductionPickLists();
-        productionPickLists.setCode(radomCode);
+        productionPickLists.setCoding(codingRulesService.defaultEncoding());
         productionPickLists.setStatus(97);
         productionPickLists.setSourceId(taskId);
         productionPickLists.setSource("productionTask");
@@ -328,6 +344,25 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         this.updateById(pickLists);
 
     }
+    @Override
+    public void sendPersonPick(ProductionPickListsParam param){
+        List<ProductionPickListsCart> carts = new ArrayList<>();
+        for (ProductionPickListsCartParam cartsParam : param.getCartsParams()) {
+            ProductionPickListsCart cart = new ProductionPickListsCart();
+            ToolUtil.copyProperties(cartsParam,cart);
+            cart.setStatus(99);
+            carts.add(cart);
+        }
+        pickListsCartService.updateBatchById(carts);
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl()+"/#/Work/Production/MyCart");
+        wxCpTemplate.setTitle("新的生产任务");
+        wxCpTemplate.setDescription("库管那里有新的物料待领取");
+        wxCpTemplate.setUserIds(param.getUserIds().stream().distinct().collect(Collectors.toList()));
+        wxCpTemplate.setType(0);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
 
     private Serializable getKey(ProductionPickListsParam param){
         return param.getPickListsId();
@@ -387,8 +422,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
             stockIds.add(pickListsDetailParam.getStorehouseId());
             pickListsIds.add(pickListsDetailParam.getPickListsId());
-            if (ToolUtil.isNotEmpty(pickListsDetailParam.getPickListsCartId())){
-                pickListsCartIds.add(pickListsDetailParam.getPickListsCartId());
+            if (ToolUtil.isNotEmpty(pickListsDetailParam.getPickListsCart())){
+                pickListsCartIds.add(pickListsDetailParam.getPickListsCart());
             }
         }
 
@@ -401,33 +436,33 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickLists pickList : pickLists) {
             userIds.add(pickList.getUserId());
         }
-        /**
-         * 拦截判断
-         */
-
-        List<ProductionPickCode> code = pickCodeService.query().eq("code", param.getCode()).list();
-        userIds = userIds.stream().distinct().collect(Collectors.toList());
-        for (Long userId : userIds) {
-            if (code.stream().noneMatch(i->i.getUserId().equals(userId))) {
-                throw new ServiceException(500,"提交的数据与领料码不完全匹配");
-            }
-        }
-        List<ProductionPickCodeBind> codeBinds = new ArrayList<>();
-        for (ProductionPickCode productionPickCode : code) {
-            for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
-               if (pickListsDetailParam.getPickListsId().equals(productionPickCode.getPickListsId())){
-                   ProductionPickCodeBind productionPickCodeBind = new ProductionPickCodeBind();
-                   productionPickCodeBind.setPickCodeId(productionPickCode.getPickCodeId());
-                   productionPickCodeBind.setPickListsId(pickListsDetailParam.getPickListsId());
-                   productionPickCodeBind.setSkuId(pickListsDetailParam.getSkuId());
-                   productionPickCodeBind.setNumber(pickListsDetailParam.getNumber());
-                   codeBinds.add(productionPickCodeBind);
-               }
-            }
-        }
-
-
-        codeBindService.saveBatch(codeBinds);
+//        /**
+//         * 拦截判断
+//         */
+//
+//        List<ProductionPickCode> code = pickCodeService.query().eq("code", param.getCode()).list();
+//        userIds = userIds.stream().distinct().collect(Collectors.toList());
+//        for (Long userId : userIds) {
+//            if (code.stream().noneMatch(i->i.getUserId().equals(userId))) {
+//                throw new ServiceException(500,"提交的数据与领料码不完全匹配");
+//            }
+//        }
+//        List<ProductionPickCodeBind> codeBinds = new ArrayList<>();
+//        for (ProductionPickCode productionPickCode : code) {
+//            for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
+//               if (pickListsDetailParam.getPickListsId().equals(productionPickCode.getPickListsId())){
+//                   ProductionPickCodeBind productionPickCodeBind = new ProductionPickCodeBind();
+//                   productionPickCodeBind.setPickCodeId(productionPickCode.getPickCodeId());
+//                   productionPickCodeBind.setPickListsId(pickListsDetailParam.getPickListsId());
+//                   productionPickCodeBind.setSkuId(pickListsDetailParam.getSkuId());
+//                   productionPickCodeBind.setNumber(pickListsDetailParam.getNumber());
+//                   codeBinds.add(productionPickCodeBind);
+//               }
+//            }
+//        }
+//
+//
+//        codeBindService.saveBatch(codeBinds);
 
         List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).list();
         for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
