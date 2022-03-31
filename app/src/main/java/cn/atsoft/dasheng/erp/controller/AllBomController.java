@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -27,28 +28,38 @@ public class AllBomController {
     private PartsService partsService;
 
     @RequestMapping(value = "/analysis", method = RequestMethod.POST)
-    public ResponseData getBoms(@RequestBody AllBomParam param) {
+    public ResponseData getBoms(@RequestBody @Valid AllBomParam param) {
 
-
+        /**
+         * 判断是否有bom
+         */
         List<Long> ids = new ArrayList<>();
+        List<AllBomParam.SkuNumberParam> noSort = new ArrayList<>();
         for (AllBomParam.SkuNumberParam skuId : param.getSkuIds()) {
-            Parts one = partsService.query().eq("sku_id", skuId.getSkuId()).eq("status", 99).eq("type", 1).one();
+            Parts one = partsService.query().eq("sku_id", skuId.getSkuId())
+                    .eq("status", 99).eq("type", 1).one();
             if (ToolUtil.isEmpty(one)) {
                 throw new ServiceException(500, skuId.getSkuId() + "没有bom");
             }
-            ids.add(skuId.getSkuId());
+            if (!skuId.getFixed()) {
+                ids.add(skuId.getSkuId());
+            } else {
+                noSort.add(skuId);
+            }
         }
 
+        /**
+         *调用组合方法
+         */
 
         List<List<Long>> lists = skuIdsList(ids);
         List<List<AllBomParam.SkuNumberParam>> allSkus = new ArrayList<>();
-
-
         for (List<Long> list : lists) {
             List<AllBomParam.SkuNumberParam> skuNumberParams = new ArrayList<>();
             for (Long aLong : list) {
                 for (AllBomParam.SkuNumberParam numberParam : param.getSkuIds()) {
                     if (aLong.equals(numberParam.getSkuId())) {
+                        skuNumberParams.addAll(noSort);
                         skuNumberParams.add(numberParam);
                         break;
                     }
@@ -57,11 +68,13 @@ public class AllBomController {
             allSkus.add(skuNumberParams);
         }
 
+        /**
+         *  调用bom方法
+         */
 
         AllBomResult allBomResult = new AllBomResult();
         List<BomOrder> results = new ArrayList<>();
         List<SkuResult> owes = new ArrayList<>();
-
         for (List<AllBomParam.SkuNumberParam> skus : allSkus) {
             AllBom allBom = new AllBom();
             allBom.start(skus);
