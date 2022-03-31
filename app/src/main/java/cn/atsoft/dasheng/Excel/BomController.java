@@ -40,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -167,6 +168,9 @@ public class BomController {
                             detail.setSkuId(detailSku.getSkuId());
                         } else {
                             detail.setSkuId(detailSku.getSkuId());
+                        }
+                        if (ToolUtil.isEmpty(bom.getNum())) {
+                            throw new ServiceException(500, "第" + bom.getLine() + "行 缺少数量");
                         }
                         detail.setNumber(bom.getNum());
 
