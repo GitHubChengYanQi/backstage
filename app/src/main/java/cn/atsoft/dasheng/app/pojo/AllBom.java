@@ -87,7 +87,7 @@ public class AllBom {
      * ]
      */
 
-    public Map<Long, Object> getBom(Long skuId, int number, int selfNum) {
+    public Map<Long, Object> getBom(Long skuId, int number, double selfNum) {
 
         Map<Long, Object> tmp = new HashMap<>();
 
@@ -110,7 +110,7 @@ public class AllBom {
 //            Map<Long, Object> map = new HashMap<>();
             List<Map<Long, Object>> list = new ArrayList<>();
             for (ErpPartsDetail erpPartsDetail : details) {
-                list.add(this.getBom(erpPartsDetail.getSkuId(), erpPartsDetail.getNumber() * number, erpPartsDetail.getNumber()));
+                list.add(this.getBom(erpPartsDetail.getSkuId(), (int)(erpPartsDetail.getNumber() * number), erpPartsDetail.getNumber()));
             }
 
             // 循环相加
@@ -140,7 +140,7 @@ public class AllBom {
                 SkuNumber o = (SkuNumber) map.get(aLong);
                 SkuNumber skuNumber = new SkuNumber();
                 ToolUtil.copyProperties(o, skuNumber);
-                skuNumber.setNum(o.getNum() * selfNum);
+                skuNumber.setNum((int) (o.getNum() * selfNum));
                 tmp.put(aLong, skuNumber);
             }
 //            for (Map<Long, Object> objectMap : list) {
@@ -163,7 +163,7 @@ public class AllBom {
             }
             skuList.put(skuId, number + num);
             SkuNumber skuNumber = new SkuNumber();
-            skuNumber.setNum(selfNum);
+            skuNumber.setNum((int) selfNum);
             skuNumber.setSkuId(skuId);
             tmp.put(skuId, skuNumber);
         }
