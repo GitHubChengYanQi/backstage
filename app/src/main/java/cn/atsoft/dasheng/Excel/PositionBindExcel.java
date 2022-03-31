@@ -87,8 +87,8 @@ public class PositionBindExcel {
             strands.add(excel.getStrand());
         }
         List<Sku> skuList = skuService.query().in("standard", strands).list();
-        List<StorehousePositionsBind> positionsBinds = bindService.list();
-        List<StorehousePositions> positions = positionsService.list();
+        List<StorehousePositionsBind> positionsBinds = bindService.query().eq("display", 1).list();
+        List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
         List<Brand> brands = brandService.list();
         List<StockDetails> stockDetailsList = new ArrayList<>();
 
