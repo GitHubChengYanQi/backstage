@@ -76,14 +76,12 @@ public class BomController {
         String fileSavePath = ConstantsContext.getFileUploadPath();
         File excelFile = new File(fileSavePath + name);
 
-        } catch (IOException | InvalidFormatException e) {
         try {
             file.transferTo(excelFile);
             workbook = new XSSFWorkbook(excelFile.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ResponseData.success();
         if (ToolUtil.isEmpty(workbook)) {
             workbook = new XSSFWorkbook();
         }

@@ -143,7 +143,7 @@ public class AllBom {
      * {5=>{},6=>{},7=>{}}
      * ]
      */
-    public Map<Long, Object> getBom(Long skuId, int number, int selfNum) {
+    public Map<Long, Object> getBom(Long skuId, int number, double selfNum) {
 
         Map<Long, Object> tmp = new HashMap<>();
 
@@ -166,7 +166,7 @@ public class AllBom {
 
             List<Map<Long, Object>> list = new ArrayList<>();
             for (ErpPartsDetail erpPartsDetail : details) {
-                list.add(this.getBom(erpPartsDetail.getSkuId(), (int)(erpPartsDetail.getNumber() * number), erpPartsDetail.getNumber()));
+                list.add(this.getBom(erpPartsDetail.getSkuId(), (int) (erpPartsDetail.getNumber() * number), erpPartsDetail.getNumber()));
             }
 
             // 循环相加
@@ -280,7 +280,7 @@ public class AllBom {
         List<Long> noEnough = new ArrayList<>();
 
         Map<Long, Object> lastChild = bomMap.get("lastChild");
-        
+
         for (Long id : lastChild.keySet()) {
             Long stockNum = stockNumber.get(id);
             SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
