@@ -135,6 +135,8 @@
             and sku_id in (
             select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
             union
+            select sku_id from goods_sku where standard like CONCAT('%',#{paramCondition.skuName},'%')
+            union
             select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
