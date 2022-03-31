@@ -68,7 +68,7 @@ public class ErpPartsDetail implements Serializable {
      * 零件数量
      */
     @TableField("number")
-    private Integer number;
+    private Double number;
 
     /**
      * 创建时间
@@ -145,11 +145,11 @@ public class ErpPartsDetail implements Serializable {
         this.partsId = partsId;
     }
 
-    public Integer getNumber() {
+    public Double getNumber() {
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(Double number) {
         this.number = number;
     }
 

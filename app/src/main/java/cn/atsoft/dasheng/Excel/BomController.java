@@ -40,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -107,6 +108,7 @@ public class BomController {
                     reader.addHeaderAlias("单位", "unit");
                     reader.addHeaderAlias("型号", "skuName");
                     reader.addHeaderAlias("分类", "spuClass");
+                    reader.addHeaderAlias("是否批量", "batch");
 
                     List<ErpPartsDetail> details = new ArrayList<>();
                     List<Bom> boms = reader.readAll(Bom.class);
@@ -120,6 +122,12 @@ public class BomController {
                             detailSku.setSkuName(bom.getSkuName());
                             detailSku.setSpecifications(bom.getSpc());
                             detailSku.setStandard(bom.getStrand());
+                            /**
+                             * 批量
+                             */
+                            if (ToolUtil.isNotEmpty(bom.getBatch()) && bom.getBatch().equals("是")) {
+                                detailSku.setBatch(1);
+                            }
                             /**
                              * 单位
                              */
@@ -161,7 +169,10 @@ public class BomController {
                         } else {
                             detail.setSkuId(detailSku.getSkuId());
                         }
-                        detail.setNumber(Integer.valueOf(bom.getNum()));
+                        if (ToolUtil.isEmpty(bom.getNum())) {
+                            throw new ServiceException(500, "第" + bom.getLine() + "行 缺少数量");
+                        }
+                        detail.setNumber(bom.getNum());
 
                         if (details.stream().noneMatch(i -> i.getSkuId().equals(detail.getSkuId()))) {
                             details.add(detail);
