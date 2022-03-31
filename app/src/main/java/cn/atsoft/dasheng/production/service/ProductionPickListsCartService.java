@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
+import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -66,4 +67,7 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
      */
      PageInfo<ProductionPickListsCartResult> findPageBySpec(ProductionPickListsCartParam param);
 
+    List<CartGroupByUserListRequest> groupByUser(ProductionPickListsCartParam param);
+
+    List<ProductionPickListsCartResult> getSelfCarts(ProductionPickListsCartParam param);
 }

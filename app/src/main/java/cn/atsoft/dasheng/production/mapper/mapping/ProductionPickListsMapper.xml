@@ -15,11 +15,12 @@
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
         <result column="status" property="status" />
+        <result column="coding" property="coding" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_id AS "pickListsId", user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
+        pick_lists_id AS "pickListsId", coding AS "coding" ,user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
     </sql>
 
 

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.production.model.request.SkuInStockTree;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -24,6 +25,7 @@ import java.util.List;
 @Data
 @ApiModel
 public class StorehouseResult implements Serializable {
+    private SkuInStockTree skuInStockTree;
 
     private static final long serialVersionUID = 1L;
     /**

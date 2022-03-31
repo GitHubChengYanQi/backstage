@@ -54,7 +54,11 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
 
     @Override
     public List<ProductionPickListsDetailResult> findListBySpec(ProductionPickListsDetailParam param){
-        return null;
+      return this.baseMapper.customList2(param);
+    }
+    @Override
+    public List<ProductionPickListsDetailResult> getByTask(ProductionPickListsDetailParam param){
+      return this.baseMapper.customList(param);
     }
 
     @Override

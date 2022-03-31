@@ -1,64 +1,51 @@
 package cn.atsoft.dasheng.production.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 
 /**
  * <p>
- * 领料单详情表
+ * 领取物料码
  * </p>
  *
- * @author Captain_Jazz
- * @since 2022-03-25
+ * @author cheng
+ * @since 2022-03-29
  */
-@TableName("daoxin_production_pick_lists_cart")
-public class ProductionPickListsCart implements Serializable {
+@TableName("daoxin_production_pick_code")
+public class ProductionPickCode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 子表id
+     * 取件码id
      */
-    @TableId(value = "pick_lists_cart", type = IdType.ID_WORKER)
-    private Long pickListsCart;
-
-
-
-    @TableField("storehouse_positions_id")
-    private Long storehousePositionsId;
-
+    @TableId(value = "pick_code_id", type = IdType.ID_WORKER)
+    private Long pickCodeId;
 
     /**
-     * 状态
+     * 取件码
      */
-    @TableField("status")
-    private Integer status;
-
-
-
-    @TableField("storehouse_id")
-    private Long storehouseId;
-
+    @TableField("code")
+    private Long code;
+    /**
+     * 任务id
+     */
+    @TableField("production_task_id")
+    private Long productionTaskId;
+    
+    /**
+     * 取件码
+     */
+    @TableField("user_id")
+    private Long userId;
 
     /**
-     * 物料id
-     */
-    @TableField("sku_id")
-    private Long skuId;
-    /**
-     * 主表id
+     * 关联领料单id
      */
     @TableField("pick_lists_id")
     private Long pickListsId;
-
-
-    @TableField("number")
-    private Integer number;
 
     /**
      * 创建者
@@ -97,20 +84,20 @@ public class ProductionPickListsCart implements Serializable {
     private Long deptId;
 
 
-    public Long getStorehousePositionsId() {
-        return storehousePositionsId;
+    public Long getPickCodeId() {
+        return pickCodeId;
     }
 
-    public void setStorehousePositionsId(Long storehousePositionsId) {
-        this.storehousePositionsId = storehousePositionsId;
+    public void setPickCodeId(Long pickCodeId) {
+        this.pickCodeId = pickCodeId;
     }
 
-    public Long getStorehouseId() {
-        return storehouseId;
+    public Long getCode() {
+        return code;
     }
 
-    public void setStorehouseId(Long storehouseId) {
-        this.storehouseId = storehouseId;
+    public void setCode(Long code) {
+        this.code = code;
     }
 
     public Long getPickListsId() {
@@ -119,40 +106,6 @@ public class ProductionPickListsCart implements Serializable {
 
     public void setPickListsId(Long pickListsId) {
         this.pickListsId = pickListsId;
-    }
-
-    public Long getPickListsCart() {
-        return pickListsCart;
-    }
-
-    public void setPickListsCart(Long pickListsCart) {
-        this.pickListsCart = pickListsCart;
-    }
-
-
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Long getSkuId() {
-        return skuId;
-    }
-
-    public void setSkuId(Long skuId) {
-        this.skuId = skuId;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
     }
 
     public Long getCreateUser() {
@@ -177,6 +130,22 @@ public class ProductionPickListsCart implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getProductionTaskId() {
+        return productionTaskId;
+    }
+
+    public void setProductionTaskId(Long productionTaskId) {
+        this.productionTaskId = productionTaskId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Date getUpdateTime() {
@@ -205,10 +174,10 @@ public class ProductionPickListsCart implements Serializable {
 
     @Override
     public String toString() {
-        return "ProductionPickListsCart{" +
-        "pickListsCart=" + pickListsCart +
-        ", skuId=" + skuId +
-        ", number=" + number +
+        return "ProductionPickCode{" +
+        "pickCodeId=" + pickCodeId +
+        ", code=" + code +
+        ", pickListsId=" + pickListsId +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +

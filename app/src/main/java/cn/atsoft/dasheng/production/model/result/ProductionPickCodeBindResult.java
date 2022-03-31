@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.production.model.result;
 
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -9,49 +8,36 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 领料单详情表
+ * 
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-03-25
+ * @since 2022-03-29
  */
 @Data
 @ApiModel
-public class ProductionPickListsCartResult implements Serializable {
+public class ProductionPickCodeBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private SkuResult skuResult;
-    private ProductionPickListsResult productionPickListsResult;
 
 
+    @ApiModelProperty("")
+    private Long pickCodeBindId;
 
-    private Long storehousePositionsId;
-    private Long storehouseId;
+    @ApiModelProperty("")
+    private Long pickCodeId;
 
-
-    /**
-     * 子表id
-     */
-    @ApiModelProperty("子表id")
-    private Long pickListsCart;
-
-    /**
-     * 主表id
-     */
-    @ApiModelProperty("主表id")
-    private Long pickListsId;
-
-    /**
-     * 物料id
-     */
-    @ApiModelProperty("物料id")
+    @ApiModelProperty("")
     private Long skuId;
 
     @ApiModelProperty("")
     private Integer number;
 
     @ApiModelProperty("")
-    private Integer status;
+    private Long productionTaskId;
+
+    @ApiModelProperty("")
+    private Long pickListsId;
 
     /**
      * 创建者

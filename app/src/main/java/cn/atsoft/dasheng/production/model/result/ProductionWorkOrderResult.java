@@ -24,9 +24,12 @@ public class ProductionWorkOrderResult implements Serializable {
 
     private ActivitiSetpSetResult setpSetResult;
 
+    private Long stockNumber;
+
     private int completeNum ;
     private int toDoNum ;
     private int cardNumber;
+    private Long cardSkuId;
     private Long outSkuId;
 
     @ApiModelProperty("")

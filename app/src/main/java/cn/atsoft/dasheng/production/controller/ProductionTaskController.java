@@ -1,14 +1,20 @@
 package cn.atsoft.dasheng.production.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.production.entity.ProductionPickCode;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
+import cn.atsoft.dasheng.production.service.ProductionPickCodeService;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.production.service.ProductionTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -32,6 +38,12 @@ public class ProductionTaskController extends BaseController {
 
     @Autowired
     private ProductionTaskService productionTaskService;
+
+    @Autowired
+    private ProductionPickCodeService pickCodeService;
+
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
     /**
      * 新增接口
@@ -118,6 +130,34 @@ public class ProductionTaskController extends BaseController {
             productionTaskParam = new ProductionTaskParam();
         }
         return this.productionTaskService.findPageBySpec(productionTaskParam);
+    }
+
+
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-22
+     */
+    @RequestMapping(value = "/getPickCode", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getPickCode(@RequestBody(required = false) ProductionTaskParam productionTaskParam) {
+        if (ToolUtil.isEmpty(productionTaskParam)) {
+            productionTaskParam = new ProductionTaskParam();
+        }
+        ProductionPickLists one = pickListsService.query().eq("source", "productionTask").eq("source_id", productionTaskParam.getProductionTaskId()).one();
+        ProductionPickCode pickListsId = pickCodeService.query().eq("pick_lists_id", one.getPickListsId()).one();
+        if (ToolUtil.isEmpty(pickListsId)){
+            ProductionPickCode codeEntity = new ProductionPickCode();
+            long code = RandomUtil.randomLong(1000,9999);
+            codeEntity.setCode(code);
+            codeEntity.setProductionTaskId(productionTaskParam.getProductionTaskId());
+            codeEntity.setPickListsId(one.getPickListsId());
+            codeEntity.setUserId(LoginContextHolder.getContext().getUserId());
+            pickCodeService.save(codeEntity);
+            return ResponseData.success(codeEntity.getCode());
+        }
+        return ResponseData.success(pickListsId.getCode()) ;
     }
 
 

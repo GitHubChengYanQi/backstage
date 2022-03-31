@@ -6,6 +6,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
 /**
@@ -26,6 +28,12 @@ public class ProductionPickLists implements Serializable {
      */
       @TableId(value = "pick_lists_id", type = IdType.ID_WORKER)
     private Long pickListsId;
+
+    /**
+     * 领取物料码
+     */
+    @TableField("coding")
+    private String coding;
 
     @TableField("user_id")
     private Long userId;
@@ -91,6 +99,14 @@ public class ProductionPickLists implements Serializable {
 
     public void setPickListsId(Long pickListsId) {
         this.pickListsId = pickListsId;
+    }
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
     }
 
     public Long getUserId() {

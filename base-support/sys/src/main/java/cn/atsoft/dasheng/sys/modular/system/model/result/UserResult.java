@@ -32,7 +32,6 @@ public class UserResult implements Serializable {
      */
 
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
     private Long userId;
 
     /**

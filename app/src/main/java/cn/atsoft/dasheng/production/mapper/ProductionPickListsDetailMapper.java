@@ -28,6 +28,8 @@ public interface ProductionPickListsDetailMapper extends BaseMapper<ProductionPi
      * @Date 2022-03-25
      */
     List<ProductionPickListsDetailResult> customList(@Param("paramCondition") ProductionPickListsDetailParam paramCondition);
+    
+    List<ProductionPickListsDetailResult> customList2(@Param("paramCondition") ProductionPickListsDetailParam paramCondition);
 
     /**
      * 获取map列表
