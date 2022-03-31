@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.pojo.AllBom;
 import cn.atsoft.dasheng.app.pojo.AllBomParam;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.app.pojo.BomOrder;
+import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,15 +23,19 @@ import java.util.Stack;
 @RestController
 @RequestMapping("/mes")
 public class AllBomController {
-
+    @Autowired
+    private PartsService partsService;
 
     @RequestMapping(value = "/analysis", method = RequestMethod.POST)
     public ResponseData getBoms(@RequestBody AllBomParam param) {
 
-        List<AllBomResult> bomResults = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
 
+        List<Long> ids = new ArrayList<>();
         for (AllBomParam.SkuNumberParam skuId : param.getSkuIds()) {
+            Parts one = partsService.query().eq("sku_id", skuId.getSkuId()).eq("status", 99).eq("type", 1).one();
+            if (ToolUtil.isEmpty(one)) {
+                throw new ServiceException(500, skuId.getSkuId() + "没有bom");
+            }
             ids.add(skuId.getSkuId());
         }
 
@@ -48,6 +57,7 @@ public class AllBomController {
             allSkus.add(skuNumberParams);
         }
 
+
         AllBomResult allBomResult = new AllBomResult();
         List<BomOrder> results = new ArrayList<>();
         List<SkuResult> owes = new ArrayList<>();
@@ -62,7 +72,7 @@ public class AllBomController {
         allBomResult.setResult(results);
         allBomResult.setOwe(owes);
 
-        return ResponseData.success(bomResults);
+        return ResponseData.success(allBomResult);
     }
 
     private List<List<Long>> skuIdsList(List<Long> skuIds) {
