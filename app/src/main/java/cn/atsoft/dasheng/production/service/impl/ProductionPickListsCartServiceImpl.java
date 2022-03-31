@@ -190,7 +190,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         for (ProductionPickLists productionPickList : productionPickLists) {
             pickListsIds.add(productionPickList.getPickListsId());
         }
-        List<ProductionPickListsCart> pickListsCarts =pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("status",99).list();
+        List<ProductionPickListsCart> pickListsCarts =pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).list();
         List<ProductionPickListsCartResult> results = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : pickListsCarts) {
             ProductionPickListsCartResult result = new ProductionPickListsCartResult();
