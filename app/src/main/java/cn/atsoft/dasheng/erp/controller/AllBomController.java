@@ -55,11 +55,10 @@ public class AllBomController {
         List<List<Long>> lists = skuIdsList(ids);
         List<List<AllBomParam.SkuNumberParam>> allSkus = new ArrayList<>();
         for (List<Long> list : lists) {
-            List<AllBomParam.SkuNumberParam> skuNumberParams = new ArrayList<>();
+            List<AllBomParam.SkuNumberParam> skuNumberParams = new ArrayList<>(noSort);
             for (Long aLong : list) {
                 for (AllBomParam.SkuNumberParam numberParam : param.getSkuIds()) {
                     if (aLong.equals(numberParam.getSkuId())) {
-                        skuNumberParams.addAll(noSort);
                         skuNumberParams.add(numberParam);
                         break;
                     }

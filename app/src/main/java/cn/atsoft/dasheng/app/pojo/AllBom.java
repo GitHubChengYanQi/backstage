@@ -314,7 +314,7 @@ public class AllBom {
             for (Long id : lastChild.keySet()) {
                 Long num = stockNumber.get(id);
                 SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
-                this.notEnough.put(skuId, skuNumber.getNum() - num);
+                this.notEnough.put(id, skuNumber.getNum() - num);
             }
         }
     }
