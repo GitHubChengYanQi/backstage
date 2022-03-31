@@ -35,6 +35,7 @@ public class PrintTemplateServiceImpl extends ServiceImpl<PrintTemplateMapper, P
     public void add(PrintTemplateParam param) {
         PrintTemplate type = this.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", param.getType());
+            eq("display",1);
         }});
         if (ToolUtil.isNotEmpty(type)) {
             throw new ServiceException(500, "已有此类模板不可重复添加，如有需求请修改之前模板");
@@ -46,7 +47,7 @@ public class PrintTemplateServiceImpl extends ServiceImpl<PrintTemplateMapper, P
     @Override
     public void delete(PrintTemplateParam param) {
         PrintTemplate printTemplate =  this.getEntity(param);
-        printTemplate.setDisplay(1);
+        printTemplate.setDisplay(0);
         this.updateById(printTemplate);
     }
 

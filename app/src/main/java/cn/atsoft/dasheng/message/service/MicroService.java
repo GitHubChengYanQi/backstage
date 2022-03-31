@@ -5,15 +5,19 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
 import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.service.ProductionCardService;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MicroService {
@@ -27,6 +31,9 @@ public class MicroService {
 
     @Autowired
     private ProductionCardService productionCardService;
+
+    @Autowired
+    private ProductionPickListsService productionPickListsService;
 
 
     public void microServiceDo(MicroServiceEntity microServiceEntity) {
@@ -67,10 +74,16 @@ public class MicroService {
             case WORK_ORDER:
                 switch (microServiceEntity.getOperationType()) {
                     case ADD:
-
+                        List<ProductionCard> cardList = productionCardService.addBatchCardByProductionPlan(microServiceEntity.getObject());
                         productionWorkOrderService.microServiceAdd(microServiceEntity.getObject());
-                        productionCardService.addBatchCardByProductionPlan(microServiceEntity.getObject());
 
+
+                }
+                break;
+            case PRODUCTION_PICKLISTS:
+                switch (microServiceEntity.getOperationType()) {
+                    case ADD:
+                        productionPickListsService.addByProductionTask(microServiceEntity.getObject());
                 }
                 break;
             default:

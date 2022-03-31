@@ -25,6 +25,7 @@ public class ProductionWorkOrderParam implements Serializable, BaseValidatingPar
     private static final long serialVersionUID = 1L;
 
 
+    private Long cardSkuId;
     @ApiModelProperty("")
     private Long workOrderId;
 
@@ -33,6 +34,12 @@ public class ProductionWorkOrderParam implements Serializable, BaseValidatingPar
      */
     @ApiModelProperty("工序id")
     private Long shipSetpId;
+
+    /**
+     * 生产卡片id
+     */
+    @ApiModelProperty("生产卡片id")
+    private Long cardId;
 
     @ApiModelProperty("")
     private Long skuId;

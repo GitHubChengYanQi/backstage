@@ -12,9 +12,12 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.omg.CORBA.LongHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,6 +83,17 @@ public class ActivitiSetpSetServiceImpl extends ServiceImpl<ActivitiSetpSetMappe
         ActivitiSetpSet entity = new ActivitiSetpSet();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public List<ActivitiSetpSetResult> getResultByStepsId(List<Long> stepsIds){
+        List<ActivitiSetpSet> activitiSetpSets = stepsIds.size() == 0 ? new ArrayList<>() : this.query().in("setps_id", stepsIds).eq("display", 1).list();
+        List<ActivitiSetpSetResult> results = new ArrayList<>();
+        for (ActivitiSetpSet activitiSetpSet : activitiSetpSets) {
+            ActivitiSetpSetResult result = new ActivitiSetpSetResult();
+            ToolUtil.copyProperties(activitiSetpSet,result);
+            results.add(result);
+        }
+        return results;
     }
 
 }

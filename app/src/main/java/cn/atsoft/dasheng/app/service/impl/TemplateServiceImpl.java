@@ -137,6 +137,7 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
 
         String regStr = "\\<tr.*data-group=\"sku\"\\>([\\w\\W]+?)<\\/tr>";
         String input = "\\<input (.*?)\\>";
+        String editor = "\\<textarea(.*?)\\>[\\w\\W]*?<\\/textarea>";
         String td = "\\<td(.*?)\\/td\\>";
         String pay = "\\<tr.*data-group=\"pay\"\\>([\\w\\W]+?)<\\/tr>";
 
@@ -251,6 +252,15 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         while (matcher.find()) {    //input
             String group = matcher.group(0);
             if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
+                resultList.add(group);
+            }
+        }
+
+        Pattern editorCompile = Pattern.compile(editor);
+        Matcher editorMatcher = editorCompile.matcher(content);
+        while (editorMatcher.find()) {    //editor
+            String group = editorMatcher.group(0);
+            if (group.contains("textarea") && group.contains(" data-title=")) {
                 resultList.add(group);
             }
         }

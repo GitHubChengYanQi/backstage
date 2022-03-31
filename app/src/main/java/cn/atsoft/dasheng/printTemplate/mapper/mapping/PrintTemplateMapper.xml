@@ -25,7 +25,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult" parameterType="cn.atsoft.dasheng.printTemplate.model.params.PrintTemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_print_template where 1 = 1
+        from daoxin_print_template where 1 = 1 and display = 1
             <if test="paramCondition.printTemplateId != null">
                 and print_template_id like CONCAT('%',#{paramCondition.printTemplateId},'%')
             </if>
@@ -61,7 +61,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.printTemplate.model.params.PrintTemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_print_template where 1 = 1
+        from daoxin_print_template where 1 = 1 and display = 1
                 <if test="paramCondition.printTemplateId != null">
                         and print_template_id like CONCAT('%',#{paramCondition.printTemplateId},'%')
                 </if>
@@ -97,7 +97,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult" parameterType="cn.atsoft.dasheng.printTemplate.model.params.PrintTemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_print_template where 1 = 1
+        from daoxin_print_template where 1 = 1 and display = 1
                 <if test="paramCondition.printTemplateId != null">
                         and print_template_id like CONCAT('%',#{paramCondition.printTemplateId},'%')
                 </if>
@@ -133,7 +133,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.printTemplate.model.params.PrintTemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_print_template where 1 = 1
+        from daoxin_print_template where 1 = 1 and display = 1
                 <if test="paramCondition.printTemplateId != null">
                         and print_template_id like CONCAT('%',#{paramCondition.printTemplateId},'%')
                 </if>

@@ -13,8 +13,8 @@ import java.io.Serializable;
  * 
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-22
  */
 @TableName("daoxin_production_task_detail")
 public class ProductionTaskDetail implements Serializable {
@@ -32,12 +32,6 @@ public class ProductionTaskDetail implements Serializable {
      */
     @TableField("production_task_id")
     private Long productionTaskId;
-
-    /**
-     * 生产卡片id
-     */
-    @TableField("production_card_id")
-    private Long productionCardId;
 
     /**
      * 创建者
@@ -75,6 +69,66 @@ public class ProductionTaskDetail implements Serializable {
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+    /**
+     * 实物
+     */
+    @TableField("inkind_id")
+    private Long inkindId;
+    /**
+     * 实物
+     */
+    @TableField("out_sku_id")
+    private Long outSkuId;
+
+    /**
+     * 实物
+     */
+    @TableField("quality_id")
+    private Long qualityId;
+
+    /**
+     * 实物
+     */
+    @TableField("my_quality_id")
+    private Long myQualityId;
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    /**
+     * 实物
+     */
+    @TableField("number")
+    private Integer number;
+
+    public Long getOutSkuId() {
+        return outSkuId;
+    }
+
+    public void setOutSkuId(Long outSkuId) {
+        this.outSkuId = outSkuId;
+    }
+
+    public Long getQualityId() {
+        return qualityId;
+    }
+
+    public void setQualityId(Long qualityId) {
+        this.qualityId = qualityId;
+    }
+
+    public Long getMyQualityId() {
+        return myQualityId;
+    }
+
+    public void setMyQualityId(Long myQualityId) {
+        this.myQualityId = myQualityId;
+    }
 
     public Long getProductionTaskDetailId() {
         return productionTaskDetailId;
@@ -90,14 +144,6 @@ public class ProductionTaskDetail implements Serializable {
 
     public void setProductionTaskId(Long productionTaskId) {
         this.productionTaskId = productionTaskId;
-    }
-
-    public Long getProductionCardId() {
-        return productionCardId;
-    }
-
-    public void setProductionCardId(Long productionCardId) {
-        this.productionCardId = productionCardId;
     }
 
     public Long getCreateUser() {
@@ -148,18 +194,26 @@ public class ProductionTaskDetail implements Serializable {
         this.updateUser = updateUser;
     }
 
+    public Long getInkindId() {
+        return inkindId;
+    }
+
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
+    }
+
     @Override
     public String toString() {
         return "ProductionTaskDetail{" +
         "productionTaskDetailId=" + productionTaskDetailId +
         ", productionTaskId=" + productionTaskId +
-        ", productionCardId=" + productionCardId +
         ", createUser=" + createUser +
         ", deptId=" + deptId +
         ", display=" + display +
         ", updateTime=" + updateTime +
         ", createTime=" + createTime +
         ", updateUser=" + updateUser +
+        ", inkindId=" + inkindId +
         "}";
     }
 }

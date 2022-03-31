@@ -115,7 +115,7 @@ public class PrintTemplateController extends BaseController {
             return this.printTemplateService.findPageBySpec(null,printTemplateParam);
         }else{
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            PageInfo<PrintTemplateResult> pageBySpec = printTemplateService.findPageBySpec(dataScope, printTemplateParam);
+            PageInfo<PrintTemplateResult> pageBySpec = printTemplateService.findPageBySpec(null, printTemplateParam);
             return pageBySpec;
         }
 

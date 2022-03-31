@@ -62,11 +62,11 @@ public class StorehousePositionsBindController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/SpuAddBind", method = RequestMethod.POST)
-    public ResponseData SpuAddBind(@Valid @RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
-        this.storehousePositionsBindService.SpuAddBind(storehousePositionsBindParam);
-        return ResponseData.success();
-    }
+//    @RequestMapping(value = "/SpuAddBind", method = RequestMethod.POST)
+//    public ResponseData SpuAddBind(@Valid @RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
+//        this.storehousePositionsBindService.SpuAddBind(storehousePositionsBindParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 编辑接口
@@ -93,6 +93,19 @@ public class StorehousePositionsBindController extends BaseController {
     public ResponseData delete(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
         this.storehousePositionsBindService.delete(storehousePositionsBindParam);
         return ResponseData.success();
+    }
+
+    /**
+     * 删除接口
+     *
+     * @author song
+     * @Date 2022-01-20
+     */
+    @RequestMapping(value = "/treeView", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData treeView(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
+        List<StorehousePositionsResult> results = this.storehousePositionsBindService.treeView(storehousePositionsBindParam.getSkuIds());
+        return ResponseData.success(results);
     }
 
     /**

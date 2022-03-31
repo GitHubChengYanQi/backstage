@@ -29,6 +29,7 @@ public class ActivitiSetpSetResult implements Serializable {
 
     private Object shipSetpResult;
 
+    private Object productionStation;
     private String type = "setp";
     /**
      * 主键

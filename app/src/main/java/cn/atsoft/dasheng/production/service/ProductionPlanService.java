@@ -66,4 +66,5 @@ public interface ProductionPlanService extends IService<ProductionPlan> {
      */
      PageInfo<ProductionPlanResult> findPageBySpec(ProductionPlanParam param);
 
+    void format(List<ProductionPlanResult> param);
 }

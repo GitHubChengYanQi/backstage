@@ -32,7 +32,7 @@ public interface ViewStockDetailsService extends IService<ViewStockDetails> {
      * @author 
      * @Date 2022-01-27
      */
-    List<ViewStockDetailsResult> findListBySpec(ViewStockDetailsParam param);
+    PageInfo<ViewStockDetailsResult> findListBySpec(ViewStockDetailsParam param);
 
     /**
      * 查询分页数据，Specification模式

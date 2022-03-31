@@ -30,6 +30,26 @@ public class ProductionWorkOrder implements Serializable {
     @TableField("ship_setp_id")
     private Long shipSetpId;
 
+    public Long getCardSkuId() {
+        return cardSkuId;
+    }
+
+    public void setCardSkuId(Long cardSkuId) {
+        this.cardSkuId = cardSkuId;
+    }
+
+    /**
+     * 工序id
+     */
+    @TableField("card_sku_id")
+    private Long cardSkuId;
+    /**
+     * 生产卡片id
+     */
+    @TableField("card_id")
+    private Long cardId;
+
+
     @TableField("sku_id")
     private Long skuId;
 
@@ -171,6 +191,15 @@ public class ProductionWorkOrder implements Serializable {
     @TableField("origin")
     private String origin;
 
+
+
+    public Long getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(Long cardId) {
+        this.cardId = cardId;
+    }
 
     public Long getWorkOrderId() {
         return workOrderId;

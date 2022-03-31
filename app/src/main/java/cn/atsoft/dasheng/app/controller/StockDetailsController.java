@@ -53,14 +53,7 @@ public class StockDetailsController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/getBoms", method = RequestMethod.POST)
-    public ResponseData getBoms(@RequestBody AllBomParam param) {
 
-        AllBom allBom = new AllBom();
-        allBom.start(param.getSkuIds());
-        AllBomResult allBomResult = allBom.getResult();
-        return ResponseData.success(allBomResult);
-    }
 
 
     /**

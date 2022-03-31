@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -11,14 +13,22 @@ import java.util.List;
  * 生产任务
  * </p>
  *
- * @author 
- * @since 2022-02-28
+ * @author Captain_Jazz
+ * @since 2022-03-22
  */
 @Data
 @ApiModel
 public class ProductionTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private UserResult createUserResult;
+    private UserResult userResult;
+    private List<UserResult> userResults;
+
+    private ProductionWorkOrderResult workOrderResult;
+
+    private List<ProductionTaskDetailResult> taskDetailResults;
 
 
     /**
@@ -33,11 +43,27 @@ public class ProductionTaskResult implements Serializable {
     @ApiModelProperty("编码")
     private String coding;
 
+
+    /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    private Date endTime;
+
     /**
      * 生产任务名称
      */
     @ApiModelProperty("生产任务名称")
     private String productionTaskName;
+
+    @ApiModelProperty("")
+    private Long skuId;
+
+    /**
+     * 数量
+     */
+    @ApiModelProperty("数量")
+    private Integer number;
 
     /**
      * 备注
@@ -96,6 +122,7 @@ public class ProductionTaskResult implements Serializable {
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
@@ -108,6 +135,7 @@ public class ProductionTaskResult implements Serializable {
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
@@ -122,6 +150,14 @@ public class ProductionTaskResult implements Serializable {
      */
     @ApiModelProperty("来源Json字符串")
     private String origin;
+
+    private Integer status;
+
+    /**
+     * 成员
+     */
+    @ApiModelProperty("成员")
+    private String userIds;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
