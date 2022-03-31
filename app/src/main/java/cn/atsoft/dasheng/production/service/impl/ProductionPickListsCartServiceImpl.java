@@ -92,8 +92,8 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         IPage<ProductionPickListsCartResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
-
-    private void format(List<ProductionPickListsCartResult> param) {
+    @Override
+    public void format(List<ProductionPickListsCartResult> param) {
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsCartResult productionPickListsCartResult : param) {
             skuIds.add(productionPickListsCartResult.getSkuId());

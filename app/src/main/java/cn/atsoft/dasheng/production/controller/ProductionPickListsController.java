@@ -8,11 +8,14 @@ import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -42,6 +45,8 @@ public class ProductionPickListsController extends BaseController {
 
     @Autowired
     private ProductionPickListsService productionPickListsService;
+    @Autowired
+    private ProductionPickListsCartService productionPickListsCartService;
 
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
@@ -137,7 +142,17 @@ public class ProductionPickListsController extends BaseController {
             ToolUtil.copyProperties(productionTask,productionTaskResult);
             productionTaskResults.add(productionTaskResult);
         }
-
+        /**
+         * 查询备料信息
+         */
+        List<ProductionPickListsCart> productionPickListsCarts = productionPickListsCartService.query().in("pick_lists_id", productionPickListsParam.getPickListsIds()).list();
+        List<ProductionPickListsCartResult> pickListsCartResults = new ArrayList<>();
+        for (ProductionPickListsCart productionPickListsCart : productionPickListsCarts) {
+            ProductionPickListsCartResult   productionPickListsCartResult = new ProductionPickListsCartResult();
+            ToolUtil.copyProperties(productionPickListsCart,productionPickListsCartResult);
+            pickListsCartResults.add(productionPickListsCartResult);
+        }
+        productionPickListsCartService.format(pickListsCartResults);
 
         List<ProductionPickListsResult> results = new ArrayList<>();
         for (ProductionPickLists productionPickList : productionPickLists) {
@@ -163,6 +178,7 @@ public class ProductionPickListsController extends BaseController {
         List<StorehousePositionsResult> storehousePositionsResults = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.treeView(skuIds);
         result.setStorehousePositionsResults(storehousePositionsResults);
         result.setProductionTaskResults(productionTaskResults);
+        result.setCartResults(pickListsCartResults);
         return ResponseData.success(result);
 
 

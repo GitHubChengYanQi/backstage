@@ -29,6 +29,7 @@ public class ProductionPickListsResult implements Serializable {
     private UserResult createUserResult;
     private UserResult userResult;
     private List<ProductionPickListsDetailResult> detailResults;
+    private List<ProductionPickListsCartResult> cartResults;
     private List<StorehouseResult> storehouseResults;
     private List<StorehousePositionsResult> storehousePositionsResults;
 
