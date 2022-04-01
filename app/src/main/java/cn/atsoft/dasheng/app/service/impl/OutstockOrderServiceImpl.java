@@ -131,7 +131,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
 
-        String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/OrCode?id=" + aLong;
+        String url = mobileService.getMobileConfig().getUrl() + "/#/Work/OrCode?id=" + aLong;
         User createUser = userService.getById(entity.getCreateUser());
         //新微信推送
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -185,7 +185,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
 
-        String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/OrCode?id=" + aLong;
+        String url = mobileService.getMobileConfig().getUrl() + "/#/Work/OrCode?id=" + aLong;
         User createUser = userService.getById(entity.getCreateUser());
         //新微信推送
         WxCpTemplate wxCpTemplate = new WxCpTemplate();

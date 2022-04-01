@@ -408,7 +408,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         pickListsCartService.updateBatchById(carts);
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Production/MyCart");
+        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Production/MyCart");
         wxCpTemplate.setTitle("新的生产任务");
         wxCpTemplate.setDescription("库管那里有新的物料待领取");
         wxCpTemplate.setUserIds(param.getUserIds().stream().distinct().collect(Collectors.toList()));

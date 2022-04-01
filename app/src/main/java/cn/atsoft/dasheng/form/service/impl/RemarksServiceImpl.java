@@ -199,7 +199,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             wxCpTemplate.setDescription("你有一条被@的消息");
             wxCpTemplate.setTitle("新消息");
             wxCpTemplate.setUserIds(userIds);
-            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?id=" + auditParam.getTaskId());
+            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?id=" + auditParam.getTaskId());
             wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
             wxCpSendTemplate.sendTemplate();
         }
