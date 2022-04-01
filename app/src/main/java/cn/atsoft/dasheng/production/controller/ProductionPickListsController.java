@@ -8,17 +8,23 @@ import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
+import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.service.ProductionTaskService;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -42,6 +48,10 @@ public class ProductionPickListsController extends BaseController {
 
     @Autowired
     private ProductionPickListsService productionPickListsService;
+    @Autowired
+    private ProductionPickListsDetailService pickListsDetailService;
+    @Autowired
+    private ProductionPickListsCartService productionPickListsCartService;
 
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
@@ -130,14 +140,24 @@ public class ProductionPickListsController extends BaseController {
         /**
          * 返回任务信息
          */
-        List<ProductionTask> productionTasks =sourceIds.size() == 0 ? new ArrayList<>() : productionTaskService.listByIds(sourceIds);
+        List<ProductionTask> productionTasks = sourceIds.size() == 0 ? new ArrayList<>() : productionTaskService.listByIds(sourceIds);
         List<ProductionTaskResult> productionTaskResults = new ArrayList<>();
         for (ProductionTask productionTask : productionTasks) {
             ProductionTaskResult productionTaskResult = new ProductionTaskResult();
-            ToolUtil.copyProperties(productionTask,productionTaskResult);
+            ToolUtil.copyProperties(productionTask, productionTaskResult);
             productionTaskResults.add(productionTaskResult);
         }
-
+        /**
+         * 查询备料信息
+         */
+        List<ProductionPickListsCart> productionPickListsCarts = productionPickListsCartService.query().in("pick_lists_id", productionPickListsParam.getPickListsIds()).list();
+        List<ProductionPickListsCartResult> pickListsCartResults = new ArrayList<>();
+        for (ProductionPickListsCart productionPickListsCart : productionPickListsCarts) {
+            ProductionPickListsCartResult productionPickListsCartResult = new ProductionPickListsCartResult();
+            ToolUtil.copyProperties(productionPickListsCart, productionPickListsCartResult);
+            pickListsCartResults.add(productionPickListsCartResult);
+        }
+        productionPickListsCartService.format(pickListsCartResults);
 
         List<ProductionPickListsResult> results = new ArrayList<>();
         for (ProductionPickLists productionPickList : productionPickLists) {
@@ -149,20 +169,25 @@ public class ProductionPickListsController extends BaseController {
         ProductionPickListsResult result = new ProductionPickListsResult();
         List<ProductionPickListsDetailResult> detailResults = new ArrayList<>();
         for (ProductionPickListsResult productionPickListsResult : results) {
-           if (ToolUtil.isNotEmpty( productionPickListsResult.getDetailResults())){
-               detailResults.addAll(productionPickListsResult.getDetailResults());
-           }
+            if (ToolUtil.isNotEmpty(productionPickListsResult.getDetailResults())) {
+                detailResults.addAll(productionPickListsResult.getDetailResults());
+            }
         }
         result.setDetailResults(detailResults);
 
         List<Long> skuIds = new ArrayList<>();
-        for (ProductionPickListsDetailResult detailResult : detailResults) {
-            skuIds.add(detailResult.getSkuId());
+        QueryWrapper<ProductionPickListsDetail> detailQueryWrapper = new QueryWrapper<>();
+        detailQueryWrapper.in("pick_lists_id",productionPickListsParam.getPickListsIds());
+        detailQueryWrapper.eq("status",0);
+        List<ProductionPickListsDetail> detailList = pickListsDetailService.list(detailQueryWrapper);
+        for (ProductionPickListsDetail productionPickListsDetail : detailList) {
+            skuIds.add(productionPickListsDetail.getSkuId());
         }
 
         List<StorehousePositionsResult> storehousePositionsResults = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.treeView(skuIds);
         result.setStorehousePositionsResults(storehousePositionsResults);
         result.setProductionTaskResults(productionTaskResults);
+        result.setCartResults(pickListsCartResults);
         return ResponseData.success(result);
 
 
@@ -182,6 +207,7 @@ public class ProductionPickListsController extends BaseController {
         }
         return this.productionPickListsService.findPageBySpec(productionPickListsParam);
     }
+
     /**
      * 查询列表
      *
@@ -227,7 +253,7 @@ public class ProductionPickListsController extends BaseController {
     public ResponseData<ProductionPickListsResult> getByTask(@RequestBody ProductionPickListsParam productionPickListsParam) {
 
 
-        ProductionPickLists detail = this.productionPickListsService.query().eq("source","productionTask").eq("source_id",productionPickListsParam.getSourceId()).one();
+        ProductionPickLists detail = this.productionPickListsService.query().eq("source", "productionTask").eq("source_id", productionPickListsParam.getSourceId()).one();
         ProductionPickListsResult result = new ProductionPickListsResult();
         ToolUtil.copyProperties(detail, result);
         productionPickListsService.formatStatus99(new ArrayList<ProductionPickListsResult>() {{

@@ -67,6 +67,8 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
      */
      PageInfo<ProductionPickListsCartResult> findPageBySpec(ProductionPickListsCartParam param);
 
+    void format(List<ProductionPickListsCartResult> param);
+
     List<CartGroupByUserListRequest> groupByUser(ProductionPickListsCartParam param);
 
     List<ProductionPickListsCartResult> getSelfCarts(ProductionPickListsCartParam param);

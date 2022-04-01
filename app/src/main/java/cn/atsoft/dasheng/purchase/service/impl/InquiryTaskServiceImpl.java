@@ -151,7 +151,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
             wxCpTemplate.setUserIds(new ArrayList<Long>(){{
                 add(param.getUserId());
             }});
-            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?id=" ;
+            String url = mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?id=" ;
             wxCpTemplate.setUrl(url);
            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
            wxCpSendTemplate.sendTemplate();
