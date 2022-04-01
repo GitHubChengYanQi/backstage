@@ -137,11 +137,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
             List<ErpPartsDetailParam> params = new ArrayList<>();
             for (Long aLong : longSet) {
-                ErpPartsDetailParam detailParam = new ErpPartsDetailParam();
-                Integer integer = skuNum.get(aLong);
-                detailParam.setNumber(Double.valueOf(integer));
-                detailParam.setSkuId(aLong);
-                params.add(detailParam);
+                if (!aLong.equals(param.getProcess().getSkuId())) {
+                    ErpPartsDetailParam detailParam = new ErpPartsDetailParam();
+                    Integer integer = skuNum.get(aLong);
+                    detailParam.setNumber(Double.valueOf(integer));
+                    detailParam.setSkuId(aLong);
+                    params.add(detailParam);
+                }
             }
             parts.setParts(params);
             Parts one = partsService.query().eq("sku_id", parts.getSkuId())
@@ -154,7 +156,6 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         }
         return processId;
     }
-
 
 
     @Override
@@ -246,6 +247,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return skuNum;
     }
 
+    /**
+     * 添加工序
+     *
+     * @param param
+     * @param stepId
+     * @return
+     */
     private Map<Long, Integer> addSetpSet(ActivitiSetpSetParam param, Long stepId) {
         Map<Long, Integer> map = new HashMap<>();
 
