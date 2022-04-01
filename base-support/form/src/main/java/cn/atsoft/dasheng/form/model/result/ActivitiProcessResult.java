@@ -30,6 +30,8 @@ public class ActivitiProcessResult implements Serializable {
     private Long skuId;
 
     private Integer num;
+
+    private Object skuResult;
     /**
      * 模块
      */

@@ -137,11 +137,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
             List<ErpPartsDetailParam> params = new ArrayList<>();
             for (Long aLong : longSet) {
-                ErpPartsDetailParam detailParam = new ErpPartsDetailParam();
-                Integer integer = skuNum.get(aLong);
-                detailParam.setNumber(Double.valueOf(integer));
-                detailParam.setSkuId(aLong);
-                params.add(detailParam);
+                if (!aLong.equals(param.getProcess().getSkuId())) {
+                    ErpPartsDetailParam detailParam = new ErpPartsDetailParam();
+                    Integer integer = skuNum.get(aLong);
+                    detailParam.setNumber(Double.valueOf(integer));
+                    detailParam.setSkuId(aLong);
+                    params.add(detailParam);
+                }
             }
             parts.setParts(params);
             Parts one = partsService.query().eq("sku_id", parts.getSkuId())

@@ -61,8 +61,6 @@ public class AllBom {
 
     private final Map<Long, Long> mix = new LinkedHashMap<>();   //最少可生产数量;
 
-    private final Map<Long, Object> result = new LinkedHashMap<>();
-
 
     public AllBomResult getResult() {
         AllBomResult allBomResult = new AllBomResult();
@@ -104,7 +102,10 @@ public class AllBom {
         Set<Long> ids = notEnough.keySet();
         List<Long> skuIds = new ArrayList<>(ids);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
+        for (SkuResult skuResult : skuResults) {
+            Long number = notEnough.get(skuResult.getSkuId());
+            skuResult.setLackNumber(number);
+        }
 
         allBomResult.setResult(new ArrayList<BomOrder>() {{
             add(bomOrder);

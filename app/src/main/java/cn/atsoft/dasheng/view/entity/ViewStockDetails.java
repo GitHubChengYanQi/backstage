@@ -22,6 +22,12 @@ public class ViewStockDetails implements Serializable {
     @TableField("sku_id")
     private Long skuId;
 
+    @TableField(exist = false)
+    private Long skuTypeNum;    //物料种类数量
+
+    @TableField(exist = false)
+    private Long skuCount;   //库存总数量
+
     /**
      * 物品Id
      */
@@ -165,6 +171,22 @@ public class ViewStockDetails implements Serializable {
 
     public void setBrandId(Long brandId) {
         this.brandId = brandId;
+    }
+
+    public Long getSkuTypeNum() {
+        return skuTypeNum;
+    }
+
+    public void setSkuTypeNum(Long skuTypeNum) {
+        this.skuTypeNum = skuTypeNum;
+    }
+
+    public Long getSkuCount() {
+        return skuCount;
+    }
+
+    public void setSkuCount(Long skuCount) {
+        this.skuCount = skuCount;
     }
 
     @Override

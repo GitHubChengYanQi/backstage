@@ -10,7 +10,12 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.task.entity.AsynTask;
+import cn.atsoft.dasheng.task.service.AsynTaskService;
+import com.alibaba.fastjson.JSON;
+import com.sun.corba.se.impl.orbutil.concurrent.Sync;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +31,9 @@ import java.util.Stack;
 public class AllBomController {
     @Autowired
     private PartsService partsService;
+
+    @Autowired
+    private AsynTaskService taskService;
 
     @RequestMapping(value = "/analysis", method = RequestMethod.POST)
     public ResponseData getBoms(@RequestBody @Valid AllBomParam param) {
@@ -48,6 +56,7 @@ public class AllBomController {
             }
         }
 
+
         /**
          *调用组合方法
          */
@@ -66,6 +75,23 @@ public class AllBomController {
             }
             allSkus.add(skuNumberParams);
         }
+        /**
+         * 调用 异步
+         */
+        task(allSkus);
+
+        return ResponseData.success("ok");
+    }
+
+
+    @Async
+    public void task(List<List<AllBomParam.SkuNumberParam>> allSkus) {
+
+        AsynTask asynTask = new AsynTask();
+        asynTask.setAllCount(allSkus.size());
+        asynTask.setType("物料分析");
+        asynTask.setStatus(0);
+        taskService.save(asynTask);
 
         /**
          *  调用bom方法
@@ -74,18 +100,26 @@ public class AllBomController {
         AllBomResult allBomResult = new AllBomResult();
         List<BomOrder> results = new ArrayList<>();
         List<SkuResult> owes = new ArrayList<>();
+        int i = 0;
         for (List<AllBomParam.SkuNumberParam> skus : allSkus) {
+            i++;
             AllBom allBom = new AllBom();
             allBom.start(skus);
             AllBomResult bom = allBom.getResult();
             results.addAll(bom.getResult());
             owes.addAll(bom.getOwe());
+
+            asynTask.setCount(i);   //修改任务状态
+            taskService.updateById(asynTask);
         }
         allBomResult.setResult(results);
         allBomResult.setOwe(owes);
 
-        return ResponseData.success(allBomResult);
+        asynTask.setContent(JSON.toJSONString(allBomResult));
+        asynTask.setStatus(99);
+        taskService.updateById(asynTask);
     }
+
 
     private List<List<Long>> skuIdsList(List<Long> skuIds) {
         List<List<Long>> skuIdsCell = new ArrayList<>();
