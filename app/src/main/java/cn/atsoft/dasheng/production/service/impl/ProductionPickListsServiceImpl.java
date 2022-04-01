@@ -355,7 +355,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     if (detail.getOutSkuId().equals(partsResult.getSkuId())) {
                         for (ErpPartsDetailResult part : partsResult.getParts()) {
                             ProductionPickListsDetail productionPickListsDetail = new ProductionPickListsDetail();
-                            productionPickListsDetail.setNumber(detail.getNumber() * part.getNumber());
+                            productionPickListsDetail.setNumber((int) (detail.getNumber() * part.getNumber()));
                             productionPickListsDetail.setSkuId(part.getSkuId());
                             productionPickListsDetail.setPickListsId(productionPickLists.getPickListsId());
                             details.add(productionPickListsDetail);
