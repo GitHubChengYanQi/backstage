@@ -4,26 +4,30 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
+import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
+import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionJobBooking;
 import cn.atsoft.dasheng.production.entity.ProductionJobBookingDetail;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
+import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.mapper.ProductionJobBookingMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionJobBookingDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionJobBookingParam;
 import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionJobBookingResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskDetailResult;
-import cn.atsoft.dasheng.production.service.ProductionJobBookingDetailService;
-import cn.atsoft.dasheng.production.service.ProductionJobBookingService;
+import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.production.service.ProductionTaskDetailService;
-import cn.atsoft.dasheng.production.service.ProductionTaskService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -65,6 +69,12 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
 
     @Autowired
     private InkindService inkindService;
+
+    @Autowired
+    private ProductionWorkOrderService workOrderService;
+
+    @Autowired
+    private CodingRulesService codingRulesService;
 
     @Override
     public void add(ProductionJobBookingParam param) {
@@ -168,12 +178,30 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
 
         jobBookingDetailService.saveBatch(jobBookingDetailsEntity);
 
+    }
+    private void createQualityTask(  ProductionTask productionTask,ProductionJobBooking entity,List<ProductionJobBookingDetail> jobBookingDetailsEntity){
+        Long workOrderId = productionTask.getWorkOrderId();
+        ProductionWorkOrder workOrder = workOrderService.getById(workOrderId);
 
-
-
-
-
-
+        List<ActivitiSetpSetDetailResult> resultByStepsIds = activitiSetpSetDetailService.getResultByStepsIds(new ArrayList<Long>() {{
+            add(workOrder.getStepsId());
+        }});
+        List<QualityTaskDetailParam> detailParams = new ArrayList<>();
+        for (ActivitiSetpSetDetailResult resultByStepsId : resultByStepsIds) {
+            for (ProductionJobBookingDetail detail : jobBookingDetailsEntity) {
+                if  (resultByStepsId.getSkuId().equals(detail.getSkuId())){
+                    QualityTaskDetailParam detailParam = new QualityTaskDetailParam();
+                    detailParam.setQualityPlanId(resultByStepsId.getQualityId());
+                    detailParam.setInkindId(detail.getInkindId().toString());
+                    detailParam.setNumber(1);
+                    detailParams.add(detailParam);
+                }
+            }
+        }
+        QualityTaskParam qualityTaskParam = new QualityTaskParam();
+        qualityTaskParam.setCoding(codingRulesService.encoding(4));
+        qualityTaskParam.setDetails(detailParams);
+        //TODO 调用质检任务add接口  或者消息队列发送内部调用
     }
 
     @Override
