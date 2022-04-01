@@ -15,6 +15,8 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.StepProcessService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
@@ -43,6 +45,8 @@ public class StepsController extends BaseController {
     private ActivitiProcessService processService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 新增接口
@@ -77,14 +81,23 @@ public class StepsController extends BaseController {
         processParam.setType("ship");
         PageInfo<ActivitiProcessResult> page = processService.findPageBySpec(processParam);
         List<Long> skuIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
         for (ActivitiProcessResult datum : page.getData()) {
             skuIds.add(datum.getFormId());
+            userIds.add(datum.getCreateUser());
         }
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         for (ActivitiProcessResult datum : page.getData()) {
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(datum.getFormId())) {
                     datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (User user : users) {
+                if (datum.getCreateUser().equals(user.getUserId())) {
+                    datum.setUser(user);
                     break;
                 }
             }

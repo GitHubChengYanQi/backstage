@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.task.model.result;
 
+import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 等待任务表
@@ -20,7 +25,7 @@ public class AsynTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private AllBomResult allBomResult;
     /**
      * 任务id
      */

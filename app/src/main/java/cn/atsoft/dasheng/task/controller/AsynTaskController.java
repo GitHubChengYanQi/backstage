@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.task.controller;
 
+import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
@@ -9,10 +10,12 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +36,6 @@ public class AsynTaskController extends BaseController {
     private AsynTaskService asynTaskService;
 
 
-
-
     /**
      * 查看详情接口
      *
@@ -47,7 +48,8 @@ public class AsynTaskController extends BaseController {
         AsynTask detail = this.asynTaskService.getById(asynTaskParam.getTaskId());
         AsynTaskResult result = new AsynTaskResult();
         ToolUtil.copyProperties(detail, result);
-
+        AllBomResult allBomResult = JSON.parseObject(result.getContent(), AllBomResult.class);
+        result.setAllBomResult(allBomResult);
         return ResponseData.success(result);
     }
 
@@ -60,13 +62,11 @@ public class AsynTaskController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AsynTaskResult> list(@RequestBody(required = false) AsynTaskParam asynTaskParam) {
-        if(ToolUtil.isEmpty(asynTaskParam)){
+        if (ToolUtil.isEmpty(asynTaskParam)) {
             asynTaskParam = new AsynTaskParam();
         }
         return this.asynTaskService.findPageBySpec(asynTaskParam);
     }
-
-
 
 
 }

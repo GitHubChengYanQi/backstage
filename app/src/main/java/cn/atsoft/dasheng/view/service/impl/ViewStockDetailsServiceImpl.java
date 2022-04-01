@@ -85,14 +85,13 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
                 return null;
         }
 
-        List<ViewStockDetails> details = this.query().select(" sum(number) as  skuCount  ,count(sku_id) as skuTypeNum ").groupBy("sku_id").list();
-        long skuTypeNum = 0L;
+        List<ViewStockDetails> details = this.query().select(" sum(number) as  skuCount  ").groupBy("sku_id").list();
+
         long skuCount = 0L;
         for (ViewStockDetails detail : details) {
-            skuTypeNum = skuTypeNum + detail.getSkuTypeNum();
             skuCount = skuCount + detail.getSkuCount();
         }
-        format(results.getRecords(), skuTypeNum, skuCount);
+        format(results.getRecords(), (long) details.size(), skuCount);
         return PageFactory.createPageInfo(page);
     }
 

@@ -1,14 +1,16 @@
 package cn.atsoft.dasheng.task.service.impl;
 
 
+import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.mapper.AsynTaskMapper;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
 import cn.atsoft.dasheng.task.model.result.AsynTaskResult;
-import  cn.atsoft.dasheng.task.service.AsynTaskService;
+import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -29,18 +31,18 @@ import java.util.List;
 public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> implements AsynTaskService {
 
     @Override
-    public void add(AsynTaskParam param){
+    public void add(AsynTaskParam param) {
         AsynTask entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(AsynTaskParam param){
+    public void delete(AsynTaskParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(AsynTaskParam param){
+    public void update(AsynTaskParam param) {
         AsynTask oldEntity = getOldEntity(param);
         AsynTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +50,24 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
     }
 
     @Override
-    public AsynTaskResult findBySpec(AsynTaskParam param){
+    public AsynTaskResult findBySpec(AsynTaskParam param) {
         return null;
     }
 
     @Override
-    public List<AsynTaskResult> findListBySpec(AsynTaskParam param){
+    public List<AsynTaskResult> findListBySpec(AsynTaskParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param){
+    public PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param) {
         Page<AsynTaskResult> pageContext = getPageContext();
         IPage<AsynTaskResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(AsynTaskParam param){
+    private Serializable getKey(AsynTaskParam param) {
         return param.getTaskId();
     }
 
@@ -82,4 +85,11 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         return entity;
     }
 
+    private void format(List<AsynTaskResult> data) {
+        for (AsynTaskResult datum : data) {
+            AllBomResult allBomResult = JSON.parseObject(datum.getContent(), AllBomResult.class);
+            datum.setAllBomResult(allBomResult);
+            break;
+        }
+    }
 }

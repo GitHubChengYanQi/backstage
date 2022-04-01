@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.model.result;
 
 import cn.atsoft.dasheng.form.pojo.ProcessEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -32,6 +33,8 @@ public class ActivitiProcessResult implements Serializable {
     private Integer num;
 
     private Object skuResult;
+
+    private User user;
     /**
      * 模块
      */

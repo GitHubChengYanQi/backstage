@@ -36,6 +36,8 @@ public class ActivitiProcessParam implements Serializable, BaseValidatingParam {
     private Integer num;  //子工艺产出数量
 
     private Long skuId;
+
+    private String skuName;
     /**
      * 模块
      */

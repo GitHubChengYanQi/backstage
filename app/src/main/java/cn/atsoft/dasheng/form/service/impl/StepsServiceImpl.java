@@ -158,7 +158,6 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     }
 
 
-
     @Override
     public Long addProcessRoute(ProcessRouteParam param) {
         return null;
@@ -220,6 +219,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                 if (ToolUtil.isEmpty(node.getProcess())) {   //step更换工艺类型
                     throw new ServiceException(500, "请确定子路线");
                 }
+                judgeShip(processId, node.getProcess().getProcessId());  // 判断
                 activitiSteps.setFormId(node.getProcess().getProcessId());
                 Map<Long, Integer> shipMap = setDetailaddProcess(activitiSteps.getSetpsId(), node.getProcess());//添加子工艺产出 和 数量
                 skuNum.putAll(shipMap);
@@ -281,6 +281,22 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
 
     }
 
+    /**
+     * 防止循环添相同子工艺
+     *
+     * @param supperProcessId
+     * @param childProcessId
+     */
+    private void judgeShip(Long supperProcessId, Long childProcessId) {
+
+        ActivitiProcess supperProcess = processService.getById(supperProcessId);
+
+        ActivitiProcess childProcess = processService.getById(childProcessId);
+
+        if (supperProcess.getFormId().equals(childProcess.getFormId())) {
+            throw new ServiceException(500, "不可以添加与顶级相同工艺");
+        }
+    }
 
     /**
      * 递归添加
@@ -309,6 +325,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
                     if (ToolUtil.isEmpty(stepsParam.getProcess())) {
                         throw new ServiceException(500, "请确定子路线");
                     }
+                    judgeShip(processId, stepsParam.getProcess().getProcessId());  // 判断
+
                     activitiSteps.setFormId(stepsParam.getProcess().getProcessId());
                     this.updateById(activitiSteps);
                     Map<Long, Integer> shipMap = setDetailaddProcess(activitiSteps.getSetpsId(), stepsParam.getProcess());
@@ -445,6 +463,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         if (ToolUtil.isEmpty(process)) {
             throw new ServiceException(500, "子工艺不存在");
         }
+
+
         ActivitiSetpSetDetail setDetail = new ActivitiSetpSetDetail();
         setDetail.setSetpsId(stepId);
         setDetail.setType("out");
