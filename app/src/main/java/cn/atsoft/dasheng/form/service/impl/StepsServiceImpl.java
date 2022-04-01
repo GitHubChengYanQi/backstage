@@ -248,6 +248,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return skuNum;
     }
 
+    /**
+     * 添加工序
+     *
+     * @param param
+     * @param stepId
+     * @return
+     */
     private Map<Long, Integer> addSetpSet(ActivitiSetpSetParam param, Long stepId) {
         Map<Long, Integer> map = new HashMap<>();
 
