@@ -50,6 +50,7 @@ public class AsynTaskController extends BaseController {
         ToolUtil.copyProperties(detail, result);
         AllBomResult allBomResult = JSON.parseObject(result.getContent(), AllBomResult.class);
         result.setAllBomResult(allBomResult);
+        result.setContent(null);
         return ResponseData.success(result);
     }
 
