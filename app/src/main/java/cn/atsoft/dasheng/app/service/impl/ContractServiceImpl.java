@@ -446,6 +446,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
             }
 
+
             contract.setPartyA(orderParam.getBuyerId());
             contract.setPartyB(orderParam.getSellerId());
             contract.setPartyAPhone(orderParam.getPartyAPhone());

@@ -66,7 +66,8 @@ public class SkuResult implements Serializable {
     private List<Long> brandIds;
     private List<BrandResult> brandResults;
     private List<String> filedUrls;
-
+    private Long produceMix;   //生产数
+    private Long lackNumber;  //缺料数
 
     /**
      * 之间方案id

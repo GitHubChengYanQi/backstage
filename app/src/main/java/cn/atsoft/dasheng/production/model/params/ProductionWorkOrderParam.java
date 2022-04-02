@@ -25,6 +25,7 @@ public class ProductionWorkOrderParam implements Serializable, BaseValidatingPar
     private static final long serialVersionUID = 1L;
 
 
+    private Long cardSkuId;
     @ApiModelProperty("")
     private Long workOrderId;
 

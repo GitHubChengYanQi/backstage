@@ -169,7 +169,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         /**
          * 查询对应的工单集合
          */
-        List<ProductionWorkOrderResult> workOrderResults = productionWorkOrderService.resultsBySourceIds("productionPlan", planIds);
+        List<ProductionWorkOrderResult> workOrderResults = planIds.size() == 0 ? new ArrayList<>() : productionWorkOrderService.resultsBySourceIds("productionPlan", planIds);
 
         /**
          * 查询出子表数据
@@ -182,7 +182,6 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         for (ProductionPlanDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
         }
-        List<ProductionCardResult> cardResults = productionCardService.resultsByProductionPlanId(planIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
 
         List<ProcessRouteResult> routeResults = skuIds.size() == 0 ? new ArrayList<>() : processRouteService.resultsBySkuIds(skuIds);

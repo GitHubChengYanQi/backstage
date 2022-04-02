@@ -57,12 +57,13 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem (@RequestBody SkuParam skuParam) {
+    public ResponseData addItem(@RequestBody SkuParam skuParam) {
         skuParam.setAddMethod(1);
         skuParam.setSkuId(null);
         Long aLong = this.skuService.add(skuParam);
         return ResponseData.success(aLong);
     }
+
     /**
      * 间接物料 新增接口
      *
@@ -105,6 +106,7 @@ public class SkuController extends BaseController {
         this.skuService.delete(skuParam);
         return ResponseData.success();
     }
+
     @RequestMapping(value = "/addSkuFromSpu", method = RequestMethod.POST)
 //    @BussinessLog(value = "删除sku", key = "name", dict = SkuParam.class)
     @ApiOperation("删除")
@@ -142,9 +144,9 @@ public class SkuController extends BaseController {
 //                sku.setSpuClassification(spuClassification);  //产品
 //
 //                if (ToolUtil.isNotEmpty(spuClassification.getPid())) {
-                    //分类
-                    SpuClassification spuClassification1 = spuClassificationService.getById(spu.getSpuClassificationId());
-                    sku.setSpuClass(spuClassification1.getSpuClassificationId());
+                //分类
+                SpuClassification spuClassification1 = spuClassificationService.getById(spu.getSpuClassificationId());
+                sku.setSpuClass(spuClassification1.getSpuClassificationId());
 //                    sku.setSkuClass(spuClassification1);
 //                }
 
@@ -155,7 +157,10 @@ public class SkuController extends BaseController {
             sku.setQualityPlan(plan);
         }
         User user = userService.getById(sku.getCreateUser());
-        sku.setCreateUserName(user.getName());
+        if (ToolUtil.isNotEmpty(user)) {
+            sku.setCreateUserName(user.getName());
+        }
+
 
         return ResponseData.success(sku);
 
@@ -178,6 +183,7 @@ public class SkuController extends BaseController {
 
         return this.skuService.changePageBySpec(skuParam);
     }
+
     /**
      * 根据md5
      *
@@ -192,6 +198,7 @@ public class SkuController extends BaseController {
         }
         return ResponseData.success(this.skuService.getSkuByMd5(skuParam));
     }
+
     /**
      * 查询列表
      *
@@ -206,6 +213,7 @@ public class SkuController extends BaseController {
         }
         return this.skuService.findPageBySpec(skuParam);
     }
+
     /**
      * 查询列表
      *
