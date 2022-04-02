@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
@@ -105,16 +106,33 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     private ErpPartsDetailService partsDetailService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private MobileService mobileService;
 
     @Override
     public void add(ProductionTaskParam param) {
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(param.getWorkOrderId());
+        List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
+        ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", productionWorkOrder.getStepsId()).one();
+        if(setpSet.getProductionType().equals("out")){
+            List<Long> skuIds = new ArrayList<>();
+            for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
+                skuIds.add(setpSetDetail.getSkuId());
+            }
+            List<Parts> list = partsService.query().in("sku_id", skuIds).eq("display", 1).list();
+            if (list.size()!=skuIds.size()){
+                throw new ServiceException(500,"有物料不存在Bom无法创建");
+            }
+        }
+
         /**
          * 判断是否满足库存
          */
-//        if (ToolUtil.isNotEmpty(param.getUserId())){
-//            checkStockDetail(param,productionWorkOrder);
-//        }
+        if (ToolUtil.isNotEmpty(param.getUserId())){
+            checkStockDetail(param,productionWorkOrder);
+        }
+
+
 
         /**
          * 判断拦截错误数据
@@ -149,7 +167,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 然后与任务数量相乘
          * 保存进子表
          */
-        List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
 
         for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
             ProductionTaskDetail productionTaskDetail = new ProductionTaskDetail();
@@ -198,7 +215,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             entity.setStatus(98);
             this.updateById(entity);
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
+            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl()+"/#/Work/ProductionTask/Detail?id="+entity.getProductionTaskId().toString());
             wxCpTemplate.setTitle("新的生产任务");
             wxCpTemplate.setDescription("您被分派了新的生产任务" + entity.getCoding());
             wxCpTemplate.setUserIds(new ArrayList<Long>() {{
@@ -278,7 +295,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             for (PartsResult partsResult : partsResults) {
                 List<ErpPartsDetailResult> partsDetailResults = new ArrayList<>();
                 for (ErpPartsDetailResult detail : details) {
-                    if (partsResult.getParts().equals(detail.getPartsId())){
+                    if (partsResult.getPartsId().equals(detail.getPartsId())){
                         partsDetailResults.add(detail);
                     }
                 }
@@ -306,6 +323,9 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 o1.setNumber(o1.getNumber() + o2.getNumber());
                 return o1;
             })).values().stream().collect(Collectors.toList());
+            if (stockDetails.size()==0){
+                throw new ServiceException(500,"库存数量不足 不可以直接投入生产");
+            }
             for (ErpPartsDetailResult detail : details) {
                 for (StockDetails stockDetail : stockDetails) {
                     if (detail.getSkuId().equals(stockDetail.getSkuId()) && detail.getNumber()>stockDetail.getNumber()){
@@ -330,6 +350,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     @Override
     public ProductionTask Receive(ProductionTaskParam param) {
         ProductionTask entity = this.getById(param.getProductionTaskId());
+        ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
+        checkStockDetail(param,productionWorkOrder);
         entity.setProductionTaskId(param.getProductionTaskId());
         entity.setUserId(param.getUserId());
         entity.setStatus(98);
@@ -337,7 +359,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         /**
          * 创建任务单详情
          */
-        ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
         List<ProductionTaskDetail> detailEntitys = new ArrayList<>();
         /**
          * 保存子表信息
