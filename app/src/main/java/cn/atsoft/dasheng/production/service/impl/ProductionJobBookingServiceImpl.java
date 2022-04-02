@@ -4,17 +4,18 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
-import cn.atsoft.dasheng.erp.entity.QualityTask;
-import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InkindService;
-import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
-import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
 import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionJobBooking;
 import cn.atsoft.dasheng.production.entity.ProductionJobBookingDetail;
@@ -34,7 +35,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +75,11 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
 
     @Autowired
     private CodingRulesService codingRulesService;
+    @Autowired
+    private MessageProducer messageProducer;
+
+    @Autowired
+    private QualityTaskService qualityTaskService;
 
     @Override
     public void add(ProductionJobBookingParam param) {
@@ -141,11 +146,7 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
                 }
             }
         }
-        if (booleans.size() == taskDetailResults.size()){
-            //TODO 更新任务状态为完成
-            productionTask.setStatus(99);
-            productionTaskService.updateById(productionTask);
-        }
+
         /**
          * 保存子表信息
          */
@@ -155,8 +156,8 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
             for (Integer i = 0; i < detailParam.getNumber(); i++) {
 
                 Inkind inkind = new Inkind();
-                inkind.setSource("jobBooking");
-                inkind.setSourceId(entity.getSourceId());
+                inkind.setSource("productionTask");
+                inkind.setSourceId(productionTask.getProductionTaskId());
                 inkind.setSkuId(detailParam.getSkuId());;
                 inkind.setNumber(1L);
                 inkinds.add(inkind);
@@ -166,7 +167,7 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
         inkindService.saveBatch(inkinds);
         List<ProductionJobBookingDetail> jobBookingDetailsEntity = new ArrayList<>();
         for (Inkind inkind : inkinds) {
-        ProductionJobBookingDetail jobBookingdetail = new ProductionJobBookingDetail();
+            ProductionJobBookingDetail jobBookingdetail = new ProductionJobBookingDetail();
             jobBookingdetail.setSkuId(inkind.getSkuId());
             jobBookingdetail.setInkindId(inkind.getInkindId());
             jobBookingdetail.setJobBookingId(entity.getJobBookingId());
@@ -178,8 +179,16 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
 
         jobBookingDetailService.saveBatch(jobBookingDetailsEntity);
 
+        if (booleans.size() == taskDetailResults.size()){
+            //TODO 更新任务状态为完成
+            productionTask.setStatus(99);
+            productionTaskService.updateById(productionTask);
+            this.createQualityTask(productionTask,entity,jobBookingDetailsEntity);
+        }
+
     }
-    private void createQualityTask(  ProductionTask productionTask,ProductionJobBooking entity,List<ProductionJobBookingDetail> jobBookingDetailsEntity){
+    @Override
+    public void createQualityTask(ProductionTask productionTask, ProductionJobBooking entity, List<ProductionJobBookingDetail> jobBookingDetailsEntity){
         Long workOrderId = productionTask.getWorkOrderId();
         ProductionWorkOrder workOrder = workOrderService.getById(workOrderId);
 
@@ -193,15 +202,25 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
                     QualityTaskDetailParam detailParam = new QualityTaskDetailParam();
                     detailParam.setQualityPlanId(resultByStepsId.getQualityId());
                     detailParam.setInkindId(detail.getInkindId().toString());
+                    detailParam.setSkuId(detail.getSkuId());
                     detailParam.setNumber(1);
                     detailParams.add(detailParam);
                 }
             }
         }
         QualityTaskParam qualityTaskParam = new QualityTaskParam();
+        qualityTaskParam.setType("入厂");
         qualityTaskParam.setCoding(codingRulesService.encoding(4));
         qualityTaskParam.setDetails(detailParams);
-        //TODO 调用质检任务add接口  或者消息队列发送内部调用
+//        //TODO 调用质检任务add接口  或者消息队列发送内部调用
+//        MicroServiceEntity serviceEntity = new MicroServiceEntity();
+//        serviceEntity.setType(MicroServiceType.QUALITY_TASK);
+//        serviceEntity.setOperationType(OperationType.ADD);
+//        serviceEntity.setObject(qualityTaskParam);
+//        serviceEntity.setMaxTimes(2);
+//        serviceEntity.setTimes(0);
+//        messageProducer.microService(serviceEntity);
+        qualityTaskService.add(qualityTaskParam);
     }
 
     @Override

@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.model.params.SelfQualityParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
@@ -178,4 +179,7 @@ public interface QualityTaskService extends IService<QualityTask> {
 
     void childRefuse(QualityTaskParam qualityTaskParam);
 
+    FormDataRequest selfQuality(SelfQualityParam param);
+
+    void saveMyQuality(FormDataPojo formDataPojo);
 }
