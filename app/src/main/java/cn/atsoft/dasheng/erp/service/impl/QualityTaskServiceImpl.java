@@ -190,7 +190,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 activitiProcessLogService.autoAudit(taskId, 1);
 
 
-
             } else {
                 throw new ServiceException(500, "请创建质检流程！");
             }
@@ -620,7 +619,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 break;
         }
         //通过data找value
-        List<FormDataValue> dataValues = formDataValueService.query().eq("data_id", formData.getDataId()).list();
+        List<FormDataValue> dataValues = formData.getDataId() == null ? new ArrayList<>() : formDataValueService.query().eq("data_id", formData.getDataId()).list();
 
 
         List<Long> planId = new ArrayList<>();
@@ -628,7 +627,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             planId.add(dataValue.getField());
         }
 
-        List<QualityPlanDetail> planDetails = qualityPlanDetailService.query().in("plan_detail_id", planId).list();
+        List<QualityPlanDetail> planDetails = planId.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.query().in("plan_detail_id", planId).list();
 
         List<Long> checkIds = new ArrayList<>();
         List<QualityPlanDetailResult> detailResults = new ArrayList<>();
@@ -641,7 +640,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
 
         //查找项
-        List<QualityCheck> checks = checkService.query().in("quality_check_id", checkIds).list();
+        List<QualityCheck> checks = checkIds.size()==0?  new ArrayList<>(): checkService.query().in("quality_check_id", checkIds).list();
 
         for (QualityPlanDetailResult detailResult : detailResults) {
             for (QualityCheck check : checks) {
