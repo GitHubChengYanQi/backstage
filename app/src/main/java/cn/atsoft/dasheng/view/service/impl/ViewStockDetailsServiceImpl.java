@@ -84,7 +84,14 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
             default:
                 return null;
         }
-        format(results.getRecords());
+
+        List<ViewStockDetails> details = this.query().select(" sum(number) as  skuCount  ").groupBy("sku_id").list();
+
+        long skuCount = 0L;
+        for (ViewStockDetails detail : details) {
+            skuCount = skuCount + detail.getSkuCount();
+        }
+        format(results.getRecords(), (long) details.size(), skuCount);
         return PageFactory.createPageInfo(page);
     }
 
@@ -113,10 +120,11 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
         return entity;
     }
 
-    private void format(List<ViewStockDetailsResult> data) {
+    private void format(List<ViewStockDetailsResult> data, Long skuTypeNum, Long skuCount) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
         List<Long> houseIds = new ArrayList<>();
+
 
         for (ViewStockDetailsResult dutm : data) {
             skuIds.add(dutm.getSkuId());
@@ -130,6 +138,10 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
         List<StorehouseResult> storehouseResults = BeanUtil.copyToList(storehouses, StorehouseResult.class, new CopyOptions());
 
         for (ViewStockDetailsResult datum : data) {
+
+            datum.setSkuTypeNum(skuTypeNum);
+            datum.setSkuCount(skuCount);
+
             for (SkuResult skuResult : skuResults) {
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);

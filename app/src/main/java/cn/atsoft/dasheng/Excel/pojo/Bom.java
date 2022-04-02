@@ -12,8 +12,9 @@ public class Bom {
     private String strand;
     private String spuName;
     private String spc;
-    private String num;
+    private double num;
     private String unit;
     private String skuName;
     private String spuClass;
+    private String batch;
 }

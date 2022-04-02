@@ -34,6 +34,10 @@ public class ViewStockDetailsResult implements Serializable {
 
     private StorehouseResult storehouseResult;
 
+    private Long skuTypeNum;   //物料种类
+
+    private Long skuCount;    //总数量
+
     @ApiModelProperty("")
     private Long skuId;
 

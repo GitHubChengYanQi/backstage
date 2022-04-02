@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.app.model.params;
+package cn.atsoft.dasheng.task.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,61 +12,54 @@ import java.util.List;
 
 /**
  * <p>
- * 清单详情
+ * 等待任务表
  * </p>
  *
- * @author cheng
- * @since 2021-10-26
+ * @author song
+ * @since 2022-04-01
  */
 @Data
 @ApiModel
-public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
+public class AsynTaskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 清单详情id
+     * 任务id
      */
-    @ApiModelProperty("清单详情id")
-    private Long partsDetailId;
-
-    private List<Spu> partsAttributes;
+    @ApiModelProperty("任务id")
+    private Long taskId;
 
     /**
-     * 规格描述
+     * 总数
      */
-    @ApiModelProperty("规格描述")
-    private String attribute;
+    @ApiModelProperty("总数")
+    private Integer allCount;
 
     /**
-     * 组成物品id
+     * 当前数
      */
-    @ApiModelProperty("组成物品id")
-    private Long spuId;
-
-    private Long skuId;
-
-    @ApiModelProperty("清单id")
-    private Long partsId;
+    @ApiModelProperty("当前数")
+    private Integer count;
 
     /**
-     * 零件数量
+     * 类型
      */
-    @ApiModelProperty("零件数量")
-    private Double number;
+    @ApiModelProperty("类型")
+    private String type;
 
     /**
-     * 创建时间
+     * json 内容
      */
-    @ApiModelProperty(hidden = true)
-    private Date createTime;
+    @ApiModelProperty("json 内容")
+    private String content;
 
     /**
-     * 修改时间
+     * 状态
      */
-    @ApiModelProperty(hidden = true)
-    private Date updateTime;
+    @ApiModelProperty("状态")
+    private Integer status;
 
     /**
      * 创建者
@@ -82,6 +74,18 @@ public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
     private Long updateUser;
 
     /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date updateTime;
+
+    /**
      * 状态
      */
     @ApiModelProperty("状态")
@@ -92,12 +96,6 @@ public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String note;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
