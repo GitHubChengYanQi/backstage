@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.pojo.*;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.task.entity.AsynTask;
@@ -30,7 +31,7 @@ public class AllBomController {
     private PartsService partsService;
 
     @Autowired
-    private AsynTaskService taskService;
+    private SkuService skuService;
 
     @Autowired
     private AsyncMethod asyncMethod;
@@ -47,7 +48,10 @@ public class AllBomController {
             Parts one = partsService.query().eq("sku_id", skuId.getSkuId())
                     .eq("status", 99).eq("type", 1).one();
             if (ToolUtil.isEmpty(one)) {
-                throw new ServiceException(500, skuId.getSkuId() + "没有bom");
+                List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
+                    add(skuId.getSkuId());
+                }});
+                throw new ServiceException(500, skuResults.get(0).getSpu().getName()+skuResults.get(0).getSkuName() + "没有bom");
             }
             if (!skuId.getFixed()) {
                 ids.add(skuId.getSkuId());
