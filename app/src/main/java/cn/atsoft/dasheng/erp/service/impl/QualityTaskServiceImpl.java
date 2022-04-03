@@ -2,10 +2,12 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -118,6 +120,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private UnitService unitService;
 
     @Override
     @Transactional
@@ -631,18 +635,29 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         List<Long> checkIds = new ArrayList<>();
         List<QualityPlanDetailResult> detailResults = new ArrayList<>();
+        List<Long> unitIds = new ArrayList<>();
         //查plan详情
         for (QualityPlanDetail planDetail : planDetails) {
             checkIds.add(planDetail.getQualityCheckId());
             QualityPlanDetailResult detailResult = new QualityPlanDetailResult();
             ToolUtil.copyProperties(planDetail, detailResult);
+            unitIds.add(planDetail.getUnitId());
             detailResults.add(detailResult);
         }
 
         //查找项
-        List<QualityCheck> checks = checkIds.size()==0?  new ArrayList<>(): checkService.query().in("quality_check_id", checkIds).list();
+        List<QualityCheck> checks = checkService.query().in("quality_check_id", checkIds).list();
+        List<Unit> units = unitIds.size() == 0 ? new ArrayList<>() : unitService.listByIds(unitIds);
+
 
         for (QualityPlanDetailResult detailResult : detailResults) {
+            for (Unit unit : units) {
+                if (ToolUtil.isNotEmpty(detailResult.getUnitId()) && detailResult.getUnitId().equals(unit.getUnitId())) {
+                    detailResult.setUnit(unit);
+                    break;
+                }
+            }
+
             for (QualityCheck check : checks) {
                 if (detailResult.getQualityCheckId().equals(check.getQualityCheckId())) {
                     QualityCheckResult checkResult = new QualityCheckResult();

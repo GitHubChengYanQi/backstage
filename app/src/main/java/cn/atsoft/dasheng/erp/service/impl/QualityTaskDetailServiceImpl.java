@@ -46,6 +46,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.omg.CORBA.LongHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -179,14 +180,26 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
         List<QualityTaskDetail> taskDetails = this.query().eq("quality_task_id", taskId).list();
 
+
         if (ToolUtil.isEmpty(taskDetails)) {
             return detailResults;
         }
 
+        List<Long> skuIds = new ArrayList<>();
         for (QualityTaskDetail taskDetail : taskDetails) {
             QualityTaskDetailResult detailResult = new QualityTaskDetailResult();
             ToolUtil.copyProperties(taskDetail, detailResult);
+            skuIds.add(taskDetail.getSkuId());
             detailResults.add(detailResult);
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        for (QualityTaskDetailResult detailResult : detailResults) {
+            for (SkuResult skuResult : skuResults) {
+                if (ToolUtil.isNotEmpty(detailResult.getSkuId()) && detailResult.getSkuId().equals(skuResult.getSkuId())) {
+                    detailResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
         }
 
         return detailResults;
