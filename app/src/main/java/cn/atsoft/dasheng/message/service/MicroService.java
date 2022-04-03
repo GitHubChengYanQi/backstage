@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.message.service;
 import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -34,6 +36,9 @@ public class MicroService {
 
     @Autowired
     private ProductionPickListsService productionPickListsService;
+
+    @Autowired
+    private QualityTaskService qualityTaskService;
 
 
     public void microServiceDo(MicroServiceEntity microServiceEntity) {
@@ -84,6 +89,13 @@ public class MicroService {
                 switch (microServiceEntity.getOperationType()) {
                     case ADD:
                         productionPickListsService.addByProductionTask(microServiceEntity.getObject());
+                }
+                break;
+            case QUALITY_TASK:
+                switch (microServiceEntity.getOperationType()) {
+                    case ADD:
+                        QualityTaskParam qualityTaskParam = JSON.parseObject(microServiceEntity.getObject().toString(), QualityTaskParam.class);
+                        qualityTaskService.add( qualityTaskParam);
                 }
                 break;
             default:

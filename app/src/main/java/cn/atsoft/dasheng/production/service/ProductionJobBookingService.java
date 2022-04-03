@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionJobBooking;
+import cn.atsoft.dasheng.production.entity.ProductionJobBookingDetail;
+import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.model.params.ProductionJobBookingParam;
 import cn.atsoft.dasheng.production.model.result.ProductionJobBookingResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -25,6 +27,8 @@ public interface ProductionJobBookingService extends IService<ProductionJobBooki
      * @Date 2022-03-23
      */
     void add(ProductionJobBookingParam param);
+
+    void createQualityTask(ProductionTask productionTask, ProductionJobBooking entity, List<ProductionJobBookingDetail> jobBookingDetailsEntity);
 
     /**
      * 删除

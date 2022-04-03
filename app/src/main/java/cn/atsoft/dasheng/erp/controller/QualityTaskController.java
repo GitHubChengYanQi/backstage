@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.model.params.SelfQualityParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
@@ -393,6 +394,17 @@ public class QualityTaskController extends BaseController {
 
         return ResponseData.success();
     }
+    @RequestMapping(value = "/selfQuality", method = RequestMethod.POST)
+    public ResponseData selfQuality(@RequestBody SelfQualityParam selfQualityParam) {
+
+        return ResponseData.success(this.qualityTaskService.selfQuality(selfQualityParam));
+    }
+ @RequestMapping(value = "/saveSelfQuality", method = RequestMethod.POST)
+    public ResponseData saveSelfQuality(@RequestBody FormDataPojo formDataPojo) {
+     this.qualityTaskService.saveMyQuality(formDataPojo);
+        return ResponseData.success();
+    }
+
 
 }
 

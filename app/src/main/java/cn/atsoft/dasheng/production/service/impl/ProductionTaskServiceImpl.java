@@ -13,6 +13,8 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
@@ -108,6 +110,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     private StockDetailsService stockDetailsService;
     @Autowired
     private MobileService mobileService;
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public void add(ProductionTaskParam param) {
@@ -467,6 +471,9 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 查询子表以及报工表
          */
         List<ProductionTaskDetailResult> productionTaskDetailResults = productionTaskDetailService.resultsByTaskIds(taskIds);
+
+
+
         List<JobBookingDetailCount> counts = jobBookingDetailService.resultsByProductionTaskIds(taskIds);
 
         for (ProductionTaskResult productionTaskResult : param) {
