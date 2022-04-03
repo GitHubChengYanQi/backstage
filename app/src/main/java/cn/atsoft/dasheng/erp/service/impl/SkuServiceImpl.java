@@ -305,8 +305,32 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
         }
+        if(ToolUtil.isNotEmpty(param.getOldSkuId())){
+            copySkuBomById(param.getOldSkuId(),skuId);
+        }
         return skuId;
     }
+
+    private void copySkuBomById(Long oldSkuId,Long newSkuId){
+        Parts parts = partsService.query().eq("sku_id", oldSkuId).eq("display", 1).one();
+        List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
+        Parts newSkuParts = new Parts();
+        ToolUtil.copyProperties(parts,newSkuParts);
+        newSkuParts.setPartsId(null);
+        newSkuParts.setSkuId(newSkuId);
+        partsService.save(newSkuParts);
+        List<ErpPartsDetail> newSkuPartsDetails = new ArrayList<>();
+        for (ErpPartsDetail partsDetail : partsDetails) {
+            ErpPartsDetail newSkuPartsDetail = new ErpPartsDetail();
+            ToolUtil.copyProperties(partsDetail,newSkuPartsDetail);
+            newSkuPartsDetail.setPartsDetailId(null);
+            newSkuPartsDetail.setPartsId(newSkuParts.getPartsId());
+            newSkuPartsDetails.add(newSkuPartsDetail);
+        }
+        partsDetailService.saveBatch(newSkuPartsDetails);
+
+    }
+
 
     @Override
     public List<SkuResult> getSkuByMd5(SkuParam param) {
