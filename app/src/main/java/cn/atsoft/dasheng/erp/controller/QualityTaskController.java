@@ -36,6 +36,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -204,7 +205,7 @@ public class QualityTaskController extends BaseController {
 
     @RequestMapping(value = "/taskComplete", method = RequestMethod.POST)
     @ApiOperation("质检完成接口")
-    public ResponseData taskComplete(@RequestBody TaskComplete taskComplete) {
+    public ResponseData taskComplete(@RequestBody @Valid TaskComplete taskComplete) {
         List<Long> longs = this.qualityTaskService.taskComplete(taskComplete);
         return ResponseData.success(longs);
     }
