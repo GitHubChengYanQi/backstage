@@ -18,5 +18,7 @@ public class AllBomParam {
         private Long num;
         @NonNull
         private Boolean fixed;
+
+        private String name;
     }
 }
