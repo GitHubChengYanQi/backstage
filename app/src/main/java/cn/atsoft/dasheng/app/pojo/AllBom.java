@@ -82,16 +82,26 @@ public class AllBom {
         });
 
         int num = 0;
+        List<Long> skus = new ArrayList<>();
         for (Map.Entry<Long, Long> longLongEntry : list) {
-
             Long skuId = longLongEntry.getKey();
-            List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
-                add(skuId);
-            }});
-            SkuResult skuResult = skuResults.get(0);
-            skuResult.setProduceMix(longLongEntry.getValue());
-            canProduce.add(skuResult);
-            num = Math.toIntExact(num + longLongEntry.getValue());
+            skus.add(skuId);
+        }
+        List<SkuResult> results = skuService.formatSkuResult(skus);
+        for (Map.Entry<Long, Long> longLongEntry : list) {
+            for (SkuResult skuResult : results) {
+                if (skuResult.getSkuId().equals(longLongEntry.getKey())) {
+                    AnalysisResult analysisResult = new AnalysisResult();
+                    analysisResult.setSkuName(skuResult.getSkuName());
+                    analysisResult.setSpuName(skuResult.getSpuResult().getName());
+                    analysisResult.setProduceMix(longLongEntry.getValue());
+                    analysisResult.setSpecifications(skuResult.getSpecifications());
+                    analysisResult.setStrand(skuResult.getStandard());
+                    canProduce.add(analysisResult);
+                    num = Math.toIntExact(num + longLongEntry.getValue());
+                    break;
+                }
+            }
         }
         bomOrder.setResult(canProduce);
         bomOrder.setNum(num);
@@ -102,20 +112,28 @@ public class AllBom {
         Set<Long> ids = notEnough.keySet();
         List<Long> skuIds = new ArrayList<>(ids);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<AnalysisResult> analysisResults = new ArrayList<>();
         for (SkuResult skuResult : skuResults) {
+            AnalysisResult analysisResult = new AnalysisResult();
             Long number = notEnough.get(skuResult.getSkuId());
-            skuResult.setLackNumber(number);
+
+            analysisResult.setSkuName(skuResult.getSkuName());
+            analysisResult.setSpuName(skuResult.getSpuResult().getName());
+            analysisResult.setLackNumber(number);
+            analysisResult.setStrand(skuResult.getStandard());
+            analysisResult.setSpecifications(skuResult.getSpecifications());
+            analysisResults.add(analysisResult);
         }
 
         allBomResult.setResult(new ArrayList<BomOrder>() {{
             add(bomOrder);
         }});
-        allBomResult.setOwe(skuResults);
+        allBomResult.setOwe(analysisResults);
         return allBomResult;
     }
 
 
-    public void start(List<AllBomParam.SkuNumberParam> params) {
+    public void start(List<AllBomParam.SkuNumberParam> params, boolean mixAdd) {
 
         /**
          * 获取bom
@@ -133,7 +151,7 @@ public class AllBom {
          *  开始计算
          */
         for (AllBomParam.SkuNumberParam param : params) {
-            getMix(param.getSkuId(), param.getNum());
+            getMix(param.getSkuId(), param.getNum(), mixAdd);
         }
 
     }
@@ -275,7 +293,7 @@ public class AllBom {
      * @param skuId
      * @param number
      */
-    public void getMix(Long skuId, Long number) {
+    public void getMix(Long skuId, Long number, boolean mixAdd) {
 
         Map<String, Map<Long, Object>> bomMap = Bom.get(skuId);
         List<Long> noEnough = new ArrayList<>();
@@ -313,9 +331,12 @@ public class AllBom {
             }
         } else if (min == 0) {    //缺料
             for (Long id : lastChild.keySet()) {
-                Long num = stockNumber.get(id);
+                Long stockNum = stockNumber.get(id);
                 SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
-                this.notEnough.put(id, skuNumber.getNum() - num);
+                long num = skuNumber.getNum() * number;
+                if (mixAdd && (num - stockNum > 0)) {
+                    this.notEnough.put(id, num - stockNum);
+                }
             }
         }
     }
