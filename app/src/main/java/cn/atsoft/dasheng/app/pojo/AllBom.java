@@ -107,23 +107,45 @@ public class AllBom {
         bomOrder.setNum(num);
 
         /**
-         * 缺料
+         * 缺料数量排序
          */
-        Set<Long> ids = notEnough.keySet();
-        List<Long> skuIds = new ArrayList<>(ids);
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<AnalysisResult> analysisResults = new ArrayList<>();
-        for (SkuResult skuResult : skuResults) {
-            AnalysisResult analysisResult = new AnalysisResult();
-            Long number = notEnough.get(skuResult.getSkuId());
+        if (ToolUtil.isNotEmpty(notEnough)) {
+            List<Map.Entry<Long, Long>> notEnoughList = new ArrayList<>(notEnough.entrySet());
+            notEnoughList.sort(new Comparator<Map.Entry<Long, Long>>() {
+                @Override
+                public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
 
-            analysisResult.setSkuName(skuResult.getSkuName());
-            analysisResult.setSpuName(skuResult.getSpuResult().getName());
-            analysisResult.setLackNumber(number);
-            analysisResult.setStrand(skuResult.getStandard());
-            analysisResult.setSpecifications(skuResult.getSpecifications());
-            analysisResults.add(analysisResult);
+                    //按照value值，从大到小排序
+                    return Math.toIntExact(o2.getValue() - o1.getValue());
+
+                }
+            });
+
+            Set<Long> ids = notEnough.keySet();
+            List<Long> skuIds = new ArrayList<>(ids);
+            List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+
+            for (Map.Entry<Long, Long> longLongEntry : notEnoughList) {
+                for (SkuResult skuResult : skuResults) {
+                    if (longLongEntry.getKey().equals(skuResult.getSkuId())) {
+                        AnalysisResult analysisResult = new AnalysisResult();
+                        Long number = notEnough.get(skuResult.getSkuId());
+
+                        analysisResult.setSkuName(skuResult.getSkuName());
+                        analysisResult.setSpuName(skuResult.getSpuResult().getName());
+                        analysisResult.setLackNumber(number);
+                        analysisResult.setStrand(skuResult.getStandard());
+                        analysisResult.setSpecifications(skuResult.getSpecifications());
+                        analysisResults.add(analysisResult);
+                        break;
+                    }
+                }
+            }
+
         }
+
 
         allBomResult.setResult(new ArrayList<BomOrder>() {{
             add(bomOrder);
