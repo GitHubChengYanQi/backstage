@@ -57,9 +57,9 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
     @Override
     public Long add(BrandParam param) {
-        Integer brandName = this.query().eq("brand_name", param.getBrandName()).count();
+        Integer brandName = this.query().eq("brand_name", param.getBrandName()).eq("display",1).count();
         if (brandName > 0) {
-            throw new ServiceException(500, "名字以重复");
+            throw new ServiceException(500, "名字已重复");
         }
         Brand entity = getEntity(param);
 
@@ -181,7 +181,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         for (BrandResult datum : data) {
             brandIs.add(datum.getBrandId());
         }
-        List<SkuBrandBind> skuBrandBinds = skuBrandBindService.query().in("brand_id", brandIs).eq("display", 1).list();
+        List<SkuBrandBind> skuBrandBinds =brandIs.size()==0? new ArrayList<>(): skuBrandBindService.query().in("brand_id", brandIs).eq("display", 1).list();
         List<Long> skuIds = new ArrayList<>();
         for (SkuBrandBind skuBrandBind : skuBrandBinds) {
             skuIds.add(skuBrandBind.getSkuId());

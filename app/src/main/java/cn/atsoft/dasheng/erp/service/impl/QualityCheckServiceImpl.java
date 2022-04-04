@@ -145,21 +145,17 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
     }
 
     public void format(List<QualityCheckResult> data) {
-        List<String> jsonids = new ArrayList<>();
+
         List<Long> classIds = new ArrayList<>();
         List<String> strings = new ArrayList<>();
         for (QualityCheckResult datum : data) {
-            jsonids.add(datum.getTool());
             strings.add(datum.getTool());
             classIds.add(datum.getQualityCheckClassificationId());
         }
         List<Long> toolIds = new ArrayList<>();
         for (String string : strings) {
-            JSONArray jsonArray = JSONUtil.parseArray(string);
-            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-            for (Long aLong : longs) {
-                toolIds.add(aLong);
-            }
+            List<Long> longs = JSON.parseArray(string, Long.class);
+            toolIds.addAll(longs);
         }
         List<Tool> tools = toolIds.size() == 0 ? new ArrayList<>() : toolService.query().in("tool_id", toolIds).list();
 
