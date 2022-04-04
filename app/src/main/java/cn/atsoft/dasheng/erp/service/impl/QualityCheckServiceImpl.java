@@ -145,17 +145,25 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
     }
 
     public void format(List<QualityCheckResult> data) {
-
+        List<String> jsonids = new ArrayList<>();
         List<Long> classIds = new ArrayList<>();
         List<String> strings = new ArrayList<>();
         for (QualityCheckResult datum : data) {
-            strings.add(datum.getTool());
+            if (ToolUtil.isNotEmpty(datum.getTool())) {
+                jsonids.add(datum.getTool());
+                strings.add(datum.getTool());
+            }
             classIds.add(datum.getQualityCheckClassificationId());
         }
         List<Long> toolIds = new ArrayList<>();
         for (String string : strings) {
-            List<Long> longs = JSON.parseArray(string, Long.class);
-            toolIds.addAll(longs);
+            if (!string.equals("null")) {
+                JSONArray jsonArray = JSONUtil.parseArray(string);
+                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+                for (Long aLong : longs) {
+                    toolIds.add(aLong);
+                }
+            }
         }
         List<Tool> tools = toolIds.size() == 0 ? new ArrayList<>() : toolService.query().in("tool_id", toolIds).list();
 
@@ -163,21 +171,23 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
 
         for (QualityCheckResult datum : data) {
-            JSONArray jsonArray = JSONUtil.parseArray(datum.getTool());
-            List<Long> list = JSONUtil.toList(jsonArray, Long.class);
-            List<ToolResult> toolResults = new ArrayList<>();
-            for (Long aLong : list) {
-                if (ToolUtil.isNotEmpty(tools)) {
-                    for (Tool tool : tools) {
-                        if (tool.getToolId().equals(aLong)) {
-                            ToolResult toolResult = new ToolResult();
-                            ToolUtil.copyProperties(tool, toolResult);
-                            toolResults.add(toolResult);
+            if (!datum.getTool().equals("null")){
+                JSONArray jsonArray = JSONUtil.parseArray(datum.getTool());
+                List<Long> list = JSONUtil.toList(jsonArray, Long.class);
+                List<ToolResult> toolResults = new ArrayList<>();
+                for (Long aLong : list) {
+                    if (ToolUtil.isNotEmpty(tools)) {
+                        for (Tool tool : tools) {
+                            if (tool.getToolId().equals(aLong)) {
+                                ToolResult toolResult = new ToolResult();
+                                ToolUtil.copyProperties(tool, toolResult);
+                                toolResults.add(toolResult);
+                            }
                         }
                     }
                 }
+                datum.setTools(toolResults);
             }
-            datum.setTools(toolResults);
             if (ToolUtil.isNotEmpty(qualityCheckClassifications)) {
                 for (QualityCheckClassification qualityCheckClassification : qualityCheckClassifications) {
                     if (qualityCheckClassification.getQualityCheckClassificationId().equals(datum.getQualityCheckClassificationId())) {

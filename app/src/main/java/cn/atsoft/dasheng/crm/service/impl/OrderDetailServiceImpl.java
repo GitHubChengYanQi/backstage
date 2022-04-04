@@ -21,6 +21,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.taxRate.entity.TaxRate;
 import cn.atsoft.dasheng.taxRate.service.TaxRateService;
 import cn.hutool.core.bean.BeanUtil;
@@ -58,7 +60,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private UnitService unitService;
     @Autowired
     private TaxRateService rateService;
-
+    @Autowired
+    private ActivitiProcessService processService;
     @Override
     public void add(OrderDetailParam param) {
         OrderDetail entity = getEntity(param);
@@ -207,7 +210,6 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         List<Unit> unitList = unitIds.size() == 0 ? new ArrayList<>() : unitService.listByIds(unitIds);
         List<TaxRate> taxRates = taxIds.size() == 0 ? new ArrayList<>() : rateService.listByIds(taxIds);
         List<OrderResult> orderResults = orderService.findListBySpec(new OrderParam());
-
         for (OrderDetailResult orderDetailResult : param) {
             for (OrderResult orderResult : orderResults) {
                 if (orderResult.getOrderId().equals(orderDetailResult.getOrderId())){
