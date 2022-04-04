@@ -24,8 +24,12 @@ import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
+import cn.atsoft.dasheng.form.model.params.StepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -105,8 +109,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Autowired
     private BrandService brandService;
+
     @Autowired
     private ActivitiProcessService processService;
+
+    @Autowired
+    private StepsService stepsService;
 
     @Transactional
     @Override
@@ -306,31 +314,69 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
         if(ToolUtil.isNotEmpty(param.getOldSkuId())){
-            copySkuBomById(param.getOldSkuId(),skuId);
+            ActivitiProcess activitiProcess = processService.query().eq("form_id", param.getOldSkuId()).eq("type", "ship").eq("display", 1).one();
+            if (ToolUtil.isNotEmpty(activitiProcess)){
+                copyProcessRoute(param.getOldSkuId(),skuId);
+            }else {
+                copySkuBomById(param.getOldSkuId(),skuId);
+            }
         }
         return skuId;
     }
 
     private void copySkuBomById(Long oldSkuId,Long newSkuId){
         Parts parts = partsService.query().eq("sku_id", oldSkuId).eq("display", 1).one();
-        List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
-        Parts newSkuParts = new Parts();
-        ToolUtil.copyProperties(parts,newSkuParts);
-        newSkuParts.setPartsId(null);
-        newSkuParts.setSkuId(newSkuId);
-        partsService.save(newSkuParts);
-        List<ErpPartsDetail> newSkuPartsDetails = new ArrayList<>();
-        for (ErpPartsDetail partsDetail : partsDetails) {
-            ErpPartsDetail newSkuPartsDetail = new ErpPartsDetail();
-            ToolUtil.copyProperties(partsDetail,newSkuPartsDetail);
-            newSkuPartsDetail.setPartsDetailId(null);
-            newSkuPartsDetail.setPartsId(newSkuParts.getPartsId());
-            newSkuPartsDetails.add(newSkuPartsDetail);
+        if (ToolUtil.isNotEmpty(parts)){
+            List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
+            Parts newSkuParts = new Parts();
+            ToolUtil.copyProperties(parts,newSkuParts);
+            newSkuParts.setPartsId(null);
+            newSkuParts.setSkuId(newSkuId);
+            partsService.save(newSkuParts);
+            List<ErpPartsDetail> newSkuPartsDetails = new ArrayList<>();
+            for (ErpPartsDetail partsDetail : partsDetails) {
+                ErpPartsDetail newSkuPartsDetail = new ErpPartsDetail();
+                ToolUtil.copyProperties(partsDetail,newSkuPartsDetail);
+                newSkuPartsDetail.setPartsDetailId(null);
+                newSkuPartsDetail.setPartsId(newSkuParts.getPartsId());
+                newSkuPartsDetails.add(newSkuPartsDetail);
+            }
+            partsDetailService.saveBatch(newSkuPartsDetails);
         }
-        partsDetailService.saveBatch(newSkuPartsDetails);
-
     }
 
+    private void copyProcessRoute(Long oldSkuId,Long newSkuId){
+        ActivitiProcess activitiProcess = processService.query().eq("type", "ship").eq("form_id", oldSkuId).eq("display", 1).one();
+       if (ToolUtil.isNotEmpty(activitiProcess)){
+           ActivitiStepsResult activitiStepsResult = stepsService.detail(activitiProcess.getProcessId());
+           StepsParam param = new StepsParam();
+           ToolUtil.copyProperties(activitiStepsResult,param);
+           System.out.println(param);
+           param.setProcess(new ActivitiProcessParam(){{
+               setSkuId(newSkuId);
+           }});
+           stepsService.add(param);
+
+       }
+    }
+//    private void loopFormatActivitiStepsResult(ActivitiStepsResult activitiStepsResult){
+//        //清除步骤id
+//
+//
+//
+//
+//
+//
+//
+//
+//        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
+//            loopFormatActivitiStepsResult(activitiStepsResult.getChildNode());
+//        }else if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList())){
+//            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
+//                loopFormatActivitiStepsResult(stepsResult);
+//            }
+//        }
+//    }
 
     @Override
     public List<SkuResult> getSkuByMd5(SkuParam param) {
@@ -801,7 +847,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Map<Long, UnitResult> unitMaps = new HashMap<>();
         Map<Long, SpuClassificationResult> spuClassificationMap = new HashMap<>();
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-
         for (Spu spu : spus) {
             if (ToolUtil.isNotEmpty(spu.getUnitId())) {
                 unitIds.add(spu.getUnitId());
