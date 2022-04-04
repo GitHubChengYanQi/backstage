@@ -85,13 +85,9 @@ public class QualityTaskController extends BaseController {
         if (ToolUtil.isEmpty(qualityTaskParam.getDetails())) {
             throw  new ServiceException(500,"请填写完整信息");
         }
-        List<String> judge = new ArrayList<>();
+        List<Long> judge = new ArrayList<>();
         for (QualityTaskDetailParam detail : qualityTaskParam.getDetails()) {
-            List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
-                add(detail.getSkuId());
-            }});
-            SkuResult skuResult = skuResults.get(0);
-            judge.add(skuResult.getSkuName()+skuResult.getSpuResult().getName()+detail.getBrandId());
+            judge.add(detail.getSkuId()+detail.getBrandId());
         }
         long count = judge.stream().distinct().count();
         if (qualityTaskParam.getDetails().size()!=count) {
