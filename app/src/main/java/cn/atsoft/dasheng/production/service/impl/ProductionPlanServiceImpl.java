@@ -96,7 +96,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 
         }
         skuIds=skuIds.stream().distinct().collect(Collectors.toList());
-        Integer designParts = partsService.query().in("sku_id", skuIds).eq("display", 1).count();
+        Integer designParts = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status",99).count();
         if (designParts<skuIds.size()) {
             int i = skuIds.size() - designParts;
             throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
