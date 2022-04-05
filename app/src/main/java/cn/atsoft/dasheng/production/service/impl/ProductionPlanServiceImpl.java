@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.StepsService;
@@ -40,6 +41,7 @@ import sun.rmi.log.LogInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -93,15 +95,16 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             skuIds.add(orderDetailParam.getSkuId());
 
         }
+        skuIds=skuIds.stream().distinct().collect(Collectors.toList());
         Integer designParts = partsService.query().in("sku_id", skuIds).eq("display", 1).count();
         if (designParts<skuIds.size()) {
             int i = skuIds.size() - designParts;
             throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
         }
-        Integer processCount = activitiProcessService.query().in("form_id", skuIds).eq("type", "ship").eq("display",1).count();
+        List<ActivitiProcess> prosess = activitiProcessService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
 
-        if (skuIds.size()!=processCount){
-            throw new ServiceException(500,"有产品没有工艺路线 ， 请先创建工艺路线");
+        if (skuIds.size()!=prosess.size()){
+            throw new ServiceException(500,"有产品没有工艺路线,请先创建工艺路线");
         }
         for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
             ProductionPlanDetail detail = new ProductionPlanDetail();
