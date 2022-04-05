@@ -97,6 +97,7 @@ public class AllBom {
                     analysisResult.setProduceMix(longLongEntry.getValue());
                     analysisResult.setSpecifications(skuResult.getSpecifications());
                     analysisResult.setStrand(skuResult.getStandard());
+                    analysisResult.setSkuId(skuResult.getSkuId());
                     canProduce.add(analysisResult);
                     num = Math.toIntExact(num + longLongEntry.getValue());
                     break;
@@ -132,7 +133,7 @@ public class AllBom {
                     if (longLongEntry.getKey().equals(skuResult.getSkuId())) {
                         AnalysisResult analysisResult = new AnalysisResult();
                         Long number = notEnough.get(skuResult.getSkuId());
-
+                        analysisResult.setSkuId(skuResult.getSkuId());
                         analysisResult.setSkuName(skuResult.getSkuName());
                         analysisResult.setSpuName(skuResult.getSpuResult().getName());
                         analysisResult.setLackNumber(number);

@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class AnalysisResult {
+    private Long  skuId;
     private String strand;
     private String SpuName;
     private String skuName;
