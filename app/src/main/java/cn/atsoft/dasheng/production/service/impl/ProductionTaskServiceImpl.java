@@ -288,7 +288,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 skuIds.add(setpSetDetail.getSkuId());
             }
             List<Long> partsIds = new ArrayList<>();
-            List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).list();
+            List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status",99).list();
             List<PartsResult> partsResults = new ArrayList<>();
             for (Parts part : parts) {
                 partsIds.add(part.getPartsId());
