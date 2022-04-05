@@ -95,6 +95,10 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         List<PurchaseListing> purchaseListings = new ArrayList<>();
         //添加采购清单
         for (PurchaseListingParam purchaseListingParam : param.getPurchaseListings()) {
+            if (ToolUtil.isEmpty(purchaseListingParam.getSkuId())) {
+                throw new ServiceException(500, "缺少skuId 参数");
+            }
+
             totalCount += purchaseListingParam.getApplyNumber();
             purchaseListingParam.setPurchaseAskId(entity.getPurchaseAskId());
             PurchaseListing purchaseListing = new PurchaseListing();
@@ -337,13 +341,14 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         }
         return askResults;
     }
+
     @Override
-    public List<PurchaseAskResult> listResultByIds(List<Long> ids){
+    public List<PurchaseAskResult> listResultByIds(List<Long> ids) {
         List<PurchaseAsk> purchaseAsks = ids.size() == 0 ? new ArrayList<>() : this.listByIds(ids);
         List<PurchaseAskResult> results = new ArrayList<>();
         for (PurchaseAsk purchaseAsk : purchaseAsks) {
             PurchaseAskResult result = new PurchaseAskResult();
-            ToolUtil.copyProperties(purchaseAsk,result);
+            ToolUtil.copyProperties(purchaseAsk, result);
             results.add(result);
         }
         return results;
