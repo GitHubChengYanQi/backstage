@@ -123,7 +123,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
                 skuIds.add(setpSetDetail.getSkuId());
             }
-            List<Parts> list = partsService.query().in("sku_id", skuIds).eq("display", 1).list();
+            skuIds = skuIds.stream().distinct().collect(Collectors.toList());
+            List<Parts> list = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status",99).list();
             if (list.size()!=skuIds.size()){
                 throw new ServiceException(500,"有物料不存在Bom无法创建");
             }
