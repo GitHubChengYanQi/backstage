@@ -885,7 +885,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (Parts part : parts) {
             partsIds.add(part.getPartsId());
         }
-        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").list();
+        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display",1).list();
 
         for (SkuResult skuResult : param) {
             for (ActivitiProcess process : processes) {
