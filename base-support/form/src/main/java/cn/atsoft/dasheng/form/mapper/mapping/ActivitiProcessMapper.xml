@@ -45,7 +45,7 @@
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessParam">
         select
         <include refid="Base_Column_List"/>
-        from activiti_process where display = 1
+        from activiti_process where display = 1 and type !='ship'
         <if test="paramCondition.type!=null">
             and type = #{paramCondition.type}
         </if>
