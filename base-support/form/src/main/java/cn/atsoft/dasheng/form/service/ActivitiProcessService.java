@@ -63,6 +63,8 @@ public interface ActivitiProcessService extends IService<ActivitiProcess> {
      */
     List<ActivitiProcessResult> findListBySpec(ActivitiProcessParam param);
 
+    PageInfo<ActivitiProcessResult> findShipPageBySpec(ActivitiProcessParam param);
+
     /**
      * 查询分页数据，Specification模式
      *

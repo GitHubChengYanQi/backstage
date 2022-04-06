@@ -79,7 +79,7 @@ public class StepsController extends BaseController {
             processParam = new ActivitiProcessParam();
         }
         processParam.setType("ship");
-        PageInfo<ActivitiProcessResult> page = processService.findPageBySpec(processParam);
+        PageInfo<ActivitiProcessResult> page = processService.findShipPageBySpec(processParam);
         List<Long> skuIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         for (ActivitiProcessResult datum : page.getData()) {

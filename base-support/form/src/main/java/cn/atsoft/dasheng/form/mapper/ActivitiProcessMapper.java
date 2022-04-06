@@ -53,4 +53,7 @@ public interface ActivitiProcessMapper extends BaseMapper<ActivitiProcess> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ActivitiProcessParam paramCondition);
 
+
+    Page<ActivitiProcessResult> shipPageList(@Param("page") Page page, @Param("paramCondition") ActivitiProcessParam paramCondition);
+
 }
