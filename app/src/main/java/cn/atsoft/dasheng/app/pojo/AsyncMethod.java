@@ -129,9 +129,10 @@ public class AsyncMethod {
 
     }
 
-    private List<List<Long>> skuIdsList(List<Long> skuIds) {
+
+    public static List<List<Long>> skuIdsList(List<Long> skuIds) {
         List<List<Long>> skuIdsCell = new ArrayList<>();
-        this.skuPartsMakeUp(skuIds, skuIds.size(), 0, skuIdsCell);
+        skuPartsMakeUp(skuIds, skuIds.size(), 0, skuIdsCell);
         return skuIdsCell;
     }
 
@@ -140,7 +141,7 @@ public class AsyncMethod {
      */
     public static Stack<Long> stack = new Stack<Long>();
 
-    private void skuPartsMakeUp(List<Long> skuIds, int count, int now, List<List<Long>> skuIdsCell) {
+    public static void skuPartsMakeUp(List<Long> skuIds, int count, int now, List<List<Long>> skuIdsCell) {
         if (now == count) {
             List<Long> stacks = new ArrayList<Long>(stack);
             skuIdsCell.add(stacks);
@@ -155,4 +156,6 @@ public class AsyncMethod {
             }
         }
     }
+
+
 }
