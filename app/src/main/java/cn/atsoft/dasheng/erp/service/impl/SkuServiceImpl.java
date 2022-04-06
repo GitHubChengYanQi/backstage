@@ -35,8 +35,6 @@ import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.production.entity.ProcessRoute;
-import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -46,15 +44,12 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.AttributeException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1129,6 +1124,31 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         this.format(skuResults);
 
         return skuResults;
+    }
+    @Override
+    public List<SkuSimpleResult> simpleFormatSkuResult(List<Long> skuIds) {
+        if (ToolUtil.isEmpty(skuIds)) {
+            return new ArrayList<>();
+        }
+        List<Sku> skus = this.listByIds(skuIds);
+        List<SkuResult> skuResults = new ArrayList<>();
+        for (Sku sku : skus) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku, skuResult);
+            skuResults.add(skuResult);
+        }
+        this.format(skuResults);
+        List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
+        for (SkuResult skuResult : skuResults) {
+            SkuSimpleResult skuSimpleResult = new SkuSimpleResult();
+            ToolUtil.copyProperties(skuResult,skuSimpleResult);
+            skuSimpleResults.add(skuSimpleResult);
+        }
+
+
+
+
+        return skuSimpleResults;
     }
 
     private Serializable getKey(SkuParam param) {
