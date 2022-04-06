@@ -1437,6 +1437,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             if (jobBookingDetailResult.getSkuId().equals(formDataPojo.getSkuId())){
                 jobBookingDetailResult.setNumber(jobBookingDetailResult.getNumber()+1);
             }
+        }
+        if (jobBookingDetailResults.size() == 0 ){
+            jobBookingDetailResults.add(new ProductionJobBookingDetailResult(){{
+                setNumber(1);
+                setSkuId(formDataPojo.getSkuId());
+            }});
 
         }
         List<Boolean> booleans = new ArrayList<>();
