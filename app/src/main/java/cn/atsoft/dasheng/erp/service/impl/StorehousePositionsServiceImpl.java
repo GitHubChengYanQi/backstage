@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
@@ -491,12 +492,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         for (StorehousePositionsBind bind : binds) {
             skuIds.add(bind.getSkuId());
         }
-        List<SkuResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
-        skuService.format(skuList);
+//        List<SkuSimpleResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
+        List<SkuSimpleResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+//        skuService.format(skuList);
         for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
-            List<SkuResult> skuResults = new ArrayList<>();
+            List<SkuSimpleResult> skuResults = new ArrayList<>();
             for (StorehousePositionsBind bind : binds) {
-                for (SkuResult result : skuList) {
+                for (SkuSimpleResult result : skuList) {
                     if (storehousePositions.getStorehousePositionsId().equals(bind.getPositionId()) && bind.getSkuId().equals(result.getSkuId())) {
                         skuResults.add(result);
                     }
