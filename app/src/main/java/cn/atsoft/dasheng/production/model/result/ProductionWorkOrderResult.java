@@ -61,12 +61,14 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 来源
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("来源")
     private String source;
 
     /**
      * 来源id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("来源id")
     private Long sourceId;
 
@@ -79,6 +81,7 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 部门编号
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("部门编号")
     private Long deptId;
 
@@ -91,6 +94,7 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 步骤id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("步骤id")
     private Long stepsId;
 

@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -186,9 +187,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
         }
-        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
+//        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
+       List<SkuSimpleResult> skuSimpleResults =  skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
         for (ProductionPickListsDetailResult detailResult : detailResults) {
-            for (SkuResult skuResult : skuResults) {
+            for (SkuSimpleResult skuResult : skuSimpleResults) {
                 if (skuResult.getSkuId().equals(detailResult.getSkuId())) {
                     detailResult.setSkuResult(skuResult);
                     break;
@@ -258,9 +260,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
         }
-        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
+//        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
+        List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
         for (ProductionPickListsDetailResult detailResult : detailResults) {
-            for (SkuResult skuResult : skuResults) {
+            for (SkuSimpleResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(detailResult.getSkuId())) {
                     detailResult.setSkuResult(skuResult);
                     break;

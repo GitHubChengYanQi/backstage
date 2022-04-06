@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,6 +82,8 @@ public interface SkuService extends IService<Sku> {
      */
     PageInfo<SkuResult> findPageBySpec(SkuParam param);
 
+
+    List<SkuSimpleResult> simpleFormatSkuResult(List<Long> skuIds);
 
     List<BackSku> backSku(Long ids);
 

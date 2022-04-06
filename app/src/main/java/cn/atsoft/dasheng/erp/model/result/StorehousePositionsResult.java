@@ -44,7 +44,7 @@ public class StorehousePositionsResult implements Serializable {
 
     private List<StockDetailsResult> detailsResults;
 
-    private List<SkuResult> skuResults;
+    private List<SkuSimpleResult> skuResults;
 
     private List<StorehousePositionsResult> storehousePositionsResults;
 
