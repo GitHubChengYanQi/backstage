@@ -76,7 +76,8 @@ public class AsyncMethod {
          */
         boolean t = true;
 
-        List<BomOrder> results = new ArrayList<>();
+        AllBomResult allBomResult = new AllBomResult();
+
         List<AnalysisResult> owes = new ArrayList<>();
         int i = 0;
         for (List<AllBomParam.SkuNumberParam> skus : allSkus) {
@@ -84,7 +85,15 @@ public class AsyncMethod {
             AllBom allBom = new AllBom();
             allBom.start(skus, t);
             AllBomResult bom = allBom.getResult();
-            results.addAll(bom.getResult());
+
+            List<BomOrder> result = allBomResult.getResult();
+            if (ToolUtil.isEmpty(result)) {
+                result = new ArrayList<>();
+            }
+            List<BomOrder> bomResult = bom.getResult();
+            result.addAll(bom.getResult());
+            allBomResult.setResult(result);     //够生产
+
             owes.addAll(bom.getOwe());
             t = false;   //控制缺料集合
             asynTask.setCount(i);   //修改任务状态
@@ -94,8 +103,7 @@ public class AsyncMethod {
          * 数据添加到 队列里
          */
 
-        AllBomResult allBomResult = new AllBomResult();
-        allBomResult.setResult(results);  //够生产
+
         allBomResult.setOwe(owes);
 
         List<Long> skuIds = new ArrayList<>();
@@ -123,7 +131,6 @@ public class AsyncMethod {
         }
 
         allBomResult.setView(views);
-
 
 
         asynTask.setContent(JSON.toJSONString(allBomResult));

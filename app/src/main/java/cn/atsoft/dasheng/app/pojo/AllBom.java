@@ -70,40 +70,43 @@ public class AllBom {
         /**
          * 可生产数量排序
          */
-        List<Map.Entry<Long, Long>> list = new ArrayList<>(mix.entrySet());
-        list.sort(new Comparator<Map.Entry<Long, Long>>() {
-            @Override
-            public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
+//        List<Map.Entry<Long, Long>> list = new ArrayList<>(mix.entrySet());
+//        list.sort(new Comparator<Map.Entry<Long, Long>>() {
+//            @Override
+//            public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
+//
+//                //按照value值，从大到小排序
+//                return Math.toIntExact(o2.getValue() - o1.getValue());
+//
+//            }
+//        });
 
-                //按照value值，从大到小排序
-                return Math.toIntExact(o2.getValue() - o1.getValue());
 
-            }
-        });
-
+        //        for (Map.Entry<Long, Long> longLongEntry : list) {
+//            Long skuId = longLongEntry.getKey();
+//            skus.add(skuId);
+//        }
         int num = 0;
-        List<Long> skus = new ArrayList<>();
-        for (Map.Entry<Long, Long> longLongEntry : list) {
-            Long skuId = longLongEntry.getKey();
-            skus.add(skuId);
-        }
+        List<Long> skus = new ArrayList<>(mix.keySet());
         List<SkuResult> results = skuService.formatSkuResult(skus);
-        for (Map.Entry<Long, Long> longLongEntry : list) {
+
+        for (Long skuId : mix.keySet()) {
             for (SkuResult skuResult : results) {
-                if (skuResult.getSkuId().equals(longLongEntry.getKey())) {
+                if (skuResult.getSkuId().equals(skuId)) {
                     AnalysisResult analysisResult = new AnalysisResult();
                     analysisResult.setSkuName(skuResult.getSkuName());
                     analysisResult.setSpuName(skuResult.getSpuResult().getName());
-                    analysisResult.setProduceMix(longLongEntry.getValue());
+                    analysisResult.setProduceMix(mix.get(skuId));
                     analysisResult.setSpecifications(skuResult.getSpecifications());
                     analysisResult.setStrand(skuResult.getStandard());
                     analysisResult.setSkuId(skuResult.getSkuId());
                     canProduce.add(analysisResult);
-                    num = Math.toIntExact(num + longLongEntry.getValue());
+                    num = Math.toIntExact(num + mix.get(skuId));
                     break;
                 }
             }
         }
+
         bomOrder.setResult(canProduce);
         bomOrder.setNum(num);
 
@@ -352,13 +355,14 @@ public class AllBom {
                 Long stockNum = stockNumber.get(id);
                 stockNumber.put(id, stockNum - num);
             }
-        } else if (number - min > 0) {
+        }
+        if (number - min > 0) {
             for (Long id : lastChild.keySet()) {
                 Long stockNum = stockNumber.get(id);
                 SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
                 long l = number - min;
-                long num = skuNumber.getNum() *l;
-                if (mixAdd && (num - stockNum > 0)) {
+                long num = skuNumber.getNum() * l;
+                if (mixAdd && ((num - stockNum) > 0)) {
                     this.notEnough.put(id, num - stockNum);
                 }
             }
