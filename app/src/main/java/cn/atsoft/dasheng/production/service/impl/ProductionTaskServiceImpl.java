@@ -118,24 +118,24 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(param.getWorkOrderId());
         List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
         ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", productionWorkOrder.getStepsId()).one();
-        if(setpSet.getProductionType().equals("out")){
+        if (setpSet.getProductionType().equals("out")) {
             List<Long> skuIds = new ArrayList<>();
             for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
                 skuIds.add(setpSetDetail.getSkuId());
             }
-            List<Parts> list = partsService.query().in("sku_id", skuIds).eq("display", 1).list();
-            if (list.size()!=skuIds.size()){
-                throw new ServiceException(500,"有物料不存在Bom无法创建");
+            skuIds = skuIds.stream().distinct().collect(Collectors.toList());
+            List<Parts> list = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
+            if (list.size() != skuIds.size()) {
+                throw new ServiceException(500, "有物料不存在Bom无法创建");
             }
         }
 
         /**
          * 判断是否满足库存
          */
-        if (ToolUtil.isNotEmpty(param.getUserId())){
-            checkStockDetail(param,productionWorkOrder);
+        if (ToolUtil.isNotEmpty(param.getUserId())) {
+            checkStockDetail(param, productionWorkOrder);
         }
-
 
 
         /**
@@ -219,7 +219,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             entity.setStatus(98);
             this.updateById(entity);
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl()+"/#/Work/ProductionTask/Detail?id="+entity.getProductionTaskId().toString());
+            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
             wxCpTemplate.setTitle("新的生产任务");
             wxCpTemplate.setDescription("您被分派了新的生产任务" + entity.getCoding());
             wxCpTemplate.setUserIds(new ArrayList<Long>() {{
@@ -287,19 +287,33 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 skuIds.add(setpSetDetail.getSkuId());
             }
             List<Long> partsIds = new ArrayList<>();
-            List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).list();
+            List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
             List<PartsResult> partsResults = new ArrayList<>();
             for (Parts part : parts) {
                 partsIds.add(part.getPartsId());
                 PartsResult partsResult = new PartsResult();
-                ToolUtil.copyProperties(part,partsResult);
+                ToolUtil.copyProperties(part, partsResult);
                 partsResults.add(partsResult);
             }
             List<ErpPartsDetailResult> details = partsIds.size() == 0 ? new ArrayList<>() : partsDetailService.getDetails(partsIds);
+            List<Long> partsDetailSkuId = new ArrayList<>();
+            for (ErpPartsDetailResult detail : details) {
+                partsDetailSkuId.add(detail.getSkuId());
+            }
+            /**
+             * 查询过滤掉有子bom的物料
+             */
+            List<Long> childrenPartsSkuId = new ArrayList<>();
+            List<Parts> childrenParts = partsDetailSkuId.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", partsDetailSkuId).eq("display", 1).eq("status", 99).list();
+            for (Parts childrenPart : childrenParts) {
+                childrenPartsSkuId.add(childrenPart.getSkuId());
+            }
+            partsDetailSkuId.removeAll(childrenPartsSkuId);
+
             for (PartsResult partsResult : partsResults) {
                 List<ErpPartsDetailResult> partsDetailResults = new ArrayList<>();
                 for (ErpPartsDetailResult detail : details) {
-                    if (partsResult.getPartsId().equals(detail.getPartsId())){
+                    if (partsResult.getPartsId().equals(detail.getPartsId())) {
                         partsDetailResults.add(detail);
                     }
                 }
@@ -308,9 +322,9 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             details.clear();
             for (ActivitiSetpSetDetailResult setpSetDetail : setpSetDetails) {
                 for (PartsResult partsResult : partsResults) {
-                    if (setpSetDetail.getSkuId().equals(partsResult.getSkuId())){
+                    if (setpSetDetail.getSkuId().equals(partsResult.getSkuId())) {
                         for (ErpPartsDetailResult part : partsResult.getParts()) {
-                            part.setNumber(part.getNumber()*setpSetDetail.getNum());
+                            part.setNumber(part.getNumber() * setpSetDetail.getNum());
                             details.add(part);
                         }
                     }
@@ -322,18 +336,18 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 return o1;
             })).values().stream().collect(Collectors.toList());
 
-            List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).list();
+            List<StockDetails> stockDetails = partsDetailSkuId.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", partsDetailSkuId).list();
             stockDetails = stockDetails.stream().collect(Collectors.toMap(StockDetails::getSkuId, a -> a, (o1, o2) -> {
                 o1.setNumber(o1.getNumber() + o2.getNumber());
                 return o1;
             })).values().stream().collect(Collectors.toList());
-            if (stockDetails.size()==0){
-                throw new ServiceException(500,"库存数量不足 不可以直接投入生产");
+            if (stockDetails.size() == 0 && partsDetailSkuId.size() != 0) {
+                throw new ServiceException(500, "库存数量不足 不可以直接投入生产");
             }
             for (ErpPartsDetailResult detail : details) {
                 for (StockDetails stockDetail : stockDetails) {
-                    if (detail.getSkuId().equals(stockDetail.getSkuId()) && detail.getNumber()>stockDetail.getNumber()){
-                        throw new ServiceException(500,"库存数量不足 不可以直接投入生产");
+                    if (detail.getSkuId().equals(stockDetail.getSkuId()) && detail.getNumber() > stockDetail.getNumber()) {
+                        throw new ServiceException(500, "库存数量不足 不可以直接投入生产");
                     }
                 }
             }
@@ -355,7 +369,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     public ProductionTask Receive(ProductionTaskParam param) {
         ProductionTask entity = this.getById(param.getProductionTaskId());
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
-        checkStockDetail(param,productionWorkOrder);
+        checkStockDetail(param, productionWorkOrder);
         entity.setProductionTaskId(param.getProductionTaskId());
         entity.setUserId(param.getUserId());
         entity.setStatus(98);
@@ -471,7 +485,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 查询子表以及报工表
          */
         List<ProductionTaskDetailResult> productionTaskDetailResults = productionTaskDetailService.resultsByTaskIds(taskIds);
-
 
 
         List<JobBookingDetailCount> counts = jobBookingDetailService.resultsByProductionTaskIds(taskIds);

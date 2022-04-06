@@ -325,7 +325,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     private void copySkuBomById(Long oldSkuId,Long newSkuId){
-        Parts parts = partsService.query().eq("sku_id", oldSkuId).eq("display", 1).one();
+        Parts parts = partsService.query().eq("sku_id", oldSkuId).eq("display", 1).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(parts)){
             List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
             Parts newSkuParts = new Parts();
