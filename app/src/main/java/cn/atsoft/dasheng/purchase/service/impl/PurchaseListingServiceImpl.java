@@ -217,7 +217,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
 
         for (PurchaseListingResult result : param) {
             for (SkuResult skuResult : skuResults) {
-                if (result.getSkuId().equals(skuResult.getSkuId())) {
+                if (ToolUtil.isNotEmpty(result.getSkuId()) && result.getSkuId().equals(skuResult.getSkuId())) {
                     result.setSkuResult(skuResult);
                     break;
                 }
@@ -231,7 +231,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             }
 
             for (BrandResult brandResult : brandResults) {
-                if (brandResult.getBrandId().equals(result.getBrandId())) {
+                if (ToolUtil.isNotEmpty(result.getBrandId()) && brandResult.getBrandId().equals(result.getBrandId())) {
                     result.setBrandResult(brandResult);
                     break;
                 }
