@@ -95,6 +95,9 @@ public class AsyncMethod {
          */
 
         AllBomResult allBomResult = new AllBomResult();
+        allBomResult.setResult(results);  //够生产
+        allBomResult.setOwe(owes);
+
         List<Long> skuIds = new ArrayList<>();
         for (AllBomParam.SkuNumberParam skuId : param.getSkuIds()) {
             skuIds.add(skuId.getSkuId());
@@ -120,8 +123,8 @@ public class AsyncMethod {
         }
 
         allBomResult.setView(views);
-        allBomResult.setResult(results);
-        allBomResult.setOwe(owes);
+
+
 
         asynTask.setContent(JSON.toJSONString(allBomResult));
         asynTask.setStatus(99);
@@ -129,9 +132,10 @@ public class AsyncMethod {
 
     }
 
-    private List<List<Long>> skuIdsList(List<Long> skuIds) {
+
+    public static List<List<Long>> skuIdsList(List<Long> skuIds) {
         List<List<Long>> skuIdsCell = new ArrayList<>();
-        this.skuPartsMakeUp(skuIds, skuIds.size(), 0, skuIdsCell);
+        skuPartsMakeUp(skuIds, skuIds.size(), 0, skuIdsCell);
         return skuIdsCell;
     }
 
@@ -140,7 +144,7 @@ public class AsyncMethod {
      */
     public static Stack<Long> stack = new Stack<Long>();
 
-    private void skuPartsMakeUp(List<Long> skuIds, int count, int now, List<List<Long>> skuIdsCell) {
+    public static void skuPartsMakeUp(List<Long> skuIds, int count, int now, List<List<Long>> skuIdsCell) {
         if (now == count) {
             List<Long> stacks = new ArrayList<Long>(stack);
             skuIdsCell.add(stacks);
@@ -155,4 +159,6 @@ public class AsyncMethod {
             }
         }
     }
+
+
 }

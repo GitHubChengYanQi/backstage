@@ -352,11 +352,12 @@ public class AllBom {
                 Long stockNum = stockNumber.get(id);
                 stockNumber.put(id, stockNum - num);
             }
-        } else if (min == 0) {    //缺料
+        } else if (number - min > 0) {
             for (Long id : lastChild.keySet()) {
                 Long stockNum = stockNumber.get(id);
                 SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
-                long num = skuNumber.getNum() * number;
+                long l = number - min;
+                long num = skuNumber.getNum() *l;
                 if (mixAdd && (num - stockNum > 0)) {
                     this.notEnough.put(id, num - stockNum);
                 }
