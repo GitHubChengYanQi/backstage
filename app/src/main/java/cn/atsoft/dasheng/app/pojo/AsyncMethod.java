@@ -95,6 +95,9 @@ public class AsyncMethod {
          */
 
         AllBomResult allBomResult = new AllBomResult();
+        allBomResult.setResult(results);  //够生产
+        allBomResult.setOwe(owes);
+
         List<Long> skuIds = new ArrayList<>();
         for (AllBomParam.SkuNumberParam skuId : param.getSkuIds()) {
             skuIds.add(skuId.getSkuId());
@@ -120,8 +123,8 @@ public class AsyncMethod {
         }
 
         allBomResult.setView(views);
-        allBomResult.setResult(results);
-        allBomResult.setOwe(owes);
+
+
 
         asynTask.setContent(JSON.toJSONString(allBomResult));
         asynTask.setStatus(99);
