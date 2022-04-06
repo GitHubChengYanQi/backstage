@@ -25,9 +25,11 @@ public class PurchaseListing implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+
     /**
      * 交货时间
-      */
+     */
     @TableField("delivery_time")
     private Time deliveryTime;
     /**

@@ -3,12 +3,10 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
@@ -30,7 +28,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -95,6 +92,9 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         return param.getPurchaseListingId();
     }
 
+
+
+
     private Page<PurchaseListingResult> getPageContext() {
         return PageFactory.defaultPage();
     }
@@ -123,6 +123,22 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         this.format(purchaseListingResults);
         return purchaseListingResults;
     }
+
+    /**
+     * 预购
+     *
+     * @param param
+     * @return
+     */
+    @Override
+    public PageInfo<PurchaseListingResult> readyBuy(PurchaseListingParam param) {
+        Page<PurchaseListingResult> pageContext = getPageContext();
+        IPage<PurchaseListingResult> page = this.baseMapper.readyBuy(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+
 
     @Override
     public Set<ListingPlan> plans(PlanListParam param) {
