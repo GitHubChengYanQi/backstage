@@ -76,7 +76,8 @@ public class AsyncMethod {
          */
         boolean t = true;
 
-        List<BomOrder> results = new ArrayList<>();
+        AllBomResult allBomResult = new AllBomResult();
+
         List<AnalysisResult> owes = new ArrayList<>();
         int i = 0;
         for (List<AllBomParam.SkuNumberParam> skus : allSkus) {
@@ -84,7 +85,15 @@ public class AsyncMethod {
             AllBom allBom = new AllBom();
             allBom.start(skus, t);
             AllBomResult bom = allBom.getResult();
-            results.addAll(bom.getResult());
+
+            List<BomOrder> result = allBomResult.getResult();
+            if (ToolUtil.isEmpty(result)) {
+                result = new ArrayList<>();
+            }
+            List<BomOrder> bomResult = bom.getResult();
+            result.addAll(bom.getResult());
+            allBomResult.setResult(result);     //够生产
+
             owes.addAll(bom.getOwe());
             t = false;   //控制缺料集合
             asynTask.setCount(i);   //修改任务状态
@@ -94,7 +103,9 @@ public class AsyncMethod {
          * 数据添加到 队列里
          */
 
-        AllBomResult allBomResult = new AllBomResult();
+
+        allBomResult.setOwe(owes);
+
         List<Long> skuIds = new ArrayList<>();
         for (AllBomParam.SkuNumberParam skuId : param.getSkuIds()) {
             skuIds.add(skuId.getSkuId());
@@ -120,8 +131,7 @@ public class AsyncMethod {
         }
 
         allBomResult.setView(views);
-        allBomResult.setResult(results);
-        allBomResult.setOwe(owes);
+
 
         asynTask.setContent(JSON.toJSONString(allBomResult));
         asynTask.setStatus(99);
@@ -129,9 +139,10 @@ public class AsyncMethod {
 
     }
 
-    private List<List<Long>> skuIdsList(List<Long> skuIds) {
+
+    public static List<List<Long>> skuIdsList(List<Long> skuIds) {
         List<List<Long>> skuIdsCell = new ArrayList<>();
-        this.skuPartsMakeUp(skuIds, skuIds.size(), 0, skuIdsCell);
+        skuPartsMakeUp(skuIds, skuIds.size(), 0, skuIdsCell);
         return skuIdsCell;
     }
 
@@ -140,7 +151,7 @@ public class AsyncMethod {
      */
     public static Stack<Long> stack = new Stack<Long>();
 
-    private void skuPartsMakeUp(List<Long> skuIds, int count, int now, List<List<Long>> skuIdsCell) {
+    public static void skuPartsMakeUp(List<Long> skuIds, int count, int now, List<List<Long>> skuIdsCell) {
         if (now == count) {
             List<Long> stacks = new ArrayList<Long>(stack);
             skuIdsCell.add(stacks);
@@ -155,4 +166,6 @@ public class AsyncMethod {
             }
         }
     }
+
+
 }
