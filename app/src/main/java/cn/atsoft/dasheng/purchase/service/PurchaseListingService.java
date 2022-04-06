@@ -71,6 +71,8 @@ public interface PurchaseListingService extends IService<PurchaseListing> {
 
     List<PurchaseListingResult> getByAskId(Long askId);
 
+    PageInfo<PurchaseListingResult> readyBuy(PurchaseListingParam param);
+
     /**
      * 待买
      *

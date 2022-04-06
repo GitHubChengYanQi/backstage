@@ -53,4 +53,6 @@ public interface PurchaseListingMapper extends BaseMapper<PurchaseListing> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") PurchaseListingParam paramCondition);
 
+
+    Page<PurchaseListingResult> readyBuy (@Param("page") Page page, @Param("paramCondition") PurchaseListingParam paramCondition);
 }

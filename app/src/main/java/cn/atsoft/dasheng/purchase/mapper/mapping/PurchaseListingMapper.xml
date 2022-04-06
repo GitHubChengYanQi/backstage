@@ -214,4 +214,35 @@
         </if>
     </select>
 
+    <select id="readyBuy" resultType="cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseListingParam">
+        SELECT
+        sum( daoxin_purchase_listing.apply_number ) AS apply_number,
+        daoxin_purchase_listing.sku_id,
+        daoxin_purchase_listing.brand_id,
+        daoxin_purchase_listing.`status` AS list_status,
+        daoxin_purchase_ask.STATUS AS ask_status,
+        daoxin_purchase_listing.create_time AS createTime,
+        daoxin_purchase_ask.type,
+        daoxin_purchase_listing.delivery_time,
+        daoxin_purchase_ask.coding
+        FROM
+        daoxin_purchase_listing
+        JOIN daoxin_purchase_ask ON daoxin_purchase_listing.purchase_ask_id = daoxin_purchase_ask.purchase_ask_id
+        GROUP BY
+        daoxin_purchase_listing.sku_id
+        HAVING
+        daoxin_purchase_listing.STATUS = 0
+        AND daoxin_purchase_ask.STATUS = 2
+        <if test="paramCondition.type != null">
+            and daoxin_purchase_ask.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.deliveryTime != null">
+            and daoxin_purchase_listing.delivery_time like CONCAT('%',#{paramCondition.deliveryTime},'%')
+        </if>
+        <if test="paramCondition.askCoding != null">
+            and daoxin_purchase_ask.coding like CONCAT('%',#{paramCondition.askCoding},'%')
+        </if>
+    </select>
+
 </mapper>
