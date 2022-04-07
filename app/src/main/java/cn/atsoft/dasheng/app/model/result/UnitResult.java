@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -25,6 +27,7 @@ public class UnitResult implements Serializable {
      * 单位id
      */
     @ApiModelProperty("单位id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long unitId;
 
     /**
@@ -37,6 +40,7 @@ public class UnitResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long createUser;
 
     /**
@@ -49,6 +53,7 @@ public class UnitResult implements Serializable {
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long updateUser;
 
     /**

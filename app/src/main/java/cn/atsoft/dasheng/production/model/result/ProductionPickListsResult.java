@@ -1,9 +1,15 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.LongJsonSerializer.LongJsonDeserializer;
+import cn.atsoft.dasheng.LongJsonSerializer.LongJsonSerializer;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -37,6 +43,7 @@ public class ProductionPickListsResult implements Serializable {
     /**
      * 领料单
      */
+    @JSONField(serializeUsing= ToStringSerializer.class)
     @ApiModelProperty("领料单")
     private Long pickListsId;
 
@@ -47,6 +54,7 @@ public class ProductionPickListsResult implements Serializable {
     private String coding;
 
     @ApiModelProperty("")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long userId;
 
     /**
@@ -61,6 +69,7 @@ public class ProductionPickListsResult implements Serializable {
      */
     @JSONField(serialize = false)
     @ApiModelProperty("来源id")
+
     private Long sourceId;
 
     /**

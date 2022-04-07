@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
 
 import java.util.Date;
@@ -60,13 +61,14 @@ public class SpuResult implements Serializable {
     /**
      * 分类id
      */
-
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long spuClassificationId;
 
     /**
      * 物品Id
      */
     @ApiModelProperty("物品Id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long spuId;
     /**
      * 型号
@@ -113,6 +115,7 @@ public class SpuResult implements Serializable {
      * 材质id
      */
     @ApiModelProperty("材质id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long materialId;
 
     /**
@@ -140,6 +143,7 @@ public class SpuResult implements Serializable {
      */
     @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
+
     private Long createUser;
 
     /**
@@ -174,18 +178,21 @@ public class SpuResult implements Serializable {
      * 产品分类
      */
     @ApiModelProperty("产品分类")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long classId;
 
     /**
      * 单位
      */
     @ApiModelProperty("单位")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long unitId;
 
     /**
      * 类目id
      */
     @ApiModelProperty("类目id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long categoryId;
 
     /**

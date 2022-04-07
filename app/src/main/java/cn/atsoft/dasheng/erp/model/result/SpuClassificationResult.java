@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.Spu;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -44,6 +45,7 @@ public class SpuClassificationResult implements Serializable {
     /**
      * pid
      */
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long pid;
 
     private List<Spu> spuList;
@@ -51,12 +53,14 @@ public class SpuClassificationResult implements Serializable {
      * spu分类id
      */
     @ApiModelProperty("spu分类id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long spuClassificationId;
 
     /**
      * 是否是产品分类
      */
     @ApiModelProperty("是否是产品分类")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long type;
 
     /**
@@ -81,12 +85,17 @@ public class SpuClassificationResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long createUser;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serializeUsing= ToStringSerializer.class)
+
+
+
     private Long updateUser;
 
     /**

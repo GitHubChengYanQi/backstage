@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
 
 import java.util.Date;
@@ -40,12 +41,14 @@ public class CategoryResult implements Serializable {
      * 物品类目Id
      */
     @ApiModelProperty("物品类目Id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long categoryId;
 
     /**
      * 上级分类id
      */
     @ApiModelProperty("上级分类id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long pid;
 
     /**
@@ -70,6 +73,7 @@ public class CategoryResult implements Serializable {
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long updateUser;
 
     /**

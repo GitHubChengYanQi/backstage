@@ -135,6 +135,18 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
                 }
             }
         }
+        if (jobBookingDetailResults.size() == 0 ){
+            for (ProductionJobBookingDetailParam detailParam : param.getDetailParams()) {
+                ProductionJobBookingDetailResult productionJobBookingDetailResult = new ProductionJobBookingDetailResult();
+                productionJobBookingDetailResult.setSkuId(detailParam.getSkuId());
+                productionJobBookingDetailResult.setNumber(detailParam.getNumber());
+                jobBookingDetailResults.add(productionJobBookingDetailResult);
+            }
+
+        }
+
+
+
         List<Boolean> booleans = new ArrayList<>();
         for (ProductionTaskDetailResult detailResult : taskDetailResults) {
             for (ProductionJobBookingDetailResult jobBookingDetailResult : jobBookingDetailResults) {
