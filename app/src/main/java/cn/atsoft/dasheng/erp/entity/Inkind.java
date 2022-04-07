@@ -24,6 +24,16 @@ public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    @TableField("batch_number")
+    private String batchNumber;
+
+    @TableField("serial_number")
+    private Integer serialNumber;
+
+    @TableField("production_time")
+    private Date productionTime;
+
     /**
      * 供应商
      */
@@ -32,6 +42,8 @@ public class Inkind implements Serializable {
 
     @TableField("source")
     private String source;
+
+
 
     @TableField("source_id")
     private Long sourceId;
@@ -247,6 +259,30 @@ public class Inkind implements Serializable {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+
+    public String getBatchNumber() {
+        return batchNumber;
+    }
+
+    public void setBatchNumber(String batchNumber) {
+        this.batchNumber = batchNumber;
+    }
+
+    public Integer getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(Integer serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public Date getProductionTime() {
+        return productionTime;
+    }
+
+    public void setProductionTime(Date productionTime) {
+        this.productionTime = productionTime;
     }
 
     @Override

@@ -28,6 +28,13 @@ import java.util.Map;
 public class InkindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private String batchNumber;
+
+    private Integer serialNumber;
+
+    private Date productionTime;
+
     private String source;
 
     private Brand brand;

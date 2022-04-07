@@ -21,6 +21,8 @@ import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -93,8 +95,6 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
     }
 
 
-
-
     private Page<PurchaseListingResult> getPageContext() {
         return PageFactory.defaultPage();
     }
@@ -135,9 +135,31 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         Page<PurchaseListingResult> pageContext = getPageContext();
         IPage<PurchaseListingResult> page = this.baseMapper.readyBuy(pageContext, param);
         format(page.getRecords());
+
+
+        List<PurchaseListing> listings = this.query().eq("status", 0).eq("display", 1).list();
+        List<PurchaseListingResult> results = BeanUtil.copyToList(listings, PurchaseListingResult.class, new CopyOptions());
+        format(results);
+
+
+        for (PurchaseListingResult record : page.getRecords()) {
+            getChild(record, results);
+        }
         return PageFactory.createPageInfo(page);
     }
 
+
+    private void getChild(PurchaseListingResult result, List<PurchaseListingResult> results) {
+
+        List<PurchaseListingResult> resultList = new ArrayList<>();
+
+        for (PurchaseListingResult purchaseListingResult : results) {
+            if (purchaseListingResult.getSkuId().equals(result.getSkuId())) {
+                resultList.add(purchaseListingResult);
+            }
+        }
+        result.setChildren(resultList);
+    }
 
 
     @Override
