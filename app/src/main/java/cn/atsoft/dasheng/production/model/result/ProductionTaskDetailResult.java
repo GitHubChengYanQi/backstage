@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import lombok.Data;
 import java.util.Date;
@@ -21,7 +22,7 @@ public class ProductionTaskDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private JobBookingDetailCount jobBookingDetailCount;
-
+    private SkuResult outSkuResult;
 
     /**
      * 子表id

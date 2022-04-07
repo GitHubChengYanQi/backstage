@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
@@ -152,7 +153,7 @@ public class StorehousePositionsController extends BaseController {
         for (StorehousePositionsBind bind : binds) {
             skuIds.add(bind.getSkuId());
         }
-        List<SkuResult> results = skuService.formatSkuResult(skuIds);
+        List<SkuSimpleResult> results = skuService.simpleFormatSkuResult(skuIds);
         result.setSkuResults(results);
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
         List<String> parentValue = StorehousePositionsSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getPid()));

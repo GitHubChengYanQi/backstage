@@ -63,7 +63,7 @@ public class QualityMessageSend implements AuditMessageSend {
         List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         wxCpTemplate.setUserIds(users);
         String url = mobileService.getMobileConfig().getUrl();
-        url = url + "/cp/#/Work/Quality?id=" + parentId;
+        url = url + "/#/Work/Quality?id=" + parentId;
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setDescription("点击查看新质检任务");
         wxCpTemplate.setTitle("您被分派新的任务");

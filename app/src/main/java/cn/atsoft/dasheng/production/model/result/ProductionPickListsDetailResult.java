@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -22,7 +24,7 @@ import java.util.List;
 public class ProductionPickListsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private SkuResult skuResult;
+    private SkuSimpleResult skuResult;
     private Integer status;
 
     private Long storehousePositionsId;
@@ -53,12 +55,14 @@ public class ProductionPickListsDetailResult implements Serializable {
     /**
      * 创建者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
@@ -71,18 +75,21 @@ public class ProductionPickListsDetailResult implements Serializable {
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 状态
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("状态")
     private Integer display;
 
     /**
      * 部门id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("部门id")
     private Long deptId;
     @ApiModelProperty("父ID顺序数组")

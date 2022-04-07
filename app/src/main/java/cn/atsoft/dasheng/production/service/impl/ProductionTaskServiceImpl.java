@@ -1,18 +1,27 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
+import cn.atsoft.dasheng.app.model.result.PartsResult;
+import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
+import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.form.service.ActivitiSetpSetDetailService;
+import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -25,6 +34,7 @@ import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
+import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
@@ -90,9 +100,43 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     @Autowired
     private MessageProducer messageProducer;
 
+    @Autowired
+    private ActivitiSetpSetService setpSetService;
+    @Autowired
+    private PartsService partsService;
+    @Autowired
+    private ErpPartsDetailService partsDetailService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private MobileService mobileService;
+    @Autowired
+    private SkuService skuService;
+
     @Override
     public void add(ProductionTaskParam param) {
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(param.getWorkOrderId());
+        List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
+        ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", productionWorkOrder.getStepsId()).one();
+        if (setpSet.getProductionType().equals("out")) {
+            List<Long> skuIds = new ArrayList<>();
+            for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
+                skuIds.add(setpSetDetail.getSkuId());
+            }
+            skuIds = skuIds.stream().distinct().collect(Collectors.toList());
+            List<Parts> list = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
+            if (list.size() != skuIds.size()) {
+                throw new ServiceException(500, "有物料不存在Bom无法创建");
+            }
+        }
+
+        /**
+         * 判断是否满足库存
+         */
+        if (ToolUtil.isNotEmpty(param.getUserId())) {
+            checkStockDetail(param, productionWorkOrder);
+        }
+
 
         /**
          * 判断拦截错误数据
@@ -118,6 +162,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             }
             entity.setUserIds(stringBuffer.substring(0, stringBuffer.length() - 1));
         }
+        entity.setShipSetpId(productionWorkOrder.getShipSetpId());
         this.save(entity);
         List<ProductionTaskDetail> detailEntitys = new ArrayList<>();
         /**
@@ -126,7 +171,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 然后与任务数量相乘
          * 保存进子表
          */
-        List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
 
         for (ActivitiSetpSetDetail setpSetDetail : setpSetDetails) {
             ProductionTaskDetail productionTaskDetail = new ProductionTaskDetail();
@@ -175,7 +219,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             entity.setStatus(98);
             this.updateById(entity);
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
+            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
             wxCpTemplate.setTitle("新的生产任务");
             wxCpTemplate.setDescription("您被分派了新的生产任务" + entity.getCoding());
             wxCpTemplate.setUserIds(new ArrayList<Long>() {{
@@ -193,7 +237,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             MicroServiceEntity serviceEntity = new MicroServiceEntity();
             serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
             serviceEntity.setOperationType(OperationType.ADD);
-            String jsonString = JSON.toJSONString(new SavePickListsObject(){{
+            String jsonString = JSON.toJSONString(new SavePickListsObject() {{
                 setDetails(detailEntitys);
                 setProductionTask(entity);
             }});
@@ -202,7 +246,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             serviceEntity.setTimes(0);
             messageProducer.microService(serviceEntity);
 
-        }else if (ToolUtil.isEmpty(param.getUserId())) {
+        } else if (ToolUtil.isEmpty(param.getUserId())) {
             /**
              * 如果有审批则进行审批  没有直接推送微信消息
              */
@@ -229,6 +273,88 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         this.removeById(getKey(param));
     }
 
+    private void checkStockDetail(ProductionTaskParam param, ProductionWorkOrder workOrder) {
+        Long stepsId = workOrder.getStepsId();
+        ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", stepsId).one();
+        List<ActivitiSetpSetDetailResult> setpSetDetails = activitiSetpSetDetailService.getResultByStepsIds(new ArrayList<Long>() {{
+            add(stepsId);
+        }});
+        if (setpSet.getProductionType().equals("in")) {
+
+        } else if (setpSet.getProductionType().equals("out")) {
+            List<Long> skuIds = new ArrayList<>();
+            for (ActivitiSetpSetDetailResult setpSetDetail : setpSetDetails) {
+                skuIds.add(setpSetDetail.getSkuId());
+            }
+            List<Long> partsIds = new ArrayList<>();
+            List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
+            List<PartsResult> partsResults = new ArrayList<>();
+            for (Parts part : parts) {
+                partsIds.add(part.getPartsId());
+                PartsResult partsResult = new PartsResult();
+                ToolUtil.copyProperties(part, partsResult);
+                partsResults.add(partsResult);
+            }
+            List<ErpPartsDetailResult> details = partsIds.size() == 0 ? new ArrayList<>() : partsDetailService.getDetails(partsIds);
+            List<Long> partsDetailSkuId = new ArrayList<>();
+            for (ErpPartsDetailResult detail : details) {
+                partsDetailSkuId.add(detail.getSkuId());
+            }
+            /**
+             * 查询过滤掉有子bom的物料
+             */
+            List<Long> childrenPartsSkuId = new ArrayList<>();
+            List<Parts> childrenParts = partsDetailSkuId.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", partsDetailSkuId).eq("display", 1).eq("status", 99).list();
+            for (Parts childrenPart : childrenParts) {
+                childrenPartsSkuId.add(childrenPart.getSkuId());
+            }
+            partsDetailSkuId.removeAll(childrenPartsSkuId);
+
+            for (PartsResult partsResult : partsResults) {
+                List<ErpPartsDetailResult> partsDetailResults = new ArrayList<>();
+                for (ErpPartsDetailResult detail : details) {
+                    if (partsResult.getPartsId().equals(detail.getPartsId())) {
+                        partsDetailResults.add(detail);
+                    }
+                }
+                partsResult.setParts(partsDetailResults);
+            }
+            details.clear();
+            for (ActivitiSetpSetDetailResult setpSetDetail : setpSetDetails) {
+                for (PartsResult partsResult : partsResults) {
+                    if (setpSetDetail.getSkuId().equals(partsResult.getSkuId())) {
+                        for (ErpPartsDetailResult part : partsResult.getParts()) {
+                            part.setNumber(part.getNumber() * setpSetDetail.getNum());
+                            details.add(part);
+                        }
+                    }
+                }
+            }
+
+            details = details.stream().collect(Collectors.toMap(ErpPartsDetailResult::getSkuId, a -> a, (o1, o2) -> {
+                o1.setNumber(o1.getNumber() + o2.getNumber());
+                return o1;
+            })).values().stream().collect(Collectors.toList());
+
+            List<StockDetails> stockDetails = partsDetailSkuId.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", partsDetailSkuId).list();
+            stockDetails = stockDetails.stream().collect(Collectors.toMap(StockDetails::getSkuId, a -> a, (o1, o2) -> {
+                o1.setNumber(o1.getNumber() + o2.getNumber());
+                return o1;
+            })).values().stream().collect(Collectors.toList());
+            if (stockDetails.size() == 0 && partsDetailSkuId.size() != 0) {
+                throw new ServiceException(500, "库存数量不足 不可以直接投入生产");
+            }
+            for (ErpPartsDetailResult detail : details) {
+                for (StockDetails stockDetail : stockDetails) {
+                    if (detail.getSkuId().equals(stockDetail.getSkuId()) && detail.getNumber() > stockDetail.getNumber()) {
+                        throw new ServiceException(500, "库存数量不足 不可以直接投入生产");
+                    }
+                }
+            }
+        }
+
+    }
+
     @Override
     public ProductionTask update(ProductionTaskParam param) {
         ProductionTask oldEntity = getOldEntity(param);
@@ -242,6 +368,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     @Override
     public ProductionTask Receive(ProductionTaskParam param) {
         ProductionTask entity = this.getById(param.getProductionTaskId());
+        ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
+        checkStockDetail(param, productionWorkOrder);
         entity.setProductionTaskId(param.getProductionTaskId());
         entity.setUserId(param.getUserId());
         entity.setStatus(98);
@@ -249,7 +377,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         /**
          * 创建任务单详情
          */
-        ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
         List<ProductionTaskDetail> detailEntitys = new ArrayList<>();
         /**
          * 保存子表信息
@@ -277,7 +404,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         productionTaskDetailService.saveBatch(detailEntitys);
 
 
-
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
         wxCpTemplate.setTitle("新的生产任务");
@@ -294,7 +420,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         MicroServiceEntity serviceEntity = new MicroServiceEntity();
         serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
         serviceEntity.setOperationType(OperationType.ADD);
-        String jsonString = JSON.toJSONString(new SavePickListsObject(){{
+        String jsonString = JSON.toJSONString(new SavePickListsObject() {{
             setDetails(detailEntitys);
             setProductionTask(entity);
         }});
@@ -359,6 +485,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 查询子表以及报工表
          */
         List<ProductionTaskDetailResult> productionTaskDetailResults = productionTaskDetailService.resultsByTaskIds(taskIds);
+
+
         List<JobBookingDetailCount> counts = jobBookingDetailService.resultsByProductionTaskIds(taskIds);
 
         for (ProductionTaskResult productionTaskResult : param) {
@@ -444,16 +572,17 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         }
         return results;
     }
+
     @Override
-    public List<ProductionTaskResult> resultsByIds(List<Long> taskIds){
+    public List<ProductionTaskResult> resultsByIds(List<Long> taskIds) {
         if (ToolUtil.isEmpty(taskIds) || taskIds.size() == 0) {
             return new ArrayList<>();
         }
         List<ProductionTask> productionTasks = this.listByIds(taskIds);
         List<ProductionTaskResult> results = new ArrayList<>();
         for (ProductionTask productionTask : productionTasks) {
-            ProductionTaskResult result =  new ProductionTaskResult();
-            ToolUtil.copyProperties(productionTask,result);
+            ProductionTaskResult result = new ProductionTaskResult();
+            ToolUtil.copyProperties(productionTask, result);
             results.add(result);
         }
         return results;

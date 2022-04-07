@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.production.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
@@ -34,6 +36,9 @@ import java.util.List;
 public class ProductionTaskDetailServiceImpl extends ServiceImpl<ProductionTaskDetailMapper, ProductionTaskDetail> implements ProductionTaskDetailService {
     @Autowired
     private ProductionTaskService productionTaskService;
+
+    @Autowired
+    private SkuService skuService;
     @Override
     public void add(ProductionTaskDetailParam param){
         List<ProductionTaskDetail> productionTaskDetails = this.query().eq("production_task_id", param.getProductionTaskId()).eq("display", 1).list();
@@ -120,6 +125,23 @@ public class ProductionTaskDetailServiceImpl extends ServiceImpl<ProductionTaskD
             ToolUtil.copyProperties(productionTaskDetail,result);
             results.add(result);
         }
+        this.format(results);
         return results;
+    }
+    private void format(List<ProductionTaskDetailResult> param){
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionTaskDetailResult productionTaskDetailResult : param) {
+            skuIds.add(productionTaskDetailResult.getOutSkuId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        for (ProductionTaskDetailResult result : param) {
+            for (SkuResult skuResult : skuResults) {
+                if (result.getOutSkuId().equals(skuResult.getSkuId())){
+                    result.setOutSkuResult(skuResult);
+                    break;
+                }
+            }
+
+        }
     }
 }

@@ -8,22 +8,23 @@ import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.model.params.SelfQualityParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
 import cn.atsoft.dasheng.erp.pojo.FormDataRequest;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.pojo.TaskComplete;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
-import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.BindParam;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -35,6 +36,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,8 @@ public class QualityTaskController extends BaseController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private SkuService skuService;
 
 
     /**
@@ -79,6 +83,17 @@ public class QualityTaskController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody QualityTaskParam qualityTaskParam) {
+        if (ToolUtil.isEmpty(qualityTaskParam.getDetails())) {
+            throw  new ServiceException(500,"请填写完整信息");
+        }
+        List<Long> judge = new ArrayList<>();
+        for (QualityTaskDetailParam detail : qualityTaskParam.getDetails()) {
+            judge.add(detail.getSkuId()+detail.getBrandId());
+        }
+        long count = judge.stream().distinct().count();
+        if (qualityTaskParam.getDetails().size()!=count) {
+            throw  new ServiceException(500,"请勿填写重复");
+        }
         this.qualityTaskService.add(qualityTaskParam);
         return ResponseData.success();
     }
@@ -203,7 +218,7 @@ public class QualityTaskController extends BaseController {
 
     @RequestMapping(value = "/taskComplete", method = RequestMethod.POST)
     @ApiOperation("质检完成接口")
-    public ResponseData taskComplete(@RequestBody TaskComplete taskComplete) {
+    public ResponseData taskComplete(@RequestBody @Valid TaskComplete taskComplete) {
         List<Long> longs = this.qualityTaskService.taskComplete(taskComplete);
         return ResponseData.success(longs);
     }
@@ -392,6 +407,17 @@ public class QualityTaskController extends BaseController {
 
         return ResponseData.success();
     }
+    @RequestMapping(value = "/selfQuality", method = RequestMethod.POST)
+    public ResponseData selfQuality(@RequestBody SelfQualityParam selfQualityParam) {
+
+        return ResponseData.success(this.qualityTaskService.selfQuality(selfQualityParam));
+    }
+ @RequestMapping(value = "/saveSelfQuality", method = RequestMethod.POST)
+    public ResponseData saveSelfQuality(@RequestBody FormDataPojo formDataPojo) {
+     this.qualityTaskService.saveMyQuality(formDataPojo);
+        return ResponseData.success();
+    }
+
 
 }
 

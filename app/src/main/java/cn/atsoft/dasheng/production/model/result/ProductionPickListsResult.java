@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.model.result;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -29,6 +30,7 @@ public class ProductionPickListsResult implements Serializable {
     private UserResult createUserResult;
     private UserResult userResult;
     private List<ProductionPickListsDetailResult> detailResults;
+    private List<ProductionPickListsCartResult> cartResults;
     private List<StorehouseResult> storehouseResults;
     private List<StorehousePositionsResult> storehousePositionsResults;
 
@@ -50,48 +52,56 @@ public class ProductionPickListsResult implements Serializable {
     /**
      * 来源
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("来源")
     private String source;
 
     /**
      * 来源id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("来源id")
     private Long sourceId;
 
     /**
      * 创建者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 创建时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 状态
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("状态")
     private Integer display;
 
     /**
      * 部门id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("部门id")
     private Long deptId;
 

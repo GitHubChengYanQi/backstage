@@ -21,7 +21,6 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -105,8 +104,8 @@ public class QualityCheckController extends BaseController {
         QualityCheck detail = this.qualityCheckService.getById(qualityCheckParam.getQualityCheckId());
 
         if (ToolUtil.isNotEmpty(detail)){
-            List<Long> longs = JSON.parseArray(detail.getTool(), Long.class);
-
+            JSONArray jsonArray =detail.getTool().equals("null") ? new JSONArray() : JSONUtil.parseArray(detail.getTool());
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
             List<Tool> tools = longs.size() > 0 ? toolService.query().in("tool_id", longs).list() : new ArrayList<>();
 
             QualityCheckClassification qualityCheckClassification = qualityCheckClassificationService.query()

@@ -8,7 +8,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
@@ -39,6 +41,7 @@ import sun.rmi.log.LogInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -53,6 +56,9 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 
     @Autowired
     private ProductionPlanDetailService productionPlanDetailService;
+
+    @Autowired
+    private PartsService partsService;
 
     @Autowired
     private MessageProducer messageProducer;
@@ -75,30 +81,31 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     @Autowired
     private ProductionCardService productionCardService;
 
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+
     @Override
     public void add(ProductionPlanParam param) {
         ProductionPlan entity = getEntity(param);
         this.save(entity);
-//        List<Long> skuIds = new ArrayList<>();
-
+        List<Long> skuIds = new ArrayList<>();
         List<ProductionPlanDetail> details = new ArrayList<>();
-//        for (ProductionPlanDetailParam productionPlanDetailParam : param.getProductionPlanDetailParams()) {
-//            ProductionPlanDetail detail = new ProductionPlanDetail();
-//            ToolUtil.copyProperties(productionPlanDetailParam,detail);
-//            detail.setProductionPlanId(entity.getProductionPlanId());
-//            skuIds.add(detail.getSkuId());
-//            details.add(detail);
-//        }
-//        Integer designParts = partsService.query().in("sku_id", skuIds).eq("type", 1).eq("display", 1).eq("status", 99).count();
-//        if (designParts<skuIds.size()) {
-//            int i = skuIds.size() - designParts;
-//            throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
-//        }
-//        Integer productionParts = partsService.query().in("sku_id", skuIds).eq("type", 2).eq("display", 1).eq("status", 99).count();
-//        if (productionParts<skuIds.size()) {
-//            int i = skuIds.size() - productionParts;
-//            throw new ServiceException(500, "有"+i+"个物品你没有生产bom,请先创建生产bom");
-//        }
+        for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
+
+            skuIds.add(orderDetailParam.getSkuId());
+
+        }
+        skuIds=skuIds.stream().distinct().collect(Collectors.toList());
+        Integer designParts = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status",99).count();
+        if (designParts<skuIds.size()) {
+            int i = skuIds.size() - designParts;
+            throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
+        }
+        List<ActivitiProcess> prosess = activitiProcessService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
+
+        if (skuIds.size()!=prosess.size()){
+            throw new ServiceException(500,"有产品没有工艺路线,请先创建工艺路线");
+        }
         for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
             ProductionPlanDetail detail = new ProductionPlanDetail();
             detail.setProductionPlanId(entity.getProductionPlanId());

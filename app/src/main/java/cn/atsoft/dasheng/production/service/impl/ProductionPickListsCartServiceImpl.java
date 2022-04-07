@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
@@ -92,15 +93,16 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         IPage<ProductionPickListsCartResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
-
-    private void format(List<ProductionPickListsCartResult> param) {
+    @Override
+    public void format(List<ProductionPickListsCartResult> param) {
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsCartResult productionPickListsCartResult : param) {
             skuIds.add(productionPickListsCartResult.getSkuId());
         }
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+//        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
         for (ProductionPickListsCartResult productionPickListsCartResult : param) {
-            for (SkuResult skuResult : skuResults) {
+            for (SkuSimpleResult skuResult : skuSimpleResults) {
                 if (productionPickListsCartResult.getSkuId().equals(skuResult.getSkuId())) {
                     productionPickListsCartResult.setSkuResult(skuResult);
                     break;

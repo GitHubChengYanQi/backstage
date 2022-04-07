@@ -14,10 +14,7 @@ import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsBindMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsDeptBindResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -131,7 +128,8 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
     @Override
     public List<StorehousePositionsResult> treeView(List<Long> skuIds) {
         List<StorehousePositionsResult> topResults = new ArrayList<>();
-        List<SkuResult> skuResultList = skuService.formatSkuResult(skuIds);
+//        List<SkuResult> skuResultList = skuService.formatSkuResult(skuIds);
+        List<SkuSimpleResult> skuResultList = skuService.simpleFormatSkuResult(skuIds);
 
         List<Long> positionIds = new ArrayList<>();
         List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).list();
@@ -151,11 +149,11 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                 }
         );
 
-        Map<Long, List<SkuResult>> skuMap = new HashMap<>();
+        Map<Long, List<SkuSimpleResult>> skuMap = new HashMap<>();
         for (StockDetails details : totalList) {
-            for (SkuResult skuResult : skuResultList) {
+            for (SkuSimpleResult skuResult : skuResultList) {
                 if (details.getSkuId().equals(skuResult.getSkuId())) {
-                    List<SkuResult> results = skuMap.get(details.getStorehousePositionsId());
+                    List<SkuSimpleResult> results = skuMap.get(details.getStorehousePositionsId());
                     if (ToolUtil.isEmpty(results)) {
                         results = new ArrayList<>();
                         results.add(skuResult);
@@ -191,7 +189,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         for (StorehousePositionsResult positionsResult : positionsResults) {
             StorehousePositionsResult supper = allMap.get(positionsResult.getPid());
 
-            List<SkuResult> skuResults = skuMap.get(positionsResult.getStorehousePositionsId());
+            List<SkuSimpleResult> skuResults = skuMap.get(positionsResult.getStorehousePositionsId());
             positionsResult.setSkuResults(skuResults);
 
             if (ToolUtil.isNotEmpty(supper)) {
@@ -223,9 +221,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
      * @param results
      * @return
      */
-    private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results, StorehousePositionsResult result, List<SkuResult> skuResults) {
+    private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results, StorehousePositionsResult result, List<SkuSimpleResult> skuResults) {
 
-        List<SkuResult> skuResultList = now.getSkuResults();
+        List<SkuSimpleResult> skuResultList = now.getSkuResults();
         if (ToolUtil.isEmpty(skuResultList)) {
             skuResultList = new ArrayList<>();
         }

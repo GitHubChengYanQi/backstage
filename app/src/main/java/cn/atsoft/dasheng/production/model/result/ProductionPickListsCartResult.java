@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ProductionPickListsCartResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private SkuResult skuResult;
+    private SkuSimpleResult skuResult;
     private ProductionPickListsResult productionPickListsResult;
 
 

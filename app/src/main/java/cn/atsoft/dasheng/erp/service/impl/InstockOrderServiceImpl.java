@@ -109,9 +109,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         //防止添加重复数据
         List<Long> judge = new ArrayList<>();
         for (InstockRequest instockRequest : param.getInstockRequest()) {
-            Long brandId = instockRequest.getBrandId();
             Long skuId = instockRequest.getSkuId();
-            judge.add(brandId + skuId);
+            judge.add( skuId);
         }
         long count = judge.stream().distinct().count();
         if (param.getInstockRequest().size() > count) {

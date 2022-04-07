@@ -30,13 +30,13 @@ public class StorehousePositionsResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private StorehouseResult storehouseResult;
-
+    @JSONField(serialize = false)
     private StorehousePositionsResult storehousePositionsResult;
 
     private StorehousePositionsResult supper;
-
+    @JSONField(serialize = false)
     private SkuResult skuResult;
-
+    @JSONField(serialize = false)
     private Integer skuNumber;
 
 
@@ -44,7 +44,7 @@ public class StorehousePositionsResult implements Serializable {
 
     private List<StockDetailsResult> detailsResults;
 
-    private List<SkuResult> skuResults;
+    private List<SkuSimpleResult> skuResults;
 
     private List<StorehousePositionsResult> storehousePositionsResults;
 
@@ -64,6 +64,7 @@ public class StorehousePositionsResult implements Serializable {
     /**
      * skuId
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("skuId")
     private Long skuId;
 
@@ -78,6 +79,7 @@ public class StorehousePositionsResult implements Serializable {
     /**
      * 数量
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("数量")
     private Long number;
 
