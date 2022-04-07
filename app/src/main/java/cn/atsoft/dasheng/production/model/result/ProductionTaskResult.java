@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -37,6 +39,7 @@ public class ProductionTaskResult implements Serializable {
      * 生产任务id
      */
     @ApiModelProperty("生产任务id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long productionTaskId;
 
     /**
@@ -59,6 +62,7 @@ public class ProductionTaskResult implements Serializable {
     private String productionTaskName;
 
     @ApiModelProperty("")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long skuId;
 
     /**
@@ -77,18 +81,21 @@ public class ProductionTaskResult implements Serializable {
      * 负责人
      */
     @ApiModelProperty("负责人")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long userId;
 
     /**
      * 工单id
      */
     @ApiModelProperty("工单id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long workOrderId;
 
     /**
      * 工序id
      */
     @ApiModelProperty("工序id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long shipSetpId;
 
     /**
@@ -107,12 +114,14 @@ public class ProductionTaskResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long createUser;
 
     /**
      * 部门编号
      */
     @ApiModelProperty("部门编号")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long deptId;
 
     /**

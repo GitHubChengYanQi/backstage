@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.production.model.request.SkuInStockTree;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -46,6 +47,7 @@ public class StorehouseResult implements Serializable {
      */
 
     @ApiModelProperty("仓库id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehouseId;
 
     /**
@@ -67,12 +69,14 @@ public class StorehouseResult implements Serializable {
      * 面积
      */
     @ApiModelProperty("面积")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long measure;
 
     /**
      * 容量
      */
     @ApiModelProperty("容量")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long capacity;
 
     /**

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -250,6 +251,18 @@ public class SkuController extends BaseController {
         SkuSelectWrapper factory = new SkuSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
+    }
+    /**
+     * 选择列表
+     *
+     * @author jazz
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/resultSkuByIds", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData resultSkuByIds(@RequestBody(required = false) SkuParam skuParam) {
+        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuParam.getSkuIds());
+        return ResponseData.success(skuSimpleResults);
     }
 
 

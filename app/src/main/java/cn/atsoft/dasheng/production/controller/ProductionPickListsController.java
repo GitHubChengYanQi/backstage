@@ -23,13 +23,24 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.service.ProductionTaskService;
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.core.util.ZipUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +141,7 @@ public class ProductionPickListsController extends BaseController {
 
     @RequestMapping(value = "/mergeDetail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickListsResult> merge(@RequestBody ProductionPickListsParam productionPickListsParam) {
+    public ResponseData merge(@RequestBody ProductionPickListsParam productionPickListsParam) {
 
         List<ProductionPickLists> productionPickLists = productionPickListsService.listByIds(productionPickListsParam.getPickListsIds());
         List<Long> sourceIds = new ArrayList<>();
@@ -177,8 +188,8 @@ public class ProductionPickListsController extends BaseController {
 
         List<Long> skuIds = new ArrayList<>();
         QueryWrapper<ProductionPickListsDetail> detailQueryWrapper = new QueryWrapper<>();
-        detailQueryWrapper.in("pick_lists_id",productionPickListsParam.getPickListsIds());
-        detailQueryWrapper.eq("status",0);
+        detailQueryWrapper.in("pick_lists_id", productionPickListsParam.getPickListsIds());
+        detailQueryWrapper.eq("status", 0);
         List<ProductionPickListsDetail> detailList = pickListsDetailService.list(detailQueryWrapper);
         for (ProductionPickListsDetail productionPickListsDetail : detailList) {
             skuIds.add(productionPickListsDetail.getSkuId());
@@ -188,7 +199,17 @@ public class ProductionPickListsController extends BaseController {
         result.setStorehousePositionsResults(storehousePositionsResults);
         result.setProductionTaskResults(productionTaskResults);
         result.setCartResults(pickListsCartResults);
-        return ResponseData.success(result);
+//         JSON.toJSONString(result);
+        String toJSONString =JSON.toJSONString(result,JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.DisableCircularReferenceDetect.getMask());
+
+
+
+
+        byte[] gzip = ZipUtil.gzip(toJSONString, CharsetUtil.UTF_8);
+
+        String base64 = Base64.encode(gzip);
+
+        return ResponseData.success(base64);
 
 
     }

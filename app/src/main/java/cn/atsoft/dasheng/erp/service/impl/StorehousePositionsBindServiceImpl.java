@@ -191,9 +191,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
 
             List<SkuSimpleResult> skuResults = skuMap.get(positionsResult.getStorehousePositionsId());
             positionsResult.setSkuResults(skuResults);
-            List<Long> skuIdsResults = new ArrayList<>();
+            List<String> skuIdsResults = new ArrayList<>();
             for (SkuSimpleResult skuResult : skuResults) {
-                skuIdsResults.add(skuResult.getSkuId());
+                skuIdsResults.add(skuResult.getSkuId().toString());
             }
             positionsResult.setSkuIds(skuIdsResults);
             if (ToolUtil.isNotEmpty(supper)) {
@@ -232,9 +232,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             skuResultList = new ArrayList<>();
         }
         skuResultList.addAll(skuResults);
-        List<Long> skuIdsResults = new ArrayList<>();
+        List<String> skuIdsResults = new ArrayList<>();
         for (SkuSimpleResult skuResult : skuResultList) {
-            skuIdsResults.add(skuResult.getSkuId());
+            skuIdsResults.add(skuResult.getSkuId().toString());
         }
         now.setSkuIds(skuIdsResults);
         now.setSkuResults(skuResultList);
