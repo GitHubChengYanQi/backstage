@@ -30,6 +30,7 @@ public class PurchaseListingResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private SkuResult skuResult;
 
+    private List<PurchaseListingResult> children;
 
     private Long brandId;
 

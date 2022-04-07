@@ -40,6 +40,12 @@ public class   InkindParam extends AbstractDictMap implements Serializable, Base
     private List<Long> skuIds;
 
     private Long customerId;
+
+    private String batchNumber;
+
+    private Integer serialNumber;
+
+    private Date productionTime;
     /**
      * 品牌
      */
