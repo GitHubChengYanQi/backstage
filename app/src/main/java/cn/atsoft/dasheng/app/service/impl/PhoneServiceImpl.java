@@ -33,20 +33,22 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
 
     @Override
     public Phone add(PhoneParam param) {
+        Phone entity = getEntity(param);
+
         if (ToolUtil.isNotEmpty(param.getPhoneNumber()) || ToolUtil.isNotEmpty(param.getTelephone())) {
             //防止添加重复电话号
             Integer count = this.query().eq("phone_number", param.getPhoneNumber()).and(i -> i.eq("display", 1)).count();
             if (count > 0) {
                 throw new ServiceException(500, "不用重复添加手机号 或者  电话已经存在");
             }
-            Phone entity = getEntity(param);
+
             this.save(entity);
 
-        }else {
+        } else {
             throw new ServiceException(500, "手机号或者电话号 必须填写一个");
         }
 
-
+        return entity;
 
     }
 
