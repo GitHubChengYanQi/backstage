@@ -42,8 +42,10 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
             Phone entity = getEntity(param);
             this.save(entity);
 
+        }else {
+            throw new ServiceException(500, "手机号或者电话号 必须填写一个");
         }
-        throw new ServiceException(500, "手机号或者电话号 必须填写一个");
+
 
 
     }
