@@ -2,43 +2,33 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
-import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
-import cn.atsoft.dasheng.erp.model.result.BackSku;
-import cn.atsoft.dasheng.erp.model.result.InstockListResult;
-import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
-import cn.atsoft.dasheng.erp.model.result.InstockRequest;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
-import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
-import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
-import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -107,15 +97,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
         //防止添加重复数据
-        List<Long> judge = new ArrayList<>();
-        for (InstockRequest instockRequest : param.getInstockRequest()) {
-            Long skuId = instockRequest.getSkuId();
-            judge.add( skuId);
-        }
-        long count = judge.stream().distinct().count();
-        if (param.getInstockRequest().size() > count) {
-            throw new ServiceException(500, "请勿重复添加");
-        }
+//        List<Long> judge = new ArrayList<>();
+//        for (InstockRequest instockRequest : param.getInstockRequest()) {
+//            Long skuId = instockRequest.getSkuId();
+//            judge.add(skuId);
+//        }
+//        long count = judge.stream().distinct().count();
+//        if (param.getInstockRequest().size() > count) {
+//            throw new ServiceException(500, "请勿重复添加");
+//        }
         InstockOrder entity = getEntity(param);
         this.save(entity);
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
@@ -147,8 +137,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             backCodeRequest.setId(entity.getInstockOrderId());
             backCodeRequest.setSource("instock");
             Long aLong = orCodeService.backCode(backCodeRequest);
-
-            String url = param.getUrl().replace("codeId", aLong.toString());
+            //           String url = param.getUrl().replace("codeId", aLong.toString());
+            String prefix = MobileUrl.prefix;
+            String url = prefix + "#/OrCode?id=" + aLong.toString();
             User createUser = userService.getById(entity.getCreateUser());
             //新微信推送
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -274,6 +265,28 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         instock(inkinds, positionsMap, positionsBinds, houseMap);  //入库
     }
 
+    @Override
+    public void formatDetail(InstockOrderResult orderResult) {
+        if (ToolUtil.isNotEmpty(orderResult)) {
+
+            List<InstockList> instockLists = instockListService.query().eq("instock_order_id", orderResult.getInstockOrderId()).list();
+            List<InstockListResult> listResults = BeanUtil.copyToList(instockLists, InstockListResult.class, new CopyOptions());
+            instockListService.format(listResults);
+            orderResult.setInstockListResults(listResults);
+
+
+            List<Long> skuIds = new ArrayList<>();
+            for (InstockList instockList : instockLists) {
+                skuIds.add(instockList.getSkuId());
+            }
+            List<StorehousePositionsResult> results = positionsBindService.bindTreeView(skuIds);  //返回树形结构
+            orderResult.setBindTreeView(results);
+        }
+
+
+    }
+
+
     /**
      * 通过库位自由入库
      */
@@ -302,7 +315,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<Inkind> inkinds = inkindService.listByIds(inkindIds);
 
-        instock(inkinds,positionsMap, positionsBinds, houseMap);  //入库
+        instock(inkinds, positionsMap, positionsBinds, houseMap);  //入库
     }
 
     /**
@@ -412,8 +425,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         return true;
     }
-
-
 
 
     private Serializable getKey(InstockOrderParam param) {

@@ -6,10 +6,8 @@ import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
@@ -27,10 +25,6 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,7 +35,6 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -300,7 +293,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         return entity;
     }
 
-    private void format(List<InstockListResult> data) {
+    @Override
+    public void format(List<InstockListResult> data) {
 
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();

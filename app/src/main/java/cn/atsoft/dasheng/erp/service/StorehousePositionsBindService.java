@@ -50,6 +50,8 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
 
     List<StorehousePositionsResult> treeView(List<Long> skuIds);
 
+    List<StorehousePositionsResult> bindTreeView(List<Long> skuIds);
+
     /**
      * 查询单条数据，Specification模式
      *

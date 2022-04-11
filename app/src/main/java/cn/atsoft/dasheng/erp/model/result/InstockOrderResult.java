@@ -26,6 +26,10 @@ import java.util.List;
 public class InstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private List<StorehousePositionsResult> bindTreeView;
+
+
     /**
      * 来源
      */

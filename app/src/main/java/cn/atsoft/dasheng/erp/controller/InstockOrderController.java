@@ -101,6 +101,7 @@ public class InstockOrderController extends BaseController {
         InstockOrderResult result = new InstockOrderResult();
         ToolUtil.copyProperties(detail, result);
 
+        instockOrderService.formatDetail(result);
 
         return ResponseData.success(result);
     }
