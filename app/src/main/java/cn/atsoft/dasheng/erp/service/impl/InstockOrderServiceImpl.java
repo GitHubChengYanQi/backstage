@@ -16,10 +16,7 @@ import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
-import cn.atsoft.dasheng.erp.model.result.BackSku;
-import cn.atsoft.dasheng.erp.model.result.InstockListResult;
-import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
-import cn.atsoft.dasheng.erp.model.result.InstockRequest;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
 import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.service.*;
@@ -32,6 +29,7 @@ import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -84,9 +82,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
+    private GetOrigin getOrigin;
+    @Autowired
     private StorehousePositionsService positionsService;
     @Autowired
     private StorehousePositionsBindService positionsBindService;
+    @Autowired
+    private SkuService skuService;
 
     @Override
     @Transactional
@@ -117,11 +119,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             throw new ServiceException(500, "请勿重复添加");
         }
         InstockOrder entity = getEntity(param);
+
         this.save(entity);
+        List<Long> skuIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
             List<InstockList> instockLists = new ArrayList<>();
             for (InstockRequest instockRequest : param.getInstockRequest()) {
                 if (ToolUtil.isNotEmpty(instockRequest)) {
+                    skuIds.add(instockRequest.getSkuId());
                     InstockList instockList = new InstockList();
                     instockList.setSkuId(instockRequest.getSkuId());
                     instockList.setNumber(instockRequest.getNumber());
@@ -142,6 +147,30 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 instockListService.saveBatch(instockLists);
             }
 
+            //更新主题与来源
+            List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
+            StringBuffer stringBuffer = new StringBuffer();
+            if (ToolUtil.isEmpty(entity.getTheme())){
+
+                if (ToolUtil.isNotEmpty(param.getCustomerName())){
+                    stringBuffer.append(param.getCustomerName());
+                }
+                for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                    stringBuffer.append(skuSimpleResult.getSkuName());
+                    if (skuSimpleResults.size()>1){
+                        stringBuffer.append("等");
+                        break;
+                    }
+                }
+                stringBuffer.append("的入库单");
+                entity.setTheme(stringBuffer.toString());
+            }
+
+            entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder",entity.getInstockOrderId(),entity.getSource(),entity.getSourceId()));
+            this.updateById(entity);
+
+
+
 
             BackCodeRequest backCodeRequest = new BackCodeRequest();
             backCodeRequest.setId(entity.getInstockOrderId());
@@ -154,7 +183,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             wxCpTemplate.setUrl(url);
             wxCpTemplate.setTitle("新的入库提醒");
-            wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
+            wxCpTemplate.setDescription(stringBuffer.toString());
             wxCpTemplate.setUserIds(new ArrayList<Long>() {{
                 add(entity.getUserId());
             }});
