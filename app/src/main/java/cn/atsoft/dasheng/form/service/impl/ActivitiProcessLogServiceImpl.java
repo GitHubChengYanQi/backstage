@@ -707,6 +707,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return activitiStepsResult;
     }
 
+    @Override
+    public ActivitiStepsResult microAddLog(Long processId, Long taskId,Long userId) {
+        ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
+        loopAdd(activitiStepsResult, taskId);
+        viewService.microAddView(taskId,userId);
+        return activitiStepsResult;
+    }
+
+
     private void loopAdd(ActivitiStepsResult activitiStepsResult, Long taskId) {
 
         Long processId = activitiStepsResult.getProcessId();

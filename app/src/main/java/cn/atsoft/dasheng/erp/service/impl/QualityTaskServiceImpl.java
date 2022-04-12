@@ -34,9 +34,6 @@ import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
-import cn.atsoft.dasheng.message.enmu.MicroServiceType;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.BindParam;
@@ -46,7 +43,6 @@ import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.production.entity.ProductionJobBooking;
 import cn.atsoft.dasheng.production.entity.ProductionJobBookingDetail;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
-import cn.atsoft.dasheng.production.model.params.ProductionJobBookingDetailParam;
 import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskDetailResult;
 import cn.atsoft.dasheng.production.service.ProductionJobBookingDetailService;
@@ -315,6 +311,80 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     qualityMessageSend.dispatchSend(entity.getQualityTaskId(), param);
                 }
             }
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void microAdd(QualityTaskParam param) {
+
+
+        String encoding = codingRulesService.encoding(3);
+
+        QualityTask entity = getEntity(param);
+        entity.setCoding(encoding);
+        this.save(entity);
+
+        String type2Activiti = null;
+        if (param.getType().equals("出厂")) {
+            type2Activiti = "outQuality";
+        }
+        if (param.getType().equals("入厂")) {
+            type2Activiti = "inQuality";
+        }
+        if (param.getType().equals("采购")) {
+            type2Activiti = "purchaseQuality";
+        }
+
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "quality").eq("status", 99).eq("module", type2Activiti).one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName("新的质检任务 (" + entity.getCoding() + ")");
+            activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
+            activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
+            activitiProcessTaskParam.setType("quality_task");
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
+            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加铃铛
+            wxCpSendTemplate.setSource("Quality");
+            wxCpSendTemplate.setSourceId(taskId);
+            //添加log
+            activitiProcessLogService.microAddLog(activitiProcess.getProcessId(), taskId, param.getMicroUserId());
+            activitiProcessLogService.autoAudit(taskId, 1);
+
+
+        } else {
+            throw new ServiceException(500, "请创建质检流程！");
+        }
+
+
+        if (ToolUtil.isNotEmpty(param.getDetails())) {
+            List<Long> skuIds = new ArrayList<>();
+            Map<Long, QualityTaskDetailParam> maps = new HashMap<>();
+            List<QualityTaskDetail> details = new ArrayList<>();
+            for (QualityTaskDetailParam detailParam : param.getDetails()) {
+                skuIds.add(detailParam.getSkuId());
+                maps.put(detailParam.getSkuId(), detailParam);
+                QualityTaskDetail detail = new QualityTaskDetail();
+                detailParam.setQualityTaskId(entity.getQualityTaskId());
+                ToolUtil.copyProperties(detailParam, detail);
+                detail.setRemaining(detailParam.getNumber());
+                details.add(detail);
+            }
+            detailService.saveBatch(details);
+
+            //回填sku质检项
+            List<Sku> skus = skuService.query().in("sku_id", skuIds).list();
+            for (Sku sku : skus) {
+                QualityTaskDetailParam qualityTaskDetailParam = maps.get(sku.getSkuId());
+                sku.setQualityPlanId(qualityTaskDetailParam.getQualityPlanId());
+                sku.setBatch(qualityTaskDetailParam.getBatch());
+            }
+            skuService.updateBatchById(skus);
         }
 
     }
@@ -1352,8 +1422,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public FormDataRequest selfQuality(SelfQualityParam param){
+    public FormDataRequest selfQuality(SelfQualityParam param) {
         SkuResult sku = skuService.getSku(param.getSkuId());
         FormDataRequest request = new FormDataRequest();
         request.setSkuResult(sku);
@@ -1394,15 +1465,16 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         request.setDataValueResults(detailResult);
         return request;
     }
+
     @Override
-    public void saveMyQuality(FormDataPojo formDataPojo){
+    public void saveMyQuality(FormDataPojo formDataPojo) {
         /**
          * 查询出已经报工的数量
          */
 
         ProductionTask productionTask = productionTaskService.getById(formDataPojo.getProductionTaskId());
-        if (ToolUtil.isEmpty(productionTask)){
-            throw new ServiceException(500,"未查询到此任务");
+        if (ToolUtil.isEmpty(productionTask)) {
+            throw new ServiceException(500, "未查询到此任务");
         }
         List<ProductionTaskDetailResult> taskDetailResults = productionTaskDetailService.resultsByTaskId(productionTask.getProductionTaskId());
         List<ProductionJobBooking> jobBookings = jobBookingService.query().eq("production_task_id", productionTask.getProductionTaskId()).list();
@@ -1434,12 +1506,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
          */
 
         for (ProductionJobBookingDetailResult jobBookingDetailResult : jobBookingDetailResults) {
-            if (jobBookingDetailResult.getSkuId().equals(formDataPojo.getSkuId())){
-                jobBookingDetailResult.setNumber(jobBookingDetailResult.getNumber()+1);
+            if (jobBookingDetailResult.getSkuId().equals(formDataPojo.getSkuId())) {
+                jobBookingDetailResult.setNumber(jobBookingDetailResult.getNumber() + 1);
             }
         }
-        if (jobBookingDetailResults.size() == 0 ){
-            jobBookingDetailResults.add(new ProductionJobBookingDetailResult(){{
+        if (jobBookingDetailResults.size() == 0) {
+            jobBookingDetailResults.add(new ProductionJobBookingDetailResult() {{
                 setNumber(1);
                 setSkuId(formDataPojo.getSkuId());
             }});
@@ -1448,10 +1520,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<Boolean> booleans = new ArrayList<>();
         for (ProductionTaskDetailResult detailResult : taskDetailResults) {
             for (ProductionJobBookingDetailResult jobBookingDetailResult : jobBookingDetailResults) {
-                if (detailResult.getOutSkuId().equals(jobBookingDetailResult.getSkuId()) && detailResult.getNumber()<jobBookingDetailResult.getNumber()){
-                    throw new ServiceException(500,"报工物料的总数量不得超过任务中物料数量");
+                if (detailResult.getOutSkuId().equals(jobBookingDetailResult.getSkuId()) && detailResult.getNumber() < jobBookingDetailResult.getNumber()) {
+                    throw new ServiceException(500, "报工物料的总数量不得超过任务中物料数量");
                 }
-                if (detailResult.getOutSkuId().equals(jobBookingDetailResult.getSkuId()) && Objects.equals(detailResult.getNumber(), jobBookingDetailResult.getNumber())){
+                if (detailResult.getOutSkuId().equals(jobBookingDetailResult.getSkuId()) && Objects.equals(detailResult.getNumber(), jobBookingDetailResult.getNumber())) {
                     booleans.add(true);
                 }
             }
@@ -1496,7 +1568,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             List<FormDataValue> formDataValues = new ArrayList<>();
             for (DataValueRequestParam dataValueParam : formDataPojo.getDataValueParams()) {
                 FormDataValue formDataValue = new FormDataValue();
-                ToolUtil.copyProperties(dataValueParam,formDataValue);
+                ToolUtil.copyProperties(dataValueParam, formDataValue);
                 formDataValue.setValue(JSON.toJSONString(dataValueParam.getFormValues()));
                 formDataValues.add(formDataValue);
             }
@@ -1514,12 +1586,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         jobBookingdetail.setSource("productionTask");
         jobBookingdetail.setSourceId(productionTask.getProductionTaskId());
         jobBookingDetailService.save(jobBookingdetail);
-        if (booleans.size() == taskDetailResults.size()){
+        if (booleans.size() == taskDetailResults.size()) {
             //TODO 更新任务状态为完成
             productionTask.setStatus(99);
             productionTaskService.updateById(productionTask);
 
-            jobBookingService.createQualityTask(productionTask,productionJobBooking,new ArrayList<ProductionJobBookingDetail>(){{
+            jobBookingService.createQualityTask(productionTask, productionJobBooking, new ArrayList<ProductionJobBookingDetail>() {{
                 add(jobBookingdetail);
             }});
 

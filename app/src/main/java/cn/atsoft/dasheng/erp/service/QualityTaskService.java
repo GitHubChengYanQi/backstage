@@ -57,6 +57,9 @@ public interface QualityTaskService extends IService<QualityTask> {
      */
     void detailFormat(QualityTaskResult result);
 
+    @Transactional
+    void microAdd(QualityTaskParam param);
+
     void power(ActivitiProcess activitiProcess);
 
     /**
