@@ -15,11 +15,13 @@ import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.purchase.entity.InquiryTask;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
@@ -424,6 +426,22 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
         return true;
+    }
+
+    @Override
+    public void updateStatus(ActivitiProcessTask processTask) {
+        InstockOrder order = this.getById(processTask.getFormId());
+        if (order.getState()!=50) {
+            order.setState(98);
+            this.updateById(order);
+        }
+    }
+
+    @Override
+    public void updateRefuseStatus(ActivitiProcessTask processTask) {
+        InstockOrder order = this.getById(processTask.getFormId());
+        order.setState(50);
+        this.updateById(order);
     }
 
 
