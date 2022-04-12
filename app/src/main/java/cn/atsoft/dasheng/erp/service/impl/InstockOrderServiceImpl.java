@@ -431,7 +431,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Override
     public void updateStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
-        if (order.getState()!=50) {
+        if (order.getState() != 50) {
             order.setState(98);
             this.updateById(order);
         }

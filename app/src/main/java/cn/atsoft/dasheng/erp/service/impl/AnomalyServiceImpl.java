@@ -101,9 +101,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库异常 ");
-            activitiProcessTaskParam.setQTaskId(entity.getAnomalyId());
+            activitiProcessTaskParam.setQTaskId(entity.getFormId());
             activitiProcessTaskParam.setUserId(param.getCreateUser());
-            activitiProcessTaskParam.setFormId(entity.getAnomalyId());
+            activitiProcessTaskParam.setFormId(entity.getFormId());
             activitiProcessTaskParam.setType("instockError");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
@@ -173,5 +173,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }

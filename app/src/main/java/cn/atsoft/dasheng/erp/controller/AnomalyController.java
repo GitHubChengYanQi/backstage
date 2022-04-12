@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
+import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.service.AnomalyDetailService;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -34,6 +36,9 @@ public class AnomalyController extends BaseController {
 
     @Autowired
     private AnomalyService anomalyService;
+
+    @Autowired
+    private AnomalyDetailService detailService;
 
     /**
      * 新增接口
@@ -91,8 +96,8 @@ public class AnomalyController extends BaseController {
         Anomaly detail = this.anomalyService.getById(anomalyParam.getAnomalyId());
         AnomalyResult result = new AnomalyResult();
         ToolUtil.copyProperties(detail, result);
-
-
+        List<AnomalyDetailResult> results = detailService.getResultByAnomalyId(result.getAnomalyId());
+        result.setResults(results);
         return ResponseData.success(result);
     }
 
