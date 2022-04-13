@@ -51,6 +51,19 @@ public class InstockOrderController extends BaseController {
         this.instockOrderService.add(instockOrderParam);
         return ResponseData.success();
     }
+    /**
+     * 新增接口
+     *
+     * @author song
+     * @Date 2021-10-06
+     */
+    @RequestMapping(value = "/checkNumberTrue", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData checkNumberTrue(@RequestBody InstockOrderParam instockOrderParam) {
+        this.instockOrderService.checkNumberTrue(instockOrderParam.getInstockOrderId(), instockOrderParam.getState());
+        return ResponseData.success();
+    }
+
 
 
     /**
