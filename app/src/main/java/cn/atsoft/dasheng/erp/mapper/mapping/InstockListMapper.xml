@@ -9,6 +9,11 @@
         <result column="item_id" property="itemId"/>
         <result column="number" property="number"/>
         <result column="instock_order_id" property="instockOrderId"/>
+        <result column="received_date" property="receivedDate"/>
+        <result column="effective_date" property="effectiveDate"/>
+        <result column="manufacture_date" property="manufactureDate"/>
+        <result column="lot_number" property="lotNumber"/>
+        <result column="serial_number" property="serialNumber"/>
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
         <result column="update_time" property="updateTime"/>
@@ -25,7 +30,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">received_date AS "receivedDate",effective_date AS "effectiveDate",manufacture_date AS "manufactureDate",lot_number AS "lotNumber",serial_number AS "serialNumber",
         instock_number
         AS "instockNumber",
 storehouse_id

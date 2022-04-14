@@ -66,6 +66,26 @@ public class InstockOrder implements Serializable {
      */
     @TableField("storehouse_id")
     private Long storeHouseId;
+
+    /**
+     * 库管人员负责人
+     */
+    @TableField("stock_user_id")
+    private Long stockUserId;
+
+    /**
+     * 是否加急
+     */
+    @TableField("urgent")
+    private Integer urgent;
+
+
+    /**
+     * 附件（最多5个，逗号分隔）
+     */
+    @TableField("enclosure")
+    private String enclosure;
+
     /**
      * 负责人
      */
@@ -128,6 +148,29 @@ public class InstockOrder implements Serializable {
     }
 
 
+    public Long getStockUserId() {
+        return stockUserId;
+    }
+
+    public void setStockUserId(Long stockUserId) {
+        this.stockUserId = stockUserId;
+    }
+
+    public Integer getUrgent() {
+        return urgent;
+    }
+
+    public void setUrgent(Integer urgent) {
+        this.urgent = urgent;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
+    }
 
     public String getSource() {
         return source;

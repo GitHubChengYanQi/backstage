@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,6 +32,7 @@ public class InstockListResult implements Serializable {
     /**
      * 库位id
      */
+    private Map<String,Object> stockDetails;
     private Long storehousePositionsId;
     private Long instockNumber;
     private List<BackSku> backSkus;
@@ -76,6 +78,38 @@ public class InstockListResult implements Serializable {
      */
     @ApiModelProperty("数量")
     private Long number;
+
+    /**
+     * 到货时间
+     */
+    @ApiModelProperty("到货时间")
+    private Date receivedDate;
+
+    /**
+     * 有效日期
+     */
+    @ApiModelProperty("有效日期")
+    private Date effectiveDate;
+
+    /**
+     * 生产日期
+     */
+    @ApiModelProperty("生产日期")
+    private Date manufactureDate;
+
+    /**
+     * 批号
+     */
+    @ApiModelProperty("批号")
+    private String lotNumber;
+
+    /**
+     * 流水号
+     */
+    @ApiModelProperty("流水号")
+    private String serialNumber;
+
+
 
     /**
      * 入库单id
