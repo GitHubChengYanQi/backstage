@@ -14,7 +14,11 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.hutool.core.convert.Convert;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -38,7 +42,8 @@ import java.util.Map;
 public class InstockOrderController extends BaseController {
     @Autowired
     private InstockOrderService instockOrderService;
-
+    @Autowired
+    private GetOrigin getOrigin;
 
     /**
      * 新增接口
@@ -128,6 +133,10 @@ public class InstockOrderController extends BaseController {
         ToolUtil.copyProperties(detail, result);
 
         instockOrderService.formatDetail(result);
+        if (ToolUtil.isNotEmpty(result.getOrigin())) {
+            result.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(result.getOrigin(),ThemeAndOrigin.class)));
+        }
+
 
         return ResponseData.success(result);
     }

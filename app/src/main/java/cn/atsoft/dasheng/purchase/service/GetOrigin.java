@@ -49,6 +49,9 @@ public class GetOrigin {
     private ProductionPlanService productionPlanService;
 
     @Autowired
+    private ProcurementOrderService procurementOrderService;
+
+    @Autowired
     private ProductionWorkOrderService workOrderService;
 
 
@@ -191,6 +194,7 @@ public class GetOrigin {
                 coding = procurementOrder.getCoding();
                 createTime = procurementOrder.getCreateTime();
                 break;
+
             case "workOrder":
                 ProductionWorkOrder productionWorkOrder = JSONObject.parseObject(JSONObject.toJSONString(param), ProductionWorkOrder.class);
                 fromId = productionWorkOrder.getWorkOrderId();
@@ -236,6 +240,9 @@ public class GetOrigin {
         return JSON.toJSONString(themeAndOrigin);
     }
     public ThemeAndOrigin originFormat(String source, Long sourceId) {
+        if (ToolUtil.isEmpty(source) || ToolUtil.isEmpty(sourceId)){
+            return new ThemeAndOrigin();
+        }
         ThemeAndOrigin themeAndOrigin = new ThemeAndOrigin();
         ThemeAndOrigin parent = new ThemeAndOrigin();
         String json = null;
@@ -259,6 +266,10 @@ public class GetOrigin {
             case "procurementPlan":
                 ProcurementPlan procurementPlan = procurementPlanService.getById(sourceId);
                 json = procurementPlan.getOrigin();
+                break;
+            case "procurementOrder":
+                ProcurementOrder procurementOrder = procurementOrderService.getById(sourceId);
+                json = procurementOrder.getOrigin();
                 break;
             case "workOrder":
                 ProductionWorkOrder workOrder = workOrderService.getById(sourceId);

@@ -385,8 +385,38 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void formatDetail(InstockOrderResult orderResult) {
-        if (ToolUtil.isNotEmpty(orderResult)) {
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(orderResult.getUserId());
+        userIds.add(orderResult.getCreateUser());
+        userIds.add(orderResult.getUpdateUser());
+        userIds.add(orderResult.getStockUserId());
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
+        for (User user : users) {
+            if (ToolUtil.isNotEmpty(orderResult.getUserId())) {
+                if (orderResult.getUserId().equals(user.getUserId())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    orderResult.setUserResult(userResult);
+                }
+                if(ToolUtil.isNotEmpty(orderResult.getCreateUser()) && orderResult.getCreateUser().equals(user.getUserId())){
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    orderResult.setCreateUserResult(userResult);
+                }
+                if(ToolUtil.isNotEmpty(orderResult.getStockUserId()) && orderResult.getStockUserId().equals(user.getUserId())){
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    orderResult.setStockUserResult(userResult);
+                }
+                if(ToolUtil.isNotEmpty(orderResult.getUpdateUser()) && orderResult.getUpdateUser().equals(user.getUserId())){
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    orderResult.setUpdateUserResult(userResult);
+                }
+            }
 
+        }
+        if (ToolUtil.isNotEmpty(orderResult)) {
             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", orderResult.getInstockOrderId()).list();
             List<InstockListResult> listResults = BeanUtil.copyToList(instockLists, InstockListResult.class, new CopyOptions());
             instockListService.format(listResults);
