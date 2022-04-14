@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
+import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
@@ -92,6 +93,9 @@ public interface InstockOrderService extends IService<InstockOrder> {
     void freeInstock(FreeInStockParam freeInStockParam);
 
     void formatDetail(InstockOrderResult orderResult);
+
+
+    void inStockByOrder(InStockByOrderParam param);
 
     /**
      * 多个库位入库

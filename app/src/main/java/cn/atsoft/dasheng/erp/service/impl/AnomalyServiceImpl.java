@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyDetail;
+import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
@@ -15,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.service.AnomalyDetailService;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -63,6 +65,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InstockOrderService instockOrderService;
     @Autowired
     private AnomalyDetailService detailService;
+    @Autowired
+    private InstockListService instockListService;
 
     @Transactional
     @Override
@@ -90,6 +94,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             ToolUtil.copyProperties(detailParam, detail);
             detail.setAnomalyId(entity.getAnomalyId());
             details.add(detail);
+            switch (param.getAnomalyType()) {
+                case InstockError:
+                    InstockList instockList = instockListService.getById(detailParam.getInstockListId());
+                    instockList.setRealNumber(instockList.getRealNumber() - detailParam.getNumber());
+                    instockListService.updateById(instockList);
+                    break;
+            }
+
         }
         detailService.saveBatch(details);
 

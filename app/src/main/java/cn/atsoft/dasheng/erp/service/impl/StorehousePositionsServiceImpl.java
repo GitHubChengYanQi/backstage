@@ -720,6 +720,36 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return entity;
     }
 
+    /**
+     * 通过库位id查询仓库id
+     *
+     * @param postitionIds
+     * @return
+     */
+    @Override
+    public Map<Long, Long> getHouseByPositionId(List<Long> postitionIds) {
+        Map<Long, Long> map = new HashMap<>();
+        List<Long> houseIds = new ArrayList<>();
+
+        List<StorehousePositions> positions = postitionIds.size() == 0 ? new ArrayList<>() : this.listByIds(postitionIds);
+
+        for (StorehousePositions position : positions) {
+            houseIds.add(position.getStorehouseId());
+        }
+        List<Storehouse> storehouses = houseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(houseIds);
+
+        for (StorehousePositions position : positions) {
+            for (Storehouse storehouse : storehouses) {
+                if (position.getStorehouseId().equals(storehouse.getStorehouseId())) {
+                    map.put(position.getStorehousePositionsId(), storehouse.getStorehouseId());
+                    break;
+                }
+            }
+        }
+
+        return map;
+    }
+
     public void format(List<StorehousePositionsResult> data) {
         List<Long> storeIds = new ArrayList<>();
         List<Long> pids = new ArrayList<>();

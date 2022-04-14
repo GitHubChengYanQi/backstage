@@ -42,6 +42,12 @@ public class InstockListResult implements Serializable {
     private Sku sku;
 
     private Long inkindId;
+
+
+    /**
+     * 实际数量
+     */
+    private Long realNumber;
     /**
      * skuId
      */

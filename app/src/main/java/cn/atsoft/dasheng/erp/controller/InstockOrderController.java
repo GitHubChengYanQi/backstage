@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
+import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -87,6 +88,19 @@ public class InstockOrderController extends BaseController {
         return ResponseData.success();
     }
 
+    /**
+     * 通过入库单入库
+     *
+     * @author song
+     * @Date 2021-10-06
+     */
+    @RequestMapping(value = "/inStockByOrder", method = RequestMethod.POST)
+    @ApiOperation("自由入库")
+    @Permission
+    public ResponseData inStockByOrder(@Valid @RequestBody InStockByOrderParam param) {
+        this.instockOrderService.inStockByOrder(param);
+        return ResponseData.success();
+    }
 
     /**
      * 查看详情接口

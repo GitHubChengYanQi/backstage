@@ -22,12 +22,13 @@
         <result column="sku_id" property="skuId"/>
         <result column="storehouse_positions_id" property="storehousePositionsId"/>
         <result column="instock_number" property="instockNumber"/>
+        <result column="real_number" property="realNumber"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         instock_number
-        AS "instockNumber",
+        AS "instockNumber",real_number AS "realNumber",
 storehouse_id
     AS "storeHouseId", selling_price AS "sellingPrice",cost_price AS "costPrice",sku_id AS "skuId",storehouse_positions_id AS "storehousePositionsId",
         instock_list_id AS "instockListId", brand_id AS "brandId",inkind_id AS "inkindId", item_id AS "itemId", number AS "number", instock_order_id AS "instockOrderId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"

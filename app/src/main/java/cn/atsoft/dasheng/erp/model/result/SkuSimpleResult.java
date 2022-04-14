@@ -14,7 +14,7 @@ public class SkuSimpleResult {
      * sku名字
      */
     @ApiModelProperty("sku名字")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long skuId;
 
     private String skuName;
@@ -27,4 +27,6 @@ public class SkuSimpleResult {
 
     @ApiModelProperty("规格")
     public String specifications;
+
+    private Long stockNumber;
 }

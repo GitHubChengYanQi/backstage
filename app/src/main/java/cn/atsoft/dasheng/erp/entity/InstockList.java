@@ -29,6 +29,12 @@ public class InstockList implements Serializable {
     @TableField("sku_id")
     private Long skuId;
     /**
+     * 实际数量
+     */
+    @TableField("real_number")
+    private Long realNumber;
+
+    /**
      * 入库数量
      */
     @TableField("instock_number")
@@ -252,6 +258,14 @@ public class InstockList implements Serializable {
 
     public void setInstockNumber(Long instockNumber) {
         this.instockNumber = instockNumber;
+    }
+
+    public Long getRealNumber() {
+        return realNumber;
+    }
+
+    public void setRealNumber(Long realNumber) {
+        this.realNumber = realNumber;
     }
 
     @Override
