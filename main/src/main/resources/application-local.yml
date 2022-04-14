@@ -38,9 +38,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.26.187.117/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
-    username: daoxin
-    password: dZN5mJF8G7ErW4ah
+    url: jdbc:mysql://rm-2ze2a8h12t8w1pp9gqo.mysql.rds.aliyuncs.com/daoxinscrm?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: daoxinscrm
+    password: 123QWEasd
     filters: wall,mergeStat
 
     # 连接池大小根据实际情况调整
@@ -59,9 +59,9 @@ spring:
     password: xxxpassword
 
   rabbitmq:
-    addresses: 172.26.187.117
+    addresses: 127.0.0.1
     username: guest
-    password: guest
+    password: 123qweasd
     port: 5672
     listener:
       simple:
