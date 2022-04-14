@@ -52,6 +52,7 @@ public class InstockOrderController extends BaseController {
         this.instockOrderService.add(instockOrderParam);
         return ResponseData.success();
     }
+
     /**
      * 新增接口
      *
@@ -64,7 +65,6 @@ public class InstockOrderController extends BaseController {
         this.instockOrderService.checkNumberTrue(instockOrderParam.getInstockOrderId(), instockOrderParam.getState());
         return ResponseData.success();
     }
-
 
 
     /**
@@ -109,7 +109,6 @@ public class InstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/inStockByOrder", method = RequestMethod.POST)
     @ApiOperation("自由入库")
-    @Permission
     public ResponseData inStockByOrder(@Valid @RequestBody InStockByOrderParam param) {
         this.instockOrderService.inStockByOrder(param);
         return ResponseData.success();

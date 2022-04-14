@@ -99,6 +99,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private InstockLogService instockLogService;
+    @Autowired
+    private InstockLogDetailService instockLogDetailService;
 
     @Override
     @Transactional
@@ -128,11 +132,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             for (InstockRequest instockRequest : param.getInstockRequest()) {
                 if (ToolUtil.isNotEmpty(instockRequest)) {
                     for (Sku sku : skus) {
-                        if (ToolUtil.isEmpty(sku.getQualityPlanId()) && sku.getSkuId().equals(instockRequest.getSkuId())){
+                        if (ToolUtil.isEmpty(sku.getQualityPlanId()) && sku.getSkuId().equals(instockRequest.getSkuId())) {
                             InstockList instockList = new InstockList();
                             instockList.setSkuId(instockRequest.getSkuId());
                             instockList.setNumber(instockRequest.getNumber());
                             instockList.setInstockOrderId(entity.getInstockOrderId());
+                            instockList.setRealNumber(instockRequest.getNumber());
                             instockList.setInstockNumber(instockRequest.getNumber());
                             instockList.setBrandId(instockRequest.getBrandId());
                             if (ToolUtil.isNotEmpty(instockRequest.getCostprice())) {
@@ -155,40 +160,40 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 内部调用创建质检
              */
-            this.createQualityTask(param,skus);
+            this.createQualityTask(param, skus);
 
-            BackCodeRequest backCodeRequest = new BackCodeRequest();
-            backCodeRequest.setId(entity.getInstockOrderId());
-            backCodeRequest.setSource("instock");
-            Long aLong = orCodeService.backCode(backCodeRequest);
-            //           String url = param.getUrl().replace("codeId", aLong.toString());
-            String prefix = MobileUrl.prefix;
-            String url = prefix + "#/OrCode?id=" + aLong.toString();
-            User createUser = userService.getById(entity.getCreateUser());
-            //新微信推送
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setUrl(url);
-            wxCpTemplate.setTitle("新的入库提醒");
-            wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
-            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-                add(entity.getUserId());
-            }});
-            wxCpSendTemplate.setSource("instockOrder");
-            wxCpSendTemplate.setSourceId(aLong);
-            wxCpTemplate.setType(0);
-            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-            wxCpSendTemplate.sendTemplate();
+//            BackCodeRequest backCodeRequest = new BackCodeRequest();
+//            backCodeRequest.setId(entity.getInstockOrderId());
+//            backCodeRequest.setSource("instock");
+//            Long aLong = orCodeService.backCode(backCodeRequest);
+//            //           String url = param.getUrl().replace("codeId", aLong.toString());
+//            String prefix = MobileUrl.prefix;
+//            String url = prefix + "#/OrCode?id=" + aLong.toString();
+//            User createUser = userService.getById(entity.getCreateUser());
+//            //新微信推送
+//            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//            wxCpTemplate.setUrl(url);
+//            wxCpTemplate.setTitle("新的入库提醒");
+//            wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
+//            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+//                add(entity.getUserId());
+//            }});
+//            wxCpSendTemplate.setSource("instockOrder");
+//            wxCpSendTemplate.setSourceId(aLong);
+//            wxCpTemplate.setType(0);
+//            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+//            wxCpSendTemplate.sendTemplate();
         }
 
     }
 
-    public void createQualityTask(InstockOrderParam param,List<Sku> skus){
+    public void createQualityTask(InstockOrderParam param, List<Sku> skus) {
         QualityTaskParam qualityTaskParam = new QualityTaskParam();
         List<QualityTaskDetailParam> qualityTaskDetailParams = new ArrayList<>();
         for (InstockRequest instockRequest : param.getInstockRequest()) {
             if (ToolUtil.isNotEmpty(instockRequest)) {
                 for (Sku sku : skus) {
-                    if (ToolUtil.isNotEmpty(sku.getQualityPlanId()) || sku.getQualityPlanId().equals(instockRequest.getSkuId())){
+                    if (ToolUtil.isNotEmpty(sku.getQualityPlanId()) || sku.getSkuId().equals(instockRequest.getSkuId())) {
                         QualityTaskDetailParam qualityTaskDetailParam = new QualityTaskDetailParam();
                         qualityTaskDetailParam.setQualityPlanId(sku.getQualityPlanId());
                         qualityTaskDetailParam.setNumber(Math.toIntExact(instockRequest.getNumber()));
@@ -215,21 +220,22 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
-    public void checkNumberTrue(Long id, Integer status){
+    public void checkNumberTrue(Long id, Integer status) {
         InstockOrder instockOrder = this.getById(id);
-        if (status!=98){
-            throw new ServiceException(500,"您传入的状态不正确");
-        }else{
+        if (status != 98) {
+            throw new ServiceException(500, "您传入的状态不正确");
+        } else {
             instockOrder.setState(status);
             this.updateById(instockOrder);
         }
     }
+
     @Override
-    public void checkNumberFalse(Long id, Integer status){
+    public void checkNumberFalse(Long id, Integer status) {
         InstockOrder instockOrder = this.getById(id);
-        if (status!=49){
-            throw new ServiceException(500,"您传入的状态不正确");
-        }else{
+        if (status != 49) {
+            throw new ServiceException(500, "您传入的状态不正确");
+        } else {
             instockOrder.setState(status);
             this.updateById(instockOrder);
         }
@@ -365,6 +371,32 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     /**
+     * 入库单完成状态
+     *
+     * @param orderId
+     */
+    private void instockOrderComplete(Long orderId) {
+        if (ToolUtil.isEmpty(orderId)) {
+            return;
+        }
+
+        List<InstockList> instockLists = instockListService.query().eq("instock_order_id", orderId).list();
+        boolean t = true;
+
+        for (InstockList instockList : instockLists) {
+            if (instockList.getRealNumber() != 0) {
+                t = false;
+                break;
+            }
+        }
+        if (t) {
+            InstockOrder order = this.getById(orderId);
+            order.setState(99);
+            this.updateById(order);
+        }
+    }
+
+    /**
      * 通过入库单入库
      */
     @Override
@@ -386,6 +418,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         Map<Long, InstockList> instockListMap = new HashMap<>();
 
 
+        InstockOrder instockOrder = this.getById(instockLists.get(0).getInstockOrderId());
+        InstockLog instockLog = new InstockLog();
+        instockLog.setInstockOrderId(instockOrder.getInstockOrderId());
+        instockLogService.save(instockLog);
+
         for (InstockList instockList : instockLists) {
             instockListMap.put(instockList.getInstockListId(), instockList);
         }
@@ -396,10 +433,26 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          */
         List<StockDetails> stockDetailsList = new ArrayList<>();
 
+        List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         for (InStockByOrderParam.SkuParam skuParam : skuParams) {
             List<Inkind> inkinds = skuParam.getInkindIds().size() == 0 ? new ArrayList<>() : inkindService.listByIds(skuParam.getInkindIds());
-            for (Inkind inKind : inkinds) {
 
+            if (ToolUtil.isNotEmpty(skuParam.getStockNumber()) && skuParam.getStockNumber() > 0) {   //盘点
+                List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuParam.getSkuId()).eq("storehouse_positions_id", skuParam.getPositionId()).list();
+                for (int i = 0; i < stockDetails.size(); i++) {
+                    if (i == 0) {
+                        StockDetails details = stockDetails.get(0);
+                        details.setNumber(skuParam.getStockNumber());
+                    } else {
+                        StockDetails details = stockDetails.get(i);
+                        details.setNumber(0L);
+                    }
+                }
+                stockDetailsService.updateBatchById(stockDetails);
+            }
+
+            long number = 0L;
+            for (Inkind inKind : inkinds) {
                 //修改清单数量
                 InstockList instockList = instockListMap.get(skuParam.getInStockListId());
                 instockList.setRealNumber(instockList.getRealNumber() - inKind.getNumber());
@@ -415,12 +468,19 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 stockDetails.setSkuId(inKind.getSkuId());
                 stockDetailsList.add(stockDetails);
                 inKind.setType("1");
-                break;
 
+                number = number + inKind.getNumber();
             }
+            InstockLogDetail instockLogDetail = new InstockLogDetail();
+            instockLogDetail.setSkuId(skuParam.getSkuId());
+            instockLogDetail.setNumber(number);
+            instockLogDetail.setInstockOrderId(instockOrder.getInstockOrderId());
+            instockLogDetail.setInstockLogId(instockLog.getInstockLogId());
+            instockLogDetails.add(instockLogDetail);
+
             inkindService.updateBatchById(inkinds);
         }
-
+        instockLogDetailService.saveBatch(instockLogDetails);
 
         instockListService.updateBatchById(instockLists);
         stockDetailsService.saveBatch(stockDetailsList);

@@ -73,7 +73,7 @@ public class MessageProducer {
             String randomString = ToolUtil.getRandomString(5);
 //            String s = messageEntity.getCpData().getDescription() + randomString;
 //            logger.info("发送" + messageEntity.getCpData().getDescription());
-            rabbitTemplate.convertAndSend(DirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMicroServiceRealRoute(), JSON.toJSONString(microServiceEntity));
+//            rabbitTemplate.convertAndSend(DirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMicroServiceRealRoute(), JSON.toJSONString(microServiceEntity));
 
         }
     }

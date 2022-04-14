@@ -50,6 +50,8 @@ public class InstockOrderResult implements Serializable {
     private List<InstockListResult> instockListResults;
     private List<InstockResult> instockResults;
 
+    private Date registerTime;
+
     /**
      * 库位id
      */

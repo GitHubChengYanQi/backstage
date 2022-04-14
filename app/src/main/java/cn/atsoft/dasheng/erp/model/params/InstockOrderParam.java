@@ -66,6 +66,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     @ApiModelProperty("库管人员负责人")
     private Long stockUserId;
 
+    private Date registerTime;
     /**
      * 是否加急
      */

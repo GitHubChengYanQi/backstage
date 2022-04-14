@@ -44,7 +44,7 @@ public class InstockOrder implements Serializable {
     private Long storehousePositionsId;
 
     @TableField("register_time")
-    private Date time;
+    private Date registerTime;
 
     public String getCoding() {
         return coding;
@@ -188,12 +188,12 @@ public class InstockOrder implements Serializable {
         this.sourceId = sourceId;
     }
 
-    public Date getTime() {
-        return time;
+    public Date getRegisterTime() {
+        return registerTime;
     }
 
-    public void setTime(Date time) {
-        this.time = time;
+    public void setRegisterTime(Date registerTime) {
+        this.registerTime = registerTime;
     }
 
     public Long getStoreHouseId() {
