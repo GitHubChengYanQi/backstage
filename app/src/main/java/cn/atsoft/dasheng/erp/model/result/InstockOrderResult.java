@@ -30,7 +30,7 @@ public class InstockOrderResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<StorehousePositionsResult> bindTreeView;
-
+    private List<InstockLogResult> logResults;
     private UserResult stockUserResult;
     private UserResult createUserResult;
     private UserResult updateUserResult;

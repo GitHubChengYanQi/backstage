@@ -10,7 +10,7 @@ import cn.atsoft.dasheng.erp.model.params.InstockLogParam;
 import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
 import cn.atsoft.dasheng.erp.model.result.InstockLogResult;
 import cn.atsoft.dasheng.erp.service.InstockLogDetailService;
-import  cn.atsoft.dasheng.erp.service.InstockLogService;
+import cn.atsoft.dasheng.erp.service.InstockLogService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.rest.service.RestUserService;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -48,18 +48,18 @@ public class InstockLogServiceImpl extends ServiceImpl<InstockLogMapper, Instock
     private RestUserService restUserService;
 
     @Override
-    public void add(InstockLogParam param){
+    public void add(InstockLogParam param) {
         InstockLog entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(InstockLogParam param){
+    public void delete(InstockLogParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(InstockLogParam param){
+    public void update(InstockLogParam param) {
         InstockLog oldEntity = getOldEntity(param);
         InstockLog newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -67,23 +67,23 @@ public class InstockLogServiceImpl extends ServiceImpl<InstockLogMapper, Instock
     }
 
     @Override
-    public InstockLogResult findBySpec(InstockLogParam param){
+    public InstockLogResult findBySpec(InstockLogParam param) {
         return null;
     }
 
     @Override
-    public List<InstockLogResult> findListBySpec(InstockLogParam param){
+    public List<InstockLogResult> findListBySpec(InstockLogParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<InstockLogResult> findPageBySpec(InstockLogParam param){
+    public PageInfo<InstockLogResult> findPageBySpec(InstockLogParam param) {
         Page<InstockLogResult> pageContext = getPageContext();
         IPage<InstockLogResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(InstockLogParam param){
+    private Serializable getKey(InstockLogParam param) {
         return param.getInstockLogId();
     }
 
@@ -100,26 +100,28 @@ public class InstockLogServiceImpl extends ServiceImpl<InstockLogMapper, Instock
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public List<InstockLogResult> listByInstockOrderId(Long id){
-        List<InstockLog> instockLogList = this.query().eq("instock_order_id", id).list();
+    public List<InstockLogResult> listByInstockOrderId(Long id) {
+        List<InstockLog> instockLogList = ToolUtil.isEmpty(id) ? new ArrayList<>() : this.query().eq("instock_order_id", id).list();
         List<InstockLogResult> results = new ArrayList<>();
         for (InstockLog instockLog : instockLogList) {
             InstockLogResult result = new InstockLogResult();
-            ToolUtil.copyProperties(instockLog,result);
+            ToolUtil.copyProperties(instockLog, result);
             results.add(result);
         }
         this.format(results);
-        return  results;
+        return results;
     }
-    private void format(List<InstockLogResult> results){
+
+    private void format(List<InstockLogResult> results) {
         List<Long> logIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         for (InstockLogResult result : results) {
             logIds.add(result.getInstockLogId());
             userIds.add(result.getCreateUser());
         }
-        List<InstockLogDetailResult> instockLogDetailResults =logIds.size() == 0 ? new ArrayList<>() : instockLogDetailService.resultsByLogIds(logIds);
+        List<InstockLogDetailResult> instockLogDetailResults = logIds.size() == 0 ? new ArrayList<>() : instockLogDetailService.resultsByLogIds(logIds);
         userIds = userIds.stream().distinct().collect(Collectors.toList());
         List<Map<String, Object>> userResults = new ArrayList<>();
         for (Long userId : userIds) {
@@ -129,14 +131,14 @@ public class InstockLogServiceImpl extends ServiceImpl<InstockLogMapper, Instock
 
         for (InstockLogResult result : results) {
             for (Map<String, Object> userResult : userResults) {
-                if (result.getCreateUser().equals(userResult.get("userId"))){
+                if (result.getCreateUser().equals(userResult.get("userId"))) {
                     result.setCreateUserResult(userResult);
                     break;
                 }
             }
             List<InstockLogDetailResult> detailResults = new ArrayList<>();
             for (InstockLogDetailResult instockLogDetailResult : instockLogDetailResults) {
-                if (instockLogDetailResult.getInstockLogId().equals(result.getInstockLogId())){
+                if (instockLogDetailResult.getInstockLogId().equals(result.getInstockLogId())) {
                     detailResults.add(instockLogDetailResult);
                 }
             }
@@ -144,7 +146,6 @@ public class InstockLogServiceImpl extends ServiceImpl<InstockLogMapper, Instock
         }
 
     }
-
 
 
 }

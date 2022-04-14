@@ -196,27 +196,27 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              */
             this.createQualityTask(param, skus);
 
-//            BackCodeRequest backCodeRequest = new BackCodeRequest();
-//            backCodeRequest.setId(entity.getInstockOrderId());
-//            backCodeRequest.setSource("instock");
-//            Long aLong = orCodeService.backCode(backCodeRequest);
-//            //           String url = param.getUrl().replace("codeId", aLong.toString());
-//            String prefix = MobileUrl.prefix;
-//            String url = prefix + "#/OrCode?id=" + aLong.toString();
-//            User createUser = userService.getById(entity.getCreateUser());
-//            //新微信推送
-//            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//            wxCpTemplate.setUrl(url);
-//            wxCpTemplate.setTitle("新的入库提醒");
-//            wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
-//            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-//                add(entity.getUserId());
-//            }});
-//            wxCpSendTemplate.setSource("instockOrder");
-//            wxCpSendTemplate.setSourceId(aLong);
-//            wxCpTemplate.setType(0);
-//            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//            wxCpSendTemplate.sendTemplate();
+            BackCodeRequest backCodeRequest = new BackCodeRequest();
+            backCodeRequest.setId(entity.getInstockOrderId());
+            backCodeRequest.setSource("instock");
+            Long aLong = orCodeService.backCode(backCodeRequest);
+            //           String url = param.getUrl().replace("codeId", aLong.toString());
+            String prefix = MobileUrl.prefix;
+            String url = prefix + "#/OrCode?id=" + aLong.toString();
+            User createUser = userService.getById(entity.getCreateUser());
+            //新微信推送
+            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+            wxCpTemplate.setUrl(url);
+            wxCpTemplate.setTitle("新的入库提醒");
+            wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
+            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+                add(entity.getUserId());
+            }});
+            wxCpSendTemplate.setSource("instockOrder");
+            wxCpSendTemplate.setSourceId(aLong);
+            wxCpTemplate.setType(0);
+            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+            wxCpSendTemplate.sendTemplate();
         }
 
     }
@@ -385,6 +385,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void formatDetail(InstockOrderResult orderResult) {
+
+        List<InstockLogResult> logResults = instockLogService.listByInstockOrderId(orderResult.getInstockOrderId());
+        orderResult.setLogResults(logResults);
+
         List<Long> userIds = new ArrayList<>();
         userIds.add(orderResult.getUserId());
         userIds.add(orderResult.getCreateUser());
@@ -398,17 +402,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     ToolUtil.copyProperties(user, userResult);
                     orderResult.setUserResult(userResult);
                 }
-                if(ToolUtil.isNotEmpty(orderResult.getCreateUser()) && orderResult.getCreateUser().equals(user.getUserId())){
+                if (ToolUtil.isNotEmpty(orderResult.getCreateUser()) && orderResult.getCreateUser().equals(user.getUserId())) {
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     orderResult.setCreateUserResult(userResult);
                 }
-                if(ToolUtil.isNotEmpty(orderResult.getStockUserId()) && orderResult.getStockUserId().equals(user.getUserId())){
+                if (ToolUtil.isNotEmpty(orderResult.getStockUserId()) && orderResult.getStockUserId().equals(user.getUserId())) {
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     orderResult.setStockUserResult(userResult);
                 }
-                if(ToolUtil.isNotEmpty(orderResult.getUpdateUser()) && orderResult.getUpdateUser().equals(user.getUserId())){
+                if (ToolUtil.isNotEmpty(orderResult.getUpdateUser()) && orderResult.getUpdateUser().equals(user.getUserId())) {
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     orderResult.setUpdateUserResult(userResult);
@@ -419,7 +423,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (ToolUtil.isNotEmpty(orderResult)) {
             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", orderResult.getInstockOrderId()).list();
             List<InstockListResult> listResults = BeanUtil.copyToList(instockLists, InstockListResult.class, new CopyOptions());
-            listResults.removeIf(i -> i.getRealNumber() == 0);
 
             long enoughNumber = 0L;
             long realNumber = 0L;
@@ -431,6 +434,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             orderResult.setRealNumber(realNumber);
             orderResult.setNotNumber(enoughNumber - realNumber);
 
+
+            listResults.removeIf(i -> i.getRealNumber() == 0);
             instockListService.format(listResults);
 
             orderResult.setInstockListResults(listResults);
@@ -489,6 +494,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<StockDetails> stockDetailsList = new ArrayList<>();
 
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
+
         for (InStockByOrderParam.SkuParam skuParam : skuParams) {
             List<Inkind> inkinds = skuParam.getInkindIds().size() == 0 ? new ArrayList<>() : inkindService.listByIds(skuParam.getInkindIds());
 
@@ -506,7 +512,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 stockDetailsService.updateBatchById(stockDetails);
             }
 
-            instockLogDetails.clear();
+
             long number = 0L;
             for (Inkind inKind : inkinds) {
                 //修改清单数量
@@ -778,20 +784,34 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private void format(List<InstockOrderResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
 
         for (InstockOrderResult datum : data) {
             userIds.add(datum.getUserId());
-            if(ToolUtil.isNotEmpty(datum.getStockUserId())){
+            if (ToolUtil.isNotEmpty(datum.getStockUserId())) {
                 userIds.add(datum.getStockUserId());
             }
             storeIds.add(datum.getStoreHouseId());
-
+            orderIds.add(datum.getInstockOrderId());
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
-
+        List<InstockList> instockListList = orderIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", orderIds).list();
 
         for (InstockOrderResult datum : data) {
+
+            long enoughNumber = 0L;
+            long realNumber = 0L;
+            for (InstockList instockList : instockListList) {
+                if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
+                    enoughNumber = enoughNumber + instockList.getNumber();
+                    realNumber = realNumber + instockList.getRealNumber();
+                }
+            }
+            datum.setEnoughNumber(enoughNumber);
+            datum.setRealNumber(realNumber);
+            datum.setNotNumber(enoughNumber - realNumber);
+
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(datum.getUserId())) {
                     if (datum.getUserId().equals(user.getUserId())) {
@@ -799,7 +819,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         ToolUtil.copyProperties(user, userResult);
                         datum.setUserResult(userResult);
                     }
-                    if(ToolUtil.isNotEmpty(datum.getStockUserId()) && datum.getStockUserId().equals(user.getUserId())){
+                    if (ToolUtil.isNotEmpty(datum.getStockUserId()) && datum.getStockUserId().equals(user.getUserId())) {
                         UserResult userResult = new UserResult();
                         ToolUtil.copyProperties(user, userResult);
                         datum.setStockUserResult(userResult);
