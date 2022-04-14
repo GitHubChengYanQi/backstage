@@ -13,7 +13,6 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -27,6 +26,7 @@ import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
 import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
@@ -34,7 +34,6 @@ import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
-import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
@@ -112,6 +111,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     private MobileService mobileService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
     @Override
     public void add(ProductionTaskParam param) {
@@ -365,6 +366,11 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         return newEntity;
     }
 
+    /**
+     * 领取任务
+     * @param param
+     * @return
+     */
     @Override
     public ProductionTask Receive(ProductionTaskParam param) {
         ProductionTask entity = this.getById(param.getProductionTaskId());
@@ -428,6 +434,43 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         serviceEntity.setMaxTimes(2);
         serviceEntity.setTimes(0);
         messageProducer.microService(serviceEntity);
+
+        return entity;
+
+    }
+
+    /**
+     * 转派新的负责人
+     * @param param
+     * @return
+     */
+    @Override
+    public ProductionTask changeUser(ProductionTaskParam param) {
+        ProductionTask entity = this.getById(param.getProductionTaskId());
+        ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
+        checkStockDetail(param, productionWorkOrder);
+        entity.setProductionTaskId(param.getProductionTaskId());
+        entity.setUserId(param.getUserId());
+        entity.setStatus(98);
+        this.updateById(entity);
+
+        ProductionPickLists productionPickLists = this.pickListsService.query().eq("source", "productionTask").eq("source_id", entity.getProductionTaskId()).one();
+        productionPickLists.setUserId(param.getUserId());
+        pickListsService.updateById(productionPickLists);
+
+
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
+        wxCpTemplate.setTitle("新的生产任务");
+        wxCpTemplate.setDescription("您被转派了新的生产任务" + entity.getCoding());
+        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+            add(entity.getUserId());
+        }});
+        wxCpSendTemplate.setSource("productionTask");
+        wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
+        wxCpTemplate.setType(0);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
 
         return entity;
 

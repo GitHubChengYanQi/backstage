@@ -37,6 +37,10 @@ public interface InstockOrderService extends IService<InstockOrder> {
      */
     void add(InstockOrderParam param);
 
+    void checkNumberTrue(Long id, Integer status);
+
+    void checkNumberFalse(Long id, Integer status);
+
     /**
      * 删除
      *

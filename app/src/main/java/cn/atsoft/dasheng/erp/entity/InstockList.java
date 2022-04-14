@@ -40,6 +40,38 @@ public class InstockList implements Serializable {
     @TableField("instock_number")
     private Long instockNumber;
 
+
+    /**
+     * 到货时间
+     */
+    @TableField("received_date")
+    private Date receivedDate;
+
+    /**
+     * 有效日期
+     */
+    @TableField("effective_date")
+    private Date effectiveDate;
+
+    /**
+     * 生产日期
+     */
+    @TableField("manufacture_date")
+    private Date manufactureDate;
+
+    /**
+     * 批号
+     */
+    @TableField("lot_number")
+    private String lotNumber;
+
+    /**
+     * 流水号
+     */
+    @TableField("serial_number")
+    private String serialNumber;
+
+
     /**
      * 库位id
      */
@@ -102,6 +134,7 @@ public class InstockList implements Serializable {
      */
     @TableField("instock_order_id")
     private Long instockOrderId;
+
 
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -251,6 +284,47 @@ public class InstockList implements Serializable {
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
     }
+
+    public Date getReceivedDate() {
+        return receivedDate;
+    }
+
+    public void setReceivedDate(Date receivedDate) {
+        this.receivedDate = receivedDate;
+    }
+
+    public Date getEffectiveDate() {
+        return effectiveDate;
+    }
+
+    public void setEffectiveDate(Date effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
+
+    public Date getManufactureDate() {
+        return manufactureDate;
+    }
+
+    public void setManufactureDate(Date manufactureDate) {
+        this.manufactureDate = manufactureDate;
+    }
+
+    public String getLotNumber() {
+        return lotNumber;
+    }
+
+    public void setLotNumber(String lotNumber) {
+        this.lotNumber = lotNumber;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
 
     public Long getInstockNumber() {
         return instockNumber;

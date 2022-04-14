@@ -60,6 +60,8 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
 
     ActivitiStepsResult addLog(Long processId, Long taskId);
 
+    ActivitiStepsResult microAddLog(Long processId, Long taskId, Long userId);
+
     /**
      * 查询单条数据，Specification模式
      *
