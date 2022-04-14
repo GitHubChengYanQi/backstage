@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.sys.modular.system.controller;
 
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.rest.wrapper.DictTypeWrapper;
 import cn.atsoft.dasheng.sys.modular.system.entity.DictType;
 import cn.atsoft.dasheng.sys.modular.system.model.params.DictTypeParam;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -131,6 +133,30 @@ public class DictTypeController extends BaseController {
     @RequestMapping("/list")
     public LayuiPageInfo list(DictTypeParam dictTypeParam) {
         return this.dictTypeService.findPageBySpec(dictTypeParam);
+    }
+    /**
+     *
+     *
+     * @author stylefeng
+     * @Date 2019-03-13
+     */
+    @ResponseBody
+    @RequestMapping("/queryBrandAndView")
+    public ResponseData queryBrandAndView(DictTypeParam dictTypeParam) {
+        DictType brand = this.dictTypeService.query().eq("code", "brand").one();
+        DictType view = this.dictTypeService.query().eq("code", "view").one();
+        Map<String,Boolean> map = new HashMap<>();
+        if (ToolUtil.isNotEmpty(brand)){
+            map.put("brand",true);
+        }else {
+            map.put("brand",false);
+        }
+        if (ToolUtil.isNotEmpty(view)) {
+            map.put("view",true);
+        }else {
+            map.put("view",false);
+        }
+        return ResponseData.success(map);
     }
 
     /**
