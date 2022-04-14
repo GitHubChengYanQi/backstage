@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
@@ -31,6 +32,9 @@ public class InstockOrderResult implements Serializable {
     private List<StorehousePositionsResult> bindTreeView;
 
     private UserResult stockUserResult;
+    private UserResult createUserResult;
+    private UserResult updateUserResult;
+    private ThemeAndOrigin themeAndOrigin;
 
     private String type;
 
