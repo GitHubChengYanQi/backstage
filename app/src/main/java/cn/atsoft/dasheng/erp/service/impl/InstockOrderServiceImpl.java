@@ -736,6 +736,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (InstockOrderResult datum : data) {
             userIds.add(datum.getUserId());
+            if(ToolUtil.isNotEmpty(datum.getStockUserId())){
+                userIds.add(datum.getStockUserId());
+            }
             storeIds.add(datum.getStoreHouseId());
 
         }
@@ -750,7 +753,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         UserResult userResult = new UserResult();
                         ToolUtil.copyProperties(user, userResult);
                         datum.setUserResult(userResult);
-                        break;
+                    }
+                    if(ToolUtil.isNotEmpty(datum.getStockUserId()) && datum.getStockUserId().equals(user.getUserId())){
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        datum.setStockUserResult(userResult);
                     }
                 }
 

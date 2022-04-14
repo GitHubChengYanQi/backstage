@@ -13,6 +13,9 @@
         <result column="stock_user_id" property="stockUserId"/>
         <result column="urgent" property="urgent"/>
         <result column="enclosure" property="enclosure"/>
+        <result column="instock_time" property="instockTime"/>
+        <result column="remark" property="remark"/>
+        <result column="enclosure" property="enclosure"/>
         <result column="display" property="display"/>
         <result column="coding" property="coding"/>
         <result column="deptId" property="deptId"/>
@@ -27,7 +30,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">stock_user_id AS "stockUserId",urgent AS "urgent",enclosure AS "enclosure",
+    <sql id="Base_Column_List">instock_time AS "instockTime",remark AS "remark",stock_user_id AS "stockUserId",urgent AS "urgent",enclosure AS "enclosure",
         storehouse_id AS "storeHouseId",register_time AS "registerTime", theme AS "theme" , origin AS "origin" ,storehouse_positions_id AS "storehousePositionsId",source AS "source",
           source_id AS "sourceId",
         instock_order_id AS "instockOrderId", user_id AS "userId", coding AS "coding", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", state AS "state"
