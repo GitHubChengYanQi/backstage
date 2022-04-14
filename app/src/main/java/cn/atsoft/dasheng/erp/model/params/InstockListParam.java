@@ -35,6 +35,11 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     private List<InstockListRequest> requests;
 
     /**
+     * 实际数量
+     */
+    private Long realNumber;
+
+    /**
      * 库位id
      */
     private Long storehousePositionsId;

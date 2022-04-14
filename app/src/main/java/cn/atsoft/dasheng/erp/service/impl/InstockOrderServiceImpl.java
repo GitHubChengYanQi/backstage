@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
+import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -360,6 +361,69 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             orderResult.setBindTreeView(results);
         }
 
+
+    }
+
+    /**
+     * 通过入库单入库
+     */
+    @Override
+    public void inStockByOrder(InStockByOrderParam param) {
+        List<InStockByOrderParam.SkuParam> skuParams = param.getSkuParams();
+
+
+        List<Long> positionIds = new ArrayList<>();
+        List<Long> instockListIds = new ArrayList<>();
+
+
+        for (InStockByOrderParam.SkuParam skuParam : skuParams) {
+            instockListIds.add(skuParam.getInStockListId());
+            positionIds.add(skuParam.getPositionId());
+        }
+
+        List<InstockList> instockLists = instockListIds.size() == 0 ? new ArrayList<>() : instockListService.listByIds(instockListIds);
+        Map<Long, Long> houseByPositionId = positionsService.getHouseByPositionId(positionIds);
+        Map<Long, InstockList> instockListMap = new HashMap<>();
+
+
+        for (InstockList instockList : instockLists) {
+            instockListMap.put(instockList.getInstockListId(), instockList);
+        }
+
+
+        /**
+         * 入库操作
+         */
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+
+        for (InStockByOrderParam.SkuParam skuParam : skuParams) {
+            List<Inkind> inkinds = skuParam.getInkindIds().size() == 0 ? new ArrayList<>() : inkindService.listByIds(skuParam.getInkindIds());
+            for (Inkind inKind : inkinds) {
+
+                //修改清单数量
+                InstockList instockList = instockListMap.get(skuParam.getInStockListId());
+                instockList.setRealNumber(instockList.getRealNumber() - inKind.getNumber());
+                instockLists.add(instockList);
+
+                StockDetails stockDetails = new StockDetails();
+                stockDetails.setNumber(inKind.getNumber());
+                stockDetails.setStorehousePositionsId(skuParam.getPositionId());
+                stockDetails.setInkindId(inKind.getInkindId());
+                stockDetails.setStorehouseId(houseByPositionId.get(skuParam.getPositionId()));
+                stockDetails.setCustomerId(inKind.getCustomerId() == null ? null : inKind.getCustomerId());
+                stockDetails.setBrandId(inKind.getBrandId() == null ? null : inKind.getBrandId());
+                stockDetails.setSkuId(inKind.getSkuId());
+                stockDetailsList.add(stockDetails);
+                inKind.setType("1");
+                break;
+
+            }
+            inkindService.updateBatchById(inkinds);
+        }
+
+
+        instockListService.updateBatchById(instockLists);
+        stockDetailsService.saveBatch(stockDetailsList);
 
     }
 

@@ -6,5 +6,6 @@ import lombok.Data;
 public class AutomaticBindResult {
     private Long codeId;
     private Long inkindId;
-
+    private Long skuId;
+    private Long number;
 }

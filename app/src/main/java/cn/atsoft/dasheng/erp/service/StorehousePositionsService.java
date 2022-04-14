@@ -98,4 +98,6 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      * @return
      */
     List<StorehousePositionsResult> getSupperBySkuId(Long skuId);
+
+    Map<Long, Long> getHouseByPositionId(List<Long> postitionIds);
 }

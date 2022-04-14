@@ -20,6 +20,7 @@ public class FreeInStockParam {
 
     @Data
     public static class PositionsInStock {
+        private Long inStockListId;
         private Long inkind;
         private Long positionsId;
         private Long storeHouseId;

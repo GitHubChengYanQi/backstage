@@ -243,6 +243,11 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             positionIds.add(bind.getPositionId());
         }
 
+
+        //查询库存数量
+        List<StockDetails> stockDetailsList = stockDetailsService.query().select("sku_id,sum(number) as num,storehouse_positions_id").groupBy("sku_id,storehouse_positions_id").list();
+
+
         Map<Long, List<SkuSimpleResult>> skuMap = new HashMap<>();
         for (StorehousePositionsBind details : binds) {
             for (SkuSimpleResult skuResult : skuResultList) {
@@ -262,11 +267,12 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             }
         }
 
-        return getTreeByPosition(positionIds, skuMap);
+
+        return getTreeByPosition(positionIds, skuMap, stockDetailsList);
 
     }
 
-    private List<StorehousePositionsResult> getTreeByPosition(List<Long> positionIds, Map<Long, List<SkuSimpleResult>> skuMap) {
+    private List<StorehousePositionsResult> getTreeByPosition(List<Long> positionIds, Map<Long, List<SkuSimpleResult>> skuMap, List<StockDetails> stockDetailsList) {
         List<StorehousePositionsResult> topResults = new ArrayList<>();
         /**
          *  查出所有库位放进map 里
@@ -290,6 +296,16 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             StorehousePositionsResult supper = allMap.get(positionsResult.getPid());
 
             List<SkuSimpleResult> skuResults = skuMap.get(positionsResult.getStorehousePositionsId());
+
+            //添加当前物料当前库位库存数量
+            for (SkuSimpleResult skuResult : skuResults) {
+                for (StockDetails stockDetails : stockDetailsList) {
+                    if (skuResult.getSkuId().equals(stockDetails.getSkuId()) && positionsResult.getStorehousePositionsId().equals(stockDetails.getStorehousePositionsId())) {
+                        skuResult.setStockNumber(stockDetails.getNum());
+                    }
+                }
+            }
+
             positionsResult.setSkuResults(skuResults);
             List<String> skuIdsResults = new ArrayList<>();
             for (SkuSimpleResult skuResult : skuResults) {
