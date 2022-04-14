@@ -68,4 +68,6 @@ public interface AuditViewService extends IService<AuditView> {
 
 
     void addView(Long taskId);
+
+    void microAddView(Long taskId, Long userId);
 }
