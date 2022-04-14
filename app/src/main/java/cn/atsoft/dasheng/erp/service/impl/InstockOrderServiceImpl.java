@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
+import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -34,7 +35,9 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
-import cn.atsoft.dasheng.purchase.entity.InquiryTask;
+import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
@@ -91,6 +94,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
+    private GetOrigin getOrigin;
+    @Autowired
     private StorehousePositionsService positionsService;
     @Autowired
     private StorehousePositionsBindService positionsBindService;
@@ -120,8 +125,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //            throw new ServiceException(500, "请勿重复添加");
 //        }
         InstockOrder entity = getEntity(param);
-        this.save(entity);
 
+        this.save(entity);
+        List<Long> skuIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
             List<Long> skuIds = new ArrayList<>();
             for (InstockRequest instockRequest : param.getInstockRequest()) {
@@ -157,6 +163,31 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             if (ToolUtil.isNotEmpty(instockLists)) {
                 instockListService.saveBatch(instockLists);
             }
+
+            //更新主题与来源
+            List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
+            StringBuffer stringBuffer = new StringBuffer();
+            if (ToolUtil.isEmpty(entity.getTheme())){
+
+                if (ToolUtil.isNotEmpty(param.getCustomerName())){
+                    stringBuffer.append(param.getCustomerName());
+                }
+                for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                    stringBuffer.append(skuSimpleResult.getSkuName());
+                    if (skuSimpleResults.size()>1){
+                        stringBuffer.append("等");
+                        break;
+                    }
+                }
+                stringBuffer.append("的入库单");
+                entity.setTheme(stringBuffer.toString());
+            }
+
+            entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder",entity.getInstockOrderId(),entity.getSource(),entity.getSourceId()));
+            this.updateById(entity);
+
+
+
             /**
              * 内部调用创建质检
              */
