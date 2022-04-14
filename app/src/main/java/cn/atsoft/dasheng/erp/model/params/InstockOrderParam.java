@@ -33,6 +33,8 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private String url;
 
     private String customerName;
+
+    private String type;
     /**
      * 库位id
      */

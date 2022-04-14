@@ -30,6 +30,12 @@ public class InstockOrderResult implements Serializable {
 
     private List<StorehousePositionsResult> bindTreeView;
 
+    private String type;
+
+
+    private Long enoughNumber;
+    private Long realNumber;
+    private Long notNumber;
 
     /**
      * 来源

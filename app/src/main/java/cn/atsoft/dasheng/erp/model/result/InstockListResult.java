@@ -32,7 +32,7 @@ public class InstockListResult implements Serializable {
     /**
      * 库位id
      */
-    private Map<String,Object> stockDetails;
+    private Map<String, Object> stockDetails;
     private Long storehousePositionsId;
     private Long instockNumber;
     private List<BackSku> backSkus;
@@ -45,7 +45,7 @@ public class InstockListResult implements Serializable {
 
     private Long inkindId;
 
-
+    private Long notNumber;
     /**
      * 实际数量
      */
@@ -114,7 +114,6 @@ public class InstockListResult implements Serializable {
      */
     @ApiModelProperty("流水号")
     private String serialNumber;
-
 
 
     /**

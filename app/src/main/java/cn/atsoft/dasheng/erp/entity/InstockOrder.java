@@ -32,6 +32,12 @@ public class InstockOrder implements Serializable {
     private String source;
 
     /**
+     * 类型
+     */
+    @TableField("type")
+    private String type;
+
+    /**
      * 来源id
      */
     @TableField("source_id")
@@ -130,6 +136,14 @@ public class InstockOrder implements Serializable {
      */
     @TableField("origin")
     private String origin;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getTheme() {
         return theme;

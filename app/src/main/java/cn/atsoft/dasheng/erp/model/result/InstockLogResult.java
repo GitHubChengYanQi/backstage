@@ -23,6 +23,10 @@ public class InstockLogResult implements Serializable {
     private Object createUserResult;
     private List<InstockLogDetailResult> detailResults;
 
+    private String remark;
+
+    private Date instockTime;
+
     @ApiModelProperty("")
     private Long instockLogId;
 

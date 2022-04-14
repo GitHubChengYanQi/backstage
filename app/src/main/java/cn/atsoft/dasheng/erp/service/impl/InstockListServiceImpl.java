@@ -328,6 +328,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 //        );
         for (InstockListResult datum : data) {
 
+            datum.setNotNumber(datum.getNumber()-datum.getRealNumber());
+
             List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
             datum.setBackSkus(backSkus);
             SpuResult backSpu = skuService.backSpu(datum.getSkuId());

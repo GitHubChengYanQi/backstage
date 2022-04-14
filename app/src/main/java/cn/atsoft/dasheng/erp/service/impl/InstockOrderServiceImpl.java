@@ -389,8 +389,20 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", orderResult.getInstockOrderId()).list();
             List<InstockListResult> listResults = BeanUtil.copyToList(instockLists, InstockListResult.class, new CopyOptions());
-            instockListService.format(listResults);
             listResults.removeIf(i -> i.getRealNumber() == 0);
+
+            long enoughNumber = 0L;
+            long realNumber = 0L;
+            for (InstockListResult listResult : listResults) {
+                enoughNumber = enoughNumber + listResult.getNumber();
+                realNumber = realNumber + listResult.getRealNumber();
+            }
+            orderResult.setEnoughNumber(enoughNumber);
+            orderResult.setRealNumber(realNumber);
+            orderResult.setNotNumber(enoughNumber - realNumber);
+
+            instockListService.format(listResults);
+
             orderResult.setInstockListResults(listResults);
 
 
@@ -431,6 +443,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         InstockOrder instockOrder = this.getById(instockLists.get(0).getInstockOrderId());
         InstockLog instockLog = new InstockLog();
         instockLog.setInstockOrderId(instockOrder.getInstockOrderId());
+        instockLog.setRemark(param.getRemark());
+        instockLog.setInstockTime(param.getInstockTime());
+
         instockLogService.save(instockLog);
 
         for (InstockList instockList : instockLists) {
