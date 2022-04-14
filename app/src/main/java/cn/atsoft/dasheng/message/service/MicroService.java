@@ -95,7 +95,7 @@ public class MicroService {
                 switch (microServiceEntity.getOperationType()) {
                     case ADD:
                         QualityTaskParam qualityTaskParam = JSON.parseObject(microServiceEntity.getObject().toString(), QualityTaskParam.class);
-                        qualityTaskService.add( qualityTaskParam);
+                        qualityTaskService.microAdd(qualityTaskParam);
                 }
                 break;
             default:

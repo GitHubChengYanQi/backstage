@@ -103,7 +103,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
      * 入库状态
      */
     @ApiModelProperty("入库状态")
-    private Boolean state;
+    private Integer state;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
