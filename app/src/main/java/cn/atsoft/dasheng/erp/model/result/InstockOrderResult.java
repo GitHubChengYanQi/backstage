@@ -30,6 +30,8 @@ public class InstockOrderResult implements Serializable {
 
     private List<StorehousePositionsResult> bindTreeView;
 
+    private UserResult stockUserResult;
+
     private String type;
 
 
@@ -125,6 +127,19 @@ public class InstockOrderResult implements Serializable {
      */
     @ApiModelProperty("主题")
     private String theme;
+
+
+    /**
+     * 入库时间
+     */
+    @ApiModelProperty("入库时间")
+    private Date instockTime;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String remark;
 
     /**
      * 来源

@@ -13,6 +13,9 @@
         <result column="stock_user_id" property="stockUserId"/>
         <result column="urgent" property="urgent"/>
         <result column="enclosure" property="enclosure"/>
+        <result column="instock_time" property="instockTime"/>
+        <result column="remark" property="remark"/>
+        <result column="enclosure" property="enclosure"/>
         <result column="display" property="display"/>
         <result column="coding" property="coding"/>
         <result column="deptId" property="deptId"/>

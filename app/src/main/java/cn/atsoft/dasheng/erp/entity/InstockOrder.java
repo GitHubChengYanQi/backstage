@@ -80,6 +80,18 @@ public class InstockOrder implements Serializable {
     private Long stockUserId;
 
     /**
+     * 入库时间
+     */
+    @TableField("instock_time")
+    private Date instockTime;
+
+    /**
+     * 备注
+     */
+    @TableField("remark")
+    private String remark;
+
+    /**
      * 是否加急
      */
     @TableField("urgent")
@@ -161,6 +173,21 @@ public class InstockOrder implements Serializable {
         this.origin = origin;
     }
 
+    public Date getInstockTime() {
+        return instockTime;
+    }
+
+    public void setInstockTime(Date instockTime) {
+        this.instockTime = instockTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public Long getStockUserId() {
         return stockUserId;
