@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -66,7 +67,8 @@ public class SkuResult implements Serializable {
     private List<Long> brandIds;
     private List<BrandResult> brandResults;
     private List<String> filedUrls;
-
+    private Long produceMix;   //生产数
+    private Long lackNumber;  //缺料数
 
     /**
      * 之间方案id
@@ -95,6 +97,7 @@ public class SkuResult implements Serializable {
     private String skuValue;
     @ApiModelProperty("备注")
     private String remarks;
+    @JSONField(serialize = false)
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
     @ApiModelProperty("执行标准")
@@ -123,18 +126,21 @@ public class SkuResult implements Serializable {
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 状态
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("状态")
     private Integer display;
 

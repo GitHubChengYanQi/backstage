@@ -31,6 +31,8 @@ public class PhoneResult implements Serializable {
     @ApiModelProperty("电话id")
     private Long phoneId;
 
+    private String telephone;
+
     /**
      * 联系人id
      */

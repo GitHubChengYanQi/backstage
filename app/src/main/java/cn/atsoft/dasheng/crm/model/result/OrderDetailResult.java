@@ -29,6 +29,7 @@ public class OrderDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private OrderResult orderResult;
     private SkuResult skuResult;
     private BrandResult brandResult;
     private CustomerResult customerResult;

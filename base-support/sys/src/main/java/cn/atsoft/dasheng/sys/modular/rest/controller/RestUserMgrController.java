@@ -302,6 +302,9 @@ public class RestUserMgrController extends BaseController {
             if (ToolUtil.isNotEmpty(user.getDeptId())){
                 userQueryWrapper.eq("dept_id",user.getDeptId());
             }
+            if (ToolUtil.isNotEmpty(user.getName())){
+                userQueryWrapper.like("name",user.getName());
+            }
         }
 
         List<Map<String, Object>> list = this.restUserService.listMaps(userQueryWrapper);

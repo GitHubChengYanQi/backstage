@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
 
 import java.util.Date;
@@ -30,38 +31,44 @@ public class StorehousePositionsResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private StorehouseResult storehouseResult;
-
+    @JSONField(serialize = false)
     private StorehousePositionsResult storehousePositionsResult;
 
     private StorehousePositionsResult supper;
-
+    @JSONField(serialize = false)
     private SkuResult skuResult;
-
+    @JSONField(serialize = false)
     private Integer skuNumber;
 
 
     private PrintTemplateResult printTemplateResult;
 
     private List<StockDetailsResult> detailsResults;
+    @JSONField(serialize = false)
+    private List<SkuSimpleResult> skuResults;
 
-    private List<SkuResult> skuResults;
-
+    private List<String> skuIds;
     private List<StorehousePositionsResult> storehousePositionsResults;
+
+
     /**
      * 仓库库位id
      */
     @ApiModelProperty("仓库库位id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehousePositionsId;
 
     /**
      * 仓库id
      */
     @ApiModelProperty("仓库id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehouseId;
 
     /**
      * skuId
      */
+    @JSONField(serialize = false,serializeUsing= ToStringSerializer.class)
     @ApiModelProperty("skuId")
     private Long skuId;
 
@@ -77,6 +84,7 @@ public class StorehousePositionsResult implements Serializable {
      * 数量
      */
     @ApiModelProperty("数量")
+    @JSONField(serialize = false,serializeUsing= ToStringSerializer.class)
     private Long number;
 
     /**

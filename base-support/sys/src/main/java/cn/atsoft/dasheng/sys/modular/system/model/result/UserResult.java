@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.sys.modular.system.model.result;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -32,7 +34,7 @@ public class UserResult implements Serializable {
      */
 
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long userId;
 
     /**

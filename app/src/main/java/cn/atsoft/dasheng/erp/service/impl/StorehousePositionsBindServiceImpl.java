@@ -1,10 +1,11 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
-import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -13,17 +14,16 @@ import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsBindMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsDeptBindResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsDeptBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -32,7 +32,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -56,11 +59,18 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
     @Autowired
     private StorehousePositionsDeptBindService storehousePositionsDeptBindService;
 
+    @Autowired
+    private StockDetailsService stockDetailsService;
+
     @Override
     public StorehousePositionsBind add(StorehousePositionsBindParam param) {
         List<StorehousePositions> positions = positionsService.query().eq("pid", param.getPositionId()).list();
         if (ToolUtil.isNotEmpty(positions)) {
             throw new ServiceException(500, "当前库位不是最下级");
+        }
+        StorehousePositionsBind positionsBind = this.query().eq("position_id", param.getPositionId()).eq("sku_id", param.getSkuId()).one();
+        if (ToolUtil.isNotEmpty(positionsBind)) {
+            throw new ServiceException(500, "以绑定");
         }
         StorehousePositionsBind entity = getEntity(param);
         this.save(entity);
@@ -113,6 +123,139 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         StorehousePositionsBind newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+    }
+
+    @Override
+    public List<StorehousePositionsResult> treeView(List<Long> skuIds) {
+        List<StorehousePositionsResult> topResults = new ArrayList<>();
+//        List<SkuResult> skuResultList = skuService.formatSkuResult(skuIds);
+        List<SkuSimpleResult> skuResultList = skuService.simpleFormatSkuResult(skuIds);
+
+        List<Long> positionIds = new ArrayList<>();
+        List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).list();
+        for (StockDetails stockDetail : stockDetails) {
+            positionIds.add(stockDetail.getStorehousePositionsId());
+        }
+
+        List<StockDetails> totalList = new ArrayList<>();
+
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+
+        Map<Long, List<SkuSimpleResult>> skuMap = new HashMap<>();
+        for (StockDetails details : totalList) {
+            for (SkuSimpleResult skuResult : skuResultList) {
+                if (details.getSkuId().equals(skuResult.getSkuId())) {
+                    List<SkuSimpleResult> results = skuMap.get(details.getStorehousePositionsId());
+                    if (ToolUtil.isEmpty(results)) {
+                        results = new ArrayList<>();
+                        results.add(skuResult);
+                        skuMap.put(details.getStorehousePositionsId(), results);
+                        break;
+                    } else {
+                        results.add(skuResult);
+                        skuMap.put(details.getStorehousePositionsId(), results);
+                        break;
+                    }
+                }
+            }
+        }
+
+        /**
+         *  查出所有库位放进map 里
+         */
+        List<StorehousePositions> positions = positionsService.list();
+        List<StorehousePositionsResult> allResult = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+
+        Map<Long, StorehousePositionsResult> allMap = new HashMap<>();
+        for (StorehousePositionsResult storehousePositionsResult : allResult) {
+            allMap.put(storehousePositionsResult.getStorehousePositionsId(), storehousePositionsResult);
+        }
+
+        /**
+         * 查出需要的库位 进行比对
+         */
+        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", positionIds).orderByAsc("sort").list();
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
+
+
+        for (StorehousePositionsResult positionsResult : positionsResults) {
+            StorehousePositionsResult supper = allMap.get(positionsResult.getPid());
+
+            List<SkuSimpleResult> skuResults = skuMap.get(positionsResult.getStorehousePositionsId());
+            positionsResult.setSkuResults(skuResults);
+            List<String> skuIdsResults = new ArrayList<>();
+            for (SkuSimpleResult skuResult : skuResults) {
+                skuIdsResults.add(skuResult.getSkuId().toString());
+            }
+            positionsResult.setSkuIds(skuIdsResults);
+            if (ToolUtil.isNotEmpty(supper)) {
+
+
+                //找到最下级的直属上级
+                List<StorehousePositionsResult> results = supper.getStorehousePositionsResults();
+                if (ToolUtil.isEmpty(results)) {
+                    results = new ArrayList<>();
+                }
+                results.add(positionsResult);
+                supper.setStorehousePositionsResults(results);
+                StorehousePositionsResult parent = new StorehousePositionsResult();//直属上级 找到所有上级
+                StorehousePositionsResult result = getSupper(supper, allResult, parent, skuResults);
+                if (topResults.stream().noneMatch(i -> i.getStorehousePositionsId().equals(result.getStorehousePositionsId()))) {
+                    topResults.add(result);
+                }
+            } else {
+                topResults.add(positionsResult);
+            }
+        }
+        return topResults;
+    }
+
+    /**
+     * 返回上级
+     *
+     * @param result
+     * @param results
+     * @return
+     */
+    private StorehousePositionsResult getSupper(StorehousePositionsResult now, List<StorehousePositionsResult> results, StorehousePositionsResult result, List<SkuSimpleResult> skuResults) {
+
+        List<SkuSimpleResult> skuResultList = now.getSkuResults();
+        if (ToolUtil.isEmpty(skuResultList)) {
+            skuResultList = new ArrayList<>();
+        }
+        skuResultList.addAll(skuResults);
+        List<String> skuIdsResults = new ArrayList<>();
+        for (SkuSimpleResult skuResult : skuResultList) {
+            skuIdsResults.add(skuResult.getSkuId().toString());
+        }
+        now.setSkuIds(skuIdsResults);
+        now.setSkuResults(skuResultList);
+
+        if (!now.getPid().equals(0L)) {
+            for (StorehousePositionsResult storehousePositionsResult : results) {
+
+                if (now.getPid().equals(storehousePositionsResult.getStorehousePositionsId())) {
+                    List<StorehousePositionsResult> positionsResults = storehousePositionsResult.getStorehousePositionsResults();
+                    if (ToolUtil.isEmpty(positionsResults)) {
+                        positionsResults = new ArrayList<>();
+                    }
+                    positionsResults.add(now);
+                    storehousePositionsResult.setStorehousePositionsResults(positionsResults);
+                    result = getSupper(storehousePositionsResult, results, result, skuResults);
+                }
+            }
+        } else {
+            result = now;
+        }
+        return result;
     }
 
     @Override
@@ -182,7 +325,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         positionIds.clear();
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
         for (StorehousePositionsDeptBindResult bindByPositionId : bindByPositionIds) {
-            if (bindByPositionId.getDeptIds().stream().anyMatch(i->i.equals(deptId))){
+            if (bindByPositionId.getDeptIds().stream().anyMatch(i -> i.equals(deptId))) {
                 positionIds.add(bindByPositionId.getStorehousePositionsId());
             }
         }

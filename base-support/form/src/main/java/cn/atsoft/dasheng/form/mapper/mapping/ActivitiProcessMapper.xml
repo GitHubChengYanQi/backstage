@@ -45,12 +45,42 @@
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessParam">
         select
         <include refid="Base_Column_List"/>
+        from activiti_process where display = 1 and type !='ship'
+        <if test="paramCondition.type!=null">
+            and type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and form_id in (
+            select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where standard like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
+            CONCAT('%',#{paramCondition.skuName},'%') )
+            )
+        </if>
+    </select>
+
+    <select id="shipPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessParam">
+        select
+        <include refid="Base_Column_List"/>
         from activiti_process where display = 1
         <if test="paramCondition.type!=null">
             and type = #{paramCondition.type}
         </if>
-
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and form_id in (
+            select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where standard like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
+            CONCAT('%',#{paramCondition.skuName},'%') )
+            )
+        </if>
     </select>
+
 
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessParam">

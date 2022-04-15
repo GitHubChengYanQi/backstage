@@ -87,7 +87,6 @@ public class OrderController extends BaseController {
         if (ToolUtil.isEmpty(orderParam)) {
             orderParam = new OrderParam();
         }
-
         return ResponseData.success(this.orderService.pendingProductionPlan(orderParam));
     }
     /**

@@ -73,7 +73,7 @@ public class ErpPartsDetailResult implements Serializable {
      * 零件数量
      */
     @ApiModelProperty("零件数量")
-    private Integer number;
+    private Double number;
 
     /**
      * 创建时间

@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
@@ -21,10 +22,8 @@ import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
-import cn.atsoft.dasheng.erp.service.impl.OutstockSendTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
-import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -33,13 +32,10 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,7 +76,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private StorehousePositionsService positionsService;
-
+    @Autowired
+    private MobileService mobileService;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -92,8 +89,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         if (param.getApplyDetails().size() > count) {
             throw new ServiceException(500, "请勿添加重复数据");
         }
-
-
         CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
             String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
@@ -118,7 +113,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             List<OutstockListing> outstockListings = new ArrayList<>();
             for (ApplyDetails applyDetail : applyDetails) {
                 OutstockListing outstockListing = new OutstockListing();
-                outstockListing.setBrandId(applyDetail.getBrandId());
+                if(ToolUtil.isNotEmpty(applyDetail.getBrandId())){
+                    outstockListing.setBrandId(applyDetail.getBrandId());
+                }
                 outstockListing.setSkuId(applyDetail.getSkuId());
                 outstockListing.setNumber(applyDetail.getNumber());
                 outstockListing.setDelivery(applyDetail.getNumber());
@@ -134,7 +131,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
 
-        String url = param.getUrl().replace("codeId", aLong.toString());
+        String url = mobileService.getMobileConfig().getUrl() + "/#/Work/OrCode?id=" + aLong;
         User createUser = userService.getById(entity.getCreateUser());
         //新微信推送
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -150,6 +147,59 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
         return entity;
+    }
+
+
+    @Override
+    public void saveOutStockOrderByPickLists(OutstockOrderParam param){
+
+
+        String encoding = codingRulesService.encoding(2);
+
+
+        OutstockOrder entity = getEntity(param);
+        entity.setCoding(encoding);
+        this.save(entity);
+
+        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
+            List<ApplyDetails> applyDetails = param.getApplyDetails();
+
+            List<OutstockListing> outstockListings = new ArrayList<>();
+            for (ApplyDetails applyDetail : applyDetails) {
+                OutstockListing outstockListing = new OutstockListing();
+                if(ToolUtil.isNotEmpty(applyDetail.getBrandId())){
+                    outstockListing.setBrandId(applyDetail.getBrandId());
+                }
+                outstockListing.setSkuId(applyDetail.getSkuId());
+                outstockListing.setNumber(applyDetail.getNumber());
+                outstockListing.setDelivery(applyDetail.getNumber());
+                outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
+                outstockListings.add(outstockListing);
+            }
+
+            outstockListingService.saveBatch(outstockListings);
+        }
+
+        BackCodeRequest backCodeRequest = new BackCodeRequest();
+        backCodeRequest.setId(entity.getOutstockOrderId());
+        backCodeRequest.setSource("outstock");
+        Long aLong = orCodeService.backCode(backCodeRequest);
+
+        String url = mobileService.getMobileConfig().getUrl() + "/#/Work/OrCode?id=" + aLong;
+        User createUser = userService.getById(entity.getCreateUser());
+        //新微信推送
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setTitle("新的出库提醒");
+        wxCpTemplate.setDescription(createUser.getName() + "创建了新的出库库任务" + entity.getCoding());
+        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+            add(entity.getUserId());
+        }});
+        wxCpSendTemplate.setSource("outstockOrder");
+        wxCpSendTemplate.setSourceId(aLong);
+        wxCpTemplate.setType(0);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
     }
 
     /**

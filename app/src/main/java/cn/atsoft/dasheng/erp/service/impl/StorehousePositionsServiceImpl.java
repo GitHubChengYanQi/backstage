@@ -1,14 +1,11 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
-import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -17,8 +14,8 @@ import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
-import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
@@ -38,13 +35,10 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +49,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
 import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.POSITIONS;
 
 /**
@@ -499,12 +492,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         for (StorehousePositionsBind bind : binds) {
             skuIds.add(bind.getSkuId());
         }
-        List<SkuResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
-        skuService.format(skuList);
+//        List<SkuSimpleResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
+        List<SkuSimpleResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+//        skuService.format(skuList);
         for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
-            List<SkuResult> skuResults = new ArrayList<>();
+            List<SkuSimpleResult> skuResults = new ArrayList<>();
             for (StorehousePositionsBind bind : binds) {
-                for (SkuResult result : skuList) {
+                for (SkuSimpleResult result : skuList) {
                     if (storehousePositions.getStorehousePositionsId().equals(bind.getPositionId()) && bind.getSkuId().equals(result.getSkuId())) {
                         skuResults.add(result);
                     }
@@ -539,6 +533,27 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
         }
         return new StorehousePositionsResult();
+    }
+
+    @Override
+    public List<StorehousePositionsResult> getDetails(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<StorehousePositions> positions = this.list();
+        List<StorehousePositionsResult> results = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        List<StorehousePositionsResult> positionsResults = new ArrayList<>();
+
+        for (Long id : ids) {
+            for (StorehousePositionsResult result : results) {
+                if (ToolUtil.isNotEmpty(id) && id.equals(result.getStorehousePositionsId())) {
+                    StorehousePositionsResult positionsResult = getSupper(result, results);
+                    positionsResults.add(positionsResult);
+                    break;
+                }
+            }
+        }
+        return positionsResults;
     }
 
     private StorehousePositionsResult getSupper(StorehousePositionsResult result, List<StorehousePositionsResult> data) {

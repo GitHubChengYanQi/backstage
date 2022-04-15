@@ -29,6 +29,10 @@ public class PurchaseListingParam implements Serializable, BaseValidatingParam {
     private Long brandId;
 
     private Time deliveryTime;
+
+    private Integer type;
+
+    private String askCoding;
     /**
      * 采购清单id
      */

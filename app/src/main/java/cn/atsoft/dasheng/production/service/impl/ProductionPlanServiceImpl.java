@@ -5,7 +5,12 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
@@ -17,14 +22,14 @@ import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPlanMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
-import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
-import cn.atsoft.dasheng.production.model.result.ProductionPlanDetailResult;
-import cn.atsoft.dasheng.production.model.result.ProductionPlanResult;
-import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
+import cn.atsoft.dasheng.production.model.result.*;
+import cn.atsoft.dasheng.production.service.ProductionCardService;
 import cn.atsoft.dasheng.production.service.ProductionPlanDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,13 +41,14 @@ import sun.rmi.log.LogInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
- *  生产计划主表 服务实现类
+ * 生产计划主表 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-02-25
  */
 @Service
@@ -50,6 +56,9 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 
     @Autowired
     private ProductionPlanDetailService productionPlanDetailService;
+
+    @Autowired
+    private PartsService partsService;
 
     @Autowired
     private MessageProducer messageProducer;
@@ -61,35 +70,51 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     private ProductionWorkOrderService productionWorkOrderService;
 
     @Autowired
-    private PartsService partsService;
+    private SkuService skuService;
 
     @Autowired
     private StepsService stepsService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProductionCardService productionCardService;
+
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+
     @Override
-    public void add(ProductionPlanParam param){
+    public void add(ProductionPlanParam param) {
         ProductionPlan entity = getEntity(param);
         this.save(entity);
         List<Long> skuIds = new ArrayList<>();
-
         List<ProductionPlanDetail> details = new ArrayList<>();
-        for (ProductionPlanDetailParam productionPlanDetailParam : param.getProductionPlanDetailParams()) {
+        for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
+
+            skuIds.add(orderDetailParam.getSkuId());
+
+        }
+        skuIds=skuIds.stream().distinct().collect(Collectors.toList());
+        Integer designParts = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status",99).count();
+        if (designParts<skuIds.size()) {
+            int i = skuIds.size() - designParts;
+            throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
+        }
+        List<ActivitiProcess> prosess = activitiProcessService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
+
+        if (skuIds.size()!=prosess.size()){
+            throw new ServiceException(500,"有产品没有工艺路线,请先创建工艺路线");
+        }
+        for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
             ProductionPlanDetail detail = new ProductionPlanDetail();
-            ToolUtil.copyProperties(productionPlanDetailParam,detail);
             detail.setProductionPlanId(entity.getProductionPlanId());
-            skuIds.add(detail.getSkuId());
+            detail.setOrderDetailId(orderDetailParam.getDetailId());
+            detail.setPlanNumber(Math.toIntExact(orderDetailParam.getPurchaseNumber()));
+            detail.setDeliveryDate(orderDetailParam.getDeliveryDate());
+            detail.setSkuId(orderDetailParam.getSkuId());
             details.add(detail);
         }
-//        Integer designParts = partsService.query().in("sku_id", skuIds).eq("type", 1).eq("display", 1).eq("status", 99).count();
-//        if (designParts<skuIds.size()) {
-//            int i = skuIds.size() - designParts;
-//            throw new ServiceException(500, "有"+i+"个物品没有设计bom,请先创建设计bom");
-//        }
-//        Integer productionParts = partsService.query().in("sku_id", skuIds).eq("type", 2).eq("display", 1).eq("status", 99).count();
-//        if (productionParts<skuIds.size()) {
-//            int i = skuIds.size() - productionParts;
-//            throw new ServiceException(500, "有"+i+"个物品你没有生产bom,请先创建生产bom");
-//        }
         productionPlanDetailService.saveBatch(details);
         if (details.size() > 0) {    //调用消息队列
             MicroServiceEntity serviceEntity = new MicroServiceEntity();
@@ -105,12 +130,12 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     }
 
     @Override
-    public void delete(ProductionPlanParam param){
+    public void delete(ProductionPlanParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(ProductionPlanParam param){
+    public void update(ProductionPlanParam param) {
         ProductionPlan oldEntity = getOldEntity(param);
         ProductionPlan newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -118,33 +143,40 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     }
 
     @Override
-    public ProductionPlanResult findBySpec(ProductionPlanParam param){
+    public ProductionPlanResult findBySpec(ProductionPlanParam param) {
         return null;
     }
 
     @Override
-    public List<ProductionPlanResult> findListBySpec(ProductionPlanParam param){
+    public List<ProductionPlanResult> findListBySpec(ProductionPlanParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ProductionPlanResult> findPageBySpec(ProductionPlanParam param){
+    public PageInfo<ProductionPlanResult> findPageBySpec(ProductionPlanParam param) {
         Page<ProductionPlanResult> pageContext = getPageContext();
         IPage<ProductionPlanResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-
-    private void format(List<ProductionPlanResult> param){
+    @Override
+    public void format(List<ProductionPlanResult> param) {
         List<Long> planIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
 
         for (ProductionPlanResult productionPlanResult : param) {
             planIds.add(productionPlanResult.getProductionPlanId());
+            userIds.add(productionPlanResult.getUserId());
         }
+
+
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+
         /**
          * 查询对应的工单集合
          */
-        List<ProductionWorkOrderResult> workOrderResults = productionWorkOrderService.resultsBySourceIds("productionPlan", planIds);
+        List<ProductionWorkOrderResult> workOrderResults = planIds.size() == 0 ? new ArrayList<>() : productionWorkOrderService.resultsBySourceIds("productionPlan", planIds);
 
         /**
          * 查询出子表数据
@@ -157,7 +189,10 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         for (ProductionPlanDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
         }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
         List<ProcessRouteResult> routeResults = skuIds.size() == 0 ? new ArrayList<>() : processRouteService.resultsBySkuIds(skuIds);
+
         //将步骤set进工艺路线中方便匹配
         ActivitiStepsResult detail = new ActivitiStepsResult();
         for (ProcessRouteResult routeResult : routeResults) {
@@ -165,17 +200,37 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             routeResult.setStepsResult(detail);
         }
         for (ProductionPlanResult productionPlanResult : param) {
+            List<ProductionWorkOrderResult> workOrderResultList = new ArrayList<>();
+            for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
+//                for (ProductionCardResult cardResult : cardResults) {
+//                    if (cardResult.getSkuId().equals())
+//                }
+                if (workOrderResult.getSource().equals("productionPlan") && workOrderResult.getSourceId().equals(productionPlanResult.getProductionPlanId())){
+                    workOrderResultList.add(workOrderResult);
+                }
+            }
+            productionPlanResult.setWorkOrderResults(workOrderResultList);
             List<ProductionPlanDetailResult> results = new ArrayList<>();
+            for (UserResult userResultsById : userResultsByIds) {
+                if (userResultsById.getUserId().equals(productionPlanResult.getUserId())){
+                    productionPlanResult.setUserResult(userResultsById);
+                }
+            }
             for (ProductionPlanDetailResult detailResult : detailResults) {
-                if (productionPlanResult.getProductionPlanId().equals(detailResult.getProductionPlanId())){
-                    formatTreeProcessRoute(detail,workOrderResults);
+                if (productionPlanResult.getProductionPlanId().equals(detailResult.getProductionPlanId())) {
+
                     results.add(detailResult);
                 }
             }
             for (ProductionPlanDetailResult result : results) {
                 for (ProcessRouteResult routeResult : routeResults) {
-                    if (result.getSkuId().equals(routeResult.getSkuId())){
+                    if (result.getSkuId().equals(routeResult.getSkuId())) {
                         result.setProcessRouteResult(routeResult);
+                    }
+                }
+                for (SkuResult skuResult : skuResults) {
+                    if (skuResult.getSkuId().equals(result.getSkuId())) {
+                        result.setSkuResult(skuResult);
                     }
                 }
             }
@@ -186,43 +241,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 
 
 
-
-    private void formatTreeProcessRoute(ActivitiStepsResult detail, List<ProductionWorkOrderResult> workOrderResults){
-//       if(ToolUtil.isNotEmpty(detail)){
-//           switch (detail.getStepType()) {
-//               case "ship":
-//                   for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
-//                       if (detail.getSetpsId().equals(workOrderResult.getStepsId())){
-//                           detail.setWorkOrderResult(workOrderResult);
-//                           break;
-//                       }
-//                   }
-//                   ProcessRouteResult processRoute = (ProcessRouteResult) detail.getProcessRoute();
-//                   formatTreeProcessRoute(processRoute.getStepsResult(),workOrderResults);
-//                   break;
-//               case "shipStart":
-//               case "setp":
-//                   for (ProductionWorkOrderResult workOrderResult : workOrderResults) {
-//                       if (detail.getSetpsId().equals(workOrderResult.getStepsId())){
-//                           detail.setWorkOrderResult(workOrderResult);
-//                           break;
-//                       }
-//                   }
-//                   if(ToolUtil.isNotEmpty(detail.getChildNode())){
-//                       formatTreeProcessRoute(detail.getChildNode(),workOrderResults);
-//                   }
-//
-//                   break;
-//               case "route":
-//                   for (ActivitiStepsResult activitiStepsResult : detail.getConditionNodeList()) {
-//                       formatTreeProcessRoute(activitiStepsResult,workOrderResults);
-//                   }
-//                   break;
-//           }
-//       }
-    }
-
-    private Serializable getKey(ProductionPlanParam param){
+    private Serializable getKey(ProductionPlanParam param) {
         return param.getProductionPlanId();
     }
 

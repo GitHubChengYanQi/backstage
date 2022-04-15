@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +22,15 @@ public class ProductionWorkOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private ActivitiSetpSetResult setpSetResult;
+
+    private Long stockNumber;
+
+    private int completeNum ;
+    private int toDoNum ;
+    private int cardNumber;
+    private Long cardSkuId;
+    private Long outSkuId;
 
     @ApiModelProperty("")
     private Long workOrderId;
@@ -29,6 +40,14 @@ public class ProductionWorkOrderResult implements Serializable {
      */
     @ApiModelProperty("工序id")
     private Long shipSetpId;
+
+
+    /**
+     * 生产卡片id
+     */
+    @ApiModelProperty("生产卡片id")
+    private Long cardId;
+
 
     @ApiModelProperty("")
     private Long skuId;
@@ -42,12 +61,14 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 来源
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("来源")
     private String source;
 
     /**
      * 来源id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("来源id")
     private Long sourceId;
 
@@ -60,6 +81,7 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 部门编号
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("部门编号")
     private Long deptId;
 
@@ -72,12 +94,14 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 步骤id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("步骤id")
     private Long stepsId;
 
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
@@ -90,6 +114,7 @@ public class ProductionWorkOrderResult implements Serializable {
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 

@@ -23,12 +23,28 @@
     <sql id="Base_Column_List">
         production_card_id AS "productionCardId",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
     </sql>
+    <sql id="grupByProducitonPlan">
+        count(*) as grupByPlanId,production_card_id AS "productionCardId",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionCardResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionCardParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_card where 1 = 1
+    </select>
+    <select id="grupByProductionPlan" resultType="cn.atsoft.dasheng.production.model.result.ProductionCardResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionCardParam">
+        select
+        <include refid="grupByProducitonPlan"/>
+        from daoxin_production_card where 1 = 1
+        and source = "productionPlan"
+        <if test="paramCondition.productinPlanIds.size>0">
+            and source_id in
+            <foreach collection="paramCondition.productinPlanIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        GROUP BY source_id
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionCardParam">

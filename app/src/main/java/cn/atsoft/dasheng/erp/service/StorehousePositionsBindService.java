@@ -29,6 +29,7 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
     StorehousePositionsBind add(StorehousePositionsBindParam param);
 
     void bindBatch(StorehousePositionsBindParam param);
+
     void SpuAddBind(StorehousePositionsBindParam param);
 
     /**
@@ -46,6 +47,8 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
      * @Date 2022-01-20
      */
     void update(StorehousePositionsBindParam param);
+
+    List<StorehousePositionsResult> treeView(List<Long> skuIds);
 
     /**
      * 查询单条数据，Specification模式

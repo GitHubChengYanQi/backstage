@@ -104,7 +104,7 @@ public class QualityCheckController extends BaseController {
         QualityCheck detail = this.qualityCheckService.getById(qualityCheckParam.getQualityCheckId());
 
         if (ToolUtil.isNotEmpty(detail)){
-            JSONArray jsonArray = JSONUtil.parseArray(detail.getTool());
+            JSONArray jsonArray =detail.getTool().equals("null") ? new JSONArray() : JSONUtil.parseArray(detail.getTool());
             List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
             List<Tool> tools = longs.size() > 0 ? toolService.query().in("tool_id", longs).list() : new ArrayList<>();
 

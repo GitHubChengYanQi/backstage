@@ -135,7 +135,14 @@ public class PurchaseListingController extends BaseController {
         return ResponseData.success(planList);
     }
 
-
+    @RequestMapping(value = "/readyBuy", method = RequestMethod.POST)
+    @ApiOperation("待买")
+    public PageInfo<PurchaseListingResult> readyBuy(@RequestBody(required = false) PurchaseListingParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new PurchaseListingParam();
+        }
+        return this.purchaseListingService.readyBuy(param);
+    }
 
 }
 

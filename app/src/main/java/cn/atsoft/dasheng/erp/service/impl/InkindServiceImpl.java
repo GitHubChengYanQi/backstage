@@ -201,6 +201,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         //打印查询打印模板
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", PHYSICALDETAIL);
+            eq("display", 1);
         }});
         if (ToolUtil.isNotEmpty(printTemplate)) {
             this.returnPrintTemplate(inkindResult, printTemplate);
@@ -209,9 +210,11 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setBrandResult(null);
         return inkindResult;
     }
-    public List<InkindResult> details(InkindParam param){
+
+    public List<InkindResult> details(InkindParam param) {
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", PHYSICALDETAIL);
+            eq("display", 1);
         }});
 
         /**
@@ -251,9 +254,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         }
 
         //查询不到模板 不执行返回打印模板操作
-        if (ToolUtil.isNotEmpty(printTemplate)){
+        if (ToolUtil.isNotEmpty(printTemplate)) {
             for (InkindResult inkindResult : inkindResults) {
-                this.returnPrintTemplate(inkindResult,printTemplate);
+                this.returnPrintTemplate(inkindResult, printTemplate);
                 inkindResult.setSkuResult(null);
                 inkindResult.setBrandResult(null);
             }
@@ -261,7 +264,8 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
 
         return inkindResults;
     }
-    private void returnPrintTemplate(InkindResult param,PrintTemplate printTemplate) {
+
+    private void returnPrintTemplate(InkindResult param, PrintTemplate printTemplate) {
 
         if (ToolUtil.isEmpty(printTemplate)) {
             throw new ServiceException(500, "请先定义二维码模板");
@@ -293,7 +297,11 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             templete = templete.replace("${number}", param.getNumber().toString());
         }
         if (templete.contains("${brand}")) {
-            templete = templete.replace("${brand}", param.getBrandResult().getBrandName());
+            if (ToolUtil.isEmpty(param.getBrandResult()) ||ToolUtil.isEmpty(param.getBrandResult().getBrandName())) {
+                templete = templete.replace("${brand}","");
+            }else {
+                templete = templete.replace("${brand}", param.getBrandResult().getBrandName());
+            }
         }
         if (templete.contains("${qrCode}")) {
             OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{

@@ -446,6 +446,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
             }
 
+
             contract.setPartyA(orderParam.getBuyerId());
             contract.setPartyB(orderParam.getSellerId());
             contract.setPartyAPhone(orderParam.getPartyAPhone());
@@ -587,7 +588,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     if (ToolUtil.isNotEmpty(cycleReplaces)) {
                         CycleReplace cycleReplace = cycleReplaces.get(i);
                         for (CycleReplace.Cycle cycle : cycleReplace.getCycles()) {
-                            group = new StringBuilder(group.toString().replace(cycle.getOldText(), cycle.getNewText()));
+                            if (cycle.getOldText().equals(cycle.getNewText())) {
+                                group = new StringBuilder(group.toString().replace(cycle.getOldText(), ""));
+                            } else {
+                                group = new StringBuilder(group.toString().replace(cycle.getOldText(), cycle.getNewText()));
+                            }
                         }
                     }
                     all.append(group);
@@ -667,7 +672,38 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 content = content.replace("${{供方公司电话}}", phone.getPhoneNumber().toString());
             }
         }
+        //-----------------------------------------------需要改动-----------------------------------------------------------------------
+        if (content.contains("${{提取(交付)地点}}")) {
+            Adress adress = orderParam.getPartyAAdressId() == null ? new Adress() : adressService.getById(orderParam.getAdressId());
+            if (ToolUtil.isEmpty(adress) || ToolUtil.isEmpty(adress.getLocation())) {
+                content = content.replace("${{提取(交付)地点}}", "");
+            } else {
+                content = content.replace("${{提取(交付)地点}}", (adress.getLocation()+(adress.getDetailLocation()==null?"":adress.getDetailLocation())));
+                adress.setType("收获地址");
+                adressService.updateById(adress);
+            }
+        }
+        if (content.contains("${{接货人员}}")) {
+            Contacts contacts = orderParam.getPartyAContactsId() == null ? new Contacts() : contactsService.getById(orderParam.getUserId());
+            if (ToolUtil.isEmpty(contacts) || ToolUtil.isEmpty(contacts.getContactsName())) {
+                content = content.replace("${{接货人员}}", "");
+            } else {
+                content = content.replace("${{接货人员}}", contacts.getContactsName());
 
+            }
+        }
+        if (content.contains("${{接货人电话}}")) {
+            Contacts contacts = orderParam.getUserId() == null ? new Contacts() : contactsService.getById(orderParam.getUserId());
+            List<Phone> phones = contacts.getContactsId() == null ? new ArrayList<>() : phoneService.query().eq("contacts_id", contacts.getContactsId()).list();
+            Phone phone = phones.get(0);
+
+            if (ToolUtil.isNotEmpty(phone) || ToolUtil.isNotEmpty(phone.getPhoneNumber())) {
+                content = content.replace("${{接货人电话}}", phone.getPhoneNumber().toString());
+            } else {
+                content = content.replace("${{接货人电话}}", "");
+            }
+        }
+//-------------------------------------------------------------------------------------------------------------------------
         if (content.contains("${{需方公司名称}}")) {
             Customer customer = orderParam.getBuyerId() == null ? new Customer() : customerService.getById(orderParam.getBuyerId());
             if (ToolUtil.isEmpty(customer)) {
@@ -877,6 +913,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         if (content.contains("${{接货人电话}}")) {
             content = content.replace("${{接货人电话}}", "");
+
+
         }
         if (content.contains("${{质量标准}}")) {
             content = content.replace("${{质量标准}}", "");

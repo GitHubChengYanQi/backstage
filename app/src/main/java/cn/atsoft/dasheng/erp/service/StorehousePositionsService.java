@@ -75,6 +75,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
     StorehousePositionsResult getDetail(Long id, List<StorehousePositions> positions);
 
+    List<StorehousePositionsResult> getDetails(List<Long> ids);
+
     /**
      * 查询单条数据，Specification模式
      *

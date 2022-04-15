@@ -14,10 +14,12 @@
         <result column="storehouse_id" property="storehouseId"/>
         <result column="stock_id" property="stockId"/>
         <result column="brand_id" property="brandId"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">create_time
+    AS "createTime",
         sku_id
         AS "skuId", spu_id AS "spuId", spu_classification_id AS "spuClassificationId", class_name AS "className", storehouse_positions_id AS "storehousePositionsId", spu_name AS "spuName", storehouse_id AS "storehouseId", stock_id AS "stockId", brand_id AS "brandId"
     </sql>
@@ -37,6 +39,14 @@
         <if test="paramCondition.spuId !=null ">
             and spu_id = #{paramCondition.spuId}
         </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT('%',#{paramCondition.skuName},'%')
+            or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null and paramCondition.storehousePositionsId != ''">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
+        </if>
         group by spu_classification_id
     </select>
 
@@ -46,7 +56,15 @@
         <include refid="Base_Column_List"/>
         ,sum(number) AS number
         from view_stock_details where 1 = 1
-         group by spu_id
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT('%',#{paramCondition.skuName},'%')
+            or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null and paramCondition.storehousePositionsId != ''">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
+        </if>
+        group by spu_id
     </select>
 
     <select id="skuList" resultType="cn.atsoft.dasheng.view.model.result.ViewStockDetailsResult"
@@ -63,6 +81,15 @@
         </if>
         <if test="paramCondition.spuId !=null ">
             and spu_id = #{paramCondition.spuId}
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT('%',#{paramCondition.skuName},'%')
+            or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+
+        </if>
+        <if test="paramCondition.storehousePositionsId != null and paramCondition.storehousePositionsId != ''">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
         </if>
         group by sku_id
     </select>
@@ -84,6 +111,14 @@
         </if>
         <if test="paramCondition.spuId !=null ">
             and spu_id = #{paramCondition.spuId}
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT('%',#{paramCondition.skuName},'%')
+            or spu_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null and paramCondition.storehousePositionsId != ''">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
         </if>
         group by sku_id
     </select>

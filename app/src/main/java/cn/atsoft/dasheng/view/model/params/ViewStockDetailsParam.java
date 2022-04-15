@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,9 +31,13 @@ public class ViewStockDetailsParam implements Serializable, BaseValidatingParam 
 
     private String type;
 
+    private String skuName;
+
     private Long partId;
 
     private List<Long> skuIds;
+
+    private Date createTime;
 
     /**
      * 物品Id

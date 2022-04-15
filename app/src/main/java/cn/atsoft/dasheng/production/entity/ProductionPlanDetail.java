@@ -8,6 +8,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.models.auth.In;
 
 import java.io.Serializable;
 
@@ -57,7 +58,7 @@ public class ProductionPlanDetail implements Serializable {
      * 交付时间
      */
     @TableField("delivery_date")
-    private Date deliveryDate;
+    private Integer deliveryDate;
 
     /**
      * 创建者
@@ -95,6 +96,21 @@ public class ProductionPlanDetail implements Serializable {
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+    public Long getOrderDetailId() {
+        return orderDetailId;
+    }
+
+    public void setOrderDetailId(Long orderDetailId) {
+        this.orderDetailId = orderDetailId;
+    }
+
+    /**
+     * orderDetailId
+     */
+    @TableField("order_detail_id")
+    private Long orderDetailId;
+
+
 
     public Long getProductionPlanDetailId() {
         return productionPlanDetailId;
@@ -121,11 +137,11 @@ public class ProductionPlanDetail implements Serializable {
     }
 
 
-    public Date getDeliveryDate() {
+    public Integer getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(Date deliveryDate) {
+    public void setDeliveryDate(Integer deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 

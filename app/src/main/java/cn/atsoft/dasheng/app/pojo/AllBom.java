@@ -1,13 +1,17 @@
 package cn.atsoft.dasheng.app.pojo;
 
+
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.AllBomService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -20,128 +24,163 @@ import cn.atsoft.dasheng.form.service.ActivitiSetpSetService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.swagger.models.auth.In;
 import lombok.Data;
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Data
-@Service
+
 public class AllBom {
 
-    @Autowired
-    @JSONField(serialize = false)
-    private AllBomService allBomService;
-
-    @Autowired
-    @JSONField(serialize = false)
-    private PartsService partsService;
-
-    @Autowired
-    @JSONField(serialize = false)
-    private ErpPartsDetailService detailService;
-
-    @Autowired
-    @JSONField(serialize = false)
-    private StockDetailsService stockDetailsService;
-
-    @Autowired
-    @JSONField(serialize = false)
-    private ActivitiProcessService processService;
-
-    @Autowired
-    @JSONField(serialize = false)
-    private StepsService stepsService;
-
-    @Autowired
-    @JSONField(serialize = false)
-    private ActivitiSetpSetDetailService setDetailService;
-
-    @Autowired
-    @JSONField(serialize = false)
-    private SkuService skuService;
-
-    @Autowired
-    @JSONField(serialize = false)
-    private ActivitiSetpSetService setService;
-
-    private Map<Long, Integer> notEnough = new HashMap<>();  //缺料数
-
-    private Map<Long, Integer> enough = new HashMap<>(); //够料
-
-    private Map<Long, ArrayList<Map<Long, Object>>> Bom = new HashMap<>();
-
-    private Map<Long, Integer> skuList = new HashMap<>();  //生产一套所需要的物料和数量
-
-    private Map<Long, Long> stockNumber = new HashMap<>();  //库存数量
-
-    private Map<Long, Integer> shipSku = new HashMap<>();  //所有子工艺sku
-
-    private Integer mix;   //最少可生产数量;
+    private final PartsService partsService = SpringContextHolder.getBean(PartsService.class);
 
 
-    public void start() {
-        for (Map.Entry<Long, Integer> integerEntry : shipSku.entrySet()) {
-            getBom(integerEntry.getKey(), integerEntry.getValue());
-        }
-    }
+    private final ErpPartsDetailService detailService = SpringContextHolder.getBean(ErpPartsDetailService.class);
 
 
-    public Map<Long, Integer> getAllShip(Long processId, int num) {
-        Map<Long, Integer> map = new HashMap<>();
-        ActivitiStepsResult stepsResult = stepsService.detail(processId);//树形结构
-
-        if (ToolUtil.isNotEmpty(stepsResult.getProcess())) {   //当前工艺
-            ActivitiProcess process = processService.getById(stepsResult.getProcess().getProcessId());
-            map.put(process.getFormId(), num);
-        }
-        this.loopGetProcessList(stepsResult, num, map);
-        this.shipSku = map;
-        return map;
-    }
+    private final StockDetailsService stockDetailsService = SpringContextHolder.getBean(StockDetailsService.class);
 
 
-    private void loopGetProcessList(ActivitiStepsResult stepsResult, int num, Map<Long, Integer> shipSku) {
-        if (ToolUtil.isNotEmpty(stepsResult)) {
-            switch (stepsResult.getStepType()) {
-                case "ship":
-                    ActivitiSetpSetDetail setDetail = setDetailService.query().eq("setps_id", stepsResult.getSetpsId()).one();
-                    if (ToolUtil.isNotEmpty(setDetail)) {
-                        num = num * setDetail.getNum();
-                        shipSku.put(setDetail.getSkuId(), num);
-                    }
-                    shipSku.putAll(getAllShip(stepsResult.getProcess().getProcessId(), num));
+    private final SkuService skuService = SpringContextHolder.getBean(SkuService.class);
+
+
+    private final Map<Long, Long> notEnough = new HashMap<>();  //缺料数
+
+    private final Map<Long, Map<String, Map<Long, Object>>> Bom = new HashMap<>();
+
+    private final Map<Long, Integer> skuList = new HashMap<>();  //生产一套所需要的物料和数量
+
+    private final Map<Long, Long> stockNumber = new HashMap<>();  //库存数量
+
+    private final Map<Long, Long> mix = new LinkedHashMap<>();   //最少可生产数量;
+
+
+    public AllBomResult getResult() {
+        AllBomResult allBomResult = new AllBomResult();
+        List<Object> canProduce = new ArrayList<>();
+        BomOrder bomOrder = new BomOrder();
+
+        /**
+         * 可生产数量排序
+         */
+//        List<Map.Entry<Long, Long>> list = new ArrayList<>(mix.entrySet());
+//        list.sort(new Comparator<Map.Entry<Long, Long>>() {
+//            @Override
+//            public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
+//
+//                //按照value值，从大到小排序
+//                return Math.toIntExact(o2.getValue() - o1.getValue());
+//
+//            }
+//        });
+
+
+        //        for (Map.Entry<Long, Long> longLongEntry : list) {
+//            Long skuId = longLongEntry.getKey();
+//            skus.add(skuId);
+//        }
+        int num = 0;
+        List<Long> skus = new ArrayList<>(mix.keySet());
+        List<SkuResult> results = skuService.formatSkuResult(skus);
+
+        for (Long skuId : mix.keySet()) {
+            for (SkuResult skuResult : results) {
+                if (skuResult.getSkuId().equals(skuId)) {
+                    AnalysisResult analysisResult = new AnalysisResult();
+                    analysisResult.setSkuName(skuResult.getSkuName());
+                    analysisResult.setSpuName(skuResult.getSpuResult().getName());
+                    analysisResult.setProduceMix(mix.get(skuId));
+                    analysisResult.setSpecifications(skuResult.getSpecifications());
+                    analysisResult.setStrand(skuResult.getStandard());
+                    analysisResult.setSkuId(skuResult.getSkuId());
+                    canProduce.add(analysisResult);
+                    num = Math.toIntExact(num + mix.get(skuId));
                     break;
-                case "shipStart":
-                    loopGetProcessList(stepsResult.getChildNode(), num, shipSku);
-                    break;
-                case "setp":
-                    ActivitiSetpSet setpSet = setService.query().eq("setps_id", stepsResult.getSetpsId()).eq("production_type", "out").one();  //投入和产出不相同
-                    if (ToolUtil.isNotEmpty(setpSet)) {
-                        List<ActivitiSetpSetDetail> setDetails = setDetailService.query().eq("setps_id", stepsResult.getSetpsId()).eq("type", "out").list();  //产出
-                        for (ActivitiSetpSetDetail detail : setDetails) {
-                            if (ToolUtil.isNotEmpty(skuList.get(detail.getSkuId()))) {
-                                Integer integer = skuList.get(detail.getSkuId());
-                                skuList.put(detail.getSkuId(), (detail.getNum() * num) + integer);
-                            } else {
-                                skuList.put(detail.getSkuId(), detail.getNum() * num);
-                            }
-                        }
-                    }
-                    loopGetProcessList(stepsResult.getChildNode(), num, shipSku);
-                    break;
-                case "route":
-                    for (ActivitiStepsResult activitiStepsResult : stepsResult.getConditionNodeList()) {
-                        loopGetProcessList(activitiStepsResult, num, shipSku);
-                    }
-                    break;
+                }
             }
         }
 
+        bomOrder.setResult(canProduce);
+        bomOrder.setNum(num);
+
+        /**
+         * 缺料数量排序
+         */
+        List<AnalysisResult> analysisResults = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(notEnough)) {
+            List<Map.Entry<Long, Long>> notEnoughList = new ArrayList<>(notEnough.entrySet());
+            notEnoughList.sort(new Comparator<Map.Entry<Long, Long>>() {
+                @Override
+                public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
+
+                    //按照value值，从大到小排序
+                    return Math.toIntExact(o2.getValue() - o1.getValue());
+
+                }
+            });
+
+            Set<Long> ids = notEnough.keySet();
+            List<Long> skuIds = new ArrayList<>(ids);
+            List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+
+            for (Map.Entry<Long, Long> longLongEntry : notEnoughList) {
+                for (SkuResult skuResult : skuResults) {
+                    if (longLongEntry.getKey().equals(skuResult.getSkuId())) {
+                        AnalysisResult analysisResult = new AnalysisResult();
+                        Long number = notEnough.get(skuResult.getSkuId());
+                        analysisResult.setSkuId(skuResult.getSkuId());
+                        analysisResult.setSkuName(skuResult.getSkuName());
+                        analysisResult.setSpuName(skuResult.getSpuResult().getName());
+                        analysisResult.setLackNumber(number);
+                        analysisResult.setStrand(skuResult.getStandard());
+                        analysisResult.setSpecifications(skuResult.getSpecifications());
+                        analysisResults.add(analysisResult);
+                        break;
+                    }
+                }
+            }
+
+        }
+
+
+        allBomResult.setResult(new ArrayList<BomOrder>() {{
+            add(bomOrder);
+        }});
+        allBomResult.setOwe(analysisResults);
+        return allBomResult;
     }
 
+
+    public void start(List<AllBomParam.SkuNumberParam> params, boolean mixAdd) {
+
+        /**
+         * 获取bom
+         */
+        for (AllBomParam.SkuNumberParam param : params) {
+            getBom(param.getSkuId(), 1, 0);
+        }
+
+        /**
+         * 计算库存
+         */
+        getNumber();
+
+        /**
+         *  开始计算
+         */
+        for (AllBomParam.SkuNumberParam param : params) {
+            getMix(param.getSkuId(), param.getNum(), mixAdd);
+        }
+
+    }
 
     /**
      * 1=>[
@@ -149,8 +188,7 @@ public class AllBom {
      * {5=>{},6=>{},7=>{}}
      * ]
      */
-
-    public Map<Long, Object> getBom(Long skuId, int number) {
+    public Map<Long, Object> getBom(Long skuId, int number, double selfNum) {
 
         Map<Long, Object> tmp = new HashMap<>();
 
@@ -171,23 +209,51 @@ public class AllBom {
              * 递归 取下级 作 1下表元素
              */
 
+            List<Map<Long, Object>> list = new ArrayList<>();
             for (ErpPartsDetail erpPartsDetail : details) {
-                tmp.putAll(this.getBom(erpPartsDetail.getSkuId(), erpPartsDetail.getNumber() * number));
+                list.add(this.getBom(erpPartsDetail.getSkuId(), (int) (erpPartsDetail.getNumber() * number), erpPartsDetail.getNumber()));
             }
 
-            this.Bom.put(skuId, new ArrayList<Map<Long, Object>>() {{
-                add(tmp2);
-                add(tmp);
+            // 循环相加
+            Map<Long, Object> map = new HashMap<>();
+            for (Map<Long, Object> objectMap : list) {
+
+                for (Long aLong : objectMap.keySet()) {
+                    SkuNumber sn = (SkuNumber) objectMap.get(aLong);
+                    if (ToolUtil.isNotEmpty(map.get(aLong))) {
+                        SkuNumber sk = (SkuNumber) map.get(aLong);
+                        sk.setNum(sk.getNum() + sn.getNum());
+                        map.put(aLong, sk);
+                    } else {
+                        map.put(aLong, sn);
+                    }
+                }
+            }
+            this.Bom.put(skuId, new HashMap<String, Map<Long, Object>>() {{
+                put("lastChild", map);
+                put("child", tmp2);
             }});
+
+            // 循环相乘，之后相加，放到tmp里
+
+
+            for (Long aLong : map.keySet()) {
+                SkuNumber o = (SkuNumber) map.get(aLong);
+                SkuNumber skuNumber = new SkuNumber();
+                ToolUtil.copyProperties(o, skuNumber);
+                skuNumber.setNum((int) (o.getNum() * selfNum));
+                tmp.put(aLong, skuNumber);
+            }
+
+
         } else {
             Integer num = 0;
             if (ToolUtil.isNotEmpty(skuList.get(skuId))) {
                 num = skuList.get(skuId);
             }
             skuList.put(skuId, number + num);
-
             SkuNumber skuNumber = new SkuNumber();
-            skuNumber.setNum(number);
+            skuNumber.setNum((int) selfNum);
             skuNumber.setSkuId(skuId);
             tmp.put(skuId, skuNumber);
         }
@@ -196,7 +262,7 @@ public class AllBom {
     }
 
 
-    public void getNumber(Long skuId) {
+    public void getNumber() {
 
         /**
          * 查询库存
@@ -208,81 +274,101 @@ public class AllBom {
             stockNumber.put(detail.getSkuId(), detail.getNum());
         }
 
+
         /**
          * 追加下级库存
          */
-        for (Long aLong : Bom.keySet()) {
-            ArrayList<Map<Long, Object>> maps = Bom.get(aLong);
-            if (!aLong.equals(skuId)) {   //不能是最顶级
+        Set<Long> longs = Bom.keySet();
+        for (Long bomSkuId : longs) {
+            Map<String, Map<Long, Object>> map = Bom.get(bomSkuId);
+            Long number = stockNumber.get(bomSkuId);
 
-                Map<Long, Object> map = maps.get(0);  //中间级
-                Map<Long, Object> childMap = maps.get(1); //最下级
+            if (ToolUtil.isNotEmpty(number)) {
+                Map<Long, Object> child = map.get("lastChild");
+                for (Long skuId : child.keySet()) {
+                    Long noNum = stockNumber.get(skuId);   //库存没有 添加
+                    if (ToolUtil.isEmpty(noNum)) {
+                        stockNumber.put(skuId, 0L);
+                    }
 
-                if (ToolUtil.isNotEmpty(childMap)) {
-                    for (Long id : map.keySet()) {    //中间级循环
-
-                        Long number = stockNumber.get(aLong);
-                        if (ToolUtil.isNotEmpty(number)) {   //库存没有中间级 不追加库存
-
-                            ErpPartsDetail detail = (ErpPartsDetail) map.get(id);
-
-                            SkuNumber skuNumber = (SkuNumber) childMap.get(id);
-                            long l = detail.getNumber() * number;
-
-                            if (ToolUtil.isNotEmpty(this.stockNumber.get(skuNumber.getSkuId()))) {
-                                stockNumber.put(skuNumber.getSkuId(), stockNumber.get(skuNumber.getSkuId()) + l);
-                            } else {
-                                stockNumber.put(skuNumber.getSkuId(), l);
-                            }
-                        }
+                    SkuNumber skuNumber = (SkuNumber) child.get(skuId);
+                    long l = number * skuNumber.getNum();
+                    Long lastNum = stockNumber.get(skuId);
+                    if (ToolUtil.isNotEmpty(lastNum)) {
+                        stockNumber.put(skuId, lastNum + l);
                     }
                 }
+            } else {
+                stockNumber.put(bomSkuId, 0L);
+                Map<Long, Object> child = map.get("lastChild");
+                for (Long id : child.keySet()) {
+                    if (ToolUtil.isEmpty(stockNumber.get(id))) {
+                        stockNumber.put(id, 0L);
+                    }
+
+                }
+            }
+        }
+
+
+    }
+
+    /**
+     * 计算最小可生产
+     *
+     * @param skuId
+     * @param number
+     */
+    public void getMix(Long skuId, Long number, boolean mixAdd) {
+
+        Map<String, Map<Long, Object>> bomMap = Bom.get(skuId);
+        List<Long> noEnough = new ArrayList<>();
+
+        Map<Long, Object> lastChild = bomMap.get("lastChild");
+
+        for (Long id : lastChild.keySet()) {
+            Long stockNum = stockNumber.get(id);
+            SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
+            if (ToolUtil.isNotEmpty(skuNumber)) {
+                if (stockNum == 0) {
+                    noEnough.add(0L);
+                } else {
+                    long mix = stockNum / skuNumber.getNum();
+                    noEnough.add(mix);
+                }
+            }
+        }
+        Long min = Collections.min(noEnough);
+        if (min > number) {
+            min = number;
+        }
+        mix.put(skuId, min);
+
+
+        /**
+         * 如果这个物料不够生产  不更新库
+         */
+        if (min > 0) {
+            for (Long id : lastChild.keySet()) {
+                SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
+                long num = skuNumber.getNum() * min;
+                Long stockNum = stockNumber.get(id);
+                stockNumber.put(id, stockNum - num);
+            }
+        }
+        if (number - min > 0) {
+            for (Long id : lastChild.keySet()) {
+                Long stockNum = stockNumber.get(id);
+                SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
+                long l = number - min;
+                long num = skuNumber.getNum() * l;
+                if (mixAdd && ((num - stockNum) > 0)) {
+                    this.notEnough.put(id, num - stockNum);
+                }
             }
         }
     }
 
-
-    public void getMix(int number) {
-        List<Integer> mix = new ArrayList<>();
-        List<Integer> max = new ArrayList<>();
-        for (Long aLong : skuList.keySet()) {
-            Integer skuNumber = skuList.get(aLong);
-            skuNumber = skuNumber * number;
-            Long stockSkuNumber = stockNumber.get(aLong);
-
-
-            if (ToolUtil.isEmpty(stockSkuNumber)) {    //库存没有 直接缺料
-                notEnough.put(aLong, skuNumber);
-                mix.add(0);
-            } else if (skuNumber - stockSkuNumber > 0) {           //缺料
-                int j = (int) ((skuNumber - stockSkuNumber) / (skuNumber / number));//不能生产数量
-                long l = (skuNumber - stockSkuNumber) % (skuNumber / number);  //取余数
-                if (ToolUtil.isNotEmpty(l) && l > 0) {
-                    j = j + 1;
-                }
-                mix.add(number - j);
-                notEnough.put(aLong, Math.toIntExact((skuNumber - stockSkuNumber)));
-            } else if (stockSkuNumber - skuNumber >= 0) {         //够料
-                enough.put(aLong, Math.toIntExact(stockSkuNumber - (long) skuNumber));
-
-                int j = (int) ((skuNumber - stockSkuNumber) / (skuNumber / number));//不能生产数量
-                long l = (skuNumber - stockSkuNumber) % (skuNumber / number);  //取余数
-                if (ToolUtil.isNotEmpty(l) && l > 0) {
-                    j = j + 1;
-                }
-                max.add(number - j);
-            }
-        }
-        if (ToolUtil.isNotEmpty(mix)) {
-            this.mix = Collections.min(mix);    //最少可生产；
-        }
-        if (ToolUtil.isEmpty(mix) && ToolUtil.isNotEmpty(max)) {
-            this.mix = Collections.min(max);
-        }
-        if (this.mix >= number) {
-            this.mix = number;
-        }
-    }
 }
 
 

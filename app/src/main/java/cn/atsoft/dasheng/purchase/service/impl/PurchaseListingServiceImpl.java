@@ -3,12 +3,10 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
@@ -23,6 +21,8 @@ import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -30,7 +30,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -95,6 +94,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         return param.getPurchaseListingId();
     }
 
+
     private Page<PurchaseListingResult> getPageContext() {
         return PageFactory.defaultPage();
     }
@@ -123,6 +123,44 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         this.format(purchaseListingResults);
         return purchaseListingResults;
     }
+
+    /**
+     * 预购
+     *
+     * @param param
+     * @return
+     */
+    @Override
+    public PageInfo<PurchaseListingResult> readyBuy(PurchaseListingParam param) {
+        Page<PurchaseListingResult> pageContext = getPageContext();
+        IPage<PurchaseListingResult> page = this.baseMapper.readyBuy(pageContext, param);
+        format(page.getRecords());
+
+
+        List<PurchaseListing> listings = this.query().eq("status", 0).eq("display", 1).list();
+        List<PurchaseListingResult> results = BeanUtil.copyToList(listings, PurchaseListingResult.class, new CopyOptions());
+        format(results);
+
+
+        for (PurchaseListingResult record : page.getRecords()) {
+            getChild(record, results);
+        }
+        return PageFactory.createPageInfo(page);
+    }
+
+
+    private void getChild(PurchaseListingResult result, List<PurchaseListingResult> results) {
+
+        List<PurchaseListingResult> resultList = new ArrayList<>();
+
+        for (PurchaseListingResult purchaseListingResult : results) {
+            if (purchaseListingResult.getSkuId().equals(result.getSkuId())) {
+                resultList.add(purchaseListingResult);
+            }
+        }
+        result.setChildren(resultList);
+    }
+
 
     @Override
     public Set<ListingPlan> plans(PlanListParam param) {
@@ -217,7 +255,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
 
         for (PurchaseListingResult result : param) {
             for (SkuResult skuResult : skuResults) {
-                if (result.getSkuId().equals(skuResult.getSkuId())) {
+                if (ToolUtil.isNotEmpty(result.getSkuId()) && result.getSkuId().equals(skuResult.getSkuId())) {
                     result.setSkuResult(skuResult);
                     break;
                 }
@@ -231,7 +269,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             }
 
             for (BrandResult brandResult : brandResults) {
-                if (brandResult.getBrandId().equals(result.getBrandId())) {
+                if (ToolUtil.isNotEmpty(result.getBrandId()) && brandResult.getBrandId().equals(result.getBrandId())) {
                     result.setBrandResult(brandResult);
                     break;
                 }

@@ -180,18 +180,18 @@ public class SpuController extends BaseController {
                         Map<String, Object> skuValueMap = new HashMap<>();
                         skuValueMap.put("id", sku.getSkuId().toString());
 
-                        for (Parts part : parts) {
-                            if (sku.getSkuId().equals(part.getSkuId()) && part.getType().equals("1")) {
-                                PartsResult partsResult = new PartsResult();
-                                ToolUtil.copyProperties(part, partsResult);
-                                skuValueMap.put("designParts", partsResult);
-
-                            } else if (sku.getSkuId().equals(part.getSkuId()) && part.getType().equals("2")) {
-                                PartsResult partsResult = new PartsResult();
-                                ToolUtil.copyProperties(part, partsResult);
-                                skuValueMap.put("productionParts", partsResult);
-                            }
-                        }
+//                        for (Parts part : parts) {
+//                            if (sku.getSkuId().equals(part.getSkuId()) && part.getType().equals("1")) {
+//                                PartsResult partsResult = new PartsResult();
+//                                ToolUtil.copyProperties(part, partsResult);
+//                                skuValueMap.put("designParts", partsResult);
+//
+//                            } else if (sku.getSkuId().equals(part.getSkuId()) && part.getType().equals("2")) {
+//                                PartsResult partsResult = new PartsResult();
+//                                ToolUtil.copyProperties(part, partsResult);
+//                                skuValueMap.put("productionParts", partsResult);
+//                            }
+//                        }
                         if (ToolUtil.isNotEmpty(valuesRequests)) {
                             for (AttributeValues valuesRequest : valuesRequests) {
                                 AttributeInSpu itemAttributeResult = new AttributeInSpu();

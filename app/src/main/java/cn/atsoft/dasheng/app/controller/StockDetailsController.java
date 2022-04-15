@@ -4,6 +4,8 @@ import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.pojo.AllBom;
+import cn.atsoft.dasheng.app.pojo.AllBomParam;
+import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -22,8 +24,10 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 
 /**
@@ -37,8 +41,6 @@ import java.util.Map;
 @Api(tags = "仓库物品明细表")
 public class StockDetailsController extends BaseController {
 
-    @Autowired
-    private AllBom allBom;
 
     @Autowired
     private StockDetailsService stockDetailsService;
@@ -51,17 +53,8 @@ public class StockDetailsController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/getAllSkuIds", method = RequestMethod.GET)
-    public ResponseData getAllSkuIds(@RequestParam Long skuId, Integer num) {
-        allBom.getSkuList().clear();
-        allBom.getStockNumber().clear();
-        allBom.getNotEnough().clear();
-        allBom.getEnough().clear();
-        allBom.getBom().clear();
-        allBom.getBom(skuId, num);
-        allBom.getNumber(skuId);
-        return ResponseData.success(allBom);
-    }
+
+
 
     /**
      * 查看详情接口
