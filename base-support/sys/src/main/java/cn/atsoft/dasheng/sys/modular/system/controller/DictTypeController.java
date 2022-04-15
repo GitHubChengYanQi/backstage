@@ -134,30 +134,7 @@ public class DictTypeController extends BaseController {
     public LayuiPageInfo list(DictTypeParam dictTypeParam) {
         return this.dictTypeService.findPageBySpec(dictTypeParam);
     }
-    /**
-     *
-     *
-     * @author stylefeng
-     * @Date 2019-03-13
-     */
-    @ResponseBody
-    @RequestMapping("/queryBrandAndView")
-    public ResponseData queryBrandAndView(DictTypeParam dictTypeParam) {
-        DictType brand = this.dictTypeService.query().eq("code", "brand").one();
-        DictType view = this.dictTypeService.query().eq("code", "view").one();
-        Map<String,Boolean> map = new HashMap<>();
-        if (ToolUtil.isNotEmpty(brand)){
-            map.put("brand",true);
-        }else {
-            map.put("brand",false);
-        }
-        if (ToolUtil.isNotEmpty(view)) {
-            map.put("view",true);
-        }else {
-            map.put("view",false);
-        }
-        return ResponseData.success(map);
-    }
+
 
     /**
      * 查询所有字典
