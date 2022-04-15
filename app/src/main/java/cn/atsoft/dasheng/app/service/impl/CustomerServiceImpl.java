@@ -152,7 +152,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
         }
 
-        if (param.getSupply() == 1) {   //供应商
+        if (ToolUtil.isNotEmpty(param.getSupply())&&param.getSupply() == 1) {   //供应商
             supplyService.addList(param.getSupplyParams(), entity.getCustomerId());
             brandService.save(new Brand() {{
                 setBrandName(entity.getCustomerName());
