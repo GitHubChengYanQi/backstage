@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.AnomalyDetailService;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -93,15 +94,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             AnomalyDetail detail = new AnomalyDetail();
             ToolUtil.copyProperties(detailParam, detail);
             detail.setAnomalyId(entity.getAnomalyId());
-            details.add(detail);
-            switch (param.getAnomalyType()) {
-                case InstockError:
-                    InstockList instockList = instockListService.getById(detailParam.getInstockListId());
-                    instockList.setRealNumber(instockList.getRealNumber() - detailParam.getNumber());
-                    instockListService.updateById(instockList);
-                    break;
-            }
 
+            if (param.getAnomalyType() == AnomalyType.InstockError) {
+                InstockList instockList = instockListService.getById(detailParam.getInstockListId());
+                instockList.setRealNumber(instockList.getRealNumber() - detailParam.getNumber());
+                instockListService.updateById(instockList);
+                detail.setPlanNumber(instockList.getNumber());
+                detail.setRealNumber(instockList.getRealNumber());
+            }
+            details.add(detail);
         }
         detailService.saveBatch(details);
 

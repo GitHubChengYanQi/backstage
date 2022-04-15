@@ -15,11 +15,14 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
+        <result column="plan_number" property="planNumber"/>
+        <result column="real_number" property="realNumber"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List"> plan_number
+    AS "planNumber" ,real_number AS "realNumber",
         detail_id
         AS "detailId", anomaly_id AS "anomalyId", sku_id AS "skuId", type AS "type", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>

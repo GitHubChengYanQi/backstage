@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -30,6 +31,12 @@ public class AnomalyDetailResult implements Serializable {
      */
     @ApiModelProperty("详情id")
     private Long detailId;
+
+
+    private Long planNumber;
+
+
+    private Long realNumber;
 
     /**
      * 主表id
