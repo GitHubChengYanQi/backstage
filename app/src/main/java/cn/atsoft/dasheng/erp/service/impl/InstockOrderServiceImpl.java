@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
@@ -19,9 +20,15 @@ import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
 import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -101,6 +108,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private InstockLogService instockLogService;
     @Autowired
     private InstockLogDetailService instockLogDetailService;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
 
     @Override
     @Transactional
@@ -210,10 +223,36 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             wxCpTemplate.setType(0);
             wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
             wxCpSendTemplate.sendTemplate();
+
+            //发起审批流程
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "instock").eq("status", 99).eq("module", "createInstock").one();
+            if (ToolUtil.isNotEmpty(activitiProcess)) {
+//            this.power(activitiProcess);//检查创建权限
+                LoginUser user = LoginContextHolder.getContext().getUser();
+                ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+                activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库 (" + param.getCoding() + ")");
+                activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
+                activitiProcessTaskParam.setUserId(param.getCreateUser());
+                activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
+                activitiProcessTaskParam.setType("createInstock");
+                activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+                Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+                //添加小铃铛
+                wxCpSendTemplate.setSource("createInstock");
+                wxCpSendTemplate.setSourceId(taskId);
+                //添加log
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+                activitiProcessLogService.autoAudit(taskId, 1);
+            } else {
+                entity.setState(1);
+                this.updateById(entity);
+            }
         }
 
     }
+    private void createProcessTask(){
 
+    }
     public void createQualityTask(InstockOrderParam param, List<Sku> skus) {
         QualityTaskParam qualityTaskParam = new QualityTaskParam();
         List<QualityTaskDetailParam> qualityTaskDetailParams = new ArrayList<>();
@@ -397,6 +436,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
                 if (ToolUtil.isNotEmpty(orderResult.getCreateUser()) && orderResult.getCreateUser().equals(user.getUserId())) {
                     UserResult userResult = new UserResult();
+                    
                     ToolUtil.copyProperties(user, userResult);
                     orderResult.setCreateUserResult(userResult);
                 }
