@@ -24,7 +24,11 @@ public class Anomaly implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    /**
+     * 附件
+     */
+    @TableField("enclosure")
+    private String enclosure;
     /**
      * 备注
      */
@@ -163,6 +167,14 @@ public class Anomaly implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
     }
 
     @Override

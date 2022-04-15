@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -13,6 +14,7 @@ import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.AnomalyDetailService;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
@@ -35,7 +37,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 
@@ -68,6 +72,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private AnomalyDetailService detailService;
     @Autowired
     private InstockListService instockListService;
+    @Autowired
+    private MediaService mediaService;
+
 
     @Transactional
     @Override
@@ -84,6 +91,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 }
                 order.setState(49);
                 instockOrderService.updateById(order);
+                param.setType(param.getAnomalyType().toString());
                 break;
         }
         Anomaly entity = getEntity(param);
@@ -97,17 +105,16 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
             if (param.getAnomalyType() == AnomalyType.InstockError) {
                 InstockList instockList = instockListService.getById(detailParam.getInstockListId());
-                instockList.setRealNumber(instockList.getRealNumber() - detailParam.getNumber());
+                instockList.setNumber(instockList.getNumber() + detailParam.getRealNumber());
+                instockList.setRealNumber(instockList.getRealNumber() - detailParam.getRealNumber());
                 instockListService.updateById(instockList);
-                detail.setPlanNumber(instockList.getNumber());
-                detail.setRealNumber(instockList.getRealNumber());
             }
             details.add(detail);
         }
         detailService.saveBatch(details);
 
 
-        //发起审批流程
+        //     发起审批流程
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "instock").eq("status", 99).eq("module", "instockError").one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             this.power(activitiProcess);//检查创建权限
@@ -187,5 +194,27 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         return entity;
     }
 
+    @Override
+    public void detailFormat(AnomalyResult result) {
+
+        if (result.getType().equals("InstockError")) {
+            InstockOrder instockOrder = instockOrderService.getById(result.getFormId());
+            InstockOrderResult orderResult = new InstockOrderResult();
+            ToolUtil.copyProperties(instockOrder, orderResult);
+            instockOrderService.formatDetail(orderResult);
+            result.setOrderResult(orderResult);
+        }
+
+        //返回附件图片等
+        if (ToolUtil.isNotEmpty(result.getEnclosure())) {
+            List<Long> filedIds = Arrays.asList(result.getEnclosure().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<String> filedUrls = new ArrayList<>();
+            for (Long filedId : filedIds) {
+                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                filedUrls.add(mediaUrl);
+            }
+            result.setFiledUrls(filedUrls);
+        }
+    }
 
 }

@@ -66,4 +66,5 @@ public interface AnomalyService extends IService<Anomaly> {
      */
      PageInfo<AnomalyResult> findPageBySpec(AnomalyParam param);
 
+    void detailFormat(AnomalyResult result);
 }

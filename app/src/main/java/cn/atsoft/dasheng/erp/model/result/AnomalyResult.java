@@ -26,8 +26,13 @@ public class AnomalyResult implements Serializable {
 
     private List<AnomalyDetailResult> results;
 
+    private InstockOrderResult orderResult;
+
+    private List<String> filedUrls;
 
     private String remark;
+
+    private String enclosure;
 
     /**
      * 异常id
