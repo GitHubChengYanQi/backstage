@@ -105,8 +105,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
             if (param.getAnomalyType() == AnomalyType.InstockError) {
                 InstockList instockList = instockListService.getById(detailParam.getInstockListId());
-                instockList.setNumber(instockList.getNumber() + detailParam.getRealNumber());
-                instockList.setRealNumber(instockList.getRealNumber() - detailParam.getRealNumber());
+                instockList.setNumber(detailParam.getRealNumber());
+                instockList.setRealNumber(detailParam.getRealNumber());
                 instockListService.updateById(instockList);
             }
             details.add(detail);
