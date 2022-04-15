@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -93,11 +94,17 @@ public class AnomalyController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<AnomalyResult> detail(@RequestBody AnomalyParam anomalyParam) {
-        Anomaly detail = this.anomalyService.getById(anomalyParam.getAnomalyId());
+
+
+        List<Anomaly> anomalies = ToolUtil.isEmpty(anomalyParam.getFormId()) ? new ArrayList<>() : this.anomalyService.query().eq("form_id", anomalyParam.getFormId()).orderByDesc("create_time").list();
+//        Anomaly detail = this.anomalyService.getById(anomalyParam.getAnomalyId());
         AnomalyResult result = new AnomalyResult();
-        ToolUtil.copyProperties(detail, result);
+        ToolUtil.copyProperties(anomalies.get(0), result);
+
         List<AnomalyDetailResult> results = detailService.getResultByAnomalyId(result.getAnomalyId());
         result.setResults(results);
+
+        this.anomalyService.detailFormat(result);
         return ResponseData.success(result);
     }
 
