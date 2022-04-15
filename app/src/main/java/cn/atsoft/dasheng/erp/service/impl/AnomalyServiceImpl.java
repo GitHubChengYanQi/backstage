@@ -86,7 +86,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (ToolUtil.isEmpty(order)) {
                     throw new ServiceException(500, "入库单不存在");
                 }
-                if (order.getState() != 0) {
+                if (order.getState() != 1 ) {
                     throw new ServiceException(500, "入库单状态不符");
                 }
                 order.setState(49);
