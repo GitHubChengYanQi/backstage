@@ -14,13 +14,15 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="remark" property="remark"/>
+        <result property="enclosure" column="enclosure"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">remark
-    AS "remark"
-    ,
-        anomaly_id AS "anomalyId", type AS "type", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    <sql id="Base_Column_List">enclosure
+    AS "enclosure",
+        remark
+        AS "remark",anomaly_id AS "anomalyId", type AS "type", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
