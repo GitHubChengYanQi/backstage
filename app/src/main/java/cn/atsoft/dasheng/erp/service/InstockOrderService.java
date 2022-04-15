@@ -117,7 +117,10 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     void updateStatus(ActivitiProcessTask processTask);
 
+    void updateCreateInstockStatus(ActivitiProcessTask processTask);
+
     void updateRefuseStatus(ActivitiProcessTask processTask);
 
 
+    void updateCreateInstockRefuseStatus(ActivitiProcessTask processTask);
 }

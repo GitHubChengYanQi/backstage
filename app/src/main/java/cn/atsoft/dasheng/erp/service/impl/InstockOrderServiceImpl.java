@@ -16,16 +16,12 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
-import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
-import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
-import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -35,8 +31,6 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
-import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
-import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -48,7 +42,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -724,11 +717,25 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             this.updateById(order);
         }
     }
+    @Override
+    public void updateCreateInstockStatus(ActivitiProcessTask processTask) {
+        InstockOrder order = this.getById(processTask.getFormId());
+        if (order.getState() != -1) {
+            order.setState(1);
+            this.updateById(order);
+        }
+    }
 
     @Override
     public void updateRefuseStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
         order.setState(50);
+        this.updateById(order);
+    }
+  @Override
+    public void updateCreateInstockRefuseStatus(ActivitiProcessTask processTask) {
+        InstockOrder order = this.getById(processTask.getFormId());
+        order.setState(-1);
         this.updateById(order);
     }
 

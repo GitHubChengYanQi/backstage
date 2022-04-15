@@ -228,6 +228,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
+
                         case "purchaseAsk":
                             if (checkPurchaseAsk.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 updateStatus(activitiProcessLog.getLogId(), status);
@@ -254,6 +255,17 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
+                        case "createInstock":   //入库创建
+                            updateStatus(activitiProcessLog.getLogId(), status);
+                            setStatus(logs, activitiProcessLog.getLogId());
+                            //拒绝走拒绝方法
+                            if (status.equals(0)) {
+                                this.refuseTask(task);
+                                auditCheck = false;
+                            }
+
+                            break;
+
                         default:
 
                     }
@@ -338,6 +350,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "instockError":
                 instockOrderService.updateStatus(processTask);
                 break;
+            case "createInstock":
+                instockOrderService.updateCreateInstockStatus(processTask);
+                break;
         }
     }
 
@@ -360,6 +375,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 break;
             case "instockError":
                 instockOrderService.updateRefuseStatus(processTask);
+                break;
+            case "createInstock":
+                instockOrderService.updateCreateInstockRefuseStatus(processTask);
                 break;
         }
     }
@@ -734,10 +752,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public ActivitiStepsResult microAddLog(Long processId, Long taskId,Long userId) {
+    public ActivitiStepsResult microAddLog(Long processId, Long taskId, Long userId) {
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
         loopAdd(activitiStepsResult, taskId);
-        viewService.microAddView(taskId,userId);
+        viewService.microAddView(taskId, userId);
         return activitiStepsResult;
     }
 
