@@ -2,9 +2,11 @@ package cn.atsoft.dasheng.sys.modular.system.controller;
 
 import cn.atsoft.dasheng.base.pojo.node.ZTreeNode;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
 import cn.atsoft.dasheng.sys.modular.system.entity.DictType;
 import cn.atsoft.dasheng.sys.modular.system.model.params.DictParam;
+import cn.atsoft.dasheng.sys.modular.system.model.params.DictTypeParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.DictResult;
 import cn.atsoft.dasheng.sys.modular.system.service.DictService;
 import cn.atsoft.dasheng.sys.modular.system.service.DictTypeService;
@@ -19,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -207,6 +211,31 @@ public class DictController extends BaseController {
     @ResponseBody
     public List<ZTreeNode> ztree(@RequestParam("dictTypeId") Long dictTypeId, @RequestParam(value = "dictId", required = false) Long dictId) {
         return this.dictService.dictTreeList(dictTypeId, dictId);
+    }
+
+    /**
+     *
+     *
+     * @author stylefeng
+     * @Date 2019-03-13
+     */
+    @ResponseBody
+    @RequestMapping("/queryBrandAndView")
+    public ResponseData queryBrandAndView(DictTypeParam dictTypeParam) {
+        Dict brand = this.dictService.query().eq("code", "brand").one();
+        Dict view = this.dictService.query().eq("code", "view").one();
+        Map<String,Boolean> map = new HashMap<>();
+        if (ToolUtil.isNotEmpty(brand) && brand.getStatus().equals("ENABLE")){
+            map.put("brand",true);
+        }else {
+            map.put("brand",false);
+        }
+        if (ToolUtil.isNotEmpty(view) && view.getStatus().equals("ENABLE")) {
+            map.put("view",true);
+        }else {
+            map.put("view",false);
+        }
+        return ResponseData.success(map);
     }
 
 }
