@@ -121,5 +121,32 @@ public class AuditViewServiceImpl extends ServiceImpl<AuditViewMapper, AuditView
         }
         this.saveBatch(auditViews);
     }
+    @Override
+    public void microAddView(Long taskId,Long userId) {
+        ActivitiProcessTask task = taskService.getById(taskId);
+        List<ActivitiProcessLogResult> logAudit = logService.getLogAudit(taskId);
+
+        List<AuditView> auditViews = new ArrayList<>();
+
+//        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+
+        for (ActivitiProcessLogResult logResult : logAudit) {
+            AuditRule rule = logResult.getActivitiAudit().getRule();
+            if (logResult.getActivitiAudit().getType().equals("process")) {
+                if (rule.getType().toString().equals("audit")) {
+                    AuditView auditView = new AuditView();
+                    auditView.setTaskType(task.getType());
+                    auditView.setUserId(userId);
+                    auditView.setProcessId(logResult.getPeocessId());
+                    auditView.setAuditLogId(logResult.getLogId());
+                    auditView.setProcessId(logResult.getPeocessId());
+                    auditViews.add(auditView);
+                }
+            }
+        }
+        this.saveBatch(auditViews);
+    }
+
+
 
 }

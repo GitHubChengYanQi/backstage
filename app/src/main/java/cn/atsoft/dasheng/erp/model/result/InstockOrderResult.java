@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,6 +28,21 @@ import java.util.List;
 public class InstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private List<StorehousePositionsResult> bindTreeView;
+    private List<InstockLogResult> logResults;
+    private UserResult stockUserResult;
+    private UserResult createUserResult;
+    private UserResult updateUserResult;
+    private ThemeAndOrigin themeAndOrigin;
+
+    private String type;
+
+
+    private Long enoughNumber;
+    private Long realNumber;
+    private Long notNumber;
+
     /**
      * 来源
      */
@@ -44,6 +61,8 @@ public class InstockOrderResult implements Serializable {
 
     private List<InstockListResult> instockListResults;
     private List<InstockResult> instockResults;
+
+    private Date registerTime;
 
     /**
      * 库位id
@@ -87,11 +106,44 @@ public class InstockOrderResult implements Serializable {
     @ApiModelProperty("部门编号")
     private Long deptId;
 
+
+    /**
+     * 库管人员负责人
+     */
+    @ApiModelProperty("库管人员负责人")
+    private Long stockUserId;
+
+    /**
+     * 是否加急
+     */
+    @ApiModelProperty("是否加急")
+    private Integer urgent;
+
+
+    /**
+     * 附件（最多5个，逗号分隔）
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
+
     /**
      * 主题
      */
     @ApiModelProperty("主题")
     private String theme;
+
+
+    /**
+     * 入库时间
+     */
+    @ApiModelProperty("入库时间")
+    private Date instockTime;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String remark;
 
     /**
      * 来源

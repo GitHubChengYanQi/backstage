@@ -25,6 +25,7 @@ import java.util.List;
 @ApiModel
 public class QualityTaskParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
+    private Long microUserId;
     private static final long serialVersionUID = 1L;
     private List<QualityTaskDetailParam> details;
 

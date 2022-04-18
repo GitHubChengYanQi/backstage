@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.sys.modular.system.controller;
 
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.rest.wrapper.DictTypeWrapper;
 import cn.atsoft.dasheng.sys.modular.system.entity.DictType;
 import cn.atsoft.dasheng.sys.modular.system.model.params.DictTypeParam;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -132,6 +134,7 @@ public class DictTypeController extends BaseController {
     public LayuiPageInfo list(DictTypeParam dictTypeParam) {
         return this.dictTypeService.findPageBySpec(dictTypeParam);
     }
+
 
     /**
      * 查询所有字典

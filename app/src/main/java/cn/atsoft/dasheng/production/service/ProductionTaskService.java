@@ -44,6 +44,8 @@ public interface ProductionTaskService extends IService<ProductionTask> {
 
     ProductionTask Receive(ProductionTaskParam param);
 
+    ProductionTask changeUser(ProductionTaskParam param);
+
     /**
      * 查询单条数据，Specification模式
      *

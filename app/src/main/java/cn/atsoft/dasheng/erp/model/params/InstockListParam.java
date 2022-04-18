@@ -35,6 +35,11 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     private List<InstockListRequest> requests;
 
     /**
+     * 实际数量
+     */
+    private Long realNumber;
+
+    /**
      * 库位id
      */
     private Long storehousePositionsId;
@@ -74,6 +79,37 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
      */
     @ApiModelProperty("数量")
     private Long number;
+
+
+    /**
+     * 到货时间
+     */
+    @ApiModelProperty("到货时间")
+    private Date receivedDate;
+
+    /**
+     * 有效日期
+     */
+    @ApiModelProperty("有效日期")
+    private Date effectiveDate;
+
+    /**
+     * 生产日期
+     */
+    @ApiModelProperty("生产日期")
+    private Date manufactureDate;
+
+    /**
+     * 批号
+     */
+    @ApiModelProperty("批号")
+    private String lotNumber;
+
+    /**
+     * 流水号
+     */
+    @ApiModelProperty("流水号")
+    private String serialNumber;
 
     /**
      * 入库单id

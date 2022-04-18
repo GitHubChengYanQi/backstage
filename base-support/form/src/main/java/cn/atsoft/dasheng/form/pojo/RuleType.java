@@ -8,5 +8,6 @@ public enum RuleType {
     audit,
     send,
     start,
-    purchaseAsk
+    purchaseAsk,
+
 }

@@ -7,7 +7,9 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
+import cn.atsoft.dasheng.erp.service.impl.CheckInstock;
 import cn.atsoft.dasheng.erp.service.impl.CheckQualityTask;
 import cn.atsoft.dasheng.erp.service.impl.ProcessTaskEndSend;
 import cn.atsoft.dasheng.form.entity.*;
@@ -97,6 +99,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private InquiryTaskService inquiryTaskService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CheckInstock checkInstock;
+
+    @Autowired
+    private InstockOrderService instockOrderService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -221,6 +228,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
+
                         case "purchaseAsk":
                             if (checkPurchaseAsk.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 updateStatus(activitiProcessLog.getLogId(), status);
@@ -234,6 +242,30 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
+                        case "instockError":   //入库异常
+                            if (checkInstock.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
+                                updateStatus(activitiProcessLog.getLogId(), status);
+                                setStatus(logs, activitiProcessLog.getLogId());
+                                //拒绝走拒绝方法
+                                if (status.equals(0)) {
+                                    this.refuseTask(task);
+                                    auditCheck = false;
+                                }
+                            } else {
+                                auditCheck = false;
+                            }
+                            break;
+                        case "createInstock":   //入库创建
+                            updateStatus(activitiProcessLog.getLogId(), status);
+                            setStatus(logs, activitiProcessLog.getLogId());
+                            //拒绝走拒绝方法
+                            if (status.equals(0)) {
+                                this.refuseTask(task);
+                                auditCheck = false;
+                            }
+
+                            break;
+
                         default:
 
                     }
@@ -315,6 +347,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "inquiry":
                 inquiryTaskService.updateStatus(processTask);
                 break;
+            case "instockError":
+                instockOrderService.updateStatus(processTask);
+                break;
+            case "createInstock":
+                instockOrderService.updateCreateInstockStatus(processTask);
+                break;
         }
     }
 
@@ -334,6 +372,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 break;
             case "inquiry":
                 inquiryTaskService.updateRefuseStatus(processTask);
+                break;
+            case "instockError":
+                instockOrderService.updateRefuseStatus(processTask);
+                break;
+            case "createInstock":
+                instockOrderService.updateCreateInstockRefuseStatus(processTask);
                 break;
         }
     }
@@ -707,6 +751,29 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return activitiStepsResult;
     }
 
+    @Override
+    public ActivitiStepsResult microAddLog(Long processId, Long taskId, Long userId) {
+        ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
+        loopAdd(activitiStepsResult, taskId);
+        viewService.microAddView(taskId, userId);
+        return activitiStepsResult;
+    }
+
+
+    public void addLogJudgeBranch(Long processId, Long taskId, Long sourId, String type) {
+        //TODO 分支添加log
+        ActivitiStepsResult stepResult = stepsService.getStepResult(processId);
+        switch (type) {
+            case "purchaseAsk":
+                PurchaseAsk purchaseAsk = askService.getById(sourId);
+                loopAddJudgeBranch(stepResult, taskId, purchaseAsk);
+                viewService.addView(taskId);
+                break;
+
+        }
+
+    }
+
     private void loopAdd(ActivitiStepsResult activitiStepsResult, Long taskId) {
 
         Long processId = activitiStepsResult.getProcessId();
@@ -868,20 +935,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return false;
     }
 
-    @Override
-    public void addLogJudgeBranch(Long processId, Long taskId, Long sourId, String type) {
-        //TODO 分支添加log
-        ActivitiStepsResult stepResult = stepsService.getStepResult(processId);
-        switch (type) {
-            case "purchaseAsk":
-                PurchaseAsk purchaseAsk = askService.getById(sourId);
-                loopAddJudgeBranch(stepResult, taskId, purchaseAsk);
-                viewService.addView(taskId);
-                break;
-
-        }
-
-    }
 
     @Override
     public List<ActivitiProcessLogResult> getLogAudit(Long taskId) {

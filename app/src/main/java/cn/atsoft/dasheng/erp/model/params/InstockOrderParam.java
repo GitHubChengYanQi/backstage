@@ -31,6 +31,10 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private static final long serialVersionUID = 1L;
     //跳转路径
     private String url;
+
+    private String customerName;
+
+    private String type;
     /**
      * 库位id
      */
@@ -59,6 +63,38 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
      */
     @ApiModelProperty("入库单")
     private Long instockOrderId;
+
+    /**
+     * 入库时间
+     */
+    @ApiModelProperty("入库时间")
+    private Date instockTime;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String remark;
+
+    /**
+     * 库管人员负责人
+     */
+    @ApiModelProperty("库管人员负责人")
+    private Long stockUserId;
+
+    private Date registerTime;
+    /**
+     * 是否加急
+     */
+    @ApiModelProperty("是否加急")
+    private Integer urgent;
+
+
+    /**
+     * 附件（最多5个，逗号分隔）
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
 
     /**
      * 负责人
@@ -103,7 +139,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
      * 入库状态
      */
     @ApiModelProperty("入库状态")
-    private Boolean state;
+    private Integer state;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

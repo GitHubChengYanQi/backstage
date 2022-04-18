@@ -44,7 +44,7 @@ public class StorehousePositionsResult implements Serializable {
     private PrintTemplateResult printTemplateResult;
 
     private List<StockDetailsResult> detailsResults;
-    @JSONField(serialize = false)
+//    @JSONField(serialize = false)
     private List<SkuSimpleResult> skuResults;
 
     private List<String> skuIds;

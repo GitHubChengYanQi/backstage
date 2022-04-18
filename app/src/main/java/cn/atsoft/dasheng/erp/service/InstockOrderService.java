@@ -10,7 +10,9 @@ import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
+import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -34,6 +36,10 @@ public interface InstockOrderService extends IService<InstockOrder> {
      * @Date 2021-10-06
      */
     void add(InstockOrderParam param);
+
+    void checkNumberTrue(Long id, Integer status);
+
+    void checkNumberFalse(Long id, Integer status);
 
     /**
      * 删除
@@ -90,6 +96,11 @@ public interface InstockOrderService extends IService<InstockOrder> {
      */
     void freeInstock(FreeInStockParam freeInStockParam);
 
+    void formatDetail(InstockOrderResult orderResult);
+
+
+    void inStockByOrder(InStockByOrderParam param);
+
     /**
      * 多个库位入库
      *
@@ -104,5 +115,12 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     Boolean judgePosition(List<StorehousePositionsBind> positionsBinds, Inkind inkind);
 
+    void updateStatus(ActivitiProcessTask processTask);
 
+    void updateCreateInstockStatus(ActivitiProcessTask processTask);
+
+    void updateRefuseStatus(ActivitiProcessTask processTask);
+
+
+    void updateCreateInstockRefuseStatus(ActivitiProcessTask processTask);
 }

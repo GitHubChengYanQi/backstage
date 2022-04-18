@@ -6,10 +6,9 @@ import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
@@ -27,10 +26,7 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -40,8 +36,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -300,7 +298,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         return entity;
     }
 
-    private void format(List<InstockListResult> data) {
+    @Override
+    public void format(List<InstockListResult> data) {
 
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
@@ -315,9 +314,21 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
 
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
-
-
+//        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", skuIds).list();
+//        List<StockDetails> stockDetailsTotal = new ArrayList<>();
+//        stockDetails.parallelStream().collect(Collectors.groupingBy(detail->detail.getSkuId(),Collectors.toList())).forEach(
+//                (id, transfer) -> {
+//                    transfer.stream().reduce((a, b) -> {
+//                        return new StockDetails(){{
+//                            setSkuId(a.getSkuId());
+//                            setNumber(a.getNumber() + b.getNumber());
+//                        }};
+//                    }).ifPresent(stockDetailsTotal::add);
+//                }
+//        );
         for (InstockListResult datum : data) {
+
+            datum.setNotNumber(datum.getNumber()-datum.getRealNumber());
 
             List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
             datum.setBackSkus(backSkus);
@@ -335,10 +346,19 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
                         SkuResult skuResult = new SkuResult();
                         ToolUtil.copyProperties(sku, skuResult);
                         datum.setSkuResult(skuResult);
+
                         break;
                     }
                 }
             }
+//            for (StockDetails details : stockDetailsTotal) {
+//                if (datum.getSkuId().equals(details.getSkuId())){
+//                    Map<String,Object> stockDetial = new HashMap<>();
+//                    stockDetial.put("skuId",datum.getSkuId());
+//                    stockDetial.put("number",details.getNumber());
+//                    datum.setStockDetails(stockDetial);
+//                }
+//            }
             for (Brand brand : brands) {
                 if (datum.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult = new BrandResult();

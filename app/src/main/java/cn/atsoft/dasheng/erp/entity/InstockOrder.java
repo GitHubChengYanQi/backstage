@@ -32,6 +32,12 @@ public class InstockOrder implements Serializable {
     private String source;
 
     /**
+     * 类型
+     */
+    @TableField("type")
+    private String type;
+
+    /**
      * 来源id
      */
     @TableField("source_id")
@@ -44,7 +50,7 @@ public class InstockOrder implements Serializable {
     private Long storehousePositionsId;
 
     @TableField("register_time")
-    private Date time;
+    private Date registerTime;
 
     public String getCoding() {
         return coding;
@@ -66,6 +72,38 @@ public class InstockOrder implements Serializable {
      */
     @TableField("storehouse_id")
     private Long storeHouseId;
+
+    /**
+     * 库管人员负责人
+     */
+    @TableField("stock_user_id")
+    private Long stockUserId;
+
+    /**
+     * 入库时间
+     */
+    @TableField("instock_time")
+    private Date instockTime;
+
+    /**
+     * 备注
+     */
+    @TableField("remark")
+    private String remark;
+
+    /**
+     * 是否加急
+     */
+    @TableField("urgent")
+    private Integer urgent;
+
+
+    /**
+     * 附件（最多5个，逗号分隔）
+     */
+    @TableField("enclosure")
+    private String enclosure;
+
     /**
      * 负责人
      */
@@ -111,6 +149,14 @@ public class InstockOrder implements Serializable {
     @TableField("origin")
     private String origin;
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getTheme() {
         return theme;
     }
@@ -127,7 +173,45 @@ public class InstockOrder implements Serializable {
         this.origin = origin;
     }
 
+    public Date getInstockTime() {
+        return instockTime;
+    }
 
+    public void setInstockTime(Date instockTime) {
+        this.instockTime = instockTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Long getStockUserId() {
+        return stockUserId;
+    }
+
+    public void setStockUserId(Long stockUserId) {
+        this.stockUserId = stockUserId;
+    }
+
+    public Integer getUrgent() {
+        return urgent;
+    }
+
+    public void setUrgent(Integer urgent) {
+        this.urgent = urgent;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
+    }
 
     public String getSource() {
         return source;
@@ -145,12 +229,12 @@ public class InstockOrder implements Serializable {
         this.sourceId = sourceId;
     }
 
-    public Date getTime() {
-        return time;
+    public Date getRegisterTime() {
+        return registerTime;
     }
 
-    public void setTime(Date time) {
-        this.time = time;
+    public void setRegisterTime(Date registerTime) {
+        this.registerTime = registerTime;
     }
 
     public Long getStoreHouseId() {

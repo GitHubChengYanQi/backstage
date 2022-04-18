@@ -1063,6 +1063,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             AutomaticBindResult automaticBindResult = new AutomaticBindResult();
             automaticBindResult.setCodeId(orCode.getOrCodeId());
             automaticBindResult.setInkindId(formId);
+            automaticBindResult.setSkuId(codeRequest.getId());
+            automaticBindResult.setNumber(codeRequest.getNumber());
             bindResults.add(automaticBindResult);
         }
         return bindResults;
