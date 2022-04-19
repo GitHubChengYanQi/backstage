@@ -38,8 +38,8 @@ public class ContractResult implements Serializable {
      */
     @ApiModelProperty("合同id")
     private Long contractId;
-    private CustomerResult partA;
-    private CustomerResult partB;
+    private CustomerResult partA = new CustomerResult();
+    private CustomerResult partB = new CustomerResult();
 
     private String partAName;
     private String partBName;
@@ -51,11 +51,11 @@ public class ContractResult implements Serializable {
     private Long partyAContactsId;
     private Long partyBContactsId;
 
-    private ContactsResult partyAContacts;
-    private ContactsResult partyBContacts;
+    private ContactsResult partyAContacts = new ContactsResult();
+    private ContactsResult partyBContacts = new ContactsResult();
 
-    private AdressResult partyAAdress;
-    private AdressResult partyBAdress;
+    private AdressResult partyAAdress = new AdressResult();
+    private AdressResult partyBAdress = new AdressResult();
 
 
     private Long partyAPhone;
@@ -66,8 +66,8 @@ public class ContractResult implements Serializable {
     private Integer audit;
     private Integer allMoney;
 
-    private PhoneResult phoneA;
-    private PhoneResult phoneB;
+    private PhoneResult phoneA = new PhoneResult();
+    private PhoneResult phoneB = new PhoneResult();
 
     @TableField(typeHandler = FastjsonTypeHandler.class)
     private Payment payment;

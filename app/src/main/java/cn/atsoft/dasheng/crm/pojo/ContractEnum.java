@@ -32,7 +32,7 @@ public enum ContractEnum {
     AZipCode("需方邮政编码"),         //需方邮政编码
     AEmail("需方公司电邮"),         //需方公司电邮
     AEin("需方税号"),            //需方税号
-    DeliveryAddress("交货地址"),           //交货地址
+    DeliveryAddress("提取(交付)地点"),           //交货地址
     supplierPhone("供货人及电话"),         //供货人及电话
     BCustomerAdress("供方公司地址"),         //供方公司地址
     BCustomerPhone("供方公司电话"),         //供方公司电话

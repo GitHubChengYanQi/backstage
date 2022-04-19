@@ -35,6 +35,12 @@ public class OrderResult implements Serializable {
     private List<OrderDetailResult> detailResults;
     private Date date;
 
+    private Long AContactsPhone;
+
+    private Long BContactsPhone;
+
+    private Long allMoney;
+
     private Adress adress;
 
     private Long adressId;
@@ -57,6 +63,9 @@ public class OrderResult implements Serializable {
     private Integer status;
     private String coding;
     private UserResult user;
+
+    private Long ACompanyPhone;
+    private Long BCompanyPhone;
 
     /**
      * 货币种类

@@ -201,7 +201,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Map<String, Object> mapFormat(Long contractId) {
         ContractResult detail = contractService.detail(contractId);
-        Order order = this.getById(detail.getSourceId());
+
+        OrderResult orderResult = this.getDetail(detail.getSourceId());
 
         Map<String, Object> map = new HashMap<>();
 
@@ -226,107 +227,71 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     map.put(ContractEnum.BCustomerPhone.getDetail(), detail.getPhoneB().getPhone());
                     break;
 
-//                case extractPlace:
-//                    Adress extractPlace = order.getPartyAAdressId() == null ? new Adress() : adressService.getById(order.getAdressId());
-//                    if (ToolUtil.isEmpty(extractPlace) || ToolUtil.isEmpty(extractPlace.getLocation())) {
-//                        map.put(ContractEnum.extractPlace.getDetail(), "");
-//                    } else {
-//                        map.put(ContractEnum.extractPlace.getDetail(), (extractPlace.getLocation() + (extractPlace.getDetailLocation() == null ? "" : extractPlace.getDetailLocation())));
-//                        extractPlace.setType("收获地址");
-//                        adressService.updateById(extractPlace);
-//                    }
-//                    break;
-//                case pickUpMan:
-//                    Contacts pickUpMan = order.getPartyAContactsId() == null ? new Contacts() : contactsService.getById(order.getPartyAContactsId());
-//                    if (ToolUtil.isEmpty(pickUpMan) || ToolUtil.isEmpty(pickUpMan.getContactsName())) {
-//                        map.put(ContractEnum.pickUpManPhone.getDetail(), "");
-//                    } else {
-//                        map.put(ContractEnum.pickUpManPhone.getDetail(), pickUpMan.getContactsName());
-//                    }
-//                    break;
-//                case pickUpManPhone:
-//                    Contacts contac = order.getPartyBPhone() == null ? new Contacts() : contactsService.getById(order.getPartyBPhone());
-//                    List<Phone> phones = contac.getContactsId() == null ? new ArrayList<>() : phoneService.query().eq("contacts_id", contac.getContactsId()).list();
-//                    Phone pickUpManPhone = phones.get(0);
-//                    if (ToolUtil.isNotEmpty(pickUpManPhone) || ToolUtil.isNotEmpty(pickUpManPhone.getPhoneNumber())) {
-//                        map.put(ContractEnum.pickUpManPhone.getDetail(), pickUpManPhone.getPhoneNumber().toString());
-//                    } else {
-//                        map.put(ContractEnum.pickUpManPhone.getDetail(), "");
-//                    }
-//                    break;
+                case extractPlace:
+                    map.put(ContractEnum.extractPlace.getDetail(), (orderResult.getAdress().getLocation()));
+                    break;
+                case pickUpMan:
+                    map.put(ContractEnum.pickUpManPhone.getDetail(), orderResult.getAcontacts().getContactsName());
+                    break;
 //
-//                case ACustomerName:
-//                    map.put(ContractEnum.ACustomerName.getDetail(), detail.getPartA().getCustomerName());
-//                    break;
-//                case BCustomerName:
-//                    map.put(ContractEnum.BCustomerName.getDetail(), detail.getPartB().getCustomerName());
-//                    break;
-//                case ABank:
-//                    Bank bank = order.getPartyABankId() == null ? new Bank() : bankService.getById(order.getPartyABankId());
-//                    if (ToolUtil.isEmpty(bank) || ToolUtil.isEmpty(bank.getBankName())) {
-//                        map.put(ContractEnum.ABank.getDetail(), "");
-//                    } else {
-//                        map.put(ContractEnum.ABank.getDetail(), bank.getBankName());
-//                    }
-//                    break;
-//                case BBank:
-//                    Bank Bbank = order.getPartyBBankId() == null ? new Bank() : bankService.getById(order.getPartyBBankId());
-//                    if (ToolUtil.isEmpty(Bbank) || ToolUtil.isEmpty(Bbank.getBankName())) {
-//                        map.put(ContractEnum.BBank.getDetail(), "");
-//                    } else {
-//                        map.put(ContractEnum.BBank.getDetail(), Bbank.getBankName());
-//                    }
-//                    break;
-//                case ABankAccount:
-//                    Invoice invoice = order.getPartyABankAccount() == null ? new Invoice() : invoiceService.getById(order.getPartyABankAccount());
-//                    if (ToolUtil.isEmpty(invoice) || ToolUtil.isEmpty(invoice.getBankAccount())) {
-//                        map.put(ContractEnum.ABankAccount.getDetail(), "");
-//                    } else {
-//                        map.put(ContractEnum.ABankAccount.getDetail(), invoice.getBankAccount());
-//                    }
-//                    break;
-//                case BBankAccount:
-//                    Invoice Bnvoice = order.getPartyBBankAccount() == null ? new Invoice() : invoiceService.getById(order.getPartyBBankAccount());
-//                    if (ToolUtil.isEmpty(Bnvoice) || ToolUtil.isEmpty(Bnvoice.getBankAccount())) {
-//                        map.put(ContractEnum.BBankAccount.getDetail(), "");
-//                    } else {
-//                        map.put(ContractEnum.BBankAccount.getDetail(), Bnvoice.getBankAccount());
-//                    }
-//                    break;
-//
-//                case TotalAmountInFigures:
-//
-//                    break;
-//
-//                case ALegalMan:
-//                    if (ToolUtil.isNotEmpty(order.getPartyALegalPerson())) {
-//                        map.put(ContractEnum.ALegalMan.getDetail(), order.getPartyALegalPerson());
-//                    } else {
-//                        map.put(ContractEnum.ALegalMan.getDetail(), "");
-//                    }
-//                    break;
-//
-//                case ALegalManPhone:
-//                    map.put(ContractEnum.ALegalManPhone.getDetail(), "");
-//                    break;
-//                case BLegalManPhone:
-//                    map.put(ContractEnum.BLegalManPhone.getDetail(), "");
-//                    break;
-//                case BLegalMan:
-//                    if (ToolUtil.isNotEmpty(order.getPartyBLegalPerson())) {
-//                        map.put(ContractEnum.BLegalMan.getDetail(), order.getPartyALegalPerson());
-//                    } else {
-//                        map.put(ContractEnum.BLegalMan.getDetail(), "");
-//                    }
-//                    break;
-//                case ABankNo:
-//                    if (ToolUtil.isNotEmpty(order.getPartyABankNo())) {
-//                        map.put(ContractEnum.ABankNo.getDetail(), order.getPartyABankNo().toString());
-//                    } else {
-//                        map.put(ContractEnum.ABankNo.getDetail(), "");
-//                    }
-//                    break;
-
+                case ACustomerName:
+                    map.put(ContractEnum.ACustomerName.getDetail(), detail.getPartA().getCustomerName());
+                    break;
+                case BCustomerName:
+                    map.put(ContractEnum.BCustomerName.getDetail(), detail.getPartB().getCustomerName());
+                    break;
+                case ABank:
+                    map.put(ContractEnum.ABank.getDetail(), orderResult.getAbank().getBankName());
+                    break;
+                case BBank:
+                    map.put(ContractEnum.BBank.getDetail(), orderResult.getBbank().getBankName());
+                    break;
+                case ABankAccount:
+                    map.put(ContractEnum.ABankAccount.getDetail(), orderResult.getPartyABankAccount());
+                    break;
+                case BBankAccount:
+                    map.put(ContractEnum.BBankAccount.getDetail(), orderResult.getPartyBBankAccount());
+                    break;
+                case TotalAmountInFigures:
+                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), orderResult.getAllMoney());
+                    break;
+                case TotalAmountInWords:
+                    int money = Math.toIntExact(orderResult.getAllMoney());
+                    String format = NumberChineseFormatter.format(money, true, true);
+                    map.put(ContractEnum.TotalAmountInWords.getDetail(),format);
+                case ABankNo:
+                    map.put(ContractEnum.ABankNo.getDetail(), orderResult.getPartyABankNo());
+                    break;
+                case BBankNo:
+                    map.put(ContractEnum.BBankNo.getDetail(), orderResult.getPartyBBankNo());
+                    break;
+                case AFax:
+                    map.put(ContractEnum.AFax.getDetail(), orderResult.getPartyAFax());
+                    break;
+                case BFax:
+                    map.put(ContractEnum.BFax.getDetail(), orderResult.getPartyBFax());
+                    break;
+                case APhone:
+                    map.put(ContractEnum.APhone.getDetail(), orderResult.getAContactsPhone());
+                    break;
+                case BPhone:
+                    map.put(ContractEnum.BPhone.getDetail(), orderResult.getBContactsPhone());
+                    break;
+                case AEmail:
+                    map.put(ContractEnum.AEmail.getDetail(), orderResult.getPartyAZipcode());
+                    break;
+                case BEmail:
+                    map.put(ContractEnum.BEmail.getDetail(), orderResult.getPartyBZipcode());
+                    break;
+                case AEin:
+                    map.put(ContractEnum.AEin.getDetail(), "");
+                    break;
+                case BEin:
+                    map.put(ContractEnum.BEin.getDetail(), "");
+                    break;
+                case DeliveryAddress:
+                    map.put(ContractEnum.DeliveryAddress.getDetail(), "");
+                    break;
             }
         }
 
@@ -340,10 +305,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         OrderResult orderResult = new OrderResult();
         ToolUtil.copyProperties(order, orderResult);
         List<OrderDetailResult> details = new ArrayList<>();
+
         PaymentResult paymentResult = paymentService.getDetail(orderResult.getOrderId());
         if (ToolUtil.isNotEmpty(paymentResult) && ToolUtil.isNotEmpty(paymentResult.getOrderId())) {
             details = detailService.getDetails(paymentResult.getOrderId());
         }
+        long allMoney = 0L;
+        for (OrderDetailResult detail : details) {
+            long money = detail.getOnePrice() * detail.getPurchaseNumber();
+            allMoney = allMoney + money;
+        }
+        orderResult.setAllMoney(allMoney);
         orderResult.setDetailResults(details);
         orderResult.setPaymentResult(paymentResult);
         detailFormat(orderResult);
@@ -354,6 +326,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private void detailFormat(OrderResult result) {
         Contacts Acontacts = contactsService.getById(result.getPartyAClientId());//甲方委托人
         Contacts Bcontacts = contactsService.getById(result.getPartyBClientId());//乙方联系人
+
+        if (ToolUtil.isNotEmpty(Acontacts)&&ToolUtil.isNotEmpty(Acontacts.getPhone())) {  //甲方代表电话
+             Phone phone = phoneService.getById(Acontacts.getPhone());
+            if (ToolUtil.isNotEmpty(phone)) {
+                result.setAContactsPhone(phone.getPhoneNumber());
+            }
+        }
+
+        if (ToolUtil.isNotEmpty(Bcontacts)&&ToolUtil.isNotEmpty(Bcontacts.getPhone())) {  //乙方代表电话
+            Phone phone = phoneService.getById(Bcontacts.getPhone());
+            if (ToolUtil.isNotEmpty(phone)) {
+                result.setBContactsPhone(phone.getPhoneNumber());
+            }
+        }
+
+
         result.setAcontacts(Acontacts);
         result.setBcontacts(Bcontacts);
 
@@ -374,8 +362,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         Customer Acustomer = customerService.getById(result.getBuyerId());//甲方;
         Customer Bcustomer = customerService.getById(result.getSellerId());//乙方
+
         result.setAcustomer(Acustomer);
         result.setBcustomer(Bcustomer);
+
+        Phone AcompanyPhone = ToolUtil.isEmpty(result.getPartyACompanyPhone()) ? new Phone() : phoneService.getById(result.getPartyACompanyPhone());  //甲方公司电话
+        Phone BcompanyPhone = ToolUtil.isEmpty(result.getPartyBCompanyPhone()) ? new Phone() : phoneService.getById(result.getPartyBCompanyPhone());  //乙方公司电话
+
+        if (ToolUtil.isNotEmpty(AcompanyPhone.getPhoneNumber())) {
+            result.setACompanyPhone(AcompanyPhone.getPhoneNumber());
+        }
+
+        if (ToolUtil.isNotEmpty(BcompanyPhone.getPhoneNumber())) {
+            result.setBCompanyPhone(BcompanyPhone.getPhoneNumber());
+        }
 
         Adress adress = ToolUtil.isEmpty(result.getAdressId()) ? new Adress() : adressService.getById(result.getAdressId());
 
