@@ -43,7 +43,7 @@ public class ContractTempleteServiceImpl extends ServiceImpl<ContractTempleteMap
         ContractTemplete entity = getEntity(param);
 
         this.save(entity);
-        if (param.getType().equals("input")){
+        if (ToolUtil.isNotEmpty(param.getDetailParams())){
             List<ContractTempleteDetail> contractTempleteDetails = new ArrayList<>();
             for (ContractTempleteDetailParam detailParam : param.getDetailParams()) {
                 ContractTempleteDetail detail = new ContractTempleteDetail();
