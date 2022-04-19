@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.Excel;
 
 import cn.afterturn.easypoi.exception.word.enmus.WordExportEnum;
 import cn.afterturn.easypoi.word.WordExportUtil;
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.service.ContractService;
@@ -10,14 +11,21 @@ import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.oshi.model.SysFileInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.ContractTemplete;
+import cn.atsoft.dasheng.crm.entity.ContractTempleteDetail;
+import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
+import cn.atsoft.dasheng.crm.service.ContractTempleteService;
+import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.poi.word.DocUtil;
 import cn.hutool.poi.word.Word07Writer;
+import com.alibaba.fastjson.JSON;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hwpf.converter.WordToHtmlConverter;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
@@ -37,6 +45,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -57,6 +70,12 @@ public class ContractExcel {
     private TemplateService templateService;
     @Autowired
     private FileInfoService fileInfoService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private ContractTempleteService templeteService;
+    @Autowired
+    private ContractTempleteDetailService templeteDetailService;
 
 
     @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
@@ -84,6 +103,78 @@ public class ContractExcel {
         } catch (Exception e) {
             //异常处理
         }
+
+    }
+
+    @RequestMapping(value = "/exportContractWord", method = RequestMethod.GET)
+    public void exportContract(HttpServletResponse response, Long id) {
+        try {
+            Contract contract = contractService.getById(id);
+            Template template = templateService.getById(contract.getTemplateId());
+            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+
+            XWPFDocument document = formatDocument(contract, fileInfo.getFilePath());
+
+            String fileName = "test.docx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            OutputStream os = response.getOutputStream();
+            document.write(os);
+        } catch (Exception e) {
+            //异常处理
+        }
+
+    }
+
+    /**
+     * 获取word
+     *
+     * @param contract
+     * @param url
+     * @return
+     */
+    private XWPFDocument formatDocument(Contract contract, String url) {
+
+        List<LabelResult> results = JSON.parseArray(contract.getContent(), LabelResult.class);
+        Map<String, Object> map = new HashMap<>();
+        for (LabelResult result : results) {
+            if (!result.type.equals("sku") && !result.getType().equals("pay")) {
+                map.put(result.getName(), result.getValue());
+            }
+            if (result.getType().equals("sku")){
+                ContractTemplete templete = templeteService.query().eq("type", result.getType()).eq("name", result.getName()).one();
+                ContractTempleteDetail templeteDetail = templeteDetailService.query().eq("contract_templete_id", templete.getContractTemplateId()).one();
+                String skuReplace = contractService.skuReplace(templeteDetail.getValue(), contract.getSourceId());
+                map.put(result.getName(), skuReplace);
+            }
+
+            if (result.getType().equals("pay")){
+
+            }
+
+        }
+        map.putAll(orderService.mapFormat(contract.getContractId()));
+
+        WordUtils wordUtils = new WordUtils();
+        XWPFDocument document = DocUtil.create(new File(url));
+
+        wordUtils.replaceInPara(document, map);
+        // 替换表格中的参数
+        wordUtils.replaceInTable(document, new int[]{0}, map);
+
+        return document;
+    }
+
+    private void wordToHtml(Long id) {
+
+        Contract contract = contractService.getById(id);
+        Template template = templateService.getById(contract.getTemplateId());
+        FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+
+        XWPFDocument document = formatDocument(contract, fileInfo.getFilePath());
+
+        WordToHtmlConverter wordToHtmlConverter = new WordToHtmlConverter((org.w3c.dom.Document) document);
+
 
     }
 

@@ -1,12 +1,12 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.Excel.WordUtils;
 import cn.atsoft.dasheng.app.entity.*;
 
 
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.*;
-import cn.atsoft.dasheng.app.pojo.ContractReplace;
 import cn.atsoft.dasheng.app.pojo.CycleReplace;
 import cn.atsoft.dasheng.app.pojo.PayReplace;
 import cn.atsoft.dasheng.app.service.*;
@@ -20,36 +20,26 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
 import cn.atsoft.dasheng.crm.entity.Invoice;
+import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.params.PaymentDetailParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
-import cn.atsoft.dasheng.crm.service.BankService;
-import cn.atsoft.dasheng.crm.service.CompanyRoleService;
-import cn.atsoft.dasheng.crm.service.ContractClassService;
-import cn.atsoft.dasheng.crm.service.InvoiceService;
+import cn.atsoft.dasheng.crm.pojo.ContractEnum;
+import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.message.enmu.MicroServiceType;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
-import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.purchase.model.params.SourceEnum;
-import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
-import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
-import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
-import cn.atsoft.dasheng.taxRate.entity.TaxRate;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.atsoft.dasheng.taxRate.service.TaxRateService;
-import cn.atsoft.dasheng.template.entity.PaymentTemplate;
-import cn.atsoft.dasheng.template.service.PaymentTemplateService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.convert.NumberChineseFormatter;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.unit.DataUnit;
-import cn.hutool.core.util.NumberUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -62,7 +52,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -84,7 +73,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private ContractService contractService;
     @Autowired
     private InvoiceService invoiceService;
-
     @Autowired
     private ContactsService contactsService;
     @Autowired
@@ -101,23 +89,31 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private SkuService skuService;
     @Autowired
     private BrandService brandService;
-
     @Autowired
     private UnitService unitService;
     @Autowired
     private TaxRateService rateService;
+    @Autowired
+    private FileInfoService fileInfoService;
+    @Autowired
+    private OrderDetailService orderDetailService;
+
 
     @Override
     public ContractResult detail(Long id) {
         Contract contract = this.getById(id);
         ContractResult contractResult = new ContractResult();
         ToolUtil.copyProperties(contract, contractResult);
-        List<ContractResult> results = new ArrayList<ContractResult>() {{
+
+
+        format(new ArrayList<ContractResult>() {{
             add(contractResult);
-        }};
-        format(results);
-        return results.get(0);
+        }});
+
+
+        return contractResult;
     }
+
 
     @Override
     public ContractResult addResult(ContractParam param) {
@@ -416,54 +412,57 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         ToolUtil.copyProperties(param, contract);
         contract.setSource(orderType);
         contract.setSourceId(orderId);
+        contract.setContent(JSON.toJSONString(param.getLabelResults()));
 
         if (ToolUtil.isEmpty(param.getTemplateId())) {
             throw new ServiceException(500, "请选择合同模板");
         }
-        Template template = templateService.getById(param.getTemplateId());
+        contract.setPartyA(orderParam.getBuyerId());
+        contract.setPartyB(orderParam.getSellerId());
+        contract.setPartyAPhone(orderParam.getPartyAPhone());
+        contract.setPartyBPhone(orderParam.getPartyBPhone());
+        contract.setPartyAAdressId(orderParam.getPartyAAdressId());
+        contract.setPartyBAdressId(orderParam.getPartyBAdressId());
+        contract.setPartyAContactsId(orderParam.getPartyAContactsId());
+        contract.setPartyBContactsId(orderParam.getPartyBContactsId());
+        this.save(contract);
+//        Template template = templateService.getById(param.getTemplateId());
+//
+//        if (ToolUtil.isNotEmpty(template)) {
+//            String content = template.getContent();
+//            if (ToolUtil.isNotEmpty(param.getContractReplaces())) {
+//                for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
+//                    if (content.contains(contractReplace.getOldText())) {
+//                        if (contractReplace.getNewText().equals(contractReplace.getOldText())) {
+//                            content = content.replace(contractReplace.getOldText(), "");
+//                        } else {
+//                            content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+//                        }
+//                    }
+//                }
+//            } else {
+//                String input = "\\<input (.*?)\\>";
+//                Pattern compile = Pattern.compile(input);
+//                Matcher matcher = compile.matcher(content);
+//                while (matcher.find()) {    //input
+//                    String group = matcher.group(0);
+//                    if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
+//                        content = content.replace(group, "");
+//                    }
+//                }
+//            }
 
-        if (ToolUtil.isNotEmpty(template)) {
-            String content = template.getContent();
-            if (ToolUtil.isNotEmpty(param.getContractReplaces())) {
-                for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
-                    if (content.contains(contractReplace.getOldText())) {
-                        if (contractReplace.getNewText().equals(contractReplace.getOldText())) {
-                            content = content.replace(contractReplace.getOldText(), "");
-                        } else {
-                            content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
-                        }
-                    }
-                }
-            } else {
-                String input = "\\<input (.*?)\\>";
-                Pattern compile = Pattern.compile(input);
-                Matcher matcher = compile.matcher(content);
-                while (matcher.find()) {    //input
-                    String group = matcher.group(0);
-                    if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
-                        content = content.replace(group, "");
-                    }
-                }
-            }
+//
 
+//            content = replace(content, orderParam);
+//            String materialList = materialList(content, orderParam, param.getCycleReplaces());  //替换sku
+//            String replace = replace(materialList, orderParam); //全局替换
+//            String payList = payList(replace, orderParam, param.getPayReplaces());  //替换付款方式
+//            contract.setContent(payList);
 
-            contract.setPartyA(orderParam.getBuyerId());
-            contract.setPartyB(orderParam.getSellerId());
-            contract.setPartyAPhone(orderParam.getPartyAPhone());
-            contract.setPartyBPhone(orderParam.getPartyBPhone());
-            contract.setPartyAAdressId(orderParam.getPartyAAdressId());
-            contract.setPartyBAdressId(orderParam.getPartyBAdressId());
-            contract.setPartyAContactsId(orderParam.getPartyAContactsId());
-            contract.setPartyBContactsId(orderParam.getPartyBContactsId());
-            content = replace(content, orderParam);
-            String materialList = materialList(content, orderParam, param.getCycleReplaces());  //替换sku
-            String replace = replace(materialList, orderParam); //全局替换
-            String payList = payList(replace, orderParam, param.getPayReplaces());  //替换付款方式
-            contract.setContent(payList);
-            this.save(contract);
-            createContractDetail(contract.getContractId(), orderParam);
-            return contract;
-        }
+//            createContractDetail(contract.getContractId(), orderParam);
+//            return contract;
+//        }
         return contract;
     }
 
@@ -489,6 +488,96 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             details.add(contractDetail);
         }
         contractDetailService.saveBatch(details);
+    }
+
+    @Override
+    public String skuReplace(String content, Long orderId) {
+        List<OrderDetail> details = orderDetailService.query().in("order_id", orderId).list();
+        List<OrderDetailResult> results = BeanUtil.copyToList(details, OrderDetailResult.class, new CopyOptions());
+        orderDetailService.format(results);
+
+        String regStr = "\\<tr(.*?)\\>([\\w\\W]+?)<\\/tr>";
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher m;
+
+        String trText = "";
+        while ((m = pattern.matcher(content)).find()) {
+            String skuGroup = m.group(0);
+            Matcher tr;
+
+            String TrRegStr = "data\\-group\\=\\\"sku\\\"\\>([\\w\\W]+?)\\<\\/tr\\>";
+            Pattern TrPattern = Pattern.compile(TrRegStr);
+            if ((tr = TrPattern.matcher(skuGroup)).find()) {
+
+
+                int i = 0;
+                for (OrderDetailResult result : results) {
+                    String s = tr.group(0);
+                    String tdText = "";
+                    i++;
+                    Matcher tdm;
+                    while ((tdm = WordUtils.matcher(s)).find()) {
+                        String group = tdm.group(1);
+                        ContractEnum contractEnum = ContractEnum.fromString(group);
+                        if (contractEnum != null) {
+                            switch (contractEnum) {
+                                case skuStrand:
+                                    group = group.replace("${" + ContractEnum.skuStrand.getDetail() + "}", result.getSkuResult().getStandard());
+                                    break;
+                                case spuName:
+                                    group = group.replace(ContractEnum.spuName.getDetail(), result.getSkuResult().getSpuResult().getName());
+                                    break;
+                                case skuName:
+                                    group = group.replace(ContractEnum.skuName.getDetail(), result.getSkuResult().getSkuName() + "/" + result.getSkuResult().getSpecifications());
+                                    break;
+                                case brand:
+                                    group = group.replace(ContractEnum.brand.getDetail(), result.getBrandResult().getBrandName());
+                                    break;
+                                case Line:
+                                    group = group.replace(ContractEnum.Line.getDetail(), i + "");
+                                    break;
+                                case number:
+                                    group = group.replace(ContractEnum.number.getDetail(), result.getPurchaseNumber() + "");
+                                    break;
+                                case unit:
+                                    group = group.replace(ContractEnum.unit.getDetail(), result.getUnit().getUnitName());
+                                    break;
+                                case UnitPrice:
+                                    group = group.replace(ContractEnum.UnitPrice.getDetail(), result.getOnePrice() + "");
+                                    break;
+                                case TotalPrice:
+                                    group = group.replace(ContractEnum.TotalPrice.getDetail(), result.getTotalPrice() + "");
+                                    break;
+                                case invoiceType:
+                                    String paperType = "";
+                                    if (result.getPaperType() == 0) {
+                                        paperType = "普票";
+                                    } else {
+                                        paperType = "专票";
+                                    }
+                                    group = group.replace(ContractEnum.invoiceType.getDetail(), paperType + "");
+                                    break;
+                                case DeliveryDate:
+                                    group = group.replace(ContractEnum.DeliveryDate.getDetail(), result.getDeliveryDate() + "");
+                                    break;
+
+                            }
+
+                        }
+                        tdText = tdText + group;
+                        s = tdm.replaceFirst("");
+
+                    }
+
+                    trText = trText + tdText;
+                }
+            }
+
+            content = m.replaceFirst("");
+//            if ((tr = Pattern.compile(regStr).matcher("data-group(.+?)=(.+?)('|\")sku('|\")")).find()) { //TODO
+//            }
+        }
+        return trText;
     }
 
     /**
@@ -678,7 +767,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             if (ToolUtil.isEmpty(adress) || ToolUtil.isEmpty(adress.getLocation())) {
                 content = content.replace("${{提取(交付)地点}}", "");
             } else {
-                content = content.replace("${{提取(交付)地点}}", (adress.getLocation()+(adress.getDetailLocation()==null?"":adress.getDetailLocation())));
+                content = content.replace("${{提取(交付)地点}}", (adress.getLocation() + (adress.getDetailLocation() == null ? "" : adress.getDetailLocation())));
                 adress.setType("收获地址");
                 adressService.updateById(adress);
             }
@@ -959,6 +1048,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         return content;
     }
+
 
     /**
      * 付款详情替换

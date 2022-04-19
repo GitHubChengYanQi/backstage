@@ -85,4 +85,5 @@ public interface ContractService extends IService<Contract> {
 
     Contract orderAddContract(Long orderId, ContractParam param, OrderParam orderPara, String orderType);
 
+    String skuReplace(String content, Long orderId);
 }

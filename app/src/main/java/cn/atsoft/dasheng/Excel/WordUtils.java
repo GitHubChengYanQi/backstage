@@ -38,6 +38,8 @@ public class WordUtils {
         }
     }
 
+
+
     /**
      * 获取 word 中需要替换的标签
      *
@@ -123,7 +125,6 @@ public class WordUtils {
                 for (XWPFTableCell cell : cells) {
                     paras = cell.getParagraphs();
                     for (XWPFParagraph para : paras) {
-
                         list.addAll(labelInPara(para));
                     }
                 }
@@ -146,6 +147,7 @@ public class WordUtils {
             replaceInTable(tables.get(index), params);
         }
     }
+
 
     /**
      * 替换表格中的变量
@@ -486,7 +488,7 @@ public class WordUtils {
      * @param str
      * @return
      */
-    private Matcher matcher(String str) {
+    public static Matcher matcher(String str) {
         Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(str);
         return matcher;

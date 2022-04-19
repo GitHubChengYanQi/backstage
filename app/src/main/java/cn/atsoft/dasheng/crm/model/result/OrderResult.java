@@ -35,6 +35,10 @@ public class OrderResult implements Serializable {
     private List<OrderDetailResult> detailResults;
     private Date date;
 
+    private Adress adress;
+
+    private Long adressId;
+
     private Customer Acustomer;
     private Customer Bcustomer;
 

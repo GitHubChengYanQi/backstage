@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.Excel.WordUtils;
+
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.app.pojo.Lable;
@@ -14,9 +16,17 @@ import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.ContractTemplete;
+import cn.atsoft.dasheng.crm.entity.ContractTempleteDetail;
+import cn.atsoft.dasheng.crm.model.result.ContractTempleteDetailResult;
+import cn.atsoft.dasheng.crm.model.result.ContractTempleteResult;
+import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
+import cn.atsoft.dasheng.crm.service.ContractTempleteService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.poi.word.DocUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -44,8 +54,6 @@ public class TemplateController extends BaseController {
 
     @Autowired
     private TemplateService templateService;
-    @Autowired
-    private FileInfoService fileInfoService;
 
 
     /**
@@ -159,101 +167,6 @@ public class TemplateController extends BaseController {
 
 
 
-
-    @RequestMapping(value = "/getWordLables", method = RequestMethod.GET)
-    public ResponseData getWordLable(@RequestParam("id") Long id) {
-        List<String> list = new ArrayList<>();
-
-        Template template = templateService.getById(id);
-
-        if (ToolUtil.isNotEmpty(template) && ToolUtil.isNotEmpty(template.getFileId())) {
-            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
-            WordUtils wordUtils = new WordUtils();
-
-            XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
-
-            list.addAll(wordUtils.getLabel(document));
-
-
-            // 替换表格中的参数
-            list.addAll(wordUtils.getLabelInTable(document, new int[]{0}));
-
-        }
-
-        List<String> list1 = new ArrayList<>();
-        list1.add("采购合同编号");
-        list1.add("合同签订地点");
-        list1.add("合同签订时间");
-        list1.add("需方公司名称");
-        list1.add("供方公司名称");
-        list1.add("提取(交付)地点");
-        list1.add("接货人员");
-        list1.add("接货人电话");
-        list1.add("需方公司地址");
-        list1.add("需方公司电话");
-        list1.add("需方公司传真");
-        list1.add("需方法人代表");
-        list1.add("需方法人电话");
-        list1.add("需方委托代表");
-        list1.add("需方代表电话");
-        list1.add("需方开户银行");
-        list1.add("需方银行账号");
-        list1.add("需方开户行号");
-        list1.add("需方邮政编码");
-        list1.add("需方公司电邮");
-        list1.add("需方税号");
-        list1.add("交货地址");
-        list1.add("供货人及电话");
-        list1.add("供方公司地址");
-        list1.add("供方公司电话");
-        list1.add("供方公司传真");
-        list1.add("供方法人代表");
-        list1.add("供方法人电话");
-        list1.add("供方委托代表");
-        list1.add("供方代表电话");
-        list1.add("供方开户银行");
-        list1.add("供方银行账号");
-        list1.add("供方开户行号");
-        list1.add("供方邮政编码");
-        list1.add("供方公司电邮");
-        list1.add("供方税号");
-        list1.add("日期方式");
-        list1.add("付款比例");
-        list1.add("付款日期");
-        list1.add("物料编码");
-        list1.add("产品名称");
-        list1.add("型号规格");
-        list1.add("品牌厂家");
-        list1.add("单位");
-        list1.add("总价");
-        list1.add("数量");
-        list1.add("单价");
-        list1.add("交货日期");
-        list1.add("合计金额大写");
-        list1.add("合计金额小写");
-        list1.add("产品备注");
-        list1.add("发票类型");
-
-        for (int i = 0; i < list.size(); ) {
-            String s1 = list.get(i);
-            if (ToolUtil.isNotEmpty(s1)) {
-                for (String s : list1) {
-                    if (s1.equals(s)) {
-                        list.remove(i);
-                    } else {
-                        i++;
-                    }
-                }
-            }
-        }
-
-
-
-
-
-
-        return ResponseData.success(list);
-    }
 }
 
 

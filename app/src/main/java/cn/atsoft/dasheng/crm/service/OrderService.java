@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -66,7 +67,9 @@ public interface OrderService extends IService<Order> {
      * @author song
      * @Date 2022-02-23
      */
-     PageInfo<OrderResult> findPageBySpec(OrderParam param);
+    PageInfo<OrderResult> findPageBySpec(OrderParam param);
+
+    Map<String, Object> mapFormat(Long contractId);
 
     OrderResult getDetail(Long id);
 
