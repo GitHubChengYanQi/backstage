@@ -69,6 +69,20 @@ public class ContractTempleteServiceImpl extends ServiceImpl<ContractTempleteMap
         ContractTemplete newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        List<ContractTempleteDetail> templeteDetails = contractTempleteDetailService.query().eq("contract_template_id", newEntity.getContractTemplateId()).list();
+        if (ToolUtil.isNotEmpty(templeteDetails)){
+            contractTempleteDetailService.removeByIds(templeteDetails);
+        }
+        if (ToolUtil.isNotEmpty(param.getDetailParams())){
+            List<ContractTempleteDetail> contractTempleteDetails = new ArrayList<>();
+            for (ContractTempleteDetailParam detailParam : param.getDetailParams()) {
+                ContractTempleteDetail detail = new ContractTempleteDetail();
+                ToolUtil.copyProperties(detailParam,detail);
+                detail.setContractTempleteId(newEntity.getContractTemplateId());
+                contractTempleteDetails.add(detail);
+            }
+            contractTempleteDetailService.saveBatch(contractTempleteDetails);
+        }
     }
 
     @Override
