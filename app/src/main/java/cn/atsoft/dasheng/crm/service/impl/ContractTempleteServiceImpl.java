@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
 import  cn.atsoft.dasheng.crm.service.ContractTempleteService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,12 +39,18 @@ public class ContractTempleteServiceImpl extends ServiceImpl<ContractTempleteMap
     @Autowired
     private ContractTempleteDetailService contractTempleteDetailService;
 
+    private void checkName(String name){
+        Integer count = this.query().eq("name", name).count();
+        if (count>0){
+            throw new ServiceException(500,"不行,不可重名");
+        }
+    }
     @Override
     public ContractTempleteResult add(ContractTempleteParam param){
         ContractTemplete entity = getEntity(param);
-
+        this.checkName(param.getName());
         this.save(entity);
-        if (param.getType().equals("input")){
+        if (ToolUtil.isNotEmpty(param.getDetailParams())){
             List<ContractTempleteDetail> contractTempleteDetails = new ArrayList<>();
             for (ContractTempleteDetailParam detailParam : param.getDetailParams()) {
                 ContractTempleteDetail detail = new ContractTempleteDetail();
@@ -68,7 +75,23 @@ public class ContractTempleteServiceImpl extends ServiceImpl<ContractTempleteMap
         ContractTemplete oldEntity = getOldEntity(param);
         ContractTemplete newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        newEntity.setDisplay(null);
+        this.checkName(param.getName());
         this.updateById(newEntity);
+        List<ContractTempleteDetail> templeteDetails = contractTempleteDetailService.query().eq("contract_template_id", newEntity.getContractTemplateId()).list();
+        if (ToolUtil.isNotEmpty(templeteDetails)){
+            contractTempleteDetailService.removeByIds(templeteDetails);
+        }
+        if (ToolUtil.isNotEmpty(param.getDetailParams())){
+            List<ContractTempleteDetail> contractTempleteDetails = new ArrayList<>();
+            for (ContractTempleteDetailParam detailParam : param.getDetailParams()) {
+                ContractTempleteDetail detail = new ContractTempleteDetail();
+                ToolUtil.copyProperties(detailParam,detail);
+                detail.setContractTempleteId(newEntity.getContractTemplateId());
+                contractTempleteDetails.add(detail);
+            }
+            contractTempleteDetailService.saveBatch(contractTempleteDetails);
+        }
     }
 
     @Override

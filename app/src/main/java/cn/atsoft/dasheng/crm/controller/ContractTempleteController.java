@@ -41,8 +41,12 @@ public class ContractTempleteController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractTempleteParam contractTempleteParam) {
-
-        return ResponseData.success(this.contractTempleteService.add(contractTempleteParam));
+        if (ToolUtil.isNotEmpty(contractTempleteParam.getContractTemplateId())) {
+            return ResponseData.success(this.contractTempleteService.add(contractTempleteParam));
+        }else {
+            this.contractTempleteService.update();
+            return ResponseData.success();
+        }
     }
 
     /**
