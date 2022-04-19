@@ -29,4 +29,14 @@ public class SkuSimpleResult {
     public String specifications;
 
     private Long stockNumber;
+
+    private Integer type;
+
+    private Integer addMethod;
+
+    private Boolean inBom;
+
+    private Long qualityPlanId;
+
+
 }
