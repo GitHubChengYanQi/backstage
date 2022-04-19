@@ -4,9 +4,15 @@ package cn.atsoft.dasheng.Excel;
 import cn.afterturn.easypoi.exception.word.enmus.WordExportEnum;
 import cn.afterturn.easypoi.word.WordExportUtil;
 import cn.atsoft.dasheng.app.entity.Contract;
+import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.service.ContractService;
+import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
+import cn.atsoft.dasheng.base.oshi.model.SysFileInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.poi.word.DocUtil;
 import cn.hutool.poi.word.Word07Writer;
@@ -34,7 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -45,6 +53,10 @@ public class ContractExcel {
 
     @Autowired
     private ContractService contractService;
+    @Autowired
+    private TemplateService templateService;
+    @Autowired
+    private FileInfoService fileInfoService;
 
 
     @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
@@ -76,7 +88,7 @@ public class ContractExcel {
     }
 
     @RequestMapping(value = "/importWord", method = RequestMethod.GET)
-    public void importWord(@RequestParam("file") MultipartFile file, HttpServletResponse response, Long id) throws IOException {
+    public void importWord(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
 
 
         String name = file.getOriginalFilename();
@@ -100,7 +112,7 @@ public class ContractExcel {
         params.put("header5", "介绍");
 
 
-        wordUtils.replaceInPara(document,params);
+        wordUtils.replaceInPara(document, params);
 
         // 替换表格中的参数
         wordUtils.replaceInTable(document, new int[]{0}, params);
@@ -111,5 +123,22 @@ public class ContractExcel {
         OutputStream os = response.getOutputStream();
         document.write(os);
 
+    }
+
+    @RequestMapping(value = "/getWordLables", method = RequestMethod.GET)
+    public ResponseData getWordLable(@RequestParam("id") Long id) {
+        List<String> list = new ArrayList<>();
+
+        Template template = templateService.getById(id);
+
+        if (ToolUtil.isNotEmpty(template) && ToolUtil.isNotEmpty(template.getFileId())) {
+            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+            WordUtils wordUtils = new WordUtils();
+            XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
+            list = wordUtils.getLabel(document);
+        }
+
+
+        return ResponseData.success(list);
     }
 }

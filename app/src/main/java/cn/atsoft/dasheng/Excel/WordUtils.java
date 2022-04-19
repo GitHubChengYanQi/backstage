@@ -11,6 +11,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,52 @@ public class WordUtils {
         }
     }
 
+    /**
+     * 获取 word 中需要替换的标签
+     *
+     * @param doc
+     */
+    public List<String> getLabel(XWPFDocument doc) {
+        List<String> list = new ArrayList<>();
+
+        Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+        while (iterator.hasNext()) {
+            list.addAll(labelInPara(iterator.next()));
+        }
+        return list;
+    }
+
+
+    private List<String> labelInPara(XWPFParagraph para) {
+        List<XWPFRun> runs;
+
+        List<String> list = new ArrayList<>();
+
+        if (matcher(para.getParagraphText()).find()) {
+            runs = para.getRuns();
+            int j = runs.size();
+            StringBuilder runText;
+            for (int i = 0; i < j; i++) {
+
+                if (ToolUtil.isNotEmpty(runs.get(i).getText(0))) {
+                    runText = new StringBuilder((runs.get(i).getText(0)));
+                } else {
+                    runText = new StringBuilder("");
+                }
+                String text = runText.toString();
+
+                Matcher matcher;
+                while ((matcher = matcher(text)).find()) {
+                    list.add(matcher.group(1));
+                    text = matcher.replaceFirst("");
+                }
+
+
+            }
+
+        }
+        return list;
+    }
 
     /**
      * 遍历所有表格，替换表格里面的变量
@@ -50,6 +97,41 @@ public class WordUtils {
             replaceInTable(iterator.next(), params);
         }
     }
+
+    public List<String> getLabelInTable(XWPFDocument doc, int[] tabIndex) {
+        List<String> list = new ArrayList<>();
+        List<XWPFTable> tables = doc.getTables();
+        if (tables.size() == 0) {
+            return list;
+        }
+        for (int index : tabIndex) {
+            list.addAll(labelInTable(tables.get(index)));
+        }
+        return list;
+    }
+
+    public List<String> labelInTable(XWPFTable table) {
+        List<XWPFTableRow> rows;
+        List<XWPFTableCell> cells;
+        List<XWPFParagraph> paras;
+        List<String> list = new ArrayList<>();
+        //判断表格中是否有 ${} 有就表示需要替换值
+        if (matcher(table.getText()).find()) {
+            rows = table.getRows();
+            for (XWPFTableRow row : rows) {
+                cells = row.getTableCells();
+                for (XWPFTableCell cell : cells) {
+                    paras = cell.getParagraphs();
+                    for (XWPFParagraph para : paras) {
+
+                        list.addAll(labelInPara(para));
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
 
     /**
      * 替换指定表格中的变量

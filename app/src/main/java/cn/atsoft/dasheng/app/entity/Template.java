@@ -30,6 +30,10 @@ public class Template implements Serializable {
     @TableField("contract_class_id")
     private Long contractClassId;
 
+
+    @TableField("file_id")
+    private Long fileId;
+
     /**
      * 合同模板id
      */
@@ -170,6 +174,14 @@ public class Template implements Serializable {
 
     public void setModule(String module) {
         this.module = module;
+    }
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
     }
 
     @Override

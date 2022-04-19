@@ -26,6 +26,8 @@ public class TemplateResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private ContractClassResult classResult;
+
+    private Long fileId;
     /**
      * 合同分类id
      */
@@ -53,7 +55,6 @@ public class TemplateResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long createUser;
-
 
 
     /**
