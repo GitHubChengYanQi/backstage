@@ -239,39 +239,59 @@ public class WordUtils {
 //                }
 
                 String rule = getRule(i, j, replaceRules);
-                switch (rule) {
-                    case "sku":
-                        List<OrderDetailResult> results = (List<OrderDetailResult>) params.get(rule);
-                        int i1 = 1;
-                        for (OrderDetailResult result : results) {
+                if (ToolUtil.isNotEmpty(rule)) {
+                    switch (rule) {
+                        case "sku":
+                            List<OrderDetailResult> results = (List<OrderDetailResult>) params.get(rule);
+                            int i1 = 1;
+                            for (OrderDetailResult result : results) {
 
-                            XWPFTableRow xwpfTableRow = xwpfTable.insertNewTableRow(j + i1);  //新行
+                                XWPFTableRow xwpfTableRow = xwpfTable.insertNewTableRow(j + i1);  //新行
 
-                            Map<String, Object> orderFormat = ContractExcel.orderFormat(result);
-                            List<XWPFTableCell> cells = tableRow.getTableCells();
-                            for (XWPFTableCell cell : cells) {
+                                Map<String, Object> orderFormat = ContractExcel.orderFormat(result);
+                                List<XWPFTableCell> cells = tableRow.getTableCells();
+                                for (XWPFTableCell cell : cells) {          //段落
 
-                                XWPFTableCell xwpfTableCell = xwpfTableRow.addNewTableCell();
-                                xwpfTableCell = cell; // TODO
-                                List<XWPFParagraph> paras = xwpfTableCell.getParagraphs();
-                                for (XWPFParagraph para : paras) {
-                                    replaceInPara(para, orderFormat);
+                                    XWPFTableCell xwpfTableCell = xwpfTableRow.addNewTableCell();
+                                    //列属性
+                                    xwpfTableCell.getCTTc().setTcPr(cell.getCTTc().getTcPr());
+                                    //段落属性
+                                    if(cell.getParagraphs()!=null&&cell.getParagraphs().size()>0){
+                                        xwpfTableCell.getParagraphs().get(0).getCTP().setPPr(cell.getParagraphs().get(0).getCTP().getPPr());
+                                        if(cell.getParagraphs().get(0).getRuns()!=null&&cell.getParagraphs().get(0).getRuns().size()>0){
+                                            XWPFRun cellR = xwpfTableCell.getParagraphs().get(0).createRun();
+                                            cellR.setText(cell.getText());
+                                            cellR.setBold(cell.getParagraphs().get(0).getRuns().get(0).isBold());
+                                        }else{
+                                            xwpfTableCell.setText(cell.getText());
+                                        }
+                                    }else{
+                                        xwpfTableCell.setText(cell.getText());
+                                    }
+
+
+                                    //    xwpfTableCell = cell; // TODO
+                                    List<XWPFParagraph> paras = xwpfTableCell.getParagraphs();
+                                    for (XWPFParagraph para : paras) {
+                                        replaceInPara(para, orderFormat);
+                                    }
                                 }
+
+                                i1++;
                             }
-
-                            i1++;
-                        }
-                        xwpfTable.removeRow(j);
-                        int size = results.size();
-                        int addSize = size - 1;
+                            xwpfTable.removeRow(j);
+                            int size = results.size();
+                            int addSize = size - 1;
 
 
-                        break;
+                            break;
 
-                    case "none":
+                        case "none":
 //                        replaceInTable(tables.get(i), params);
-                        break;
+                            break;
+                    }
                 }
+
             }
             replaceInTable(tables.get(i), params);
 
