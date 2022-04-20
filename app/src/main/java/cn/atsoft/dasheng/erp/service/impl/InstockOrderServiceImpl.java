@@ -851,8 +851,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             long realNumber = 0L;
             for (InstockList instockList : instockListList) {
                 if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
-                    enoughNumber = enoughNumber + instockList.getNumber();
-                    realNumber = realNumber + instockList.getRealNumber();
+                    enoughNumber =ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 :  enoughNumber + instockList.getNumber();
+                    realNumber =ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
                 }
             }
             datum.setEnoughNumber(enoughNumber);
