@@ -190,7 +190,7 @@ public class ContractExcel {
 
         wordUtils.replaceInPara(document, map);
         // 替换表格中的参数
-        wordUtils.replaceInTable(document, new int[]{0}, map,replaceRules);
+        wordUtils.replaceInTable(document, new int[]{0}, map, replaceRules);
 
         return document;
     }
@@ -253,7 +253,7 @@ public class ContractExcel {
                     map.put(ContractEnum.TotalPrice.getDetail(), results.getTotalPrice() + "");
                 case invoiceType:
                     String paperType = "";
-                    if (results.getPaperType() == 0) {
+                    if (ToolUtil.isNotEmpty(results.getPaperType()) && results.getPaperType() == 0) {
                         paperType = "普票";
                     } else {
                         paperType = "专票";
