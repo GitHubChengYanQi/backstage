@@ -32,8 +32,8 @@ public class SkuSimpleResult {
 
     private Integer type;
 
-    private Integer addMethod;
-
+    private Integer batch;
+    
     private Boolean inBom;
 
     private Long qualityPlanId;
