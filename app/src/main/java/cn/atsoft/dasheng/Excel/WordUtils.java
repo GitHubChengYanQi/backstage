@@ -1,20 +1,21 @@
 package cn.atsoft.dasheng.Excel;
 
+import cn.atsoft.dasheng.Excel.pojo.TempReplaceRule;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xddf.usermodel.chart.*;
 import org.apache.poi.xwpf.usermodel.*;
+import org.apache.xmlbeans.XmlCursor;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 
+import javax.print.Doc;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.DoubleConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +24,82 @@ import java.util.regex.Pattern;
  * @date 2021-08-23 11:08
  */
 public class WordUtils {
+
+
+//    public void replaceSkuTwo(XWPFDocument doc) {
+//
+//        List<XWPFParagraph> paragraphs = doc.getParagraphs();
+//
+//        for (XWPFParagraph paragraph : paragraphs) {
+//
+//            doc.removeBodyElement(doc.getPosOfParagraph(paragraph));
+//
+//        }
+//
+//    }
+
+    public void replaceSku(XWPFDocument doc) {
+
+        List<Integer> pos = new ArrayList<>();
+        Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+        while (iterator.hasNext()) {
+            XWPFParagraph next = iterator.next();
+            if (getSkuInPara(next, new HashMap<String, Object>() {{
+                put("sku", "1111");
+            }})) {
+                pos.add(doc.getPosOfParagraph(next));
+                System.out.println(pos);
+            }
+        }
+        for (Integer po : pos) {
+            doc.removeBodyElement(po);
+            this.insertTable(po, doc);
+        }
+    }
+
+
+    /**
+     * 设置表格位置
+     *
+     * @param xwpfTable
+     * @param location  整个表格居中center,left居左，right居右，both两端对齐
+     */
+
+
+    public static void setTableLocation(XWPFTable xwpfTable, String location) {
+        CTTbl cttbl = xwpfTable.getCTTbl();
+        CTTblPr tblpr = cttbl.getTblPr() == null ? cttbl.addNewTblPr() : cttbl.getTblPr();
+        CTJc cTJc = tblpr.addNewJc();
+        cTJc.setVal(STJc.Enum.forString(location));
+    }
+
+    /**
+     * 设置单元格水平位置和垂直位置
+     *
+     * @param xwpfTable
+     * @param verticalLoction    单元格中内容垂直上TOP，下BOTTOM，居中CENTER，BOTH两端对齐
+     * @param horizontalLocation 单元格中内容水平居中center,left居左，right居右，both两端对齐
+     */
+    public static void setCellLocation(XWPFTable xwpfTable, String verticalLoction, String horizontalLocation) {
+        List<XWPFTableRow> rows = xwpfTable.getRows();
+        for (XWPFTableRow row : rows) {
+            List<XWPFTableCell> cells = row.getTableCells();
+            for (XWPFTableCell cell : cells) {
+                CTTc cttc = cell.getCTTc();
+                CTP ctp = cttc.getPList().get(0);
+                CTPPr ctppr = ctp.getPPr();
+                if (ctppr == null) {
+                    ctppr = ctp.addNewPPr();
+                }
+                CTJc ctjc = ctppr.getJc();
+                if (ctjc == null) {
+                    ctjc = ctppr.addNewJc();
+                }
+                ctjc.setVal(STJc.Enum.forString(horizontalLocation)); //水平居中
+                cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.valueOf(verticalLoction));//垂直居中
+            }
+        }
+    }
 
     /**
      * 替换文档中的内容
@@ -37,7 +114,6 @@ public class WordUtils {
             replaceInPara(iterator.next(), params);
         }
     }
-
 
 
     /**
@@ -112,6 +188,7 @@ public class WordUtils {
         return list;
     }
 
+
     public List<String> labelInTable(XWPFTable table) {
         List<XWPFTableRow> rows;
         List<XWPFTableCell> cells;
@@ -141,11 +218,88 @@ public class WordUtils {
      * @param tabIndex 表格下标
      * @param params   替换参数
      */
-    public void replaceInTable(XWPFDocument doc, int[] tabIndex, Map<String, Object> params) {
+    public void replaceInTable(XWPFDocument doc, int[] tabIndex, Map<String, Object> params, List<TempReplaceRule.ReplaceRule> replaceRules) {
+
+
         List<XWPFTable> tables = doc.getTables();
-        for (int index : tabIndex) {
-            replaceInTable(tables.get(index), params);
+
+        for (int i = 0; i < tables.size(); i++) {
+            XWPFTable xwpfTable = tables.get(i);   //表
+
+            List<XWPFTableRow> rows = xwpfTable.getRows();
+
+            for (int j = 0; j < rows.size(); j++) {    //行
+                XWPFTableRow tableRow = rows.get(i);
+
+
+//                xwpfTable.addRow()
+
+//                for (XWPFTableCell tableCell : tableRow.getTableCells()) {
+//
+//                }
+
+                String rule = getRule(i, j, replaceRules);
+                switch (rule) {
+                    case "sku":
+                        List<OrderDetailResult> results = (List<OrderDetailResult>) params.get(rule);
+                        int i1 = 1;
+                        for (OrderDetailResult result : results) {
+
+                            XWPFTableRow xwpfTableRow = xwpfTable.insertNewTableRow(j + i1);  //新行
+
+                            Map<String, Object> orderFormat = ContractExcel.orderFormat(result);
+                            List<XWPFTableCell> cells = tableRow.getTableCells();
+                            for (XWPFTableCell cell : cells) {
+
+                                XWPFTableCell xwpfTableCell = xwpfTableRow.addNewTableCell();
+                                xwpfTableCell = cell; // TODO
+                                List<XWPFParagraph> paras = xwpfTableCell.getParagraphs();
+                                for (XWPFParagraph para : paras) {
+                                    replaceInPara(para, orderFormat);
+                                }
+                            }
+
+                            i1++;
+                        }
+                        xwpfTable.removeRow(j);
+                        int size = results.size();
+                        int addSize = size - 1;
+
+
+                        break;
+
+                    case "none":
+//                        replaceInTable(tables.get(i), params);
+                        break;
+                }
+            }
+            replaceInTable(tables.get(i), params);
+
         }
+
+//        for (int index : tabIndex) {
+//            replaceInTable(tables.get(index), params);
+//        }
+    }
+
+    public String getRule(int table, int tr, List<TempReplaceRule.ReplaceRule> replaceRules) {
+        for (TempReplaceRule.ReplaceRule replaceRule : replaceRules) {
+            if (replaceRule.getTableIndex().equals(table) && replaceRule.getTrIndex().equals(tr)) {
+                return replaceRule.getType();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取word 中所有表格
+     *
+     * @param doc
+     * @return
+     */
+    public List<XWPFTable> getTables(XWPFDocument doc) {
+        List<XWPFTable> tables = doc.getTables();
+        return tables;
     }
 
 
@@ -174,6 +328,7 @@ public class WordUtils {
         }
     }
 
+
     /**
      * 在表格中新增行数并填充数据
      *
@@ -188,6 +343,35 @@ public class WordUtils {
                 cells.get(j).setText(cellDatas[j]);
             }
         }
+    }
+
+    private Boolean getSkuInPara(XWPFParagraph para, Map<String, Object> params) {
+        List<XWPFRun> runs;
+        StringBuilder runText;
+        if (matcher(para.getParagraphText()).find()) {
+            runs = para.getRuns();
+            int j = runs.size();
+            for (int i = 0; i < j; i++) {
+                if (ToolUtil.isNotEmpty(runs.get(i).getText(0))) {
+                    runText = new StringBuilder((runs.get(i).getText(0)));
+                } else {
+                    runText = new StringBuilder("");
+                }
+                String text = runText.toString();
+                Matcher matcher;
+
+                while ((matcher = matcher(text)).find()) {
+                    for (String s : params.keySet()) {
+                        if (s.equals(matcher.group(1))) {
+                            return true;
+                        }
+                    }
+                    text = matcher.replaceFirst("");
+                }
+
+            }
+        }
+        return false;
     }
 
     /**
@@ -205,24 +389,26 @@ public class WordUtils {
             int j = runs.size();
             for (int i = 0; i < j; i++) {
 
-                if (ToolUtil.isNotEmpty(runs.get(i).getText(0))) {
-                    runText = new StringBuilder((runs.get(i).getText(0)));
-                } else {
-                    runText = new StringBuilder("");
+                if (ToolUtil.isNotEmpty(runs.get(0).getText(0))) {
+//                    runText = new StringBuilder((runs.get(i).getText(0)));
+                    runText.append(runs.get(0).getText(0));
                 }
-                String text = runText.toString();
-                Matcher matcher;
-
-                while ((matcher = matcher(text)).find()) {
-                    text = matcher.replaceFirst(String.valueOf(params.get(matcher.group(1))));
-                }
-                runs.get(i).setText(text, 0);
-                //保留最后一个段落，在这段落中替换值，保留原有段落样式
-//                if (!((j - 1) == i)) {
-//                    para.removeRun(0);
+//                else {
+//                    runText = new StringBuilder("");
 //                }
-            }
 
+
+                //保留最后一个段落，在这段落中替换值，保留原有段落样式
+                if (!((j - 1) == i)) {
+                    para.removeRun(0);
+                }
+            }
+            String text = runText.toString();
+            Matcher matcher;
+            while ((matcher = matcher(text)).find()) {
+                text = matcher.replaceFirst(String.valueOf(params.get(matcher.group(1))));
+            }
+            runs.get(0).setText(text, 0);
 
         }
     }
@@ -272,6 +458,7 @@ public class WordUtils {
      */
     public void createTable(XWPFDocument document, List<String[]> tableList) {
         XWPFTable table = document.createTable(tableList.size(), tableList.get(0).length);
+//        XWPFTable table = new XWPFTable(document.getBody().addNewTbl(), this, rows, cols);
         //设置表格的宽度
         CTTblWidth comTableWidth = table.getCTTbl().addNewTblPr().addNewTblW();
         comTableWidth.setType(STTblWidth.PCT);
@@ -287,6 +474,18 @@ public class WordUtils {
             }
         }
 
+    }
+
+    public void insertTable(int pos, XWPFDocument document) {
+        XWPFTable xwpfTable = document.createTable();
+
+        List<String[]> table2 = new ArrayList<>();
+        table2.add(new String[]{"1", "姜文", "张牧之", "xxx"});
+        table2.add(new String[]{"2", "周润发", "黄四郎", "xxx"});
+        table2.add(new String[]{"3", "葛优", "马邦德", "xxx"});
+
+        createTable(document, table2);
+        document.insertTable(pos, xwpfTable);
     }
 
 

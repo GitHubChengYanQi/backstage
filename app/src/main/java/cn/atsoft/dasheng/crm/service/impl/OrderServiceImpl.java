@@ -233,7 +233,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 case pickUpMan:
                     map.put(ContractEnum.pickUpManPhone.getDetail(), orderResult.getAcontacts().getContactsName());
                     break;
-//
+
                 case ACustomerName:
                     map.put(ContractEnum.ACustomerName.getDetail(), detail.getPartA().getCustomerName());
                     break;
@@ -258,7 +258,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 case TotalAmountInWords:
                     int money = Math.toIntExact(orderResult.getAllMoney());
                     String format = NumberChineseFormatter.format(money, true, true);
-                    map.put(ContractEnum.TotalAmountInWords.getDetail(),format);
+                    map.put(ContractEnum.TotalAmountInWords.getDetail(), format);
                 case ABankNo:
                     map.put(ContractEnum.ABankNo.getDetail(), orderResult.getPartyABankNo());
                     break;
@@ -327,18 +327,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Contacts Acontacts = contactsService.getById(result.getPartyAClientId());//甲方委托人
         Contacts Bcontacts = contactsService.getById(result.getPartyBClientId());//乙方联系人
 
-        if (ToolUtil.isNotEmpty(Acontacts)&&ToolUtil.isNotEmpty(Acontacts.getPhone())) {  //甲方代表电话
-             Phone phone = phoneService.getById(Acontacts.getPhone());
+        if (ToolUtil.isNotEmpty(Acontacts) && ToolUtil.isNotEmpty(Acontacts.getPhone())) {  //甲方代表电话
+            Phone phone = phoneService.getById(Acontacts.getPhone());
             if (ToolUtil.isNotEmpty(phone)) {
                 result.setAContactsPhone(phone.getPhoneNumber());
             }
+        } else {
+            Acontacts = new Contacts();
         }
 
-        if (ToolUtil.isNotEmpty(Bcontacts)&&ToolUtil.isNotEmpty(Bcontacts.getPhone())) {  //乙方代表电话
+        if (ToolUtil.isNotEmpty(Bcontacts) && ToolUtil.isNotEmpty(Bcontacts.getPhone())) {  //乙方代表电话
             Phone phone = phoneService.getById(Bcontacts.getPhone());
             if (ToolUtil.isNotEmpty(phone)) {
                 result.setBContactsPhone(phone.getPhoneNumber());
             }
+        } else {
+            Bcontacts = new Contacts();
         }
 
 

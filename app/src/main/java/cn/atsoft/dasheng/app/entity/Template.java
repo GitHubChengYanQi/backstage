@@ -34,6 +34,10 @@ public class Template implements Serializable {
     @TableField("file_id")
     private Long fileId;
 
+
+    @TableField("replace_rule")
+    private String replaceRule;
+
     /**
      * 合同模板id
      */
@@ -182,6 +186,14 @@ public class Template implements Serializable {
 
     public void setFileId(Long fileId) {
         this.fileId = fileId;
+    }
+
+    public String getReplaceRule() {
+        return replaceRule;
+    }
+
+    public void setReplaceRule(String replaceRule) {
+        this.replaceRule = replaceRule;
     }
 
     @Override

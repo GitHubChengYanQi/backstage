@@ -36,20 +36,20 @@ import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.poi.word.DocUtil;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -114,6 +114,35 @@ public class ContractController extends BaseController {
 //        }
         this.contractService.update(contractParam);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 返回表格
+     */
+    @RequestMapping(value = "/getWordTables", method = RequestMethod.GET)
+    public ResponseData getWordTables(@RequestParam("fileId") Long fileId) {
+        FileInfo fileInfo = fileInfoService.getById(fileId);
+        XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
+        List<XWPFTable> tables = document.getTables();
+
+
+        List<List<List<String>>> tableList = new ArrayList<>();
+
+        for (XWPFTable table : tables) {   //表格
+            List<List<String>> lines = new ArrayList<>();
+            List<XWPFTableRow> rows = table.getRows();
+            for (XWPFTableRow row : rows) {   //行
+                List<String> cells = new ArrayList<>();
+                for (XWPFTableCell tableCell : row.getTableCells()) {   //列
+                    cells.add(tableCell.getText());
+                }
+                lines.add(cells);
+            }
+            tableList.add(lines);
+        }
+
+        return ResponseData.success(tableList);
     }
 
     /**

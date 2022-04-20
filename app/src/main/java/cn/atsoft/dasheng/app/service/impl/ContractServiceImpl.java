@@ -467,6 +467,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     }
 
 
+
+
     /**
      * 添加合同详情
      *
@@ -490,6 +492,15 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         contractDetailService.saveBatch(details);
     }
 
+
+    @Override
+    public List<OrderDetailResult> skuReplaceList(Long orderId) {
+        List<OrderDetail> details = orderDetailService.query().in("order_id", orderId).list();
+        List<OrderDetailResult> results = BeanUtil.copyToList(details, OrderDetailResult.class, new CopyOptions());
+        orderDetailService.format(results);
+        return results;
+    }
+
     @Override
     public String skuReplace(String content, Long orderId) {
         List<OrderDetail> details = orderDetailService.query().in("order_id", orderId).list();
@@ -505,48 +516,48 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             String skuGroup = m.group(0);
             Matcher tr;
 
-            String TrRegStr = "data\\-group\\=\\\"sku\\\"\\>([\\w\\W]+?)\\<\\/tr\\>";
+            String TrRegStr = "<tr(.+?)data-group(.+?)=(.+?)(\"|')sku(\"|')>([\\w\\W]+?)</tr>";
             Pattern TrPattern = Pattern.compile(TrRegStr);
             if ((tr = TrPattern.matcher(skuGroup)).find()) {
 
 
                 int i = 0;
                 for (OrderDetailResult result : results) {
-                    String s = tr.group(0);
+                    String trString = tr.group(0);
                     String tdText = "";
                     i++;
                     Matcher tdm;
-                    while ((tdm = WordUtils.matcher(s)).find()) {
+                    while ((tdm = WordUtils.matcher(trString)).find()) {
                         String group = tdm.group(1);
                         ContractEnum contractEnum = ContractEnum.fromString(group);
                         if (contractEnum != null) {
                             switch (contractEnum) {
                                 case skuStrand:
-                                    group = group.replace("${" + ContractEnum.skuStrand.getDetail() + "}", result.getSkuResult().getStandard());
+                                    trString = trString.replace(ContractEnum.skuStrand.getDetail(), result.getSkuResult().getStandard());
                                     break;
                                 case spuName:
-                                    group = group.replace(ContractEnum.spuName.getDetail(), result.getSkuResult().getSpuResult().getName());
+                                    trString = trString.replace(ContractEnum.spuName.getDetail(), result.getSkuResult().getSpuResult().getName());
                                     break;
                                 case skuName:
-                                    group = group.replace(ContractEnum.skuName.getDetail(), result.getSkuResult().getSkuName() + "/" + result.getSkuResult().getSpecifications());
+                                    trString = trString.replace(ContractEnum.skuName.getDetail(), result.getSkuResult().getSkuName() + "/" + result.getSkuResult().getSpecifications());
                                     break;
                                 case brand:
-                                    group = group.replace(ContractEnum.brand.getDetail(), result.getBrandResult().getBrandName());
+                                    trString = trString.replace(ContractEnum.brand.getDetail(), result.getBrandResult().getBrandName());
                                     break;
                                 case Line:
-                                    group = group.replace(ContractEnum.Line.getDetail(), i + "");
+                                    trString = trString.replace(ContractEnum.Line.getDetail(), i + "");
                                     break;
                                 case number:
-                                    group = group.replace(ContractEnum.number.getDetail(), result.getPurchaseNumber() + "");
+                                    trString = trString.replace(ContractEnum.number.getDetail(), result.getPurchaseNumber() + "");
                                     break;
                                 case unit:
-                                    group = group.replace(ContractEnum.unit.getDetail(), result.getUnit().getUnitName());
+                                    trString = trString.replace(ContractEnum.unit.getDetail(), result.getUnit().getUnitName());
                                     break;
                                 case UnitPrice:
-                                    group = group.replace(ContractEnum.UnitPrice.getDetail(), result.getOnePrice() + "");
+                                    trString = trString.replace(ContractEnum.UnitPrice.getDetail(), result.getOnePrice() + "");
                                     break;
                                 case TotalPrice:
-                                    group = group.replace(ContractEnum.TotalPrice.getDetail(), result.getTotalPrice() + "");
+                                    trString = trString.replace(ContractEnum.TotalPrice.getDetail(), result.getTotalPrice() + "");
                                     break;
                                 case invoiceType:
                                     String paperType = "";
@@ -555,30 +566,30 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                                     } else {
                                         paperType = "专票";
                                     }
-                                    group = group.replace(ContractEnum.invoiceType.getDetail(), paperType + "");
+                                    trString = trString.replace(ContractEnum.invoiceType.getDetail(), paperType + "");
                                     break;
                                 case DeliveryDate:
-                                    group = group.replace(ContractEnum.DeliveryDate.getDetail(), result.getDeliveryDate() + "");
+                                    trString = trString.replace(ContractEnum.DeliveryDate.getDetail(), result.getDeliveryDate() + "");
                                     break;
+                                default:
+//                                    s = s.replace()
 
                             }
 
                         }
-                        tdText = tdText + group;
-                        s = tdm.replaceFirst("");
+//                        tdText = tdText + s;
+//                        s = tdm.replaceFirst("");
 
                     }
 
-                    trText = trText + tdText;
+                    trText = trText + trString;
                 }
             }
-
-            content = m.replaceFirst("");
-//            if ((tr = Pattern.compile(regStr).matcher("data-group(.+?)=(.+?)('|\")sku('|\")")).find()) { //TODO
-//            }
+            content = content.replace(skuGroup, trText);
         }
-        return trText;
+        return content;
     }
+
 
     /**
      * 循环替换
