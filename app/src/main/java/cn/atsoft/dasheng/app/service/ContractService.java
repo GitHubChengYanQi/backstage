@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -87,6 +88,8 @@ public interface ContractService extends IService<Contract> {
     Contract orderAddContract(Long orderId, ContractParam param, OrderParam orderPara, String orderType);
 
     List<OrderDetailResult> skuReplaceList(Long orderId);
+
+    List<PaymentDetailResult> paymentDetailsReplaceList(Long orderId);
 
     String skuReplace(String content, Long orderId);
 }

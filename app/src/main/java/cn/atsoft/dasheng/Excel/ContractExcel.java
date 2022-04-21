@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractTemplete;
 import cn.atsoft.dasheng.crm.entity.ContractTempleteDetail;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
 import cn.atsoft.dasheng.crm.service.ContractTempleteService;
@@ -22,6 +23,8 @@ import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.poi.word.DocUtil;
 import cn.hutool.poi.word.Word07Writer;
@@ -176,9 +179,15 @@ public class ContractExcel {
 
         List<OrderDetailResult> list = contractService.skuReplaceList(contract.getSourceId());
 
+        List<PaymentDetailResult> replaceList = contractService.paymentDetailsReplaceList(contract.getSourceId());
+
+
         map.put("sku", list);
 
+        map.put("pay", replaceList);
+
         map.putAll(orderService.mapFormat(contract.getContractId()));
+
 
         TempReplaceRule tempReplaceRule = JSON.parseObject(template.getReplaceRule(), TempReplaceRule.class);
         List<TempReplaceRule.ReplaceRule> replaceRules = tempReplaceRule.getReplaceRules();
@@ -190,7 +199,8 @@ public class ContractExcel {
 
         wordUtils.replaceInPara(document, map);
         // 替换表格中的参数
-        wordUtils.replaceInTable(document, new int[]{0}, map, replaceRules);
+        wordUtils.replaceInTable(document, map, replaceRules);
+
 
         return document;
     }
@@ -225,6 +235,45 @@ public class ContractExcel {
         return ResponseData.success(list);
     }
 
+
+    public static Map<String, Object> payFormat(PaymentDetailResult result) {
+        Map<String, Object> map = new HashMap<>();
+
+        for (ContractEnum value : ContractEnum.values()) {
+            switch (value) {
+                case payMoney:
+                    map.put(ContractEnum.payMoney.getDetail(), result.getMoney());
+                case DateWay:
+                    String dateWay = "";
+                    switch (result.getDateWay()) {
+                        case 0:
+                            dateWay = "天";
+                            break;
+                        case 1:
+                            dateWay = "月";
+                            break;
+                        case 2:
+                            dateWay = "年";
+                            break;
+                    }
+                    map.put(ContractEnum.DateWay.getDetail(), dateWay);
+                case PaymentProportion:
+                    map.put(ContractEnum.PaymentProportion.getDetail(), result.getPercentum().toString());
+                case PaymentDate:
+                    if (ToolUtil.isNotEmpty(result.getPayTime())) {
+                        DateTime date = DateUtil.date(result.getPayTime());
+                        map.put(ContractEnum.PaymentDate.getDetail(), date.toString());
+                    } else {
+                        map.put(ContractEnum.PaymentDate.getDetail(), "");
+                    }
+
+            }
+
+        }
+
+        return map;
+    }
+
     public static Map<String, Object> orderFormat(OrderDetailResult results) {
 
         Map<String, Object> map = new HashMap<>();
@@ -236,7 +285,7 @@ public class ContractExcel {
                 case skuStrand:
                     map.put(ContractEnum.skuStrand.getDetail(), results.getSkuResult().getStandard());
                 case spuName:
-                    map.put(ContractEnum.spuName.getDetail(), results.getSkuResult().getSpuName());
+                    map.put(ContractEnum.spuName.getDetail(), results.getSkuResult().getSpuResult().getName());
                 case skuName:
                     map.put(ContractEnum.skuName.getDetail(), results.getSkuResult().getSkuName());
                 case brand:

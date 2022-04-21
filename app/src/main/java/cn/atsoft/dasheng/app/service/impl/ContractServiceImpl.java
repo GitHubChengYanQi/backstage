@@ -17,15 +17,13 @@ import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.crm.entity.Bank;
-import cn.atsoft.dasheng.crm.entity.ContractClass;
-import cn.atsoft.dasheng.crm.entity.Invoice;
-import cn.atsoft.dasheng.crm.entity.OrderDetail;
+import cn.atsoft.dasheng.crm.entity.*;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.params.PaymentDetailParam;
 import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -97,6 +95,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private FileInfoService fileInfoService;
     @Autowired
     private OrderDetailService orderDetailService;
+    @Autowired
+    private PaymentService paymentService;
+    @Autowired
+    private PaymentDetailService paymentDetailService;
 
 
     @Override
@@ -467,8 +469,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     }
 
 
-
-
     /**
      * 添加合同详情
      *
@@ -499,6 +499,18 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         List<OrderDetailResult> results = BeanUtil.copyToList(details, OrderDetailResult.class, new CopyOptions());
         orderDetailService.format(results);
         return results;
+    }
+
+    @Override
+    public List<PaymentDetailResult> paymentDetailsReplaceList(Long orderId) {
+        if (ToolUtil.isEmpty(orderId)) {
+            return new ArrayList<>();
+        }
+        Payment payment = paymentService.query().eq("order_id", orderId).one();
+        List<PaymentDetail> details = ToolUtil.isEmpty(payment.getPaymentId()) ? new ArrayList<>() : paymentDetailService.query().eq("payment_id", payment.getPaymentId()).list();
+        List<PaymentDetailResult> results = BeanUtil.copyToList(details, PaymentDetailResult.class, new CopyOptions());
+        return results;
+
     }
 
     @Override

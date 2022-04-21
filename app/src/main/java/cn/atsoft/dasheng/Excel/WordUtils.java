@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.Excel;
 import cn.atsoft.dasheng.Excel.pojo.TempReplaceRule;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xddf.usermodel.chart.*;
@@ -24,38 +25,6 @@ import java.util.regex.Pattern;
  * @date 2021-08-23 11:08
  */
 public class WordUtils {
-
-
-//    public void replaceSkuTwo(XWPFDocument doc) {
-//
-//        List<XWPFParagraph> paragraphs = doc.getParagraphs();
-//
-//        for (XWPFParagraph paragraph : paragraphs) {
-//
-//            doc.removeBodyElement(doc.getPosOfParagraph(paragraph));
-//
-//        }
-//
-//    }
-
-    public void replaceSku(XWPFDocument doc) {
-
-        List<Integer> pos = new ArrayList<>();
-        Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
-        while (iterator.hasNext()) {
-            XWPFParagraph next = iterator.next();
-            if (getSkuInPara(next, new HashMap<String, Object>() {{
-                put("sku", "1111");
-            }})) {
-                pos.add(doc.getPosOfParagraph(next));
-                System.out.println(pos);
-            }
-        }
-        for (Integer po : pos) {
-            doc.removeBodyElement(po);
-            this.insertTable(po, doc);
-        }
-    }
 
 
     /**
@@ -218,7 +187,7 @@ public class WordUtils {
      * @param tabIndex 表格下标
      * @param params   替换参数
      */
-    public void replaceInTable(XWPFDocument doc, int[] tabIndex, Map<String, Object> params, List<TempReplaceRule.ReplaceRule> replaceRules) {
+    public void replaceInTable(XWPFDocument doc, Map<String, Object> params, List<TempReplaceRule.ReplaceRule> replaceRules) {
 
 
         List<XWPFTable> tables = doc.getTables();
@@ -229,7 +198,7 @@ public class WordUtils {
             List<XWPFTableRow> rows = xwpfTable.getRows();
 
             for (int j = 0; j < rows.size(); j++) {    //行
-                XWPFTableRow tableRow = rows.get(i);
+                XWPFTableRow tableRow = rows.get(j);
 
 
 //                xwpfTable.addRow()
@@ -256,21 +225,18 @@ public class WordUtils {
                                     //列属性
                                     xwpfTableCell.getCTTc().setTcPr(cell.getCTTc().getTcPr());
                                     //段落属性
-                                    if(cell.getParagraphs()!=null&&cell.getParagraphs().size()>0){
+                                    if (cell.getParagraphs() != null && cell.getParagraphs().size() > 0) {
                                         xwpfTableCell.getParagraphs().get(0).getCTP().setPPr(cell.getParagraphs().get(0).getCTP().getPPr());
-                                        if(cell.getParagraphs().get(0).getRuns()!=null&&cell.getParagraphs().get(0).getRuns().size()>0){
+                                        if (cell.getParagraphs().get(0).getRuns() != null && cell.getParagraphs().get(0).getRuns().size() > 0) {
                                             XWPFRun cellR = xwpfTableCell.getParagraphs().get(0).createRun();
                                             cellR.setText(cell.getText());
                                             cellR.setBold(cell.getParagraphs().get(0).getRuns().get(0).isBold());
-                                        }else{
+                                        } else {
                                             xwpfTableCell.setText(cell.getText());
                                         }
-                                    }else{
+                                    } else {
                                         xwpfTableCell.setText(cell.getText());
                                     }
-
-
-                                    //    xwpfTableCell = cell; // TODO
                                     List<XWPFParagraph> paras = xwpfTableCell.getParagraphs();
                                     for (XWPFParagraph para : paras) {
                                         replaceInPara(para, orderFormat);
@@ -280,14 +246,43 @@ public class WordUtils {
                                 i1++;
                             }
                             xwpfTable.removeRow(j);
-                            int size = results.size();
-                            int addSize = size - 1;
-
-
                             break;
+                        case "pay":
+                            List<PaymentDetailResult> payList = (List<PaymentDetailResult>) params.get(rule);
+                            int i2 = 1;
+                            for (PaymentDetailResult paymentDetailResult : payList) {
+                                XWPFTableRow xwpfTableRow = xwpfTable.insertNewTableRow(j + i2);  //新行
 
-                        case "none":
-//                        replaceInTable(tables.get(i), params);
+                                Map<String, Object> orderFormat = ContractExcel.payFormat(paymentDetailResult);
+
+                                List<XWPFTableCell> cells = tableRow.getTableCells();
+                                for (XWPFTableCell cell : cells) {          //段落
+
+                                    XWPFTableCell xwpfTableCell = xwpfTableRow.addNewTableCell();
+                                    //列属性
+                                    xwpfTableCell.getCTTc().setTcPr(cell.getCTTc().getTcPr());
+                                    //段落属性
+                                    if (cell.getParagraphs() != null && cell.getParagraphs().size() > 0) {
+                                        xwpfTableCell.getParagraphs().get(0).getCTP().setPPr(cell.getParagraphs().get(0).getCTP().getPPr());
+                                        if (cell.getParagraphs().get(0).getRuns() != null && cell.getParagraphs().get(0).getRuns().size() > 0) {
+                                            XWPFRun cellR = xwpfTableCell.getParagraphs().get(0).createRun();
+                                            cellR.setText(cell.getText());
+                                            cellR.setBold(cell.getParagraphs().get(0).getRuns().get(0).isBold());
+                                        } else {
+                                            xwpfTableCell.setText(cell.getText());
+                                        }
+                                    } else {
+                                        xwpfTableCell.setText(cell.getText());
+                                    }
+
+                                    List<XWPFParagraph> paras = xwpfTableCell.getParagraphs();
+                                    for (XWPFParagraph para : paras) {
+                                        replaceInPara(para, orderFormat);
+                                    }
+                                }
+
+                                i2++;
+                            }
                             break;
                     }
                 }
@@ -401,6 +396,10 @@ public class WordUtils {
      * @param params 参数
      */
     private void replaceInPara(XWPFParagraph para, Map<String, Object> params) {
+        for (String key : params.keySet()) {
+            params.putIfAbsent(key, "");
+        }
+
         List<XWPFRun> runs;
         StringBuilder runText = new StringBuilder();
 
@@ -426,7 +425,11 @@ public class WordUtils {
             String text = runText.toString();
             Matcher matcher;
             while ((matcher = matcher(text)).find()) {
-                text = matcher.replaceFirst(String.valueOf(params.get(matcher.group(1))));
+                if (text.equals("${sku}") || text.equals("${pay}")) {
+                    text = matcher.replaceFirst("");
+                } else {
+                    text = matcher.replaceFirst(String.valueOf(params.get(matcher.group(1))));
+                }
             }
             runs.get(0).setText(text, 0);
 

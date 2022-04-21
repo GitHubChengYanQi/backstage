@@ -63,7 +63,10 @@ public enum ContractEnum {
     TotalAmountInFigures("合计金额小写"),
     remakr("产品备注"),
     Line("序号"),
+    payMoney("付款金额"),
+
     invoiceType("发票类型");
+
 
 
     public String getDetail() {
