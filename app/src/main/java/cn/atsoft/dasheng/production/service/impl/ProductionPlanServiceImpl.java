@@ -86,8 +86,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 
     @Override
     public void add(ProductionPlanParam param) {
-        ProductionPlan entity = getEntity(param);
-        this.save(entity);
+
         List<Long> skuIds = new ArrayList<>();
         List<ProductionPlanDetail> details = new ArrayList<>();
         for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
@@ -106,6 +105,8 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         if (skuIds.size()!=prosess.size()){
             throw new ServiceException(500,"有产品没有工艺路线,请先创建工艺路线");
         }
+        ProductionPlan entity = getEntity(param);
+        this.save(entity);
         for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
             ProductionPlanDetail detail = new ProductionPlanDetail();
             detail.setProductionPlanId(entity.getProductionPlanId());
@@ -157,6 +158,10 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         Page<ProductionPlanResult> pageContext = getPageContext();
         IPage<ProductionPlanResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
+        for (ProductionPlanResult record : page.getRecords()) {
+            record.setWorkOrderResults(null);
+            record.setPlanDetailResults(null);
+        }
         return PageFactory.createPageInfo(page);
     }
     @Override

@@ -68,12 +68,10 @@ public class MessageProducer {
     public void microService(MicroServiceEntity microServiceEntity) {
         microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
         if (ToolUtil.isNotEmpty(microServiceEntity.getMaxTimes()) && microServiceEntity.getTimes() <= microServiceEntity.getMaxTimes()) {
-//            microServiceEntity.getObject().setDescription(messageEntity.getCpData().getDescription());
             //TODO 测试加入唯一key
             String randomString = ToolUtil.getRandomString(5);
-//            String s = messageEntity.getCpData().getDescription() + randomString;
-//            logger.info("发送" + messageEntity.getCpData().getDescription());
-//            rabbitTemplate.convertAndSend(DirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMicroServiceRealRoute(), JSON.toJSONString(microServiceEntity));
+            logger.info("内部调用创建:" + microServiceEntity.getType()+"/"+microServiceEntity.getOperationType()+"/"+randomString);
+            rabbitTemplate.convertAndSend(DirectQueueConfig.getMicroServiceRealExchange(), DirectQueueConfig.getMicroServiceRealRoute(), JSON.toJSONString(microServiceEntity));
 
         }
     }

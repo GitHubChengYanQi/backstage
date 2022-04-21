@@ -213,30 +213,6 @@ public class DictController extends BaseController {
         return this.dictService.dictTreeList(dictTypeId, dictId);
     }
 
-    /**
-     *
-     *
-     * @author stylefeng
-     * @Date 2019-03-13
-     */
-    @ResponseBody
-    @RequestMapping("/queryBrandAndView")
-    public ResponseData queryBrandAndView(DictTypeParam dictTypeParam) {
-        Dict brand = this.dictService.query().eq("code", "brand").one();
-        Dict view = this.dictService.query().eq("code", "view").one();
-        Map<String,Boolean> map = new HashMap<>();
-        if (ToolUtil.isNotEmpty(brand) && brand.getStatus().equals("ENABLE")){
-            map.put("brand",true);
-        }else {
-            map.put("brand",false);
-        }
-        if (ToolUtil.isNotEmpty(view) && view.getStatus().equals("ENABLE")) {
-            map.put("view",true);
-        }else {
-            map.put("view",false);
-        }
-        return ResponseData.success(map);
-    }
 
 }
 

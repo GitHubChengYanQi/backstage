@@ -84,7 +84,7 @@ public class InvoiceResult implements Serializable {
      * 开户账号
      */
     @ApiModelProperty("开户账号")
-    private Integer bankNo;
+    private Long bankNo;
 
 
     /**
