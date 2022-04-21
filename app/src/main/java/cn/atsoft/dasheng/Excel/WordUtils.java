@@ -425,10 +425,11 @@ public class WordUtils {
             String text = runText.toString();
             Matcher matcher;
             while ((matcher = matcher(text)).find()) {
-                if (text.equals("${sku}") || text.equals("${pay}")) {
+                String group = matcher.group(1);
+                if (group.equals("${sku}") || group.equals("${pay}")) {
                     text = matcher.replaceFirst("");
                 } else {
-                    text = matcher.replaceFirst(String.valueOf(params.get(matcher.group(1))));
+                    text = matcher.replaceFirst(String.valueOf(params.get(group)));
                 }
             }
             runs.get(0).setText(text, 0);
