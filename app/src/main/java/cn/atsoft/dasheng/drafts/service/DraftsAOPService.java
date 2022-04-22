@@ -20,8 +20,9 @@ import java.util.HashMap;
 public class DraftsAOPService {
     @Autowired
     private DraftsService draftsService;
-    @Around("@annotation(DraftsAOP)")
-    public Object recordSysLog(ProceedingJoinPoint point) throws Throwable {
+//    @Around("@annotation(DraftsAOP)")
+    @Around("execution(* cn.atsoft.dasheng.erp..*.*(..))")
+    public void recordSysLog(ProceedingJoinPoint point) throws Throwable {
 
         //先执行业务
         Object result = point.proceed();
@@ -29,10 +30,9 @@ public class DraftsAOPService {
         try {
             removeDrafts(point);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
-        return null;
     }
     private void removeDrafts(ProceedingJoinPoint point) throws NoSuchMethodException, ClassNotFoundException {
 //获取拦截的方法名
