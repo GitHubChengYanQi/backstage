@@ -21,7 +21,7 @@ public class DraftsAOPService {
     @Autowired
     private DraftsService draftsService;
 //    @Around("@annotation(DraftsAOP)")
-    @Around("execution(* cn.atsoft.dasheng.erp..*.*(..))")
+    @Around("execution(* cn.atsoft.dasheng.erp.controller.*.*(..))")
     public void recordSysLog(ProceedingJoinPoint point) throws Throwable {
 
         //先执行业务
@@ -51,7 +51,7 @@ public class DraftsAOPService {
 //        }
         ParameterNameDiscoverer pnd = new DefaultParameterNameDiscoverer();
         // 获取指定的方法，第二个参数可以不传，但是为了防止有重载的现象，还是需要传入参数的类型
-        Method method = Class.forName(classType).getMethod(methodName, classes);
+9        Method method = Class.forName(classType).getMethod(methodName, classes);
         // 参数名
         String[] parameterNames = pnd.getParameterNames(method);
         // 通过map封装参数和参数值
