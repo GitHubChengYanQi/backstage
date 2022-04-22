@@ -78,5 +78,6 @@ public class TopicMessage {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         MicroServiceEntity microServiceEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
         microService.microServiceDo(microServiceEntity);
+        logger.info("内部调用创建单据:"+microServiceEntity.getType()+"/"+microServiceEntity.getOperationType());
     }
 }

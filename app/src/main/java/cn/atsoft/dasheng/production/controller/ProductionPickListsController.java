@@ -276,10 +276,14 @@ public class ProductionPickListsController extends BaseController {
 
         ProductionPickLists detail = this.productionPickListsService.query().eq("source", "productionTask").eq("source_id", productionPickListsParam.getSourceId()).one();
         ProductionPickListsResult result = new ProductionPickListsResult();
-        ToolUtil.copyProperties(detail, result);
-        productionPickListsService.formatStatus99(new ArrayList<ProductionPickListsResult>() {{
-            add(result);
-        }});
+        if (ToolUtil.isEmpty(detail)) {
+            return ResponseData.success(result);
+        }else {
+            ToolUtil.copyProperties(detail, result);
+            productionPickListsService.formatStatus99(new ArrayList<ProductionPickListsResult>() {{
+                add(result);
+            }});
+        }
         return ResponseData.success(result);
     }
 

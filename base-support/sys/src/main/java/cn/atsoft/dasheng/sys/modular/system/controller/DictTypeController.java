@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.rest.wrapper.DictTypeWrapper;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
 import cn.atsoft.dasheng.sys.modular.system.entity.DictType;
 import cn.atsoft.dasheng.sys.modular.system.model.params.DictTypeParam;
 import cn.atsoft.dasheng.sys.modular.system.service.DictTypeService;
@@ -151,6 +152,47 @@ public class DictTypeController extends BaseController {
 
         List<DictType> list = this.dictTypeService.list(objectQueryWrapper);
         return new SuccessResponseData(list);
+    }
+
+    /**
+     *
+     *
+     * @author 查询字典
+     * @Date 2019-03-13
+     */
+    @ResponseBody
+    @RequestMapping("/queryBrandAndView")
+    public ResponseData queryBrandAndView(DictTypeParam dictTypeParam) {
+        DictType brand = this.dictTypeService.query().eq("code", "BRAND").one();
+        DictType view = this.dictTypeService.query().eq("code", "VIEW").one();
+        Map<String,Boolean> map = new HashMap<>();
+        if (ToolUtil.isNotEmpty(brand) && brand.getStatus().equals("ENABLE")){
+            map.put("brand",true);
+        }else {
+            map.put("brand",false);
+        }
+        if (ToolUtil.isNotEmpty(view) && view.getStatus().equals("ENABLE")) {
+            map.put("view",true);
+        }else {
+            map.put("view",false);
+        }
+        return ResponseData.success(map);
+    }
+    /**
+     *c
+     *
+     * @author 查询字典
+     * @Date 2019-03-13
+     */
+    @ResponseBody
+    @RequestMapping("/updateStatus")
+    public ResponseData updateStatus(DictTypeParam dictTypeParam) {
+        if (dictTypeParam.getStatus().equals("ENABLE") || dictTypeParam.getStatus().equals("DISABLE")){
+            DictType entity = this.dictTypeService.getById(dictTypeParam.getDictTypeId());
+            entity.setStatus(dictTypeParam.getStatus());
+            this.dictTypeService.updateById(entity);
+        }
+        return ResponseData.success();
     }
 }
 
