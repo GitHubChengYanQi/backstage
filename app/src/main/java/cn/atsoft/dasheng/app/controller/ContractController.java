@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.Excel.ContractExcel;
 import cn.atsoft.dasheng.Excel.WordUtils;
 import cn.atsoft.dasheng.Excel.pojo.ContractLabel;
 import cn.atsoft.dasheng.Excel.pojo.LabelResult;
@@ -42,13 +43,15 @@ import cn.hutool.poi.word.DocUtil;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.ibatis.annotations.Param;
+
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.io.File;
+import javax.xml.transform.TransformerException;
+import java.io.*;
 import java.util.*;
 
 
@@ -65,15 +68,11 @@ public class ContractController extends BaseController {
 
     @Autowired
     private ContractService contractService;
-    private Long customerId;
     @Autowired
     private TemplateService templateService;
     @Autowired
     private FileInfoService fileInfoService;
-    @Autowired
-    private ContractTempleteService contractTempleteService;
-    @Autowired
-    private ContractTempleteDetailService templeteDetailService;
+
 
     /**
      * 新增接口
@@ -226,75 +225,19 @@ public class ContractController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/toHtml", method = RequestMethod.GET)
+    public ResponseData wordToHtml(@RequestParam("id") Long id) {
+        String wordToHtml = this.contractService.wordToHtml(id);
+        return ResponseData.success(wordToHtml);
+    }
+
     @RequestMapping(value = "/getLabel", method = RequestMethod.GET)
     public ResponseData getLable(@RequestParam("templateId") Long templateId) {
-        List<String> list = new ArrayList<>();
-        Template template = templateService.getById(templateId);
-
-        if (ToolUtil.isNotEmpty(template) && ToolUtil.isNotEmpty(template.getFileId())) {
-            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
-            WordUtils wordUtils = new WordUtils();
-            XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
-            list.addAll(wordUtils.getLabel(document));
-            // 替换表格中的参数
-            list.addAll(wordUtils.getLabelInTable(document, new int[]{0}));
-        }
-
-
-        List<String> newStrings = new ArrayList<>();
-        for (String s : list) {
-            boolean judge = judge(s);
-            if (judge) {
-                newStrings.add(s);
-            }
-        }
-
-
-        List<ContractTemplete> templetes = list.size() == 0 ? new ArrayList<>() : contractTempleteService.query().in("name", newStrings).list();
-        List<ContractTempleteResult> contractTempleteResults = BeanUtil.copyToList(templetes, ContractTempleteResult.class, new CopyOptions());
-        List<Long> ids = new ArrayList<>();
-        for (ContractTemplete templete : templetes) {
-            ids.add(templete.getContractTemplateId());
-        }
-        List<ContractTempleteDetail> templeteDetails = ids.size() == 0 ? new ArrayList<>() : templeteDetailService.query().in("contract_templete_id", ids).list();
-        List<ContractTempleteDetailResult> templeteDetailResults = BeanUtil.copyToList(templeteDetails, ContractTempleteDetailResult.class, new CopyOptions());
-
-
-        List<LabelResult> results = new ArrayList<>();
-        for (ContractTempleteResult contractTempleteResult : contractTempleteResults) {
-
-            LabelResult labelResult = new LabelResult();
-            labelResult.setName(contractTempleteResult.getName());
-            labelResult.setTitle(contractTempleteResult.getName());
-            labelResult.setType(contractTempleteResult.getType());
-
-            List<LabelResult.LabelDetail> detail = new ArrayList<>();
-
-            for (ContractTempleteDetailResult templeteDetailResult : templeteDetailResults) {
-                if (contractTempleteResult.getContractTemplateId().equals(templeteDetailResult.getContractTempleteId())) {
-                    LabelResult.LabelDetail labelDetail = new LabelResult.LabelDetail();
-                    labelDetail.setName(templeteDetailResult.getValue());
-                    labelDetail.setIsDefault(templeteDetailResult.getIsDefault());
-                    detail.add(labelDetail);
-                }
-            }
-
-            labelResult.setDetail(detail);
-            results.add(labelResult);
-        }
-
-        return ResponseData.success(results);
+        List<LabelResult> labelResults = this.contractService.getLabelResults(templateId);
+        return ResponseData.success(labelResults);
     }
 
 
-    private boolean judge(String s) {
-        for (String label : ContractLabel.labels) {
-            if (s.equals(label)) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
 
 

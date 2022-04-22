@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
 import cn.atsoft.dasheng.crm.service.ContractTempleteService;
 import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
@@ -29,15 +30,20 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.poi.word.DocUtil;
 import cn.hutool.poi.word.Word07Writer;
 import com.alibaba.fastjson.JSON;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFPictureData;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.jsoup.Jsoup;
@@ -53,9 +59,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
@@ -116,11 +120,20 @@ public class ContractExcel {
 
     @RequestMapping(value = "/exportContractWord", method = RequestMethod.GET)
     public void exportContract(HttpServletResponse response, Long id) {
-        try {
-            Contract contract = contractService.getById(id);
-            Template template = templateService.getById(contract.getTemplateId());
-            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
 
+            Contract contract = contractService.getById(id);
+            if (ToolUtil.isEmpty(contract)) {
+                throw new ServiceException(500, "请确定合同");
+            }
+            Template template = templateService.getById(contract.getTemplateId());
+            if (ToolUtil.isEmpty(template)) {
+                throw new ServiceException(500, "请确定合同模板");
+            }
+            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+            if (ToolUtil.isEmpty(fileInfo)) {
+                throw new ServiceException(500, "请确定合同模板");
+            }
+        try {
             XWPFDocument document = formatDocument(contract, template, fileInfo.getFilePath());  //读取word
 
             String fileName = "test.docx";
@@ -154,13 +167,13 @@ public class ContractExcel {
      * @param url
      * @return
      */
-    private XWPFDocument formatDocument(Contract contract, Template template, String url) {
+    public XWPFDocument formatDocument(Contract contract, Template template, String url) throws InvalidFormatException, IOException {
 
         List<LabelResult> results = JSON.parseArray(contract.getContent(), LabelResult.class);
         Map<String, Object> map = new HashMap<>();
         for (LabelResult result : results) {
             if (!result.type.equals("sku") && !result.getType().equals("pay")) {
-                map.put(result.getName(), result.getValue());
+                map.put(result.getName(), ToolUtil.isEmpty(result.getValue()) ? "" : result.getValue());
             }
 //            if (result.getType().equals("sku")) {
 //                ContractTempleteDetail templeteDetail = templeteDetailService.query().eq("contract_templete_id", template.getTemplateId()).one();
@@ -181,41 +194,37 @@ public class ContractExcel {
 
         List<PaymentDetailResult> replaceList = contractService.paymentDetailsReplaceList(contract.getSourceId());
 
-
         map.put("sku", list);
-
         map.put("pay", replaceList);
-
         map.putAll(orderService.mapFormat(contract.getContractId()));
-
 
         TempReplaceRule tempReplaceRule = JSON.parseObject(template.getReplaceRule(), TempReplaceRule.class);
         List<TempReplaceRule.ReplaceRule> replaceRules = tempReplaceRule.getReplaceRules();
 
         WordUtils wordUtils = new WordUtils();
 
-        XWPFDocument document = DocUtil.create(new File(url));
+        InputStream inputStream = new FileInputStream(url);
+        XWPFDocument document = new XWPFDocument(inputStream);
 
+//        XWPFDocument document  = DocUtil.create(new File(url));
 
         wordUtils.replaceInPara(document, map);
-        // 替换表格中的参数
+
         wordUtils.replaceInTable(document, map, replaceRules);
 
 
         return document;
+
     }
 
-    private void wordToHtml(Long id) {
-
-        Contract contract = contractService.getById(id);
-        Template template = templateService.getById(contract.getTemplateId());
-        FileInfo fileInfo = fileInfoService.getById(template.getFileId());
-
-        XWPFDocument document = formatDocument(contract, template, fileInfo.getFilePath());
-
-        WordToHtmlConverter wordToHtmlConverter = new WordToHtmlConverter((org.w3c.dom.Document) document);
 
 
+
+    @RequestMapping(value = "/wordToHtml", method = RequestMethod.GET)
+    private ResponseData wordToHtml(@RequestParam("id") Long id) throws IOException, TransformerException {
+
+
+        return ResponseData.success();
     }
 
     @RequestMapping(value = "/getWordLables", method = RequestMethod.GET)
@@ -242,23 +251,36 @@ public class ContractExcel {
         for (ContractEnum value : ContractEnum.values()) {
             switch (value) {
                 case payMoney:
-                    map.put(ContractEnum.payMoney.getDetail(), result.getMoney());
-                case DateWay:
-                    String dateWay = "";
-                    switch (result.getDateWay()) {
-                        case 0:
-                            dateWay = "天";
-                            break;
-                        case 1:
-                            dateWay = "月";
-                            break;
-                        case 2:
-                            dateWay = "年";
-                            break;
+                    if (ToolUtil.isNotEmpty(result.getMoney())) {
+                        map.put(ContractEnum.payMoney.getDetail(), result.getMoney());
+                    } else {
+                        map.put(ContractEnum.payMoney.getDetail(), "");
                     }
-                    map.put(ContractEnum.DateWay.getDetail(), dateWay);
+                case DateWay:
+                    if (ToolUtil.isNotEmpty(result.getDateWay())) {
+                        map.put(ContractEnum.DateWay.getDetail(), "");
+                    } else {
+                        String dateWay = "";
+                        switch (result.getDateWay()) {
+                            case 0:
+                                dateWay = "天";
+                                break;
+                            case 1:
+                                dateWay = "月";
+                                break;
+                            case 2:
+                                dateWay = "年";
+                                break;
+                        }
+                        map.put(ContractEnum.DateWay.getDetail(), dateWay);
+                    }
+
                 case PaymentProportion:
-                    map.put(ContractEnum.PaymentProportion.getDetail(), result.getPercentum().toString());
+                    if (ToolUtil.isNotEmpty(result.getPercentum())) {
+                        map.put(ContractEnum.PaymentProportion.getDetail(), result.getPercentum().toString());
+                    } else {
+                        map.put(ContractEnum.PaymentProportion.getDetail(), "");
+                    }
                 case PaymentDate:
                     if (ToolUtil.isNotEmpty(result.getPayTime())) {
                         DateTime date = DateUtil.date(result.getPayTime());
@@ -283,23 +305,48 @@ public class ContractExcel {
             i++;
             switch (value) {
                 case skuStrand:
-                    map.put(ContractEnum.skuStrand.getDetail(), results.getSkuResult().getStandard());
+                    if (ToolUtil.isNotEmpty(results.getSkuResult()) && ToolUtil.isNotEmpty(results.getSkuResult().getStandard())) {
+                        map.put(ContractEnum.skuStrand.getDetail(), results.getSkuResult().getStandard());
+                    } else {
+                        map.put(ContractEnum.skuStrand.getDetail(), "");
+                    }
                 case spuName:
                     map.put(ContractEnum.spuName.getDetail(), results.getSkuResult().getSpuResult().getName());
                 case skuName:
                     map.put(ContractEnum.skuName.getDetail(), results.getSkuResult().getSkuName());
                 case brand:
-                    map.put(ContractEnum.brand.getDetail(), results.getBrandResult().getBrandName());
+                    if (ToolUtil.isNotEmpty(results.getBrandResult()) && ToolUtil.isNotEmpty(results.getBrandResult().getBrandName())) {
+                        map.put(ContractEnum.brand.getDetail(), results.getBrandResult().getBrandName());
+                    } else {
+                        map.put(ContractEnum.brand.getDetail(), "");
+                    }
                 case Line:
                     map.put(ContractEnum.Line.getDetail(), i + "");
                 case number:
-                    map.put(ContractEnum.number.getDetail(), results.getPurchaseNumber() + "");
+                    if (ToolUtil.isNotEmpty(results.getPurchaseNumber())) {
+                        map.put(ContractEnum.number.getDetail(), results.getPurchaseNumber() + "");
+                    } else {
+                        map.put(ContractEnum.number.getDetail(), "");
+                    }
                 case unit:
-                    map.put(ContractEnum.unit.getDetail(), results.getUnit().getUnitName());
+                    if (ToolUtil.isNotEmpty(results.getUnit()) && ToolUtil.isNotEmpty(results.getUnit().getUnitName())) {
+                        map.put(ContractEnum.unit.getDetail(), results.getUnit().getUnitName());
+                    } else {
+                        map.put(ContractEnum.unit.getDetail(), "");
+                    }
+
                 case UnitPrice:
-                    map.put(ContractEnum.UnitPrice.getDetail(), results.getOnePrice() + "");
+                    if (ToolUtil.isNotEmpty(results.getOnePrice())) {
+                        map.put(ContractEnum.UnitPrice.getDetail(), results.getOnePrice() + "");
+                    } else {
+                        map.put(ContractEnum.UnitPrice.getDetail(), "");
+                    }
                 case TotalPrice:
-                    map.put(ContractEnum.TotalPrice.getDetail(), results.getTotalPrice() + "");
+                    if (ToolUtil.isNotEmpty(results.getTotalPrice())) {
+                        map.put(ContractEnum.TotalPrice.getDetail(), results.getTotalPrice() + "");
+                    } else {
+                        map.put(ContractEnum.TotalPrice.getDetail(), "");
+                    }
                 case invoiceType:
                     String paperType = "";
                     if (ToolUtil.isNotEmpty(results.getPaperType()) && results.getPaperType() == 0) {
@@ -308,8 +355,13 @@ public class ContractExcel {
                         paperType = "专票";
                     }
                     map.put(ContractEnum.invoiceType.getDetail(), paperType);
-                case DeliveryDate:
-                    map.put(ContractEnum.invoiceType.getDetail(), results.getDeliveryDate() + "");
+                case DeliveryCycle:
+                    if (ToolUtil.isNotEmpty(results.getDeliveryDate())) {
+                        map.put(ContractEnum.DeliveryCycle.getDetail(), results.getDeliveryDate() + "");
+                    } else {
+                        map.put(ContractEnum.DeliveryCycle.getDetail(), "");
+                    }
+
 
             }
         }
