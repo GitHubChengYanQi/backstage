@@ -375,7 +375,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     map.put(ContractEnum.ATime.getDetail(), orderResult.getCreateTime());
                     break;
                 case mailingAddress:
-                    map.put(ContractEnum.ATime.getDetail(), "");
+                    map.put(ContractEnum.mailingAddress.getDetail(), "");
                     break;
 
             }
