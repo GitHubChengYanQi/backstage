@@ -1,12 +1,15 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.Excel.ContractExcel;
+import cn.atsoft.dasheng.Excel.WordUtils;
+import cn.atsoft.dasheng.Excel.pojo.ContractLabel;
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.app.entity.*;
 
 
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.*;
-import cn.atsoft.dasheng.app.pojo.ContractReplace;
 import cn.atsoft.dasheng.app.pojo.CycleReplace;
 import cn.atsoft.dasheng.app.pojo.PayReplace;
 import cn.atsoft.dasheng.app.service.*;
@@ -17,52 +20,48 @@ import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.crm.entity.Bank;
-import cn.atsoft.dasheng.crm.entity.ContractClass;
-import cn.atsoft.dasheng.crm.entity.Invoice;
+import cn.atsoft.dasheng.crm.entity.*;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.params.PaymentDetailParam;
-import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
-import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
-import cn.atsoft.dasheng.crm.service.BankService;
-import cn.atsoft.dasheng.crm.service.CompanyRoleService;
-import cn.atsoft.dasheng.crm.service.ContractClassService;
-import cn.atsoft.dasheng.crm.service.InvoiceService;
+import cn.atsoft.dasheng.crm.model.result.*;
+import cn.atsoft.dasheng.crm.pojo.ContractEnum;
+import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.message.enmu.MicroServiceType;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
-import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.purchase.model.params.SourceEnum;
-import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
-import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
-import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
-import cn.atsoft.dasheng.taxRate.entity.TaxRate;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.atsoft.dasheng.taxRate.service.TaxRateService;
-import cn.atsoft.dasheng.template.entity.PaymentTemplate;
-import cn.atsoft.dasheng.template.service.PaymentTemplateService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.convert.NumberChineseFormatter;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.unit.DataUnit;
-import cn.hutool.core.util.NumberUtil;
+import cn.hutool.http.HtmlUtil;
+import cn.hutool.poi.word.DocUtil;
+import cn.hutool.poi.word.WordUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLConverter;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLOptions;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -84,7 +83,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private ContractService contractService;
     @Autowired
     private InvoiceService invoiceService;
-
     @Autowired
     private ContactsService contactsService;
     @Autowired
@@ -101,23 +99,41 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private SkuService skuService;
     @Autowired
     private BrandService brandService;
-
     @Autowired
     private UnitService unitService;
     @Autowired
     private TaxRateService rateService;
+    @Autowired
+    private FileInfoService fileInfoService;
+    @Autowired
+    private OrderDetailService orderDetailService;
+    @Autowired
+    private PaymentService paymentService;
+    @Autowired
+    private PaymentDetailService paymentDetailService;
+    @Autowired
+    private ContractTempleteService contractTempleteService;
+    @Autowired
+    private ContractTempleteDetailService templeteDetailService;
+    @Autowired
+    private ContractExcel contractExcel;
+
 
     @Override
     public ContractResult detail(Long id) {
         Contract contract = this.getById(id);
         ContractResult contractResult = new ContractResult();
         ToolUtil.copyProperties(contract, contractResult);
-        List<ContractResult> results = new ArrayList<ContractResult>() {{
+
+
+        format(new ArrayList<ContractResult>() {{
             add(contractResult);
-        }};
-        format(results);
-        return results.get(0);
+        }});
+
+
+        return contractResult;
     }
+
 
     @Override
     public ContractResult addResult(ContractParam param) {
@@ -416,57 +432,173 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         ToolUtil.copyProperties(param, contract);
         contract.setSource(orderType);
         contract.setSourceId(orderId);
+        contract.setContent(JSON.toJSONString(param.getLabelResults()));
 
         if (ToolUtil.isEmpty(param.getTemplateId())) {
             throw new ServiceException(500, "请选择合同模板");
         }
-        Template template = templateService.getById(param.getTemplateId());
+        contract.setPartyA(orderParam.getBuyerId());
+        contract.setPartyB(orderParam.getSellerId());
+        contract.setPartyAPhone(orderParam.getPartyAPhone());
+        contract.setPartyBPhone(orderParam.getPartyBPhone());
+        contract.setPartyAAdressId(orderParam.getPartyAAdressId());
+        contract.setPartyBAdressId(orderParam.getPartyBAdressId());
+        contract.setPartyAContactsId(orderParam.getPartyAContactsId());
+        contract.setPartyBContactsId(orderParam.getPartyBContactsId());
+        this.save(contract);
+//        Template template = templateService.getById(param.getTemplateId());
+//
+//        if (ToolUtil.isNotEmpty(template)) {
+//            String content = template.getContent();
+//            if (ToolUtil.isNotEmpty(param.getContractReplaces())) {
+//                for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
+//                    if (content.contains(contractReplace.getOldText())) {
+//                        if (contractReplace.getNewText().equals(contractReplace.getOldText())) {
+//                            content = content.replace(contractReplace.getOldText(), "");
+//                        } else {
+//                            content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
+//                        }
+//                    }
+//                }
+//            } else {
+//                String input = "\\<input (.*?)\\>";
+//                Pattern compile = Pattern.compile(input);
+//                Matcher matcher = compile.matcher(content);
+//                while (matcher.find()) {    //input
+//                    String group = matcher.group(0);
+//                    if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
+//                        content = content.replace(group, "");
+//                    }
+//                }
+//            }
 
-        if (ToolUtil.isNotEmpty(template)) {
-            String content = template.getContent();
-            if (ToolUtil.isNotEmpty(param.getContractReplaces())) {
-                for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
-                    if (content.contains(contractReplace.getOldText())) {
-                        if (contractReplace.getNewText().equals(contractReplace.getOldText())) {
-                            content = content.replace(contractReplace.getOldText(), "");
-                        } else {
-                            content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
-                        }
-                    }
-                }
-            } else {
-                String input = "\\<input (.*?)\\>";
-                Pattern compile = Pattern.compile(input);
-                Matcher matcher = compile.matcher(content);
-                while (matcher.find()) {    //input
-                    String group = matcher.group(0);
-                    if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
-                        content = content.replace(group, "");
-                    }
-                }
-            }
+//
 
+//            content = replace(content, orderParam);
+//            String materialList = materialList(content, orderParam, param.getCycleReplaces());  //替换sku
+//            String replace = replace(materialList, orderParam); //全局替换
+//            String payList = payList(replace, orderParam, param.getPayReplaces());  //替换付款方式
+//            contract.setContent(payList);
 
-            contract.setPartyA(orderParam.getBuyerId());
-            contract.setPartyB(orderParam.getSellerId());
-            contract.setPartyAPhone(orderParam.getPartyAPhone());
-            contract.setPartyBPhone(orderParam.getPartyBPhone());
-            contract.setPartyAAdressId(orderParam.getPartyAAdressId());
-            contract.setPartyBAdressId(orderParam.getPartyBAdressId());
-            contract.setPartyAContactsId(orderParam.getPartyAContactsId());
-            contract.setPartyBContactsId(orderParam.getPartyBContactsId());
-            content = replace(content, orderParam);
-            String materialList = materialList(content, orderParam, param.getCycleReplaces());  //替换sku
-            String replace = replace(materialList, orderParam); //全局替换
-            String payList = payList(replace, orderParam, param.getPayReplaces());  //替换付款方式
-            contract.setContent(payList);
-            this.save(contract);
-            createContractDetail(contract.getContractId(), orderParam);
-            return contract;
-        }
+//            createContractDetail(contract.getContractId(), orderParam);
+//            return contract;
+//        }
         return contract;
     }
 
+    @Override
+    public String wordToHtml(Long id) {
+
+        Contract contract = this.getById(id);
+        Template template = templateService.getById(contract.getTemplateId());
+        FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+        XWPFDocument document = null;
+        try {
+            document = contractExcel.formatDocument(contract, template, fileInfo.getFilePath());
+        } catch (InvalidFormatException | IOException e) {
+            e.printStackTrace();
+        }
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        try {
+            document.write(os);
+
+
+
+//            Options options = Options.getFrom(DocumentKind.DOCX).to(ConverterTypeTo.PDF);
+
+//            IConverter converter = ConverterRegistry.getRegistry().getConverter(options);
+
+            OutputStream out = new ByteArrayOutputStream();
+//            InputStream in = new FileInputStream(new File("D:/tmp/\\1517011925641457666.docx"));
+
+            XHTMLOptions options = XHTMLOptions.create();
+
+            XHTMLConverter.getInstance().convert(document, out, options);
+
+//            converter.convert(in, out, options);
+            System.out.println("aaa");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        //转化数据流，替换特殊字符
+        return "";
+    }
+
+    @Override
+    public List<LabelResult> getLabelResults(Long id) {
+
+        List<String> list = new ArrayList<>();
+        Template template = templateService.getById(id);
+
+        if (ToolUtil.isNotEmpty(template) && ToolUtil.isNotEmpty(template.getFileId())) {
+            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+            WordUtils wordUtils = new WordUtils();
+            XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
+            list.addAll(wordUtils.getLabel(document));
+            // 替换表格中的参数
+            list.addAll(wordUtils.getLabelInTable(document, new int[]{0}));
+        }
+
+
+        List<String> newStrings = new ArrayList<>();
+        for (String s : list) {
+            boolean judge = judge(s);
+            if (judge) {
+                newStrings.add(s);
+            }
+        }
+
+
+        List<ContractTemplete> templetes = list.size() == 0 ? new ArrayList<>() : contractTempleteService.query().in("name", newStrings).list();
+        List<ContractTempleteResult> contractTempleteResults = BeanUtil.copyToList(templetes, ContractTempleteResult.class, new CopyOptions());
+        List<Long> ids = new ArrayList<>();
+        for (ContractTemplete templete : templetes) {
+            ids.add(templete.getContractTemplateId());
+        }
+        List<ContractTempleteDetail> templeteDetails = ids.size() == 0 ? new ArrayList<>() : templeteDetailService.query().in("contract_templete_id", ids).list();
+        List<ContractTempleteDetailResult> templeteDetailResults = BeanUtil.copyToList(templeteDetails, ContractTempleteDetailResult.class, new CopyOptions());
+
+
+        List<LabelResult> results = new ArrayList<>();
+        for (ContractTempleteResult contractTempleteResult : contractTempleteResults) {
+
+            LabelResult labelResult = new LabelResult();
+            labelResult.setName(contractTempleteResult.getName());
+            labelResult.setTitle(contractTempleteResult.getName());
+            labelResult.setType(contractTempleteResult.getType());
+            labelResult.setIsHidden(contractTempleteResult.getIsHidden());
+
+            List<LabelResult.LabelDetail> detail = new ArrayList<>();
+
+            for (ContractTempleteDetailResult templeteDetailResult : templeteDetailResults) {
+                if (contractTempleteResult.getContractTemplateId().equals(templeteDetailResult.getContractTempleteId())) {
+                    LabelResult.LabelDetail labelDetail = new LabelResult.LabelDetail();
+                    labelDetail.setName(templeteDetailResult.getValue());
+                    labelDetail.setIsDefault(templeteDetailResult.getIsDefault());
+                    detail.add(labelDetail);
+                }
+            }
+
+            labelResult.setDetail(detail);
+            results.add(labelResult);
+        }
+        return results;
+    }
+
+
+    private boolean judge(String s) {
+        for (String label : ContractLabel.labels) {
+            if (s.equals(label)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * 添加合同详情
@@ -490,6 +622,117 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         contractDetailService.saveBatch(details);
     }
+
+
+    @Override
+    public List<OrderDetailResult> skuReplaceList(Long orderId) {
+        List<OrderDetail> details = orderDetailService.query().in("order_id", orderId).list();
+        List<OrderDetailResult> results = BeanUtil.copyToList(details, OrderDetailResult.class, new CopyOptions());
+        orderDetailService.format(results);
+        return results;
+    }
+
+    @Override
+    public List<PaymentDetailResult> paymentDetailsReplaceList(Long orderId) {
+        if (ToolUtil.isEmpty(orderId)) {
+            return new ArrayList<>();
+        }
+        Payment payment = paymentService.query().eq("order_id", orderId).one();
+        List<PaymentDetail> details = ToolUtil.isEmpty(payment.getPaymentId()) ? new ArrayList<>() : paymentDetailService.query().eq("payment_id", payment.getPaymentId()).list();
+        List<PaymentDetailResult> results = BeanUtil.copyToList(details, PaymentDetailResult.class, new CopyOptions());
+        return results;
+
+    }
+
+    @Override
+    public String skuReplace(String content, Long orderId) {
+        List<OrderDetail> details = orderDetailService.query().in("order_id", orderId).list();
+        List<OrderDetailResult> results = BeanUtil.copyToList(details, OrderDetailResult.class, new CopyOptions());
+        orderDetailService.format(results);
+
+        String regStr = "\\<tr(.*?)\\>([\\w\\W]+?)<\\/tr>";
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher m;
+
+        String trText = "";
+        while ((m = pattern.matcher(content)).find()) {
+            String skuGroup = m.group(0);
+            Matcher tr;
+
+            String TrRegStr = "<tr(.+?)data-group(.+?)=(.+?)(\"|')sku(\"|')>([\\w\\W]+?)</tr>";
+            Pattern TrPattern = Pattern.compile(TrRegStr);
+            if ((tr = TrPattern.matcher(skuGroup)).find()) {
+
+
+                int i = 0;
+                for (OrderDetailResult result : results) {
+                    String trString = tr.group(0);
+                    String tdText = "";
+                    i++;
+                    Matcher tdm;
+                    while ((tdm = WordUtils.matcher(trString)).find()) {
+                        String group = tdm.group(1);
+                        ContractEnum contractEnum = ContractEnum.fromString(group);
+                        if (contractEnum != null) {
+                            switch (contractEnum) {
+                                case skuStrand:
+                                    trString = trString.replace(ContractEnum.skuStrand.getDetail(), result.getSkuResult().getStandard());
+                                    break;
+                                case spuName:
+                                    trString = trString.replace(ContractEnum.spuName.getDetail(), result.getSkuResult().getSpuResult().getName());
+                                    break;
+                                case skuName:
+                                    trString = trString.replace(ContractEnum.skuName.getDetail(), result.getSkuResult().getSkuName() + "/" + result.getSkuResult().getSpecifications());
+                                    break;
+                                case brand:
+                                    trString = trString.replace(ContractEnum.brand.getDetail(), result.getBrandResult().getBrandName());
+                                    break;
+                                case Line:
+                                    trString = trString.replace(ContractEnum.Line.getDetail(), i + "");
+                                    break;
+                                case number:
+                                    trString = trString.replace(ContractEnum.number.getDetail(), result.getPurchaseNumber() + "");
+                                    break;
+                                case unit:
+                                    trString = trString.replace(ContractEnum.unit.getDetail(), result.getUnit().getUnitName());
+                                    break;
+                                case UnitPrice:
+                                    trString = trString.replace(ContractEnum.UnitPrice.getDetail(), result.getOnePrice() + "");
+                                    break;
+                                case TotalPrice:
+                                    trString = trString.replace(ContractEnum.TotalPrice.getDetail(), result.getTotalPrice() + "");
+                                    break;
+                                case invoiceType:
+                                    String paperType = "";
+                                    if (result.getPaperType() == 0) {
+                                        paperType = "普票";
+                                    } else {
+                                        paperType = "专票";
+                                    }
+                                    trString = trString.replace(ContractEnum.invoiceType.getDetail(), paperType + "");
+                                    break;
+                                case DeliveryDate:
+                                    trString = trString.replace(ContractEnum.DeliveryDate.getDetail(), result.getDeliveryDate() + "");
+                                    break;
+                                default:
+//                                    s = s.replace()
+
+                            }
+
+                        }
+//                        tdText = tdText + s;
+//                        s = tdm.replaceFirst("");
+
+                    }
+
+                    trText = trText + trString;
+                }
+            }
+            content = content.replace(skuGroup, trText);
+        }
+        return content;
+    }
+
 
     /**
      * 循环替换
@@ -678,7 +921,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             if (ToolUtil.isEmpty(adress) || ToolUtil.isEmpty(adress.getLocation())) {
                 content = content.replace("${{提取(交付)地点}}", "");
             } else {
-                content = content.replace("${{提取(交付)地点}}", (adress.getLocation()+(adress.getDetailLocation()==null?"":adress.getDetailLocation())));
+                content = content.replace("${{提取(交付)地点}}", (adress.getLocation() + (adress.getDetailLocation() == null ? "" : adress.getDetailLocation())));
                 adress.setType("收获地址");
                 adressService.updateById(adress);
             }
@@ -913,8 +1156,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         if (content.contains("${{接货人电话}}")) {
             content = content.replace("${{接货人电话}}", "");
-
-
         }
         if (content.contains("${{质量标准}}")) {
             content = content.replace("${{质量标准}}", "");
@@ -959,6 +1200,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         return content;
     }
+
 
     /**
      * 付款详情替换

@@ -29,30 +29,45 @@ import java.util.List;
 @ApiModel
 public class OrderResult implements Serializable {
 
+    private Long totalNumber;
+
     private static final long serialVersionUID = 1L;
 
     private PaymentResult paymentResult;
     private List<OrderDetailResult> detailResults;
     private Date date;
 
-    private Customer Acustomer;
-    private Customer Bcustomer;
+    private Long AContactsPhone;
 
-    private Adress Aadress;
-    private Adress Badress;
+    private Long BContactsPhone;
 
-    private Contacts Acontacts;
-    private Contacts Bcontacts;
+    private Long allMoney;
 
-    private Bank Abank;
-    private Bank Bbank;
+    private Adress adress;
 
-    private Phone Aphone;
-    private Phone Bphone;
+    private Long adressId;
+
+    private Customer Acustomer = new Customer();
+    private Customer Bcustomer = new Customer();
+
+    private Adress Aadress = new Adress();
+    private Adress Badress = new Adress();
+
+    private Contacts Acontacts = new Contacts();
+    private Contacts Bcontacts = new Contacts();
+
+    private Bank Abank = new Bank();
+    private Bank Bbank = new Bank();
+
+    private Phone Aphone = new Phone();
+    private Phone Bphone = new Phone();
 
     private Integer status;
     private String coding;
     private UserResult user;
+
+    private Long ACompanyPhone;
+    private Long BCompanyPhone;
 
     /**
      * 货币种类

@@ -1,7 +1,12 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.Excel.ContractExcel;
+import cn.atsoft.dasheng.Excel.WordUtils;
+import cn.atsoft.dasheng.Excel.pojo.ContractLabel;
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
@@ -20,17 +25,34 @@ import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.ContractTemplete;
+import cn.atsoft.dasheng.crm.entity.ContractTempleteDetail;
+import cn.atsoft.dasheng.crm.model.result.ContractTempleteDetailResult;
+import cn.atsoft.dasheng.crm.model.result.ContractTempleteResult;
+import cn.atsoft.dasheng.crm.pojo.ContractEnum;
+import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
+import cn.atsoft.dasheng.crm.service.ContractTempleteService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.poi.word.DocUtil;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.ibatis.annotations.Param;
+
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.xml.transform.TransformerException;
+import java.io.*;
+import java.util.*;
 
 
 /**
@@ -46,9 +68,11 @@ public class ContractController extends BaseController {
 
     @Autowired
     private ContractService contractService;
-    private Long customerId;
     @Autowired
     private TemplateService templateService;
+    @Autowired
+    private FileInfoService fileInfoService;
+
 
     /**
      * 新增接口
@@ -89,6 +113,35 @@ public class ContractController extends BaseController {
 //        }
         this.contractService.update(contractParam);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 返回表格
+     */
+    @RequestMapping(value = "/getWordTables", method = RequestMethod.GET)
+    public ResponseData getWordTables(@RequestParam("fileId") Long fileId) {
+        FileInfo fileInfo = fileInfoService.getById(fileId);
+        XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
+        List<XWPFTable> tables = document.getTables();
+
+
+        List<List<List<String>>> tableList = new ArrayList<>();
+
+        for (XWPFTable table : tables) {   //表格
+            List<List<String>> lines = new ArrayList<>();
+            List<XWPFTableRow> rows = table.getRows();
+            for (XWPFTableRow row : rows) {   //行
+                List<String> cells = new ArrayList<>();
+                for (XWPFTableCell tableCell : row.getTableCells()) {   //列
+                    cells.add(tableCell.getText());
+                }
+                lines.add(cells);
+            }
+            tableList.add(lines);
+        }
+
+        return ResponseData.success(tableList);
     }
 
     /**
@@ -169,6 +222,19 @@ public class ContractController extends BaseController {
     public ResponseData pendingProductionPlan() {
         Set<ContractDetailSetRequest> contractDetailSetRequests = this.contractService.pendingProductionPlan();
         return ResponseData.success(contractDetailSetRequests);
+    }
+
+
+    @RequestMapping(value = "/toHtml", method = RequestMethod.GET)
+    public ResponseData wordToHtml(@RequestParam("id") Long id) {
+        String wordToHtml = this.contractService.wordToHtml(id);
+        return ResponseData.success(wordToHtml);
+    }
+
+    @RequestMapping(value = "/getLabel", method = RequestMethod.GET)
+    public ResponseData getLable(@RequestParam("templateId") Long templateId) {
+        List<LabelResult> labelResults = this.contractService.getLabelResults(templateId);
+        return ResponseData.success(labelResults);
     }
 
 

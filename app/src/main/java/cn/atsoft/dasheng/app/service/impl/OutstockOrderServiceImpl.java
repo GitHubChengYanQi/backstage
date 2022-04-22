@@ -208,8 +208,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
      * @param param
      */
     public void AkeyOutbound(OutstockOrderParam param) {
-        OutstockOrder outstockOrder = this.getById(param.getOutstockOrderId());
-
         outBound(param.getListingParams()); //出库
     }
 
