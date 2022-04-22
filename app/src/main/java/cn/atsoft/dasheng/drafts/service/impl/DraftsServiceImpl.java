@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.drafts.model.params.DraftsParam;
 import cn.atsoft.dasheng.drafts.model.result.DraftsResult;
 import  cn.atsoft.dasheng.drafts.service.DraftsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -68,6 +69,10 @@ public class DraftsServiceImpl extends ServiceImpl<DraftsMapper, Drafts> impleme
 
     @Override
     public PageInfo<DraftsResult> findPageBySpec(DraftsParam param){
+        if (ToolUtil.isNotEmpty(param.getDates()) && param.getDates().size() == 2){
+            param.setStartDay(param.getDates().get(0));
+            param.setEndDay(param.getDates().get(1));
+        }
         Page<DraftsResult> pageContext = getPageContext();
         IPage<DraftsResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
