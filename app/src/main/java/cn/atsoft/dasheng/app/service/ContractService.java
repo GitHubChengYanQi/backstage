@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -86,6 +87,10 @@ public interface ContractService extends IService<Contract> {
     ContractResult addResult(ContractParam param);
 
     Contract orderAddContract(Long orderId, ContractParam param, OrderParam orderPara, String orderType);
+
+    String wordToHtml(Long id);
+
+    List<LabelResult> getLabelResults(Long id);
 
     List<OrderDetailResult> skuReplaceList(Long orderId);
 

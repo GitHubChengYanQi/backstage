@@ -29,6 +29,8 @@ import java.util.List;
 @ApiModel
 public class OrderResult implements Serializable {
 
+    private Long totalNumber;
+
     private static final long serialVersionUID = 1L;
 
     private PaymentResult paymentResult;

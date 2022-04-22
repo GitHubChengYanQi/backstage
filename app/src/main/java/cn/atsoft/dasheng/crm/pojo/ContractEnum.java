@@ -21,7 +21,7 @@ public enum ContractEnum {
     pickUpManPhone("接货人电话"),          //接货人电话
     ACustomerAdress("需方公司地址"),         //需方公司地址
     ACustomerPhone("需方公司电话"),         //需方公司电话
-    AFax("需方公司电话"),         //需方公司传真
+    AFax("需方公司传真"),         //需方公司传真
     ALegalMan("需方法人代表"),         //需方法人代表
     ALegalManPhone("需方法人电话"),            //需方法人电话
     AContacts("需方委托代表"),             //需方委托代表
@@ -59,14 +59,15 @@ public enum ContractEnum {
     number("数量"),
     UnitPrice("单价"),
     DeliveryDate("交货日期"),
+    DeliveryCycle("交货周期"),
     TotalAmountInWords("合计金额大写"),
     TotalAmountInFigures("合计金额小写"),
     remakr("产品备注"),
     Line("序号"),
     payMoney("付款金额"),
-
+    TotalNumber("合计数量"),
     invoiceType("发票类型");
-
+    
 
 
     public String getDetail() {

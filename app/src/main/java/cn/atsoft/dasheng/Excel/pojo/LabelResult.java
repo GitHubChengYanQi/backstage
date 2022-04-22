@@ -12,6 +12,7 @@ public class LabelResult {
     public String type;
     public List<LabelDetail> detail;
     public String value;
+    private Integer isHidden;
 
     @Data
     public static class LabelDetail {

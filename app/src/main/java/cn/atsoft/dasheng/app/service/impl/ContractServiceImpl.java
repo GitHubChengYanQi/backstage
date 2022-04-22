@@ -1,7 +1,10 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.Excel.ContractExcel;
 import cn.atsoft.dasheng.Excel.WordUtils;
+import cn.atsoft.dasheng.Excel.pojo.ContractLabel;
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.app.entity.*;
 
 
@@ -21,15 +24,14 @@ import cn.atsoft.dasheng.crm.entity.*;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.params.PaymentDetailParam;
-import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
-import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
-import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
+import cn.atsoft.dasheng.crm.model.result.*;
 import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.atsoft.dasheng.taxRate.service.TaxRateService;
 import cn.hutool.core.bean.BeanUtil;
@@ -37,16 +39,26 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.convert.NumberChineseFormatter;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.HtmlUtil;
+import cn.hutool.poi.word.DocUtil;
+import cn.hutool.poi.word.WordUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLConverter;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLOptions;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,6 +111,12 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private PaymentService paymentService;
     @Autowired
     private PaymentDetailService paymentDetailService;
+    @Autowired
+    private ContractTempleteService contractTempleteService;
+    @Autowired
+    private ContractTempleteDetailService templeteDetailService;
+    @Autowired
+    private ContractExcel contractExcel;
 
 
     @Override
@@ -468,6 +486,119 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         return contract;
     }
 
+    @Override
+    public String wordToHtml(Long id) {
+
+        Contract contract = this.getById(id);
+        Template template = templateService.getById(contract.getTemplateId());
+        FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+        XWPFDocument document = null;
+        try {
+            document = contractExcel.formatDocument(contract, template, fileInfo.getFilePath());
+        } catch (InvalidFormatException | IOException e) {
+            e.printStackTrace();
+        }
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        try {
+            document.write(os);
+
+
+
+//            Options options = Options.getFrom(DocumentKind.DOCX).to(ConverterTypeTo.PDF);
+
+//            IConverter converter = ConverterRegistry.getRegistry().getConverter(options);
+
+            OutputStream out = new ByteArrayOutputStream();
+//            InputStream in = new FileInputStream(new File("D:/tmp/\\1517011925641457666.docx"));
+
+            XHTMLOptions options = XHTMLOptions.create();
+
+            XHTMLConverter.getInstance().convert(document, out, options);
+
+//            converter.convert(in, out, options);
+            System.out.println("aaa");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        //转化数据流，替换特殊字符
+        return "";
+    }
+
+    @Override
+    public List<LabelResult> getLabelResults(Long id) {
+
+        List<String> list = new ArrayList<>();
+        Template template = templateService.getById(id);
+
+        if (ToolUtil.isNotEmpty(template) && ToolUtil.isNotEmpty(template.getFileId())) {
+            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+            WordUtils wordUtils = new WordUtils();
+            XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
+            list.addAll(wordUtils.getLabel(document));
+            // 替换表格中的参数
+            list.addAll(wordUtils.getLabelInTable(document, new int[]{0}));
+        }
+
+
+        List<String> newStrings = new ArrayList<>();
+        for (String s : list) {
+            boolean judge = judge(s);
+            if (judge) {
+                newStrings.add(s);
+            }
+        }
+
+
+        List<ContractTemplete> templetes = list.size() == 0 ? new ArrayList<>() : contractTempleteService.query().in("name", newStrings).list();
+        List<ContractTempleteResult> contractTempleteResults = BeanUtil.copyToList(templetes, ContractTempleteResult.class, new CopyOptions());
+        List<Long> ids = new ArrayList<>();
+        for (ContractTemplete templete : templetes) {
+            ids.add(templete.getContractTemplateId());
+        }
+        List<ContractTempleteDetail> templeteDetails = ids.size() == 0 ? new ArrayList<>() : templeteDetailService.query().in("contract_templete_id", ids).list();
+        List<ContractTempleteDetailResult> templeteDetailResults = BeanUtil.copyToList(templeteDetails, ContractTempleteDetailResult.class, new CopyOptions());
+
+
+        List<LabelResult> results = new ArrayList<>();
+        for (ContractTempleteResult contractTempleteResult : contractTempleteResults) {
+
+            LabelResult labelResult = new LabelResult();
+            labelResult.setName(contractTempleteResult.getName());
+            labelResult.setTitle(contractTempleteResult.getName());
+            labelResult.setType(contractTempleteResult.getType());
+            labelResult.setIsHidden(contractTempleteResult.getIsHidden());
+
+            List<LabelResult.LabelDetail> detail = new ArrayList<>();
+
+            for (ContractTempleteDetailResult templeteDetailResult : templeteDetailResults) {
+                if (contractTempleteResult.getContractTemplateId().equals(templeteDetailResult.getContractTempleteId())) {
+                    LabelResult.LabelDetail labelDetail = new LabelResult.LabelDetail();
+                    labelDetail.setName(templeteDetailResult.getValue());
+                    labelDetail.setIsDefault(templeteDetailResult.getIsDefault());
+                    detail.add(labelDetail);
+                }
+            }
+
+            labelResult.setDetail(detail);
+            results.add(labelResult);
+        }
+        return results;
+    }
+
+
+    private boolean judge(String s) {
+        for (String label : ContractLabel.labels) {
+            if (s.equals(label)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * 添加合同详情
@@ -1025,8 +1156,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         if (content.contains("${{接货人电话}}")) {
             content = content.replace("${{接货人电话}}", "");
-
-
         }
         if (content.contains("${{质量标准}}")) {
             content = content.replace("${{质量标准}}", "");
