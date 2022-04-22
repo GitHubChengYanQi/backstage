@@ -12,8 +12,8 @@ import java.util.Map;
 public enum ContractEnum {
 
     contractCoding("采购合同编号"),  //采购合同编号
-    ASite("签订地点"),           //签订地点
-    ATime("签订时间"),           //签订时间
+    ASite("合同签订地点"),           //签订地点
+    ATime("合同签订时间"),           //签订时间
     ACustomerName("需方公司名称"),   //需方公司名称
     BCustomerName("供方公司名称"),   //供方公司名称
     extractPlace("提取地点"),    //提取地点
@@ -66,8 +66,8 @@ public enum ContractEnum {
     Line("序号"),
     payMoney("付款金额"),
     TotalNumber("合计数量"),
+    mailingAddress("发票邮寄地址"),
     invoiceType("发票类型");
-    
 
 
     public String getDetail() {
