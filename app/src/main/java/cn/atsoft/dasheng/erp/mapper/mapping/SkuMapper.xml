@@ -253,6 +253,7 @@
                 #{state}
             </foreach>
         </if>
+        group by goods_sku.sku_id
         order by createTime DESC
     </select>
 
