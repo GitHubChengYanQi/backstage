@@ -16,6 +16,8 @@ import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Supply;
+import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
@@ -110,6 +112,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Autowired
     private StepsService stepsService;
+    @Autowired
+    private SupplyService supplyService;
 
     @Transactional
     @Override
@@ -796,12 +800,28 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         Page<SkuResult> pageContext = getPageContext();
         IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
-        format(page.getRecords());
-
+        this.format(page.getRecords());
+        this.isSupply(param,page.getRecords());
 
         return PageFactory.createPageInfo(page);
     }
 
+    public void isSupply(SkuParam skuParam,List<SkuResult> results){
+        List<Long> skuIds =new ArrayList<>();
+        for (SkuResult result : results) {
+            skuIds.add(result.getSkuId());
+        }
+        List<Supply> supplies =skuIds.size() == 0 ? new ArrayList<>() : supplyService.query().in("sku_id", skuIds).list();
+        for (SkuResult result : results) {
+            result.setInSupply(false);
+            for (Supply supply : supplies) {
+                if (result.getSkuId().equals(supply.getSkuId()) && supply.getCustomerId().equals(skuParam.getCustomerId())){
+                    result.setInSupply(true);
+                }
+            }
+        }
+
+    }
     @Override
     public List<SkuResult> AllSku() {
         List<SkuResult> skuResults = this.baseMapper.customList(new SkuParam());

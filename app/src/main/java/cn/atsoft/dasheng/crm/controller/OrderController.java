@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody @Valid OrderParam orderParam) {
+        if (ToolUtil.isEmpty(orderParam.getCoding())) {
+            throw new ServiceException(500, "请填写编号");
+        }
         Order order = this.orderService.add(orderParam);
         return ResponseData.success(order);
     }
@@ -75,6 +79,7 @@ public class OrderController extends BaseController {
         }
         return this.orderService.findPageBySpec(orderParam);
     }
+
     /**
      * 查询列表
      *
@@ -89,6 +94,7 @@ public class OrderController extends BaseController {
         }
         return ResponseData.success(this.orderService.pendingProductionPlan(orderParam));
     }
+
     /**
      * 查询列表
      *
@@ -101,7 +107,7 @@ public class OrderController extends BaseController {
         if (ToolUtil.isEmpty(orderParam)) {
             orderParam = new OrderParam();
         }
-        return ResponseData.success(this.orderService.pendingProductionPlanByContracts(orderParam)) ;
+        return ResponseData.success(this.orderService.pendingProductionPlanByContracts(orderParam));
     }
 
 

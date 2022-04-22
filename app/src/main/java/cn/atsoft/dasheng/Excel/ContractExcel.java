@@ -121,18 +121,18 @@ public class ContractExcel {
     @RequestMapping(value = "/exportContractWord", method = RequestMethod.GET)
     public void exportContract(HttpServletResponse response, Long id) {
 
-            Contract contract = contractService.getById(id);
-            if (ToolUtil.isEmpty(contract)) {
-                throw new ServiceException(500, "请确定合同");
-            }
-            Template template = templateService.getById(contract.getTemplateId());
-            if (ToolUtil.isEmpty(template)) {
-                throw new ServiceException(500, "请确定合同模板");
-            }
-            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
-            if (ToolUtil.isEmpty(fileInfo)) {
-                throw new ServiceException(500, "请确定合同模板");
-            }
+        Contract contract = contractService.getById(id);
+        if (ToolUtil.isEmpty(contract)) {
+            throw new ServiceException(500, "请确定合同");
+        }
+        Template template = templateService.getById(contract.getTemplateId());
+        if (ToolUtil.isEmpty(template)) {
+            throw new ServiceException(500, "请确定合同模板");
+        }
+        FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+        if (ToolUtil.isEmpty(fileInfo)) {
+            throw new ServiceException(500, "请确定合同模板");
+        }
         try {
             XWPFDocument document = formatDocument(contract, template, fileInfo.getFilePath());  //读取word
 
@@ -170,6 +170,9 @@ public class ContractExcel {
     public XWPFDocument formatDocument(Contract contract, Template template, String url) throws InvalidFormatException, IOException {
 
         List<LabelResult> results = JSON.parseArray(contract.getContent(), LabelResult.class);
+        if (ToolUtil.isEmpty(results)) {
+            results = new ArrayList<>();
+        }
         Map<String, Object> map = new HashMap<>();
         for (LabelResult result : results) {
             if (!result.type.equals("sku") && !result.getType().equals("pay")) {
@@ -216,8 +219,6 @@ public class ContractExcel {
         return document;
 
     }
-
-
 
 
     @RequestMapping(value = "/wordToHtml", method = RequestMethod.GET)

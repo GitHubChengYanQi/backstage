@@ -44,7 +44,6 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
     @NotNull
     @ApiModelProperty("")
     private Long skuId;
-    @NotNull
     @ApiModelProperty("")
     private Long brandId;
     @NotNull
