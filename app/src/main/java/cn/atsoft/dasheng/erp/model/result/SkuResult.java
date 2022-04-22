@@ -39,6 +39,7 @@ public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Boolean inSupply;
     List<AttributeValuesResult> list;
     private List<SkuJson> skuJsons;
     private String categoryName;
