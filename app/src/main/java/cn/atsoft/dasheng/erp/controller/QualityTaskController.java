@@ -86,14 +86,14 @@ public class QualityTaskController extends BaseController {
         if (ToolUtil.isEmpty(qualityTaskParam.getDetails())) {
             throw  new ServiceException(500,"请填写完整信息");
         }
-        List<Long> judge = new ArrayList<>();
-        for (QualityTaskDetailParam detail : qualityTaskParam.getDetails()) {
-            judge.add(detail.getSkuId()+detail.getBrandId());
-        }
-        long count = judge.stream().distinct().count();
-        if (qualityTaskParam.getDetails().size()!=count) {
-            throw  new ServiceException(500,"请勿填写重复");
-        }
+//        List<Long> judge = new ArrayList<>();
+//        for (QualityTaskDetailParam detail : qualityTaskParam.getDetails()) {
+//            judge.add(detail.getSkuId()+detail.getBrandId());
+//        }
+//        long count = judge.stream().distinct().count();
+//        if (qualityTaskParam.getDetails().size()!=count) {
+//            throw  new ServiceException(500,"请勿填写重复");
+//        }
         this.qualityTaskService.add(qualityTaskParam);
         return ResponseData.success();
     }
