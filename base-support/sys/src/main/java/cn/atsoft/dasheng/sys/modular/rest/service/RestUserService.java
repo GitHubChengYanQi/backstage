@@ -23,6 +23,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -329,7 +330,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         RestUser user = this.getById(userId);
         Map<String, Object> map = RestUserFactory.removeUnSafeFieldsRest(user);
 
-        HashMap<String, Object> hashMap = CollectionUtil.newHashMap();
+        HashMap<String, Object> hashMap = MapUtil.newHashMap();
         hashMap.putAll(map);
         hashMap.put("roleName", ConstantFactory.me().getRoleName(user.getRoleId()));
         hashMap.put("deptName", ConstantFactory.me().getDeptName(user.getDeptId()));

@@ -25,6 +25,12 @@ public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 交货地点
+     */
+    @TableField("adress_id")
+    private Long adressId;
+
+    /**
      * 订单编号
      */
     @TableId(value = "order_id", type = IdType.ID_WORKER)
@@ -165,7 +171,7 @@ public class Order implements Serializable {
      * 乙方开户行账号
      */
     @TableField("party_b_bank_account")
-    private String  partyBBankAccount;
+    private String partyBBankAccount;
 
     /**
      * 乙方法人
@@ -618,6 +624,14 @@ public class Order implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Long getAdressId() {
+        return adressId;
+    }
+
+    public void setAdressId(Long adressId) {
+        this.adressId = adressId;
     }
 
     @Override

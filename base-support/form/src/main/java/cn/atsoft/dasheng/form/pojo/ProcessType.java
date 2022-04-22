@@ -2,14 +2,14 @@ package cn.atsoft.dasheng.form.pojo;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 
-public enum ProcecssType {
+public enum ProcessType {
 
 
     quality("质检"),
     purchase("采购"),
     enquiry("询价");
 
-    ProcecssType(String type) {
+    ProcessType(String type) {
         this.type = type;
     }
 

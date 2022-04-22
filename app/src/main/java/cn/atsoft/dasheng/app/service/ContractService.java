@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -8,6 +9,8 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
+import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -85,4 +88,13 @@ public interface ContractService extends IService<Contract> {
 
     Contract orderAddContract(Long orderId, ContractParam param, OrderParam orderPara, String orderType);
 
+    String wordToHtml(Long id);
+
+    List<LabelResult> getLabelResults(Long id);
+
+    List<OrderDetailResult> skuReplaceList(Long orderId);
+
+    List<PaymentDetailResult> paymentDetailsReplaceList(Long orderId);
+
+    String skuReplace(String content, Long orderId);
 }

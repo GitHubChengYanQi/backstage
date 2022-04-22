@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.app.entity.ContractDetail;
 import cn.atsoft.dasheng.app.pojo.ContractReplace;
 import cn.atsoft.dasheng.app.pojo.CycleReplace;
@@ -40,6 +41,9 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     private List<PayReplace> payReplaces;
 
     private String contractCoding;
+
+    private List<LabelResult> labelResults;
+
     /**
      * 合同分类
      */

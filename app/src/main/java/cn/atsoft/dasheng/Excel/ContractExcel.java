@@ -3,33 +3,71 @@ package cn.atsoft.dasheng.Excel;
 
 import cn.afterturn.easypoi.exception.word.enmus.WordExportEnum;
 import cn.afterturn.easypoi.word.WordExportUtil;
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
+import cn.atsoft.dasheng.Excel.pojo.TempReplaceRule;
 import cn.atsoft.dasheng.app.entity.Contract;
+import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.service.ContractService;
+import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.base.consts.ConstantsContext;
+import cn.atsoft.dasheng.base.oshi.model.SysFileInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.ContractTemplete;
+import cn.atsoft.dasheng.crm.entity.ContractTempleteDetail;
+import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
+import cn.atsoft.dasheng.crm.pojo.ContractEnum;
+import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
+import cn.atsoft.dasheng.crm.service.ContractTempleteService;
+import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.poi.word.DocUtil;
 import cn.hutool.poi.word.Word07Writer;
+import com.alibaba.fastjson.JSON;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hwpf.converter.WordToHtmlConverter;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFPictureData;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -40,52 +78,17 @@ public class ContractExcel {
 
     @Autowired
     private ContractService contractService;
+    @Autowired
+    private TemplateService templateService;
+    @Autowired
+    private FileInfoService fileInfoService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private ContractTempleteService templeteService;
+    @Autowired
+    private ContractTempleteDetailService templeteDetailService;
 
-
-    @ResponseBody
-    public ResponseData exportContract(HttpServletResponse response, @Param("id") Long id) throws Exception {
-        Contract contract = contractService.getById(id);
-
-        String noteName = "d:/";
-        String reportDirName = "合同.doc";
-        htmlToWord(reportDirName, noteName, contract.getContent());
-        return ResponseData.success("保存路径：" + noteName + reportDirName);
-    }
-
-
-    /**
-     * HTML转word
-     *
-     * @param noteName         导出文件名称
-     * @param researchNoteInfo 文件的html
-     * @return void
-     * @paramre portDirName 文件路径
-     * @author Solitary
-     * @date 2019/1/11 9:21
-     */
-    public static void htmlToWord(String noteName, String reportDirName, String researchNoteInfo) throws Exception {
-        //拼一个标准的HTML格式文档
-        Document document = Jsoup.parse(researchNoteInfo);
-        InputStream is = new ByteArrayInputStream(document.html().getBytes("GBK"));
-        OutputStream os = new FileOutputStream(reportDirName + noteName);
-        inputStreamToWord(is, os);
-    }
-
-    /**
-     * 把is写入到对应的word输出流os中
-     *
-     * @param is
-     * @param os
-     * @throws IOException
-     */
-    private static void inputStreamToWord(InputStream is, OutputStream os) throws IOException {
-        POIFSFileSystem fs = new POIFSFileSystem();
-        DirectoryNode root = fs.getRoot();
-        root.createDocument("WordDocument", is);
-        fs.writeFilesystem(os);
-        os.close();
-        is.close();
-    }
 
     @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
     public void test(HttpServletRequest request, HttpServletResponse response, Long id) {
@@ -115,68 +118,253 @@ public class ContractExcel {
 
     }
 
-    @RequestMapping(value = "export", method = RequestMethod.GET)
-    public void export(HttpServletRequest request, HttpServletResponse response, Long id) {
-        Contract contract = contractService.getById(id);
+    @RequestMapping(value = "/exportContractWord", method = RequestMethod.GET)
+    public void exportContract(HttpServletResponse response, Long id) {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("title", "这是标题");
-        params.put("name", "李四");
-        //这里是我说的一行代码
-        exportWord(contract.getContent(), "F:/test", "aaa.docx", params, request, response);
+            Contract contract = contractService.getById(id);
+            if (ToolUtil.isEmpty(contract)) {
+                throw new ServiceException(500, "请确定合同");
+            }
+            Template template = templateService.getById(contract.getTemplateId());
+            if (ToolUtil.isEmpty(template)) {
+                throw new ServiceException(500, "请确定合同模板");
+            }
+            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+            if (ToolUtil.isEmpty(fileInfo)) {
+                throw new ServiceException(500, "请确定合同模板");
+            }
+        try {
+            XWPFDocument document = formatDocument(contract, template, fileInfo.getFilePath());  //读取word
+
+            String fileName = "test.docx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            OutputStream os = response.getOutputStream();
+            document.write(os);
+        } catch (Exception e) {
+            //异常处理
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 返回表格
+     */
+    @RequestMapping(value = "/getWordTables", method = RequestMethod.GET)
+    public ResponseData<List<XWPFTable>> getWordTables(@RequestParam("fileId") Long fileId) {
+        FileInfo fileInfo = fileInfoService.getById(fileId);
+        XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
+        List<XWPFTable> documentTables = document.getTables();
+        return ResponseData.success(documentTables);
     }
 
 
     /**
-     * 导出word
-     * <p>第一步生成替换后的word文件，只支持docx</p>
-     * <p>第二步下载生成的文件</p>
-     * <p>第三步删除生成的临时文件</p>
-     * 模版变量中变量格式：{{foo}}
+     * 获取word
      *
-     * @param templatePath word模板地址
-     * @param temDir       生成临时文件存放地址
-     * @param fileName     文件名
-     * @param params       替换的参数
-     * @param request      HttpServletRequest
-     * @param response     HttpServletResponse
+     * @param contract
+     * @param url
+     * @return
      */
+    public XWPFDocument formatDocument(Contract contract, Template template, String url) throws InvalidFormatException, IOException {
 
-    public static void exportWord(String templatePath, String temDir, String fileName, Map<String, Object> params, HttpServletRequest request, HttpServletResponse response) {
-        Assert.notNull(templatePath, "模板路径不能为空");
-        Assert.notNull(temDir, "临时文件路径不能为空");
-        Assert.notNull(fileName, "导出文件名不能为空");
-        Assert.isTrue(fileName.endsWith(".docx"), "word导出请使用docx格式");
-        if (!temDir.endsWith("/")) {
-            temDir = temDir + File.separator;
-        }
-        File dir = new File(temDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        try {
-            String userAgent = request.getHeader("user-agent").toLowerCase();
-            if (userAgent.contains("msie") || userAgent.contains("like gecko")) {
-                fileName = URLEncoder.encode(fileName, "UTF-8");
-            } else {
-                fileName = new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+        List<LabelResult> results = JSON.parseArray(contract.getContent(), LabelResult.class);
+        Map<String, Object> map = new HashMap<>();
+        for (LabelResult result : results) {
+            if (!result.type.equals("sku") && !result.getType().equals("pay")) {
+                map.put(result.getName(), ToolUtil.isEmpty(result.getValue()) ? "" : result.getValue());
             }
-            XWPFDocument doc = WordExportUtil.exportWord07(templatePath, params);
-            String tmpPath = temDir + fileName;
-            FileOutputStream fos = new FileOutputStream(tmpPath);
-            doc.write(fos);
-            // 设置强制下载不打开
-            response.setContentType("application/force-download");
-            // 设置文件名
-            response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);
-            OutputStream out = response.getOutputStream();
-            doc.write(out);
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-//            delAllFile(temDir);//这一步看具体需求，要不要删
+//            if (result.getType().equals("sku")) {
+//                ContractTempleteDetail templeteDetail = templeteDetailService.query().eq("contract_templete_id", template.getTemplateId()).one();
+//                String skuReplace = contractService.skuReplace(templeteDetail.getValue(), contract.getSourceId());
+//                map.put(result.getName(), skuReplace);
+//            }
+//
+//            if (result.getType().equals("pay")) {
+//
+//            }
+
         }
 
+//        ContractTempleteDetail templateDetail = templeteDetailService.query().eq("contract_template_id", template.getTemplateId()).one();
+//        String skuReplace = contractService.skuReplace(templateDetail.getValue(), contract.getSourceId());
+
+        List<OrderDetailResult> list = contractService.skuReplaceList(contract.getSourceId());
+
+        List<PaymentDetailResult> replaceList = contractService.paymentDetailsReplaceList(contract.getSourceId());
+
+        map.put("sku", list);
+        map.put("pay", replaceList);
+        map.putAll(orderService.mapFormat(contract.getContractId()));
+
+        TempReplaceRule tempReplaceRule = JSON.parseObject(template.getReplaceRule(), TempReplaceRule.class);
+        List<TempReplaceRule.ReplaceRule> replaceRules = tempReplaceRule.getReplaceRules();
+
+        WordUtils wordUtils = new WordUtils();
+
+        InputStream inputStream = new FileInputStream(url);
+        XWPFDocument document = new XWPFDocument(inputStream);
+
+//        XWPFDocument document  = DocUtil.create(new File(url));
+
+        wordUtils.replaceInPara(document, map);
+
+        wordUtils.replaceInTable(document, map, replaceRules);
+
+
+        return document;
+
+    }
+
+
+
+
+    @RequestMapping(value = "/wordToHtml", method = RequestMethod.GET)
+    private ResponseData wordToHtml(@RequestParam("id") Long id) throws IOException, TransformerException {
+
+
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/getWordLables", method = RequestMethod.GET)
+    public ResponseData getWordLable(@RequestParam("id") Long id) {
+        List<String> list = new ArrayList<>();
+
+        Template template = templateService.getById(id);
+
+        if (ToolUtil.isNotEmpty(template) && ToolUtil.isNotEmpty(template.getFileId())) {
+            FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+            WordUtils wordUtils = new WordUtils();
+            XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
+            list = wordUtils.getLabel(document);
+        }
+
+
+        return ResponseData.success(list);
+    }
+
+
+    public static Map<String, Object> payFormat(PaymentDetailResult result) {
+        Map<String, Object> map = new HashMap<>();
+
+        for (ContractEnum value : ContractEnum.values()) {
+            switch (value) {
+                case payMoney:
+                    if (ToolUtil.isNotEmpty(result.getMoney())) {
+                        map.put(ContractEnum.payMoney.getDetail(), result.getMoney());
+                    } else {
+                        map.put(ContractEnum.payMoney.getDetail(), "");
+                    }
+                case DateWay:
+                    if (ToolUtil.isNotEmpty(result.getDateWay())) {
+                        map.put(ContractEnum.DateWay.getDetail(), "");
+                    } else {
+                        String dateWay = "";
+                        switch (result.getDateWay()) {
+                            case 0:
+                                dateWay = "天";
+                                break;
+                            case 1:
+                                dateWay = "月";
+                                break;
+                            case 2:
+                                dateWay = "年";
+                                break;
+                        }
+                        map.put(ContractEnum.DateWay.getDetail(), dateWay);
+                    }
+
+                case PaymentProportion:
+                    if (ToolUtil.isNotEmpty(result.getPercentum())) {
+                        map.put(ContractEnum.PaymentProportion.getDetail(), result.getPercentum().toString());
+                    } else {
+                        map.put(ContractEnum.PaymentProportion.getDetail(), "");
+                    }
+                case PaymentDate:
+                    if (ToolUtil.isNotEmpty(result.getPayTime())) {
+                        DateTime date = DateUtil.date(result.getPayTime());
+                        map.put(ContractEnum.PaymentDate.getDetail(), date.toString());
+                    } else {
+                        map.put(ContractEnum.PaymentDate.getDetail(), "");
+                    }
+
+            }
+
+        }
+
+        return map;
+    }
+
+    public static Map<String, Object> orderFormat(OrderDetailResult results) {
+
+        Map<String, Object> map = new HashMap<>();
+
+        int i = 0;
+        for (ContractEnum value : ContractEnum.values()) {
+            i++;
+            switch (value) {
+                case skuStrand:
+                    if (ToolUtil.isNotEmpty(results.getSkuResult()) && ToolUtil.isNotEmpty(results.getSkuResult().getStandard())) {
+                        map.put(ContractEnum.skuStrand.getDetail(), results.getSkuResult().getStandard());
+                    } else {
+                        map.put(ContractEnum.skuStrand.getDetail(), "");
+                    }
+                case spuName:
+                    map.put(ContractEnum.spuName.getDetail(), results.getSkuResult().getSpuResult().getName());
+                case skuName:
+                    map.put(ContractEnum.skuName.getDetail(), results.getSkuResult().getSkuName());
+                case brand:
+                    if (ToolUtil.isNotEmpty(results.getBrandResult()) && ToolUtil.isNotEmpty(results.getBrandResult().getBrandName())) {
+                        map.put(ContractEnum.brand.getDetail(), results.getBrandResult().getBrandName());
+                    } else {
+                        map.put(ContractEnum.brand.getDetail(), "");
+                    }
+                case Line:
+                    map.put(ContractEnum.Line.getDetail(), i + "");
+                case number:
+                    if (ToolUtil.isNotEmpty(results.getPurchaseNumber())) {
+                        map.put(ContractEnum.number.getDetail(), results.getPurchaseNumber() + "");
+                    } else {
+                        map.put(ContractEnum.number.getDetail(), "");
+                    }
+                case unit:
+                    if (ToolUtil.isNotEmpty(results.getUnit()) && ToolUtil.isNotEmpty(results.getUnit().getUnitName())) {
+                        map.put(ContractEnum.unit.getDetail(), results.getUnit().getUnitName());
+                    } else {
+                        map.put(ContractEnum.unit.getDetail(), "");
+                    }
+
+                case UnitPrice:
+                    if (ToolUtil.isNotEmpty(results.getOnePrice())) {
+                        map.put(ContractEnum.UnitPrice.getDetail(), results.getOnePrice() + "");
+                    } else {
+                        map.put(ContractEnum.UnitPrice.getDetail(), "");
+                    }
+                case TotalPrice:
+                    if (ToolUtil.isNotEmpty(results.getTotalPrice())) {
+                        map.put(ContractEnum.TotalPrice.getDetail(), results.getTotalPrice() + "");
+                    } else {
+                        map.put(ContractEnum.TotalPrice.getDetail(), "");
+                    }
+                case invoiceType:
+                    String paperType = "";
+                    if (ToolUtil.isNotEmpty(results.getPaperType()) && results.getPaperType() == 0) {
+                        paperType = "普票";
+                    } else {
+                        paperType = "专票";
+                    }
+                    map.put(ContractEnum.invoiceType.getDetail(), paperType);
+                case DeliveryCycle:
+                    if (ToolUtil.isNotEmpty(results.getDeliveryDate())) {
+                        map.put(ContractEnum.DeliveryCycle.getDetail(), results.getDeliveryDate() + "");
+                    } else {
+                        map.put(ContractEnum.DeliveryCycle.getDetail(), "");
+                    }
+
+
+            }
+        }
+        return map;
     }
 }

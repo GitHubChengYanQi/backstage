@@ -1,5 +1,9 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.Excel.WordUtils;
+
+import cn.atsoft.dasheng.Excel.pojo.LabelResult;
+import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.app.pojo.Lable;
 import cn.atsoft.dasheng.app.wrapper.TemplateSelectWrapper;
@@ -12,13 +16,27 @@ import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.ContractTemplete;
+import cn.atsoft.dasheng.crm.entity.ContractTempleteDetail;
+import cn.atsoft.dasheng.crm.model.result.ContractTempleteDetailResult;
+import cn.atsoft.dasheng.crm.model.result.ContractTempleteResult;
+import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
+import cn.atsoft.dasheng.crm.service.ContractTempleteService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.poi.word.DocUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +54,7 @@ public class TemplateController extends BaseController {
 
     @Autowired
     private TemplateService templateService;
+
 
     /**
      * 新增接口
@@ -145,6 +164,9 @@ public class TemplateController extends BaseController {
         Lable label = this.templateService.getLabel(id);
         return ResponseData.success(label);
     }
+
+
+
 }
 
 

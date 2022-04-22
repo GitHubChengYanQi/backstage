@@ -67,7 +67,6 @@ spring:
       simple:
         acknowledge-mode: manual
     prefix: jazz
-    prefix2: microservices
 
 
 
