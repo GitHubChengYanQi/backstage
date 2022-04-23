@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/selfEnterprise")
 @Api(tags = "自身企业")
@@ -31,6 +33,7 @@ public class SelfEenterpriseController {
             customerParam = new CustomerParam();
         }
 
+        customerParam.setStatus(99);
 //        if (LoginContextHolder.getContext().isAdmin()) {
         return this.customerService.findPageBySpec(null,customerParam);
 //        }else{
