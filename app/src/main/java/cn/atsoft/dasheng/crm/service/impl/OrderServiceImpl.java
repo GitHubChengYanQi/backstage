@@ -416,6 +416,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Contacts Acontacts = contactsService.getById(result.getPartyAClientId());//甲方委托人
         Contacts Bcontacts = contactsService.getById(result.getPartyBClientId());//乙方联系人
 
+
         if (ToolUtil.isNotEmpty(Acontacts) && ToolUtil.isNotEmpty(Acontacts.getPhone())) {  //甲方代表电话
             Phone phone = phoneService.getById(Acontacts.getPhone());
             if (ToolUtil.isNotEmpty(phone)) {

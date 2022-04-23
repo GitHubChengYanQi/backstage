@@ -221,12 +221,6 @@ public class ContractExcel {
     }
 
 
-    @RequestMapping(value = "/wordToHtml", method = RequestMethod.GET)
-    private ResponseData wordToHtml(@RequestParam("id") Long id) throws IOException, TransformerException {
-
-
-        return ResponseData.success();
-    }
 
     @RequestMapping(value = "/getWordLables", method = RequestMethod.GET)
     public ResponseData getWordLable(@RequestParam("id") Long id) {
