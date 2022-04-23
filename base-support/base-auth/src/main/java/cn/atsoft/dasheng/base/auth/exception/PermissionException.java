@@ -21,6 +21,11 @@ public class PermissionException extends RuntimeException {
         this.code = AuthExceptionEnum.NO_PERMISSION.getCode();
         this.errorMessage = AuthExceptionEnum.NO_PERMISSION.getMessage();
     }
+    public PermissionException(String name) {
+        super(AuthExceptionEnum.NO_PERMISSION.getMessage()+":("+name +")");
+        this.code = AuthExceptionEnum.NO_PERMISSION.getCode();
+        this.errorMessage =AuthExceptionEnum.NO_PERMISSION.getMessage() + ":("+name +")";
+    }
 
     public PermissionException(AbstractBaseExceptionEnum exception) {
         super(exception.getMessage());
