@@ -81,14 +81,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
-        List<Long> ids = new ArrayList<>();
-        for (ApplyDetails applyDetail : param.getApplyDetails()) {
-            ids.add(applyDetail.getBrandId() + applyDetail.getSkuId());
-        }
-        long count = ids.stream().distinct().count();
-        if (param.getApplyDetails().size() > count) {
-            throw new ServiceException(500, "请勿添加重复数据");
-        }
+
+
         CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
             String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
