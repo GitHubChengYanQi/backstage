@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.action;
 
-public enum OrderActionEnum {
+public enum OrderActionEnum  implements FormActionInterface{
 
     start {
         public Long getStatus() {

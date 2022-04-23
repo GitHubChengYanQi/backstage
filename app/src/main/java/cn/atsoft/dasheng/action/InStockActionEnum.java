@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.action;
 
-public enum InStockActionEnum {
+public enum InStockActionEnum   implements FormActionInterface{
 
     start {
         public Long getStatus() {
