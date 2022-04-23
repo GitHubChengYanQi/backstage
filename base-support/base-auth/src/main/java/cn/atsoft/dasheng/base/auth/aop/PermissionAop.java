@@ -52,6 +52,10 @@ public class PermissionAop {
         Method method = ms.getMethod();
         Permission permission = method.getAnnotation(Permission.class);
         String[] permissions = permission.value();
+        String name = permission.name();
+        if (name.equals("")){
+            name = String.valueOf(point);
+        }
         if (permissions.length == 0) {
 
             //检查全体角色
@@ -59,7 +63,7 @@ public class PermissionAop {
             if (result) {
                 return point.proceed();
             } else {
-                throw new PermissionException();
+                throw new PermissionException(name);
             }
 
         } else {
@@ -69,7 +73,7 @@ public class PermissionAop {
             if (result) {
                 return point.proceed();
             } else {
-                throw new PermissionException();
+                throw new PermissionException(name);
             }
         }
     }
