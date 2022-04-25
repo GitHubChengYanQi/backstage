@@ -167,12 +167,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             skuIds.add(part.getSkuId());
             if (part.getSkuId().equals(partsParam.getSkuId())) {
-                throw new ServiceException(500, "请看清在加");
+                throw new ServiceException(500, "子件信息和父件信息不能相同");
             }
         }
         long count = skuIds.stream().distinct().count();
         if (count != partsParam.getParts().size()) {
-            throw new ServiceException(500, "请勿添加重复数据");
+            throw new ServiceException(500, "子件信息不可重复");
         }
     }
 
