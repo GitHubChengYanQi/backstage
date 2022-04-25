@@ -73,8 +73,10 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @FreedLog
     public Contacts add(ContactsParam param) {
+
         Contacts entity = getEntity(param);
         this.save(entity);
+
 
         List<Long> phoneNumber = new ArrayList<>();
         for (PhoneParam phoneParam : param.getPhoneParams()) {
@@ -126,6 +128,13 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         }
 
         if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+            Customer customer = customerService.getById(param.getCustomerId());
+            if (ToolUtil.isEmpty(customer)) {
+                throw new ServiceException(500, "绑定的客户不存在");
+            }
+            customer.setDefaultContacts(entity.getContactsId());
+            customerService.updateById(customer);
+
             ContactsBindParam contactsBindParam = new ContactsBindParam();
             contactsBindParam.setCustomerId(param.getCustomerId());
             contactsBindParam.setContactsId(entity.getContactsId());
@@ -417,7 +426,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 if (phone.getContactsId().equals(record.getContactsId())) {
                     PhoneResult phoneResult = new PhoneResult();
                     ToolUtil.copyProperties(phone, phoneResult);
-                    String phoneNumber =ToolUtil.isEmpty( phoneResult.getPhoneNumber()) ? new String() : phoneResult.getPhoneNumber().toString().substring(0, 3) + "****" + phoneResult.getPhoneNumber().toString().substring(7);
+                    String phoneNumber = ToolUtil.isEmpty(phoneResult.getPhoneNumber()) ? new String() : phoneResult.getPhoneNumber().toString().substring(0, 3) + "****" + phoneResult.getPhoneNumber().toString().substring(7);
                     phoneResult.setPhone(phoneNumber);
                     List.add(phoneResult);
                 }
