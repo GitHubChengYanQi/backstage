@@ -464,26 +464,26 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             throw new ServiceException(500, "物料必须添加在最底级分类中");
         }
 
-//        //生成编码
-//        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
-//        if (ToolUtil.isNotEmpty(codingRules)) {
-//            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-////                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
-//            SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
-//            if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
-//                String replace = "";
-//                if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
-//                    replace = backCoding.replace("${skuClass}", classification.getCodingClass());
-//                } else {
-//                    replace = backCoding.replace("${skuClass}", "");
-//                }
-//
-//                param.setStandard(replace);
-//                param.setCoding(replace);
-//
-//            }
-//
-//        }
+        //生成编码
+        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
+        if (ToolUtil.isNotEmpty(codingRules)) {
+            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+//                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
+            SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
+            if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
+                String replace = "";
+                if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
+                    replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+                } else {
+                    replace = backCoding.replace("${skuClass}", "");
+                }
+
+                param.setStandard(replace);
+                param.setCoding(replace);
+
+            }
+
+        }
         /**
          * 判断成品码是否重复
          */
@@ -600,7 +600,43 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return list;
     }
 
-
+    /**
+     * 合并sku
+     * @param param
+     */
+    @Override
+    public void mirageSku(SkuParam param){
+        Sku oldEntity = getOldEntity(param);
+        Sku newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        Category category = this.getOrSaveCategory(param);
+        Long categoryId = category.getCategoryId();
+        List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
+        SpuClassification spuClassification =ToolUtil.isEmpty(param.getSpuClass()) ? new SpuClassification() : spuClassificationService.getById(param.getSpuClass());
+        Long spuClassificationId = spuClassification.getSpuClassificationId();
+        Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
+        newEntity.setSpuId(orSaveSpu.getSpuId());
+        String json = JSON.toJSONString(list);
+        newEntity.setSkuValue(json);
+        String md5 = SecureUtil.md5(newEntity.getSkuValue()+newEntity.getSpuId().toString()+newEntity.getSkuName()+spuClassification.getSpuClassificationId());
+        newEntity.setSkuValueMd5(md5);
+        this.updateById(newEntity);
+//        /**
+//         * 更新品牌
+//         */
+//        if (ToolUtil.isNotEmpty(param.getBrandIds())) {
+//            List<SkuBrandBind> binds = skuBrandBindService.query().eq("sku_id", newEntity.getSkuId()).list();
+//            for (SkuBrandBind bind : binds) {
+//                bind.setDisplay(0);
+//            }
+//            skuBrandBindService.updateBatchById(binds);
+//
+//            skuBrandBindService.addBatch(new SkuBrandBindParam() {{
+//                setBrandIds(param.getBrandIds());
+//                setSkuId(newEntity.getSkuId());
+//            }});
+//        }
+    }
     @Override
     public void delete(SkuParam param) {
         List<Long> id = new ArrayList<>();
@@ -686,7 +722,89 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         categoryService.updateBatchById(categoryList);
 
     }
+    public void BatchAddSku(BatchSkuParam batchSkuParam){
+        List<Sku> entitys = new ArrayList<>();
+        for (SkuParam param : batchSkuParam.getSkuParams()) {
+            Category category = this.getOrSaveCategory(param);
+            Long categoryId = category.getCategoryId();
 
+            SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
+            Long spuClassificationId = spuClassification.getSpuClassificationId();
+            Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
+            if (parentSpuClassifications > 0) {
+                throw new ServiceException(500, "物料必须添加在最底级分类中");
+            }
+
+            //生成编码
+            CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+//                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
+                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
+                if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
+                    String replace = "";
+                    if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
+                        replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+                    } else {
+                        replace = backCoding.replace("${skuClass}", "");
+                    }
+
+                    param.setStandard(replace);
+                    param.setCoding(replace);
+
+                }
+
+            }
+            /**
+             * 判断成品码是否重复
+             */
+            int count = skuService.count(new QueryWrapper<Sku>() {{
+                eq("standard", param.getStandard());
+                eq("display", 1);
+            }});
+            if (count > 0) {
+                throw new ServiceException(500, "编码/成品码重复");
+            }
+
+
+            /**
+             * sku名称（skuName）加型号(spuName)判断防止重复
+             */
+            Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
+            Long spuId = spu.getSpuId();
+//        List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+//        if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
+//            throw new ServiceException(500, "此物料在产品中已存在");
+//        }
+            /**
+             * 查询产品，添加产品 在上方spu查询
+             */
+
+            List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
+
+            Sku entity = getEntity(param);
+
+
+            String json = JSON.toJSONString(list);
+
+            entity.setSpuId(spuId);
+            entity.setSkuValue(json);
+
+            String md5 = SecureUtil.md5(entity.getSkuValue()+entity.getSpuId().toString()+entity.getSkuName()+spuClassification.getSpuClassificationId());
+
+            entity.setSkuValueMd5(md5);
+
+            entitys.add(entity);
+
+//            if (ToolUtil.isNotEmpty(param.getBrandIds())) {
+//                skuBrandBindService.addBatch(new SkuBrandBindParam() {{
+//                    setBrandIds(param.getBrandIds());
+//                    setSkuId(entity.getSkuId());
+//                }});
+//            }
+        }
+        this.saveBatch(entitys);
+    }
 
     @Override
     @BussinessLog

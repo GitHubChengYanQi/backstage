@@ -37,6 +37,8 @@ public interface SkuService extends IService<Sku> {
     @Transactional
     void directAdd(SkuParam param);
 
+    void mirageSku(SkuParam param);
+
     /**
      * 删除
      *

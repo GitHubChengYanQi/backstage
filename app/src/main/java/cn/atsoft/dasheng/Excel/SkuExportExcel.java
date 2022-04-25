@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.Excel;
 
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -12,10 +13,8 @@ import cn.atsoft.dasheng.production.model.params.ProductionStationClassParam;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -36,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/jazz")
+@RequestMapping("/skuExcel")
 @Api(tags = "")
 public class SkuExportExcel extends BaseController {
 
@@ -44,29 +43,21 @@ public class SkuExportExcel extends BaseController {
     private SkuService skuService;
 
 
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public List<SkuResult> dasad(@RequestBody(required = false) SkuParam skuParam) {
-        if (ToolUtil.isEmpty(skuParam)) {
-            skuParam = new SkuParam();
-        }
-        List<SkuResult> listBySpec = skuService.findListBySpec(skuParam);
-        return listBySpec;
-    }
-
     @RequestMapping(value = "/skuExport", method = RequestMethod.GET)
     @ApiOperation("导出")
     public void qrCodetoExcel(HttpServletResponse response, Long type, String url) throws IOException {
-        String title = "二维码导出表单";
-        String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量", "规格"};
+        String title = "基础物料导出单";
+        String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量","规格","物料描述"};
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("物料导出");
-        sheet.setDefaultColumnWidth(40);
+
+        sheet.setDefaultColumnWidth(30);
+//        sheet.setColumnWidth(7,50);
+
         CellRangeAddress region = new CellRangeAddress(0, 0, 0, 7);
         sheet.addMergedRegion(region);
-//        sheet.setColumnWidth(0, 10);
         HSSFRow titleRow = sheet.createRow(0);
         HSSFCell ti = titleRow.createCell(0);
         ti.setCellValue(title);
@@ -74,8 +65,31 @@ public class SkuExportExcel extends BaseController {
         titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+
+
+        HSSFFont font = workbook.createFont();
+        font.setFontHeightInPoints((short) 16);
+        font.setBold(true);
+        font.setFontName("宋体");
+        titleStyle.setFont(font);
+        //设置边框样式
+        titleStyle.setBorderBottom(BorderStyle.MEDIUM);
+        titleStyle.setBorderLeft(BorderStyle.MEDIUM);
+        titleStyle.setBorderRight(BorderStyle.MEDIUM);
+        titleStyle.setBorderTop(BorderStyle.MEDIUM);
         ti.setCellStyle(titleStyle);
 
+        HSSFCellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);//上下居中
+        cellStyle.setAlignment(HorizontalAlignment.LEFT);//居左对齐
+        cellStyle.setWrapText(true);//自动换行
+
+        //设置边框样式
+        cellStyle.setBorderBottom(BorderStyle.MEDIUM);
+        cellStyle.setBorderLeft(BorderStyle.MEDIUM);
+        cellStyle.setBorderRight(BorderStyle.MEDIUM);
+        cellStyle.setBorderTop(BorderStyle.MEDIUM);
 
         HSSFRow headRow = sheet.createRow(1);
 
@@ -85,11 +99,14 @@ public class SkuExportExcel extends BaseController {
 
             //创建一个内容对象
             HSSFRichTextString text = new HSSFRichTextString(header[i]);
-
-
+            //样式
             HSSFCellStyle headerStyle = workbook.createCellStyle();
             headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
             headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setBorderBottom(BorderStyle.MEDIUM);
+            headerStyle.setBorderLeft(BorderStyle.MEDIUM);
+            headerStyle.setBorderRight(BorderStyle.MEDIUM);
+            headerStyle.setBorderTop(BorderStyle.MEDIUM);
 
             //将内容对象的文字内容写入到单元格中
             cell.setCellValue(text);
@@ -101,49 +118,62 @@ public class SkuExportExcel extends BaseController {
 
 
         int i = 1;
-//        for (Map<String, String> longStringMap : list) {
-//
-//            HSSFRow row1 = sheet.createRow(i);
-//            HSSFCell id = row1.createCell(1);
-//            HSSFCell url1 = row1.createCell(2);
-//            HSSFRichTextString idValue = new HSSFRichTextString(longStringMap.get("id"));
-//            HSSFRichTextString urlValue = new HSSFRichTextString(longStringMap.get("url"));
-//            id.setCellValue(idValue);
-//            url1.setCellValue(urlValue);
-//            i++;
-//
-//        }
+
         for (SkuResult skuResult : skuResults) {
             i++;
+
             HSSFRow row1 = sheet.createRow(i);
             HSSFCell coding = row1.createCell(0);
+            coding.setCellStyle(cellStyle);
             HSSFCell classes = row1.createCell(1);
+            classes.setCellStyle(cellStyle);
             HSSFCell spuName = row1.createCell(2);
+            spuName.setCellStyle(cellStyle);
             HSSFCell sku = row1.createCell(3);
+            sku.setCellStyle(cellStyle);
             HSSFCell unit = row1.createCell(4);
+            unit.setCellStyle(cellStyle);
             HSSFCell isAll = row1.createCell(5);
-            HSSFCell attributeValue = row1.createCell(6);
+            isAll.setCellStyle(cellStyle);
+            HSSFCell specifications = row1.createCell(6);
+            specifications.setCellStyle(cellStyle);
+            HSSFCell attributeAndValues = row1.createCell(7);
+            attributeAndValues.setCellStyle(cellStyle);
 
             HSSFRichTextString codingStr = new HSSFRichTextString(skuResult.getStandard());
 
-            HSSFRichTextString classesStr = new HSSFRichTextString();
+            HSSFRichTextString classesStr = new HSSFRichTextString(skuResult.getSpuResult().getSpuClassificationResult().getName());
 
             HSSFRichTextString spuNameStr = ToolUtil.isEmpty(skuResult.getSpuResult()) ? new HSSFRichTextString() : new HSSFRichTextString(skuResult.getSpuResult().getName());
             HSSFRichTextString skuStr = new HSSFRichTextString();
             if (ToolUtil.isNotEmpty(skuResult.getSpuResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult().getName())) {
                 skuStr = new HSSFRichTextString(skuResult.getSpuResult().getSpuClassificationResult().getName());
             }
-            HSSFRichTextString unitStr = ToolUtil.isEmpty(skuResult.getUnit()) || ToolUtil.isEmpty(skuResult.getUnit().getUnitName()) ? new HSSFRichTextString(" ") : new HSSFRichTextString(skuResult.getUnit().getUnitName());
+            HSSFRichTextString unitStr = ToolUtil.isEmpty(skuResult.getSpuResult()) || ToolUtil.isEmpty(skuResult.getSpuResult().getUnitResult())|| ToolUtil.isEmpty(skuResult.getSpuResult().getUnitResult().getUnitName()) ? new HSSFRichTextString(" ") : new HSSFRichTextString(skuResult.getSpuResult().getUnitResult().getUnitName());
             HSSFRichTextString isAllStr = new HSSFRichTextString();
             if (ToolUtil.isNotEmpty(skuResult.getBatch()) && skuResult.getBatch().equals(1)) {
                 isAllStr = new HSSFRichTextString("是");
             } else {
                 isAllStr = new HSSFRichTextString("否");
             }
-            HSSFRichTextString attributeValueStr = new HSSFRichTextString();
-            if (ToolUtil.isNotEmpty(skuResult.getSkuJsons()) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0)) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0).getValues()) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0).getValues().getAttributeValues())) {
-                attributeValueStr = new HSSFRichTextString(skuResult.getSkuJsons().get(0).getValues().getAttributeValues());
+            HSSFRichTextString specificationsStr = new HSSFRichTextString();
+            if (ToolUtil.isNotEmpty(skuResult.getSpecifications())) {
+                specificationsStr = new HSSFRichTextString(skuResult.getSpecifications());
             }
+            String attributeAndValuesStr = "";
+            StringBuffer sb = new StringBuffer();
+            if(ToolUtil.isNotEmpty(skuResult.getSkuJsons())){
+                for (SkuJson skuJson : skuResult.getSkuJsons()) {
+                    sb.append(skuJson.getAttribute().getAttribute()).append(":").append(skuJson.getValues().getAttributeValues()).append(",");
+                }
+            }
+            if(sb.length()>1){
+                attributeAndValuesStr = sb.substring(0, sb.length() - 1);
+            }
+
+
+
+
 
             coding.setCellValue(codingStr);
             classes.setCellValue(classesStr);
@@ -151,7 +181,8 @@ public class SkuExportExcel extends BaseController {
             sku.setCellValue(skuStr);
             unit.setCellValue(unitStr);
             isAll.setCellValue(isAllStr);
-            attributeValue.setCellValue(attributeValueStr);
+            specifications.setCellValue(specificationsStr);
+            attributeAndValues.setCellValue(attributeAndValuesStr);
         }
 
         //准备将Excel的输出流通过response输出到页面下载
@@ -159,14 +190,13 @@ public class SkuExportExcel extends BaseController {
         response.setContentType("application/octet-stream");
 
         //这后面可以设置导出Excel的名称
-        response.setHeader("Content-disposition", "attachment;filename=qrCode.xls");
+        response.setHeader("Content-disposition", "attachment;filename=skuExport.xls");
 
         //刷新缓冲
         response.flushBuffer();
 
         //workbook将Excel写入到response的输出流中，供页面下载
         workbook.write(response.getOutputStream());
-//        System.out.println(workbook.write(response.getOutputStream())); b6
     }
 
     @RequestMapping(value = "/exportTemplate", method = RequestMethod.GET)
