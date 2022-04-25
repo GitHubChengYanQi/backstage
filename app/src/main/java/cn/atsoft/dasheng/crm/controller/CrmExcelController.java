@@ -86,7 +86,7 @@ public class CrmExcelController {
     @Autowired
     private BrandService brandService;
     @Autowired
-    private SpuClassificationService spuClassificationService;
+    private SpuClassificationService spuClassService;
 
 
     /**
@@ -354,19 +354,16 @@ public class CrmExcelController {
     @ApiOperation("导出")
     public void SkuExcel(HttpServletResponse response, Long type, String url) throws IOException {
 
-        String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量"};
+        String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量","规格"};
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet hssfSheet = workbook.createSheet("二维码导出");
+        HSSFSheet hssfSheet = workbook.createSheet("物料模板");
         HSSFSheet sheet = dataEffective(hssfSheet);
-        //        sheet.setDefaultColumnWidth(40);
-//        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 1);
-//        sheet.addMergedRegion(region);
-//        sheet.setColumnWidth(0, 10);
         HSSFRow titleRow = sheet.createRow(0);
         HSSFCell ti = titleRow.createCell(0);
 
         HSSFCellStyle titleStyle = workbook.createCellStyle();
-        titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
+        titleStyle.setFillForegroundColor((short) 10);
+//        titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         ti.setCellStyle(titleStyle);
@@ -393,28 +390,32 @@ public class CrmExcelController {
             cell.setCellStyle(headerStyle);
         }
 
+
+
         //准备将Excel的输出流通过response输出到页面下载
         //八进制输出流
         response.setContentType("application/octet-stream");
 
         //这后面可以设置导出Excel的名称
-        response.setHeader("Content-disposition", "attachment;filename=物料导入模板.xls");
+        response.setHeader("Content-disposition", "attachment;filename=temp.xls");
 
         //刷新缓冲
         response.flushBuffer();
 
         //workbook将Excel写入到response的输出流中，供页面下载
         workbook.write(response.getOutputStream());
+
     }
 
-    private static HSSFSheet dataEffective(HSSFSheet sheet) {
-
+    /**
+     * 单元格添加下拉
+     * @param sheet
+     * @return
+     */
+    private  HSSFSheet dataEffective(HSSFSheet sheet) {
+        List<String> className = spuClassService.getClassName();
         //获取分类名称
-        List<String> categoryNameList = new ArrayList<String>() {{
-            add("aaaaaaa");
-            add("bbbbbbb");
-        }};
-        String[] categoryNames = categoryNameList.toArray(new String[categoryNameList.size()]);
+        String[] categoryNames = className.toArray(new String[className.size()]);
         //资产分类有效性
         DVConstraint categoryConstraint = DVConstraint
                 .createExplicitListConstraint(categoryNames);//textlist  下拉选项的 数组 如{列表1，列表2，。。。。。}
