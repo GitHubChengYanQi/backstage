@@ -110,6 +110,8 @@ public interface SkuService extends IService<Sku> {
 
     List<SkuResult> formatSkuResult (List<Long> skuIds);
 
+    SkuResult getDetail(Long skuId);
+
     //    /**
 //     * 查询产品 新建或返回已有产品id
 //     *

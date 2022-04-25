@@ -16,6 +16,8 @@ import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
@@ -195,20 +197,44 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
      *
      * @return
      */
+    @Override
     public List<String> getClassName() {
+        List<String> names = new ArrayList<>();
+
         List<SpuClassification> classifications = this.query().eq("display", 1).eq("type", 1).list();
+        List<SpuClassificationResult> results = BeanUtil.copyToList(classifications, SpuClassificationResult.class, new CopyOptions());
 
-        List<String> className = new ArrayList<>();
-
-        for (SpuClassification father : classifications) {
-
-            for (SpuClassification child : classifications) {
-
-
+        for (SpuClassificationResult result : results) {
+            if (result.getPid() == 0) {
+                getChild(result, results);
             }
         }
+        for (SpuClassificationResult result : results) {
+            if (result.isMostJunior()) {
+                names.add(result.getName());
+            }
+        }
+        return names;
     }
 
+
+    /**
+     * MostJunior ture（最下级）
+     *
+     * @param father
+     * @param classification
+     */
+    private void getChild(SpuClassificationResult father, List<SpuClassificationResult> classification) {
+
+        for (SpuClassificationResult spuClassificationResult : classification) {
+            if (father.getSpuClassificationId().equals(spuClassificationResult.getPid())) {
+                father.setMostJunior(false);
+                getChild(spuClassificationResult, classification);
+            }
+        }
+
+        father.setMostJunior(true);
+    }
 
     /**
      * 更新包含它的
