@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.crm.entity.excel.AdressExcelItem;
 import cn.atsoft.dasheng.crm.entity.excel.ContactsExcelItem;
 import cn.atsoft.dasheng.crm.entity.excel.CustomerExcelItem;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
+import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
@@ -38,6 +39,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -83,6 +85,8 @@ public class CrmExcelController {
     private CompanyRoleService roleService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
 
     /**
@@ -352,8 +356,9 @@ public class CrmExcelController {
 
         String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量"};
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("二维码导出");
-//        sheet.setDefaultColumnWidth(40);
+        HSSFSheet hssfSheet = workbook.createSheet("二维码导出");
+        HSSFSheet sheet = dataEffective(hssfSheet);
+        //        sheet.setDefaultColumnWidth(40);
 //        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 1);
 //        sheet.addMergedRegion(region);
 //        sheet.setColumnWidth(0, 10);
@@ -367,11 +372,13 @@ public class CrmExcelController {
         ti.setCellStyle(titleStyle);
 
 
-        HSSFRow headrow = sheet.createRow(0);
+        HSSFRow headRow = sheet.createRow(0);
 
         for (int i = 0; i < header.length; i++) {
+
+
             //创建一个单元格
-            HSSFCell cell = headrow.createCell(i);
+            HSSFCell cell = headRow.createCell(i);
 
             //创建一个内容对象
             HSSFRichTextString text = new HSSFRichTextString(header[i]);
@@ -399,5 +406,26 @@ public class CrmExcelController {
         //workbook将Excel写入到response的输出流中，供页面下载
         workbook.write(response.getOutputStream());
     }
+
+    private static HSSFSheet dataEffective(HSSFSheet sheet) {
+
+        //获取分类名称
+        List<String> categoryNameList = new ArrayList<String>() {{
+            add("aaaaaaa");
+            add("bbbbbbb");
+        }};
+        String[] categoryNames = categoryNameList.toArray(new String[categoryNameList.size()]);
+        //资产分类有效性
+        DVConstraint categoryConstraint = DVConstraint
+                .createExplicitListConstraint(categoryNames);//textlist  下拉选项的 数组 如{列表1，列表2，。。。。。}
+        // 设置数据有效性加载在哪个单元格上,四个参数分别是：起始行、终止行、起始列、终止列
+        CellRangeAddressList categoryRegions = new CellRangeAddressList(1, 200, 1, 1);
+        // 数据有效性对象
+        HSSFDataValidation categoryDataValidationList = new HSSFDataValidation(categoryRegions, categoryConstraint);
+        sheet.addValidationData(categoryDataValidationList);
+
+        return sheet;
+    }
+
 }
 
