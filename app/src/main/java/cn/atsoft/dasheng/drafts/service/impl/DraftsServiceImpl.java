@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,9 +70,10 @@ public class DraftsServiceImpl extends ServiceImpl<DraftsMapper, Drafts> impleme
 
     @Override
     public PageInfo<DraftsResult> findPageBySpec(DraftsParam param){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (ToolUtil.isNotEmpty(param.getDates()) && param.getDates().size() == 2){
-            param.setStartDay(param.getDates().get(0));
-            param.setEndDay(param.getDates().get(1));
+            param.setStartDay(sdf.format(param.getDates().get(0)));
+            param.setEndDay(sdf.format(param.getDates().get(1)));
         }
         Page<DraftsResult> pageContext = getPageContext();
         IPage<DraftsResult> page = this.baseMapper.customPageList(pageContext, param);

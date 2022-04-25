@@ -24,8 +24,8 @@ public class DraftsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<Date> dates;
-    private Date startDay;
-    private Date endDay;
+    private String startDay;
+    private String endDay;
 
     /**
      * 草稿箱id
