@@ -28,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -192,6 +189,26 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         }
         return result;
     }
+
+    /**
+     * 获取所有最下级分类
+     *
+     * @return
+     */
+    public List<String> getClassName() {
+        List<SpuClassification> classifications = this.query().eq("display", 1).eq("type", 1).list();
+
+        List<String> className = new ArrayList<>();
+
+        for (SpuClassification father : classifications) {
+
+            for (SpuClassification child : classifications) {
+
+
+            }
+        }
+    }
+
 
     /**
      * 更新包含它的
