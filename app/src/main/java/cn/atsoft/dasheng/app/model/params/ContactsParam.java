@@ -9,6 +9,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -108,6 +109,7 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
      * 客户id
      */
     @ApiModelProperty("客户id")
+    @NotNull
     private Long customerId;
 
     @ApiModelProperty("父ID顺序数组")
