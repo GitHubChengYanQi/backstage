@@ -53,6 +53,12 @@ public class SpuParam extends AbstractDictMap implements Serializable, BaseValid
     private Long spuId;
 
     /**
+     * 产品码
+     */
+    @ApiModelProperty("产品码")
+    private String coding;
+
+    /**
      * 型号
      */
     @ApiModelProperty("型号")

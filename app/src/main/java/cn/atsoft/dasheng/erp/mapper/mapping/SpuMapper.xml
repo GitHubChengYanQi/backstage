@@ -7,6 +7,7 @@
         <id column="spu_id" property="spuId"/>
         <result column="name" property="name"/>
         <result column="shelf_life" property="shelfLife"/>
+        <result column="coding" property="coding"/>
         <result column="inventory" property="inventory"/>
         <result column="production_time" property="productionTime"/>
         <result column="important" property="important"/>
@@ -34,7 +35,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">spu_classification_id
-    AS "spuClassificationId",type AS "type",
+    AS "spuClassificationId",type AS "type",coding AS "coding" ,
         spu_id
         AS "spuId", name AS "name", shelf_life AS "shelfLife", inventory AS "inventory", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", class_id AS "classId", unit_id AS "unitId", category_id AS "categoryId", attribute AS "attribute",
 curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",production_type AS "productionType"
