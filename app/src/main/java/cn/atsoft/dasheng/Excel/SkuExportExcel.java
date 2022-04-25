@@ -77,11 +77,11 @@ public class SkuExportExcel extends BaseController {
         ti.setCellStyle(titleStyle);
 
 
-        HSSFRow headrow = sheet.createRow(1);
+        HSSFRow headRow = sheet.createRow(1);
 
         for (int i = 0; i < header.length; i++) {
             //创建一个单元格
-            HSSFCell cell = headrow.createCell(i);
+            HSSFCell cell = headRow.createCell(i);
 
             //创建一个内容对象
             HSSFRichTextString text = new HSSFRichTextString(header[i]);
