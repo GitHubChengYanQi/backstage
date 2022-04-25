@@ -42,6 +42,8 @@ public interface SpuClassificationService extends IService<SpuClassification> {
      */
     void update(SpuClassificationParam param);
 
+    List<String> getClassName();
+
     /**
      * 查询单条数据，Specification模式
      *

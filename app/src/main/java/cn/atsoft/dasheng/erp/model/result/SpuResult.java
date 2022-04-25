@@ -70,6 +70,13 @@ public class SpuResult implements Serializable {
     @ApiModelProperty("物品Id")
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long spuId;
+
+    /**
+     * 产品码
+     */
+    @ApiModelProperty("产品码")
+    private String coding;
+
     /**
      * 型号
      */

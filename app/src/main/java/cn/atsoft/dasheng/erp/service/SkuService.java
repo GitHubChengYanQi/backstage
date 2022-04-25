@@ -37,6 +37,8 @@ public interface SkuService extends IService<Sku> {
     @Transactional
     void directAdd(SkuParam param);
 
+    void mirageSku(SkuParam param);
+
     /**
      * 删除
      *
@@ -107,6 +109,8 @@ public interface SkuService extends IService<Sku> {
     SkuResult getSku(Long id);
 
     List<SkuResult> formatSkuResult (List<Long> skuIds);
+
+    SkuResult getDetail(Long skuId);
 
     //    /**
 //     * 查询产品 新建或返回已有产品id

@@ -95,6 +95,20 @@ public class SkuController extends BaseController {
     }
 
     /**
+     * 合并sku接口
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/mirageSku", method = RequestMethod.POST)
+    @BussinessLog(value = "合并sku", key = "name", dict = SkuParam.class)
+    @ApiOperation("编辑")
+    public ResponseData mirageSku(@RequestBody SkuParam skuParam) {
+        this.skuService.mirageSku(skuParam);
+        return ResponseData.success();
+    }
+
+    /**
      * 删除接口
      *
      * @author
