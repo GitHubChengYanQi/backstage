@@ -235,13 +235,8 @@ public class SkuExcelController {
                     }
                 }
                 if (ToolUtil.isEmpty(newItem)) {
-                    newItem = new Spu();
-                    newItem.setName(skuExcelItem.getClassItem());
-                    newItem.setSpuClassificationId(spuClass.getSpuClassificationId());
-                    newItem.setCategoryId(categoryId);
-                    //TODO 产品替换编码
-                    spuService.save(newItem);
-                    spuList.add(newItem);
+                    skuExcelItem.setType("noSpu");
+                  throw  new ServiceException(500,"没有当前次产品");
                 }
                 newSku.setSpuId(newItem.getSpuId());
 
