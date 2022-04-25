@@ -229,14 +229,15 @@ public class SkuExcelController {
 
                 Spu newItem = null;
                 for (Spu spu : spuList) {
-                    if (skuExcelItem.getClassItem().equals(spu.getName())) {
+                    if (skuExcelItem.getClassItem().equals(spu.getName()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
                         newItem = spu;
                         break;
                     }
                 }
                 if (ToolUtil.isEmpty(newItem)) {
+                    skuExcelItem.setClassId(skuExcelItem.getClassId());
                     skuExcelItem.setType("noSpu");
-                  throw  new ServiceException(500,"没有当前次产品");
+                    throw new ServiceException(500, "没有当前产品");
                 }
                 newSku.setSpuId(newItem.getSpuId());
 
@@ -270,12 +271,9 @@ public class SkuExcelController {
                 }
                 //规格-----------------------------------------------------------------------------------------------
                 newSku.setSpecifications(skuExcelItem.getSpecifications());
-                //属性-----------------------------------------------------------------------------------------------
 
                 //物料描述--------------------------------------------------------------------------------------------------
                 String describe = skuExcelItem.getDescribe();
-//                describe
-
                 List<AttributeValues> list = new ArrayList<>();
                 if (ToolUtil.isNotEmpty(describe)) {
                     List<String> attributeAndValues = Arrays.stream(describe.split(",")).map(String::trim).collect(Collectors.toList());
@@ -286,7 +284,7 @@ public class SkuExcelController {
                             List<String> keyAndValue = Arrays.stream(attributeAndValue.split(":")).map(String::trim).collect(Collectors.toList());
                             String attributeStr = keyAndValue.get(0);
                             String valueStr = keyAndValue.get(1);
-                            if (ToolUtil.isNotEmpty(attributeStr)&&ToolUtil.isNotEmpty(valueStr)) {
+                            if (ToolUtil.isNotEmpty(attributeStr) && ToolUtil.isNotEmpty(valueStr)) {
                                 Long attributeId = 0L;
                                 ItemAttribute attribute = attributeService.query().eq("attribute", attributeStr).eq("category_id", categoryId).eq("display", 1).one();
                                 if (ToolUtil.isEmpty(attribute)) {
@@ -301,7 +299,7 @@ public class SkuExcelController {
 
                                 //
                                 Long valueId = 0L;
-                                List<AttributeValues> attributeValuesList = valuesService.query().eq("attribute_values",valueStr).eq("attribute_id", attributeId).eq("display", 1).list();
+                                List<AttributeValues> attributeValuesList = valuesService.query().eq("attribute_values", valueStr).eq("attribute_id", attributeId).eq("display", 1).list();
                                 if (ToolUtil.isEmpty(attributeValuesList)) {
                                     attributeValuesList = new ArrayList<>();
                                     attributeValuesList.add(null);
@@ -328,9 +326,26 @@ public class SkuExcelController {
                 String json = null;
                 if (ToolUtil.isNotEmpty(list) && list.size() > 0) {
                     list.sort(Comparator.comparing(AttributeValues::getAttributeId));
-                     json = JSON.toJSONString(list);
+                    json = JSON.toJSONString(list);
                     newSku.setSkuValue(json);
                 }
+
+                //判断 分类 产品 型号 --------------------------------------------------------------------------------------
+                for (Sku sku : skus) {
+                    if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
+                        for (Spu spu : spuList) {
+                            if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
+                                skuExcelItem.setType("spuRepeat");
+                                SkuResult results = skuService.getDetail(sku.getSkuId());
+                                skuExcelItem.setSimpleResult(results);
+                                skuExcelItem.setErrorSkuId(sku.getSkuId());
+                                throw new ServiceException(500, "分类，产品，型号 重复");
+                            }
+                        }
+                    }
+
+                }
+
                 //判断分类 产品 型号 描述-------------------------------------------------------------------------------------
                 String md5 = SecureUtil.md5(newSku.getSkuValue() + newSku.getSpuId().toString() + newSku.getSkuName() + spuClass.getSpuClassificationId());
                 for (Sku sku : skus) {
@@ -344,27 +359,11 @@ public class SkuExcelController {
                 }
                 newSku.setSkuValueMd5(md5);
 
-                //判断 分类 产品 型号 --------------------------------------------------------------------------------------
-                if (ToolUtil.isEmpty(newSku.getSkuValue())) {
-                    for (Sku sku : skus) {
-                        if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
-                            for (Spu spu : spuList) {
-                                if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
-                                    skuExcelItem.setType("spuRepeat");
-                                    SkuResult results = skuService.getDetail(sku.getSkuId());
-                                    skuExcelItem.setSimpleResult(results);
-                                    skuExcelItem.setErrorSkuId(sku.getSkuId());
-                                    throw new ServiceException(500, "分类，产品，型号 重复");
-                                }
-                            }
-                        }
-
-                    }
-                }
-
-
-                if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
+                if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard())
+                        && item.getSkuValueMd5().equals(newSku.getSkuValueMd5()))) {  //excel 重复数据
                     skuList.add(newSku);
+                } else {
+                    throw new ServiceException(500, "当前行有重复数据");
                 }
 
             } catch (Exception e) {
