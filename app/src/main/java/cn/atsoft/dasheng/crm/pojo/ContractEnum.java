@@ -91,14 +91,11 @@ public enum ContractEnum {
     }
 
 
+
     public static ContractEnum fromString(String text) {
-
         for (ContractEnum b : ContractEnum.values()) {
-
             if (b.type.equalsIgnoreCase(text)) {
-
                 return b;
-
             }
         }
         return null;

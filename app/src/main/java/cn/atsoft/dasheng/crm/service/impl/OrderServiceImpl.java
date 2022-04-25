@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 
 import cn.atsoft.dasheng.Excel.pojo.ContractLabel;
+import cn.atsoft.dasheng.action.OrderActionEnum;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
@@ -103,6 +104,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 orderType = "销售";
                 break;
         }
+
 
         this.save(entity);
 
@@ -415,6 +417,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private void detailFormat(OrderResult result) {
         Contacts Acontacts = contactsService.getById(result.getPartyAClientId());//甲方委托人
         Contacts Bcontacts = contactsService.getById(result.getPartyBClientId());//乙方联系人
+
 
         if (ToolUtil.isNotEmpty(Acontacts) && ToolUtil.isNotEmpty(Acontacts.getPhone())) {  //甲方代表电话
             Phone phone = phoneService.getById(Acontacts.getPhone());
