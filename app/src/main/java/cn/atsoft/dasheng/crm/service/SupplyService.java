@@ -95,5 +95,5 @@ public interface SupplyService extends IService<Supply> {
 
     List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds);
 
-    void OrdersBackfill(Long customerId, List<OrderDetailParam> params);
+    void OrdersBackFill(Long customerId, List<OrderDetailParam> params);
 }

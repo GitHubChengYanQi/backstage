@@ -512,7 +512,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
      * @param params
      */
     @Override
-    public void OrdersBackfill(Long customerId, List<OrderDetailParam> params) {
+    public void OrdersBackFill(Long customerId, List<OrderDetailParam> params) {
         List<Supply> supplies = this.list();
         for (OrderDetailParam param : params) {
             boolean judge = judge(customerId, param, supplies);

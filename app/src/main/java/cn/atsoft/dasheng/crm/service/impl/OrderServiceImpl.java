@@ -117,7 +117,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         param.getPaymentParam().setOrderId(entity.getOrderId());
-        supplyService.OrdersBackfill(param.getSellerId(), param.getDetailParams());  //回填
+        supplyService.OrdersBackFill(param.getSellerId(), param.getDetailParams());  //回填
         detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());
         paymentService.add(param.getPaymentParam(), orderType);
         this.updateById(entity);

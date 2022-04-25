@@ -141,22 +141,26 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             Long spuClassificationId = spuClassification.getSpuClassificationId();
             //生成编码
-            CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
-            if (ToolUtil.isNotEmpty(codingRules)) {
-                String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+            if (ToolUtil.isEmpty(param.getStandard())) {
+                CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
+                if (ToolUtil.isNotEmpty(codingRules)) {
+                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
-                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
-                if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
-                    String replace = "";
-                    if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
-                        replace = backCoding.replace("${skuClass}", classification.getCodingClass());
-                    } else {
-                        replace = backCoding.replace("${skuClass}", "");
+                    SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
+                    if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
+                        String replace = "";
+                        if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
+                            replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+                        } else {
+                            replace = backCoding.replace("${skuClass}", "");
+                        }
+
+                        param.setStandard(replace);
+                        param.setCoding(replace);
+
                     }
-
-                    param.setStandard(replace);
-                    param.setCoding(replace);
-
+                } else {
+                    throw  new ServiceException(500,"当前无此规则");
                 }
             }
             /**
@@ -722,7 +726,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         categoryService.updateBatchById(categoryList);
 
     }
-    public void BatchAddSku(BatchSkuParam batchSkuParam){
+    @Override
+    public void batchAddSku(BatchSkuParam batchSkuParam){
         List<Sku> entitys = new ArrayList<>();
         for (SkuParam param : batchSkuParam.getSkuParams()) {
             Category category = this.getOrSaveCategory(param);
@@ -1294,7 +1299,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     private Page<SkuResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>() {{
+            add("createTime");
+            add("skuName");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private Sku getOldEntity(SkuParam param) {
