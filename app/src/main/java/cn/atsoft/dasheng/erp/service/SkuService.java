@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -51,6 +52,8 @@ public interface SkuService extends IService<Sku> {
      * 批量删除
      */
     void deleteBatch(SkuParam param);
+
+    void batchAddSku(BatchSkuParam batchSkuParam);
 
     /**
      * 更新

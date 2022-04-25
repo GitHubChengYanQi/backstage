@@ -3,9 +3,11 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
@@ -64,6 +66,22 @@ public class SkuController extends BaseController {
         Long aLong = this.skuService.add(skuParam);
         return ResponseData.success(aLong);
     }
+    /**
+     * 直接物料 新增接口
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addBatch(@RequestBody BatchSkuParam batchSkuParam) {
+        for (SkuParam skuParam : batchSkuParam.getSkuParams()) {
+            skuParam.setAddMethod(1);
+            skuParam.setSkuId(null);
+        }
+        this.skuService.batchAddSku(batchSkuParam);
+        return ResponseData.success();
+    }
 
     /**
      * 间接物料 新增接口
@@ -103,6 +121,7 @@ public class SkuController extends BaseController {
     @RequestMapping(value = "/mirageSku", method = RequestMethod.POST)
     @BussinessLog(value = "合并sku", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
+    @Permission("合并物料")
     public ResponseData mirageSku(@RequestBody SkuParam skuParam) {
         this.skuService.mirageSku(skuParam);
         return ResponseData.success();
