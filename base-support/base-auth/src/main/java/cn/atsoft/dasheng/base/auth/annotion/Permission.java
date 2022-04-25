@@ -34,4 +34,5 @@ public @interface Permission {
      * <p>常用在某些资源限制只有超级管理员角色才可访问</p>
      */
     String[] value() default {};
+    String name() default "";
 }
