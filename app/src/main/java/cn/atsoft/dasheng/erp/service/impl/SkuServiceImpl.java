@@ -202,7 +202,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             entity.setSpuId(spuId);
             entity.setSkuValue(json);
 //            entity.setSkuValue(spuId + "," + json);
-            String md5 = SecureUtil.md5(entity.getSkuValue()+entity.getSpuId().toString()+entity.getSkuName()+spuClassificationId);
+            String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassificationId);
 //            String oldMd51 = SecureUtil.md5(entity.getSkuValue());
 //            String oldMd52 = SecureUtil.md5(spuId + entity.getSkuValue());
 
@@ -278,7 +278,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 String json = JSON.toJSONString(list);
                 entity.setSkuValue(json);
 //                entity.setSkuValue(spuId + "," + json);
-                String md5 = SecureUtil.md5(entity.getSkuValue()+entity.getSpuId().toString()+entity.getSkuName()+param.getSpuClassificationId());
+                String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + param.getSpuClassificationId());
                 entity.setSkuValueMd5(md5);
                 /**
                  * //TODO 原 SKU防重复判断
@@ -312,30 +312,30 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
         }
-        if(ToolUtil.isNotEmpty(param.getOldSkuId())){
+        if (ToolUtil.isNotEmpty(param.getOldSkuId())) {
             ActivitiProcess activitiProcess = processService.query().eq("form_id", param.getOldSkuId()).eq("type", "ship").eq("display", 1).one();
-            if (ToolUtil.isNotEmpty(activitiProcess)){
-                copyProcessRoute(param.getOldSkuId(),skuId);
-            }else {
-                copySkuBomById(param.getOldSkuId(),skuId);
+            if (ToolUtil.isNotEmpty(activitiProcess)) {
+                copyProcessRoute(param.getOldSkuId(), skuId);
+            } else {
+                copySkuBomById(param.getOldSkuId(), skuId);
             }
         }
         return skuId;
     }
 
-    private void copySkuBomById(Long oldSkuId,Long newSkuId){
+    private void copySkuBomById(Long oldSkuId, Long newSkuId) {
         Parts parts = partsService.query().eq("sku_id", oldSkuId).eq("display", 1).eq("status", 99).one();
-        if (ToolUtil.isNotEmpty(parts)){
+        if (ToolUtil.isNotEmpty(parts)) {
             List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
             Parts newSkuParts = new Parts();
-            ToolUtil.copyProperties(parts,newSkuParts);
+            ToolUtil.copyProperties(parts, newSkuParts);
             newSkuParts.setPartsId(null);
             newSkuParts.setSkuId(newSkuId);
             partsService.save(newSkuParts);
             List<ErpPartsDetail> newSkuPartsDetails = new ArrayList<>();
             for (ErpPartsDetail partsDetail : partsDetails) {
                 ErpPartsDetail newSkuPartsDetail = new ErpPartsDetail();
-                ToolUtil.copyProperties(partsDetail,newSkuPartsDetail);
+                ToolUtil.copyProperties(partsDetail, newSkuPartsDetail);
                 newSkuPartsDetail.setPartsDetailId(null);
                 newSkuPartsDetail.setPartsId(newSkuParts.getPartsId());
                 newSkuPartsDetails.add(newSkuPartsDetail);
@@ -344,19 +344,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
     }
 
-    private void copyProcessRoute(Long oldSkuId,Long newSkuId){
+    private void copyProcessRoute(Long oldSkuId, Long newSkuId) {
         ActivitiProcess activitiProcess = processService.query().eq("type", "ship").eq("form_id", oldSkuId).eq("display", 1).one();
-       if (ToolUtil.isNotEmpty(activitiProcess)){
-           ActivitiStepsResult activitiStepsResult = stepsService.detail(activitiProcess.getProcessId());
-           StepsParam param = new StepsParam();
-           ToolUtil.copyProperties(activitiStepsResult,param);
-           System.out.println(param);
-           param.setProcess(new ActivitiProcessParam(){{
-               setSkuId(newSkuId);
-           }});
-           stepsService.add(param);
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            ActivitiStepsResult activitiStepsResult = stepsService.detail(activitiProcess.getProcessId());
+            StepsParam param = new StepsParam();
+            ToolUtil.copyProperties(activitiStepsResult, param);
+            System.out.println(param);
+            param.setProcess(new ActivitiProcessParam() {{
+                setSkuId(newSkuId);
+            }});
+            stepsService.add(param);
 
-       }
+        }
     }
 //    private void loopFormatActivitiStepsResult(ActivitiStepsResult activitiStepsResult){
 //        //清除步骤id
@@ -437,7 +437,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         list.sort(Comparator.comparing(AttributeValues::getAttributeId));
         String jsonList = JSON.toJSONString(list);
-        String md5 = SecureUtil.md5(jsonList+spu.getSpuId().toString()+param.getSkuName()+spu.getSpuClassificationId());
+        String md5 = SecureUtil.md5(jsonList + spu.getSpuId().toString() + param.getSkuName() + spu.getSpuClassificationId());
 
 
         List<Sku> skuList = this.query().in("sku_value_md5", md5).list();
@@ -519,7 +519,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         entity.setSpuId(spuId);
         entity.setSkuValue(json);
 
-        String md5 = SecureUtil.md5(entity.getSkuValue()+entity.getSpuId().toString()+entity.getSkuName()+spuClassification.getSpuClassificationId());
+        String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassification.getSpuClassificationId());
 
         entity.setSkuValueMd5(md5);
 //        if (ToolUtil.isNotEmpty(codingRules)) {
@@ -714,7 +714,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
-        String md5 = SecureUtil.md5(newEntity.getSkuValue()+newEntity.getSpuId().toString()+newEntity.getSkuName()+spuClassification.getSpuClassificationId());
+        String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
 
         newEntity.setSkuValueMd5(md5);
 
@@ -801,27 +801,28 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Page<SkuResult> pageContext = getPageContext();
         IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
         this.format(page.getRecords());
-        this.isSupply(param,page.getRecords());
+        this.isSupply(param, page.getRecords());
 
         return PageFactory.createPageInfo(page);
     }
 
-    public void isSupply(SkuParam skuParam,List<SkuResult> results){
-        List<Long> skuIds =new ArrayList<>();
+    public void isSupply(SkuParam skuParam, List<SkuResult> results) {
+        List<Long> skuIds = new ArrayList<>();
         for (SkuResult result : results) {
             skuIds.add(result.getSkuId());
         }
-        List<Supply> supplies =skuIds.size() == 0 ? new ArrayList<>() : supplyService.query().in("sku_id", skuIds).list();
+        List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : supplyService.query().in("sku_id", skuIds).list();
         for (SkuResult result : results) {
             result.setInSupply(false);
             for (Supply supply : supplies) {
-                if (result.getSkuId().equals(supply.getSkuId()) && supply.getCustomerId().equals(skuParam.getCustomerId())){
+                if (result.getSkuId().equals(supply.getSkuId()) && supply.getCustomerId().equals(skuParam.getCustomerId())) {
                     result.setInSupply(true);
                 }
             }
         }
 
     }
+
     @Override
     public List<SkuResult> AllSku() {
         List<SkuResult> skuResults = this.baseMapper.customList(new SkuParam());
@@ -900,7 +901,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (Parts part : parts) {
             partsIds.add(part.getPartsId());
         }
-        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display",1).list();
+        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
 
         for (SkuResult skuResult : param) {
             for (ActivitiProcess process : processes) {
@@ -1145,6 +1146,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         return skuResults;
     }
+
     @Override
     public List<SkuSimpleResult> simpleFormatSkuResult(List<Long> skuIds) {
         if (ToolUtil.isEmpty(skuIds)) {
@@ -1161,11 +1163,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
         for (SkuResult skuResult : skuResults) {
             SkuSimpleResult skuSimpleResult = new SkuSimpleResult();
-            ToolUtil.copyProperties(skuResult,skuSimpleResult);
+            ToolUtil.copyProperties(skuResult, skuSimpleResult);
             skuSimpleResults.add(skuSimpleResult);
         }
-
-
 
 
         return skuSimpleResults;
@@ -1413,6 +1413,37 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //        param.setSpuClass(spuClassificationId);
 //        return spuClassificationId;
 //    }
+
+    @Override
+    public SkuResult getDetail( Long skuId) {
+
+        SkuResult sku = skuService.getSku(skuId);
+        if (ToolUtil.isNotEmpty(sku.getSpuId())) {
+            Spu spu = spuService.getById(sku.getSpuId());
+            if (ToolUtil.isNotEmpty(spu.getUnitId())) {
+                Unit unit = unitService.getById(spu.getUnitId());
+                sku.setUnit(unit);
+            }
+            if (ToolUtil.isNotEmpty(spu.getSpuClassificationId())) {
+//                SpuClassification spuClassification = spuClassificationService.getById(spu.getSpuClassificationId());
+//                sku.setSpuClassification(spuClassification);  //产品
+//
+//                if (ToolUtil.isNotEmpty(spuClassification.getPid())) {
+                //分类
+                SpuClassification spuClassification1 = spuClassificationService.getById(spu.getSpuClassificationId());
+                sku.setSpuClass(spuClassification1.getSpuClassificationId());
+//                    sku.setSkuClass(spuClassification1);
+//                }
+
+            }
+        }
+        User user = userService.getById(sku.getCreateUser());
+        if (ToolUtil.isNotEmpty(user)) {
+            sku.setCreateUserName(user.getName());
+        }
+        return sku;
+    }
+
     @Override
     public Long addSkuFromSpu(PartsParam partsParam) {
         Sku sku = new Sku();

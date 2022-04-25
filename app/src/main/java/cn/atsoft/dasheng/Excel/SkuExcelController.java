@@ -12,6 +12,8 @@ import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.excel.CustomerExcelItem;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.message.topic.TopicMessage;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -44,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -120,7 +123,7 @@ public class SkuExcelController {
                             skuExcelItem.setClassItem(data);
                             break;
                         case "型号":
-                            skuExcelItem.setSpuName(data);
+                            skuExcelItem.setSkuName(data);
                             break;
                         case "单位":
                             skuExcelItem.setUnit(data);
@@ -131,19 +134,26 @@ public class SkuExcelController {
                         case "规则名称":
                             skuExcelItem.setItemRule(data);
                             break;
+                        case "规格":
+                            skuExcelItem.setSpecifications(data);
+                            break;
+                        case "物料描述":
+                            skuExcelItem.setDescribe(data);
                         default:
-                            if (ToolUtil.isNotEmpty(header) && ToolUtil.isNotEmpty(data)) {
-                                Specifications specifications = new Specifications();
-                                specifications.setAttribute(header.toString());
-                                specifications.setValue(data);
-                                specificationsList.add(specifications);
-                            }
+//                            List<Specifications> describe = new ArrayList<>();
+//                            if (ToolUtil.isNotEmpty(header) && ToolUtil.isNotEmpty(data)) {
+//                                Specifications specifications = new Specifications();
+//                                specifications.setAttribute(header.toString());
+//                                specifications.setValue(data);
+//                                specificationsList.add(specifications);
+//                                describe.add(specifications);
+//                            }
                     }
                 } catch (Exception e) {
                     logger.error("读取异常:" + e.toString());
                 }
             }
-            skuExcelItem.setSpecifications(specificationsList);
+//            skuExcelItem.setDescribe(specificationsList);
             skuExcelItemList.add(skuExcelItem);
         }
 //---------------------------------------------以上是读取excel数据----别动！！！---------------------------------------------
@@ -159,6 +169,8 @@ public class SkuExcelController {
 
         List<SkuExcelItem> errorList = new ArrayList<>();
         for (SkuExcelItem skuExcelItem : skuExcelItemList) {
+
+
             Sku newSku = new Sku();
             try {
                 //成品码-------------------------------------------------------------------------------------------------
@@ -167,14 +179,19 @@ public class SkuExcelController {
                 } else {
                     skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
                     for (Sku sku : skus) {
+
                         if (sku.getStandard().equals(skuExcelItem.getStandard())) {
+                            SkuResult results = skuService.getDetail(sku.getSkuId());
+                            skuExcelItem.setSimpleResult(results);
+
+                            skuExcelItem.setErrorSkuId(sku.getSkuId());
+                            skuExcelItem.setType("codingRepeat");
                             throw new ServiceException(500, "编码以重复");
                         }
                     }
                     newSku.setStandard(skuExcelItem.getStandard());
-                    skus.add(newSku);
                 }
-                newSku.setSkuName(skuExcelItem.getSpuName());  //   型号
+                newSku.setSkuName(skuExcelItem.getSkuName());  //   型号
                 // 分类----------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getSpuClass())) {
                     throw new ServiceException(500, "参数错误");
@@ -194,7 +211,7 @@ public class SkuExcelController {
                 if (ToolUtil.isEmpty(skuExcelItem.getClassItem())) {
                     throw new ServiceException(500, "产品不存在");
                 }
-                skuExcelItem.setSpuName(skuExcelItem.getClassItem().replaceAll(" ", ""));
+                skuExcelItem.setClassItem(skuExcelItem.getClassItem().replaceAll(" ", ""));
                 Long categoryId = null;
                 for (Category category : categories) {
                     if (skuExcelItem.getClassItem().equals(category.getCategoryName())) {
@@ -227,6 +244,7 @@ public class SkuExcelController {
                     spuList.add(newItem);
                 }
                 newSku.setSpuId(newItem.getSpuId());
+
                 //单位------------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getUnit())) {
                     throw new ServiceException(500, "参数错误");
@@ -255,52 +273,107 @@ public class SkuExcelController {
                 if (skuExcelItem.getIsNotBatch().equals("是")) {
                     newSku.setBatch(1);
                 }
-
+                //规格-----------------------------------------------------------------------------------------------
+                newSku.setSpecifications(skuExcelItem.getSpecifications());
                 //属性-----------------------------------------------------------------------------------------------
+
+                //物料描述--------------------------------------------------------------------------------------------------
+                String describe = skuExcelItem.getDescribe();
+//                describe
+
                 List<AttributeValues> list = new ArrayList<>();
+                if (ToolUtil.isNotEmpty(describe)) {
+                    List<String> attributeAndValues = Arrays.stream(describe.split(",")).map(String::trim).collect(Collectors.toList());
+                    if (ToolUtil.isNotEmpty(attributeAndValues)) {
+                        for (String attributeAndValue : attributeAndValues) {
 
-                for (Specifications specifications : skuExcelItem.getSpecifications()) {
-                    if (ToolUtil.isNotEmpty(specifications.getAttribute()) && ToolUtil.isNotEmpty(specifications.getValue())) {
-                        AttributeValues value = new AttributeValues();
-                        Long attributeId = 0L;
-                        ItemAttribute attribute = attributeService.query().eq("attribute", specifications.getAttribute()).eq("category_id", categoryId).eq("display", 1).one();
-                        if (ToolUtil.isEmpty(attribute)) {
-                            ItemAttribute itemAttribute = new ItemAttribute();
-                            itemAttribute.setAttribute(specifications.getAttribute());
-                            itemAttribute.setCategoryId(categoryId);
-                            attributeService.save(itemAttribute);
-                            attributeId = itemAttribute.getAttributeId();
-                        } else {
-                            attributeId = attribute.getAttributeId();
-                        }
+                            AttributeValues value = new AttributeValues();
+                            List<String> keyAndValue = Arrays.stream(attributeAndValue.split(":")).map(String::trim).collect(Collectors.toList());
+                            String attributeStr = keyAndValue.get(0);
+                            String valueStr = keyAndValue.get(1);
+                            if (ToolUtil.isNotEmpty(attributeStr)&&ToolUtil.isNotEmpty(valueStr)) {
+                                Long attributeId = 0L;
+                                ItemAttribute attribute = attributeService.query().eq("attribute", attributeStr).eq("category_id", categoryId).eq("display", 1).one();
+                                if (ToolUtil.isEmpty(attribute)) {
+                                    ItemAttribute itemAttribute = new ItemAttribute();
+                                    itemAttribute.setAttribute(attributeStr);
+                                    itemAttribute.setCategoryId(categoryId);
+                                    attributeService.save(itemAttribute);
+                                    attributeId = itemAttribute.getAttributeId();
+                                } else {
+                                    attributeId = attribute.getAttributeId();
+                                }
 
-                        Long valueId = 0L;
-                        AttributeValues attributeValues = valuesService.query().eq("attribute_values", specifications.getAttribute()).eq("attribute_values", specifications.getValue()).eq("display", 1).one();
-                        if (ToolUtil.isEmpty(attributeValues)) {
-                            AttributeValues values = new AttributeValues();
-                            values.setAttributeValues(specifications.getValue());
-                            values.setAttributeId(attributeId);
-                            valuesService.save(values);
-                            valueId = values.getAttributeValuesId();
-                        } else {
-                            valueId = attributeValues.getAttributeValuesId();
+                                //
+                                Long valueId = 0L;
+                                List<AttributeValues> attributeValuesList = valuesService.query().eq("attribute_values",valueStr).eq("attribute_id", attributeId).eq("display", 1).list();
+                                if (ToolUtil.isEmpty(attributeValuesList)) {
+                                    attributeValuesList = new ArrayList<>();
+                                    attributeValuesList.add(null);
+                                }
+                                AttributeValues attributeValues = attributeValuesList.get(0);
+                                if (ToolUtil.isEmpty(attributeValues)) {
+                                    AttributeValues values = new AttributeValues();
+                                    values.setAttributeValues(valueStr);
+                                    values.setAttributeId(attributeId);
+                                    valuesService.save(values);
+                                    valueId = values.getAttributeValuesId();
+                                } else {
+                                    valueId = attributeValues.getAttributeValuesId();
+                                }
+                                value.setAttributeId(attributeId);
+                                value.setAttributeValuesId(valueId);
+                                list.add(value);
+                            }
+
                         }
-                        value.setAttributeId(attributeId);
-                        value.setAttributeValuesId(valueId);
-                        list.add(value);
                     }
                 }
+
+                String json = null;
                 if (ToolUtil.isNotEmpty(list) && list.size() > 0) {
                     list.sort(Comparator.comparing(AttributeValues::getAttributeId));
-                    String json = JSON.toJSONString(list);
+                     json = JSON.toJSONString(list);
                     newSku.setSkuValue(json);
                 }
+                //判断分类 产品 型号 描述-------------------------------------------------------------------------------------
+                String md5 = SecureUtil.md5(newSku.getSkuValue() + newSku.getSpuId().toString() + newSku.getSkuName() + spuClass.getSpuClassificationId());
+                for (Sku sku : skus) {
+                    if (md5.equals(sku.getSkuValueMd5())) {
+                        skuExcelItem.setType("skuRepeat");
+                        skuExcelItem.setErrorSkuId(sku.getSkuId());
+                        SkuResult results = skuService.getDetail(sku.getSkuId());
+                        skuExcelItem.setSimpleResult(results);
+                        throw new ServiceException(500, "产品，型号，分类，描述 重复");
+                    }
+                }
+                newSku.setSkuValueMd5(md5);
+
+                //判断 分类 产品 型号 --------------------------------------------------------------------------------------
+                if (ToolUtil.isEmpty(newSku.getSkuValue())) {
+                    for (Sku sku : skus) {
+                        if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
+                            for (Spu spu : spuList) {
+                                if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
+                                    skuExcelItem.setType("spuRepeat");
+                                    SkuResult results = skuService.getDetail(sku.getSkuId());
+                                    skuExcelItem.setSimpleResult(results);
+                                    skuExcelItem.setErrorSkuId(sku.getSkuId());
+                                    throw new ServiceException(500, "分类，产品，型号 重复");
+                                }
+                            }
+                        }
+
+                    }
+                }
+
 
                 if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
                     skuList.add(newSku);
                 }
 
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.error("写入异常:" + "第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);   //错误异常
                 skuExcelItem.setError(e.getMessage());
                 errorList.add(skuExcelItem);
@@ -309,4 +382,6 @@ public class SkuExcelController {
         skuService.saveBatch(skuList);
         return ResponseData.success(errorList);
     }
+
+
 }

@@ -354,7 +354,7 @@ public class CrmExcelController {
     @ApiOperation("导出")
     public void SkuExcel(HttpServletResponse response, Long type, String url) throws IOException {
 
-        String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量","规格"};
+        String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量","规格","物料描述"};
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet hssfSheet = workbook.createSheet("物料模板");
         HSSFSheet sheet = dataEffective(hssfSheet);
