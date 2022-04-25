@@ -53,6 +53,13 @@ public class Spu implements Serializable {
     @TableField("name")
     private String name;
 
+
+    /**
+     * 产品码
+     */
+    @TableField("coding")
+    private String coding;
+
     /**
      * 质保期
      */
@@ -385,6 +392,14 @@ public class Spu implements Serializable {
 
     public void setProductionType(Integer productionType) {
         this.productionType = productionType;
+    }
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
     }
 
     @Override
