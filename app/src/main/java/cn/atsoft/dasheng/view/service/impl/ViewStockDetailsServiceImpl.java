@@ -65,6 +65,9 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
     public PageInfo<ViewStockDetailsResult> findListBySpec(ViewStockDetailsParam param) {
         Page<ViewStockDetailsResult> results = null;
         Page<ViewStockDetailsResult> page = getPageContext();
+        if (ToolUtil.isEmpty(param.getType())) {
+            param.setType("sku");
+        }
         switch (param.getType()) {
             case "sku":
                 results = this.baseMapper.skuList(page, param);

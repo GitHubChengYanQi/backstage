@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class ContactsController extends BaseController {
 
     @Autowired
     private ContactsService contactsService;
-    
+
 
     /**
      * 新增接口
@@ -48,7 +49,7 @@ public class ContactsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     @Permission
-    public ResponseData addItem(@RequestBody ContactsParam contactsParam) {
+    public ResponseData addItem(@RequestBody @Valid ContactsParam contactsParam) {
 
         Contacts contacts = contactsService.add(contactsParam);
         return ResponseData.success(contacts);
@@ -99,7 +100,7 @@ public class ContactsController extends BaseController {
         ToolUtil.copyProperties(detail, result);
         results.add(result);
         this.contactsService.format(results);
-        for(ContactsResult res : results){
+        for (ContactsResult res : results) {
             return ResponseData.success(res);
         }
 //        result.setValue(parentValue);
@@ -121,10 +122,10 @@ public class ContactsController extends BaseController {
             contactsParam = new ContactsParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
-            return this.contactsService.findPageBySpec(null,contactsParam);
-        }else{
+            return this.contactsService.findPageBySpec(null, contactsParam);
+        } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.contactsService.findPageBySpec(dataScope,contactsParam);
+            return this.contactsService.findPageBySpec(dataScope, contactsParam);
         }
     }
 
