@@ -42,6 +42,8 @@ public interface AsynTaskDetailService extends IService<AsynTaskDetail> {
      */
     void update(AsynTaskDetailParam param);
 
+    List<AsynTaskDetailResult> getSkuExcelDetail(Long taskId);
+
     /**
      * 查询单条数据，Specification模式
      *

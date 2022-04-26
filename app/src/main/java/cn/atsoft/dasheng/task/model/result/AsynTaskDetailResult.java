@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.task.model.result;
 
+import cn.atsoft.dasheng.Excel.pojo.SkuExcelItem;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 任务详情表
@@ -20,7 +25,7 @@ public class AsynTaskDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private SkuExcelItem skuExcelItem;
     /**
      * 详情id
      */
