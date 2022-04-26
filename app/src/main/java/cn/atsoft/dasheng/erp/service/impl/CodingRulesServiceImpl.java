@@ -246,7 +246,6 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             rules = rules.replace("${week}", weekOfYear + "");
         }
 
-
         Pattern compile = Pattern.compile("\\$\\{(serial.*?(\\[(\\d[0-9]?)\\]))\\}");
         Matcher matcher = compile.matcher(rules);
         if (matcher.find()) {
