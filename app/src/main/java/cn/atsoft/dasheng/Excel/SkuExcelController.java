@@ -63,30 +63,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SkuExcelController {
 
-    @Autowired
-    private SpuService spuService;
-    @Autowired
-    private UnitService unitService;
-    @Autowired
-    private ItemAttributeService attributeService;
-    @Autowired
-    private AttributeValuesService valuesService;
-    @Autowired
-    private SkuService skuService;
-    @Autowired
-    private SpuClassificationService classificationService;
-    @Autowired
-    private CategoryService categoryService;
-    @Autowired
-    private CodingRulesService codingRulesService;
-    @Autowired
-    private SerialNumberService serialNumberService;
+
     @Autowired
     private FileInfoService fileInfoService;
-    @Autowired
-    private AsynTaskService taskService;
-    @Autowired
-    private AsynTaskDetailService taskDetailService;
     @Autowired
     private SkuExcelAsync skuExcelAsync;
 
