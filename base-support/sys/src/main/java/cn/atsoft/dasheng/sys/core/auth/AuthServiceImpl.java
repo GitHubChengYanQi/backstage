@@ -16,6 +16,7 @@
 package cn.atsoft.dasheng.sys.core.auth;
 
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
+import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.listener.ConfigListener;
@@ -274,4 +275,23 @@ public class AuthServiceImpl implements AuthService {
         return false;
     }
 
+    public String refreshToken() {
+
+        String token = TokenUtil.getToken();
+        JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
+
+        // TODO key的作用
+        JwtPayLoad payLoad = new JwtPayLoad(jwtPayLoad.getUserId(), jwtPayLoad.getAccount(), "xxxx");
+
+        //创建token
+        token = JwtTokenUtil.generateToken(payLoad);
+
+        //创建登录会话
+        sessionManager.createSession(token, user(jwtPayLoad.getAccount()));
+
+        //创建cookie
+        addLoginCookie(token);
+
+        return token;
+    }
 }

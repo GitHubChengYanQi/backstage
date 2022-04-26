@@ -42,7 +42,7 @@ public class UserUtils {
         UcJwtPayLoad ucJwtPayLoad = getPayLoad();
         String type =  ucJwtPayLoad.getType();
         if(ToolUtil.isEmpty(type)){
-            throw new AuthException();
+            return "";
         }
         return type;
     }
@@ -51,7 +51,7 @@ public class UserUtils {
         UcJwtPayLoad ucJwtPayLoad = getPayLoad();
         String mobile =  ucJwtPayLoad.getMobile();
         if(ToolUtil.isEmpty(mobile)){
-            throw new AuthException(402);
+            return "";
         }
         return mobile;
     }

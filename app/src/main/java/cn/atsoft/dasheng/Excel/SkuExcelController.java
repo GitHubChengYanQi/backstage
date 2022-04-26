@@ -21,6 +21,8 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,26 +75,22 @@ public class SkuExcelController {
     private CodingRulesService codingRulesService;
     @Autowired
     private SerialNumberService serialNumberService;
+    @Autowired
+    private FileInfoService fileInfoService;
 
     protected static final Logger logger = LoggerFactory.getLogger(SkuExcelController.class);
 
     /**
      * 上传excel填报
      */
-    @RequestMapping("/importSku")
+    @RequestMapping(value = "/importSku", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
+    public ResponseData uploadExcel(@RequestParam("fileId") Long fileId) {
+
+        FileInfo fileInfo = fileInfoService.getById(fileId);
+        File excelFile = new File(fileInfo.getFilePath());
 
 
-        String name = file.getOriginalFilename();
-        String fileSavePath = ConstantsContext.getFileUploadPath();
-
-        File excelFile = new File(fileSavePath + name);
-        try {
-            file.transferTo(excelFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         ExcelReader excelReader = ExcelUtil.getReader(excelFile, 0);
         List<Object> readRow = excelReader.readRow(0);
         List<List<Object>> read = excelReader.read(1);
@@ -179,19 +178,27 @@ public class SkuExcelController {
                 } else {
                     skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
                     for (Sku sku : skus) {
-
                         if (sku.getStandard().equals(skuExcelItem.getStandard())) {
                             SkuResult results = skuService.getDetail(sku.getSkuId());
                             skuExcelItem.setSimpleResult(results);
 
                             skuExcelItem.setErrorSkuId(sku.getSkuId());
                             skuExcelItem.setType("codingRepeat");
-                            throw new ServiceException(500, "编码以重复");
+                            throw new ServiceException(500, "编码重复");
                         }
                     }
                     newSku.setStandard(skuExcelItem.getStandard());
                 }
                 newSku.setSkuName(skuExcelItem.getSkuName());  //   型号
+
+                Long unitId = null;
+                for (Unit unit : units) {
+                    if (unit.getUnitName().equals(skuExcelItem.getUnit())) {
+                        unitId = unit.getUnitId();
+                        break;
+                    }
+                }
+
                 // 分类----------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getSpuClass())) {
                     throw new ServiceException(500, "参数错误");
@@ -204,6 +211,8 @@ public class SkuExcelController {
                     }
                 }
                 if (ToolUtil.isEmpty(spuClass)) {
+                    skuExcelItem.setUnitId(unitId);
+                    skuExcelItem.setType("noClass");
                     throw new ServiceException(500, "没有分类");
                 }
 
@@ -235,24 +244,15 @@ public class SkuExcelController {
                     }
                 }
                 if (ToolUtil.isEmpty(newItem)) {
+                    skuExcelItem.setUnitId(unitId);
                     skuExcelItem.setClassId(skuExcelItem.getClassId());
                     skuExcelItem.setType("noSpu");
+                    skuExcelItem.setClassId(spuClass.getSpuClassificationId());
                     throw new ServiceException(500, "没有当前产品");
                 }
                 newSku.setSpuId(newItem.getSpuId());
 
                 //单位------------------------------------------------------------------------------------------------------
-                if (ToolUtil.isEmpty(skuExcelItem.getUnit())) {
-                    throw new ServiceException(500, "参数错误");
-                }
-                skuExcelItem.setUnit(skuExcelItem.getUnit().replaceAll(" ", ""));
-                Long unitId = null;
-                for (Unit unit : units) {
-                    if (unit.getUnitName().equals(skuExcelItem.getUnit())) {
-                        unitId = unit.getUnitId();
-                        break;
-                    }
-                }
                 if (ToolUtil.isEmpty(unitId)) {
                     Unit newUnit = new Unit();
                     newUnit.setUnitName(skuExcelItem.getUnit());
@@ -337,6 +337,8 @@ public class SkuExcelController {
                             if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
                                 skuExcelItem.setType("spuRepeat");
                                 SkuResult results = skuService.getDetail(sku.getSkuId());
+                                skuExcelItem.setUnitId(unitId);
+                                skuExcelItem.setClassId(spuClass.getSpuClassificationId());
                                 skuExcelItem.setSimpleResult(results);
                                 skuExcelItem.setErrorSkuId(sku.getSkuId());
                                 throw new ServiceException(500, "分类，产品，型号 重复");
@@ -351,6 +353,8 @@ public class SkuExcelController {
                 for (Sku sku : skus) {
                     if (md5.equals(sku.getSkuValueMd5())) {
                         skuExcelItem.setType("skuRepeat");
+                        skuExcelItem.setUnitId(unitId);
+                        skuExcelItem.setClassId(spuClass.getSpuClassificationId());
                         skuExcelItem.setErrorSkuId(sku.getSkuId());
                         SkuResult results = skuService.getDetail(sku.getSkuId());
                         skuExcelItem.setSimpleResult(results);
@@ -359,11 +363,8 @@ public class SkuExcelController {
                 }
                 newSku.setSkuValueMd5(md5);
 
-                if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard())
-                        && item.getSkuValueMd5().equals(newSku.getSkuValueMd5()))) {  //excel 重复数据
+                if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
                     skuList.add(newSku);
-                } else {
-                    throw new ServiceException(500, "当前行有重复数据");
                 }
 
             } catch (Exception e) {
