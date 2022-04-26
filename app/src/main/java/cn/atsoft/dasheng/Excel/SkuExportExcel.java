@@ -50,19 +50,18 @@ public class SkuExportExcel extends BaseController {
     @RequestMapping(value = "/skuExport", method = RequestMethod.GET)
     @ApiOperation("导出")
     public void qrCodetoExcel(HttpServletResponse response, Long type, String url) throws IOException {
+        List<SkuResult> skuResults = skuService.findListBySpec(new SkuParam());
         String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量","规格","物料描述"};
 
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet hssfSheet = workbook.createSheet("物料导出");
-        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet);
+        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet,skuResults.size());
 
         sheet.setDefaultColumnWidth(30);
 //        sheet.setColumnWidth(7,50);
 
-        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 7);
-        sheet.addMergedRegion(region);
 
 
         HSSFCellStyle cellStyle = workbook.createCellStyle();
@@ -76,7 +75,7 @@ public class SkuExportExcel extends BaseController {
         cellStyle.setBorderRight(BorderStyle.MEDIUM);
         cellStyle.setBorderTop(BorderStyle.MEDIUM);
 
-        HSSFRow headRow = sheet.createRow(1);
+        HSSFRow headRow = sheet.createRow(0);
 
         for (int i = 0; i < header.length; i++) {
             //创建一个单元格
@@ -98,11 +97,7 @@ public class SkuExportExcel extends BaseController {
             cell.setCellStyle(headerStyle);
         }
 
-
-        List<SkuResult> skuResults = skuService.findListBySpec(new SkuParam());
-
-
-        int i = 1;
+        int i = 0;
 
         for (SkuResult skuResult : skuResults) {
             i++;

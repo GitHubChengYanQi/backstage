@@ -168,10 +168,7 @@
                 #{state}
             </foreach>
         </if>
-        order by
-        spuName,
-        standard,
-        createTime
+
     </select>
     <select id="changeCustomPageList" resultType="cn.atsoft.dasheng.erp.model.result.SkuResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">

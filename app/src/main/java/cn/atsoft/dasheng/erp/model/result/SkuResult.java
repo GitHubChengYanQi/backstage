@@ -50,7 +50,6 @@ public class SkuResult implements Serializable {
     private String skuTextValue;
     private Long spuClass;
     private Long brandId;
-    @ApiModelProperty("")
     private Long skuId;
     private Spu spu;
     private QualityPlan qualityPlan;

@@ -15,7 +15,9 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,8 +65,23 @@ public class SkuController extends BaseController {
     public ResponseData addItem(@RequestBody SkuParam skuParam) {
         skuParam.setAddMethod(1);
         skuParam.setSkuId(null);
-        Long aLong = this.skuService.add(skuParam);
-        return ResponseData.success(aLong);
+
+
+        Map<String, Sku> skuMap = this.skuService.add(skuParam);
+        if (ToolUtil.isNotEmpty(skuMap.get("success"))) {
+            return ResponseData.success(skuMap.get("success").getSkuId());
+        }else {
+            Sku error = skuMap.get("error");
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(error,skuResult);
+            skuService.format(new ArrayList<SkuResult>(){{
+                add(skuResult);
+            }});
+            return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(),BizExceptionEnum.USER_CHECK.getMessage(),skuResult);
+        }
+
+
+
     }
     /**
      * 直接物料 新增接口
@@ -121,7 +138,7 @@ public class SkuController extends BaseController {
     @RequestMapping(value = "/mirageSku", method = RequestMethod.POST)
     @BussinessLog(value = "合并sku", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
-    @Permission("合并物料")
+    @Permission(name = "合并物料")
     public ResponseData mirageSku(@RequestBody SkuParam skuParam) {
         this.skuService.mirageSku(skuParam);
         return ResponseData.success();

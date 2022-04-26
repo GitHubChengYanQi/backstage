@@ -118,8 +118,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Transactional
     @Override
-    public Long add(SkuParam param) {
+    public Map<String, Sku> add(SkuParam param) {
 
+        Sku result = new Sku();
         Long skuId = null;
 
         /**
@@ -137,7 +138,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (parentSpuClassifications > 0) {
                 throw new ServiceException(500, "物料必须添加在最底级分类中");
             }
-           Long spuClassificationId = spuClassification.getSpuClassificationId();
+            Long spuClassificationId = spuClassification.getSpuClassificationId();
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
              */
@@ -146,16 +147,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Long categoryId = category.getCategoryId();
             Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
             //同分类，同产品下不可有同名物料
-            this.throwDuplicate(param, spu.getSpuId());
-
-
+            Sku sku = this.throwDuplicate(param, spu.getSpuId());
+            if (ToolUtil.isNotEmpty(sku)) {
+                {
+                    return new HashMap<String, Sku>() {{
+                        put("error", sku);
+                    }};
+                }
+            }
 
 
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
-                CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state",1).one();
+                CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
                 if (ToolUtil.isNotEmpty(codingRules)) {
-                    String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(),spu.getSpuId());
+                    String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spu.getSpuId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                     SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
                     if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
@@ -171,7 +177,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
                     }
                 } else {
-                    throw  new ServiceException(500,"当前无此规则");
+                    throw new ServiceException(500, "当前无此规则");
                 }
             }
             /**
@@ -184,8 +190,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (count > 0) {
                 throw new ServiceException(500, "编码/成品码重复");
             }
-
-
 
 
             /**
@@ -240,7 +244,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              */
 
             this.save(entity);
-            skuId = entity.getSkuId();
+            ToolUtil.copyProperties(entity, result);
             /**
              * 绑定品牌（多个）
              */
@@ -257,6 +261,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 setTimes(0);
                 setMaxTimes(2);
             }}, 100);
+
 
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
@@ -307,7 +312,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //                    throw new ServiceException(500, "此物料在产品中已存在");
 //                } else {
                 this.save(entity);
-                skuId = entity.getSkuId();
+                ToolUtil.copyProperties(entity, result);
                 /**
                  * 绑定品牌（多个）
                  */
@@ -329,7 +334,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 copySkuBomById(param.getOldSkuId(), skuId);
             }
         }
-        return skuId;
+        return new HashMap<String, Sku>() {{
+            put("success", result);
+        }};
     }
 
     private void copySkuBomById(Long oldSkuId, Long newSkuId) {
@@ -480,7 +487,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         //生成编码
         CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(),spu.getSpuId());
+            String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spu.getSpuId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
             SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
             if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
@@ -507,7 +514,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (count > 0) {
             throw new ServiceException(500, "编码/成品码重复");
         }
-
 
 
 //        List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
@@ -611,23 +617,24 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     /**
      * 合并sku
+     *
      * @param param
      */
     @Override
-    public void mirageSku(SkuParam param){
+    public void mirageSku(SkuParam param) {
         Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         Category category = this.getOrSaveCategory(param);
         Long categoryId = category.getCategoryId();
         List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
-        SpuClassification spuClassification =ToolUtil.isEmpty(param.getSpuClass()) ? new SpuClassification() : spuClassificationService.getById(param.getSpuClass());
+        SpuClassification spuClassification = ToolUtil.isEmpty(param.getSpuClass()) ? new SpuClassification() : spuClassificationService.getById(param.getSpuClass());
         Long spuClassificationId = spuClassification.getSpuClassificationId();
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
         newEntity.setSpuId(orSaveSpu.getSpuId());
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);
-        String md5 = SecureUtil.md5(newEntity.getSkuValue()+newEntity.getSpuId().toString()+newEntity.getSkuName()+spuClassification.getSpuClassificationId());
+        String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
         newEntity.setSkuValueMd5(md5);
         this.updateById(newEntity);
 //        /**
@@ -646,6 +653,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            }});
 //        }
     }
+
     @Override
     public void delete(SkuParam param) {
         List<Long> id = new ArrayList<>();
@@ -731,8 +739,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         categoryService.updateBatchById(categoryList);
 
     }
+
     @Override
-    public void batchAddSku(BatchSkuParam batchSkuParam){
+    public void batchAddSku(BatchSkuParam batchSkuParam) {
         List<Sku> entitys = new ArrayList<>();
         for (SkuParam param : batchSkuParam.getSkuParams()) {
             Category category = this.getOrSaveCategory(param);
@@ -752,7 +761,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             //生成编码
             CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
             if (ToolUtil.isNotEmpty(codingRules)) {
-                String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(),spu.getSpuId());
+                String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spu.getSpuId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                 SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
                 if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
@@ -781,7 +790,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
 
-
 //        List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
 //        if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
 //            throw new ServiceException(500, "此物料在产品中已存在");
@@ -800,7 +808,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             entity.setSpuId(spuId);
             entity.setSkuValue(json);
 
-            String md5 = SecureUtil.md5(entity.getSkuValue()+entity.getSpuId().toString()+entity.getSkuName()+spuClassification.getSpuClassificationId());
+            String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassification.getSpuClassificationId());
 
             entity.setSkuValueMd5(md5);
 
@@ -1306,7 +1314,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private Page<SkuResult> getPageContext() {
         List<String> fields = new ArrayList<String>() {{
             add("createTime");
+            add("create_time");
             add("skuName");
+            add("spuName");
+            add("spu_name");
         }};
         return PageFactory.defaultPage(fields);
     }
@@ -1487,7 +1498,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             entity.setCategoryName(param.getSpu().getName().replace(" ", ""));
             categoryService.save(entity);
         } else {
-            ToolUtil.copyProperties(category,entity);
+            ToolUtil.copyProperties(category, entity);
         }
         return entity;
 
@@ -1504,6 +1515,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu spuEntity = new Spu();
 
         if (ToolUtil.isNotEmpty(spu)) {
+            if (ToolUtil.isNotEmpty(param.getSpu().getCoding())){
+                spu.setCoding(param.getSpu().getCoding());
+            }
+            spu.setCoding(param.getCoding());
             ToolUtil.copyProperties(spu, spuEntity);
             spuEntity.setSpuClassificationId(spuClassificationId);
             spuEntity.setUnitId(param.getUnitId());
@@ -1511,6 +1526,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             return spuEntity;
 
         } else {
+            if (ToolUtil.isNotEmpty(param.getSpu().getCoding())){
+                spuEntity.setCoding(param.getSpu().getCoding());
+            }
             spuEntity.setSpuClassificationId(spuClassificationId);
             spuEntity.setUnitId(param.getUnitId());
             spuEntity.setName(param.getSpu().getName());
@@ -1553,7 +1571,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //    }
 
     @Override
-    public SkuResult getDetail( Long skuId) {
+    public SkuResult getDetail(Long skuId) {
 
         SkuResult sku = skuService.getSku(skuId);
         if (ToolUtil.isNotEmpty(sku.getSpuId())) {
@@ -1605,10 +1623,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (ToolUtil.isNotEmpty(partsParam.getSkuId())) {
                 skuParam.setSkuId(partsParam.getSkuId());
                 skuService.update(skuParam);
-                return partsParam.getSkuId();
+                 return partsParam.getSkuId();
 
             }
-            Long skuId = skuService.add(skuParam);
+            Map<String, Sku> add = skuService.add(skuParam);
+            Sku success = add.get("success");
+            Long skuId = success.getSkuId();
             sku.setSkuId(skuId);
             return sku.getSkuId();
         }
@@ -1617,16 +1637,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
 
-    private ResponseData throwDuplicate(SkuParam param,Long spuId){
-        List<Sku> skus = this.query().eq("skuName", param.getSkuName()).list();
+    private Sku throwDuplicate(SkuParam param, Long spuId) {
+        List<Sku> skus = this.query().eq("sku_name", param.getSkuName()).list();
         for (Sku sku : skus) {
-            if(sku.getSpuId().equals(spuId)){
-                SkuResult skuResult = new SkuResult();
-                ToolUtil.copyProperties(sku,skuResult);
-                this.format(new ArrayList<SkuResult>(){{
-                    add(skuResult);
-                }});
-               return ResponseData.error(502,"此分类下此产品已有相同名称物料",skuResult);
+            if (sku.getSpuId().equals(spuId)) {
+                return sku;
             }
         }
         return null;

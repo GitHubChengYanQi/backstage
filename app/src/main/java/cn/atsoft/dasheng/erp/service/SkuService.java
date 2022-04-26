@@ -31,7 +31,7 @@ public interface SkuService extends IService<Sku> {
      * @author
      * @Date 2021-10-18
      */
-    Long add(SkuParam param);
+    Map<String,Sku> add(SkuParam param);
 
     List<SkuResult> getSkuByMd5(SkuParam param);
 

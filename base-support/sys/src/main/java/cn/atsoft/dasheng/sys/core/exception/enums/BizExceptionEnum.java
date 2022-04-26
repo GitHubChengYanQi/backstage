@@ -110,7 +110,15 @@ public enum BizExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 租户相关的异常
      */
-    NO_TENANT_ERROR(1901, "没有相关租户");
+    NO_TENANT_ERROR(1901, "没有相关租户"),
+
+
+    /**
+     * 用户确认
+     */
+    USER_CHECK(1001,"需要用户确认");
+
+
 
     BizExceptionEnum(int code, String message) {
         this.code = code;

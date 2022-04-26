@@ -123,7 +123,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 skuParam.setSku(partsParam.getSku());
                 skuParam.setSpu(spuParam);
                 skuParam.setSpuClass(spuParam.getSpuClassificationId());
-                Long skuId = skuService.add(skuParam);
+
+                Map<String, Sku> add = skuService.add(skuParam);
+                Sku success = add.get("success");
+
+                Long skuId = success.getSkuId();
                 sku.setSkuId(skuId);
             } else if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
                 sku = skuService.getById(partsParam.getItem().getSkuId()); // query().eq("sku_id", partsParam.getItem().getSkuId()).eq("display", 1).count();
