@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.task.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.task.entity.AsynTaskDetail;
 import cn.atsoft.dasheng.task.model.params.AsynTaskDetailParam;
 import cn.atsoft.dasheng.task.model.result.AsynTaskDetailResult;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,10 +69,27 @@ public class AsynTaskDetailController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AsynTaskDetailParam asynTaskDetailParam)  {
+    public ResponseData delete(@RequestBody AsynTaskDetailParam asynTaskDetailParam) {
         this.asynTaskDetailService.delete(asynTaskDetailParam);
         return ResponseData.success();
     }
+
+    /**
+     * @author song
+     * @Date 2022-04-26
+     */
+    @RequestMapping(value = "/remove", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData remove(@RequestParam("id") Long id) {
+        AsynTaskDetail taskDetail = this.asynTaskDetailService.getById(id);
+        if (ToolUtil.isEmpty(taskDetail)) {
+            throw new ServiceException(500, "参数不正确");
+        }
+        taskDetail.setDisplay(0);
+        asynTaskDetailService.updateById(taskDetail);
+        return ResponseData.success();
+    }
+
 
     /**
      * 查看详情接口
@@ -97,13 +116,11 @@ public class AsynTaskDetailController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AsynTaskDetailResult> list(@RequestBody(required = false) AsynTaskDetailParam asynTaskDetailParam) {
-        if(ToolUtil.isEmpty(asynTaskDetailParam)){
+        if (ToolUtil.isEmpty(asynTaskDetailParam)) {
             asynTaskDetailParam = new AsynTaskDetailParam();
         }
         return this.asynTaskDetailService.findPageBySpec(asynTaskDetailParam);
     }
-
-
 
 
 }

@@ -248,7 +248,6 @@ public class SystemController extends BaseController {
      * @Date 2018/11/9 12:45 PM
      */
     @RequestMapping("/previewAvatar")
-    @ResponseBody
     public Object previewAvatar(HttpServletResponse response) {
 
         //输出图片的文件流

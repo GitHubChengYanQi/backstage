@@ -19,7 +19,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -51,21 +53,32 @@ public class AsynTaskDetailServiceImpl extends ServiceImpl<AsynTaskDetailMapper,
         this.updateById(newEntity);
     }
 
+
     /**
-     * 获取导入任务
+     * 获取物料导入数据任务
      *
      * @param taskId
      * @return
      */
     @Override
-    public List<AsynTaskDetailResult> getSkuExcelDetail(Long taskId) {
+    public Map<String, Integer> getNum(Long taskId) {
+
+        Map<String, Integer> map = new HashMap<>();
         List<AsynTaskDetail> taskDetails = this.query().eq("task_id", taskId).eq("display", 1).list();
         List<AsynTaskDetailResult> detailResults = BeanUtil.copyToList(taskDetails, AsynTaskDetailResult.class, new CopyOptions());
+        int successNum = 0;
+        int errorNum = 0;
         for (AsynTaskDetailResult detailResult : detailResults) {
-            SkuExcelItem skuExcelItem = JSON.parseObject(detailResult.getContentJson(), SkuExcelItem.class);
-            detailResult.setSkuExcelItem(skuExcelItem);
+            if (detailResult.getStatus() == 99) {
+                successNum++;
+            }
+            if (detailResult.getStatus() == 50) {
+                errorNum++;
+            }
         }
-        return detailResults;
+        map.put("successNum", successNum);
+        map.put("errorNum", errorNum);
+        return map;
     }
 
     @Override
@@ -82,6 +95,7 @@ public class AsynTaskDetailServiceImpl extends ServiceImpl<AsynTaskDetailMapper,
     public PageInfo<AsynTaskDetailResult> findPageBySpec(AsynTaskDetailParam param) {
         Page<AsynTaskDetailResult> pageContext = getPageContext();
         IPage<AsynTaskDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -103,4 +117,15 @@ public class AsynTaskDetailServiceImpl extends ServiceImpl<AsynTaskDetailMapper,
         return entity;
     }
 
+    private void format(List<AsynTaskDetailResult> data) {
+
+        for (AsynTaskDetailResult datum : data) {
+
+            if (datum.getType().equals("物料导入")) {
+                SkuExcelItem result = JSON.parseObject(datum.getContentJson(), SkuExcelItem.class);
+                datum.setSkuExcelItem(result);
+                datum.setContentJson(null);
+            }
+        }
+    }
 }

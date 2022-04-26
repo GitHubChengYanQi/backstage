@@ -24,7 +24,7 @@ public class AsynTaskDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    private String type;
     /**
      * 详情id
      */

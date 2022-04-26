@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.task.model.result.AsynTaskDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -42,7 +43,9 @@ public interface AsynTaskDetailService extends IService<AsynTaskDetail> {
      */
     void update(AsynTaskDetailParam param);
 
-    List<AsynTaskDetailResult> getSkuExcelDetail(Long taskId);
+
+
+    Map<String, Integer> getNum(Long taskId);
 
     /**
      * 查询单条数据，Specification模式
