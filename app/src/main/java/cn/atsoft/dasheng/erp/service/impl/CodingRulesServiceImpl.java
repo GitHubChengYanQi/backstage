@@ -1,12 +1,12 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.entity.CodingRulesClassification;
 import cn.atsoft.dasheng.erp.entity.RulesRelation;
+import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.mapper.CodingRulesMapper;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
 import cn.atsoft.dasheng.erp.model.params.Codings;
@@ -16,26 +16,21 @@ import cn.atsoft.dasheng.erp.service.CodingRulesClassificationService;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.RulesRelationService;
+import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.serial.entity.SerialNumber;
 import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.Month;
 import cn.hutool.core.util.RandomUtil;
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xkcoding.http.util.StringUtil;
-import org.omg.CORBA.INTERNAL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,6 +52,8 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     private RulesRelationService rulesRelationService;
     @Autowired
     private SerialNumberService serialNumberService;
+    @Autowired
+    private SpuService spuService;
 
     @Override
     @Transactional
@@ -259,8 +256,21 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         if (rules.contains("${skuClass}")) {
             rules = rules.replace("${skuClass}", "${skuClass}");
         }
+
         return rules;
     }
+    @Override
+    public String backSkuCoding(Long ids,Long spuId) {
+        String backCoding = this.backCoding(ids);
+
+        if (backCoding.contains("${spuCoding}")) {
+            Spu spu = spuService.getById(spuId);
+            backCoding = backCoding.replace("${spuCoding}", spu.getCoding());
+        }
+        return backCoding;
+    }
+
+
 
     /**
      * 通过模块返回编码

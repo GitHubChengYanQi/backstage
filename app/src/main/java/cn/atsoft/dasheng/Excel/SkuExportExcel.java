@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -16,6 +17,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -42,6 +44,8 @@ public class SkuExportExcel extends BaseController {
     @Autowired
     private SkuService skuService;
 
+    @Autowired
+    private SkuExcelService skuExcelService;
 
     @RequestMapping(value = "/skuExport", method = RequestMethod.GET)
     @ApiOperation("导出")
@@ -50,8 +54,10 @@ public class SkuExportExcel extends BaseController {
         String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量","规格","物料描述"};
 
 
+
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("物料导出");
+        HSSFSheet hssfSheet = workbook.createSheet("物料导出");
+        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet);
 
         sheet.setDefaultColumnWidth(30);
 //        sheet.setColumnWidth(7,50);
