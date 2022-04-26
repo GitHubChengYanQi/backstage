@@ -51,16 +51,19 @@ public class AsynTaskDetailServiceImpl extends ServiceImpl<AsynTaskDetailMapper,
         this.updateById(newEntity);
     }
 
+
     /**
-     * 获取导入任务
+     * 获取物料导入数据任务
      *
      * @param taskId
      * @return
      */
     @Override
     public List<AsynTaskDetailResult> getSkuExcelDetail(Long taskId) {
+
         List<AsynTaskDetail> taskDetails = this.query().eq("task_id", taskId).eq("display", 1).list();
         List<AsynTaskDetailResult> detailResults = BeanUtil.copyToList(taskDetails, AsynTaskDetailResult.class, new CopyOptions());
+
         for (AsynTaskDetailResult detailResult : detailResults) {
             SkuExcelItem skuExcelItem = JSON.parseObject(detailResult.getContentJson(), SkuExcelItem.class);
             detailResult.setSkuExcelItem(skuExcelItem);
