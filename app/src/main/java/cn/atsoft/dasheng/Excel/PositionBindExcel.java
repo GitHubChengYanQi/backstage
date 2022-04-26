@@ -19,6 +19,8 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
 import cn.atsoft.dasheng.orCode.pojo.InkindQrcode;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -54,20 +56,17 @@ public class PositionBindExcel {
     private OrCodeService codeService;
     @Autowired
     private BrandService brandService;
-
+    @Autowired
+    private FileInfoService fileInfoService;
     protected static final Logger logger = LoggerFactory.getLogger(SkuExcelController.class);
 
     @RequestMapping("/importPositionBind")
     @ResponseBody
-    public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
-        String name = file.getOriginalFilename();
-        String fileSavePath = ConstantsContext.getFileUploadPath();
-        File excelFile = new File(fileSavePath + name);
-        try {
-            file.transferTo(excelFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ResponseData uploadExcel(@RequestParam("fileId") Long fileId) {
+
+        FileInfo fileInfo = fileInfoService.getById(fileId);
+        File excelFile = new File(fileInfo.getFilePath());
+
         ExcelReader reader = ExcelUtil.getReader(excelFile);
         reader.addHeaderAlias("分类", "spuClass");
         reader.addHeaderAlias("物料编码", "strand");

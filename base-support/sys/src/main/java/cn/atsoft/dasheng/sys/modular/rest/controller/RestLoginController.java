@@ -69,4 +69,11 @@ public class RestLoginController extends BaseController {
         authService.logout();
         return new SuccessResponseData();
     }
+
+    @RequestMapping(value = "/refreshToken" , method = RequestMethod.GET)
+    @ApiOperation(value = "刷新token")
+    @ResponseBody
+    public ResponseData refreshToken() {
+        return ResponseData.success(authService.refreshToken());
+    }
 }

@@ -147,7 +147,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
-                CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
+                CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state",1).one();
                 if (ToolUtil.isNotEmpty(codingRules)) {
                     String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
