@@ -29,6 +29,9 @@ public class AsynTaskResult implements Serializable {
     private AllBomResult allBomResult;
 
     private SkuExcelResult skuExcelResult;
+
+
+    private List<AsynTaskDetailResult> excelDetail;
     /**
      * 任务id
      */

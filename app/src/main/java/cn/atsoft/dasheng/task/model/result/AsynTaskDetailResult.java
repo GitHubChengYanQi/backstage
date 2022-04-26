@@ -26,6 +26,8 @@ public class AsynTaskDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private SkuExcelItem skuExcelItem;
+
+    private String type;
     /**
      * 详情id
      */
