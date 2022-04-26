@@ -149,7 +149,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (ToolUtil.isEmpty(param.getStandard())) {
                 CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state",1).one();
                 if (ToolUtil.isNotEmpty(codingRules)) {
-                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                    String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(),spu.getSpuId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                     SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
                     if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
@@ -469,11 +469,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (parentSpuClassifications > 0) {
             throw new ServiceException(500, "物料必须添加在最底级分类中");
         }
-
+        /**
+         * sku名称（skuName）加型号(spuName)判断防止重复
+         */
+        Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
+        Long spuId = spu.getSpuId();
         //生成编码
         CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+            String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(),spu.getSpuId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
             SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
             if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
@@ -502,11 +506,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
 
-        /**
-         * sku名称（skuName）加型号(spuName)判断防止重复
-         */
-        Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-        Long spuId = spu.getSpuId();
+
 //        List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
 //        if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
 //            throw new ServiceException(500, "此物料在产品中已存在");
@@ -741,11 +741,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (parentSpuClassifications > 0) {
                 throw new ServiceException(500, "物料必须添加在最底级分类中");
             }
-
+            /**
+             * sku名称（skuName）加型号(spuName)判断防止重复
+             */
+            Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
+            Long spuId = spu.getSpuId();
             //生成编码
             CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
             if (ToolUtil.isNotEmpty(codingRules)) {
-                String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(),spu.getSpuId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                 SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
                 if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
@@ -774,11 +778,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
 
-            /**
-             * sku名称（skuName）加型号(spuName)判断防止重复
-             */
-            Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-            Long spuId = spu.getSpuId();
+
 //        List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
 //        if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
 //            throw new ServiceException(500, "此物料在产品中已存在");
