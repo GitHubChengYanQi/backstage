@@ -102,7 +102,7 @@
             parameterType="cn.atsoft.dasheng.task.model.params.AsynTaskDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from asyn_task_detail where 1 = 1
+        from asyn_task_detail where 1 = 1 and display = 1
         <if test="paramCondition.detailId != null">
             and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
         </if>
