@@ -50,7 +50,6 @@ public class SkuExportExcel extends BaseController {
     @RequestMapping(value = "/skuExport", method = RequestMethod.GET)
     @ApiOperation("导出")
     public void qrCodetoExcel(HttpServletResponse response, Long type, String url) throws IOException {
-        String title = "基础物料导出单";
         String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量","规格","物料描述"};
 
 
@@ -64,27 +63,7 @@ public class SkuExportExcel extends BaseController {
 
         CellRangeAddress region = new CellRangeAddress(0, 0, 0, 7);
         sheet.addMergedRegion(region);
-        HSSFRow titleRow = sheet.createRow(0);
-        HSSFCell ti = titleRow.createCell(0);
-        ti.setCellValue(title);
-        HSSFCellStyle titleStyle = workbook.createCellStyle();
-        titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);
-        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
-
-
-        HSSFFont font = workbook.createFont();
-        font.setFontHeightInPoints((short) 16);
-        font.setBold(true);
-        font.setFontName("宋体");
-        titleStyle.setFont(font);
-        //设置边框样式
-        titleStyle.setBorderBottom(BorderStyle.MEDIUM);
-        titleStyle.setBorderLeft(BorderStyle.MEDIUM);
-        titleStyle.setBorderRight(BorderStyle.MEDIUM);
-        titleStyle.setBorderTop(BorderStyle.MEDIUM);
-        ti.setCellStyle(titleStyle);
 
         HSSFCellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);//上下居中

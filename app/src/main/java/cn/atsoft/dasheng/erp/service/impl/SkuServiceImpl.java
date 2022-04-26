@@ -144,7 +144,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Category category = this.getOrSaveCategory(param);
             Long categoryId = category.getCategoryId();
             Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-
+            //同分类，同产品下不可有同名物料
+            this.throwDuplicate(param,spu.getSpuId());
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
                 CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state",1).one();
@@ -181,10 +182,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
 
-//            List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
-//            if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
-//                throw new ServiceException(500, "此物料在产品中已存在");
-//            }
+
             /**
              * 查询产品，添加产品 在上方spu查询
              */
@@ -1611,5 +1609,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         return null;
+    }
+
+
+    private void throwDuplicate(SkuParam param,Long spuId){
+        List<Sku> skus = this.query().eq("skuName", param.getSkuName()).list();
+        for (Sku sku : skus) {
+            if(sku.getSpuId().equals(spuId)){
+                throw new ServiceException(502,"同分类同产品下已有相同物料");
+            }
+        }
+
+
     }
 }
