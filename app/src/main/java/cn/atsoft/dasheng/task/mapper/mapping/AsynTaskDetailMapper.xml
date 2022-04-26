@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.task.mapper.AsynTaskDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.task.entity.AsynTaskDetail">
+        <id column="detail_id" property="detailId" />
+        <result column="task_id" property="taskId" />
+        <result column="content_json" property="contentJson" />
+        <result column="status" property="status" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        detail_id AS "detailId", task_id AS "taskId", content_json AS "contentJson", status AS "status", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.task.model.result.AsynTaskDetailResult" parameterType="cn.atsoft.dasheng.task.model.params.AsynTaskDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from asyn_task_detail where 1 = 1
+            <if test="paramCondition.detailId != null">
+                and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+            </if>
+            <if test="paramCondition.taskId != null">
+                and task_id like CONCAT('%',#{paramCondition.taskId},'%')
+            </if>
+            <if test="paramCondition.contentJson != null and paramCondition.contentJson != ''">
+                and content_json like CONCAT('%',#{paramCondition.contentJson},'%')
+            </if>
+            <if test="paramCondition.status != null">
+                and status like CONCAT('%',#{paramCondition.status},'%')
+            </if>
+            <if test="paramCondition.createUser != null">
+                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </if>
+            <if test="paramCondition.updateUser != null">
+                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+            </if>
+            <if test="paramCondition.display != null">
+                and display like CONCAT('%',#{paramCondition.display},'%')
+            </if>
+            <if test="paramCondition.deptId != null">
+                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.task.model.params.AsynTaskDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from asyn_task_detail where 1 = 1
+                <if test="paramCondition.detailId != null">
+                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+                </if>
+                <if test="paramCondition.taskId != null">
+                        and task_id like CONCAT('%',#{paramCondition.taskId},'%')
+                </if>
+                <if test="paramCondition.contentJson != null and paramCondition.contentJson != ''">
+                        and content_json like CONCAT('%',#{paramCondition.contentJson},'%')
+                </if>
+                <if test="paramCondition.status != null">
+                        and status like CONCAT('%',#{paramCondition.status},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.task.model.result.AsynTaskDetailResult" parameterType="cn.atsoft.dasheng.task.model.params.AsynTaskDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from asyn_task_detail where 1 = 1
+                <if test="paramCondition.detailId != null">
+                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+                </if>
+                <if test="paramCondition.taskId != null">
+                        and task_id like CONCAT('%',#{paramCondition.taskId},'%')
+                </if>
+                <if test="paramCondition.contentJson != null and paramCondition.contentJson != ''">
+                        and content_json like CONCAT('%',#{paramCondition.contentJson},'%')
+                </if>
+                <if test="paramCondition.status != null">
+                        and status like CONCAT('%',#{paramCondition.status},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.task.model.params.AsynTaskDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from asyn_task_detail where 1 = 1
+                <if test="paramCondition.detailId != null">
+                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+                </if>
+                <if test="paramCondition.taskId != null">
+                        and task_id like CONCAT('%',#{paramCondition.taskId},'%')
+                </if>
+                <if test="paramCondition.contentJson != null and paramCondition.contentJson != ''">
+                        and content_json like CONCAT('%',#{paramCondition.contentJson},'%')
+                </if>
+                <if test="paramCondition.status != null">
+                        and status like CONCAT('%',#{paramCondition.status},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+</mapper>

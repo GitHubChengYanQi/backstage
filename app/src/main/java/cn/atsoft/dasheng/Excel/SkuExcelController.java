@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelItem;
+import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.Excel.pojo.Specifications;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Unit;
@@ -23,6 +24,10 @@ import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
+import cn.atsoft.dasheng.task.entity.AsynTask;
+import cn.atsoft.dasheng.task.entity.AsynTaskDetail;
+import cn.atsoft.dasheng.task.service.AsynTaskDetailService;
+import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -34,6 +39,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -77,6 +83,10 @@ public class SkuExcelController {
     private SerialNumberService serialNumberService;
     @Autowired
     private FileInfoService fileInfoService;
+    @Autowired
+    private AsynTaskService taskService;
+    @Autowired
+    private AsynTaskDetailService taskDetailService;
 
     protected static final Logger logger = LoggerFactory.getLogger(SkuExcelController.class);
 
@@ -85,6 +95,7 @@ public class SkuExcelController {
      */
     @RequestMapping(value = "/importSku", method = RequestMethod.GET)
     @ResponseBody
+
     public ResponseData uploadExcel(@RequestParam("fileId") Long fileId) {
 
         FileInfo fileInfo = fileInfoService.getById(fileId);
@@ -152,11 +163,18 @@ public class SkuExcelController {
                     logger.error("读取异常:" + e.toString());
                 }
             }
-//            skuExcelItem.setDescribe(specificationsList);
             skuExcelItemList.add(skuExcelItem);
         }
 //---------------------------------------------以上是读取excel数据----别动！！！---------------------------------------------
+        /**
+         * 调用异步添加
+         */
+        add(skuExcelItemList);
+        return ResponseData.success("ok");
+    }
 
+    @Async
+    public void add(List<SkuExcelItem> skuExcelItemList) {
 
         //-------------------------------------------------------------------------------------------------------------
         List<Sku> skuList = new ArrayList<>();
@@ -166,12 +184,28 @@ public class SkuExcelController {
         List<Unit> units = unitService.query().eq("display", 1).list();
         List<Category> categories = categoryService.query().eq("display", 1).list();
 
+
+        AsynTask asynTask = new AsynTask();
+        asynTask.setAllCount(skuExcelItemList.size());
+        asynTask.setType("物料导入");
+        asynTask.setStatus(0);
+        taskService.save(asynTask);
+
+
+        SkuExcelResult skuExcelResult = new SkuExcelResult();
         List<SkuExcelItem> errorList = new ArrayList<>();
+        int successNum = 0;
+        int i = 0;
         for (SkuExcelItem skuExcelItem : skuExcelItemList) {
 
-
+            AsynTaskDetail asynTaskDetail = new AsynTaskDetail();
             Sku newSku = new Sku();
             try {
+                asynTaskDetail.setContentJson(JSON.toJSONString(skuExcelItem));
+                i++;
+                asynTask.setCount(i);   //修改任务状态
+                taskService.updateById(asynTask);
+
                 //成品码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
                     throw new ServiceException(500, "物料编码不存在");
@@ -181,7 +215,6 @@ public class SkuExcelController {
                         if (sku.getStandard().equals(skuExcelItem.getStandard())) {
                             SkuResult results = skuService.getDetail(sku.getSkuId());
                             skuExcelItem.setSimpleResult(results);
-
                             skuExcelItem.setErrorSkuId(sku.getSkuId());
                             skuExcelItem.setType("codingRepeat");
                             throw new ServiceException(500, "编码重复");
@@ -358,16 +391,18 @@ public class SkuExcelController {
                         skuExcelItem.setErrorSkuId(sku.getSkuId());
                         SkuResult results = skuService.getDetail(sku.getSkuId());
                         skuExcelItem.setSimpleResult(results);
-                        throw new ServiceException(500, "产品，型号，分类，描述 重复");
+                        throw new ServiceException(500, "分类，产品，型号，描述 重复");
                     }
                 }
                 newSku.setSkuValueMd5(md5);
 
                 if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
+                    successNum++;
                     skuList.add(newSku);
                 }
 
             } catch (Exception e) {
+                asynTaskDetail.setStatus();
                 e.printStackTrace();
                 logger.error("写入异常:" + "第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);   //错误异常
                 skuExcelItem.setError(e.getMessage());
@@ -375,8 +410,12 @@ public class SkuExcelController {
             }
         }
         skuService.saveBatch(skuList);
-        return ResponseData.success(errorList);
-    }
+        skuExcelResult.setErrorList(errorList);
+        skuExcelResult.setSuccessNum(successNum);
 
+        asynTask.setContent(JSON.toJSONString(skuExcelResult));
+        asynTask.setStatus(99);
+        taskService.updateById(asynTask);
+    }
 
 }

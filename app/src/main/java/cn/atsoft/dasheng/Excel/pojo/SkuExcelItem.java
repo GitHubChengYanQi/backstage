@@ -54,4 +54,6 @@ public class SkuExcelItem {
     private Long classId;
 
     private Long unitId;
+
+    private Integer success;
 }

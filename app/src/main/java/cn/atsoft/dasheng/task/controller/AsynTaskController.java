@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.task.controller;
 
+import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
@@ -48,8 +49,16 @@ public class AsynTaskController extends BaseController {
         AsynTask detail = this.asynTaskService.getById(asynTaskParam.getTaskId());
         AsynTaskResult result = new AsynTaskResult();
         ToolUtil.copyProperties(detail, result);
-        AllBomResult allBomResult = JSON.parseObject(result.getContent(), AllBomResult.class);
-        result.setAllBomResult(allBomResult);
+        switch (result.getType()){
+            case "物料分析":
+                AllBomResult allBomResult = JSON.parseObject(result.getContent(), AllBomResult.class);
+                result.setAllBomResult(allBomResult);
+                break;
+            case "物料导入":
+                SkuExcelResult skuExcelResult = JSON.parseObject(result.getContent(), SkuExcelResult.class);
+                result.setSkuExcelResult(skuExcelResult);
+                break;
+        }
         result.setContent(null);
         return ResponseData.success(result);
     }

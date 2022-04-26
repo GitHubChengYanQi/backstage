@@ -1,34 +1,32 @@
 package cn.atsoft.dasheng.task.model.result;
 
-import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
-import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 等待任务表
+ * 任务详情表
  * </p>
  *
  * @author song
- * @since 2022-04-01
+ * @since 2022-04-26
  */
 @Data
 @ApiModel
-public class AsynTaskResult implements Serializable {
+public class AsynTaskDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private AllBomResult allBomResult;
 
-    private SkuExcelResult skuExcelResult;
+    /**
+     * 详情id
+     */
+    @ApiModelProperty("详情id")
+    private Long detailId;
+
     /**
      * 任务id
      */
@@ -36,28 +34,10 @@ public class AsynTaskResult implements Serializable {
     private Long taskId;
 
     /**
-     * 总数
+     * json数据
      */
-    @ApiModelProperty("总数")
-    private Integer allCount;
-
-    /**
-     * 当前数
-     */
-    @ApiModelProperty("当前数")
-    private Integer count;
-
-    /**
-     * 类型
-     */
-    @ApiModelProperty("类型")
-    private String type;
-
-    /**
-     * json 内容
-     */
-    @ApiModelProperty("json 内容")
-    private String content;
+    @ApiModelProperty("json数据")
+    private String contentJson;
 
     /**
      * 状态
