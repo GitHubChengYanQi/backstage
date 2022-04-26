@@ -37,6 +37,7 @@ import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -145,7 +146,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Long categoryId = category.getCategoryId();
             Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
             //同分类，同产品下不可有同名物料
-            this.throwDuplicate(param,spu.getSpuId());
+            this.throwDuplicate(param, spu.getSpuId());
+
+
+
+
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
                 CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state",1).one();
@@ -1612,14 +1617,18 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
 
-    private void throwDuplicate(SkuParam param,Long spuId){
+    private ResponseData throwDuplicate(SkuParam param,Long spuId){
         List<Sku> skus = this.query().eq("skuName", param.getSkuName()).list();
         for (Sku sku : skus) {
             if(sku.getSpuId().equals(spuId)){
-                throw new ServiceException(502,"同分类同产品下已有相同物料");
+                SkuResult skuResult = new SkuResult();
+                ToolUtil.copyProperties(sku,skuResult);
+                this.format(new ArrayList<SkuResult>(){{
+                    add(skuResult);
+                }});
+               return ResponseData.error(502,"此分类下此产品已有相同名称物料",skuResult);
             }
         }
-
-
+        return null;
     }
 }

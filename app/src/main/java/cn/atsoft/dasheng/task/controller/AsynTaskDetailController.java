@@ -85,7 +85,6 @@ public class AsynTaskDetailController extends BaseController {
         AsynTaskDetailResult result = new AsynTaskDetailResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
