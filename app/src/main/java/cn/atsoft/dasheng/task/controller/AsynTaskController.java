@@ -59,9 +59,9 @@ public class AsynTaskController extends BaseController {
                 result.setAllBomResult(allBomResult);
                 break;
             case "物料导入":
-
-                List<AsynTaskDetailResult> excelDetail = detailService.getSkuExcelDetail(result.getTaskId());
-                result.setExcelDetail(excelDetail);
+                Map<String, Integer> num = detailService.getNum(result.getTaskId());
+                result.setSuccessNum(num.get("successNum"));
+                result.setErrorNum(num.get("errorNum"));
                 break;
         }
         result.setContent(null);

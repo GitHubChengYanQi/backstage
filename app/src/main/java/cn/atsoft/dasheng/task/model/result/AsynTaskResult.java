@@ -30,6 +30,9 @@ public class AsynTaskResult implements Serializable {
 
     private SkuExcelResult skuExcelResult;
 
+    private Integer errorNum;
+
+    private Integer successNum;
 
     private List<AsynTaskDetailResult> excelDetail;
     /**
