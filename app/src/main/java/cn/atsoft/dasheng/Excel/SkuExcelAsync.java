@@ -51,6 +51,8 @@ public class SkuExcelAsync {
     private AsynTaskService taskService;
     @Autowired
     private AsynTaskDetailService asynTaskDetailService;
+    @Autowired
+    private CodingRulesService codingRulesService;
 
 
     protected static final Logger logger = LoggerFactory.getLogger(SkuExcelController.class);
@@ -66,7 +68,7 @@ public class SkuExcelAsync {
         List<Spu> spuList = spuService.query().eq("display", 1).list();
         List<Unit> units = unitService.query().eq("display", 1).list();
         List<Category> categories = categoryService.query().eq("display", 1).list();
-
+        CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
 
         AsynTask asynTask = new AsynTask();
         asynTask.setAllCount(skuExcelItemList.size());
@@ -93,22 +95,6 @@ public class SkuExcelAsync {
                 taskService.updateById(asynTask);
 
 
-                //成品码-------------------------------------------------------------------------------------------------
-                if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
-                    throw new ServiceException(500, "物料编码不存在");
-                } else {
-                    skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
-                    for (Sku sku : skus) {
-                        if (sku.getStandard().equals(skuExcelItem.getStandard())) {
-                            SkuResult results = skuService.getDetail(sku.getSkuId());
-                            skuExcelItem.setSimpleResult(results);
-                            skuExcelItem.setErrorSkuId(sku.getSkuId());
-                            skuExcelItem.setType("codingRepeat");
-                            throw new ServiceException(500, "编码重复");
-                        }
-                    }
-                    newSku.setStandard(skuExcelItem.getStandard());
-                }
                 newSku.setSkuName(skuExcelItem.getSkuName());  //   型号
 
                 Long unitId = null;
@@ -171,6 +157,25 @@ public class SkuExcelAsync {
                     throw new ServiceException(500, "没有当前产品");
                 }
                 newSku.setSpuId(newItem.getSpuId());
+
+                //物料编码-------------------------------------------------------------------------------------------------
+                if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
+                    String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), newItem.getSpuId());
+                    backCoding = backCoding.replace("${skuClass}", spuClass.getCodingClass());
+                    newSku.setStandard(backCoding);
+                } else {
+                    skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
+                    for (Sku sku : skus) {
+                        if (ToolUtil.isNotEmpty(sku.getStandard()) && sku.getStandard().equals(skuExcelItem.getStandard())) {
+                            SkuResult results = skuService.getDetail(sku.getSkuId());
+                            skuExcelItem.setSimpleResult(results);
+                            skuExcelItem.setErrorSkuId(sku.getSkuId());
+                            skuExcelItem.setType("codingRepeat");
+                            throw new ServiceException(500, "编码重复");
+                        }
+                    }
+                    newSku.setStandard(skuExcelItem.getStandard());
+                }
 
                 //单位------------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(unitId)) {
@@ -304,7 +309,6 @@ public class SkuExcelAsync {
         skuService.saveBatch(skuList);
         skuExcelResult.setErrorList(errorList);
         skuExcelResult.setSuccessNum(successNum);
-        asynTask.setContent(JSON.toJSONString(skuExcelResult));
         asynTask.setStatus(99);
         asynTaskDetailService.saveBatch(asynTaskDetails);
         taskService.updateById(asynTask);
