@@ -250,9 +250,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
     }
-    private void createProcessTask(){
+
+    private void createProcessTask() {
 
     }
+
     public void createQualityTask(InstockOrderParam param, List<Sku> skus) {
         QualityTaskParam qualityTaskParam = new QualityTaskParam();
         List<QualityTaskDetailParam> qualityTaskDetailParams = new ArrayList<>();
@@ -436,7 +438,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
                 if (ToolUtil.isNotEmpty(orderResult.getCreateUser()) && orderResult.getCreateUser().equals(user.getUserId())) {
                     UserResult userResult = new UserResult();
-                    
+
                     ToolUtil.copyProperties(user, userResult);
                     orderResult.setCreateUserResult(userResult);
                 }
@@ -669,6 +671,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
 
+
+        InstockLog instockLog = new InstockLog();   //添加入库记录
+        instockLog.setInstockTime(new DateTime());
+        instockLogService.save(instockLog);
+
+        List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         for (Inkind inkind : inkinds) {
 //            if (judgePosition(binds, inkind)) {
 //                throw new ServiceException(500, "入库的物料 未和库位绑定");
@@ -685,7 +693,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetailsList.add(stockDetails);
             inkind.setType("1");
 
+            InstockLogDetail logDetail = new InstockLogDetail();
+            logDetail.setInstockLogId(instockLog.getInstockLogId());
+            logDetail.setNumber(inkind.getNumber());
+            logDetail.setInkindId(inkind.getInkindId());
+            logDetail.setStorehousePositionsId(positions.get(inkind.getInkindId()));
+            logDetail.setStorehouseId(houseId.get(inkind.getInkindId()));
+            logDetail.setSkuId(inkind.getSkuId());
+            instockLogDetails.add(logDetail);
+
         }
+        instockLogDetailService.saveBatch(instockLogDetails);
         stockDetailsService.saveBatch(stockDetailsList);
         inkindService.updateBatchById(inkinds);
 
@@ -757,6 +775,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             this.updateById(order);
         }
     }
+
     @Override
     public void updateCreateInstockStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
@@ -772,7 +791,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         order.setState(50);
         this.updateById(order);
     }
-  @Override
+
+    @Override
     public void updateCreateInstockRefuseStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
         order.setState(-1);
@@ -851,8 +871,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             long realNumber = 0L;
             for (InstockList instockList : instockListList) {
                 if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
-                    enoughNumber =ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 :  enoughNumber + instockList.getNumber();
-                    realNumber =ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
+                    enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
+                    realNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
                 }
             }
             datum.setEnoughNumber(enoughNumber);
