@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.Excel;
 
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelItem;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
+import cn.atsoft.dasheng.Excel.pojo.SpuExcel;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Component
 @jdk.nashorn.internal.runtime.logging.Logger
-public class SkuExcelAsync {
+public class ExcelAsync {
 
     @Autowired
     private SpuService spuService;
@@ -59,7 +60,7 @@ public class SkuExcelAsync {
 
 
     @Async
-    public void add(List<SkuExcelItem> skuExcelItemList) {
+    public void skuAdd(List<SkuExcelItem> skuExcelItemList) {
 
         //-------------------------------------------------------------------------------------------------------------
         List<Sku> skuList = new ArrayList<>();
@@ -161,7 +162,7 @@ public class SkuExcelAsync {
                 //物料编码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
                     String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), newItem.getSpuId());
-                    backCoding = backCoding.replace("${skuClass}",   ToolUtil.isEmpty(spuClass.getCodingClass())? "": spuClass.getCodingClass());
+                    backCoding = backCoding.replace("${skuClass}", ToolUtil.isEmpty(spuClass.getCodingClass()) ? "" : spuClass.getCodingClass());
                     newSku.setStandard(backCoding);
                 } else {
                     skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
@@ -311,6 +312,86 @@ public class SkuExcelAsync {
         skuExcelResult.setSuccessNum(successNum);
         asynTask.setStatus(99);
         asynTaskDetailService.saveBatch(asynTaskDetails);
+        taskService.updateById(asynTask);
+    }
+
+
+    @Async
+    public void spuAdd(List<SpuExcel> spuExcels) {
+        List<Spu> spuList = spuService.query().eq("display", 1).list();
+        List<Category> categoryList = categoryService.query().eq("display", 1).list();
+        List<SpuClassification> spuClassList = classificationService.query().eq("display", 1).list();
+
+        AsynTask asynTask = new AsynTask();
+        asynTask.setType("产品导入");
+        asynTask.setStatus(0);
+        asynTask.setAllCount(spuClassList.size());
+
+        taskService.save(asynTask);
+
+
+        List<Spu> spus = new ArrayList<>();
+        List<AsynTaskDetail> asynTaskDetails = new ArrayList<>();
+        int i = 0;
+        for (SpuExcel spuExcel : spuExcels) {
+            i++;
+            asynTask.setCount(i);
+            taskService.updateById(asynTask);
+
+            AsynTaskDetail asynTaskDetail = new AsynTaskDetail();
+            asynTaskDetail.setTaskId(asynTask.getTaskId());
+            asynTaskDetail.setType("产品导入");
+
+            spuExcel.setLine(i + "");
+            try {
+                Spu newSpu = new Spu();
+                Long classId = null;
+                for (SpuClassification spuClassification : spuClassList) {
+                    if (spuClassification.getName().equals(spuExcel.getSpuClass())) {
+                        classId = spuClassification.getSpuClassificationId();
+                        break;
+                    }
+                }
+                if (ToolUtil.isEmpty(classId)) {
+                    throw new ServiceException(500, "产品分类不存在");
+                }
+
+                for (Spu spu : spuList) {
+                    if (spu.getCoding().equals(spuExcel.getSpuCoding())) {
+                        throw new ServiceException(500, "产品编码已存在");
+                    }
+                }
+                //------------------------------------------------------------------------------
+                Category cate = null;
+                for (Category category : categoryList) {
+                    if (category.getCategoryName().equals(spuExcel.getSpuName())) {
+                        cate = category;
+                        break;
+                    }
+                }
+                if (ToolUtil.isEmpty(cate)) {
+                    cate = new Category();
+                    cate.setCategoryName(spuExcel.getSpuName());
+                    categoryService.save(cate);
+                }
+                newSpu.setCategoryId(cate.getCategoryId());
+                newSpu.setName(spuExcel.getSpuName());
+                newSpu.setSpuClassificationId(classId);
+                spus.add(newSpu);
+                asynTaskDetail.setStatus(99);
+            } catch (Exception e) {
+                asynTaskDetail.setStatus(50);
+                spuExcel.setError(e.getMessage());
+                e.printStackTrace();
+            } finally {
+                asynTaskDetail.setContentJson(JSON.toJSONString(spuExcel));
+                asynTaskDetails.add(asynTaskDetail);
+            }
+
+        }
+        asynTaskDetailService.saveBatch(asynTaskDetails);
+        spuService.saveBatch(spus);
+        asynTask.setStatus(99);
         taskService.updateById(asynTask);
     }
 }

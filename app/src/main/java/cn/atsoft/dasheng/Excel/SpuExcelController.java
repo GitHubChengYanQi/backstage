@@ -43,13 +43,7 @@ public class SpuExcelController {
     @Autowired
     private SkuExcelService skuExcelService;
     @Autowired
-    private SpuService spuService;
-    @Autowired
-    private CategoryService categoryService;
-    @Autowired
-    private SpuClassificationService classificationService;
-    @Autowired
-    private UnitService unitService;
+    private ExcelAsync excelAsync;
 
 
     @RequestMapping(value = "/spuImport", method = RequestMethod.GET)
@@ -67,59 +61,10 @@ public class SpuExcelController {
         reader.addHeaderAlias("单位", "unit");
         List<SpuExcel> spuExcels = reader.readAll(SpuExcel.class);
 
-
-        List<Spu> spuList = spuService.query().eq("display", 1).list();
-        List<Category> categoryList = categoryService.query().eq("display", 1).list();
-        List<SpuClassification> spuClassList = classificationService.query().eq("display", 1).list();
-
-        List<SpuExcel> errorList = new ArrayList<>();
-        List<Spu> spus = new ArrayList<>();
-        int i = 0;
-        for (SpuExcel spuExcel : spuExcels) {
-            i++;
-            spuExcel.setLine(i + "");
-            try {
-                Spu newSpu = new Spu();
-                Long classId = null;
-                for (SpuClassification spuClassification : spuClassList) {
-                    if (spuClassification.getName().equals(spuExcel.getSpuClass())) {
-                        classId = spuClassification.getSpuClassificationId();
-                        break;
-                    }
-                }
-                if (ToolUtil.isEmpty(classId)) {
-                    throw new ServiceException(500, "产品分类不存在");
-                }
-
-                for (Spu spu : spuList) {
-                    if (spu.getCoding().equals(spuExcel.getSpuCoding())) {
-                        throw new ServiceException(500, "产品编码已存在");
-                    }
-                }
-                //------------------------------------------------------------------------------
-                Category cate = null;
-                for (Category category : categoryList) {
-                    if (category.getCategoryName().equals(spuExcel.getSpuName())) {
-                        cate = category;
-                        break;
-                    }
-                }
-                if (ToolUtil.isEmpty(cate)) {
-                    cate = new Category();
-                    cate.setCategoryName(spuExcel.getSpuName());
-                    categoryService.save(cate);
-                }
-                newSpu.setCategoryId(cate.getCategoryId());
-                newSpu.setName(spuExcel.getSpuName());
-                newSpu.setSpuClassificationId(classId);
-                spus.add(newSpu);
-            } catch (Exception e) {
-                errorList.add(spuExcel);
-                e.printStackTrace();
-            }
-
-        }
-        spuService.saveBatch(spus);
+        /**
+         * 调用异步方法
+         */
+        excelAsync.spuAdd(spuExcels);
 
         return ResponseData.success();
     }
@@ -132,7 +77,7 @@ public class SpuExcelController {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet hssfSheet = workbook.createSheet("产品模板");
-        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet,300);
+        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet, 300);
         HSSFRow titleRow = sheet.createRow(0);
         HSSFCell ti = titleRow.createCell(0);
 
