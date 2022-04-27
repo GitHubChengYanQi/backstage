@@ -605,8 +605,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Long categoryId = category.getCategoryId();
         Long spuClassificationId = spuClassification.getSpuClassificationId();
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-        if (ToolUtil.isEmpty(param.getStandard())){
-            getCoding(param,orSaveSpu.getSpuId());
+        if (ToolUtil.isEmpty(param.getStandard())) {
+            getCoding(param, orSaveSpu.getSpuId());
         }
         List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
 
@@ -829,10 +829,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (ToolUtil.isNotEmpty(partsDetailList) || ToolUtil.isNotEmpty(partList)) {
             throw new ServiceException(500, "清单中有此物品数据,不可修改");
         }
-        Sku oldEntity = getOldEntity(param);
-        Sku newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-
+        
         Category category = this.getOrSaveCategory(param);
         Long categoryId = category.getCategoryId();
 
@@ -841,8 +838,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
         Long spuClassificationId = spuClassification.getSpuClassificationId();
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-
-
+        if (ToolUtil.isEmpty(param.getStandard())) {
+            getCoding(param, orSaveSpu.getSpuId());
+        }
+        Sku oldEntity = getOldEntity(param);
+        Sku newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
         newEntity.setSpuId(orSaveSpu.getSpuId());
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);
