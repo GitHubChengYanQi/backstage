@@ -92,6 +92,7 @@ public class SkuExcelAsync {
                 asynTask.setCount(i);   //修改任务状态
                 taskService.updateById(asynTask);
 
+
                 //成品码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
                     throw new ServiceException(500, "物料编码不存在");

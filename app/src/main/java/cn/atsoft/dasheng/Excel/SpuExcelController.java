@@ -132,7 +132,7 @@ public class SpuExcelController {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet hssfSheet = workbook.createSheet("产品模板");
-        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet);
+        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet,2);
         HSSFRow titleRow = sheet.createRow(0);
         HSSFCell ti = titleRow.createCell(0);
 
