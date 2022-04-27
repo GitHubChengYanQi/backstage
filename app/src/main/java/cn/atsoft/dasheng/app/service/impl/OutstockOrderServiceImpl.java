@@ -375,7 +375,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         long newNumber = stockDetails.getNumber() - freeOutStockParam.getNumber();
         stockDetails.setNumber(newNumber);
         if (stockDetails.getNumber() == 0) {
-            stockDetailsService.removeById(stockDetails);
+            stockDetails.setDisplay(0);
+            stockDetailsService.updateById(stockDetails);
         } else {
             stockDetailsService.updateById(stockDetails);
         }
