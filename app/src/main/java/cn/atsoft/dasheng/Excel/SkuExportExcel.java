@@ -126,8 +126,8 @@ public class SkuExportExcel extends BaseController {
 
             HSSFRichTextString spuNameStr = ToolUtil.isEmpty(skuResult.getSpuResult()) ? new HSSFRichTextString() : new HSSFRichTextString(skuResult.getSpuResult().getName());
             HSSFRichTextString skuStr = new HSSFRichTextString();
-            if (ToolUtil.isNotEmpty(skuResult.getSpuResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult().getName())) {
-                skuStr = new HSSFRichTextString(skuResult.getSpuResult().getSpuClassificationResult().getName());
+            if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isNotEmpty(skuResult.getSkuName())) {
+                skuStr = new HSSFRichTextString(skuResult.getSkuName());
             }
             HSSFRichTextString unitStr = ToolUtil.isEmpty(skuResult.getSpuResult()) || ToolUtil.isEmpty(skuResult.getSpuResult().getUnitResult())|| ToolUtil.isEmpty(skuResult.getSpuResult().getUnitResult().getUnitName()) ? new HSSFRichTextString(" ") : new HSSFRichTextString(skuResult.getSpuResult().getUnitResult().getUnitName());
             HSSFRichTextString isAllStr = new HSSFRichTextString();
