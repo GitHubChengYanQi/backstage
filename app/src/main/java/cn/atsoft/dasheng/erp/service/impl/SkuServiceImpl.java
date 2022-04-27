@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
-import cn.atsoft.dasheng.app.entity.Parts;
-import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
@@ -115,6 +112,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private StepsService stepsService;
     @Autowired
     private SupplyService supplyService;
+
 
     @Transactional
     @Override
@@ -985,6 +983,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attributeIds.add(valuesRequest.getAttributeId());
             }
         }
+
+        List<StockDetails> details = stockDetailsService.query().in("sku_id", skuIds).select("sku_id,sum(number) as num").groupBy("sku_id").list();
+
+
 //        List<Parts> list1 = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
 
@@ -1489,6 +1491,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (ToolUtil.isNotEmpty(param.getSpu().getCategoryId())) {
             category = categoryService.getById(param.getSpu().getCategoryId());
         } else {
+            if (ToolUtil.isEmpty(param.getSpu().getName())) {
+                throw new ServiceException(500, "请传入产品名称");
+            }
             String trim = param.getSpu().getName().trim(); //去空格
             category = categoryService.query().eq("category_name", trim).eq("display", 1).one();
         }
@@ -1515,7 +1520,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu spuEntity = new Spu();
 
         if (ToolUtil.isNotEmpty(spu)) {
-            if (ToolUtil.isNotEmpty(param.getSpu().getCoding())){
+            if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
                 spu.setCoding(param.getSpu().getCoding());
             }
             spu.setCoding(param.getCoding());
@@ -1526,7 +1531,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             return spuEntity;
 
         } else {
-            if (ToolUtil.isNotEmpty(param.getSpu().getCoding())){
+            if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
                 spuEntity.setCoding(param.getSpu().getCoding());
             }
             spuEntity.setSpuClassificationId(spuClassificationId);
@@ -1623,7 +1628,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (ToolUtil.isNotEmpty(partsParam.getSkuId())) {
                 skuParam.setSkuId(partsParam.getSkuId());
                 skuService.update(skuParam);
-                 return partsParam.getSkuId();
+                return partsParam.getSkuId();
 
             }
             Map<String, Sku> add = skuService.add(skuParam);

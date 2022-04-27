@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -75,10 +76,29 @@ public class AsynTaskDetailController extends BaseController {
     }
 
     /**
+     * 删除接口
+     *
      * @author song
      * @Date 2022-04-26
      */
-    @RequestMapping(value = "/remove", method = RequestMethod.POST)
+    @RequestMapping(value = "/removeBatch", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData removeBatch(@RequestBody AsynTaskDetailParam asynTaskDetailParam) {
+        AsynTaskDetail taskDetail = new AsynTaskDetail();
+        taskDetail.setDisplay(0);
+        QueryWrapper<AsynTaskDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("detail_id", asynTaskDetailParam.getIds());
+        this.asynTaskDetailService.update(taskDetail, queryWrapper);
+
+//        this.asynTaskDetailService.delete(asynTaskDetailParam);
+        return ResponseData.success();
+    }
+
+    /**
+     * @author song
+     * @Date 2022-04-26
+     */
+    @RequestMapping(value = "/remove", method = RequestMethod.GET)
     @ApiOperation("删除")
     public ResponseData remove(@RequestParam("id") Long id) {
         AsynTaskDetail taskDetail = this.asynTaskDetailService.getById(id);
@@ -119,9 +139,20 @@ public class AsynTaskDetailController extends BaseController {
         if (ToolUtil.isEmpty(asynTaskDetailParam)) {
             asynTaskDetailParam = new AsynTaskDetailParam();
         }
+        asynTaskDetailParam.setStatus(99);
         return this.asynTaskDetailService.findPageBySpec(asynTaskDetailParam);
     }
 
+
+    @RequestMapping(value = "/errorlist", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<AsynTaskDetailResult> errorlist(@RequestBody(required = false) AsynTaskDetailParam asynTaskDetailParam) {
+        if (ToolUtil.isEmpty(asynTaskDetailParam)) {
+            asynTaskDetailParam = new AsynTaskDetailParam();
+        }
+        asynTaskDetailParam.setStatus(50);
+        return this.asynTaskDetailService.findPageBySpec(asynTaskDetailParam);
+    }
 
 }
 
