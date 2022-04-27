@@ -50,7 +50,6 @@ public class SkuResult implements Serializable {
     private String skuTextValue;
     private Long spuClass;
     private Long brandId;
-    @ApiModelProperty("")
     private Long skuId;
     private Spu spu;
     private QualityPlan qualityPlan;
@@ -71,6 +70,13 @@ public class SkuResult implements Serializable {
     private Long produceMix;   //生产数
     private Long lackNumber;  //缺料数
 
+
+    private Integer stockNumber;
+    /**
+     * 预购数量
+     */
+
+    private Integer purchaseNumber;
     /**
      * 之间方案id
      */

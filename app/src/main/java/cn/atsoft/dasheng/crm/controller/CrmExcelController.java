@@ -7,6 +7,7 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
+import cn.atsoft.dasheng.Excel.SkuExcelService;
 import cn.atsoft.dasheng.Tool.VoUtilsTool;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.service.*;
@@ -18,6 +19,7 @@ import cn.atsoft.dasheng.crm.entity.excel.AdressExcelItem;
 import cn.atsoft.dasheng.crm.entity.excel.ContactsExcelItem;
 import cn.atsoft.dasheng.crm.entity.excel.CustomerExcelItem;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
+import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
@@ -38,6 +40,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -83,7 +86,11 @@ public class CrmExcelController {
     private CompanyRoleService roleService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private SpuClassificationService spuClassService;
 
+    @Autowired
+    private SkuExcelService skuExcelService;
 
     /**
      * 上传excel填报
@@ -350,28 +357,28 @@ public class CrmExcelController {
     @ApiOperation("导出")
     public void SkuExcel(HttpServletResponse response, Long type, String url) throws IOException {
 
-        String[] header = {"成品码", "分类", "产品", "型号", "单位", "是否批量"};
+        String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量","规格","物料描述"};
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("二维码导出");
-//        sheet.setDefaultColumnWidth(40);
-//        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 1);
-//        sheet.addMergedRegion(region);
-//        sheet.setColumnWidth(0, 10);
+        HSSFSheet hssfSheet = workbook.createSheet("物料模板");
+        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet,300);
         HSSFRow titleRow = sheet.createRow(0);
         HSSFCell ti = titleRow.createCell(0);
 
         HSSFCellStyle titleStyle = workbook.createCellStyle();
-        titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
+        titleStyle.setFillForegroundColor((short) 10);
+//        titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         ti.setCellStyle(titleStyle);
 
 
-        HSSFRow headrow = sheet.createRow(0);
+        HSSFRow headRow = sheet.createRow(0);
 
         for (int i = 0; i < header.length; i++) {
+
+
             //创建一个单元格
-            HSSFCell cell = headrow.createCell(i);
+            HSSFCell cell = headRow.createCell(i);
 
             //创建一个内容对象
             HSSFRichTextString text = new HSSFRichTextString(header[i]);
@@ -386,18 +393,43 @@ public class CrmExcelController {
             cell.setCellStyle(headerStyle);
         }
 
+
+
         //准备将Excel的输出流通过response输出到页面下载
         //八进制输出流
         response.setContentType("application/octet-stream");
 
         //这后面可以设置导出Excel的名称
-        response.setHeader("Content-disposition", "attachment;filename=物料导入模板.xls");
+        response.setHeader("Content-disposition", "attachment;filename=temp.xls");
 
         //刷新缓冲
         response.flushBuffer();
 
         //workbook将Excel写入到response的输出流中，供页面下载
         workbook.write(response.getOutputStream());
+
     }
+
+//    /**
+//     * 单元格添加下拉
+//     * @param sheet
+//     * @return
+//     */
+//    private  HSSFSheet dataEffective(HSSFSheet sheet) {
+//        List<String> className = spuClassService.getClassName();
+//        //获取分类名称
+//        String[] categoryNames = className.toArray(new String[className.size()]);
+//        //资产分类有效性
+//        DVConstraint categoryConstraint = DVConstraint
+//                .createExplicitListConstraint(categoryNames);//textlist  下拉选项的 数组 如{列表1，列表2，。。。。。}
+//        // 设置数据有效性加载在哪个单元格上,四个参数分别是：起始行、终止行、起始列、终止列
+//        CellRangeAddressList categoryRegions = new CellRangeAddressList(1, 200, 1, 1);
+//        // 数据有效性对象
+//        HSSFDataValidation categoryDataValidationList = new HSSFDataValidation(categoryRegions, categoryConstraint);
+//        sheet.addValidationData(categoryDataValidationList);
+//
+//        return sheet;
+//    }
+
 }
 

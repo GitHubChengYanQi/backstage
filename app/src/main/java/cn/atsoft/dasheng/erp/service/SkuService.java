@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -30,12 +31,14 @@ public interface SkuService extends IService<Sku> {
      * @author
      * @Date 2021-10-18
      */
-    Long add(SkuParam param);
+    Map<String,Sku> add(SkuParam param);
 
     List<SkuResult> getSkuByMd5(SkuParam param);
 
     @Transactional
     void directAdd(SkuParam param);
+
+    void mirageSku(SkuParam param);
 
     /**
      * 删除
@@ -49,6 +52,8 @@ public interface SkuService extends IService<Sku> {
      * 批量删除
      */
     void deleteBatch(SkuParam param);
+
+    void batchAddSku(BatchSkuParam batchSkuParam);
 
     /**
      * 更新
@@ -107,6 +112,8 @@ public interface SkuService extends IService<Sku> {
     SkuResult getSku(Long id);
 
     List<SkuResult> formatSkuResult (List<Long> skuIds);
+
+    SkuResult getDetail(Long skuId);
 
     //    /**
 //     * 查询产品 新建或返回已有产品id

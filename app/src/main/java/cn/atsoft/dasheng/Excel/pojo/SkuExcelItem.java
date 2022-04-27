@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.Excel.pojo;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.auth.In;
 import lombok.Data;
@@ -23,10 +25,13 @@ public class SkuExcelItem {
     private String classItem;
 
 
-    private String spuName;
+    private String skuName;
 
 
     private String unit;
+
+
+    private String specifications; //规格
 
 
     private String isNotBatch;
@@ -36,8 +41,19 @@ public class SkuExcelItem {
 
     private Integer line;
 
-    private List<Specifications> specifications;
+    private String describe;  //描述
 
     private String error;
 
+    private String type;
+
+    private Long errorSkuId;
+
+    private SkuResult simpleResult;
+
+    private Long classId;
+
+    private Long unitId;
+
+    private Integer success;
 }

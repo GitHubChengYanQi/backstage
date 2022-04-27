@@ -32,6 +32,12 @@ public class SpuClassificationResult implements Serializable {
 
     @JSONField(serialize = false)
     private String childrens;
+
+    /**
+     * 最下级
+     */
+    private boolean mostJunior;
+
     /**
      * 编码分类
      */
@@ -45,7 +51,7 @@ public class SpuClassificationResult implements Serializable {
     /**
      * pid
      */
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long pid;
 
     private List<Spu> spuList;
@@ -53,14 +59,14 @@ public class SpuClassificationResult implements Serializable {
      * spu分类id
      */
     @ApiModelProperty("spu分类id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long spuClassificationId;
 
     /**
      * 是否是产品分类
      */
     @ApiModelProperty("是否是产品分类")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long type;
 
     /**
@@ -85,15 +91,14 @@ public class SpuClassificationResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long createUser;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serializeUsing= ToStringSerializer.class)
-
+    @JSONField(serializeUsing = ToStringSerializer.class)
 
 
     private Long updateUser;

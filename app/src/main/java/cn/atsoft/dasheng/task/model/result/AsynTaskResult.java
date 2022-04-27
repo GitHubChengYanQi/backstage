@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.task.model.result;
 
+import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import lombok.Data;
 
@@ -26,6 +27,14 @@ public class AsynTaskResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private AllBomResult allBomResult;
+
+    private SkuExcelResult skuExcelResult;
+
+    private Integer errorNum;
+
+    private Integer successNum;
+
+    private List<AsynTaskDetailResult> excelDetail;
     /**
      * 任务id
      */

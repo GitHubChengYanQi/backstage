@@ -85,4 +85,5 @@ public interface AuthService {
      */
     boolean checkAll();
 
+    String refreshToken();
 }

@@ -20,6 +20,8 @@ import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.hutool.core.lang.Console;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -67,20 +69,20 @@ public class BomController {
     private SpuClassificationService classificationService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private FileInfoService fileInfoService;
 
     @RequestMapping("/importBom")
     @ResponseBody
-    public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseData uploadExcel(@RequestParam("fileId") Long fileId) throws IOException {
+
+        FileInfo fileInfo = fileInfoService.getById(fileId);
+        File excelFile = new File(fileInfo.getFilePath());
 
         List<String> errorList = new ArrayList<>();
         XSSFWorkbook workbook = null;
 
-        String name = file.getOriginalFilename();
-        String fileSavePath = ConstantsContext.getFileUploadPath();
-        File excelFile = new File(fileSavePath + name);
-
         try {
-            file.transferTo(excelFile);
             workbook = new XSSFWorkbook(excelFile.getPath());
         } catch (IOException e) {
             e.printStackTrace();
@@ -213,11 +215,11 @@ public class BomController {
         ti.setCellStyle(titleStyle);
 
 
-        HSSFRow headrow = sheet.createRow(0);
+        HSSFRow headRow = sheet.createRow(0);
 
         for (int i = 0; i < header.length; i++) {
             //创建一个单元格
-            HSSFCell cell = headrow.createCell(i);
+            HSSFCell cell = headRow.createCell(i);
 
             //创建一个内容对象
             HSSFRichTextString text = new HSSFRichTextString(header[i]);

@@ -1,10 +1,13 @@
 package cn.atsoft.dasheng.task.controller;
 
+import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
+import cn.atsoft.dasheng.task.model.result.AsynTaskDetailResult;
 import cn.atsoft.dasheng.task.model.result.AsynTaskResult;
+import cn.atsoft.dasheng.task.service.AsynTaskDetailService;
 import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -34,6 +37,8 @@ public class AsynTaskController extends BaseController {
 
     @Autowired
     private AsynTaskService asynTaskService;
+    @Autowired
+    private AsynTaskDetailService detailService;
 
 
     /**
@@ -48,8 +53,17 @@ public class AsynTaskController extends BaseController {
         AsynTask detail = this.asynTaskService.getById(asynTaskParam.getTaskId());
         AsynTaskResult result = new AsynTaskResult();
         ToolUtil.copyProperties(detail, result);
-        AllBomResult allBomResult = JSON.parseObject(result.getContent(), AllBomResult.class);
-        result.setAllBomResult(allBomResult);
+        switch (result.getType()) {
+            case "物料分析":
+                AllBomResult allBomResult = JSON.parseObject(result.getContent(), AllBomResult.class);
+                result.setAllBomResult(allBomResult);
+                break;
+            case "物料导入":
+                Map<String, Integer> num = detailService.getNum(result.getTaskId());
+                result.setSuccessNum(num.get("successNum"));
+                result.setErrorNum(num.get("errorNum"));
+                break;
+        }
         result.setContent(null);
         return ResponseData.success(result);
     }

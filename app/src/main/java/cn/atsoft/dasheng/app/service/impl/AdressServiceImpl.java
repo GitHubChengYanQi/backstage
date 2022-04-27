@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.params.CustomerMap;
+;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.log.FreedLog;
@@ -50,6 +51,8 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     @Override
     public Adress add(AdressParam param) {
 
+
+
         if (ToolUtil.isNotEmpty(param.getMap())) {
             param.setLocation(param.getMap().getAddress());
             if (ToolUtil.isNotEmpty(param.getMap().getMap()) && param.getMap().getMap().size() > 0) {
@@ -61,6 +64,7 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
         if (commonAreas.size() > 0) {
             throw new ServiceException(500, "地址请选择区或县");
         }
+
 
         Adress entity = getEntity(param);
         this.save(entity);

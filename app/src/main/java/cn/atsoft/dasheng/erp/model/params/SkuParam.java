@@ -52,6 +52,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private Long oldSkuId;
 
     private List<SkuAttributeAndValue> sku;
+    private String customerName;
 
     private String selectType;
 

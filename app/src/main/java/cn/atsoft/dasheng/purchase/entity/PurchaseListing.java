@@ -26,7 +26,8 @@ public class PurchaseListing implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-
+    @TableField(exist = false)
+    private Long num;//用来分组查询求相同sku总预购数量
     /**
      * 交货时间
      */
@@ -244,6 +245,14 @@ public class PurchaseListing implements Serializable {
 
     public void setDeliveryTime(Time deliveryTime) {
         this.deliveryTime = deliveryTime;
+    }
+
+    public Long getNum() {
+        return num;
+    }
+
+    public void setNum(Long num) {
+        this.num = num;
     }
 
     @Override

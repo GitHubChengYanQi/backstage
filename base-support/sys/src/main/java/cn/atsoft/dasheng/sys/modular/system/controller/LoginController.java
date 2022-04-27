@@ -36,6 +36,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import com.google.code.kaptcha.Constants;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -221,5 +222,6 @@ public class LoginController extends BaseController {
         authService.logout();
         return new SuccessResponseData();
     }
+
 
 }
