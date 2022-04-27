@@ -84,7 +84,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
         Spu entity = getEntity(param);
         //查询判断是否有相同名称spu
-        Integer count = this.query().eq("name", param.getName()).eq("display",1).count();
+        Integer count = this.query().eq("name", param.getName()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "产品名称重复,请更换");
         }
@@ -320,12 +320,14 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 //        newEntity.setSpuClassificationId(spuClassificationId);
         this.updateById(newEntity);
     }
+
     /**
      * 查询产品 新建或返回已有产品id
+     *
      * @param param
      * @return
      */
-    private Long getSpuClass(SpuParam param){
+    private Long getSpuClass(SpuParam param) {
         Long spuClassificationId = 0L;
         SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
         if (ToolUtil.isEmpty(spuClassification)) {
@@ -340,6 +342,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
         return spuClassificationId;
     }
+
     @Override
     public SpuResult findBySpec(SpuParam param) {
         return null;
@@ -410,7 +413,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     }
 
     private Page<SpuResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> list = new ArrayList<>();
+        list.add("createTime");
+        list.add("spuName");
+        return PageFactory.defaultPage(list);
     }
 
     private Spu getOldEntity(SpuParam param) {

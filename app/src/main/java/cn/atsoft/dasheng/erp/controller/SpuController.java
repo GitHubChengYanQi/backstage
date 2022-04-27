@@ -201,7 +201,8 @@ public class SpuController extends BaseController {
                                 attributeValuesResult.setId(valuesRequest.getAttributeValuesId());
                                 attributeValuesResult.setAttributeId(valuesRequest.getAttributeId());
                                 attributeValuesResults.add(attributeValuesResult);
-                                skuValueMap.put("s" + valuesRequest.getAttributeId().toString(), valuesRequest.getAttributeValuesId().toString());
+
+                                skuValueMap.put(ToolUtil.isEmpty(valuesRequest.getAttributeId()) ? "" : "s" + valuesRequest.getAttributeId().toString(), ToolUtil.isEmpty(valuesRequest.getAttributeValuesId()) ? "" : valuesRequest.getAttributeValuesId().toString());
                             }
 
                         }

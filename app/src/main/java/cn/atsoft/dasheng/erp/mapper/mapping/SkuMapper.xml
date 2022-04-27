@@ -253,7 +253,7 @@
             WHERE supply = 1 AND display = 1 and  customer_name LIKE CONCAT('%',#{paramCondition.customerName},'%' )
             ))
         </if>
-        order by createTime DESC
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
