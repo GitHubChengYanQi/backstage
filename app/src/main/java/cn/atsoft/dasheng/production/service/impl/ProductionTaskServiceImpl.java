@@ -26,10 +26,7 @@ import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.production.entity.ProductionPickLists;
-import cn.atsoft.dasheng.production.entity.ProductionTask;
-import cn.atsoft.dasheng.production.entity.ProductionTaskDetail;
-import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
+import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
@@ -113,11 +110,14 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     private SkuService skuService;
     @Autowired
     private ProductionPickListsService pickListsService;
+    @Autowired
+    private ProductionStationBindService productionStationBindService;
 
     @Override
     public void add(ProductionTaskParam param) {
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(param.getWorkOrderId());
         List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
+
         ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", productionWorkOrder.getStepsId()).one();
         if (setpSet.getProductionType().equals("out")) {
             List<Long> skuIds = new ArrayList<>();
@@ -130,6 +130,15 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 throw new ServiceException(500, "有物料不存在Bom无法创建");
             }
         }
+
+        /**
+         * 判断负责人是否存在与工位中
+         */
+        List<ProductionStationBind> productionStationBinds = productionStationBindService.query().eq("production_station_id", setpSet.getProductionStationId()).list();
+        if (ToolUtil.isNotEmpty(param.getUserId()) && productionStationBinds.stream().noneMatch(i->i.getUserId().equals(param.getUserId()))) {
+            throw new ServiceException(500,"负责人不在此工位，无法分派");
+        }
+
 
         /**
          * 判断是否满足库存
@@ -373,8 +382,15 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
      */
     @Override
     public ProductionTask Receive(ProductionTaskParam param) {
+
         ProductionTask entity = this.getById(param.getProductionTaskId());
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
+        //判断负责人是否存在于工位
+        ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", productionWorkOrder.getStepsId()).one();
+        List<ProductionStationBind> productionStationBinds = productionStationBindService.query().eq("production_station_id", setpSet.getProductionStationId()).list();
+        if (ToolUtil.isNotEmpty(param.getUserId()) && productionStationBinds.stream().noneMatch(i->i.getUserId().equals(param.getUserId()))) {
+            throw new ServiceException(500,"负责人不在此工位，无法分派");
+        }
         checkStockDetail(param, productionWorkOrder);
         entity.setProductionTaskId(param.getProductionTaskId());
         entity.setUserId(param.getUserId());

@@ -3,9 +3,11 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
@@ -13,7 +15,9 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +65,39 @@ public class SkuController extends BaseController {
     public ResponseData addItem(@RequestBody SkuParam skuParam) {
         skuParam.setAddMethod(1);
         skuParam.setSkuId(null);
-        Long aLong = this.skuService.add(skuParam);
-        return ResponseData.success(aLong);
+
+
+        Map<String, Sku> skuMap = this.skuService.add(skuParam);
+        if (ToolUtil.isNotEmpty(skuMap.get("success"))) {
+            return ResponseData.success(skuMap.get("success").getSkuId());
+        }else {
+            Sku error = skuMap.get("error");
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(error,skuResult);
+            skuService.format(new ArrayList<SkuResult>(){{
+                add(skuResult);
+            }});
+            return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(),BizExceptionEnum.USER_CHECK.getMessage(),skuResult);
+        }
+
+
+
+    }
+    /**
+     * 直接物料 新增接口
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addBatch(@RequestBody BatchSkuParam batchSkuParam) {
+        for (SkuParam skuParam : batchSkuParam.getSkuParams()) {
+            skuParam.setAddMethod(1);
+            skuParam.setSkuId(null);
+        }
+        this.skuService.batchAddSku(batchSkuParam);
+        return ResponseData.success();
     }
 
     /**
@@ -103,6 +138,7 @@ public class SkuController extends BaseController {
     @RequestMapping(value = "/mirageSku", method = RequestMethod.POST)
     @BussinessLog(value = "合并sku", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
+    @Permission(name = "合并物料")
     public ResponseData mirageSku(@RequestBody SkuParam skuParam) {
         this.skuService.mirageSku(skuParam);
         return ResponseData.success();

@@ -1,40 +1,39 @@
-package cn.atsoft.dasheng.task.model.result;
+package cn.atsoft.dasheng.task.model.params;
 
-import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
-import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import lombok.Data;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
-import java.util.Date;
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 等待任务表
+ * 任务详情表
  * </p>
  *
  * @author song
- * @since 2022-04-01
+ * @since 2022-04-26
  */
 @Data
 @ApiModel
-public class AsynTaskResult implements Serializable {
+public class AsynTaskDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private AllBomResult allBomResult;
+    private List<Long> ids;
 
-    private SkuExcelResult skuExcelResult;
+    private String type;
+    /**
+     * 详情id
+     */
+    @ApiModelProperty("详情id")
+    private Long detailId;
 
-    private Integer errorNum;
-
-    private Integer successNum;
-
-    private List<AsynTaskDetailResult> excelDetail;
     /**
      * 任务id
      */
@@ -42,28 +41,10 @@ public class AsynTaskResult implements Serializable {
     private Long taskId;
 
     /**
-     * 总数
+     * json数据
      */
-    @ApiModelProperty("总数")
-    private Integer allCount;
-
-    /**
-     * 当前数
-     */
-    @ApiModelProperty("当前数")
-    private Integer count;
-
-    /**
-     * 类型
-     */
-    @ApiModelProperty("类型")
-    private String type;
-
-    /**
-     * json 内容
-     */
-    @ApiModelProperty("json 内容")
-    private String content;
+    @ApiModelProperty("json数据")
+    private String contentJson;
 
     /**
      * 状态
@@ -106,6 +87,13 @@ public class AsynTaskResult implements Serializable {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

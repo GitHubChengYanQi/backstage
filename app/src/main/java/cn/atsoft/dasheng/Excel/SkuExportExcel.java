@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -16,6 +17,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -42,43 +44,25 @@ public class SkuExportExcel extends BaseController {
     @Autowired
     private SkuService skuService;
 
+    @Autowired
+    private SkuExcelService skuExcelService;
 
     @RequestMapping(value = "/skuExport", method = RequestMethod.GET)
     @ApiOperation("导出")
     public void qrCodetoExcel(HttpServletResponse response, Long type, String url) throws IOException {
-        String title = "基础物料导出单";
+        List<SkuResult> skuResults = skuService.findListBySpec(new SkuParam());
         String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量","规格","物料描述"};
 
 
+
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("物料导出");
+        HSSFSheet hssfSheet = workbook.createSheet("物料导出");
+        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet,skuResults.size());
 
         sheet.setDefaultColumnWidth(30);
 //        sheet.setColumnWidth(7,50);
 
-        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 7);
-        sheet.addMergedRegion(region);
-        HSSFRow titleRow = sheet.createRow(0);
-        HSSFCell ti = titleRow.createCell(0);
-        ti.setCellValue(title);
-        HSSFCellStyle titleStyle = workbook.createCellStyle();
-        titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);
-        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
-
-
-        HSSFFont font = workbook.createFont();
-        font.setFontHeightInPoints((short) 16);
-        font.setBold(true);
-        font.setFontName("宋体");
-        titleStyle.setFont(font);
-        //设置边框样式
-        titleStyle.setBorderBottom(BorderStyle.MEDIUM);
-        titleStyle.setBorderLeft(BorderStyle.MEDIUM);
-        titleStyle.setBorderRight(BorderStyle.MEDIUM);
-        titleStyle.setBorderTop(BorderStyle.MEDIUM);
-        ti.setCellStyle(titleStyle);
 
         HSSFCellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);//上下居中
@@ -91,7 +75,7 @@ public class SkuExportExcel extends BaseController {
         cellStyle.setBorderRight(BorderStyle.MEDIUM);
         cellStyle.setBorderTop(BorderStyle.MEDIUM);
 
-        HSSFRow headRow = sheet.createRow(1);
+        HSSFRow headRow = sheet.createRow(0);
 
         for (int i = 0; i < header.length; i++) {
             //创建一个单元格
@@ -113,11 +97,7 @@ public class SkuExportExcel extends BaseController {
             cell.setCellStyle(headerStyle);
         }
 
-
-        List<SkuResult> skuResults = skuService.findListBySpec(new SkuParam());
-
-
-        int i = 1;
+        int i = 0;
 
         for (SkuResult skuResult : skuResults) {
             i++;
@@ -146,8 +126,8 @@ public class SkuExportExcel extends BaseController {
 
             HSSFRichTextString spuNameStr = ToolUtil.isEmpty(skuResult.getSpuResult()) ? new HSSFRichTextString() : new HSSFRichTextString(skuResult.getSpuResult().getName());
             HSSFRichTextString skuStr = new HSSFRichTextString();
-            if (ToolUtil.isNotEmpty(skuResult.getSpuResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult().getName())) {
-                skuStr = new HSSFRichTextString(skuResult.getSpuResult().getSpuClassificationResult().getName());
+            if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isNotEmpty(skuResult.getSkuName())) {
+                skuStr = new HSSFRichTextString(skuResult.getSkuName());
             }
             HSSFRichTextString unitStr = ToolUtil.isEmpty(skuResult.getSpuResult()) || ToolUtil.isEmpty(skuResult.getSpuResult().getUnitResult())|| ToolUtil.isEmpty(skuResult.getSpuResult().getUnitResult().getUnitName()) ? new HSSFRichTextString(" ") : new HSSFRichTextString(skuResult.getSpuResult().getUnitResult().getUnitName());
             HSSFRichTextString isAllStr = new HSSFRichTextString();

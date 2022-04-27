@@ -149,6 +149,7 @@
                 and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
             </if>
         </if>
+
         <if test="spuIds != null  and spuIds.size > 0 ">
             and goods_sku.spu_id in
             <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
@@ -168,10 +169,6 @@
                 #{state}
             </foreach>
         </if>
-        order by
-        spuName,
-        standard,
-        createTime
     </select>
     <select id="changeCustomPageList" resultType="cn.atsoft.dasheng.erp.model.result.SkuResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
@@ -249,6 +246,12 @@
             <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
                 #{state}
             </foreach>
+        </if>
+        <if test="paramCondition.customerName != null">
+            and goods_sku.sku_id in (
+            SELECT sku_id FROM daoxin_supply WHERE customer_id IN ( SELECT customer_id FROM daoxin_crm_customer
+            WHERE supply = 1 AND display = 1 and  customer_name LIKE CONCAT('%',#{paramCondition.customerName},'%' )
+            ))
         </if>
         order by createTime DESC
     </select>

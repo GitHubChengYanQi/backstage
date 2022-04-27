@@ -83,20 +83,25 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     public OutstockOrder add(OutstockOrderParam param) {
 
 
-        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
-        if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-            Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
-            if (ToolUtil.isNotEmpty(storehouse)) {
-                String replace = "";
-                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
-                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
-                } else {
-                    replace = backCoding.replace("${storehouse}", "");
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", 2).eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
+                if (ToolUtil.isNotEmpty(storehouse)) {
+                    String replace = "";
+                    if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
+                        replace = backCoding.replace("${storehouse}", storehouse.getCoding());
+                    } else {
+                        replace = backCoding.replace("${storehouse}", "");
+                    }
+                    param.setCoding(replace);
                 }
-                param.setCoding(replace);
+            } else {
+                throw new ServiceException(500, "请先设置出库单 默认生成编码的规则");
             }
         }
+
 
         OutstockOrder entity = getEntity(param);
         this.save(entity);
@@ -107,7 +112,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             List<OutstockListing> outstockListings = new ArrayList<>();
             for (ApplyDetails applyDetail : applyDetails) {
                 OutstockListing outstockListing = new OutstockListing();
-                if(ToolUtil.isNotEmpty(applyDetail.getBrandId())){
+                if (ToolUtil.isNotEmpty(applyDetail.getBrandId())) {
                     outstockListing.setBrandId(applyDetail.getBrandId());
                 }
                 outstockListing.setSkuId(applyDetail.getSkuId());
@@ -145,7 +150,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
 
     @Override
-    public void saveOutStockOrderByPickLists(OutstockOrderParam param){
+    public void saveOutStockOrderByPickLists(OutstockOrderParam param) {
 
 
         String encoding = codingRulesService.encoding(2);
@@ -161,7 +166,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             List<OutstockListing> outstockListings = new ArrayList<>();
             for (ApplyDetails applyDetail : applyDetails) {
                 OutstockListing outstockListing = new OutstockListing();
-                if(ToolUtil.isNotEmpty(applyDetail.getBrandId())){
+                if (ToolUtil.isNotEmpty(applyDetail.getBrandId())) {
                     outstockListing.setBrandId(applyDetail.getBrandId());
                 }
                 outstockListing.setSkuId(applyDetail.getSkuId());
@@ -258,7 +263,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
     private void mergePosition(List<Long> positionIds) {
-    
+
     }
 
 

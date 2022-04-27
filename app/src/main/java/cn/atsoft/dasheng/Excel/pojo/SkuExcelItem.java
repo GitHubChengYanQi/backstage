@@ -50,4 +50,10 @@ public class SkuExcelItem {
     private Long errorSkuId;
 
     private SkuResult simpleResult;
+
+    private Long classId;
+
+    private Long unitId;
+
+    private Integer success;
 }

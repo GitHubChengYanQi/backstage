@@ -102,10 +102,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Transactional
     public Customer add(CustomerParam param) {
         //查询数据库是否已有同名客户
-        List<Customer> customerList = this.query().eq("display", 1).eq("customer_name", param.getCustomerName()).list();
+        Integer customerCount = this.query().eq("display", 1).eq("customer_name", param.getCustomerName()).count();
 
         //有同名客户 阻止添加
-        if (!ToolUtil.isEmpty(customerList)) {
+        if (customerCount>0) {
             throw new ServiceException(500, "已有当前客户");
         }
         param.setCustomerId(null);
