@@ -36,6 +36,8 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.service.ProcessRouteService;
+import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
+import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.crypto.SecureUtil;
@@ -88,30 +90,22 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private UserService userService;
     @Autowired
     private SkuBrandBindService skuBrandBindService;
-
     @Autowired
     private StockDetailsService stockDetailsService;
-
     @Autowired
     private MessageProducer messageProducer;
-
-    @Autowired
-    private ProcessRouteService processRouteService;
-
     @Autowired
     private MediaService mediaService;
-
-
     @Autowired
     private BrandService brandService;
-
     @Autowired
     private ActivitiProcessService processService;
-
     @Autowired
     private StepsService stepsService;
     @Autowired
     private SupplyService supplyService;
+    @Autowired
+    private PurchaseListingService purchaseListingService;
 
 
     @Transactional
@@ -984,8 +978,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
 
-        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().select("sku_id,sum(number) as num").in("sku_id", skuIds).groupBy("sku_id").list();
-
+        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().select("sku_id,sum(number) as num").in("sku_id", skuIds).groupBy("sku_id").eq("display", 1).list();
+        List<PurchaseListing> purchaseListings = skuIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().select("sku_id , sum(apply_number) as num").in("sku_id", skuIds).eq("status", 0).eq("display", 1).groupBy("sku_id").list();
 
 //        List<Parts> list1 = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
@@ -1042,9 +1036,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
 
         for (SkuResult skuResult : param) {
+            /**
+             * 库存数量
+             */
             for (StockDetails stockDetail : stockDetails) {
                 if (skuResult.getSkuId().equals(stockDetail.getSkuId())) {
                     skuResult.setStockNumber(Math.toIntExact(stockDetail.getNum()));
+                    break;
+                }
+            }
+            /**
+             * 预购数量
+             */
+            for (PurchaseListing purchaseListing : purchaseListings) {
+                if (skuResult.getSkuId().equals(purchaseListing.getSkuId())) {
+                    skuResult.setPurchaseNumber(Math.toIntExact(purchaseListing.getNum()));
                     break;
                 }
             }
