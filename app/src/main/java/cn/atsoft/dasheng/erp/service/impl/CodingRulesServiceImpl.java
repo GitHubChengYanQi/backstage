@@ -264,7 +264,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         if (backCoding.contains("${spuCoding}")) {
             Spu spu = spuService.getById(spuId);
-            backCoding = backCoding.replace("${spuCoding}", spu.getCoding());
+            backCoding = backCoding.replace("${spuCoding}", ToolUtil.isEmpty(spu.getCoding())? "":spu.getCoding());
         }
         return backCoding;
     }

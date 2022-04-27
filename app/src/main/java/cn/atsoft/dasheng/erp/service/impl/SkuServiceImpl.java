@@ -984,7 +984,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
 
-        List<StockDetails> details = stockDetailsService.query().in("sku_id", skuIds).select("sku_id,sum(number) as num").groupBy("sku_id").list();
+        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().select("sku_id,sum(number) as num").in("sku_id", skuIds).groupBy("sku_id").list();
 
 
 //        List<Parts> list1 = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
@@ -1042,6 +1042,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
 
         for (SkuResult skuResult : param) {
+            for (StockDetails stockDetail : stockDetails) {
+                if (skuResult.getSkuId().equals(stockDetail.getSkuId())) {
+                    skuResult.setStockNumber(Math.toIntExact(stockDetail.getNum()));
+                    break;
+                }
+            }
+
             for (ActivitiProcess process : processes) {
                 if (process.getFormId().equals(skuResult.getSkuId())) {
                     ActivitiProcessResult processResult = new ActivitiProcessResult();
