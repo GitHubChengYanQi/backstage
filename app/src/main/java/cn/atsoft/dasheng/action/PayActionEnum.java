@@ -20,6 +20,12 @@ public enum PayActionEnum implements FormActionInterface {
         public Long getStatus() {
             return null;
         }
+    },
+    refuse {
+        public Long getStatus() {
+            return 50L;
+        }
+
     }
 }
 
