@@ -38,4 +38,5 @@ public interface FormActionInterface {
         documentsStatusService.save(documentsStatus);
 
     }
+    Long getStatus();
 }

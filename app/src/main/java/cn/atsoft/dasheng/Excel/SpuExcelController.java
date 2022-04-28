@@ -59,6 +59,7 @@ public class SpuExcelController {
         reader.addHeaderAlias("产品分类", "spuClass");
         reader.addHeaderAlias("产品名称", "spuName");
         reader.addHeaderAlias("单位", "unit");
+
         List<SpuExcel> spuExcels = reader.readAll(SpuExcel.class);
 
         /**
@@ -66,7 +67,7 @@ public class SpuExcelController {
          */
         excelAsync.spuAdd(spuExcels);
 
-        return ResponseData.success();
+        return ResponseData.success("ok");
     }
 
 

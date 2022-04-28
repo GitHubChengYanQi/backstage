@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.Excel.pojo.PositionBind;
+import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -76,6 +79,12 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
      */
     PageInfo<StorehousePositionsBindResult> findPageBySpec(StorehousePositionsBindParam param);
 
+
+    StorehousePositions getPosition(String name, List<StorehousePositions> positions);
+
+    StorehousePositionsBind judge(PositionBind excel, List<StorehousePositionsBind> positionsBinds);
+
+    Brand judgeBrand(String name, List<Brand> brands);
 
     List<StorehousePositionsResult> sku2position(Long skuId);
 }
