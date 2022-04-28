@@ -6,24 +6,24 @@ import cn.atsoft.dasheng.action.FormActionInterface;
 public enum PayActionEnum implements FormActionInterface {
 
     start {
-        public Long getStatus() {
-            return 0L;
+        public Integer getStatus() {
+            return 0;
         }
     },
     done {
-        public Long getStatus() {
-            return 99L;
+        public Integer getStatus() {
+            return 99;
         }
     },
     pay {
         @Override
-        public Long getStatus() {
+        public Integer getStatus() {
             return null;
         }
     },
     refuse {
-        public Long getStatus() {
-            return 50L;
+        public Integer getStatus() {
+            return 50;
         }
 
     }

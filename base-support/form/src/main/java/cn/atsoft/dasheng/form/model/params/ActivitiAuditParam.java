@@ -36,6 +36,8 @@ public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
 
     private String url;
 
+    private Long documentsStatusId;
+
     /**
      * 步骤Id
      */

@@ -57,10 +57,17 @@ public class ActivitiAudit implements Serializable {
     private AuditRule rule;
 
     /**
+     * 单据动作
+     */
+    @TableField("documents_status_id")
+    private Long documentsStatusId;
+
+    /**
      * 删除状态
      */
     @TableField("display")
     private Integer display;
+
 
     @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
@@ -74,6 +81,13 @@ public class ActivitiAudit implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
+    public Long getDocumentsStatusId() {
+        return documentsStatusId;
+    }
+
+    public void setDocumentsStatusId(Long documentsStatusId) {
+        this.documentsStatusId = documentsStatusId;
+    }
 
     public Long getAuditId() {
         return auditId;

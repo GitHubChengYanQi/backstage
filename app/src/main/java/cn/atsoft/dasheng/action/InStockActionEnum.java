@@ -3,18 +3,18 @@ package cn.atsoft.dasheng.action;
 public enum InStockActionEnum implements FormActionInterface {
 
     start {
-        public Long getStatus() {
-            return 0L;
+        public Integer getStatus() {
+            return 0;
         }
     },
     done {
-        public Long getStatus() {
-            return 99L;
+        public Integer getStatus() {
+            return 99;
         }
     },
     refuse {
-        public Long getStatus() {
-            return 50L;
+        public Integer getStatus() {
+            return 50;
         }
     }
 }

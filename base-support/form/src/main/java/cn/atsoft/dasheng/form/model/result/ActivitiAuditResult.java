@@ -40,6 +40,8 @@ public class ActivitiAuditResult implements Serializable {
     @ApiModelProperty("步骤Id")
     private Long setpsId;
 
+    private Long documentsStatusId;
+
     /**
      * person（指定人），supervisor（主管），optional（自主选择）
      */
