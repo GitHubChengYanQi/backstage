@@ -1,15 +1,22 @@
 package cn.atsoft.dasheng.Excel;
 
+import cn.atsoft.dasheng.Excel.pojo.PositionBind;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelItem;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.Excel.pojo.SpuExcel;
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.pojo.InkindQrcode;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.atsoft.dasheng.task.entity.AsynTask;
@@ -54,9 +61,21 @@ public class ExcelAsync {
     private AsynTaskDetailService asynTaskDetailService;
     @Autowired
     private CodingRulesService codingRulesService;
+    @Autowired
+    private StorehousePositionsBindService bindService;
+    @Autowired
+    private StorehousePositionsService positionsService;
+    @Autowired
+    private StockDetailsService detailsService;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private OrCodeService codeService;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
 
 
-    protected static final Logger logger = LoggerFactory.getLogger(SkuExcelController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ExcelAsync.class);
 
 
     @Async
@@ -321,11 +340,13 @@ public class ExcelAsync {
         List<Spu> spuList = spuService.query().eq("display", 1).list();
         List<Category> categoryList = categoryService.query().eq("display", 1).list();
         List<SpuClassification> spuClassList = classificationService.query().eq("display", 1).list();
+        List<Unit> units = unitService.query().eq("display", 1).list();
+
 
         AsynTask asynTask = new AsynTask();
         asynTask.setType("产品导入");
         asynTask.setStatus(0);
-        asynTask.setAllCount(spuClassList.size());
+        asynTask.setAllCount(spuExcels.size());
 
         taskService.save(asynTask);
 
@@ -345,6 +366,7 @@ public class ExcelAsync {
             spuExcel.setLine(i + "");
             try {
                 Spu newSpu = new Spu();
+                newSpu.setCoding(spuExcel.getSpuCoding());
                 Long classId = null;
                 for (SpuClassification spuClassification : spuClassList) {
                     if (spuClassification.getName().equals(spuExcel.getSpuClass())) {
@@ -357,8 +379,13 @@ public class ExcelAsync {
                 }
 
                 for (Spu spu : spuList) {
-                    if (spu.getCoding().equals(spuExcel.getSpuCoding())) {
+                    if (ToolUtil.isNotEmpty(spu.getCoding()) && spu.getCoding().equals(spuExcel.getSpuCoding())) {
                         throw new ServiceException(500, "产品编码已存在");
+                    }
+                }
+                for (Spu spu : spuList) {
+                    if (spuExcel.getSpuName().equals(spu.getName())&&spu.getSpuClassificationId().equals(classId)) {
+                        throw new ServiceException(500, "产品名称已存在");
                     }
                 }
                 //------------------------------------------------------------------------------
@@ -369,6 +396,19 @@ public class ExcelAsync {
                         break;
                     }
                 }
+                for (Unit unit : units) {
+                    if (unit.getUnitName().equals(spuExcel.getUnit())) {
+                        newSpu.setUnitId(unit.getUnitId());
+                        break;
+                    }
+                }
+                if (ToolUtil.isEmpty(newSpu.getUnitId())) {
+                    Unit unit = new Unit();
+                    unit.setUnitName(spuExcel.getUnit());
+                    unitService.save(unit);
+                    newSpu.setUnitId(unit.getUnitId());
+                }
+
                 if (ToolUtil.isEmpty(cate)) {
                     cate = new Category();
                     cate.setCategoryName(spuExcel.getSpuName());
@@ -394,4 +434,124 @@ public class ExcelAsync {
         asynTask.setStatus(99);
         taskService.updateById(asynTask);
     }
+
+
+    @Async
+    public void positionAdd(List<PositionBind> excels) {
+
+        List<String> strands = new ArrayList<>();
+
+        for (PositionBind excel : excels) {
+            strands.add(excel.getStrand());
+        }
+        List<Sku> skuList = skuService.query().in("standard", strands).list();
+        List<StorehousePositionsBind> positionsBinds = bindService.query().eq("display", 1).list();
+        List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
+        List<Brand> brands = brandService.list();
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+
+
+        AsynTask asynTask = new AsynTask();
+        asynTask.setType("库存导入");
+        asynTask.setStatus(0);
+        asynTask.setAllCount(excels.size());
+        taskService.save(asynTask);
+
+        int i = 0;
+
+        List<AsynTaskDetail> asynTaskDetails = new ArrayList<>();
+        for (PositionBind excel : excels) {
+            i++;
+            AsynTaskDetail asynTaskDetail = new AsynTaskDetail();
+            asynTaskDetail.setTaskId(asynTask.getTaskId());
+            asynTaskDetail.setType("库存导入");
+
+            asynTask.setCount(i);
+            taskService.updateById(asynTask);
+            try {
+                excel.setLine(i);
+                //物料---------------------------------------------------------
+                for (Sku sku : skuList) {
+                    if (sku.getStandard().equals(excel.getStrand())) {
+                        excel.setSkuId(sku.getSkuId());
+                        break;
+                    }
+                }
+                if (ToolUtil.isEmpty(excel.getSkuId())) {
+                    throw new ServiceException(500, "当前物料不存在");
+                }
+                //  品牌-------------------------------------------------------------
+                if (ToolUtil.isEmpty(excel.getBrand())) {
+                    throw new ServiceException(500, "缺少品牌");
+                }
+                Brand brand = null;
+                brand = positionsBindService.judgeBrand(excel.getBrand(), brands);
+                if (ToolUtil.isEmpty(brand)) {
+                    brand = new Brand();
+                    brand.setBrandName(excel.getBrand());
+                }
+                //上级库位-------------------------------------------------------------
+                StorehousePositions supper = positionsBindService.getPosition(excel.getSupperPosition(), positions);
+                if (ToolUtil.isEmpty(supper)) {
+                    throw new ServiceException(500, "没有上级库位");
+                }
+                if (ToolUtil.isEmpty(excel.getPosition())) {
+                    excel.setPositionId(supper.getStorehousePositionsId());
+                } else {
+                    StorehousePositions position = positionsBindService.getPosition(excel.getPosition(), positions);    //库位
+                    if (ToolUtil.isEmpty(position)) {
+                        StorehousePositions end = new StorehousePositions();
+                        end.setName(excel.getPosition());
+                        end.setPid(supper.getStorehousePositionsId());
+                        end.setStorehouseId(supper.getStorehouseId());
+                        positionsService.save(end);
+                        positions.add(end);
+                        excel.setPositionId(end.getStorehousePositionsId());
+                    } else {
+                        excel.setPositionId(position.getStorehousePositionsId());
+                    }
+                }
+
+                StorehousePositionsBind positionBind = positionsBindService.judge(excel, positionsBinds);
+                if (ToolUtil.isEmpty(positionBind)) {
+                    positionBind = new StorehousePositionsBind();
+                    positionBind.setSkuId(excel.getSkuId());
+                    positionBind.setPositionId(excel.getPositionId());
+                    bindService.save(positionBind);
+                    positionsBinds.add(positionBind);
+                }
+
+                if (ToolUtil.isNotEmpty(excel.getStockNumber()) && excel.getStockNumber() > 0) {
+                    //库存
+                    InkindQrcode inkindQrcode = codeService.ExcelBind(excel.getSkuId(), Long.valueOf(excel.getStockNumber()), brand.getBrandId());
+                    StockDetails stockDetails = new StockDetails();
+                    stockDetails.setSkuId(excel.getSkuId());
+                    stockDetails.setNumber(Long.valueOf(excel.getStockNumber()));
+                    stockDetails.setBrandId(brand.getBrandId());
+                    stockDetails.setStorehouseId(supper.getStorehouseId());
+                    stockDetails.setStorehousePositionsId(excel.getPositionId());
+                    stockDetails.setInkindId(inkindQrcode.getInkindId());
+                    stockDetails.setQrCodeId(inkindQrcode.getQrCodeId());
+                    stockDetailsList.add(stockDetails);
+                }
+
+                asynTaskDetail.setStatus(99);
+            } catch (Exception e) {
+                logger.error(excel.getLine() + "------->" + e);
+                excel.setError(e.getMessage());
+                asynTaskDetail.setStatus(50);
+            } finally {
+                asynTaskDetail.setContentJson(JSON.toJSONString(excel));
+                asynTaskDetails.add(asynTaskDetail);
+            }
+        }
+
+        asynTask.setStatus(99);
+        taskService.updateById(asynTask);
+
+        detailsService.saveBatch(stockDetailsList);
+        asynTaskDetailService.saveBatch(asynTaskDetails);
+    }
+
+
 }

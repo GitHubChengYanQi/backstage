@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.task.model.result;
 
+import cn.atsoft.dasheng.Excel.pojo.PositionBind;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelItem;
+import cn.atsoft.dasheng.Excel.pojo.SpuExcel;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,6 +28,10 @@ public class AsynTaskDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private SkuExcelItem skuExcelItem;
+
+    private SpuExcel spuExcel;
+
+    private PositionBind positionBind;
 
     private String type;
     /**

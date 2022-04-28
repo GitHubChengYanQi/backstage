@@ -16,7 +16,10 @@ public enum PayActionEnum implements FormActionInterface {
         }
     },
     pay {
-
+        @Override
+        public Long getStatus() {
+            return null;
+        }
     }
 }
 
