@@ -60,6 +60,7 @@ public class AsynTaskController extends BaseController {
                 break;
             case "物料导入":
             case "产品导入":
+            case "库存导入":
                 Map<String, Integer> num = detailService.getNum(result.getTaskId());
                 result.setSuccessNum(num.get("successNum"));
                 result.setErrorNum(num.get("errorNum"));
