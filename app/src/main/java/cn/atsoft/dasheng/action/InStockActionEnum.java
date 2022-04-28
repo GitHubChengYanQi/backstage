@@ -11,7 +11,6 @@ public enum InStockActionEnum   implements FormActionInterface{
         public Long getStatus() {
             return 99L;
         }
-    }
-
+    };
 
 }

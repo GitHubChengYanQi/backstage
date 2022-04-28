@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.Excel.pojo.PositionBind;
+import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
@@ -393,6 +395,61 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         return PageFactory.createPageInfo(page);
     }
 
+
+
+    /**
+     * 比对库位
+     */
+    @Override
+    public StorehousePositions getPosition(String name, List<StorehousePositions> positions) {
+        if (ToolUtil.isEmpty(name)) {
+            return null;
+        }
+
+        for (StorehousePositions position : positions) {
+            if (position.getName().equals(name)) {
+                return position;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 判断是否重复绑定
+     *
+     * @param excel
+     * @param positionsBinds
+     * @return
+     */
+    @Override
+    public StorehousePositionsBind judge(PositionBind excel, List<StorehousePositionsBind> positionsBinds) {
+
+        for (StorehousePositionsBind positionsBind : positionsBinds) {
+            if (positionsBind.getSkuId().equals(excel.getSkuId()) && positionsBind.getPositionId().equals(excel.getPositionId())) {
+                return positionsBind;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 对比品牌
+     *
+     * @param name
+     * @param brands
+     * @return
+     */
+    @Override
+    public Brand judgeBrand(String name, List<Brand> brands) {
+
+        for (Brand brand : brands) {
+            if (brand.getBrandName().equals(name)) {
+                return brand;
+            }
+        }
+        return null;
+    }
     public void format(List<StorehousePositionsBindResult> param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();

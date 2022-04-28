@@ -24,15 +24,22 @@ import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,22 +49,14 @@ import java.util.List;
 @RequestMapping("/Excel")
 @Slf4j
 public class PositionBindExcel {
-    @Autowired
-    private StorehousePositionsBindService bindService;
-    @Autowired
-    private StorehousePositionsService positionsService;
-    @Autowired
-    private SkuService skuService;
-    @Autowired
-    private StockDetailsService detailsService;
-    @Autowired
-    private InkindService inkindService;
-    @Autowired
-    private OrCodeService codeService;
-    @Autowired
-    private BrandService brandService;
+
     @Autowired
     private FileInfoService fileInfoService;
+    @Autowired
+    private ExcelAsync excelAsync;
+    @Autowired
+    private SkuExcelService skuExcelService;
+
     protected static final Logger logger = LoggerFactory.getLogger(SkuExcelController.class);
 
     @RequestMapping("/importPositionBind")
@@ -77,155 +76,69 @@ public class PositionBindExcel {
         reader.addHeaderAlias("上级库位", "supperPosition");
         reader.addHeaderAlias("品牌", "brand");
 
-        List<String> strands = new ArrayList<>();
 
         List<PositionBind> excels = reader.readAll(PositionBind.class);
-        List<PositionBind> errorList = new ArrayList<>();
-        List<PositionBind> successList = new ArrayList<>();
-        for (PositionBind excel : excels) {
-            strands.add(excel.getStrand());
-        }
-        List<Sku> skuList = skuService.query().in("standard", strands).list();
-        List<StorehousePositionsBind> positionsBinds = bindService.query().eq("display", 1).list();
-        List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
-        List<Brand> brands = brandService.list();
-        List<StockDetails> stockDetailsList = new ArrayList<>();
+        /**
+         * 调用异步
+         */
+        excelAsync.positionAdd(excels);
 
-        int i = 0;
-
-        for (PositionBind excel : excels) {
-            i++;
-            try {
-                excel.setLine(i);
-                //物料---------------------------------------------------------
-                for (Sku sku : skuList) {
-                    if (sku.getStandard().equals(excel.getStrand())) {
-                        excel.setSkuId(sku.getSkuId());
-                        break;
-                    }
-                }
-                if (ToolUtil.isEmpty(excel.getSkuId())) {
-                    throw new ServiceException(500, "当前物料不存在");
-                }
-                //  品牌-------------------------------------------------------------
-                if (ToolUtil.isEmpty(excel.getBrand())) {
-                    throw new ServiceException(500, "缺少品牌");
-                }
-                Brand brand = null;
-                brand = judgeBrand(excel.getBrand(), brands);
-                if (ToolUtil.isEmpty(brand)) {
-                    brand = new Brand();
-                    brand.setBrandName(excel.getBrand());
-                }
-                //上级库位-------------------------------------------------------------
-                StorehousePositions supper = getPosition(excel.getSupperPosition(), positions);
-                if (ToolUtil.isEmpty(supper)) {
-                    throw new ServiceException(500, "没有上级库位");
-                }
-                if (ToolUtil.isEmpty(excel.getPosition())) {
-                    excel.setPositionId(supper.getStorehousePositionsId());
-                } else {
-                    StorehousePositions position = getPosition(excel.getPosition(), positions);    //库位
-                    if (ToolUtil.isEmpty(position)) {
-                        StorehousePositions end = new StorehousePositions();
-                        end.setName(excel.getPosition());
-                        end.setPid(supper.getStorehousePositionsId());
-                        end.setStorehouseId(supper.getStorehouseId());
-                        positionsService.save(end);
-                        positions.add(end);
-                        excel.setPositionId(end.getStorehousePositionsId());
-                    } else {
-                        excel.setPositionId(position.getStorehousePositionsId());
-                    }
-                }
-
-                StorehousePositionsBind positionBind = judge(excel, positionsBinds);
-                if (ToolUtil.isEmpty(positionBind)) {
-                    positionBind = new StorehousePositionsBind();
-                    positionBind.setSkuId(excel.getSkuId());
-                    positionBind.setPositionId(excel.getPositionId());
-                    bindService.save(positionBind);
-                    positionsBinds.add(positionBind);
-                }
-
-                if (ToolUtil.isNotEmpty(excel.getStockNumber()) && excel.getStockNumber() > 0) {
-                    //库存
-                    InkindQrcode inkindQrcode = codeService.ExcelBind(excel.getSkuId(), Long.valueOf(excel.getStockNumber()), brand.getBrandId());
-                    StockDetails stockDetails = new StockDetails();
-                    stockDetails.setSkuId(excel.getSkuId());
-                    stockDetails.setNumber(Long.valueOf(excel.getStockNumber()));
-                    stockDetails.setBrandId(brand.getBrandId());
-                    stockDetails.setStorehouseId(supper.getStorehouseId());
-                    stockDetails.setStorehousePositionsId(excel.getPositionId());
-                    stockDetails.setInkindId(inkindQrcode.getInkindId());
-                    stockDetails.setQrCodeId(inkindQrcode.getQrCodeId());
-                    stockDetailsList.add(stockDetails);
-                }
-                successList.add(excel);
-            } catch (Exception e) {
-                logger.error(excel.getLine() + "------->" + e);
-                excel.setError(e.getMessage());
-                errorList.add(excel);
-            }
-        }
-
-        detailsService.saveBatch(stockDetailsList);
-
-
-        return ResponseData.success(new ExcelPositionResult() {{
-            setErrorList(errorList);
-            setSuccessList(successList);
-        }});
+        return ResponseData.success("ok");
     }
 
-    /**
-     * 比对库位
-     */
-    private StorehousePositions getPosition(String name, List<StorehousePositions> positions) {
-        if (ToolUtil.isEmpty(name)) {
-            return null;
+    @RequestMapping(value = "/positionTemp", method = RequestMethod.GET)
+    public void spuTemp(HttpServletResponse response) {
+
+        String[] header = {"物料编码", "分类", "产品", "型号","库存余额","上级库位","库位","品牌"};
+
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet hssfSheet = workbook.createSheet("库位绑定模板");
+        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet, 300);
+        HSSFRow titleRow = sheet.createRow(0);
+        HSSFCell ti = titleRow.createCell(0);
+
+        HSSFCellStyle titleStyle = workbook.createCellStyle();
+        titleStyle.setFillForegroundColor((short) 10);
+
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        ti.setCellStyle(titleStyle);
+
+        HSSFRow headRow = sheet.createRow(0);
+
+        for (int i = 0; i < header.length; i++) {
+
+            //创建一个单元格
+            HSSFCell cell = headRow.createCell(i);
+
+            //创建一个内容对象
+            HSSFRichTextString text = new HSSFRichTextString(header[i]);
+
+
+            HSSFCellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            //将内容对象的文字内容写入到单元格中
+            cell.setCellValue(text);
+            cell.setCellStyle(headerStyle);
+        }
+        //准备将Excel的输出流通过response输出到页面下载
+        //八进制输出流
+        response.setContentType("application/octet-stream");
+
+        //这后面可以设置导出Excel的名称
+        response.setHeader("Content-disposition", "attachment;filename=PositionTemp.xls");
+
+
+        try {
+            //刷新缓冲
+            response.flushBuffer();
+            //workbook将Excel写入到response的输出流中，供页面下载
+            workbook.write(response.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        for (StorehousePositions position : positions) {
-            if (position.getName().equals(name)) {
-                return position;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 判断是否重复绑定
-     *
-     * @param excel
-     * @param positionsBinds
-     * @return
-     */
-    private StorehousePositionsBind judge(PositionBind excel, List<StorehousePositionsBind> positionsBinds) {
-
-        for (StorehousePositionsBind positionsBind : positionsBinds) {
-            if (positionsBind.getSkuId().equals(excel.getSkuId()) && positionsBind.getPositionId().equals(excel.getPositionId())) {
-                return positionsBind;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * 对比品牌
-     *
-     * @param name
-     * @param brands
-     * @return
-     */
-    private Brand judgeBrand(String name, List<Brand> brands) {
-
-        for (Brand brand : brands) {
-            if (brand.getBrandName().equals(name)) {
-                return brand;
-            }
-        }
-        return null;
     }
 }
