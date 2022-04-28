@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.crm.model.result;
+package cn.atsoft.dasheng.form.model.result;
 
 import lombok.Data;
 import java.util.Date;
@@ -12,7 +12,7 @@ import java.util.List;
  * </p>
  *
  * @author song
- * @since 2022-04-23
+ * @since 2022-04-28
  */
 @Data
 @ApiModel

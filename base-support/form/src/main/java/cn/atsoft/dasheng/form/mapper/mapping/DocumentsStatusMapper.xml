@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.crm.mapper.DocumentsStatusMapper">
+<mapper namespace="cn.atsoft.dasheng.form.mapper.DocumentsStatusMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.DocumentsStatus">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.DocumentsStatus">
         <id column="documents_status_id" property="documentsStatusId" />
         <result column="action" property="action" />
         <result column="form_status" property="formStatus" />
@@ -21,7 +21,7 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.DocumentsStatusResult" parameterType="cn.atsoft.dasheng.crm.model.params.DocumentsStatusParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.DocumentsStatusResult" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsStatusParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_documents_status where 1 = 1
@@ -31,7 +31,7 @@
             <if test="paramCondition.action != null and paramCondition.action != ''">
                 and action like CONCAT('%',#{paramCondition.action},'%')
             </if>
-            <if test="paramCondition.formStatus != null and paramCondition.formStatus != ''">
+            <if test="paramCondition.formStatus != null">
                 and form_status like CONCAT('%',#{paramCondition.formStatus},'%')
             </if>
             <if test="paramCondition.formType != null and paramCondition.formType != ''">
@@ -54,7 +54,7 @@
             </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.DocumentsStatusParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsStatusParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_documents_status where 1 = 1
@@ -64,7 +64,7 @@
                 <if test="paramCondition.action != null and paramCondition.action != ''">
                         and action like CONCAT('%',#{paramCondition.action},'%')
                 </if>
-                <if test="paramCondition.formStatus != null and paramCondition.formStatus != ''">
+                <if test="paramCondition.formStatus != null">
                         and form_status like CONCAT('%',#{paramCondition.formStatus},'%')
                 </if>
                 <if test="paramCondition.formType != null and paramCondition.formType != ''">
@@ -87,7 +87,7 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.DocumentsStatusResult" parameterType="cn.atsoft.dasheng.crm.model.params.DocumentsStatusParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.DocumentsStatusResult" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsStatusParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_documents_status where 1 = 1
@@ -97,7 +97,7 @@
                 <if test="paramCondition.action != null and paramCondition.action != ''">
                         and action like CONCAT('%',#{paramCondition.action},'%')
                 </if>
-                <if test="paramCondition.formStatus != null and paramCondition.formStatus != ''">
+                <if test="paramCondition.formStatus != null">
                         and form_status like CONCAT('%',#{paramCondition.formStatus},'%')
                 </if>
                 <if test="paramCondition.formType != null and paramCondition.formType != ''">
@@ -120,7 +120,7 @@
                 </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.DocumentsStatusParam">
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsStatusParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_documents_status where 1 = 1
@@ -130,7 +130,7 @@
                 <if test="paramCondition.action != null and paramCondition.action != ''">
                         and action like CONCAT('%',#{paramCondition.action},'%')
                 </if>
-                <if test="paramCondition.formStatus != null and paramCondition.formStatus != ''">
+                <if test="paramCondition.formStatus != null">
                         and form_status like CONCAT('%',#{paramCondition.formStatus},'%')
                 </if>
                 <if test="paramCondition.formType != null and paramCondition.formType != ''">

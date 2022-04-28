@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.crm.entity;
+package cn.atsoft.dasheng.form.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -6,8 +6,6 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.models.auth.In;
-
 import java.io.Serializable;
 
 /**
@@ -16,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author song
- * @since 2022-04-23
+ * @since 2022-04-28
  */
 @TableName("daoxin_documents_status")
 public class DocumentsStatus implements Serializable {

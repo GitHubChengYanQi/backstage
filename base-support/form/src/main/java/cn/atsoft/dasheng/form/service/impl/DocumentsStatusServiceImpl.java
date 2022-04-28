@@ -1,13 +1,13 @@
-package cn.atsoft.dasheng.crm.service.impl;
+package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.crm.entity.DocumentsStatus;
-import cn.atsoft.dasheng.crm.mapper.DocumentsStatusMapper;
-import cn.atsoft.dasheng.crm.model.params.DocumentsStatusParam;
-import cn.atsoft.dasheng.crm.model.result.DocumentsStatusResult;
-import  cn.atsoft.dasheng.crm.service.DocumentsStatusService;
+import cn.atsoft.dasheng.form.entity.DocumentsStatus;
+import cn.atsoft.dasheng.form.mapper.DocumentsStatusMapper;
+import cn.atsoft.dasheng.form.model.params.DocumentsStatusParam;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
+import  cn.atsoft.dasheng.form.service.DocumentsStatusService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,7 +23,7 @@ import java.util.List;
  * </p>
  *
  * @author song
- * @since 2022-04-23
+ * @since 2022-04-28
  */
 @Service
 public class DocumentsStatusServiceImpl extends ServiceImpl<DocumentsStatusMapper, DocumentsStatus> implements DocumentsStatusService {

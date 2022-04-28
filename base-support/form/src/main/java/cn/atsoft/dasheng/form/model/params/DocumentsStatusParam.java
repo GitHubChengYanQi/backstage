@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.crm.model.params;
+package cn.atsoft.dasheng.form.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -16,7 +16,7 @@ import java.util.List;
  * </p>
  *
  * @author song
- * @since 2022-04-23
+ * @since 2022-04-28
  */
 @Data
 @ApiModel

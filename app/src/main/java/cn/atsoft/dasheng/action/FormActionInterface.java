@@ -1,16 +1,10 @@
 package cn.atsoft.dasheng.action;
 
 
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
-import cn.atsoft.dasheng.crm.entity.DocumentsStatus;
-import cn.atsoft.dasheng.crm.service.DocumentsStatusService;
-import io.swagger.models.auth.In;
-import org.springframework.beans.factory.annotation.Autowired;
+import cn.atsoft.dasheng.form.entity.DocumentsStatus;
+import cn.atsoft.dasheng.form.service.DocumentsStatusService;
 
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 
 public interface FormActionInterface {
 
