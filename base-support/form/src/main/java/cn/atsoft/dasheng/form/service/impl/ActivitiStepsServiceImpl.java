@@ -232,6 +232,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case route:
                 break;
         }
+        activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
         activitiAudit.setType(String.valueOf(auditType));
         auditService.save(activitiAudit);
     }

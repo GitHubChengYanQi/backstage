@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.action.Controller;
 
-import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
-import cn.atsoft.dasheng.action.Enum.PurchaseActionEnum;
+import cn.atsoft.dasheng.action.Enum.*;
 import cn.atsoft.dasheng.action.model.param.ActionParam;
 import cn.atsoft.dasheng.action.model.param.AddAction;
 import cn.atsoft.dasheng.action.model.param.StatusParam;
@@ -39,7 +38,7 @@ public class ActionController {
      * @author song
      * @Date 2022-04-28
      */
-    @RequestMapping(value = "/addPurchaseAction", method = RequestMethod.POST)
+    @RequestMapping(value = "/addAction", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody @Valid AddAction param) {
 
@@ -47,12 +46,13 @@ public class ActionController {
         if (ToolUtil.isEmpty(param.getOrderEnum())) {
             throw new ServiceException(500, "请填写单据类型");
         }
+        for (AddAction.Action action : param.getActions()) {    // 删除之前老动作 重新添加新动作
+            documentsActionService.removeAll(action.getStatusId());
+        }
+
         switch (param.getOrderEnum()) {
             case purchaseAsk:
                 for (AddAction.Action action : actions) {
-                    documentsActionService.remove(new QueryWrapper<DocumentsAction>() {{
-                        eq("documents_status_id", action.getStatusId());
-                    }});
                     int i = 0;
                     for (PurchaseActionEnum purchaseActionEnum : action.purchaseActionEnums) {
                         purchaseActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
@@ -62,9 +62,6 @@ public class ActionController {
                 break;
             case instockAsk:
                 for (AddAction.Action action : actions) {
-                    documentsActionService.remove(new QueryWrapper<DocumentsAction>() {{
-                        eq("documents_status_id", action.getStatusId());
-                    }});
                     int i = 0;
                     for (InStockActionEnum inStockActionEnum : action.inStockActionEnums) {
                         inStockActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
@@ -73,25 +70,61 @@ public class ActionController {
                 }
                 break;
             case productionQuality:
-
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (ProductionQualityActionEnum productionQualityActionEnum : action.productionQualityActionEnums) {
+                        productionQualityActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
+                        i++;
+                    }
+                }
                 break;
             case instockError:
-
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (InStockActionEnum inStockActionEnum : action.getInStockActionEnums()) {
+                        inStockActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
+                        i++;
+                    }
+                }
                 break;
             case inQuality:
-
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (InQualityActionEnum inQualityActionEnum : action.getInQualityActionEnums()) {
+                        inQualityActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
+                        i++;
+                    }
+                }
                 break;
             case outstock:
-
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (OutStockActionEnum outStockActionEnum : action.outStockActionEnums) {
+                        outStockActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
+                        i++;
+                    }
+                }
                 break;
             case payAsk:
 
                 break;
             case SO:
-
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (SoOrderActionEnum soOrderActionEnum : action.soOrderActionEnums) {
+                        soOrderActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
+                        i++;
+                    }
+                }
                 break;
             case PO:
-
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (PoOrderActionEnum poOrderActionEnum : action.getPoOrderActionEnums()) {
+                        poOrderActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
+                        i++;
+                    }
+                }
                 break;
         }
 

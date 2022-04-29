@@ -12,6 +12,7 @@ public class AddAction {
 
     public List<Action> actions;
 
+    @NotNull
     public OrderEnum orderEnum;
 
     @Data
@@ -30,6 +31,8 @@ public class AddAction {
         public List<SoOrderActionEnum> soOrderActionEnums;
 
         public List<ProductionQualityActionEnum> productionQualityActionEnums;
+
+        public List<OutStockActionEnum> outStockActionEnums;
 
     }
 }

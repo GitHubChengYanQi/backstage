@@ -26,6 +26,8 @@ public interface DocumentsActionService extends IService<DocumentsAction> {
      */
     void add(DocumentsActionParam param);
 
+    void removeAll(Long statusId);
+
     /**
      * 删除
      *

@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.form.model.result.DocumentsActionResult;
 import cn.atsoft.dasheng.form.service.DocumentsActionService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,6 +38,14 @@ public class DocumentsActionServiceImpl extends ServiceImpl<DocumentsActionMappe
     }
 
     @Override
+    public void removeAll(Long statusId) {
+        this.remove(new QueryWrapper<DocumentsAction>() {{
+            eq("documents_status_id", statusId);
+        }});
+    }
+
+
+    @Override
     public void delete(DocumentsActionParam param) {
         this.removeById(getKey(param));
     }
@@ -50,12 +59,12 @@ public class DocumentsActionServiceImpl extends ServiceImpl<DocumentsActionMappe
     }
 
     @Override
-    public List<DocumentsActionResult> getList(Long statusId,String fromType) {
+    public List<DocumentsActionResult> getList(Long statusId, String fromType) {
         if (ToolUtil.isEmpty(statusId)) {
             return new ArrayList<>();
         }
         List<DocumentsAction> documentsActions = this.query().eq("documents_status_id", statusId)
-                .eq("form_type",fromType)
+                .eq("form_type", fromType)
                 .orderByAsc("sort").list();
         return BeanUtil.copyToList(documentsActions, DocumentsActionResult.class);
     }

@@ -2,8 +2,7 @@ package cn.atsoft.dasheng.action.Enum;
 
 import cn.atsoft.dasheng.action.service.FormActionInterface;
 
-public enum ProductionQualityActionEnum implements FormActionInterface {
-
+public enum OutStockActionEnum  implements FormActionInterface {
     start {
         public Long getStatus() {
             return 0L;
@@ -18,5 +17,6 @@ public enum ProductionQualityActionEnum implements FormActionInterface {
         public Long getStatus() {
             return 50L;
         }
-    },
+    }
+    ,
 }
