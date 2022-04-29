@@ -196,46 +196,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
 
             Sku entity = getEntity(param);
-//            List<AttributeValues> list = new ArrayList<>();
-//            AttributeValues attributeValue = new AttributeValues();
-//            attributeValue.setAttributeId(itemAttributeId);
-//            attributeValue.setAttributeValuesId(attributeValuesId);
-//            list.add(attributeValue);
+
             list.sort(Comparator.comparing(AttributeValues::getAttributeId));
             String json = JSON.toJSONString(list);
 
             entity.setSpuId(spuId);
             entity.setSkuValue(json);
-//            entity.setSkuValue(spuId + "," + json);
+
             String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassificationId);
-//            String oldMd51 = SecureUtil.md5(entity.getSkuValue());
-//            String oldMd52 = SecureUtil.md5(spuId + entity.getSkuValue());
+
 
             entity.setSkuValueMd5(md5);
-//            if (ToolUtil.isNotEmpty(codingRules)) {
-//                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
-//                if (skuCount > 0) {
-//                    throw new ServiceException(500, "该物料已经存在");
-//                }
-//            }
-//
-            /**
-             * //TODO 原 SKU防重复判断
-             *
-             * List<Sku> sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).list();
-             * List<Sku> oldsku1 = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, oldMd51).and(i -> i.eq(Sku::getDisplay, 1)).list();
-             * List<Sku> oldsku2 = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, oldMd52).and(i -> i.eq(Sku::getDisplay, 1)).list();
-             * Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
-             *  if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(oldsku1) || ToolUtil.isNotEmpty(oldsku2)) {
-             *    throw new ServiceException(500, "此物料在产品中已存在");
-             *} else {
-             *    this.save(entity);
-             *}
-             *
-             *  ↓为新sku防止重复判断  以名称加型号 做数据库比对判断
-             */
+
 
             this.save(entity);
+            skuId = entity.getSkuId();
             ToolUtil.copyProperties(entity, result);
             /**
              * 绑定品牌（多个）
@@ -304,6 +279,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //                    throw new ServiceException(500, "此物料在产品中已存在");
 //                } else {
                 this.save(entity);
+                skuId = entity.getSkuId();
                 ToolUtil.copyProperties(entity, result);
                 /**
                  * 绑定品牌（多个）
