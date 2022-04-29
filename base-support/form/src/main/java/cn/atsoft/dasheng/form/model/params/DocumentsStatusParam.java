@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -30,6 +31,9 @@ public class DocumentsStatusParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("通用单据状态id")
     private Long documentsStatusId;
+
+
+    private String name;
 
     /**
      * 动作

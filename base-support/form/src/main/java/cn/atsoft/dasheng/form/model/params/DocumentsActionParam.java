@@ -1,18 +1,20 @@
-package cn.atsoft.dasheng.form.model.result;
+package cn.atsoft.dasheng.form.model.params;
 
 import lombok.Data;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
-import java.util.Date;
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 单据状态
+ * 单据动作
  * </p>
  *
  * @author song
@@ -20,18 +22,23 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DocumentsStatusResult implements Serializable {
+public class DocumentsActionParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<DocumentsActionResult> actionResults;
-    /**
-     * 通用单据状态id
-     */
-    @ApiModelProperty("通用单据状态id")
-    private Long documentsStatusId;
 
-    private String name;
+    /**
+     * 单据动作
+     */
+    @ApiModelProperty("单据动作")
+    private Long documentsActionId;
+
+    /**
+     * 单据状态id
+     */
+    @NotNull
+    @ApiModelProperty("单据状态id")
+    private Long documentsStatusId;
 
     /**
      * 动作
@@ -40,16 +47,10 @@ public class DocumentsStatusResult implements Serializable {
     private String action;
 
     /**
-     * 表单状态
+     * 排序
      */
-    @ApiModelProperty("表单状态")
-    private Integer formStatus;
-
-    /**
-     * 表单类型
-     */
-    @ApiModelProperty("表单类型")
-    private String formType;
+    @ApiModelProperty("排序")
+    private Integer sort;
 
     /**
      * 创建者
@@ -80,6 +81,13 @@ public class DocumentsStatusResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

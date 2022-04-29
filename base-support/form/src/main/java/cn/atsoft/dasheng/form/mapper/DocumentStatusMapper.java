@@ -19,7 +19,7 @@ import java.util.Map;
  * @author song
  * @since 2022-04-28
  */
-public interface DocumentsStatusMapper extends BaseMapper<DocumentsStatus> {
+public interface DocumentStatusMapper extends BaseMapper<DocumentsStatus> {
 
     /**
      * 获取列表

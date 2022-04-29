@@ -16,7 +16,7 @@ import java.util.List;
  * @author song
  * @since 2022-04-28
  */
-public interface DocumentsStatusService extends IService<DocumentsStatus> {
+public interface DocumentStatusService extends IService<DocumentsStatus> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface DocumentsStatusService extends IService<DocumentsStatus> {
      * @author song
      * @Date 2022-04-28
      */
-    void add(DocumentsStatusParam param);
+    Long add(DocumentsStatusParam param);
 
     /**
      * 删除
@@ -41,6 +41,8 @@ public interface DocumentsStatusService extends IService<DocumentsStatus> {
      * @Date 2022-04-28
      */
     void update(DocumentsStatusParam param);
+
+    List<DocumentsStatusResult> detail(String formType);
 
     /**
      * 查询单条数据，Specification模式

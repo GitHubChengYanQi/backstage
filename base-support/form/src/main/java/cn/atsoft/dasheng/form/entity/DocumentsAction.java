@@ -13,34 +13,44 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 单据状态
+ * 单据动作
  * </p>
  *
  * @author song
  * @since 2022-04-28
  */
-@TableName("daoxin_documents_status")
-public class DocumentsStatus implements Serializable {
+@TableName("daoxin_documents_action")
+public class DocumentsAction implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 通用单据状态id
+     * 单据动作
      */
-    @TableId(value = "documents_status_id", type = IdType.ID_WORKER)
+    @TableId(value = "documents_action_id", type = IdType.ID_WORKER)
+    private Long documentsActionId;
+
+    /**
+     * 单据状态id
+     */
+    @TableField("documents_status_id")
     private Long documentsStatusId;
 
-    /**
-     * 状态名称
-     */
-    @TableField("name")
-    private String name;
 
-    /**
-     * 表单类型
-     */
     @TableField("form_type")
     private String formType;
+
+    /**
+     * 动作
+     */
+    @TableField("action")
+    private String action;
+
+    /**
+     * 排序
+     */
+    @TableField("sort")
+    private Integer sort;
 
     /**
      * 创建者
@@ -72,12 +82,20 @@ public class DocumentsStatus implements Serializable {
     @TableField("display")
     private Integer display;
 
-    public String getName() {
-        return name;
+    public String getFormType() {
+        return formType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFormType(String formType) {
+        this.formType = formType;
+    }
+
+    public Long getDocumentsActionId() {
+        return documentsActionId;
+    }
+
+    public void setDocumentsActionId(Long documentsActionId) {
+        this.documentsActionId = documentsActionId;
     }
 
     public Long getDocumentsStatusId() {
@@ -88,12 +106,20 @@ public class DocumentsStatus implements Serializable {
         this.documentsStatusId = documentsStatusId;
     }
 
-    public String getFormType() {
-        return formType;
+    public String getAction() {
+        return action;
     }
 
-    public void setFormType(String formType) {
-        this.formType = formType;
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 
     public Long getCreateUser() {
@@ -138,9 +164,11 @@ public class DocumentsStatus implements Serializable {
 
     @Override
     public String toString() {
-        return "DocumentsStatus{" +
-                "documentsStatusId=" + documentsStatusId +
-                ", formType=" + formType +
+        return "DocumentsAction{" +
+                "documentsActionId=" + documentsActionId +
+                ", documentsStatusId=" + documentsStatusId +
+                ", action=" + action +
+                ", sort=" + sort +
                 ", createUser=" + createUser +
                 ", updateUser=" + updateUser +
                 ", createTime=" + createTime +
