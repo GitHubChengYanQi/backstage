@@ -23,6 +23,7 @@ import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.Month;
 import cn.hutool.core.util.RandomUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -95,6 +96,8 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
     public void update(CodingRulesParam param) {
 
+        updateDefault(param.getCodingRulesId());
+
         if (ToolUtil.isNotEmpty(param.getCodings())) {
             String codingRules = "";
             if (param.getCodings().size() == 0) {
@@ -124,6 +127,25 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         CodingRules newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+    }
+
+    /**
+     * 修改吗默认
+     *
+     * @param id
+     */
+    private void updateDefault(Long id) {
+        CodingRules rules = ToolUtil.isEmpty(id) ? new CodingRules() : this.getById(id);
+        if (ToolUtil.isNotEmpty(rules)) {
+            QueryWrapper<CodingRules> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("module", rules.getModule());
+            this.update(new CodingRules() {{
+                setState(0);
+            }}, queryWrapper);
+            rules.setState(1);
+            this.updateById(rules);
+        }
+
     }
 
     @Override
@@ -258,17 +280,17 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         return rules;
     }
+
     @Override
-    public String backSkuCoding(Long ids,Long spuId) {
+    public String backSkuCoding(Long ids, Long spuId) {
         String backCoding = this.backCoding(ids);
 
         if (backCoding.contains("${spuCoding}")) {
             Spu spu = spuService.getById(spuId);
-            backCoding = backCoding.replace("${spuCoding}", ToolUtil.isEmpty(spu.getCoding())? "":spu.getCoding());
+            backCoding = backCoding.replace("${spuCoding}", ToolUtil.isEmpty(spu.getCoding()) ? "" : spu.getCoding());
         }
         return backCoding;
     }
-
 
 
     /**
