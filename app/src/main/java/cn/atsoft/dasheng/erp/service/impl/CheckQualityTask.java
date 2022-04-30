@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
-import cn.atsoft.dasheng.action.QualityActionEnum;
+import cn.atsoft.dasheng.action.Enum.InQualityActionEnum;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.service.CheckTask;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
@@ -30,7 +30,9 @@ public class CheckQualityTask implements CheckTask {
                     return false;
                 }
             case quality_complete:
-                if (qualityTask.getState().equals(QualityActionEnum.done.getStatus())) {
+                Long status = InQualityActionEnum.done.getStatus();
+                Long state = Long.valueOf(qualityTask.getState());
+                if (status.equals(state)) {
                     return true;
                 } else {
                     return false;

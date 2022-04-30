@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.form.model.params;
 
-import cn.atsoft.dasheng.form.pojo.AuditRule;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -14,67 +13,75 @@ import java.util.List;
 
 /**
  * <p>
- * 审批配置表
+ * 单据状态
  * </p>
  *
- * @author Sing
- * @since 2021-11-10
+ * @author song
+ * @since 2022-04-28
  */
 @Data
 @ApiModel
-public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
+public class DocumentsStatusParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
-    private Long processId;
     /**
-     * 主键
+     * 通用单据状态id
      */
-    @ApiModelProperty("主键")
-    private Long auditId;
-
-    private String url;
-
+    @ApiModelProperty("通用单据状态id")
     private Long documentsStatusId;
 
+
+    private String name;
+
+    /**
+     * 动作
+     */
+    @ApiModelProperty("动作")
+    private String action;
+
+    /**
+     * 表单状态
+     */
+    @ApiModelProperty("表单状态")
+    private Integer formStatus;
+
+    /**
+     * 表单类型
+     */
+    @ApiModelProperty("表单类型")
     private String formType;
 
     /**
-     * 步骤Id
+     * 创建者
      */
-    @ApiModelProperty("步骤Id")
-    private Long setpsId;
-
-    /**
-     * person（指定人），supervisor（主管），optional（自主选择）
-     */
-    @ApiModelProperty("person（指定人），supervisor（主管），optional（自主选择）")
-    private String type;
-
-    /**
-     * 审批规则
-     */
-    @ApiModelProperty("审批规则")
-    private AuditRule rule;
-
-    /**
-     * 删除状态
-     */
-    @ApiModelProperty("删除状态")
-    private Integer display;
-
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
+    /**
+     * 修改者
+     */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
+    /**
+     * 创建时间
+     */
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
+    /**
+     * 修改时间
+     */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer display;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

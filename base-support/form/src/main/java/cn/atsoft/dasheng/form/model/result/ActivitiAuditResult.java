@@ -28,11 +28,15 @@ public class ActivitiAuditResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Integer status;
+
+    private DocumentsStatusResult statusResult;
     /**
      * 主键
      */
     @ApiModelProperty("主键")
     private Long auditId;
+
+    private String formType;
 
     /**
      * 步骤Id

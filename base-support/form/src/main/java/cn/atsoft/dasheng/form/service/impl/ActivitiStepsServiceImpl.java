@@ -232,6 +232,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case route:
                 break;
         }
+        activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
+        activitiAudit.setFormType(auditRule.getFormType());
         activitiAudit.setType(String.valueOf(auditType));
         auditService.save(activitiAudit);
     }
@@ -513,8 +515,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         //取出所有步骤
         List<ActivitiAuditResult> auditResults = auditService.backAudits(stepIds);
-        ActivitiStepsResult result = groupSteps(steps, auditResults, top);
-        return result;
+        return groupSteps(steps, auditResults, top);
     }
 
     /**
@@ -617,6 +618,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 if (auditResult.getSetpsId().equals(stepsResult.getSetpsId())) {
                     stepsResult.setAuditRule(auditResult.getRule());
                     stepsResult.setAuditType(auditResult.getType());
+                    stepsResult.setServiceAudit(auditResult);
                 }
             }
         }

@@ -15,10 +15,12 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="documents_status_id" property="documentsStatusId"/>
+        <result column="form_type" property="formType"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">documents_status_id AS "documentsStatusId",
+    <sql id="Base_Column_List">documents_status_id
+    AS "documentsStatusId",form_type AS "form_type",
         audit_id
         AS "auditId", setps_id AS "setpsId", type AS "type", rule AS "rule", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>

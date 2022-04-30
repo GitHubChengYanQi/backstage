@@ -12,6 +12,10 @@ public class AuditRule {
 
     private RuleType type;
 
+    private Long documentsStatusId; //
+
+    private String formType;
+
     @Data
     public static class Rule {
 

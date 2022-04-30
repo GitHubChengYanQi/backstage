@@ -10,10 +10,12 @@ import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import cn.atsoft.dasheng.form.service.DocumentStatusService;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -39,6 +41,8 @@ import java.util.List;
 @Service
 public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, ActivitiAudit> implements ActivitiAuditService {
 
+    @Autowired
+    private DocumentStatusService documentStatusService;
 
     @Override
     @Transactional
@@ -120,6 +124,8 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
             for (ActivitiAudit audit : audits) {
                 ActivitiAuditResult auditResult = new ActivitiAuditResult();
                 ToolUtil.copyProperties(audit, auditResult);
+                DocumentsStatusResult detail = documentStatusService.detail(auditResult.getDocumentsStatusId());
+                auditResult.setStatusResult(detail);
                 auditResults.add(auditResult);
             }
         }

@@ -1,12 +1,13 @@
-package cn.atsoft.dasheng.crm.entity;
+package cn.atsoft.dasheng.form.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.models.auth.In;
 
 import java.io.Serializable;
 
@@ -16,7 +17,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author song
- * @since 2022-04-23
+ * @since 2022-04-28
  */
 @TableName("daoxin_documents_status")
 public class DocumentsStatus implements Serializable {
@@ -26,20 +27,14 @@ public class DocumentsStatus implements Serializable {
     /**
      * 通用单据状态id
      */
-      @TableId(value = "documents_status_id", type = IdType.ID_WORKER)
+    @TableId(value = "documents_status_id", type = IdType.ID_WORKER)
     private Long documentsStatusId;
 
     /**
-     * 动作
+     * 状态名称
      */
-    @TableField("action")
-    private String action;
-
-    /**
-     * 表单状态
-     */
-    @TableField("form_status")
-    private Integer formStatus;
+    @TableField("name")
+    private String name;
 
     /**
      * 表单类型
@@ -50,25 +45,25 @@ public class DocumentsStatus implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -77,6 +72,13 @@ public class DocumentsStatus implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Long getDocumentsStatusId() {
         return documentsStatusId;
@@ -84,22 +86,6 @@ public class DocumentsStatus implements Serializable {
 
     public void setDocumentsStatusId(Long documentsStatusId) {
         this.documentsStatusId = documentsStatusId;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public Integer getFormStatus() {
-        return formStatus;
-    }
-
-    public void setFormStatus(Integer formStatus) {
-        this.formStatus = formStatus;
     }
 
     public String getFormType() {
@@ -153,15 +139,13 @@ public class DocumentsStatus implements Serializable {
     @Override
     public String toString() {
         return "DocumentsStatus{" +
-        "documentsStatusId=" + documentsStatusId +
-        ", action=" + action +
-        ", formStatus=" + formStatus +
-        ", formType=" + formType +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "documentsStatusId=" + documentsStatusId +
+                ", formType=" + formType +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

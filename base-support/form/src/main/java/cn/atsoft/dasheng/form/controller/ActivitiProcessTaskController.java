@@ -11,10 +11,12 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +63,9 @@ public class ActivitiProcessTaskController extends BaseController {
         return ResponseData.success();
     }
 
+
+
+
     /**
      * 删除接口
      *
@@ -69,7 +74,7 @@ public class ActivitiProcessTaskController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam)  {
+    public ResponseData delete(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
         this.activitiProcessTaskService.delete(activitiProcessTaskParam);
         return ResponseData.success();
     }
@@ -102,12 +107,12 @@ public class ActivitiProcessTaskController extends BaseController {
     public PageInfo<ActivitiProcessTaskResult> list(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
 
 
-        if(ToolUtil.isEmpty(activitiProcessTaskParam)){
+        if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
             activitiProcessTaskParam = new ActivitiProcessTaskParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.activitiProcessTaskService.findPageBySpec(activitiProcessTaskParam);
-        }else{
+        } else {
             Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
             Long userId = LoginContextHolder.getContext().getUserId();
             activitiProcessTaskParam.setUserId(userId);
@@ -115,8 +120,6 @@ public class ActivitiProcessTaskController extends BaseController {
             return this.activitiProcessTaskService.findPageBySpec(activitiProcessTaskParam);
         }
     }
-
-
 
 
 }
