@@ -42,7 +42,9 @@ public interface DocumentStatusService extends IService<DocumentsStatus> {
      */
     void update(DocumentsStatusParam param);
 
-    List<DocumentsStatusResult> detail(String formType);
+    DocumentsStatusResult detail(Long statusId);
+
+    List<DocumentsStatusResult> details(String formType);
 
     /**
      * 查询单条数据，Specification模式

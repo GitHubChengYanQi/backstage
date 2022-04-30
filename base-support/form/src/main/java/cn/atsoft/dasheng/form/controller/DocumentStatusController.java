@@ -72,7 +72,7 @@ public class DocumentStatusController extends BaseController {
 
     @RequestMapping(value = "/getDetails", method = RequestMethod.GET)
     public ResponseData getDetails(@RequestParam("type") String type) {
-        List<DocumentsStatusResult> results = this.documentStatusService.detail(type);
+        List<DocumentsStatusResult> results = this.documentStatusService.details(type);
         return ResponseData.success(results);
     }
 

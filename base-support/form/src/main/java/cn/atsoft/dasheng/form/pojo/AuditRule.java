@@ -14,6 +14,8 @@ public class AuditRule {
 
     private Long documentsStatusId; //
 
+    private String formType;
+
     @Data
     public static class Rule {
 

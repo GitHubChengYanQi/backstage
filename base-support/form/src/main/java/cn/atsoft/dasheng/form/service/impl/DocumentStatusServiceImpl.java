@@ -57,7 +57,41 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
     }
 
     @Override
-    public List<DocumentsStatusResult> detail(String formType) {
+    public DocumentsStatusResult detail(Long statusId) {
+
+        DocumentsStatusResult documentsStatusResult = new DocumentsStatusResult();
+        if (ToolUtil.isEmpty(statusId)) {
+            return documentsStatusResult;
+        }
+        if (statusId == 0) {
+            documentsStatusResult.setName("发起");
+        }
+        if (statusId == 50) {
+            documentsStatusResult.setName("拒绝");
+        }
+        if (statusId == 99) {
+            documentsStatusResult.setName("完成");
+        }
+        if (ToolUtil.isNotEmpty(getResult(statusId))) {
+            documentsStatusResult = getResult(statusId);
+        }
+
+        List<DocumentsActionResult> actionResults = actionService.getList(documentsStatusResult.getDocumentsStatusId(), documentsStatusResult.getFormType());
+        documentsStatusResult.setActionResults(actionResults);
+
+
+        return documentsStatusResult;
+    }
+
+    private DocumentsStatusResult getResult(Long statusId) {
+        DocumentsStatusResult documentsStatusResult = new DocumentsStatusResult();
+        DocumentsStatus documentsStatus = this.getById(statusId);
+        ToolUtil.copyProperties(documentsStatus, documentsStatusResult);
+        return documentsStatusResult;
+    }
+
+    @Override
+    public List<DocumentsStatusResult> details(String formType) {
         List<DocumentsStatus> statuses = this.query().eq("form_type", formType).list();
 
         List<DocumentsStatusResult> statusResults = new ArrayList<>();
@@ -81,11 +115,11 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
         statusResults.add(refuse);
 
 
-        statusResults .addAll( BeanUtil.copyToList(statuses, DocumentsStatusResult.class, new CopyOptions()));
+        statusResults.addAll(BeanUtil.copyToList(statuses, DocumentsStatusResult.class, new CopyOptions()));
 
 
         for (DocumentsStatusResult statusResult : statusResults) {
-            List<DocumentsActionResult> actionResults = actionService.getList(statusResult.getDocumentsStatusId(),statusResult.getFormType());
+            List<DocumentsActionResult> actionResults = actionService.getList(statusResult.getDocumentsStatusId(), statusResult.getFormType());
             statusResult.setActionResults(actionResults);
         }
 

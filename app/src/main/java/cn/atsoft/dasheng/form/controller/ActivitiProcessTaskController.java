@@ -73,6 +73,16 @@ public class ActivitiProcessTaskController extends BaseController {
         return ResponseData.success();
     }
 
+
+    @RequestMapping(value = "/getTaskIdByFromId", method = RequestMethod.GET)
+    public ResponseData getTaskIdByFromId(Long formId) {
+        ActivitiProcessTask task = this.activitiProcessTaskService.query().eq("form_id", formId).eq("display", 1).one();
+        if (ToolUtil.isEmpty(task)) {
+            task = new ActivitiProcessTask();
+        }
+        return ResponseData.success(task.getProcessTaskId());
+    }
+
     /**
      * 删除接口
      *

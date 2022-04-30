@@ -57,6 +57,12 @@ public class ActivitiAudit implements Serializable {
     private AuditRule rule;
 
     /**
+     * 单据类型
+     */
+    @TableField("form_type")
+    private String formType;
+
+    /**
      * 单据动作
      */
     @TableField("documents_status_id")
@@ -120,6 +126,15 @@ public class ActivitiAudit implements Serializable {
 //    public void setRule(String rule) {
 //        this.rule = rule;
 //    }
+
+
+    public String getFormType() {
+        return formType;
+    }
+
+    public void setFormType(String formType) {
+        this.formType = formType;
+    }
 
     public Integer getDisplay() {
         return display;
