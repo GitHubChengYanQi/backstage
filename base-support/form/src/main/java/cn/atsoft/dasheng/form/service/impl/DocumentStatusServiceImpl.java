@@ -65,14 +65,11 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
         }
         if (statusId == 0) {
             documentsStatusResult.setName("发起");
-        }
-        if (statusId == 50) {
+        } else if (statusId == 50) {
             documentsStatusResult.setName("拒绝");
-        }
-        if (statusId == 99) {
+        } else if (statusId == 99) {
             documentsStatusResult.setName("完成");
-        }
-        if (ToolUtil.isNotEmpty(getResult(statusId))) {
+        } else if (ToolUtil.isNotEmpty(getResult(statusId))) {
             documentsStatusResult = getResult(statusId);
         }
 
@@ -86,6 +83,9 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
     private DocumentsStatusResult getResult(Long statusId) {
         DocumentsStatusResult documentsStatusResult = new DocumentsStatusResult();
         DocumentsStatus documentsStatus = this.getById(statusId);
+        if (ToolUtil.isEmpty(documentsStatus)) {
+            return documentsStatusResult;
+        }
         ToolUtil.copyProperties(documentsStatus, documentsStatusResult);
         return documentsStatusResult;
     }

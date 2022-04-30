@@ -30,7 +30,9 @@ public class CheckQualityTask implements CheckTask {
                     return false;
                 }
             case quality_complete:
-                if (qualityTask.getState().equals(InQualityActionEnum.done.getStatus())) {
+                Long status = InQualityActionEnum.done.getStatus();
+                Long state = Long.valueOf(qualityTask.getState());
+                if (status.equals(state)) {
                     return true;
                 } else {
                     return false;
