@@ -36,7 +36,7 @@ public class SpuClassificationResult implements Serializable {
     /**
      * 最下级
      */
-    private boolean mostJunior;
+    private boolean mostJunior = true;
 
     /**
      * 编码分类
