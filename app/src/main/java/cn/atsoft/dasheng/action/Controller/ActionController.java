@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.action.model.param.AddAction;
 import cn.atsoft.dasheng.action.model.param.StatusParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
+import cn.atsoft.dasheng.form.entity.DocumentsStatus;
 import cn.atsoft.dasheng.form.model.params.DocumentsActionParam;
 import cn.atsoft.dasheng.form.model.params.DocumentsStatusParam;
 import cn.atsoft.dasheng.form.service.DocumentStatusService;
@@ -46,17 +47,18 @@ public class ActionController {
         if (ToolUtil.isEmpty(param.getOrderEnum())) {
             throw new ServiceException(500, "请填写单据类型");
         }
-        for (AddAction.Action action : param.getActions()) {    // 删除之前老动作 重新添加新动作
-            documentsActionService.removeAll(action.getStatusId());
-        }
-
+        // 删除之前老动作 重新添加新动作
+        DocumentsAction documentsAction = new DocumentsAction();
+        documentsAction.setDisplay(0);
+        documentsActionService.update(documentsAction, new QueryWrapper<DocumentsAction>() {
+            {
+                eq("form_type", param.orderEnum);
+            }
+        });
         switch (param.getOrderEnum()) {
             case purchaseAsk:
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    if (ToolUtil.isEmpty(action.purchaseActionEnums)) {
-                        throw new ServiceException(500, "请检查参数");
-                    }
                     for (PurchaseActionEnum purchaseActionEnum : action.purchaseActionEnums) {
                         purchaseActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
                         i++;
@@ -66,9 +68,6 @@ public class ActionController {
             case createInstock:
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    if (ToolUtil.isEmpty(action.inStockActionEnums)) {
-                        throw new ServiceException(500, "请检查参数");
-                    }
                     for (InStockActionEnum inStockActionEnum : action.inStockActionEnums) {
                         inStockActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
                         i++;
@@ -78,9 +77,6 @@ public class ActionController {
             case productionQuality:
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    if (ToolUtil.isEmpty(action.productionQualityActionEnums)) {
-                        throw new ServiceException(500, "请检查参数");
-                    }
                     for (ProductionQualityActionEnum productionQualityActionEnum : action.productionQualityActionEnums) {
                         productionQualityActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
                         i++;
@@ -90,9 +86,6 @@ public class ActionController {
             case instockError:
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    if (ToolUtil.isEmpty(action.instockErrorActionEnums)) {
-                        throw new ServiceException(500, "请检查参数");
-                    }
                     for (InstockErrorActionEnum instockErrorActionEnum : action.instockErrorActionEnums) {
                         instockErrorActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
                         i++;
@@ -102,9 +95,6 @@ public class ActionController {
             case inQuality:
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    if (ToolUtil.isEmpty(action.inQualityActionEnums)) {
-                        throw new ServiceException(500, "请检查参数");
-                    }
                     for (InQualityActionEnum inQualityActionEnum : action.inQualityActionEnums) {
                         inQualityActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
                         i++;
@@ -114,9 +104,6 @@ public class ActionController {
             case outstock:
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    if (ToolUtil.isEmpty(action.outStockActionEnums)) {
-                        throw new ServiceException(500, "请检查参数");
-                    }
                     for (OutStockActionEnum outStockActionEnum : action.outStockActionEnums) {
                         outStockActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
                         i++;
@@ -129,9 +116,6 @@ public class ActionController {
             case SO:
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    if (ToolUtil.isEmpty(action.soOrderActionEnums)) {
-                        throw new ServiceException(500, "请检查参数");
-                    }
                     for (SoOrderActionEnum soOrderActionEnum : action.soOrderActionEnums) {
                         soOrderActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
                         i++;
@@ -139,12 +123,8 @@ public class ActionController {
                 }
                 break;
             case PO:
-
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    if (ToolUtil.isEmpty(action.poOrderActionEnums)) {
-                        throw new ServiceException(500, "请检查参数");
-                    }
                     for (PoOrderActionEnum poOrderActionEnum : action.poOrderActionEnums) {
                         poOrderActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
                         i++;

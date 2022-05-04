@@ -92,7 +92,7 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
 
     @Override
     public List<DocumentsStatusResult> details(String formType) {
-        List<DocumentsStatus> statuses = this.query().eq("form_type", formType).list();
+        List<DocumentsStatus> statuses = this.query().eq("form_type", formType).eq("display",1).list();
 
         List<DocumentsStatusResult> statusResults = new ArrayList<>();
 

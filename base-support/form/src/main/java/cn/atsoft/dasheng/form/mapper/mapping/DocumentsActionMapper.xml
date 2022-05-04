@@ -4,153 +4,158 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.DocumentsAction">
-        <id column="documents_action_id" property="documentsActionId" />
-        <result column="documents_status_id" property="documentsStatusId" />
-        <result column="action" property="action" />
-        <result column="sort" property="sort" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="documents_action_id" property="documentsActionId"/>
+        <result column="documents_status_id" property="documentsStatusId"/>
+        <result column="action" property="action"/>
+        <result column="sort" property="sort"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        documents_action_id AS "documentsActionId", documents_status_id AS "documentsStatusId", action AS "action", sort AS "sort", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        documents_action_id
+        AS "documentsActionId", documents_status_id AS "documentsStatusId", action AS "action", sort AS "sort", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.DocumentsActionResult" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsActionParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.DocumentsActionResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.DocumentsActionParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_documents_action where 1 = 1
-            <if test="paramCondition.documentsActionId != null">
-                and documents_action_id like CONCAT('%',#{paramCondition.documentsActionId},'%')
-            </if>
-            <if test="paramCondition.documentsStatusId != null">
-                and documents_status_id like CONCAT('%',#{paramCondition.documentsStatusId},'%')
-            </if>
-            <if test="paramCondition.action != null and paramCondition.action != ''">
-                and action like CONCAT('%',#{paramCondition.action},'%')
-            </if>
-            <if test="paramCondition.sort != null">
-                and sort like CONCAT('%',#{paramCondition.sort},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
+        <if test="paramCondition.documentsActionId != null">
+            and documents_action_id like CONCAT('%',#{paramCondition.documentsActionId},'%')
+        </if>
+        <if test="paramCondition.documentsStatusId != null">
+            and documents_status_id like CONCAT('%',#{paramCondition.documentsStatusId},'%')
+        </if>
+        <if test="paramCondition.action != null and paramCondition.action != ''">
+            and action like CONCAT('%',#{paramCondition.action},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsActionParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.form.model.params.DocumentsActionParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_documents_action where 1 = 1
-                <if test="paramCondition.documentsActionId != null">
-                        and documents_action_id like CONCAT('%',#{paramCondition.documentsActionId},'%')
-                </if>
-                <if test="paramCondition.documentsStatusId != null">
-                        and documents_status_id like CONCAT('%',#{paramCondition.documentsStatusId},'%')
-                </if>
-                <if test="paramCondition.action != null and paramCondition.action != ''">
-                        and action like CONCAT('%',#{paramCondition.action},'%')
-                </if>
-                <if test="paramCondition.sort != null">
-                        and sort like CONCAT('%',#{paramCondition.sort},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
+        <if test="paramCondition.documentsActionId != null">
+            and documents_action_id like CONCAT('%',#{paramCondition.documentsActionId},'%')
+        </if>
+        <if test="paramCondition.documentsStatusId != null">
+            and documents_status_id like CONCAT('%',#{paramCondition.documentsStatusId},'%')
+        </if>
+        <if test="paramCondition.action != null and paramCondition.action != ''">
+            and action like CONCAT('%',#{paramCondition.action},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.DocumentsActionResult" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsActionParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.DocumentsActionResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.DocumentsActionParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_documents_action where 1 = 1
-                <if test="paramCondition.documentsActionId != null">
-                        and documents_action_id like CONCAT('%',#{paramCondition.documentsActionId},'%')
-                </if>
-                <if test="paramCondition.documentsStatusId != null">
-                        and documents_status_id like CONCAT('%',#{paramCondition.documentsStatusId},'%')
-                </if>
-                <if test="paramCondition.action != null and paramCondition.action != ''">
-                        and action like CONCAT('%',#{paramCondition.action},'%')
-                </if>
-                <if test="paramCondition.sort != null">
-                        and sort like CONCAT('%',#{paramCondition.sort},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
+        from daoxin_documents_action where 1 = 1 and display = 1
+        <if test="paramCondition.documentsActionId != null">
+            and documents_action_id like CONCAT('%',#{paramCondition.documentsActionId},'%')
+        </if>
+        <if test="paramCondition.documentsStatusId != null">
+            and documents_status_id like CONCAT('%',#{paramCondition.documentsStatusId},'%')
+        </if>
+        <if test="paramCondition.action != null and paramCondition.action != ''">
+            and action like CONCAT('%',#{paramCondition.action},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsActionParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.form.model.params.DocumentsActionParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_documents_action where 1 = 1
-                <if test="paramCondition.documentsActionId != null">
-                        and documents_action_id like CONCAT('%',#{paramCondition.documentsActionId},'%')
-                </if>
-                <if test="paramCondition.documentsStatusId != null">
-                        and documents_status_id like CONCAT('%',#{paramCondition.documentsStatusId},'%')
-                </if>
-                <if test="paramCondition.action != null and paramCondition.action != ''">
-                        and action like CONCAT('%',#{paramCondition.action},'%')
-                </if>
-                <if test="paramCondition.sort != null">
-                        and sort like CONCAT('%',#{paramCondition.sort},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
+        <if test="paramCondition.documentsActionId != null">
+            and documents_action_id like CONCAT('%',#{paramCondition.documentsActionId},'%')
+        </if>
+        <if test="paramCondition.documentsStatusId != null">
+            and documents_status_id like CONCAT('%',#{paramCondition.documentsStatusId},'%')
+        </if>
+        <if test="paramCondition.action != null and paramCondition.action != ''">
+            and action like CONCAT('%',#{paramCondition.action},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
     </select>
 
 </mapper>

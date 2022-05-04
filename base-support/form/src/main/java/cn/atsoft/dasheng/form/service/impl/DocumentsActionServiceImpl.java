@@ -47,7 +47,9 @@ public class DocumentsActionServiceImpl extends ServiceImpl<DocumentsActionMappe
 
     @Override
     public void delete(DocumentsActionParam param) {
-        this.removeById(getKey(param));
+        DocumentsAction action = getEntity(param);
+        action.setDisplay(0);
+        this.updateById(action);
     }
 
     @Override
@@ -65,6 +67,7 @@ public class DocumentsActionServiceImpl extends ServiceImpl<DocumentsActionMappe
         }
         List<DocumentsAction> documentsActions = this.query().eq("documents_status_id", statusId)
                 .eq("form_type", fromType)
+                .eq("display", 1)
                 .orderByAsc("sort").list();
         return BeanUtil.copyToList(documentsActions, DocumentsActionResult.class);
     }
