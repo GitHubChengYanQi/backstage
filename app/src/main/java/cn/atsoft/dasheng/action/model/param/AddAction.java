@@ -34,5 +34,7 @@ public class AddAction {
 
         public List<OutStockActionEnum> outStockActionEnums;
 
+        public List<InstockErrorActionEnum> instockErrorActionEnums;
+
     }
 }

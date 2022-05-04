@@ -16,6 +16,8 @@ public class AuditRule {
 
     private String formType;
 
+    private List<Long> actionIds;
+
     @Data
     public static class Rule {
 

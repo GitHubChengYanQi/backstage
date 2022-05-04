@@ -52,24 +52,25 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
         this.save(entity);
 
     }
+
     @Override
-    public List<ActivitiAudit> getListBySteps(List<ActivitiSteps> steps){
+    public List<ActivitiAudit> getListBySteps(List<ActivitiSteps> steps) {
         List<Long> stepsId = new ArrayList<>();
         for (ActivitiSteps step : steps) {
             stepsId.add(step.getSetpsId());
         }
-       return this.list(new QueryWrapper<ActivitiAudit>(){{
-            in("setps_id",stepsId);
+        return this.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", stepsId);
         }});
     }
 
     @Override
     public List<ActivitiAudit> getListByStepsId(List<Long> stepsIds) {
         if (ToolUtil.isEmpty(stepsIds)) {
-            return  new ArrayList<>();
+            return new ArrayList<>();
         }
-        return this.list(new QueryWrapper<ActivitiAudit>(){{
-            in("setps_id",stepsIds);
+        return this.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", stepsIds);
         }});
     }
 
@@ -126,6 +127,10 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
                 ToolUtil.copyProperties(audit, auditResult);
                 DocumentsStatusResult detail = documentStatusService.detail(auditResult.getDocumentsStatusId());
                 auditResult.setStatusResult(detail);
+                if (ToolUtil.isNotEmpty(auditResult.getAction())) {
+                    List<Long> actionIds = JSON.parseArray(auditResult.getAction(), Long.class);
+                    auditResult.setActionIds(actionIds);
+                }
                 auditResults.add(auditResult);
             }
         }

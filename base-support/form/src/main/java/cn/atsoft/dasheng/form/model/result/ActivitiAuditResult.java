@@ -30,6 +30,8 @@ public class ActivitiAuditResult implements Serializable {
     private Integer status;
 
     private DocumentsStatusResult statusResult;
+
+    private List<Long> actionIds;
     /**
      * 主键
      */
@@ -37,6 +39,8 @@ public class ActivitiAuditResult implements Serializable {
     private Long auditId;
 
     private String formType;
+
+    private String action;
 
     /**
      * 步骤Id

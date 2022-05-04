@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -75,8 +76,13 @@ public class ActivitiProcessTaskController extends BaseController {
 
 
     @RequestMapping(value = "/getTaskIdByFromId", method = RequestMethod.GET)
-    public ResponseData getTaskIdByFromId(Long formId) {
-        ActivitiProcessTask task = this.activitiProcessTaskService.query().eq("form_id", formId).eq("display", 1).one();
+    public ResponseData getTaskIdByFromId( Long formId, String type) {
+        if (ToolUtil.isEmpty(formId)||ToolUtil.isEmpty(type)) {
+            throw new ServiceException(500,"缺少参数");
+        }
+        ActivitiProcessTask task = this.activitiProcessTaskService.query().eq("form_id", formId)
+                .eq("type", type)
+                .eq("display", 1).one();
         if (ToolUtil.isEmpty(task)) {
             task = new ActivitiProcessTask();
         }

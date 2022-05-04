@@ -4,7 +4,9 @@ public enum OrderEnum {
 
     purchaseAsk //采购单申请
     ,
-    instockAsk //入库单
+    purchaseOrder  //采购单
+    ,
+    createInstock //入库单
     ,
     PO //采购单
     ,
@@ -17,6 +19,8 @@ public enum OrderEnum {
     payAsk //付款申请单
     ,
     inQuality //入场检
+    ,
+    outQuality  //出厂检
     ,
     productionQuality  //生产检查
 }

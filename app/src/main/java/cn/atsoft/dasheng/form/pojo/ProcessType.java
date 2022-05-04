@@ -28,7 +28,7 @@ public enum ProcessType {
             put("module","createInstock");
         }});
         add(new HashMap<String,String>(){{
-            put("name","入库异常");
+            put("moduleName","入库异常");
             put("module","instockError");
         }});
     }}),

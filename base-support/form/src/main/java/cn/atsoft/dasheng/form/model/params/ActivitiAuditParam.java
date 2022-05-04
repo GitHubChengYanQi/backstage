@@ -40,6 +40,8 @@ public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
 
     private String formType;
 
+    private String action;
+
     /**
      * 步骤Id
      */

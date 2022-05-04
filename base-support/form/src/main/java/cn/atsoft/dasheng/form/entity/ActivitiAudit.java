@@ -36,6 +36,12 @@ public class ActivitiAudit implements Serializable {
     private Long auditId;
 
     /**
+     * 动作
+     */
+    @TableField("action")
+    private String action;
+
+    /**
      * 步骤Id
      */
     @TableField("setps_id")
@@ -182,6 +188,14 @@ public class ActivitiAudit implements Serializable {
 
     public void setRule(AuditRule rule) {
         this.rule = rule;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     @Override

@@ -785,11 +785,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setPeocessId(processId);
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
-//        if (activitiStepsResult.getType().equals("0")) {
-//            processLog.setStatus(1);
-//        } else {
         processLog.setStatus(-1);
-//        }
+        List<Long> actionIds = activitiStepsResult.getAuditRule().getActionIds();
+
         this.save(processLog);
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
