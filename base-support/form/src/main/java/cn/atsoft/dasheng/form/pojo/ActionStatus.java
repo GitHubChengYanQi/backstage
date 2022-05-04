@@ -6,4 +6,5 @@ import lombok.Data;
 public class ActionStatus {
     private Long actionId;
     private Integer status;
+    private boolean isNot;
 }

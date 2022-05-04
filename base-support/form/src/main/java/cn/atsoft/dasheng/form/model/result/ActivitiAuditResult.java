@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import lombok.Data;
 
@@ -31,7 +32,7 @@ public class ActivitiAuditResult implements Serializable {
 
     private DocumentsStatusResult statusResult;
 
-    private List<Long> actionIds;
+    private List<ActionStatus> statuses;
     /**
      * 主键
      */

@@ -236,8 +236,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
         activitiAudit.setFormType(auditRule.getFormType());
         activitiAudit.setType(String.valueOf(auditType));
-        if (ToolUtil.isNotEmpty(auditRule.getActionIds())) {
-            String action = JSON.toJSONString(auditRule.getActionIds());
+        if (ToolUtil.isNotEmpty(auditRule.getActionStatuses())) {
+            String action = JSON.toJSONString(auditRule.getActionStatuses());
             activitiAudit.setAction(action);
         }
         auditService.save(activitiAudit);

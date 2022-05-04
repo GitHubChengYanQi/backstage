@@ -9,5 +9,6 @@ public enum RuleType {
     send,
     start,
     purchaseAsk,
+    status
 
 }

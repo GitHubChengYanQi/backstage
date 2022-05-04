@@ -789,16 +789,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
         processLog.setStatus(-1);
 
-        List<Long> actionIds = activitiStepsResult.getAuditRule().getActionIds();
-        if (ToolUtil.isNotEmpty(actionIds)) {
-            List<ActionStatus> statuses = new ArrayList<>();
-            for (Long actionId : actionIds) {
-                ActionStatus status = new ActionStatus();
-                status.setActionId(actionId);
-                status.setStatus(0);
-                statuses.add(status);
-            }
-            processLog.setActionStatus(JSON.toJSONString(statuses));
+        List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
+        if (ToolUtil.isNotEmpty(actionStatuses)) {
+            processLog.setActionStatus(JSON.toJSONString(actionStatuses));
         }
 
         this.save(processLog);
@@ -983,6 +976,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * insert
          */
         ActivitiProcessLog processLog = new ActivitiProcessLog();
+        List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();   //添加log 动作状态
+        if (ToolUtil.isNotEmpty(actionStatuses)) {
+            processLog.setActionStatus(JSON.toJSONString(actionStatuses));
+        }
         processLog.setPeocessId(processId);
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());

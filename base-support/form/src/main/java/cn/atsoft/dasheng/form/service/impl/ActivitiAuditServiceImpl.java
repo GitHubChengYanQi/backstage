@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
+import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
@@ -128,8 +129,8 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
                 DocumentsStatusResult detail = documentStatusService.detail(auditResult.getDocumentsStatusId());
                 auditResult.setStatusResult(detail);
                 if (ToolUtil.isNotEmpty(auditResult.getAction())) {
-                    List<Long> actionIds = JSON.parseArray(auditResult.getAction(), Long.class);
-                    auditResult.setActionIds(actionIds);
+                    List<ActionStatus> statuses = JSON.parseArray(auditResult.getAction(), ActionStatus.class);
+                    auditResult.setStatuses(statuses);
                 }
                 auditResults.add(auditResult);
             }
