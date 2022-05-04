@@ -791,6 +791,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
         if (ToolUtil.isNotEmpty(actionStatuses)) {
+            for (ActionStatus actionStatus : actionStatuses) {
+                actionStatus.setStatus(0);
+            }
             processLog.setActionStatus(JSON.toJSONString(actionStatuses));
         }
 
@@ -978,6 +981,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiProcessLog processLog = new ActivitiProcessLog();
         List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();   //添加log 动作状态
         if (ToolUtil.isNotEmpty(actionStatuses)) {
+            for (ActionStatus actionStatus : actionStatuses) {
+                actionStatus.setStatus(0);
+            }
             processLog.setActionStatus(JSON.toJSONString(actionStatuses));
         }
         processLog.setPeocessId(processId);
