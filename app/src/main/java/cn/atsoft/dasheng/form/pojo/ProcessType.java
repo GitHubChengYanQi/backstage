@@ -18,18 +18,18 @@ public enum ProcessType {
             put("module","outQuality");
         }});
         add(new HashMap<String,String>(){{
-            put("moduleName","生产");
+            put("moduleName","生产检");
             put("module","productionQuality");
         }});
     }}),
     INSTOCK("入库操作" ,"instock", new ArrayList<Map<String,String>>(){{
         add(new HashMap<String,String>(){{
-            put("moduleName","发起入库");
-            put("module","createInstock");
+            put("moduleName","生产入库");
+            put("module","productionInstock");
         }});
         add(new HashMap<String,String>(){{
-            put("moduleName","入库异常");
-            put("module","instockError");
+            put("moduleName","采购入库");
+            put("module","purchaseInstock");
         }});
     }}),
     SHIP("工艺路线" ,"ship", new ArrayList<Map<String,String>>(){{
@@ -94,8 +94,6 @@ public enum ProcessType {
 
 
     public static List<Map<String,Object>> enumList() {
-
-
         List<Map<String, Object>> enumList = new ArrayList<>();
         for (ProcessType value : ProcessType.values()) {
             Map<String,Object> enumDetail = new HashMap<>();
