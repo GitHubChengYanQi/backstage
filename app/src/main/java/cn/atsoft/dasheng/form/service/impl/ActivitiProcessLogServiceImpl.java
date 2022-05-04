@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
@@ -34,6 +35,7 @@ import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -786,7 +788,18 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
         processLog.setStatus(-1);
+
         List<Long> actionIds = activitiStepsResult.getAuditRule().getActionIds();
+        if (ToolUtil.isNotEmpty(actionIds)) {
+            List<ActionStatus> statuses = new ArrayList<>();
+            for (Long actionId : actionIds) {
+                ActionStatus status = new ActionStatus();
+                status.setActionId(actionId);
+                status.setStatus(0);
+                statuses.add(status);
+            }
+            processLog.setActionStatus(JSON.toJSONString(statuses));
+        }
 
         this.save(processLog);
 

@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.pojo;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -16,7 +17,7 @@ public class AuditRule {
 
     private String formType;
 
-    private List<Long> actionIds;
+    private List<Long> actionIds = new ArrayList<>();
 
     @Data
     public static class Rule {
