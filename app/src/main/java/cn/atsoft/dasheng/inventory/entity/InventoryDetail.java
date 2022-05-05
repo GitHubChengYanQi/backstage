@@ -42,6 +42,14 @@ public class InventoryDetail implements Serializable {
      */
     @TableField("inventory_id")
     private Long inventoryId;
+
+    /**
+     * 删除状态
+     */
+    @TableField("display")
+    private Integer display;
+
+
     /**
      * 对应实物id
      */
@@ -67,6 +75,13 @@ public class InventoryDetail implements Serializable {
     private Long deptId;
 
 
+    public Integer getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(Integer display) {
+        this.display = display;
+    }
 
     public Long getInventoryId() {
         return inventoryId;

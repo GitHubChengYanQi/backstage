@@ -90,7 +90,6 @@ public class AsyncMethod {
             if (ToolUtil.isEmpty(result)) {
                 result = new ArrayList<>();
             }
-            List<BomOrder> bomResult = bom.getResult();
             result.addAll(bom.getResult());
             allBomResult.setResult(result);     //够生产
 

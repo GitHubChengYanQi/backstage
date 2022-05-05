@@ -61,6 +61,10 @@ public class AllBom {
 
     private final Map<Long, Long> mix = new LinkedHashMap<>();   //最少可生产数量;
 
+    private final Map<Long, Long> demandNumber = new HashMap<>();  //需求数量
+
+    private final Map<Long, Long> notUpdateStockNumber = new HashMap<>();
+
 
     public AllBomResult getResult() {
         AllBomResult allBomResult = new AllBomResult();
@@ -70,22 +74,6 @@ public class AllBom {
         /**
          * 可生产数量排序
          */
-//        List<Map.Entry<Long, Long>> list = new ArrayList<>(mix.entrySet());
-//        list.sort(new Comparator<Map.Entry<Long, Long>>() {
-//            @Override
-//            public int compare(Map.Entry<Long, Long> o1, Map.Entry<Long, Long> o2) {
-//
-//                //按照value值，从大到小排序
-//                return Math.toIntExact(o2.getValue() - o1.getValue());
-//
-//            }
-//        });
-
-
-        //        for (Map.Entry<Long, Long> longLongEntry : list) {
-//            Long skuId = longLongEntry.getKey();
-//            skus.add(skuId);
-//        }
         int num = 0;
         List<Long> skus = new ArrayList<>(mix.keySet());
         List<SkuResult> results = skuService.formatSkuResult(skus);
@@ -136,6 +124,8 @@ public class AllBom {
                     if (longLongEntry.getKey().equals(skuResult.getSkuId())) {
                         AnalysisResult analysisResult = new AnalysisResult();
                         Long number = notEnough.get(skuResult.getSkuId());
+                        analysisResult.setDemandNumber(demandNumber.get(skuResult.getSkuId()));
+                        analysisResult.setStockNumber(notUpdateStockNumber.get(skuResult.getSkuId()));
                         analysisResult.setSkuId(skuResult.getSkuId());
                         analysisResult.setSkuName(skuResult.getSkuName());
                         analysisResult.setSpuName(skuResult.getSpuResult().getName());
@@ -272,6 +262,7 @@ public class AllBom {
         List<StockDetails> details = stockDetailsService.list(queryWrapper);
         for (StockDetails detail : details) {
             stockNumber.put(detail.getSkuId(), detail.getNum());
+            notUpdateStockNumber.put(detail.getSkuId(), detail.getNum());
         }
 
 
@@ -356,14 +347,36 @@ public class AllBom {
                 stockNumber.put(id, stockNum - num);
             }
         }
-        if (number - min > 0) {
+        /**
+         * 可生产的数量 不够 需求的数量
+         */
+        if (number - min > 0) {      //number:需要生产的数量   min：最少可生产
             for (Long id : lastChild.keySet()) {
                 Long stockNum = stockNumber.get(id);
                 SkuNumber skuNumber = (SkuNumber) lastChild.get(id);
-                long l = number - min;
+                long l = number - min;  //
                 long num = skuNumber.getNum() * l;
                 if (mixAdd && ((num - stockNum) > 0)) {
-                    this.notEnough.put(id, num - stockNum);
+
+                    /**
+                     * 缺料数量
+                     */
+                    Long enoNum = this.notEnough.get(id);
+                    if (ToolUtil.isNotEmpty(enoNum)) {
+                        this.notEnough.put(id, (num - stockNum) + enoNum);
+                    } else {
+                        this.notEnough.put(id, num - stockNum);
+                    }
+
+                    /**
+                     * 需求数量
+                     */
+                    Long demandNumber = this.demandNumber.get(id);
+                    if (ToolUtil.isNotEmpty(demandNumber)) {
+                        this.demandNumber.put(id, (skuNumber.getNum() * number) + demandNumber);
+                    } else {
+                        this.demandNumber.put(id, skuNumber.getNum() * number);
+                    }
                 }
             }
         }

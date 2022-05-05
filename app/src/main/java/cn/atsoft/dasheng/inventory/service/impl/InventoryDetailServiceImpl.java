@@ -61,7 +61,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
     @Override
     public void delete(InventoryDetailParam param) {
-        this.removeById(getKey(param));
+        InventoryDetail entity = getEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
+        /*this.removeById(getKey(param));*/
     }
 
 
