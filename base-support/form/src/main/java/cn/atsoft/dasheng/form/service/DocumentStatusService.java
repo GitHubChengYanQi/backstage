@@ -70,4 +70,5 @@ public interface DocumentStatusService extends IService<DocumentsStatus> {
      */
      PageInfo<DocumentsStatusResult> findPageBySpec(DocumentsStatusParam param);
 
+    List<DocumentsStatusResult> resultsByIds(List<Long> ids);
 }

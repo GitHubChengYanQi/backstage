@@ -185,8 +185,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             askIds.add(purchaseAskResult.getPurchaseAskId());
             statusIds.add(purchaseAskResult.getStatus());
         }
-        
 
+        List<DocumentsStatusResult> documentsStatusResults = documentStatusService.resultsByIds(statusIds);
         List<PurchaseListing> purchaseListings = askIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().in("purchase_ask_id", askIds).eq("display", 1).list();
         List<PurchaseListingResult> resultList = BeanUtil.copyToList(purchaseListings, PurchaseListingResult.class, new CopyOptions());
         purchaseListingService.format(resultList);
@@ -198,6 +198,15 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
                     purchaseAskResult.setCreateUserName(user.getName());
                 }
             }
+            for (DocumentsStatusResult documentsStatusResult : documentsStatusResults) {
+                if (purchaseAskResult.getStatus().equals(documentsStatusResult.getDocumentsStatusId())){
+                    purchaseAskResult.setStatusResult(documentsStatusResult);
+                    break;
+                }
+            }
+
+
+
             int type = 0;
             int number = 0;
             for (PurchaseListing purchaseListing : purchaseListings) {
