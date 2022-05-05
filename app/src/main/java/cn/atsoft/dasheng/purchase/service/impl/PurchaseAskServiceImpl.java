@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ViewUpdate;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -71,6 +72,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private StepsService stepsSer;
+    @Autowired
+    private DocumentStatusService documentStatusService;
 
 
     @Override
@@ -130,7 +133,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getPurchaseAskId(), "purchaseAsk");
             activitiProcessLogService.autoAudit(taskId, 1);
         } else {
-            entity.setStatus(2);
+            entity.setStatus(2L);
             this.updateById(entity);
         }
 
@@ -176,11 +179,13 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public void format(List<PurchaseAskResult> param) {
         List<Long> userIds = new ArrayList<>();
         List<Long> askIds = new ArrayList<>();
+        List<Long> statusIds = new ArrayList<>();
         for (PurchaseAskResult purchaseAskResult : param) {
             userIds.add(purchaseAskResult.getCreateUser());
             askIds.add(purchaseAskResult.getPurchaseAskId());
+            statusIds.add(purchaseAskResult.getStatus());
         }
-
+        
 
         List<PurchaseListing> purchaseListings = askIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().in("purchase_ask_id", askIds).eq("display", 1).list();
         List<PurchaseListingResult> resultList = BeanUtil.copyToList(purchaseListings, PurchaseListingResult.class, new CopyOptions());
@@ -232,6 +237,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         result.setPurchaseListings(purchaseListing);
         result.setApplyType(purchaseListing.size());
         result.setApplyNumber(number);
+        DocumentsStatusResult statusResult = documentStatusService.detail(result.getStatus());
+        result.setStatusResult(statusResult);
         return result;
     }
 
@@ -245,7 +252,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public void updateStatus(ActivitiProcessTask param) {
         if (param.getType().equals("purchaseAsk")) {
             PurchaseAsk ask = this.getById(param.getFormId());
-            ask.setStatus(2);
+            ask.setStatus(2L);
             this.updateById(ask);
         }
     }
@@ -259,7 +266,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public void updateRefuseStatus(ActivitiProcessTask param) {
         if (param.getType().equals("purchaseAsk")) {
             PurchaseAsk ask = this.getById(param.getFormId());
-            ask.setStatus(1);
+            ask.setStatus(1L);
             this.updateById(ask);
         }
     }
@@ -276,7 +283,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             throw new ServiceException(500, "当前采购申请没有流程任务");
         }
         PurchaseAsk ask = this.getById(askId);
-        ask.setStatus(3);
+        ask.setStatus(3L);
         this.updateById(ask);
 
         List<ActivitiProcessLog> processLogs = activitiProcessLogService.query().eq("task_id", processTask).list();
@@ -308,7 +315,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public void complateAsk(Long processTaskId) {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(processTaskId);
         PurchaseAsk purchaseAsk = this.getById(processTask.getFormId());
-        purchaseAsk.setStatus(2);
+        purchaseAsk.setStatus(2L);
         this.updateById(purchaseAsk);
         activitiProcessLogService.autoAudit(processTaskId, 1);
     }

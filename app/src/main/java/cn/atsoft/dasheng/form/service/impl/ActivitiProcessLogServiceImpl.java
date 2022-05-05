@@ -7,7 +7,9 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.CheckInstock;
 import cn.atsoft.dasheng.erp.service.impl.CheckQualityTask;
@@ -24,6 +26,7 @@ import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.service.InquiryTaskService;
 import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
@@ -74,6 +77,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private CheckQualityTask checkQualityTask;
+
+
+    @Autowired
+    private QualityTaskService qualityTaskService;
 
     @Autowired
     private CheckPurchaseAsk checkPurchaseAsk;
@@ -291,6 +298,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     }
                 }
             }
+
             /**
              * 更新当前线路的所有节点
              */
@@ -314,6 +322,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * 流程结束需要重新获取需要审批的节点
          */
         audit = this.getAudit(taskId);
+        /**
+         * TODO 更新单据状态
+         */
+        updateDocumentStatus(audit,activitiAudits,task);
+
+
         //如果查询下级需要审批节点  为空  则审批流程已经没有了 下级节点  则流程结束
         if (ToolUtil.isEmpty(audit)) {
             /**
@@ -334,6 +348,52 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             //推送流程结束消息
             endSend.endSend(task.getProcessTaskId());
         }
+    }
+
+
+    private void updateDocumentStatus(List<ActivitiProcessLog> logs, List<ActivitiAudit> activitiAudits, ActivitiProcessTask task) {
+
+        /**
+         * 把所有过程（非 开始、路由、分支）
+         */
+        List<ActivitiAudit> process = new ArrayList<>();
+        for (ActivitiProcessLog activitiProcessLog : logs) {
+            for (ActivitiAudit activitiAudit : activitiAudits) {
+                if (activitiProcessLog.getSetpsId().equals(activitiAudit.getSetpsId()) && activitiAudit.getType().equals("process")) {
+                    process.add(activitiAudit);
+                }
+            }
+        }
+
+        if (ToolUtil.isNotEmpty(process) && ToolUtil.isNotEmpty(process.get(0).getDocumentsStatusId())) {
+            Long documentsStatusId = process.get(0).getDocumentsStatusId();
+            Long formId = task.getFormId();
+            String type = task.getType();
+            switch (type) {
+                case "quality_task":
+                    QualityTask qualityTask = qualityTaskService.getById(formId);
+                    qualityTask.setStatus(documentsStatusId);
+                    qualityTaskService.updateById(qualityTask);
+                    break;
+                case "purchaseAsk":
+                    PurchaseAsk purchaseAsk = purchaseAskService.getById(formId);
+                    purchaseAsk.setStatus(documentsStatusId);
+                    purchaseAskService.updateById(purchaseAsk);
+                    break;
+                case "procurementOrder":
+                    ProcurementOrder procurementOrder = procurementOrderService.getById(formId);
+                    break;
+                case "purchasePlan":
+                    break;
+                case "createInstock":
+                    break;
+                case "instockError":
+                    break;
+            }
+
+        }
+
+
     }
 
     private void updateStatus(ActivitiProcessTask processTask) {
@@ -438,6 +498,34 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         this.updateById(entity);
     }
 
+    /**
+     * 检查节点动作完成请款
+     * @param taskId
+     * @param stepId
+     * @param actionId
+     */
+    private void checkLogActionComplete(Long taskId, Long stepId, Long actionId) {
+        ActivitiProcessLog processLog = this.query().eq("task_id", taskId).eq("setps_id", stepId).one();
+        if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
+            List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+            for (ActionStatus actionStatus : actionStatuses) {
+                if (actionStatus.getActionId().equals(actionId)) {
+                    actionStatus.setStatus(1);
+                }
+            }
+            boolean completeFlag = true;
+            for (ActionStatus actionStatus : actionStatuses) {
+                if(actionStatus.getStatus().equals(1) && actionStatus.isChecked()){
+
+                }else {
+                    completeFlag = false;
+                }
+            }
+            if (completeFlag){
+                this.autoAudit(taskId,1);
+            }
+        }
+    }
 
     /**
      * 确认质检任务状态 （未完成 0）/（完成 1）/（待入库 2）
@@ -932,9 +1020,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     /**
      * 格式化log动作
+     *
      * @param param
      */
-    private void logActionFormat(List<ActivitiProcessLogResult> param){
+    private void logActionFormat(List<ActivitiProcessLogResult> param) {
         List<Long> actionIds = new ArrayList<>();
         for (ActivitiProcessLogResult activitiProcessLogResult : param) {
             if (ToolUtil.isNotEmpty(activitiProcessLogResult.getActionStatus())) {
@@ -948,7 +1037,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         List<DocumentsActionResult> results = new ArrayList<>();
         for (DocumentsAction documentsAction : documentsActions) {
             DocumentsActionResult result = new DocumentsActionResult();
-            ToolUtil.copyProperties(documentsAction,result);
+            ToolUtil.copyProperties(documentsAction, result);
             results.add(result);
         }
         for (ActivitiProcessLogResult activitiProcessLogResult : param) {

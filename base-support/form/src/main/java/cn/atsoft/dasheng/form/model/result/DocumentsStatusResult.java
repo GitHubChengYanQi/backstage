@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -48,24 +49,28 @@ public class DocumentsStatusResult implements Serializable {
     /**
      * 表单类型
      */
+
     @ApiModelProperty("表单类型")
     private String formType;
 
     /**
      * 创建者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 创建时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
@@ -73,13 +78,16 @@ public class DocumentsStatusResult implements Serializable {
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false)
     private Integer display;
     @ApiModelProperty("父ID顺序数组")
+    @JSONField(serialize = false)
     private List<String> pidValue;
 }
