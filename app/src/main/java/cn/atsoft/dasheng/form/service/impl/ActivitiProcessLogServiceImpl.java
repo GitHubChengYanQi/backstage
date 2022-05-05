@@ -325,7 +325,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         /**
          * TODO 更新单据状态
          */
-        updateDocumentStatus(audit,activitiAudits,task);
+        if  (auditCheck){
+            updateDocumentStatus(audit,activitiAudits,task);
+        }
 
 
         //如果查询下级需要审批节点  为空  则审批流程已经没有了 下级节点  则流程结束
