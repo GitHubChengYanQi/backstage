@@ -48,6 +48,9 @@ public enum ProcessType {
             put("moduleName","采购单");
             put("module","purchaseOrder");
         }});
+    }}),
+    INSTOCKERROR("入库异常" ,"instockError", new ArrayList<Map<String,String>>(){{
+
     }});
 
 //
