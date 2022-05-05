@@ -18,14 +18,11 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.model.result.DocumentsActionResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.RuleType;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.form.service.ActivitiStepsService;
-import cn.atsoft.dasheng.form.service.RemarksService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.service.InquiryTaskService;
@@ -35,6 +32,10 @@ import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -106,6 +107,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private InstockOrderService instockOrderService;
+
+    @Autowired
+    private DocumentsActionService documentsActionService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -920,8 +924,46 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             ToolUtil.copyProperties(processLog, logResult);
             logResults.add(logResult);
         }
-
+        this.logActionFormat(logResults);
         return logResults;
+    }
+
+    /**
+     * 格式化log动作
+     * @param param
+     */
+    private void logActionFormat(List<ActivitiProcessLogResult> param){
+        List<Long> actionIds = new ArrayList<>();
+        for (ActivitiProcessLogResult activitiProcessLogResult : param) {
+            if (ToolUtil.isNotEmpty(activitiProcessLogResult.getActionStatus())) {
+                List<ActionStatus> actionStatuses = JSON.parseArray(activitiProcessLogResult.getActionStatus(), ActionStatus.class);
+                for (ActionStatus actionStatus : actionStatuses) {
+                    actionIds.add(actionStatus.getActionId());
+                }
+            }
+        }
+        List<DocumentsAction> documentsActions = actionIds.size() == 0 ? new ArrayList<>() : documentsActionService.listByIds(actionIds);
+        List<DocumentsActionResult> results = new ArrayList<>();
+        for (DocumentsAction documentsAction : documentsActions) {
+            DocumentsActionResult result = new DocumentsActionResult();
+            ToolUtil.copyProperties(documentsAction,result);
+            results.add(result);
+        }
+        for (ActivitiProcessLogResult activitiProcessLogResult : param) {
+            if (ToolUtil.isNotEmpty(activitiProcessLogResult.getActionStatus())) {
+                List<DocumentsActionResult> documentsActionResults = new ArrayList<>();
+                List<ActionStatus> actionStatuses = JSON.parseArray(activitiProcessLogResult.getActionStatus(), ActionStatus.class);
+                for (ActionStatus actionStatus : actionStatuses) {
+                    for (DocumentsActionResult result : results) {
+                        if (actionStatus.getActionId().equals(result.getDocumentsActionId())) {
+                            documentsActionResults.add(result);
+                        }
+                    }
+                }
+                activitiProcessLogResult.setActionResults(documentsActionResults);
+            }
+
+        }
     }
 
 
