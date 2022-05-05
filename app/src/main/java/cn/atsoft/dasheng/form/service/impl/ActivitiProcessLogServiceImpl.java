@@ -788,14 +788,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
         processLog.setStatus(-1);
-
-        List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
-        if (ToolUtil.isNotEmpty(actionStatuses)) {
-            for (ActionStatus actionStatus : actionStatuses) {
-                actionStatus.setStatus(0);
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule()) && ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule().getActionStatuses())) {
+            List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
+            if (ToolUtil.isNotEmpty(actionStatuses)) {
+                for (ActionStatus actionStatus : actionStatuses) {
+                    actionStatus.setStatus(0);
+                }
+                processLog.setActionStatus(JSON.toJSONString(actionStatuses));
             }
-            processLog.setActionStatus(JSON.toJSONString(actionStatuses));
         }
+
 
         this.save(processLog);
 
@@ -979,13 +981,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * insert
          */
         ActivitiProcessLog processLog = new ActivitiProcessLog();
-        List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();   //添加log 动作状态
-        if (ToolUtil.isNotEmpty(actionStatuses)) {
-            for (ActionStatus actionStatus : actionStatuses) {
-                actionStatus.setStatus(0);
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule()) && ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule().getActionStatuses())) {
+            List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();   //添加log 动作状态
+            if (ToolUtil.isNotEmpty(actionStatuses)) {
+                for (ActionStatus actionStatus : actionStatuses) {
+                    actionStatus.setStatus(0);
+                }
+                processLog.setActionStatus(JSON.toJSONString(actionStatuses));
             }
-            processLog.setActionStatus(JSON.toJSONString(actionStatuses));
         }
+
         processLog.setPeocessId(processId);
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
@@ -993,6 +998,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         //判断分支条件
         if (activitiStepsResult.getType().toString().equals("3")) {
             AuditRule auditRule = activitiStepsResult.getAuditRule();
+            if (ToolUtil.isNotEmpty(auditRule)) {
+                throw new ServiceException(500, "请先在分支上设置条件");
+            }
             boolean b = true;
             for (AuditRule.Rule rule : auditRule.getRules()) {
                 AuditRule.PurchaseAsk ask = rule.getPurchaseAsk();
@@ -1007,11 +1015,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             b = false;
                         }
                         break;
-//                    case money:  //总金额
-//                        if (!judeg(ask, Long.valueOf(purchaseAsk.getMoney()))) {
-//                            b = false;
-//                        }
-//                        break;
                 }
             }
 
