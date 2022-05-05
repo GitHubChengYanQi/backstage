@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.Month;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -192,23 +194,26 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             throw new ServiceException(500, "没有制定规则");
         }
         rules = codingRules.getCodingRules().replace(",", "");
-
-        DateTime dateTime = new DateTime();
+        Date date = new Date();
         //年
-        int year = dateTime.year();
+        int year = DateUtil.year(date);
         //月
-        Month month = dateTime.monthEnum();
-        int monthValue = month.getValue();
+        Month month = DateUtil.monthEnum(date);
+        String monthValue = String.format("%02d", month.getValueBaseOne());
+
         //随机数
         int randomInt = RandomUtil.randomInt(1, 100);
         //随机六位字符串
         String randomString = RandomUtil.randomString(6);
         //季度
-        int quarter = dateTime.quarter();
+        int quarter = DateUtil.quarter(date);
+
         //所属年份的第几周
-        int weekOfYear = dateTime.weekOfYear();
+//        int weekOfYear = dateTime.weekOfYear();
+        String weekOfYear = String.format("%02d", DateUtil.weekOfYear(date));
         //日
-        int dayOfMonth = dateTime.dayOfMonth();
+//        int dayOfMonth = dateTime.dayOfMonth();
+        String dayOfMonth = String.format("%02d", DateUtil.dayOfMonth(date));
 //--------------------------------------------------------------------------------------------------------------
         if (rules.contains("${dd}")) {
             rules = rules.replace("${dd}", dayOfMonth + "");
