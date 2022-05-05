@@ -161,12 +161,33 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
         return entity;
     }
     @Override
-    public List<DocumentsStatusResult> resultsByIds (List<Long> ids){
+    public List<DocumentsStatusResult> resultsByIds(List<Long> ids){
         if (ToolUtil.isEmpty(ids) || ids .size() == 0){
             return new ArrayList<>();
         }
+
         List<DocumentsStatus> documentsStatuses = this.listByIds(ids);
-        return BeanUtil.copyToList(documentsStatuses, DocumentsStatusResult.class, new CopyOptions());
+        List<DocumentsStatusResult> documentsStatusResults = BeanUtil.copyToList(documentsStatuses, DocumentsStatusResult.class, new CopyOptions());
+        for (Long id : ids) {
+            if (id == 0) {
+                DocumentsStatusResult result = new DocumentsStatusResult();
+                result.setName("发起");
+                result.setDocumentsStatusId(0L);
+                documentsStatusResults.add(result);
+            } else if (id == 50) {
+                DocumentsStatusResult result = new DocumentsStatusResult();
+                result.setDocumentsStatusId(50L);
+                result.setName("拒绝");
+                documentsStatusResults.add(result);
+            } else if (id == 99) {
+                DocumentsStatusResult result = new DocumentsStatusResult();
+                result.setDocumentsStatusId(99L);
+                result.setName("完成");
+                documentsStatusResults.add(result);
+            }
+        }
+        return documentsStatusResults;
+
     }
 
 }
