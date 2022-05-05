@@ -160,5 +160,13 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+    @Override
+    public List<DocumentsStatusResult> resultsByIds (List<Long> ids){
+        if (ToolUtil.isEmpty(ids) || ids .size() == 0){
+            return new ArrayList<>();
+        }
+        List<DocumentsStatus> documentsStatuses = this.listByIds(ids);
+        return BeanUtil.copyToList(documentsStatuses, DocumentsStatusResult.class, new CopyOptions());
+    }
 
 }
