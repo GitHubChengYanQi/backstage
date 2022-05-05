@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ViewUpdate;
+import cn.atsoft.dasheng.form.service.DocumentStatusService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
@@ -36,6 +38,9 @@ public class PurchaseAskResult implements Serializable {
     private Integer applyType;
 
     private User user;
+
+    private DocumentsStatusResult statusResult;
+
     /**
      * 采购申请id
      */
@@ -64,7 +69,7 @@ public class PurchaseAskResult implements Serializable {
      * 申请状态
      */
     @ApiModelProperty("申请状态")
-    private Integer status;
+    private Long status;
 
     /**
      * 总金额

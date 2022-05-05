@@ -258,12 +258,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     public void createQualityTask(InstockOrderParam param, List<Sku> skus) {
         QualityTaskParam qualityTaskParam = new QualityTaskParam();
+        qualityTaskParam.setType("入场");
         List<QualityTaskDetailParam> qualityTaskDetailParams = new ArrayList<>();
         for (InstockRequest instockRequest : param.getInstockRequest()) {
             if (ToolUtil.isNotEmpty(instockRequest)) {
                 for (Sku sku : skus) {
                     if (ToolUtil.isNotEmpty(sku.getQualityPlanId()) || sku.getSkuId().equals(instockRequest.getSkuId())) {
                         QualityTaskDetailParam qualityTaskDetailParam = new QualityTaskDetailParam();
+                        qualityTaskDetailParam.setQualityPlanId(sku.getQualityPlanId());
                         qualityTaskDetailParam.setQualityPlanId(sku.getQualityPlanId());
                         qualityTaskDetailParam.setNumber(Math.toIntExact(instockRequest.getNumber()));
                         qualityTaskDetailParam.setSkuId(instockRequest.getSkuId());
