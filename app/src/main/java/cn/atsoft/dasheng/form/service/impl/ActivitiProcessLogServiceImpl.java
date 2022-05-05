@@ -1040,7 +1040,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         //判断分支条件
         if (activitiStepsResult.getType().toString().equals("3")) {
             AuditRule auditRule = activitiStepsResult.getAuditRule();
-            if (ToolUtil.isNotEmpty(auditRule)) {
+            if (ToolUtil.isEmpty(auditRule)) {
                 throw new ServiceException(500, "请先在分支上设置条件");
             }
             boolean b = true;

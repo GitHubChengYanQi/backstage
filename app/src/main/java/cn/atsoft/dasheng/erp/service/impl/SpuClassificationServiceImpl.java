@@ -226,9 +226,6 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
      */
     private void getChild(SpuClassificationResult father, List<SpuClassificationResult> classification) {
 
-        if (father.getName().equals("安安安")) {
-            System.out.println("ssssss");
-        }
         for (SpuClassificationResult spuClassificationResult : classification) {
             if (father.getSpuClassificationId().equals(spuClassificationResult.getPid())) {
                 father.setMostJunior(false);
@@ -238,6 +235,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
         father.setMostJunior(true);
     }
+
 
     /**
      * 更新包含它的
