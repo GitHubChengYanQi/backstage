@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.message.producer;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.config.DirectQueueConfig;
-import cn.atsoft.dasheng.message.config.MicroServiceDirectQueueConfig;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import com.alibaba.fastjson.JSON;
@@ -93,7 +92,42 @@ public class MessageProducer {
                 return message;
             });
         }
+    }
 
 
+
+    /**
+     * 普通队列
+     *
+     * @param microServiceEntity 内容对象
+     */
+    public void auditService(MicroServiceEntity microServiceEntity) {
+        microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
+        if (ToolUtil.isNotEmpty(microServiceEntity.getMaxTimes()) && microServiceEntity.getTimes() <= microServiceEntity.getMaxTimes()) {
+            //TODO 测试加入唯一key
+            String randomString = ToolUtil.getRandomString(5);
+            logger.info("内部调用创建:" + microServiceEntity.getType()+"/"+microServiceEntity.getOperationType()+"/"+randomString);
+            rabbitTemplate.convertAndSend(DirectQueueConfig.getAuditRealExchange(), DirectQueueConfig.getAuditRealRoute(), JSON.toJSONString(microServiceEntity));
+
+        }
+    }
+
+    /**
+     * 延迟队列
+     *
+     * @param microServiceEntity 消息
+     * @param ttl           延迟 毫秒
+     */
+    public void auditService(MicroServiceEntity microServiceEntity, Integer ttl) {
+
+        microServiceEntity.setExpiration(ttl);
+        microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
+        if (ToolUtil.isNotEmpty(microServiceEntity.getMaxTimes()) && microServiceEntity.getTimes() <= microServiceEntity.getMaxTimes()) {
+            rabbitTemplate.convertAndSend(DirectQueueConfig.getAuditRealExchange(), DirectQueueConfig.getAuditRealRoute(), JSON.toJSONString(microServiceEntity), message -> {
+                MessageProperties messageProperties = message.getMessageProperties();
+                messageProperties.setExpiration(ttl.toString());//单位是毫秒
+                return message;
+            });
+        }
     }
 }
