@@ -153,7 +153,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (ToolUtil.isEmpty(param.getStandard())) {
                 CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
                 if (ToolUtil.isNotEmpty(codingRules)) {
-                    String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spu.getSpuId());
+                    String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spu.getSpuId(),spuClassificationId);
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                     SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
                     if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
@@ -778,20 +778,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private void getCoding(SkuParam param, Long spuId) {
         CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spuId);
+            String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spuId,param.getSpuClass());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
             SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
-            if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
-                String replace = "";
-                if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
-                    replace = backCoding.replace("${skuClass}", classification.getCodingClass());
-                } else {
-                    replace = backCoding.replace("${skuClass}", "");
-                }
 
-                param.setStandard(replace);
-                param.setCoding(replace);
-            }
         } else {
             throw new ServiceException(500, "当前无此规则");
         }

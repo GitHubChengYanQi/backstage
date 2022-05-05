@@ -1,12 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
-import cn.atsoft.dasheng.app.entity.Parts;
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.SpuClassificationMapper;
@@ -322,5 +318,50 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         }
     }
 
+
+    /**
+     * 从子集到父级的所有编码拼接
+     * @return
+     */
+    @Override
+    public String getCodings(Long classId){
+        SpuClassification now = this.getById(classId);
+        List<SpuClassification> all = this.list();
+//        String codings = now.getCodingClass() ;
+//        StringBuffer stringBuffer = this.loopGetCoding(now, all, new StringBuffer());
+        String coding = getCoding(now, all);
+        return coding;
+    }
+
+//    private StringBuffer loopGetCoding(SpuClassification now,List<SpuClassification> all,StringBuffer codings){
+//        if(ToolUtil.isNotEmpty(now.getPid())){
+//            for (SpuClassification spuClassification : all) {
+//                if (now.getPid().equals(spuClassification.getSpuClassificationId())) {
+//                   StringBuffer sb = new StringBuffer().append(ToolUtil.isEmpty(now.getCodingClass()) ? "" : now.getCodingClass()).append(codings);
+//                    codings = sb;
+//                    codings = loopGetCoding(spuClassification,all,codings);
+//                }
+//            }
+//        }else {
+//            StringBuffer sb = new StringBuffer().append(ToolUtil.isEmpty(now.getCodingClass()) ? "" : now.getCodingClass()).append(codings);
+//            codings = sb;
+//        }
+//        return codings;
+//    }
+
+    private String getCoding(SpuClassification result, List<SpuClassification> resultList) {
+        String coding = "";
+        if (result.getPid() == 0) {
+            coding = result.getCodingClass();
+        }else {
+            for (SpuClassification spuClassification : resultList) {
+                if (result.getPid().equals(spuClassification.getSpuClassificationId())) {
+                    String cod = getCoding(spuClassification, resultList);
+                    coding = cod + result.getCodingClass();
+                }
+            }
+        }
+        return coding;
+    }
 
 }

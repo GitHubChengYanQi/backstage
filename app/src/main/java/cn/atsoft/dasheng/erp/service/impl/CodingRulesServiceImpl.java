@@ -3,20 +3,14 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.CodingRules;
-import cn.atsoft.dasheng.erp.entity.CodingRulesClassification;
-import cn.atsoft.dasheng.erp.entity.RulesRelation;
-import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.CodingRulesMapper;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
 import cn.atsoft.dasheng.erp.model.params.Codings;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesResult;
-import cn.atsoft.dasheng.erp.service.CodingRulesClassificationService;
-import cn.atsoft.dasheng.erp.service.CodingRulesService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.RulesRelationService;
-import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.service.SerialNumberService;
@@ -56,6 +50,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     private SerialNumberService serialNumberService;
     @Autowired
     private SpuService spuService;
+
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     @Override
     @Transactional
@@ -264,12 +261,17 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         return rules;
     }
     @Override
-    public String backSkuCoding(Long ids,Long spuId) {
+    public String backSkuCoding(Long ids,Long spuId,Long classId) {
         String backCoding = this.backCoding(ids);
 
         if (backCoding.contains("${spuCoding}")) {
             Spu spu = spuService.getById(spuId);
             backCoding = backCoding.replace("${spuCoding}", ToolUtil.isEmpty(spu.getCoding())? "":spu.getCoding());
+        }
+
+        if (backCoding.contains("${skuClass}")) {
+            String codings = spuClassificationService.getCodings(classId);
+            backCoding = backCoding.replace("${skuClass}",codings);
         }
         return backCoding;
     }
