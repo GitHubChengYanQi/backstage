@@ -233,13 +233,15 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case route:
                 break;
         }
-        activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
-        activitiAudit.setFormType(auditRule.getFormType());
-        activitiAudit.setType(String.valueOf(auditType));
-        if (ToolUtil.isNotEmpty(auditRule.getActionStatuses())) {
-            String action = JSON.toJSONString(auditRule.getActionStatuses());
-            activitiAudit.setAction(action);
+        if (ToolUtil.isNotEmpty(auditRule)) {
+            activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
+            activitiAudit.setFormType(auditRule.getFormType());
+            if (ToolUtil.isNotEmpty(auditRule.getActionStatuses())) {
+                String action = JSON.toJSONString(auditRule.getActionStatuses());
+                activitiAudit.setAction(action);
+            }
         }
+        activitiAudit.setType(String.valueOf(auditType));
         auditService.save(activitiAudit);
     }
 

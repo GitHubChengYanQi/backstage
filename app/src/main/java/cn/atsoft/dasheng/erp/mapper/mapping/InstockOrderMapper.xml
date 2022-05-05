@@ -110,7 +110,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.InstockOrderParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_instock_order where 1 = 1
+        from daoxin_erp_instock_order where 1 = 1 and display = 1
         <if test="paramCondition.instockOrderId != null">
             and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
         </if>
