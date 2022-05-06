@@ -18,6 +18,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.Month;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -273,9 +274,11 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         Pattern compile = Pattern.compile("\\$\\{(serial.*?(\\[(\\d[0-9]?)\\]))\\}");
         Matcher matcher = compile.matcher(rules);
+
         if (matcher.find()) {
             SerialNumberParam serialNumberParam = new SerialNumberParam();
-            serialNumberParam.setMd5(stringBuffer.toString());
+            String md5 = SecureUtil.md5(stringBuffer.toString());
+            serialNumberParam.setMd5(md5);
             serialNumberParam.setSerialLength(Long.valueOf(matcher.group(3)));
             String aLong = serialNumberService.add(serialNumberParam);
             rules = rules.replace(matcher.group(0) + "", aLong + "");
