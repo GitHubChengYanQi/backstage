@@ -125,6 +125,10 @@ public class AllBom {
                         AnalysisResult analysisResult = new AnalysisResult();
                         Long number = notEnough.get(skuResult.getSkuId());
                         analysisResult.setDemandNumber(demandNumber.get(skuResult.getSkuId()));
+                        Long stockNum = notUpdateStockNumber.get(skuResult.getSkuId());
+                        if (ToolUtil.isEmpty(stockNum)) {
+                            notUpdateStockNumber.put(skuResult.getSkuId(), 0L);
+                        }
                         analysisResult.setStockNumber(notUpdateStockNumber.get(skuResult.getSkuId()));
                         analysisResult.setSkuId(skuResult.getSkuId());
                         analysisResult.setSkuName(skuResult.getSkuName());
