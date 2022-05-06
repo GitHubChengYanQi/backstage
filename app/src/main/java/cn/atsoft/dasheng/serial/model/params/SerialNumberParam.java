@@ -43,6 +43,12 @@ public class SerialNumberParam implements Serializable, BaseValidatingParam {
     private String model;
 
     /**
+     * 唯一字符串
+     */
+    @ApiModelProperty("唯一字符串")
+    private String md5;
+
+    /**
      * 流水号
      */
     @ApiModelProperty("流水号")
