@@ -153,7 +153,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (ToolUtil.isEmpty(param.getStandard())) {
                 CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
                 if (ToolUtil.isNotEmpty(codingRules)) {
-                    String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spu.getSpuId(),spuClassificationId);
+                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spu.getSpuId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                     SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
                     if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
@@ -221,14 +221,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     setSkuId(entity.getSkuId());
                 }});
             }
-            messageProducer.microService(new MicroServiceEntity() {{
-                setType(MicroServiceType.CONTRACT);
-                setOperationType(OperationType.ADD);
-                setObject(new ContractParam());
-                setTimes(0);
-                setMaxTimes(2);
-            }}, 100);
-
 
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
@@ -702,7 +694,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public void batchAddSku(BatchSkuParam batchSkuParam) {
-        List<Sku> entitys = new ArrayList<>();
+//        List<Sku> entitys = new ArrayList<>();
+        Long skuId = null;
         for (SkuParam param : batchSkuParam.getSkuParams()) {
             Category category = this.getOrSaveCategory(param);
             Long categoryId = category.getCategoryId();
@@ -755,17 +748,18 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassification.getSpuClassificationId());
 
             entity.setSkuValueMd5(md5);
+            this.save(entity);
+            skuId = entity.getSkuId();
 
-            entitys.add(entity);
+            if (ToolUtil.isNotEmpty(param.getBrandIds()) && skuId!=null) {
+                skuBrandBindService.addBatch(new SkuBrandBindParam() {{
+                    setBrandIds(param.getBrandIds());
+                    setSkuId(entity.getSkuId());
+                }});
+            }
 
-//            if (ToolUtil.isNotEmpty(param.getBrandIds())) {
-//                skuBrandBindService.addBatch(new SkuBrandBindParam() {{
-//                    setBrandIds(param.getBrandIds());
-//                    setSkuId(entity.getSkuId());
-//                }});
-//            }
         }
-        this.saveBatch(entitys);
+
     }
 
     /**
@@ -778,7 +772,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private void getCoding(SkuParam param, Long spuId) {
         CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), spuId,param.getSpuClass());
+            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spuId);
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
             SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
 
