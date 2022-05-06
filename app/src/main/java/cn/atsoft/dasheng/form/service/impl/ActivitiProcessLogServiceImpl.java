@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
@@ -325,8 +326,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         /**
          * TODO 更新单据状态
          */
-        if  (auditCheck){
-            updateDocumentStatus(audit,activitiAudits,task);
+        if (auditCheck) {
+            updateDocumentStatus(audit, activitiAudits, task);
         }
 
 
@@ -387,7 +388,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     break;
                 case "purchasePlan":
                     break;
-                case "createInstock":
+                case "INSTOCK":
+                    InstockOrder instockOrder = instockOrderService.getById(formId);
+                    instockOrder.setStatus(documentsStatusId);
+                    instockOrderService.updateById(instockOrder);
                     break;
                 case "instockError":
                     break;
@@ -502,6 +506,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     /**
      * 检查节点动作完成请款
+     *
      * @param taskId
      * @param stepId
      * @param actionId
@@ -517,16 +522,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
             boolean completeFlag = true;
             for (ActionStatus actionStatus : actionStatuses) {
-                if(actionStatus.getStatus().equals(0) && actionStatus.isChecked()){
+                if (actionStatus.getStatus().equals(0) && actionStatus.isChecked()) {
                     completeFlag = false;
                     break;
-                }else if (actionStatus.getStatus().equals(0)){
+                } else if (actionStatus.getStatus().equals(0)) {
                     completeFlag = false;
                     break;
                 }
             }
-            if (completeFlag){
-                this.autoAudit(taskId,1);
+            if (completeFlag) {
+                this.autoAudit(taskId, 1);
             }
         }
     }

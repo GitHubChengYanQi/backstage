@@ -99,6 +99,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
     void formatDetail(InstockOrderResult orderResult);
 
 
+    void formatResult(InstockOrderResult result);
+
     void inStockByOrder(InStockByOrderParam param);
 
     /**

@@ -35,6 +35,8 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private String customerName;
 
     private String type;
+
+    private Long status;
     /**
      * 库位id
      */

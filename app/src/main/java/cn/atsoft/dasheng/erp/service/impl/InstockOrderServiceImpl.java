@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
@@ -26,9 +27,11 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.form.service.DocumentStatusService;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -114,6 +117,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private DocumentStatusService documentStatusService;
 
     @Override
     @Transactional
@@ -224,8 +229,20 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
 //            wxCpSendTemplate.sendTemplate();
 
+            String module = "";
+            if (ToolUtil.isNotEmpty(param.getType())) {
+                switch (param.getType()) {
+                    case "采购入库":
+                        module = "purchaseInstock";
+                        break;
+                    case "生产入库":
+                        module = "productionInstock";
+                        break;
+                }
+            }
+
             //发起审批流程
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "instock").eq("status", 99).eq("module", "createInstock").one();
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", module).one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
 //            this.power(activitiProcess);//检查创建权限
                 LoginUser user = LoginContextHolder.getContext().getUser();
@@ -234,13 +251,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
                 activitiProcessTaskParam.setUserId(param.getCreateUser());
                 activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
-                activitiProcessTaskParam.setType("createInstock");
+                activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
                 activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
                 Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
                 //添加小铃铛
                 wxCpSendTemplate.setSource("processTask");
                 wxCpSendTemplate.setSourceId(taskId);
-                wxCpSendTemplate.sendTemplate();
                 //添加log
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
                 activitiProcessLogService.autoAudit(taskId, 1);
@@ -488,6 +504,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
 
+    }
+
+    @Override
+    public void formatResult(InstockOrderResult result) {
+        DocumentsStatusResult statusResult = documentStatusService.detail(result.getStatus());
+        result.setStatusResult(statusResult);
     }
 
 
@@ -855,6 +877,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
+        List<Long> statusIds = new ArrayList<>();
 
         for (InstockOrderResult datum : data) {
             userIds.add(datum.getUserId());
@@ -863,7 +886,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
             storeIds.add(datum.getStoreHouseId());
             orderIds.add(datum.getInstockOrderId());
+            statusIds.add(datum.getStatus());
         }
+
+        List<DocumentsStatusResult> documentsStatusResults = documentStatusService.resultsByIds(statusIds);
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
         List<InstockList> instockListList = orderIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", orderIds).list();
@@ -881,6 +907,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             datum.setEnoughNumber(enoughNumber);
             datum.setRealNumber(realNumber);
             datum.setNotNumber(enoughNumber - realNumber);
+
+            for (DocumentsStatusResult documentsStatusResult : documentsStatusResults) {
+                if (datum.getStatus().equals(documentsStatusResult.getDocumentsStatusId())){
+                    datum.setStatusResult(documentsStatusResult);
+                    break;
+                }
+            }
 
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(datum.getUserId())) {

@@ -134,10 +134,10 @@ public class InstockOrderController extends BaseController {
 
         instockOrderService.formatDetail(result);
         if (ToolUtil.isNotEmpty(result.getOrigin())) {
-            result.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(result.getOrigin(),ThemeAndOrigin.class)));
+            result.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(result.getOrigin(), ThemeAndOrigin.class)));
         }
 
-
+        instockOrderService.formatResult(result);
         return ResponseData.success(result);
     }
 
