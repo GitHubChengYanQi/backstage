@@ -294,12 +294,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void checkNumberTrue(Long id, Integer status) {
-        InstockOrder instockOrder = this.getById(id);
         if (status != 98) {
             throw new ServiceException(500, "您传入的状态不正确");
         } else {
             DocumentsAction documentsAction = documentsActionService.query().eq("action_name", "核实数量").eq("display", 1).one();
-            List<ActivitiProcessLog> logs = this.activitiProcessLogService.getAuditByForm(id, "instock");
+            ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", "instock").eq("form_id", id).eq("display", 1).one();
+            List<ActivitiProcessLog> logs = activitiProcessLogService.getAudit(processTask.getProcessTaskId());
             List<Long> stepIds = new ArrayList<>();
             for (ActivitiProcessLog processLog : logs) {
                 stepIds.add(processLog.getSetpsId());
@@ -309,15 +309,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 for (ActivitiSteps activitiStep : activitiSteps) {
                     if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
 
+                        activitiProcessLogService.checkLogActionComplete(id,activitiStep.getSetpsId(),documentsAction.getDocumentsActionId());
 
-                        List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
-                        for (ActionStatus actionStatus : actionStatuses) {
-                            if (actionStatus.getActionId().equals(documentsAction.getDocumentsActionId())){
-                                actionStatus.setStatus(1);
-                            }
-                        }
-                        processLog.setActionStatus(JSON.toJSONString(actionStatuses));
-                        activitiProcessLogService.updateById(processLog);
                     }
                 }
             }
