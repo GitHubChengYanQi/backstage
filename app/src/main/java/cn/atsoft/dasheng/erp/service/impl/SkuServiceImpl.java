@@ -695,8 +695,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public void batchAddSku(BatchSkuParam batchSkuParam) {
 //        List<Sku> entitys = new ArrayList<>();
-        Long skuId = null;
+
         for (SkuParam param : batchSkuParam.getSkuParams()) {
+            Long skuId = null;
             Category category = this.getOrSaveCategory(param);
             Long categoryId = category.getCategoryId();
 
@@ -713,7 +714,25 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Long spuId = spu.getSpuId();
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
-                getCoding(param, spu.getSpuId());
+                CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
+                if (ToolUtil.isNotEmpty(codingRules)) {
+                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spu.getSpuId());
+                    SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
+                    if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
+                        String replace = "";
+                        if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
+                            replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+                        } else {
+                            replace = backCoding.replace("${skuClass}", "");
+                        }
+
+                        param.setStandard(replace);
+                        param.setCoding(replace);
+
+                    }
+                } else {
+                    throw new ServiceException(500, "当前无此规则");
+                }
             }
             /**
              * 判断成品码是否重复
@@ -751,13 +770,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             this.save(entity);
             skuId = entity.getSkuId();
 
-            if (ToolUtil.isNotEmpty(param.getBrandIds()) && skuId!=null) {
+            if (ToolUtil.isNotEmpty(param.getBrandIds())) {
                 skuBrandBindService.addBatch(new SkuBrandBindParam() {{
                     setBrandIds(param.getBrandIds());
                     setSkuId(entity.getSkuId());
                 }});
             }
-
+            if (ToolUtil.isNotEmpty(param.getOldSkuId()) && ToolUtil.isNotEmpty(skuId)) {
+                ActivitiProcess activitiProcess = processService.query().eq("form_id", param.getOldSkuId()).eq("type", "ship").eq("display", 1).one();
+                if (ToolUtil.isNotEmpty(activitiProcess)) {
+                    copyProcessRoute(param.getOldSkuId(), skuId);
+                } else {
+                    copySkuBomById(param.getOldSkuId(), skuId);
+                }
+            }
         }
 
     }
