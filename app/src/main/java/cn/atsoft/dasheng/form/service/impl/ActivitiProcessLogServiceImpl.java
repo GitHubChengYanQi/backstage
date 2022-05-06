@@ -266,6 +266,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             }
                             break;
                         case "createInstock":   //入库创建
+                        case "INSTOCK":   //入库创建
                             updateStatus(activitiProcessLog.getLogId(), status);
                             setStatus(logs, activitiProcessLog.getLogId());
                             //拒绝走拒绝方法
