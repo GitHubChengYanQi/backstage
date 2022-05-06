@@ -1057,6 +1057,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 for (ActionStatus actionStatus : actionStatuses) {
                     for (DocumentsActionResult result : results) {
                         if (actionStatus.getActionId().equals(result.getDocumentsActionId())) {
+                            result.setStatus(actionStatus.getStatus());
                             documentsActionResults.add(result);
                         }
                     }
@@ -1273,8 +1274,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
         }
     }
+
     @Override
-    public List<ActivitiProcessLog> getAuditByForm(Long formId,String type){
+    public List<ActivitiProcessLog> getAuditByForm(Long formId, String type) {
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", type).eq("form_id", formId).eq("display", 1).one();
         List<ActivitiProcessLog> audit = this.getAudit(processTask.getProcessTaskId());
         return audit;

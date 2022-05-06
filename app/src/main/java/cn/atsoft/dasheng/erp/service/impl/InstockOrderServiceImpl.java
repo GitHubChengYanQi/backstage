@@ -324,12 +324,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             for (ActivitiProcessLog processLog : logs) {
                 stepIds.add(processLog.getSetpsId());
             }
-            List<ActivitiSteps> activitiSteps =stepIds.size() == 0 ? new ArrayList<>() : stepsService.listByIds(stepIds);
+            List<ActivitiSteps> activitiSteps = stepIds.size() == 0 ? new ArrayList<>() : stepsService.listByIds(stepIds);
             for (ActivitiProcessLog processLog : logs) {
                 for (ActivitiSteps activitiStep : activitiSteps) {
                     if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
 
-                        activitiProcessLogService.checkLogActionComplete(id,activitiStep.getSetpsId(),documentsAction.getDocumentsActionId());
+                        activitiProcessLogService.checkLogActionComplete(id, activitiStep.getSetpsId(), documentsAction.getDocumentsActionId());
 
                     }
                 }
@@ -908,7 +908,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
             storeIds.add(datum.getStoreHouseId());
             orderIds.add(datum.getInstockOrderId());
-            statusIds.add(datum.getStatus());
+            if (ToolUtil.isNotEmpty(datum.getStatus())) {
+                statusIds.add(datum.getStatus());
+            }
         }
 
         List<DocumentsStatusResult> documentsStatusResults = documentStatusService.resultsByIds(statusIds);
@@ -931,7 +933,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             datum.setNotNumber(enoughNumber - realNumber);
 
             for (DocumentsStatusResult documentsStatusResult : documentsStatusResults) {
-                if (datum.getStatus().equals(documentsStatusResult.getDocumentsStatusId())){
+                if (ToolUtil.isNotEmpty(datum.getStatus()) && datum.getStatus().equals(documentsStatusResult.getDocumentsStatusId())) {
                     datum.setStatusResult(documentsStatusResult);
                     break;
                 }
