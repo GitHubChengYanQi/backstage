@@ -205,27 +205,27 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              */
             this.createQualityTask(param, skus);
 
-            BackCodeRequest backCodeRequest = new BackCodeRequest();
-            backCodeRequest.setId(entity.getInstockOrderId());
-            backCodeRequest.setSource("instock");
-            Long aLong = orCodeService.backCode(backCodeRequest);
-            //           String url = param.getUrl().replace("codeId", aLong.toString());
-            String prefix = MobileUrl.prefix;
-            String url = prefix + "#/OrCode?id=" + aLong.toString();
-            User createUser = userService.getById(entity.getCreateUser());
-            //新微信推送
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setUrl(url);
-            wxCpTemplate.setTitle("新的入库提醒");
-            wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
-            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-                add(entity.getUserId());
-            }});
-            wxCpSendTemplate.setSource("instockOrder");
-            wxCpSendTemplate.setSourceId(aLong);
-            wxCpTemplate.setType(0);
-            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-            wxCpSendTemplate.sendTemplate();
+//            BackCodeRequest backCodeRequest = new BackCodeRequest();
+//            backCodeRequest.setId(entity.getInstockOrderId());
+//            backCodeRequest.setSource("instock");
+//            Long aLong = orCodeService.backCode(backCodeRequest);
+//            //           String url = param.getUrl().replace("codeId", aLong.toString());
+//            String prefix = MobileUrl.prefix;
+//            String url = prefix + "#/OrCode?id=" + aLong.toString();
+//            User createUser = userService.getById(entity.getCreateUser());
+//            //新微信推送
+//            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//            wxCpTemplate.setUrl(url);
+//            wxCpTemplate.setTitle("新的入库提醒");
+//            wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
+//            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+//                add(entity.getUserId());
+//            }});
+//            wxCpSendTemplate.setSource("instockOrder");
+//            wxCpSendTemplate.setSourceId(aLong);
+//            wxCpTemplate.setType(0);
+//            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+//            wxCpSendTemplate.sendTemplate();
 
             //发起审批流程
             ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "instock").eq("status", 99).eq("module", "createInstock").one();
@@ -243,6 +243,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 //添加小铃铛
                 wxCpSendTemplate.setSource("processTask");
                 wxCpSendTemplate.setSourceId(taskId);
+                wxCpSendTemplate.sendTemplate();
                 //添加log
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
                 activitiProcessLogService.autoAudit(taskId, 1);

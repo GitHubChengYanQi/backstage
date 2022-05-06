@@ -154,6 +154,7 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
 
         Page<ActivitiProcessResult> pageContext = getPageContext();
         IPage<ActivitiProcessResult> page = this.baseMapper.customPageList(pageContext, param);
+
         return PageFactory.createPageInfo(page);
     }
 
@@ -174,6 +175,9 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+
+
 
     @Override
     public List<String> getModule(ProcessEnum processEnum) {

@@ -48,24 +48,24 @@ public enum ProcessType {
 
 
 
-    QUALITY("质检" ,"quality", new ArrayList<ProcessModuleEnum>(){{
+    QUALITY("质检" ,"QUALITY", new ArrayList<ProcessModuleEnum>(){{
         add(ProcessModuleEnum.inQuality);
         add(ProcessModuleEnum.outQuality);
         add(ProcessModuleEnum.productionQuality);
     }}),
 
-    INSTOCK("入库操作" ,"instock", new ArrayList<ProcessModuleEnum>(){{
+    INSTOCK("入库操作" ,"INSTOCK", new ArrayList<ProcessModuleEnum>(){{
         add(ProcessModuleEnum.productionInstock);
         add(ProcessModuleEnum.purchaseInstock);
     }}),
 
-    SHIP("工艺路线" ,"ship", new ArrayList<ProcessModuleEnum>(){{
+    SHIP("工艺路线" ,"SHIP", new ArrayList<ProcessModuleEnum>(){{
 
     }}),
-    PURCHASE("采购" ,"purchase",new ArrayList<ProcessModuleEnum>(){{
+    PURCHASE("采购" ,"PURCHASE",new ArrayList<ProcessModuleEnum>(){{
         add(ProcessModuleEnum.purchaseAsk);
     }}),
-    INSTOCKERROR("入库异常" ,"instockError",new ArrayList<ProcessModuleEnum>(){{
+    INSTOCKERROR("入库异常" ,"INSTOCKERROR",new ArrayList<ProcessModuleEnum>(){{
         add(ProcessModuleEnum.inQuality);
         add(ProcessModuleEnum.outQuality);
         add(ProcessModuleEnum.productionQuality);

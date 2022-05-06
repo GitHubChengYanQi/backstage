@@ -30,6 +30,14 @@ public class DocumentsAction implements Serializable {
     @TableId(value = "documents_action_id", type = IdType.ID_WORKER)
     private Long documentsActionId;
 
+
+    /**
+     * 动作显示
+     */
+    @TableField("action_name")
+    private String actionName;
+
+
     /**
      * 单据状态id
      */
@@ -160,6 +168,14 @@ public class DocumentsAction implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public String getActionName() {
+        return actionName;
+    }
+
+    public void setActionName(String actionName) {
+        this.actionName = actionName;
     }
 
     @Override

@@ -4,21 +4,35 @@ import cn.atsoft.dasheng.action.service.FormActionInterface;
 
 public enum PurchaseActionEnum implements FormActionInterface {
 
-    start {
+    start("开始") {
         public Long getStatus() {
             return 0L;
         }
     },
-    done {
+    done("完成") {
         public Long getStatus() {
             return 99L;
         }
     },
-    refuse {
+    refuse("拒绝") {
         public Long getStatus() {
             return 50L;
         }
     },
-    perform
+    perform("执行");
 
+
+    PurchaseActionEnum(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    private String value;
 }

@@ -25,10 +25,11 @@ public interface FormActionInterface {
     }
 
 
-    default void setStatus(Long status, String fromType, int sort) {
+    default void setStatus(Long status, String fromType, String actionName, int sort) {
         String name = this.toString();
         DocumentsAction action = new DocumentsAction();
         action.setAction(name);
+        action.setActionName(actionName);
         action.setFormType(fromType);
         action.setDocumentsStatusId(status);
         action.setSort(sort);

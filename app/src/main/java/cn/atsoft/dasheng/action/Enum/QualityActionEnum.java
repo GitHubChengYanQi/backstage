@@ -2,9 +2,9 @@ package cn.atsoft.dasheng.action.Enum;
 
 import cn.atsoft.dasheng.action.service.FormActionInterface;
 
-public enum SoOrderActionEnum implements FormActionInterface {
+public enum QualityActionEnum implements FormActionInterface {
 
-    start("开始") {
+    start ("开始"){
         public Long getStatus() {
             return 0L;
         }
@@ -21,10 +21,6 @@ public enum SoOrderActionEnum implements FormActionInterface {
     };
 
 
-    SoOrderActionEnum(String value) {
-        this.value = value;
-    }
-
     public String getValue() {
         return value;
     }
@@ -34,4 +30,9 @@ public enum SoOrderActionEnum implements FormActionInterface {
     }
 
     private String value;
+
+
+    QualityActionEnum(String value) {
+        this.value = value;
+    }
 }
