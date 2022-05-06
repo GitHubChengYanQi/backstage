@@ -180,7 +180,7 @@ public class ExcelAsync {
 
                 //物料编码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
-                    String backCoding = codingRulesService.backSkuCoding(codingRules.getCodingRulesId(), newItem.getSpuId(),spuClass.getSpuClassificationId());
+                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), newItem.getSpuId());
                     backCoding = backCoding.replace("${skuClass}", ToolUtil.isEmpty(spuClass.getCodingClass()) ? "" : spuClass.getCodingClass());
                     newSku.setStandard(backCoding);
                 } else {
