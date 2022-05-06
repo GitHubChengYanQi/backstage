@@ -36,10 +36,6 @@ import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -511,7 +507,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
      * @param stepId
      * @param actionId
      */
-    private void checkLogActionComplete(Long taskId, Long stepId, Long actionId) {
+    @Override
+    public void checkLogActionComplete(Long taskId, Long stepId, Long actionId) {
         ActivitiProcessLog processLog = this.query().eq("task_id", taskId).eq("setps_id", stepId).one();
         if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
             List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
@@ -520,6 +517,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     actionStatus.setStatus(1);
                 }
             }
+            processLog.setActionStatus(JSON.toJSONString(actionStatuses));
+            this.updateById(processLog);
+
+
             boolean completeFlag = true;
             for (ActionStatus actionStatus : actionStatuses) {
                 if (actionStatus.getStatus().equals(0) && actionStatus.isChecked()) {
@@ -1271,6 +1272,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
             }
         }
+    }
+    @Override
+    public List<ActivitiProcessLog> getAuditByForm(Long formId,String type){
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", type).eq("form_id", formId).eq("display", 1).one();
+        List<ActivitiProcessLog> audit = this.getAudit(processTask.getProcessTaskId());
+        return audit;
     }
 
 }

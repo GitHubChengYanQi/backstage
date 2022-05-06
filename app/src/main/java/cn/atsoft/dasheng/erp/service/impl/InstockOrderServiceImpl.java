@@ -21,9 +21,7 @@ import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
 import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -32,6 +30,8 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.DocumentStatusService;
+import cn.atsoft.dasheng.form.pojo.ActionStatus;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -106,6 +106,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private MessageProducer messageProducer;
 
     @Autowired
+    private StepsService stepsService;
+
+    @Autowired
     private SkuService skuService;
     @Autowired
     private InstockLogService instockLogService;
@@ -119,6 +122,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private DocumentStatusService documentStatusService;
+
+    @Autowired
+    private DocumentsActionService documentsActionService;
 
     @Override
     @Transactional
@@ -308,12 +314,28 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void checkNumberTrue(Long id, Integer status) {
-        InstockOrder instockOrder = this.getById(id);
         if (status != 98) {
             throw new ServiceException(500, "您传入的状态不正确");
         } else {
-            instockOrder.setState(status);
-            this.updateById(instockOrder);
+            DocumentsAction documentsAction = documentsActionService.query().eq("action_name", "核实数量").eq("display", 1).one();
+            ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", "instock").eq("form_id", id).eq("display", 1).one();
+            List<ActivitiProcessLog> logs = activitiProcessLogService.getAudit(processTask.getProcessTaskId());
+            List<Long> stepIds = new ArrayList<>();
+            for (ActivitiProcessLog processLog : logs) {
+                stepIds.add(processLog.getSetpsId());
+            }
+            List<ActivitiSteps> activitiSteps =stepIds.size() == 0 ? new ArrayList<>() : stepsService.listByIds(stepIds);
+            for (ActivitiProcessLog processLog : logs) {
+                for (ActivitiSteps activitiStep : activitiSteps) {
+                    if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
+
+                        activitiProcessLogService.checkLogActionComplete(id,activitiStep.getSetpsId(),documentsAction.getDocumentsActionId());
+
+                    }
+                }
+            }
+
+
         }
     }
 
