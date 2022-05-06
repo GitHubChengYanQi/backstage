@@ -30,6 +30,8 @@ public class DocumentsStatus implements Serializable {
     @TableId(value = "documents_status_id", type = IdType.ID_WORKER)
     private Long documentsStatusId;
 
+
+
     /**
      * 状态名称
      */
@@ -135,6 +137,8 @@ public class DocumentsStatus implements Serializable {
     public void setDisplay(Integer display) {
         this.display = display;
     }
+
+
 
     @Override
     public String toString() {

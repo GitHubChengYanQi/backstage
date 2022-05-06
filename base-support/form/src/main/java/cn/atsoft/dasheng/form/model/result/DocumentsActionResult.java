@@ -27,6 +27,9 @@ public class DocumentsActionResult implements Serializable {
     @ApiModelProperty("单据动作")
     private Long documentsActionId;
 
+
+    private String actionName;
+
     /**
      * 单据状态id
      */

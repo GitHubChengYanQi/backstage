@@ -32,6 +32,8 @@ public class DocumentsStatusParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("通用单据状态id")
     private Long documentsStatusId;
 
+    private String actionName;
+
 
     private String name;
 

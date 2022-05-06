@@ -13,7 +13,7 @@ public class AddAction {
     public List<Action> actions;
 
     @NotNull
-    public OrderEnum orderEnum;
+    public ReceiptsEnum receiptsEnum;
 
     @Data
     public class Action {

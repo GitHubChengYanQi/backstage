@@ -13,10 +13,12 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
+        <result column="action_name" property="actionName"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">action_name
+    AS "actionName",
         documents_action_id
         AS "documentsActionId", documents_status_id AS "documentsStatusId", action AS "action", sort AS "sort", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>

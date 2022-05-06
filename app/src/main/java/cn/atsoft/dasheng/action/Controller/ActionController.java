@@ -1,13 +1,10 @@
 package cn.atsoft.dasheng.action.Controller;
 
 import cn.atsoft.dasheng.action.Enum.*;
-import cn.atsoft.dasheng.action.model.param.ActionParam;
 import cn.atsoft.dasheng.action.model.param.AddAction;
 import cn.atsoft.dasheng.action.model.param.StatusParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
-import cn.atsoft.dasheng.form.entity.DocumentsStatus;
-import cn.atsoft.dasheng.form.model.params.DocumentsActionParam;
 import cn.atsoft.dasheng.form.model.params.DocumentsStatusParam;
 import cn.atsoft.dasheng.form.service.DocumentStatusService;
 import cn.atsoft.dasheng.form.service.DocumentsActionService;
@@ -44,7 +41,7 @@ public class ActionController {
     public ResponseData addItem(@RequestBody @Valid AddAction param) {
 
         List<AddAction.Action> actions = param.getActions();
-        if (ToolUtil.isEmpty(param.getOrderEnum())) {
+        if (ToolUtil.isEmpty(param.getReceiptsEnum())) {
             throw new ServiceException(500, "请填写单据类型");
         }
         // 删除之前老动作 重新添加新动作
@@ -52,15 +49,16 @@ public class ActionController {
         documentsAction.setDisplay(0);
         documentsActionService.update(documentsAction, new QueryWrapper<DocumentsAction>() {
             {
-                eq("form_type", param.orderEnum);
+                eq("form_type", param.receiptsEnum);
             }
         });
-        switch (param.getOrderEnum()) {
+        switch (param.getReceiptsEnum()) {
             case purchaseAsk:
                 for (AddAction.Action action : actions) {
                     int i = 0;
                     for (PurchaseActionEnum purchaseActionEnum : action.purchaseActionEnums) {
-                        purchaseActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
+                        String value = purchaseActionEnum.getValue();
+                        purchaseActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
                         i++;
                     }
                 }
@@ -69,74 +67,75 @@ public class ActionController {
                 for (AddAction.Action action : actions) {
                     int i = 0;
                     for (InStockActionEnum inStockActionEnum : action.inStockActionEnums) {
-                        inStockActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
+                        String value = inStockActionEnum.getValue();
+                        inStockActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
                         i++;
                     }
                 }
                 break;
-            case productionQuality:
-                for (AddAction.Action action : actions) {
-                    int i = 0;
-                    for (ProductionQualityActionEnum productionQualityActionEnum : action.productionQualityActionEnums) {
-                        productionQualityActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
-                        i++;
-                    }
-                }
-                break;
-            case instockError:
-                for (AddAction.Action action : actions) {
-                    int i = 0;
-                    for (InstockErrorActionEnum instockErrorActionEnum : action.instockErrorActionEnums) {
-                        instockErrorActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
-                        i++;
-                    }
-                }
-                break;
-            case inQuality:
-                for (AddAction.Action action : actions) {
-                    int i = 0;
-                    for (InQualityActionEnum inQualityActionEnum : action.inQualityActionEnums) {
-                        inQualityActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
-                        i++;
-                    }
-                }
-                break;
-            case outstock:
-                for (AddAction.Action action : actions) {
-                    int i = 0;
-                    for (OutStockActionEnum outStockActionEnum : action.outStockActionEnums) {
-                        outStockActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
-                        i++;
-                    }
-                }
-                break;
-            case payAsk:
-
-                break;
-            case SO:
-                for (AddAction.Action action : actions) {
-                    int i = 0;
-                    for (SoOrderActionEnum soOrderActionEnum : action.soOrderActionEnums) {
-                        soOrderActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
-                        i++;
-                    }
-                }
-                break;
-            case PO:
-                for (AddAction.Action action : actions) {
-                    int i = 0;
-                    for (PoOrderActionEnum poOrderActionEnum : action.poOrderActionEnums) {
-                        poOrderActionEnum.setStatus(action.getStatusId(), param.getOrderEnum().name(), i);
-                        i++;
-                    }
-                }
-                break;
-            case outQuality:
-
-                break;
-            case purchaseOrder:
-
-                break;
+//            case productionQuality:
+//                for (AddAction.Action action : actions) {
+//                    int i = 0;
+//                    for (ProductionQualityActionEnum productionQualityActionEnum : action.productionQualityActionEnums) {
+//                        productionQualityActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), i);
+//                        i++;
+//                    }
+//                }
+//                break;
+//            case instockError:
+//                for (AddAction.Action action : actions) {
+//                    int i = 0;
+//                    for (InstockErrorActionEnum instockErrorActionEnum : action.instockErrorActionEnums) {
+//                        instockErrorActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), i);
+//                        i++;
+//                    }
+//                }
+//                break;
+//            case inQuality:
+//                for (AddAction.Action action : actions) {
+//                    int i = 0;
+//                    for (InQualityActionEnum inQualityActionEnum : action.inQualityActionEnums) {
+//                        inQualityActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), i);
+//                        i++;
+//                    }
+//                }
+//                break;
+//            case outstock:
+//                for (AddAction.Action action : actions) {
+//                    int i = 0;
+//                    for (OutStockActionEnum outStockActionEnum : action.outStockActionEnums) {
+//                        outStockActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), i);
+//                        i++;
+//                    }
+//                }
+//                break;
+//            case payAsk:
+//
+//                break;
+//            case SO:
+//                for (AddAction.Action action : actions) {
+//                    int i = 0;
+//                    for (SoOrderActionEnum soOrderActionEnum : action.soOrderActionEnums) {
+//                        soOrderActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), i);
+//                        i++;
+//                    }
+//                }
+//                break;
+//            case PO:
+//                for (AddAction.Action action : actions) {
+//                    int i = 0;
+//                    for (PoOrderActionEnum poOrderActionEnum : action.poOrderActionEnums) {
+//                        poOrderActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), i);
+//                        i++;
+//                    }
+//                }
+//                break;
+//            case outQuality:
+//
+//                break;
+//            case purchaseOrder:
+//
+//                break;
         }
 
 
@@ -152,7 +151,7 @@ public class ActionController {
     @RequestMapping(value = "/addState", method = RequestMethod.POST)
     public ResponseData addState(@RequestBody @Valid StatusParam statusParam) {
         Long id;
-        switch (statusParam.getOrderEnum()) {
+        switch (statusParam.getReceiptsEnum()) {
             case purchaseAsk:
             case createInstock:
             case PO:
@@ -165,7 +164,7 @@ public class ActionController {
             case outQuality:
             case purchaseOrder:
                 DocumentsStatusParam status = statusParam.getParam();
-                status.setFormType(statusParam.getOrderEnum().name());
+                status.setFormType(statusParam.getReceiptsEnum().name());
                 id = documentStatusService.add(status);
                 break;
             default:
