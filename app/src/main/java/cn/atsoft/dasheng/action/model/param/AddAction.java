@@ -26,15 +26,11 @@ public class AddAction {
 
         public List<PoOrderActionEnum> poOrderActionEnums;
 
-        public List<InQualityActionEnum> inQualityActionEnums;
-
-        public List<SoOrderActionEnum> soOrderActionEnums;
-
-        public List<ProductionQualityActionEnum> productionQualityActionEnums;
-
         public List<OutStockActionEnum> outStockActionEnums;
 
         public List<InstockErrorActionEnum> instockErrorActionEnums;
+
+        public List<QualityActionEnum> qualityActionEnums;
 
     }
 }

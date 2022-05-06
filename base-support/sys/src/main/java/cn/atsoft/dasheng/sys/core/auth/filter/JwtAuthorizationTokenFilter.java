@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.sys.core.auth.filter;
 
+import cn.atsoft.dasheng.base.auth.exception.AuthException;
+import cn.atsoft.dasheng.base.auth.exception.enums.AuthExceptionEnum;
 import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
+import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
 import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -39,6 +42,9 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private SessionManager sessionManager;
+
+    @Autowired
+    private AuthService authService;
 
     public JwtAuthorizationTokenFilter() {
     }
@@ -82,8 +88,10 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
         // 4.如果账号不为空，并且没有设置security上下文
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
+            sessionManager.createSession(authToken, authService.user(username));
             // 5.从缓存中拿userDetails，如果不为空，就设置登录上下文和权限上下文
             UserDetails userDetails = sessionManager.getSession(authToken);
+
             if (userDetails != null) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
@@ -117,6 +125,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
                 //跳转到登录超时
                 response.setHeader("Guns-Session-Timeout", "true");
                 request.getRequestDispatcher("/global/sessionError").forward(request, response);
+//                throw new AuthException(AuthExceptionEnum.NO_PAGE_ERROR);
             }
         }
 
