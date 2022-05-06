@@ -74,7 +74,7 @@ public interface CodingRulesService extends IService<CodingRules> {
      */
     String backCoding(Long ids);
 
-    String backSkuCoding(Long ids,Long spuId);
+    String backCoding(Long ids,Long spuId);
 
     /**
      * 通过模块获取编码

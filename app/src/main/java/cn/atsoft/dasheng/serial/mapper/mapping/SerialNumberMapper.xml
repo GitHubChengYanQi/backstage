@@ -8,6 +8,7 @@
         <result column="date" property="date"/>
         <result column="model" property="model"/>
         <result column="num" property="num"/>
+        <result column="md5" property="md5"/>
         <result column="create_user" property="createUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_user" property="updateUser"/>
