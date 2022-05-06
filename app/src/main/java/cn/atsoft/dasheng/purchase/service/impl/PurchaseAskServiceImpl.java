@@ -261,7 +261,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public void updateStatus(ActivitiProcessTask param) {
         if (param.getType().equals("purchaseAsk")) {
             PurchaseAsk ask = this.getById(param.getFormId());
-            ask.setStatus(2L);
+            ask.setStatus(99L);
             this.updateById(ask);
         }
     }

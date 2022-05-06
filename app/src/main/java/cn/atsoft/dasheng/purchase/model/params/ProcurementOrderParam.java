@@ -49,7 +49,7 @@ public class ProcurementOrderParam implements Serializable, BaseValidatingParam 
      * 状态
      */
     @ApiModelProperty("状态")
-    private Integer status;
+    private Long status;
 
     /**
      * 备注

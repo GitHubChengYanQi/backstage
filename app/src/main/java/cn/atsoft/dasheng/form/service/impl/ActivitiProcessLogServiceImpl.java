@@ -517,10 +517,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
             boolean completeFlag = true;
             for (ActionStatus actionStatus : actionStatuses) {
-                if(actionStatus.getStatus().equals(1) && actionStatus.isChecked()){
-
-                }else {
+                if(actionStatus.getStatus().equals(0) && actionStatus.isChecked()){
                     completeFlag = false;
+                    break;
+                }else if (actionStatus.getStatus().equals(0)){
+                    completeFlag = false;
+                    break;
                 }
             }
             if (completeFlag){

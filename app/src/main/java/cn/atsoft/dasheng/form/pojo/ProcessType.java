@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.pojo;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.sun.org.apache.xerces.internal.xs.datatypes.ObjectList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,56 +9,89 @@ import java.util.List;
 import java.util.Map;
 
 public enum ProcessType {
-    QUALITY("质检" ,"quality", new ArrayList<Map<String,String>>(){{
-        add(new HashMap<String,String>(){{
-            put("moduleName","入场检");
-            put("module","inQuality");
-        }});
-        add(new HashMap<String,String>(){{
-            put("moduleName","出厂检");
-            put("module","outQuality");
-        }});
-        add(new HashMap<String,String>(){{
-            put("moduleName","生产检");
-            put("module","productionQuality");
-        }});
+//    QUALITY("质检" ,"quality", new ArrayList<Map<String, Object>>(){{
+//        add(new HashMap<String,Object>(){{
+//            put("moduleName","入场检");
+//            put("module",ProcessModuleEnum.inQuality);
+//        }});
+//        add(new HashMap<String,Object>(){{
+//            put("moduleName","出厂检");
+//            put("module",ProcessModuleEnum.outQuality);
+//        }});
+//        add(new HashMap<String,Object>(){{
+//            put("moduleName","生产检");
+//            put("module",ProcessModuleEnum.productionQuality);
+//        }});
+//    }}),
+//    INSTOCK("入库操作" ,"instock", new ArrayList<Map<String,Object>>(){{
+//        add(new HashMap<String,Object>(){{
+//            put("moduleName","生产入库");
+//            put("module",ProcessModuleEnum.productionInstock);
+//        }});
+//        add(new HashMap<String,Object>(){{
+//            put("moduleName","采购入库");
+//            put("module",ProcessModuleEnum.purchaseInstock);
+//        }});
+//    }}),
+//    SHIP("工艺路线" ,"ship", new ArrayList<Map<String,Object>>(){{
+//
+//    }}),
+//    PURCHASE("采购" ,"purchase", new ArrayList<Map<String,Object>>(){{
+//        add(new HashMap<String,Object>(){{
+//            put("moduleName","采购申请");
+//            put("module",ProcessModuleEnum.purchaseAsk);
+//        }});
+//    }}),
+//    INSTOCKERROR("入库异常" ,"instockError", new ArrayList<Map<String,Object>>(){{
+//
+//    }});
+
+
+
+    QUALITY("质检" ,"quality", new ArrayList<ProcessModuleEnum>(){{
+        add(ProcessModuleEnum.inQuality);
+        add(ProcessModuleEnum.outQuality);
+        add(ProcessModuleEnum.productionQuality);
     }}),
-    INSTOCK("入库操作" ,"instock", new ArrayList<Map<String,String>>(){{
-        add(new HashMap<String,String>(){{
-            put("moduleName","生产入库");
-            put("module","productionInstock");
-        }});
-        add(new HashMap<String,String>(){{
-            put("moduleName","采购入库");
-            put("module","purchaseInstock");
-        }});
+
+    INSTOCK("入库操作" ,"instock", new ArrayList<ProcessModuleEnum>(){{
+        add(ProcessModuleEnum.productionInstock);
+        add(ProcessModuleEnum.purchaseInstock);
     }}),
-    SHIP("工艺路线" ,"ship", new ArrayList<Map<String,String>>(){{
+
+    SHIP("工艺路线" ,"ship", new ArrayList<ProcessModuleEnum>(){{
 
     }}),
-    PURCHASE("采购" ,"purchase", new ArrayList<Map<String,String>>(){{
-        add(new HashMap<String,String>(){{
-            put("moduleName","采购申请");
-            put("module","purchaseAsk");
-        }});
-        add(new HashMap<String,String>(){{
-            put("moduleName","采购计划");
-            put("module","purchasePlan");
-        }});
-        add(new HashMap<String,String>(){{
-            put("moduleName","采购单");
-            put("module","purchaseOrder");
-        }});
+    PURCHASE("采购" ,"purchase",new ArrayList<ProcessModuleEnum>(){{
+        add(ProcessModuleEnum.purchaseAsk);
     }}),
-    INSTOCKERROR("入库异常" ,"instockError", new ArrayList<Map<String,String>>(){{
-
+    INSTOCKERROR("入库异常" ,"instockError",new ArrayList<ProcessModuleEnum>(){{
+        add(ProcessModuleEnum.inQuality);
+        add(ProcessModuleEnum.outQuality);
+        add(ProcessModuleEnum.productionQuality);
     }});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //
 //    @EnumValue
 //    private final Map<String, String> detail;
     @EnumValue
-    private List<Map<String, String>> list;
+    private List<Map<String, Object>> list;
+    @EnumValue
+    private List<ProcessModuleEnum> moduleEnums;
 
 
     @EnumValue
@@ -73,18 +107,27 @@ public enum ProcessType {
         return name;
     }
 
-    public List<Map<String, String>> getList() {
+    public List<Map<String, Object>> getList() {
         return list;
     }
 
+    public List<ProcessModuleEnum> getModuleEnums() {
+        return moduleEnums;
+    }
 
 
-
-    ProcessType(String name,String type,List<Map<String,String>> list) {
+    ProcessType( String name, String type,List<ProcessModuleEnum> moduleEnums) {
         this.name = name;
         this.type = type;
-        this.list = list;
+        this.moduleEnums = moduleEnums;
+
     }
+
+//    ProcessType(String name, String type, List<Map<String,Object>> list) {
+//        this.name = name;
+//        this.type = type;
+//        this.list = list;
+//    }
 
 
     @Override
@@ -100,10 +143,22 @@ public enum ProcessType {
         List<Map<String, Object>> enumList = new ArrayList<>();
         for (ProcessType value : ProcessType.values()) {
             Map<String,Object> enumDetail = new HashMap<>();
-            List<Map<String,String>> list = new ArrayList<>(value.getList());
+
+
+            List<Map<String,String>> detail = new ArrayList<>();
+            for (ProcessModuleEnum anEnum : value.getModuleEnums()) {
+                Map<String,String> map = new HashMap<>();
+                map.put("module",anEnum.name());
+                map.put("moduleName",anEnum.getModuleName());
+                detail.add(map);
+            }
+
+
+
+
             String type = value.getType();
             String name = value.getName();
-            enumDetail.put("details",list);
+            enumDetail.put("details",detail);
             enumDetail.put("name",name);
             enumDetail.put("type",type);
             enumList.add(enumDetail);
