@@ -298,7 +298,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (status != 98) {
             throw new ServiceException(500, "您传入的状态不正确");
         } else {
-            DocumentsAction documentsAction = documentsActionService.query().eq("action_name", "核实数量").eq("display", 1).one();
+            DocumentsAction documentsAction = documentsActionService.query().eq("action_name", "核实").eq("display", 1).one();
             ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", "instock").eq("form_id", id).eq("display", 1).one();
             List<ActivitiProcessLog> logs = activitiProcessLogService.getAudit(processTask.getProcessTaskId());
             List<Long> stepIds = new ArrayList<>();
@@ -310,7 +310,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 for (ActivitiSteps activitiStep : activitiSteps) {
                     if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
 
-                        activitiProcessLogService.checkLogActionComplete(id,activitiStep.getSetpsId(),documentsAction.getDocumentsActionId());
+                        activitiProcessLogService.checkLogActionComplete(processTask.getProcessTaskId(),activitiStep.getSetpsId(),documentsAction.getDocumentsActionId());
 
                     }
                 }
