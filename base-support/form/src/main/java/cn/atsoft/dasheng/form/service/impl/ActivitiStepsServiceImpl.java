@@ -669,7 +669,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     @Override
     public ActivitiStepsResult getStepResultByType(String type) {
-        ActivitiProcess process = processService.query().eq("module", type).eq("status", 99).one();
+        ActivitiProcess process = processService.query().eq("module", type).eq("status", 99).eq("display",1).one();
         if (ToolUtil.isNotEmpty(process)) {
             return getStepResult(process.getProcessId());
         }

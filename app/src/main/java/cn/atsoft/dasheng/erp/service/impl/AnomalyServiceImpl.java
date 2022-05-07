@@ -92,6 +92,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 order.setState(49);
                 instockOrderService.updateById(order);
                 param.setType(param.getAnomalyType().toString());
+
                 break;
         }
         Anomaly entity = getEntity(param);

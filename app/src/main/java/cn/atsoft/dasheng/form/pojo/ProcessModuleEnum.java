@@ -14,7 +14,8 @@ public enum ProcessModuleEnum {
     productionQuality("生产检"),
     productionInstock("生产入库"),
     purchaseInstock("采购入库"),
-    purchaseAsk("采购申请");
+    purchaseAsk("采购申请"),
+    verifyError("核实异常");
 
 
     @EnumValue

@@ -48,7 +48,7 @@ public enum ProcessType {
 
 
 
-    QUALITY("质检" ,"QUALITY", new ArrayList<ProcessModuleEnum>(){{
+    QUALITY("质检" ,"QUALITY",new ArrayList<ProcessModuleEnum>(){{
         add(ProcessModuleEnum.inQuality);
         add(ProcessModuleEnum.outQuality);
         add(ProcessModuleEnum.productionQuality);
@@ -66,9 +66,8 @@ public enum ProcessType {
         add(ProcessModuleEnum.purchaseAsk);
     }}),
     INSTOCKERROR("入库异常" ,"INSTOCKERROR",new ArrayList<ProcessModuleEnum>(){{
-        add(ProcessModuleEnum.inQuality);
-        add(ProcessModuleEnum.outQuality);
-        add(ProcessModuleEnum.productionQuality);
+        add(ProcessModuleEnum.verifyError);
+
     }});
 
 
@@ -106,6 +105,7 @@ public enum ProcessType {
     public String getName() {
         return name;
     }
+
 
     public List<Map<String, Object>> getList() {
         return list;

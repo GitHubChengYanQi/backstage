@@ -238,7 +238,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 //添加小铃铛
                 wxCpSendTemplate.setSource("processTask");
                 wxCpSendTemplate.setSourceId(taskId);
-                wxCpSendTemplate.sendTemplate();
                 //添加log
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
                 activitiProcessLogService.autoAudit(taskId, 1);
@@ -816,6 +815,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             order.setState(98);
             this.updateById(order);
         }
+
     }
 
     @Override
