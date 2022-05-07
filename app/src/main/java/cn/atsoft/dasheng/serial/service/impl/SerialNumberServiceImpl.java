@@ -104,6 +104,9 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
             String date = simpleDateFormat.format(param.getDate());
             queryWrapper.apply("date_format(create_time,'%Y-%m-%d') = date_format('"+date+"','%Y-%m-%d')").orderByDesc("num");
         }
+        if (ToolUtil.isNotEmpty(param.getMd5())) {
+            queryWrapper.eq("md5",param.getMd5());
+        }
         SerialNumber num = this.baseMapper.selectOne(queryWrapper.orderByDesc("num").last("limit 1"));
         return num;
     }

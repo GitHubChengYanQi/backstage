@@ -143,9 +143,9 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         /**
          * 判断是否满足库存
          */
-        if (ToolUtil.isNotEmpty(param.getUserId())) {
-            checkStockDetail(param, productionWorkOrder);
-        }
+//        if (ToolUtil.isNotEmpty(param.getUserId())) {
+//            checkStockDetail(param, productionWorkOrder);
+//        }
 
 
         /**

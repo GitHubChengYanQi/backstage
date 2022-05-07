@@ -1,12 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
-import cn.atsoft.dasheng.app.entity.Parts;
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.SpuClassificationMapper;
@@ -53,10 +49,14 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
-        if (ToolUtil.isNotEmpty(param.getPid()) && param.getType() != 2) {
+        if (ToolUtil.isNotEmpty(param.getPid())) {
             Integer num = this.query().eq("pid", param.getPid()).eq("type", 2).eq("display", 1).count();
             if (num > 0) {
                 throw new ServiceException(500, "当前分类下已有产品，不可创建");
+            }
+            Integer spuCount = spuService.query().eq("spu_classification_id", param.getPid()).eq("display", 1).count();
+            if(spuCount>0){
+                throw new ServiceException(500,"父级分类下已存在产品,不可添加");
             }
 
         }
@@ -65,19 +65,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
 
         // 更新当前节点，及下级
-//        SpuClassification spuClassification = new SpuClassification();
-//        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
-//        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-//        spuClassification.setChildren(JSON.toJSONString(childrenMap.get("children")));
-//        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
-//        QueryWrapper.eq("spu_classification_id", entity.getPid());
-//        SpuClassification spuClass = this.getById(entity.getPid());
-//        if (ToolUtil.isNotEmpty(spuClass) && ToolUtil.isNotEmpty(spuClass.getType()) && spuClass.getType() == 2) {
-//            throw new ServiceException(500, "产品不可以有下级分类");
-//        }
-//        this.update(spuClassification, QueryWrapper);
-//
-//        updateChildren(entity.getPid());
+
 
         return entity.getSpuClassificationId();
 
@@ -87,9 +75,13 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     public void delete(SpuClassificationParam param) {
         Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).and(i -> i.eq(Spu::getDisplay, 1)).count();
-        if (count > 0) {
+        Integer children = this.query().eq("pid", param.getSpuClassificationId()).eq("display", 1).count();
+        if (count > 0 ) {
             throw new ServiceException(500, "此分类下有物品,无法删除");
-        } else {
+        } else if (children > 0){
+            throw new ServiceException(500, "此分类下有下级,无法删除");
+
+        } else{
             SpuClassification spuClassification = new SpuClassification();
             spuClassification.setSpuClassificationId(param.getSpuClassificationId());
             spuClassification.setDisplay(0);
@@ -322,5 +314,50 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         }
     }
 
+
+    /**
+     * 从子集到父级的所有编码拼接
+     * @return
+     */
+    @Override
+    public String getCodings(Long classId){
+        SpuClassification now = this.getById(classId);
+        List<SpuClassification> all = this.list();
+//        String codings = now.getCodingClass() ;
+//        StringBuffer stringBuffer = this.loopGetCoding(now, all, new StringBuffer());
+        String coding = getCoding(now, all);
+        return coding;
+    }
+
+//    private StringBuffer loopGetCoding(SpuClassification now,List<SpuClassification> all,StringBuffer codings){
+//        if(ToolUtil.isNotEmpty(now.getPid())){
+//            for (SpuClassification spuClassification : all) {
+//                if (now.getPid().equals(spuClassification.getSpuClassificationId())) {
+//                   StringBuffer sb = new StringBuffer().append(ToolUtil.isEmpty(now.getCodingClass()) ? "" : now.getCodingClass()).append(codings);
+//                    codings = sb;
+//                    codings = loopGetCoding(spuClassification,all,codings);
+//                }
+//            }
+//        }else {
+//            StringBuffer sb = new StringBuffer().append(ToolUtil.isEmpty(now.getCodingClass()) ? "" : now.getCodingClass()).append(codings);
+//            codings = sb;
+//        }
+//        return codings;
+//    }
+
+    private String getCoding(SpuClassification result, List<SpuClassification> resultList) {
+        String coding = "";
+        if (result.getPid() == 0) {
+            coding = result.getCodingClass();
+        }else {
+            for (SpuClassification spuClassification : resultList) {
+                if (result.getPid().equals(spuClassification.getSpuClassificationId())) {
+                    String cod = getCoding(spuClassification, resultList);
+                    coding = cod + result.getCodingClass();
+                }
+            }
+        }
+        return coding;
+    }
 
 }

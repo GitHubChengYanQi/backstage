@@ -44,6 +44,13 @@ public class SerialNumberResult implements Serializable {
      */
     @ApiModelProperty("流水号")
     private Long num;
+
+    /**
+     * 唯一字符串
+     */
+    @ApiModelProperty("唯一字符串")
+    private String md5;
+
     /**
      * 长度
      */
