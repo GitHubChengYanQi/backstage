@@ -13,6 +13,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,10 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private String url;
 
     private String customerName;
+
+
+    private Long actionId;
+
 
     private String type;
 

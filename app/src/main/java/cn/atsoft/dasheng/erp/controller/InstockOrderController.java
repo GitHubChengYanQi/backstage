@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -66,8 +67,8 @@ public class InstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/checkNumberTrue", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData checkNumberTrue(@RequestBody InstockOrderParam instockOrderParam) {
-        this.instockOrderService.checkNumberTrue(instockOrderParam.getInstockOrderId(), instockOrderParam.getState());
+    public ResponseData checkNumberTrue(@RequestBody @Valid InstockOrderParam instockOrderParam) {
+        this.instockOrderService.checkNumberTrue(instockOrderParam.getInstockOrderId(), instockOrderParam.getState(), instockOrderParam.getActionId());
         return ResponseData.success();
     }
 
@@ -115,8 +116,8 @@ public class InstockOrderController extends BaseController {
     @RequestMapping(value = "/inStockByOrder", method = RequestMethod.POST)
     @ApiOperation("自由入库")
     public ResponseData inStockByOrder(@Valid @RequestBody InStockByOrderParam param) {
-        this.instockOrderService.inStockByOrder(param);
-        return ResponseData.success();
+        boolean b = this.instockOrderService.inStockByOrder(param);
+        return ResponseData.success(b);
     }
 
     /**
