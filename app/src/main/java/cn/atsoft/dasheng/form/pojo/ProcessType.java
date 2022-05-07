@@ -62,8 +62,11 @@ public enum ProcessType {
     SHIP("工艺路线" ,"SHIP", new ArrayList<ProcessModuleEnum>(){{
 
     }}),
-    PURCHASE("采购" ,"PURCHASE",new ArrayList<ProcessModuleEnum>(){{
+    PURCHASEASK("采购申请" ,"PURCHASEASK",new ArrayList<ProcessModuleEnum>(){{
         add(ProcessModuleEnum.purchaseAsk);
+    }}),
+    PROCUREMENTORDER("采购单" ,"PROCUREMENTORDER",new ArrayList<ProcessModuleEnum>(){{
+        add(ProcessModuleEnum.procurementOrder);
     }}),
     INSTOCKERROR("入库异常" ,"INSTOCKERROR",new ArrayList<ProcessModuleEnum>(){{
         add(ProcessModuleEnum.verifyError);

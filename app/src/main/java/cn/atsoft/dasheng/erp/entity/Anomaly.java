@@ -8,6 +8,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -63,6 +64,18 @@ public class Anomaly implements Serializable {
      */
     @TableField("form_id")
     private Long formId;
+
+    /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private Long sourceId;
 
     /**
      * 创建者
@@ -123,6 +136,22 @@ public class Anomaly implements Serializable {
 
     public void setFormId(Long formId) {
         this.formId = formId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 
     public Long getCreateUser() {

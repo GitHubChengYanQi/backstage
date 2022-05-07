@@ -66,6 +66,17 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
     @NotNull
     @ApiModelProperty("单据id")
     private Long formId;
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @ApiModelProperty("来源id")
+    private Long sourceId;
 
     /**
      * 创建者

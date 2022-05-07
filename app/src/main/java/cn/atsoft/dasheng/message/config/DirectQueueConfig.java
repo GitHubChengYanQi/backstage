@@ -52,14 +52,14 @@ public class DirectQueueConfig {
      * 审批流消息队列
      */
 
-    public final static String AUDIT_REAL_EXCHANGE = ".audit.real.topicExchange";
-    public final static String AUDIT_REAL_ROUTE = ".audit.real.route";
-    public final static String AUDIT_REAL_QUEUE = ".audit.real.queue";
+    public final static String AUDIT_REAL_EXCHANGE = ".auditService.real.topicExchange";
+    public final static String AUDIT_REAL_ROUTE = ".auditService.real.route";
+    public final static String AUDIT_REAL_QUEUE = ".auditService.real.queue";
 
 
-    public final static String AUDIT_DELAY_EXCHANGE = ".audit.delay.topicExchange";
-    public final static String AUDIT_DELAY_ROUTE = ".audit.delay.route";
-    public final static String AUDIT_DELAY_QUEUE = ".audit.delay.queue";
+    public final static String AUDIT_DELAY_EXCHANGE = ".auditService.delay.topicExchange";
+    public final static String AUDIT_DELAY_ROUTE = ".auditService.delay.route";
+    public final static String AUDIT_DELAY_QUEUE = ".auditService.delay.queue";
 
 
 
@@ -247,7 +247,7 @@ public class DirectQueueConfig {
         Map<String, Object> argsMap = Maps.newHashMap();
         argsMap.put("x-dead-letter-exchange", getAuditRealExchange()); //真正的交换机
         argsMap.put("x-dead-letter-routing-key", getAuditRealRoute()); //真正的路由键
-        return new Queue(getMicroServiceDelayQueue() , true, false, false, argsMap);
+        return new Queue(getAuditDelayExchange() , true, false, false, argsMap);
     }
 
     /**

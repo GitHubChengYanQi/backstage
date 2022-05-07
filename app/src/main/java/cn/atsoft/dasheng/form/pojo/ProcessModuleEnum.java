@@ -15,6 +15,13 @@ public enum ProcessModuleEnum {
     productionInstock("生产入库"),
     purchaseInstock("采购入库"),
     purchaseAsk("采购申请"),
+    purchasePlan("采购计划"),
+    procurementOrder("采购单"),
+    inQuiry(""),
+    instockError(""),
+    createInstock(""),
+    INSTOCK(""),
+    quality_task(""),
     verifyError("核实异常");
 
 

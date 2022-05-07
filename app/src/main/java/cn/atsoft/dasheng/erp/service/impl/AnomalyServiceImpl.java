@@ -32,6 +32,7 @@ import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -85,6 +86,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Autowired
     private MessageProducer messageProducer;
 
+    @Autowired
+    private GetOrigin getOrigin;
 
     @Transactional
     @Override
@@ -107,6 +110,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
         Anomaly entity = getEntity(param);
         this.save(entity);
+
+         if (ToolUtil.isNotEmpty(param.getType()) && ToolUtil.isNotEmpty(param.getFormId())) {
+                String origin = getOrigin.newThemeAndOrigin("anomaly", entity.getAnomalyId(), entity.getSource(), entity.getSourceId());
+                entity.setOrigin(origin);
+                this.updateById(entity);
+         }
 
         List<AnomalyDetail> details = new ArrayList<>();
         for (AnomalyDetailParam detailParam : param.getDetailParams()) {
