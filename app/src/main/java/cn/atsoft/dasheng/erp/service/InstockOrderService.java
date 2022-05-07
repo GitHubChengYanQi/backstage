@@ -37,7 +37,7 @@ public interface InstockOrderService extends IService<InstockOrder> {
      */
     void add(InstockOrderParam param);
 
-    void checkNumberTrue(Long id, Integer status);
+    void checkNumberTrue(Long id, Integer status, Long actionId);
 
     void checkNumberFalse(Long id, Integer status);
 
@@ -99,7 +99,9 @@ public interface InstockOrderService extends IService<InstockOrder> {
     void formatDetail(InstockOrderResult orderResult);
 
 
-    void inStockByOrder(InStockByOrderParam param);
+    void formatResult(InstockOrderResult result);
+
+    boolean inStockByOrder(InStockByOrderParam param);
 
     /**
      * 多个库位入库

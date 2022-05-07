@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 单据动作
@@ -29,6 +33,8 @@ public class DocumentsActionResult implements Serializable {
 
 
     private String actionName;
+
+    private Integer status;
 
     /**
      * 单据状态id
