@@ -1,14 +1,27 @@
 package cn.atsoft.dasheng.message.entity;
 
+import cn.atsoft.dasheng.message.enmu.AuditEnum;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
+import lombok.Data;
 
+@Data
 public class AuditEntity {
     /**
      * 参数对象
      */
-    private Object object;
+    private Long taskId;
 
+    private Integer auditStatus;
+
+    private Long formStatus;
+
+    private String form;
+    private Long formId;
+
+    private Long actionId;
+
+    private AuditEnum auditType;
 
 
     /**

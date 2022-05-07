@@ -1,5 +1,5 @@
 package cn.atsoft.dasheng.message.enmu;
 
 public enum AuditEnum {
-    Approved,Refuse,Withdraw,RollBack
+    checkAction,audit,autoAudit,refuse,withdraw,rollBack
 }

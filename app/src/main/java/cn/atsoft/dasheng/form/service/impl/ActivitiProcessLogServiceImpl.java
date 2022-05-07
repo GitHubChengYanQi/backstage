@@ -500,8 +500,36 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         this.updateById(entity);
     }
 
+
+
     /**
-     * 检查节点动作完成请款
+     * 检查节点动作完成(上)
+     *
+     * @param
+     * @param
+     * @param
+     */
+    @Override
+    public void checkAction(Long id, String formType, Long actionId) {
+
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", formType).eq("form_id", id).eq("display", 1).one();
+        List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiProcessLog processLog : logs) {
+            stepIds.add(processLog.getSetpsId());
+        }
+        List<ActivitiSteps> activitiSteps = stepIds.size() == 0 ? new ArrayList<>() : stepsService.listByIds(stepIds);
+        for (ActivitiProcessLog processLog : logs) {
+            for (ActivitiSteps activitiStep : activitiSteps) {
+                if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
+                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId);
+                }
+            }
+        }
+    }
+
+    /**
+     * 检查节点动作完成(下)
      *
      * @param taskId
      * @param stepId
@@ -524,7 +552,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 processLog.setActionStatus(JSON.toJSONString(actionStatuses));
                 this.updateById(processLog);
 
-
+                boolean isChecked = false;
                 boolean completeFlag = true;
                 for (ActionStatus actionStatus : actionStatuses) {
                     if (actionStatus.getStatus().equals(0) && actionStatus.isChecked()) {
@@ -534,8 +562,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         completeFlag = false;
                         break;
                     }
+                    if (actionStatus.isChecked()){
+                        isChecked = true;
+                    }
                 }
-                if (completeFlag) {
+                if (completeFlag && isChecked) {
                     this.autoAudit(taskId, 1);
                 }
             }
