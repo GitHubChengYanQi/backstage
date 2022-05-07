@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
+import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -24,6 +26,7 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -74,6 +77,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InstockListService instockListService;
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private DocumentsActionService documentsActionService;
 
 
     @Transactional
@@ -86,11 +91,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (ToolUtil.isEmpty(order)) {
                     throw new ServiceException(500, "入库单不存在");
                 }
-                if (order.getState() != 1 ) {
-                    throw new ServiceException(500, "入库单状态不符");
-                }
-                order.setState(49);
-                instockOrderService.updateById(order);
+//                if (order.getState() != 1) {
+//                    throw new ServiceException(500, "入库单状态不符");
+//                }
+//                order.setState(49);
+//                instockOrderService.updateById(order);
                 param.setType(param.getAnomalyType().toString());
 
                 break;
@@ -134,6 +139,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
+        } else {
+            /**
+             * 没有异常流程直接算完成
+             */
+            InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
+            instockOrderService.updateById(instockOrder);
+            DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
+            instockOrderService.checkAction(instockOrder.getInstockOrderId(), action.getDocumentsActionId());
         }
     }
 

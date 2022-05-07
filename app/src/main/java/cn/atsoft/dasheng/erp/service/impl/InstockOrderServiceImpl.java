@@ -308,8 +308,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
     }
 
-
-    private void checkAction(Long id, Long actionId) {
+    @Override
+    public void checkAction(Long id, Long actionId) {
 
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", "instock").eq("form_id", id).eq("display", 1).one();
         List<ActivitiProcessLog> logs = activitiProcessLogService.getAudit(processTask.getProcessTaskId());
@@ -812,8 +812,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     public void updateStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
         if (order.getState() != 50) {
-            order.setState(98);
-            this.updateById(order);
+            DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
+            checkAction(order.getInstockOrderId(), action.getDocumentsActionId());
         }
 
     }
