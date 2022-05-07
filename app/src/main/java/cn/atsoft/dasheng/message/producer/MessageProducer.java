@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.message.producer;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.config.DirectQueueConfig;
-import cn.atsoft.dasheng.message.config.MicroServiceDirectQueueConfig;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import com.alibaba.fastjson.JSON;

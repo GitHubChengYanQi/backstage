@@ -3,20 +3,14 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.CodingRules;
-import cn.atsoft.dasheng.erp.entity.CodingRulesClassification;
-import cn.atsoft.dasheng.erp.entity.RulesRelation;
-import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.CodingRulesMapper;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
 import cn.atsoft.dasheng.erp.model.params.Codings;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesResult;
-import cn.atsoft.dasheng.erp.service.CodingRulesClassificationService;
-import cn.atsoft.dasheng.erp.service.CodingRulesService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.RulesRelationService;
-import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.service.SerialNumberService;
@@ -24,6 +18,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.Month;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -56,6 +51,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     private SerialNumberService serialNumberService;
     @Autowired
     private SpuService spuService;
+
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     @Override
     @Transactional
@@ -188,6 +186,10 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
      */
     @Override
     public String backCoding(Long ids) {
+       return this.backCoding(ids,null);
+    }
+    @Override
+    public String backCoding(Long ids,Long spuId) {
         String rules = "";
         CodingRules codingRules = this.getById(ids);
         if (ToolUtil.isEmpty(codingRules.getCodingRules())) {
@@ -215,63 +217,73 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 //        int dayOfMonth = dateTime.dayOfMonth();
         String dayOfMonth = String.format("%02d", DateUtil.dayOfMonth(date));
 //--------------------------------------------------------------------------------------------------------------
-        if (rules.contains("${dd}")) {
-            rules = rules.replace("${dd}", dayOfMonth + "");
-        }
+        StringBuffer stringBuffer = new StringBuffer();
 
         if (rules.contains("${YYYY}")) {
             rules = rules.replace("${YYYY}", year + "");
+            stringBuffer.append(year);
         }
 
         if (rules.contains("${YY}")) {
             int yy = Integer.parseInt(String.valueOf(year).substring(2));
             rules = rules.replace("${YY}", yy + "");
+            stringBuffer.append(yy);
         }
 
         if (rules.contains("${MM}")) {
             rules = rules.replace("${MM}", monthValue + "");
+            stringBuffer.append(monthValue);
         }
 
-        if (rules.contains("${randomInt}")) {
-            rules = rules.replace("${randomInt}", randomInt + "");
-        }
-
-        if (rules.contains("${randomString}")) {
-            rules = rules.replace("${randomString}", randomString);
-        }
-
-        if (rules.contains("${quarter}")) {
-            rules = rules.replace("${quarter}", quarter + "");
+        if (rules.contains("${dd}")) {
+            rules = rules.replace("${dd}", dayOfMonth + "");
+            stringBuffer.append(dayOfMonth);
         }
 
         if (rules.contains("${week}")) {
             rules = rules.replace("${week}", weekOfYear + "");
+            stringBuffer.append(weekOfYear);
+        }
+
+        if (rules.contains("${randomInt}")) {
+            rules = rules.replace("${randomInt}", randomInt + "");
+            stringBuffer.append(randomInt);
+        }
+
+        if (rules.contains("${randomString}")) {
+            rules = rules.replace("${randomString}", randomString);
+            stringBuffer.append(randomString);
+        }
+
+        if (rules.contains("${quarter}")) {
+            rules = rules.replace("${quarter}", quarter + "");
+            stringBuffer.append(quarter);
+        }
+        if (rules.contains("${spuCoding}")) {
+            Spu spu = spuService.getById(spuId);
+            rules = rules.replace("${spuCoding}", ToolUtil.isEmpty(spu.getCoding())? "":spu.getCoding());
+            stringBuffer.append(ToolUtil.isEmpty(spu.getCoding())? "":spu.getCoding());
+        }
+
+        if (rules.contains("${skuClass}")) {
+            Spu spu = spuService.getById(spuId);
+            String codings = spuClassificationService.getCodings(spu.getSpuClassificationId());
+            rules = rules.replace("${skuClass}",codings);
+            stringBuffer.append(codings);
         }
 
         Pattern compile = Pattern.compile("\\$\\{(serial.*?(\\[(\\d[0-9]?)\\]))\\}");
         Matcher matcher = compile.matcher(rules);
+
         if (matcher.find()) {
             SerialNumberParam serialNumberParam = new SerialNumberParam();
+            String md5 = SecureUtil.md5(stringBuffer.toString());
+            serialNumberParam.setMd5(md5);
             serialNumberParam.setSerialLength(Long.valueOf(matcher.group(3)));
             String aLong = serialNumberService.add(serialNumberParam);
             rules = rules.replace(matcher.group(0) + "", aLong + "");
         }
-
-        if (rules.contains("${skuClass}")) {
-            rules = rules.replace("${skuClass}", "${skuClass}");
-        }
-
         return rules;
-    }
-    @Override
-    public String backSkuCoding(Long ids,Long spuId) {
-        String backCoding = this.backCoding(ids);
-
-        if (backCoding.contains("${spuCoding}")) {
-            Spu spu = spuService.getById(spuId);
-            backCoding = backCoding.replace("${spuCoding}", ToolUtil.isEmpty(spu.getCoding())? "":spu.getCoding());
-        }
-        return backCoding;
     }
 
 
