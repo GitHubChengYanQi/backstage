@@ -25,6 +25,18 @@ public class Anomaly implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 主题
+     */
+    @TableField("theme")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @TableField("origin")
+    private String origin;
+
+    /**
      * 附件
      */
     @TableField("enclosure")
@@ -175,6 +187,22 @@ public class Anomaly implements Serializable {
 
     public void setEnclosure(String enclosure) {
         this.enclosure = enclosure;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     @Override

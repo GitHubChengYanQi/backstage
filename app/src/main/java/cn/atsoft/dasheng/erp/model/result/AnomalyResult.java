@@ -34,6 +34,17 @@ public class AnomalyResult implements Serializable {
 
     private String enclosure;
 
+
+    /**
+     * 主题
+     */
+    private String theme;
+
+    /**
+     * 来源
+     */
+    private String origin;
+
     /**
      * 异常id
      */

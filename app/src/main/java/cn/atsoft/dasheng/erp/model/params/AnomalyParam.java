@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -34,6 +35,16 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     @NotNull
     private List<AnomalyDetailParam> detailParams;
+
+    /**
+     * 主题
+     */
+    private String theme;
+
+    /**
+     * 来源
+     */
+    private String origin;
 
 
     private String remark;
