@@ -31,8 +31,10 @@ import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
+import cn.atsoft.dasheng.message.service.AuditMessageService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
@@ -58,6 +60,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
+
+import static cn.atsoft.dasheng.message.enmu.AuditEnum.checkAction;
 
 /**
  * <p>
@@ -122,6 +126,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Autowired
     private DocumentsActionService documentsActionService;
+
 
     @Override
     @Transactional
@@ -292,7 +297,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (status != 98) {
             throw new ServiceException(500, "您传入的状态不正确");
         } else {
-            checkAction(id, actionId);
+            messageProducer.auditMessageDo(new AuditEntity(){{
+                setAuditType(checkAction);
+                setFormId(id);
+                setForm("instock");
+                setActionId(actionId);
+            }});
         }
 
     }
@@ -308,25 +318,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
     }
 
-    @Override
-    public void checkAction(Long id, Long actionId) {
-
-        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", "instock").eq("form_id", id).eq("display", 1).one();
-        List<ActivitiProcessLog> logs = activitiProcessLogService.getAudit(processTask.getProcessTaskId());
-        List<Long> stepIds = new ArrayList<>();
-        for (ActivitiProcessLog processLog : logs) {
-            stepIds.add(processLog.getSetpsId());
-        }
-        List<ActivitiSteps> activitiSteps = stepIds.size() == 0 ? new ArrayList<>() : stepsService.listByIds(stepIds);
-        for (ActivitiProcessLog processLog : logs) {
-            for (ActivitiSteps activitiStep : activitiSteps) {
-                if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
-                    activitiProcessLogService.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId);
-
-                }
-            }
-        }
-    }
 
     private void currentNode() {
 //        ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
@@ -619,7 +610,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         boolean orderComplete = instockOrderComplete(instockOrder.getInstockOrderId());
         if (orderComplete) {
-            checkAction(param.getInstockOrderId(), param.getActionId());
+            /**
+             * 消息队列完成动作
+             */
+            messageProducer.auditMessageDo(new AuditEntity(){{
+                setAuditType(checkAction);
+                setFormId(param.getInstockOrderId());
+                setForm("instock");
+                setActionId(param.getActionId());
+            }});
         }
         return orderComplete;
     }
@@ -813,7 +812,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         InstockOrder order = this.getById(processTask.getFormId());
         if (order.getState() != 50) {
             DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
-            checkAction(order.getInstockOrderId(), action.getDocumentsActionId());
+            messageProducer.auditMessageDo(new AuditEntity(){{
+                setAuditType(checkAction);
+                setFormId(order.getInstockOrderId());
+                setForm(ReceiptsEnum.INSTOCK.name());
+                setActionId(action.getDocumentsActionId());
+            }});
+
         }
 
     }

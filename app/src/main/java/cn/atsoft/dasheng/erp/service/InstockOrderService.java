@@ -41,7 +41,7 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     void checkNumberFalse(Long id, Integer status);
 
-    void checkAction(Long id, Long actionId);
+
 
     /**
      * 删除

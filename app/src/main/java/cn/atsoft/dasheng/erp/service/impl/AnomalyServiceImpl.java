@@ -29,6 +29,8 @@ import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.message.entity.AuditEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
+import static cn.atsoft.dasheng.message.enmu.AuditEnum.checkAction;
 
 /**
  * <p>
@@ -79,6 +82,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private MediaService mediaService;
     @Autowired
     private DocumentsActionService documentsActionService;
+    @Autowired
+    private MessageProducer messageProducer;
 
 
     @Transactional
@@ -146,7 +151,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
             instockOrderService.updateById(instockOrder);
             DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
-            instockOrderService.checkAction(instockOrder.getInstockOrderId(), action.getDocumentsActionId());
+            messageProducer.auditMessageDo(new AuditEntity(){{
+                setAuditType(checkAction);
+                setFormId(instockOrder.getInstockOrderId());
+                setForm(ReceiptsEnum.INSTOCK.name());
+                setActionId(action.getDocumentsActionId());
+            }});
         }
     }
 

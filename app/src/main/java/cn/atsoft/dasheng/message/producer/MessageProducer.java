@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.message.producer;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.config.DirectQueueConfig;
+import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import com.alibaba.fastjson.JSON;
@@ -99,15 +100,22 @@ public class MessageProducer {
     /**
      * 普通队列
      *
-     * @param microServiceEntity 内容对象
+     * @param auditEntity 内容对象
      */
-    public void auditService(MicroServiceEntity microServiceEntity) {
-        microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
-        if (ToolUtil.isNotEmpty(microServiceEntity.getMaxTimes()) && microServiceEntity.getTimes() <= microServiceEntity.getMaxTimes()) {
-            //TODO 测试加入唯一key
+    public void auditMessageDo(AuditEntity auditEntity) {
+        auditEntity.setTimes(1 + auditEntity.getTimes());
+        if (ToolUtil.isNotEmpty(auditEntity.getMaxTimes()) && auditEntity.getTimes() <= auditEntity.getMaxTimes()) {
+            /**
+             * 打印日志
+             */
             String randomString = ToolUtil.getRandomString(5);
-            logger.info("内部调用创建:" + microServiceEntity.getType()+"/"+microServiceEntity.getOperationType()+"/"+randomString);
-            rabbitTemplate.convertAndSend(DirectQueueConfig.getAuditRealExchange(), DirectQueueConfig.getAuditRealRoute(), JSON.toJSONString(microServiceEntity));
+            StringBuffer sb = new StringBuffer();
+            sb.append("发出审批队列").append(auditEntity).append("/").append(randomString);
+            logger.info(sb.toString());
+            /**
+             * 发送
+             */
+            rabbitTemplate.convertAndSend(DirectQueueConfig.getAuditRealExchange(), DirectQueueConfig.getAuditRealRoute(), JSON.toJSONString(auditEntity));
 
         }
     }
@@ -115,15 +123,25 @@ public class MessageProducer {
     /**
      * 延迟队列
      *
-     * @param microServiceEntity 消息
+     * @param auditEntity 消息
      * @param ttl           延迟 毫秒
      */
-    public void auditService(MicroServiceEntity microServiceEntity, Integer ttl) {
+    public void auditMessageDo(AuditEntity auditEntity, Integer ttl) {
 
-        microServiceEntity.setExpiration(ttl);
-        microServiceEntity.setTimes(1 + microServiceEntity.getTimes());
-        if (ToolUtil.isNotEmpty(microServiceEntity.getMaxTimes()) && microServiceEntity.getTimes() <= microServiceEntity.getMaxTimes()) {
-            rabbitTemplate.convertAndSend(DirectQueueConfig.getAuditRealExchange(), DirectQueueConfig.getAuditRealRoute(), JSON.toJSONString(microServiceEntity), message -> {
+        auditEntity.setExpiration(ttl);
+        auditEntity.setTimes(1 + auditEntity.getTimes());
+        /**
+         * 打印日志
+         */
+        String randomString = ToolUtil.getRandomString(5);
+        StringBuffer sb = new StringBuffer();
+        sb.append("发出审批队列").append(auditEntity).append("/").append(randomString);
+        logger.info(sb.toString());
+        /**
+         * 发送
+         */
+        if (ToolUtil.isNotEmpty(auditEntity.getMaxTimes()) && auditEntity.getTimes() <= auditEntity.getMaxTimes()) {
+            rabbitTemplate.convertAndSend(DirectQueueConfig.getAuditRealExchange(), DirectQueueConfig.getAuditRealRoute(), JSON.toJSONString(auditEntity), message -> {
                 MessageProperties messageProperties = message.getMessageProperties();
                 messageProperties.setExpiration(ttl.toString());//单位是毫秒
                 return message;
