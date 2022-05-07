@@ -20,7 +20,7 @@ public interface FormActionInterface {
      */
     default Long getStatus() {
         String name = this.toString();
-        DocumentsAction action = actionService.query().eq("name", name).one();
+        DocumentsAction action = actionService.query().eq("action", name).eq("display",1).one();
         return action.getDocumentsStatusId();
     }
 

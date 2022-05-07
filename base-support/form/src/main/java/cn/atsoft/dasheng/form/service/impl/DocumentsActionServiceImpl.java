@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.mapper.DocumentsActionMapper;
 import cn.atsoft.dasheng.form.model.params.DocumentsActionParam;
 import cn.atsoft.dasheng.form.model.result.DocumentsActionResult;
+import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.DocumentsActionService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.bean.BeanUtil;
@@ -59,6 +60,32 @@ public class DocumentsActionServiceImpl extends ServiceImpl<DocumentsActionMappe
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
+
+    /**
+     * 组合
+     *
+     * @param actionStatuses
+     */
+    @Override
+    public void combination(List<ActionStatus> actionStatuses) {
+        List<Long> ids = new ArrayList<>();
+        for (ActionStatus actionStatus : actionStatuses) {
+            ids.add(actionStatus.getActionId());
+        }
+        List<DocumentsAction> documentsActions = ids.size() == 0 ? new ArrayList<>() : this.listByIds(ids);
+
+        for (ActionStatus actionStatus : actionStatuses) {
+            for (DocumentsAction documentsAction : documentsActions) {
+                if (actionStatus.getActionId().equals(documentsAction.getDocumentsActionId())) {
+                    actionStatus.setAction(documentsAction.getAction());
+                    actionStatus.setFormType(documentsAction.getFormType());
+                    break;
+                }
+            }
+        }
+
+    }
+
 
     @Override
     public List<DocumentsActionResult> getList(Long statusId, String fromType) {

@@ -61,6 +61,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     private ActivitiSetpSetService setpSetService;
     @Autowired
     private ActivitiSetpSetDetailService setpSetDetailService;
+    @Autowired
+    private DocumentsActionService actionService;
 
 
     @Override
@@ -237,6 +239,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
             activitiAudit.setFormType(auditRule.getFormType());
             if (ToolUtil.isNotEmpty(auditRule.getActionStatuses())) {
+                actionService.combination(auditRule.getActionStatuses());
                 String action = JSON.toJSONString(auditRule.getActionStatuses());
                 activitiAudit.setAction(action);
             }
@@ -669,7 +672,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     @Override
     public ActivitiStepsResult getStepResultByType(String type) {
-        ActivitiProcess process = processService.query().eq("module", type).eq("status", 99).eq("display",1).one();
+        ActivitiProcess process = processService.query().eq("module", type).eq("status", 99).eq("display", 1).one();
         if (ToolUtil.isNotEmpty(process)) {
             return getStepResult(process.getProcessId());
         }
