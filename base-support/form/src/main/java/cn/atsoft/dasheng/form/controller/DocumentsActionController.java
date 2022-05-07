@@ -32,45 +32,45 @@ public class DocumentsActionController extends BaseController {
     @Autowired
     private DocumentsActionService documentsActionService;
 
-    /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2022-04-28
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody DocumentsActionParam documentsActionParam) {
-        this.documentsActionService.add(documentsActionParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2022-04-28
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody DocumentsActionParam documentsActionParam) {
-
-        this.documentsActionService.update(documentsActionParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2022-04-28
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody DocumentsActionParam documentsActionParam)  {
-        this.documentsActionService.delete(documentsActionParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 新增接口
+//     *
+//     * @author song
+//     * @Date 2022-04-28
+//     */
+//    @RequestMapping(value = "/add", method = RequestMethod.POST)
+//    @ApiOperation("新增")
+//    public ResponseData addItem(@RequestBody DocumentsActionParam documentsActionParam) {
+//        this.documentsActionService.add(documentsActionParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 编辑接口
+//     *
+//     * @author song
+//     * @Date 2022-04-28
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody DocumentsActionParam documentsActionParam) {
+//
+//        this.documentsActionService.update(documentsActionParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 删除接口
+//     *
+//     * @author song
+//     * @Date 2022-04-28
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody DocumentsActionParam documentsActionParam)  {
+//        this.documentsActionService.delete(documentsActionParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口
