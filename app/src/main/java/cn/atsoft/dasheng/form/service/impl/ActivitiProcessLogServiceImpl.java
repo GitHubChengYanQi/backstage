@@ -17,10 +17,7 @@ import cn.atsoft.dasheng.erp.service.impl.ProcessTaskEndSend;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.model.result.DocumentsActionResult;
+import cn.atsoft.dasheng.form.model.result.*;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.RuleType;
@@ -113,6 +110,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private DocumentsActionService documentsActionService;
+
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -264,7 +262,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
-                        case "createInstock":   //入库创建
+                        case "createInstock":
+                        case "INSTOCK"://入库创建
                             updateStatus(activitiProcessLog.getLogId(), status);
                             setStatus(logs, activitiProcessLog.getLogId());
                             //拒绝走拒绝方法
@@ -274,6 +273,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             }
 
                             break;
+
 
                         default:
 
@@ -505,31 +505,38 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Override
     public void checkLogActionComplete(Long taskId, Long stepId, Long actionId) {
         ActivitiProcessLog processLog = this.query().eq("task_id", taskId).eq("setps_id", stepId).one();
-        if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
-            List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
-            for (ActionStatus actionStatus : actionStatuses) {
-                if (actionStatus.getActionId().equals(actionId)) {
-                    actionStatus.setStatus(1);
-                }
-            }
-            processLog.setActionStatus(JSON.toJSONString(actionStatuses));
-            this.updateById(processLog);
+        ActivitiAuditResult audit = auditService.getAudit(stepId);
 
 
-            boolean completeFlag = true;
-            for (ActionStatus actionStatus : actionStatuses) {
-                if(actionStatus.getStatus().equals(0) && actionStatus.isChecked()){
-                    completeFlag = false;
-                    break;
-                }else if (actionStatus.getStatus().equals(0)){
-                    completeFlag = false;
-                    break;
+
+        if (!this.checkUser(audit.getRule())){
+            if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
+                List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+                for (ActionStatus actionStatus : actionStatuses) {
+                    if (actionStatus.getActionId().equals(actionId)) {
+                        actionStatus.setStatus(1);
+                    }
                 }
-            }
-            if (completeFlag){
-                this.autoAudit(taskId,1);
+                processLog.setActionStatus(JSON.toJSONString(actionStatuses));
+                this.updateById(processLog);
+
+
+                boolean completeFlag = true;
+                for (ActionStatus actionStatus : actionStatuses) {
+                    if(actionStatus.getStatus().equals(0) && actionStatus.isChecked()){
+                        completeFlag = false;
+                        break;
+                    }else if (actionStatus.getStatus().equals(0)){
+                        completeFlag = false;
+                        break;
+                    }
+                }
+                if (completeFlag){
+                    this.autoAudit(taskId,1);
+                }
             }
         }
+
     }
 
     /**
@@ -776,8 +783,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return loopAudit(activitiStepsResult, activitiProcessLogs);
     }
 
-    private List<ActivitiProcessLog> loopAudit(ActivitiStepsResult
-                                                       activitiStepsResult, List<ActivitiProcessLog> activityProcessLog) {
+    private List<ActivitiProcessLog> loopAudit(ActivitiStepsResult activitiStepsResult, List<ActivitiProcessLog> activityProcessLog) {
         List<ActivitiProcessLog> activitiStepsResultList = new ArrayList<>();
 
         if (ToolUtil.isEmpty(activitiStepsResult)) {
