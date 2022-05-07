@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.DocumentsActionParam;
 import cn.atsoft.dasheng.form.model.result.DocumentsActionResult;
+import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -44,7 +45,9 @@ public interface DocumentsActionService extends IService<DocumentsAction> {
      */
     void update(DocumentsActionParam param);
 
-    List<DocumentsActionResult> getList(Long statusId,String fromType);
+    void combination(List<ActionStatus> actionStatuses);
+
+    List<DocumentsActionResult> getList(Long statusId, String fromType);
 
     /**
      * 查询单条数据，Specification模式
