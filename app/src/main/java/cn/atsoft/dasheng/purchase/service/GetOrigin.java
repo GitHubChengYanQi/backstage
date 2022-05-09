@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
@@ -218,6 +219,13 @@ public class GetOrigin {
                 fromId = order.getOrderId();
 //                coding = order.getCoding();
                 createTime = order.getCreateTime();
+                break;
+                case "processTask":
+                    JSONObject.toJSONString(param);
+                    ActivitiProcessTask activitiProcessTask = JSON.parseObject(JSONObject.toJSONString(param), ActivitiProcessTask.class);
+                    fromId = activitiProcessTask.getProcessTaskId();
+//                coding = activitiProcessTas
+                createTime = activitiProcessTask.getCreateTime();
                 break;
         }
         Long finalFromId = fromId;

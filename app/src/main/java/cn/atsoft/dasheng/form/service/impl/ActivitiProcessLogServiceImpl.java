@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
+import cn.atsoft.dasheng.action.Enum.InstockErrorActionEnum;
+import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -344,6 +347,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 activitiProcessTaskService.updateById(endProcessTask);
                 //更新任务关联单据状态
                 this.updateStatus(task);
+                this.updateParentProcessTask(task);
             }
             //推送流程结束消息
             endSend.endSend(task.getProcessTaskId());
@@ -432,7 +436,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "inQuality":
                 break;
             case "purchaseInstock":
-            case "productionInstock":
+                break;
+            case "INSTOCKERROR":
                 InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
                 if (ToolUtil.isNotEmpty(instockOrder.getOrigin())) {
                     origin = getOrigin.getOrigin(JSON.parseObject(instockOrder.getOrigin(), ThemeAndOrigin.class));
@@ -442,10 +447,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 //如果来源存的是流程任务的id
                                 ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
 
-                                checkAction(parentProcessTask.getProcessTaskId(),11111L);
+                                checkAction(parentProcessTask.getProcessTaskId(), InstockErrorActionEnum.done.getStatus());
                             }else{
                                 //如果来源存的是主单据的id
-                                checkAction(themeAndOrigin.getSourceId(),"unknow",11111L);
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCKERROR.name(),InstockErrorActionEnum.done.getStatus());
                             }
                         }
                     }

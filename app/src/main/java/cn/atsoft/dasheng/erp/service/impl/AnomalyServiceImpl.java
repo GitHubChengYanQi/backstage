@@ -111,7 +111,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         Anomaly entity = getEntity(param);
         this.save(entity);
 
-         if (ToolUtil.isNotEmpty(param.getType()) && ToolUtil.isNotEmpty(param.getFormId())) {
+         if (ToolUtil.isNotEmpty(param.getSource()) && ToolUtil.isNotEmpty(param.getSourceId())) {
                 String origin = getOrigin.newThemeAndOrigin("anomaly", entity.getAnomalyId(), entity.getSource(), entity.getSourceId());
                 entity.setOrigin(origin);
                 this.updateById(entity);
