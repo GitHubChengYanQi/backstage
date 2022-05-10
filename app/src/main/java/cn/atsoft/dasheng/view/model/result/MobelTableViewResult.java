@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.view.model.result;
 
+import cn.atsoft.dasheng.view.model.pojo.MobelViewJson;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.List;
 public class MobelTableViewResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private List<MobelViewJson> details;
 
 
     @ApiModelProperty("")

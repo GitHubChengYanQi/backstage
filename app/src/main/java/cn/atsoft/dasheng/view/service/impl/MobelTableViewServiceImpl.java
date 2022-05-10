@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.view.service.impl;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.controller.LoginController;
 import cn.atsoft.dasheng.view.entity.MobelTableView;
@@ -12,6 +13,7 @@ import cn.atsoft.dasheng.view.model.params.MobelTableViewParam;
 import cn.atsoft.dasheng.view.model.result.MobelTableViewResult;
 import  cn.atsoft.dasheng.view.service.MobelTableViewService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,12 +37,28 @@ public class MobelTableViewServiceImpl extends ServiceImpl<MobelTableViewMapper,
     public void add(MobelTableViewParam param){
         Long userId = LoginContextHolder.getContext().getUserId();
 
+        List<MobelTableView> views = this.query().eq("user_id", userId).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(views)) {
+            for (MobelTableView view : views) {
+                view.setDisplay(0);
+            }
+            this.updateBatchById(views);
+        }
+
+        MobelTableView entity = getEntity(param);
+        if(ToolUtil.isNotEmpty(param.getDetails())){
+            entity.setField(JSON.toJSONString(param.getDetails()));
+        }
+
+
+
         Integer count = this.query().in("table_key",param.getTableKey()).eq("name", param.getName()).eq("user_id",userId).count();
         if (count > 0) {
             throw new ServiceException(500, "视图名称重复,请更换");
         }
-        param.setUserId(userId);
-        MobelTableView entity = getEntity(param);
+        entity.setUserId(userId);
+
+
         this.save(entity);
     }
 

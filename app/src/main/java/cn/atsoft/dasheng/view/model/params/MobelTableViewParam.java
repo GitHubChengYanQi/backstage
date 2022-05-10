@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.view.model.params;
 
+import cn.atsoft.dasheng.view.model.pojo.MobelViewJson;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -23,7 +24,7 @@ import java.util.List;
 public class MobelTableViewParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<MobelViewJson> details;
 
     @ApiModelProperty("")
     private Long mobelTableViewId;
