@@ -133,7 +133,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             if (param.getNumber() == 0) {
                 throw new ServiceException(500, "请确定数量");
             }
-            Integer count = detailsService.query().eq("inkind_id", param.getInkindId()).count();
+            Integer count = detailsService.query().eq("inkind_id", param.getInkindId()).eq("display",1).count();
             if (count > 1) {
                 throw new ServiceException(500, "已有相同实物");
             }
@@ -144,7 +144,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             throw new ServiceException(500, "请勿重复添加相同物料");
         }
 
-        List<StockDetails> details = inkindIds.size() == 0 ? new ArrayList<>() : detailsService.query().in("inkind_id", inkindIds).list();
+        List<StockDetails> details = inkindIds.size() == 0 ? new ArrayList<>() : detailsService.query().in("inkind_id", inkindIds)
+                .eq("display",1).list();
 
         List<InventoryDetail> inventories = new ArrayList<>();
 
@@ -182,7 +183,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<Long> collect = inkindIds.stream().filter(item -> !stockInkinds.contains(item)).collect(toList());
 //------------------------------------------------------------------------------------------------------------------------新入库
         if (ToolUtil.isNotEmpty(collect)) {
-            List<StockDetails> stockDetails = detailsService.query().in("inkind_id", collect).list();
+            List<StockDetails> stockDetails = detailsService.query().in("inkind_id", collect).eq("display",1).list();
             if (ToolUtil.isNotEmpty(stockDetails)) {
                 throw new ServiceException(500, "新入库的物料 在库存中已存在");
             }
@@ -273,7 +274,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         List<Long> stockIds = new ArrayList<>();
         List<InventoryDetail> inventoryDetails = new ArrayList<>();
-        List<StockDetails> outDetails = detailsService.query().in("inkind_id", inkindIds).list();
+        List<StockDetails> outDetails = detailsService.query().in("inkind_id", inkindIds).eq("display",1).list();
         for (StockDetails outDetail : outDetails) {
             stockIds.add(outDetail.getStockId());
         }
@@ -323,7 +324,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     @Override
     public InkindResult inkindInventory(Long id) {
         InkindResult inkindResult = inkindService.getInkindResult(id);
-        StockDetails stockDetails = detailsService.query().eq("inkind_id", inkindResult.getInkindId()).one();
+        StockDetails stockDetails = detailsService.query().eq("inkind_id", inkindResult.getInkindId()).eq("display",1).one();
         if (ToolUtil.isNotEmpty(stockDetails)) {
             StorehousePositionsResult positionsResult = positionsService.positionsResultById(stockDetails.getStorehousePositionsId());
             inkindResult.setPositionsResult(positionsResult);
@@ -338,7 +339,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public StorehousePositionsResult positionInventory(Long id) {
         StorehousePositionsResult positionsResult = positionsService.positionsResultById(id);
 
-        List<StockDetails> stockDetails = detailsService.query().eq("storehouse_positions_id", positionsResult.getStorehousePositionsId()).list();
+        List<StockDetails> stockDetails = detailsService.query().eq("storehouse_positions_id", id).eq("display",1).list();
         if (ToolUtil.isNotEmpty(stockDetails)) {
             List<Long> inkindIds = new ArrayList<>();
             List<StockDetailsResult> detailsResults = new ArrayList<>();

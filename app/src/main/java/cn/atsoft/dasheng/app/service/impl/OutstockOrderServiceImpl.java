@@ -155,6 +155,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         if (ToolUtil.isNotEmpty(param)) {
             OutstockOrder entity = new OutstockOrder();
             ToolUtil.copyProperties(param, entity);
+            entity.setDisplay(0);
             this.save(entity);
             List<OutstockListing> listings = BeanUtil.copyToList(param.getListingParams(), OutstockListing.class, new CopyOptions());
             for (OutstockListing listing : listings) {

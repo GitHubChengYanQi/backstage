@@ -263,6 +263,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
             InstockOrder entity = new InstockOrder();
             ToolUtil.copyProperties(param, entity);
+            entity.setDisplay(0);
             this.save(entity);
 
             List<InstockList> instockLists = BeanUtil.copyToList(param.getListParams(), InstockList.class, new CopyOptions());
