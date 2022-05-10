@@ -588,7 +588,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     }
                     detail.setNumber(detail.getNumber() - batchOutStockParam.getNumber());
                     if (detail.getNumber() == 0) {
-                        stockDetailsService.removeById(detail);
+                        detail.setDisplay(0);
+                        stockDetailsService.updateById(detail);
                     }
                 }
             }

@@ -1,16 +1,23 @@
 package cn.atsoft.dasheng.inventory.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
+import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
+import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
+import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
@@ -68,6 +75,10 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private OrCodeBindService codeBindService;
     @Autowired
     private InventoryDetailService inventoryDetailService;
+    @Autowired
+    private InstockOrderService instockOrderService;
+    @Autowired
+    private OutstockOrderService outstockOrderService;
 
     @Override
     public void add(InventoryParam param) {
@@ -136,7 +147,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<StockDetails> details = inkindIds.size() == 0 ? new ArrayList<>() : detailsService.query().in("inkind_id", inkindIds).list();
 
         List<InventoryDetail> inventories = new ArrayList<>();
-        List<Long> outInkind = new ArrayList<>();
+
         List<Long> sotckIds = new ArrayList<>();
         List<Long> stockInkinds = new ArrayList<>();
         InventoryDetail inventory = null;
@@ -154,7 +165,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         inventory = new InventoryDetail();
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(2);
-                        outInkind.add(param.getInkindId());
+
                         inventories.add(inventory);
                     } else if (detail.getNumber() < param.getNumber()) { //修正入库
                         inventory = new InventoryDetail();
@@ -218,28 +229,25 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     //盘点入库
     private void inkindInstock(List<Inkind> inkinds, Map<Long, Long> numberMap, Map<Long, Long> codeMap, Long storeHouseId, Long positionId) {
 
+        InstockOrderParam param = new InstockOrderParam();  //往入库单中添加记录
+        param.setStoreHouseId(storeHouseId);
+        param.setSource("盘点入库记录");
+        param.setState(60);
+
         List<InventoryDetail> inventoryDetails = new ArrayList<>();
+        List<InstockListParam> listParams = new ArrayList<>();
         for (Inkind inkind : inkinds) {
-            Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, storeHouseId)  //查询仓库
-                    .eq(Stock::getSkuId, inkind.getSkuId())
-                    .eq(Stock::getBrandId, inkind.getBrandId())
-                    .one();
-            Long stockId = null;
-            if (ToolUtil.isNotEmpty(stock)) {  //有相同物料 叠加数量
-                stock.setInventory(stock.getInventory() + numberMap.get(inkind.getInkindId()));
-                stockService.updateById(stock);
-                stockId = stock.getStockId();
-            } else {                          //没有相同物料 创建新物料
-                Stock newStock = new Stock();
-                newStock.setInventory(numberMap.get(inkind.getInkindId()));
-                newStock.setBrandId(inkind.getBrandId());
-                newStock.setSkuId(inkind.getSkuId());
-                newStock.setStorehouseId(storeHouseId);
-                stockService.save(newStock);
-                stockId = newStock.getStockId();
+            //入库记录详情
+            InstockListParam instockListParam = new InstockListParam();
+            instockListParam.setSkuId(inkind.getSkuId());
+            instockListParam.setNumber(numberMap.get(inkind.getInkindId()));
+            if (ToolUtil.isNotEmpty(inkind.getBrandId())) {
+                instockListParam.setBrandId(inkind.getBrandId());
             }
+            listParams.add(instockListParam);
+
+            //库存添加
             StockDetails stockDetails = new StockDetails();
-            stockDetails.setStockId(stockId);
             stockDetails.setNumber(numberMap.get(inkind.getInkindId()));
             stockDetails.setStorehousePositionsId(positionId);
             stockDetails.setQrCodeId(codeMap.get(inkind.getInkindId()));
@@ -254,8 +262,10 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryDetail.setStatus(1);
             inventoryDetails.add(inventoryDetail);
         }
+        param.setListParams(listParams);
         inkindService.updateBatchById(inkinds);
         inventoryDetailService.saveBatch(inventoryDetails);
+        instockOrderService.addRecord(param);  //添加入库记录
     }
 
     //盘点出库
@@ -268,13 +278,27 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             stockIds.add(outDetail.getStockId());
         }
 
-        detailsService.remove(new QueryWrapper<StockDetails>() {{
-            in("inkind_id", inkindIds);
-        }});
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("inkind_id", inkindIds);
+        StockDetails stockDetails = new StockDetails();
+        stockDetails.setDisplay(0);
+        stockDetails.setNumber(0L);
+        detailsService.update(stockDetails, queryWrapper);
 
         List<Inkind> inkinds = inkindService.listByIds(inkindIds);
         List<Inkind> newInkinds = new ArrayList<>();
+        List<OutstockListingParam> listingParams = new ArrayList<>();
+        OutstockOrderParam param = new OutstockOrderParam();
+        param.setSource("盘点出库记录");
+        param.setState(60);
+
+
         for (Inkind inkind : inkinds) {
+            OutstockListingParam listingParam = new OutstockListingParam();
+            listingParam.setSkuId(inkind.getSkuId());
+            listingParam.setBrandId(inkind.getBrandId());
+            listingParams.add(listingParam);
+
             Inkind newInkind = new Inkind();
             ToolUtil.copyProperties(inkind, newInkind);
             newInkind.setInkindId(null);
@@ -286,6 +310,10 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryDetail.setStatus(2);
             inventoryDetails.add(inventoryDetail);
         }
+
+        param.setListingParams(listingParams);
+        outstockOrderService.addRecord(param);
+
         inventoryDetailService.saveBatch(inventoryDetails);
         inkindService.updateBatchById(inkinds);
         inkindService.saveBatch(newInkinds);

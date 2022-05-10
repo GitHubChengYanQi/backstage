@@ -251,9 +251,30 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     }
 
-    private void createProcessTask() {
+
+    /**
+     * 添加入库记录
+     *
+     * @param param
+     */
+    @Override
+    public void addRecord(InstockOrderParam param) {
+        if (ToolUtil.isNotEmpty(param)) {
+
+            InstockOrder entity = new InstockOrder();
+            ToolUtil.copyProperties(param, entity);
+            this.save(entity);
+
+            List<InstockList> instockLists = BeanUtil.copyToList(param.getListParams(), InstockList.class, new CopyOptions());
+            for (InstockList instockList : instockLists) {
+                instockList.setInstockOrderId(entity.getInstockOrderId());
+            }
+
+            instockListService.saveBatch(instockLists);
+        }
 
     }
+
 
     public void createQualityTask(InstockOrderParam param, List<Sku> skus) {
         QualityTaskParam qualityTaskParam = new QualityTaskParam();

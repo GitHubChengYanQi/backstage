@@ -107,7 +107,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             List<OutstockListing> outstockListings = new ArrayList<>();
             for (ApplyDetails applyDetail : applyDetails) {
                 OutstockListing outstockListing = new OutstockListing();
-                if(ToolUtil.isNotEmpty(applyDetail.getBrandId())){
+                if (ToolUtil.isNotEmpty(applyDetail.getBrandId())) {
                     outstockListing.setBrandId(applyDetail.getBrandId());
                 }
                 outstockListing.setSkuId(applyDetail.getSkuId());
@@ -144,8 +144,28 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
 
+    /**
+     * 出库单添加出库记录
+     *
+     * @param param
+     */
     @Override
-    public void saveOutStockOrderByPickLists(OutstockOrderParam param){
+    public void addRecord(OutstockOrderParam param) {
+
+        if (ToolUtil.isNotEmpty(param)) {
+            OutstockOrder entity = new OutstockOrder();
+            ToolUtil.copyProperties(param, entity);
+            this.save(entity);
+            List<OutstockListing> listings = BeanUtil.copyToList(param.getListingParams(), OutstockListing.class, new CopyOptions());
+            for (OutstockListing listing : listings) {
+                listing.setOutstockOrderId(entity.getOutstockOrderId());
+            }
+            outstockListingService.saveBatch(listings);
+        }
+    }
+
+    @Override
+    public void saveOutStockOrderByPickLists(OutstockOrderParam param) {
 
 
         String encoding = codingRulesService.encoding(2);
@@ -161,7 +181,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             List<OutstockListing> outstockListings = new ArrayList<>();
             for (ApplyDetails applyDetail : applyDetails) {
                 OutstockListing outstockListing = new OutstockListing();
-                if(ToolUtil.isNotEmpty(applyDetail.getBrandId())){
+                if (ToolUtil.isNotEmpty(applyDetail.getBrandId())) {
                     outstockListing.setBrandId(applyDetail.getBrandId());
                 }
                 outstockListing.setSkuId(applyDetail.getSkuId());
@@ -258,7 +278,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
     private void mergePosition(List<Long> positionIds) {
-    
+
     }
 
 
@@ -273,9 +293,15 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             }
         }
         stockDetailsService.updateBatchById(details);
-        stockDetailsService.remove(new QueryWrapper<StockDetails>() {{
+
+        StockDetails stockDetails = new StockDetails();
+        stockDetails.setDisplay(0);
+        stockDetailsService.update(stockDetails, new QueryWrapper<StockDetails>() {{
             eq("stage", 2);
         }});
+//        stockDetailsService.remove(new QueryWrapper<StockDetails>() {{
+//            eq("stage", 2);
+//        }});
     }
 
     /**
@@ -370,10 +396,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         long newNumber = stockDetails.getNumber() - freeOutStockParam.getNumber();
         stockDetails.setNumber(newNumber);
         if (stockDetails.getNumber() == 0) {
-            stockDetailsService.removeById(stockDetails);
-        } else {
-            stockDetailsService.updateById(stockDetails);
+            stockDetails.setDisplay(0);
         }
+        stockDetailsService.updateById(stockDetails);
+
 
         //修改库存数量
         Inkind instockInkind = inkindService.getById(stockDetails.getInkindId());

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.params;
 import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
@@ -41,6 +42,8 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private Long storehousePositionsId;
 
     private List<InstockRequest> instockRequest;
+
+    private List<InstockListParam> listParams;
 
     /**
      * 来源
