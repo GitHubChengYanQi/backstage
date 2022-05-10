@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
@@ -699,10 +700,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         instockLogService.save(instockLog);
 
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
+
+        List<InstockListParam> instockListParams = new ArrayList<>();
         for (Inkind inkind : inkinds) {
 //            if (judgePosition(binds, inkind)) {
 //                throw new ServiceException(500, "入库的物料 未和库位绑定");
 //            }
+            InstockListParam instockListParam = new InstockListParam();
+            instockListParam.setNumber(inkind.getNumber());
+            instockListParam.setSkuId(inkind.getSkuId());
+            instockListParams.add(instockListParam);
+
             StockDetails stockDetails = new StockDetails();
             stockDetails.setNumber(inkind.getNumber());
             stockDetails.setStorehousePositionsId(positions.get(inkind.getInkindId()));
@@ -729,6 +737,31 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockDetailsService.saveBatch(stockDetailsList);
         inkindService.updateBatchById(inkinds);
 
+
+        addInStockRecord(instockListParams, "自由入库记录");  //添加记录
+    }
+
+    /**
+     * 添加入库记录
+     *
+     * @param instockListParams
+     */
+    @Override
+    public void addInStockRecord(List<InstockListParam> instockListParams, String source) {
+        InstockOrderParam param = new InstockOrderParam();  //往入库单中添加记录
+        param.setSource(source);
+        param.setState(60);
+        param.setDisplay(0);
+        param.setCreateUser(LoginContextHolder.getContext().getUserId());
+        param.setListParams(instockListParams);
+
+        MicroServiceEntity microServiceEntity = new MicroServiceEntity(); //添加入库记录
+        microServiceEntity.setOperationType(OperationType.SAVE);
+        microServiceEntity.setType(MicroServiceType.INSTOCKORDER);
+        microServiceEntity.setObject(param);
+        microServiceEntity.setMaxTimes(2);
+        microServiceEntity.setTimes(0);
+        messageProducer.microService(microServiceEntity);
     }
 
     /**

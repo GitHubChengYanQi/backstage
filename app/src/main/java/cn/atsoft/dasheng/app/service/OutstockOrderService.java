@@ -32,6 +32,10 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
 
     void addRecord(OutstockOrderParam param);
 
+
+
+    void addOutStockRecord(List<OutstockListingParam> outstockListingParams, String source);
+
     void saveOutStockOrderByPickLists(OutstockOrderParam param);
 
     void AkeyOutbound(OutstockOrderParam param);

@@ -69,8 +69,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
     @Autowired
     private InkindService inkindService;
-    @Autowired
-    private MessageProducer messageProducer;
+
     @Autowired
     private StockDetailsService detailsService;
     @Autowired
@@ -243,11 +242,11 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         detailsService.updateBatchById(details);
         inventoryDetailService.saveBatch(inventories);
 
-        if (inListParams.size()>0) {  //入库记录添加
-            addInStockRecord(inListParams);
+        if (inListParams.size() > 0) {  //入库记录添加
+            instockOrderService.addInStockRecord(inListParams, "盘点入库记录");
         }
-        if (outParams.size()>0) {    //出库记录添加
-            addOutStockRecord(outParams);
+        if (outParams.size() > 0) {    //出库记录添加
+            outstockOrderService.addOutStockRecord(outParams, "盘点出库记录");
         }
 
         if (sotckIds.size() > 0) {
@@ -298,56 +297,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
     }
 
-    /**
-     * 添加入库记录
-     *
-     * @param instockListParams
-     */
-    private void addInStockRecord(List<InstockListParam> instockListParams) {
-        InstockOrderParam param = new InstockOrderParam();  //往入库单中添加记录
-        param.setSource("盘点入库记录");
-        param.setState(60);
-        param.setDisplay(0);
-        param.setCreateUser(LoginContextHolder.getContext().getUserId());
-        param.setListParams(instockListParams);
-
-        MicroServiceEntity microServiceEntity = new MicroServiceEntity(); //添加入库记录
-        microServiceEntity.setOperationType(OperationType.SAVE);
-        microServiceEntity.setType(MicroServiceType.INSTOCKORDER);
-        microServiceEntity.setObject(param);
-        microServiceEntity.setMaxTimes(2);
-        microServiceEntity.setTimes(0);
-        messageProducer.microService(microServiceEntity);
-    }
-
-    /**
-     * 添加出库记录
-     *
-     * @param outstockListingParams
-     */
-    private void addOutStockRecord(List<OutstockListingParam> outstockListingParams) {
-
-        OutstockOrderParam param = new OutstockOrderParam();
-        param.setSource("盘点出库记录");
-        param.setState(60);
-        param.setDisplay(0);
-        param.setCreateUser(LoginContextHolder.getContext().getUserId());
-        param.setListingParams(outstockListingParams);
-
-        /**
-         * 调用消息队列
-         */
-        MicroServiceEntity microServiceEntity = new MicroServiceEntity();
-        microServiceEntity.setOperationType(OperationType.SAVE);
-        microServiceEntity.setType(MicroServiceType.OUTSTOCKORDER);
-        microServiceEntity.setObject(param);
-        microServiceEntity.setMaxTimes(2);
-        microServiceEntity.setTimes(0);
-        messageProducer.microService(microServiceEntity);
-    }
 
     //盘点出库
-    private  void  inkindOutstock(List<Long> inkindIds, List<OutstockListingParam> outstockListingParams) {
+    private void inkindOutstock(List<Long> inkindIds, List<OutstockListingParam> outstockListingParams) {
 
         List<Long> stockIds = new ArrayList<>();
         List<InventoryDetail> inventoryDetails = new ArrayList<>();
