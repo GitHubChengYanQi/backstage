@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
+import cn.atsoft.dasheng.production.model.result.ProductionPlanResult;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
@@ -107,6 +108,7 @@ public class GetOrigin {
         List<Long> askIds = new ArrayList<>();
         List<Long> planIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
+        List<Long> productionPlanIds = new ArrayList<>();
         for (ThemeAndOrigin themeAndOrigin : param) {
             //TODO 可增加表单类型
             switch (themeAndOrigin.getSource()) {
@@ -116,8 +118,16 @@ public class GetOrigin {
                 case "ProcurementPlan":
                     planIds.add(themeAndOrigin.getSourceId());
                     break;
+                case "productionPlan":
+                    productionPlanIds.add(themeAndOrigin.getSourceId());
+                    break;
             }
         }
+        List<ProductionPlanResult> productionPlanResults = productionPlanService.resultsByIds(productionPlanIds);
+        for (ProductionPlanResult productionPlanResult : productionPlanResults) {
+            userIds.add(productionPlanResult.getCreateUser());
+        }
+
         List<PurchaseAskResult> purchaseAsks = purchaseAskService.listResultByIds(askIds);
         for (PurchaseAskResult purchaseAsk : purchaseAsks) {
             userIds.add(purchaseAsk.getCreateUser());
@@ -142,6 +152,21 @@ public class GetOrigin {
                     }
                 }
             }
+            for (ProductionPlanResult productionPlanResult : productionPlanResults) {
+                if (themeAndOrigin.getSource().equals("productionPlan") && themeAndOrigin.getSourceId().equals(productionPlanResult.getProductionPlanId())){
+                    for (UserResult userResult : userResults) {
+                        if (productionPlanResult.getCreateUser().equals(userResult.getUserId())) {
+                            this.copy2Ret(themeAndOrigin, productionPlanResult, themeAndOrigin.getSource(), userResult);
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+
+
+
 
         }
         return param;

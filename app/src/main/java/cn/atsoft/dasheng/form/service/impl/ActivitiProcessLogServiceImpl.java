@@ -347,6 +347,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 activitiProcessTaskService.updateById(endProcessTask);
                 //更新任务关联单据状态
                 this.updateStatus(task);
+                /**
+                 * 如果是子单据  子单据完成  反向去更新父级状态
+                 */
                 this.updateParentProcessTask(task);
             }
             //推送流程结束消息
@@ -386,6 +389,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     break;
                 case "procurementOrder":
                     ProcurementOrder procurementOrder = procurementOrderService.getById(formId);
+                    procurementOrder.setStatus(documentsStatusId);
+                    procurementOrderService.updateById(procurementOrder);
                     break;
                 case "purchasePlan":
                     break;
