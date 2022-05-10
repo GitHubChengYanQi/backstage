@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
@@ -32,6 +33,10 @@ import cn.atsoft.dasheng.inventory.pojo.InventoryRequest;
 import cn.atsoft.dasheng.inventory.service.InventoryDetailService;
 import cn.atsoft.dasheng.inventory.service.InventoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
@@ -64,6 +69,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
     @Autowired
     private InkindService inkindService;
+    @Autowired
+    private MessageProducer messageProducer;
     @Autowired
     private StockDetailsService detailsService;
     @Autowired
@@ -133,7 +140,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             if (param.getNumber() == 0) {
                 throw new ServiceException(500, "请确定数量");
             }
-            Integer count = detailsService.query().eq("inkind_id", param.getInkindId()).eq("display",1).count();
+            Integer count = detailsService.query().eq("inkind_id", param.getInkindId()).eq("display", 1).count();
             if (count > 1) {
                 throw new ServiceException(500, "已有相同实物");
             }
@@ -145,7 +152,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }
 
         List<StockDetails> details = inkindIds.size() == 0 ? new ArrayList<>() : detailsService.query().in("inkind_id", inkindIds)
-                .eq("display",1).list();
+                .eq("display", 1).list();
 
         List<InventoryDetail> inventories = new ArrayList<>();
 
@@ -154,21 +161,36 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         InventoryDetail inventory = null;
 
         //添加盘点数据----------------------------------------------------------------------------------------------------
+
+        List<OutstockListingParam> outParams = new ArrayList<>();
+        List<InstockListParam> inListParams = new ArrayList<>();
+
         for (StockDetails detail : details) {
             stockInkinds.add(detail.getInkindId());
-
             for (InventoryRequest.InkindParam param : params) {
                 if (detail.getInkindId().equals(param.getInkindId())) {  //相同实物
 
                     sotckIds.add(detail.getStockId());
 
                     if (detail.getNumber() > param.getNumber()) {  //修正出库
+
+                        OutstockListingParam outstockListingParam = new OutstockListingParam();  //添加记录
+                        outstockListingParam.setNumber(detail.getNumber() - param.getNumber());
+                        outstockListingParam.setSkuId(detail.getSkuId());
+                        outParams.add(outstockListingParam);
+
                         inventory = new InventoryDetail();
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(2);
 
                         inventories.add(inventory);
                     } else if (detail.getNumber() < param.getNumber()) { //修正入库
+
+                        InstockListParam instockListParam = new InstockListParam();//添加记录
+                        instockListParam.setSkuId(detail.getSkuId());
+                        instockListParam.setNumber(param.getNumber() - detail.getNumber());
+                        inListParams.add(instockListParam);
+
                         inventory = new InventoryDetail();
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(1);
@@ -183,7 +205,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<Long> collect = inkindIds.stream().filter(item -> !stockInkinds.contains(item)).collect(toList());
 //------------------------------------------------------------------------------------------------------------------------新入库
         if (ToolUtil.isNotEmpty(collect)) {
-            List<StockDetails> stockDetails = detailsService.query().in("inkind_id", collect).eq("display",1).list();
+            List<StockDetails> stockDetails = detailsService.query().in("inkind_id", collect).eq("display", 1).list();
             if (ToolUtil.isNotEmpty(stockDetails)) {
                 throw new ServiceException(500, "新入库的物料 在库存中已存在");
             }
@@ -208,7 +230,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     }
                 }
             }
-            inkindInstock(inkindList, numberMap, codeMap, inventoryRequest.getStoreHouseId(), inventoryRequest.getPositionId());
+            inkindInstock(inkindList, numberMap, codeMap, inventoryRequest.getStoreHouseId(), inventoryRequest.getPositionId(), inListParams);
         }
 //--------------------------------------------------------------------------------------------------------------------------新出库
         if (ToolUtil.isNotEmpty(inventoryRequest.getOutStockInkindParams())) {
@@ -216,10 +238,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             for (InventoryRequest.outStockInkindParam outStockInkindParam : inventoryRequest.getOutStockInkindParams()) {
                 outStockInkind.add(outStockInkindParam.getInkindId());
             }
-            inkindOutstock(outStockInkind); //出库
+            inkindOutstock(outStockInkind, outParams);//出库
         }
         detailsService.updateBatchById(details);
         inventoryDetailService.saveBatch(inventories);
+
+        if (inListParams.size()>0) {  //入库记录添加
+            addInStockRecord(inListParams);
+        }
+        if (outParams.size()>0) {    //出库记录添加
+            addOutStockRecord(outParams);
+        }
+
         if (sotckIds.size() > 0) {
             stockService.updateNumber(sotckIds);
         }
@@ -228,15 +258,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     }
 
     //盘点入库
-    private void inkindInstock(List<Inkind> inkinds, Map<Long, Long> numberMap, Map<Long, Long> codeMap, Long storeHouseId, Long positionId) {
+    private void inkindInstock(List<Inkind> inkinds, Map<Long, Long> numberMap, Map<Long, Long> codeMap, Long storeHouseId, Long positionId
+            , List<InstockListParam> instockListParams
+    ) {
 
-        InstockOrderParam param = new InstockOrderParam();  //往入库单中添加记录
-        param.setStoreHouseId(storeHouseId);
-        param.setSource("盘点入库记录");
-        param.setState(60);
 
         List<InventoryDetail> inventoryDetails = new ArrayList<>();
-        List<InstockListParam> listParams = new ArrayList<>();
+
         for (Inkind inkind : inkinds) {
             //入库记录详情
             InstockListParam instockListParam = new InstockListParam();
@@ -245,7 +273,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             if (ToolUtil.isNotEmpty(inkind.getBrandId())) {
                 instockListParam.setBrandId(inkind.getBrandId());
             }
-            listParams.add(instockListParam);
+            instockListParams.add(instockListParam);
 
             //库存添加
             StockDetails stockDetails = new StockDetails();
@@ -263,18 +291,67 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryDetail.setStatus(1);
             inventoryDetails.add(inventoryDetail);
         }
-        param.setListParams(listParams);
+
+
         inkindService.updateBatchById(inkinds);
         inventoryDetailService.saveBatch(inventoryDetails);
-        instockOrderService.addRecord(param);  //添加入库记录
+
+    }
+
+    /**
+     * 添加入库记录
+     *
+     * @param instockListParams
+     */
+    private void addInStockRecord(List<InstockListParam> instockListParams) {
+        InstockOrderParam param = new InstockOrderParam();  //往入库单中添加记录
+        param.setSource("盘点入库记录");
+        param.setState(60);
+        param.setDisplay(0);
+        param.setCreateUser(LoginContextHolder.getContext().getUserId());
+        param.setListParams(instockListParams);
+
+        MicroServiceEntity microServiceEntity = new MicroServiceEntity(); //添加入库记录
+        microServiceEntity.setOperationType(OperationType.SAVE);
+        microServiceEntity.setType(MicroServiceType.INSTOCKORDER);
+        microServiceEntity.setObject(param);
+        microServiceEntity.setMaxTimes(2);
+        microServiceEntity.setTimes(0);
+        messageProducer.microService(microServiceEntity);
+    }
+
+    /**
+     * 添加出库记录
+     *
+     * @param outstockListingParams
+     */
+    private void addOutStockRecord(List<OutstockListingParam> outstockListingParams) {
+
+        OutstockOrderParam param = new OutstockOrderParam();
+        param.setSource("盘点出库记录");
+        param.setState(60);
+        param.setDisplay(0);
+        param.setCreateUser(LoginContextHolder.getContext().getUserId());
+        param.setListingParams(outstockListingParams);
+
+        /**
+         * 调用消息队列
+         */
+        MicroServiceEntity microServiceEntity = new MicroServiceEntity();
+        microServiceEntity.setOperationType(OperationType.SAVE);
+        microServiceEntity.setType(MicroServiceType.OUTSTOCKORDER);
+        microServiceEntity.setObject(param);
+        microServiceEntity.setMaxTimes(2);
+        microServiceEntity.setTimes(0);
+        messageProducer.microService(microServiceEntity);
     }
 
     //盘点出库
-    private void inkindOutstock(List<Long> inkindIds) {
+    private  void  inkindOutstock(List<Long> inkindIds, List<OutstockListingParam> outstockListingParams) {
 
         List<Long> stockIds = new ArrayList<>();
         List<InventoryDetail> inventoryDetails = new ArrayList<>();
-        List<StockDetails> outDetails = detailsService.query().in("inkind_id", inkindIds).eq("display",1).list();
+        List<StockDetails> outDetails = detailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
         for (StockDetails outDetail : outDetails) {
             stockIds.add(outDetail.getStockId());
         }
@@ -287,24 +364,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         detailsService.update(stockDetails, queryWrapper);
 
         List<Inkind> inkinds = inkindService.listByIds(inkindIds);
-        List<Inkind> newInkinds = new ArrayList<>();
-        List<OutstockListingParam> listingParams = new ArrayList<>();
-        OutstockOrderParam param = new OutstockOrderParam();
-        param.setSource("盘点出库记录");
-        param.setState(60);
 
 
         for (Inkind inkind : inkinds) {
             OutstockListingParam listingParam = new OutstockListingParam();
             listingParam.setSkuId(inkind.getSkuId());
             listingParam.setBrandId(inkind.getBrandId());
-            listingParams.add(listingParam);
-
-            Inkind newInkind = new Inkind();
-            ToolUtil.copyProperties(inkind, newInkind);
-            newInkind.setInkindId(null);
-            newInkind.setSource("盘点出库");
-            newInkinds.add(newInkind);
+            outstockListingParams.add(listingParam);
             inkind.setNumber(0L);
             InventoryDetail inventoryDetail = new InventoryDetail();
             inventoryDetail.setInkindId(inkind.getInkindId());
@@ -312,19 +378,17 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryDetails.add(inventoryDetail);
         }
 
-        param.setListingParams(listingParams);
-        outstockOrderService.addRecord(param);
 
-        inventoryDetailService.saveBatch(inventoryDetails);
         inkindService.updateBatchById(inkinds);
-        inkindService.saveBatch(newInkinds);
+        inventoryDetailService.saveBatch(inventoryDetails);
         stockService.updateNumber(stockIds);
+
     }
 
     @Override
     public InkindResult inkindInventory(Long id) {
         InkindResult inkindResult = inkindService.getInkindResult(id);
-        StockDetails stockDetails = detailsService.query().eq("inkind_id", inkindResult.getInkindId()).eq("display",1).one();
+        StockDetails stockDetails = detailsService.query().eq("inkind_id", inkindResult.getInkindId()).eq("display", 1).one();
         if (ToolUtil.isNotEmpty(stockDetails)) {
             StorehousePositionsResult positionsResult = positionsService.positionsResultById(stockDetails.getStorehousePositionsId());
             inkindResult.setPositionsResult(positionsResult);
@@ -339,7 +403,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public StorehousePositionsResult positionInventory(Long id) {
         StorehousePositionsResult positionsResult = positionsService.positionsResultById(id);
 
-        List<StockDetails> stockDetails = detailsService.query().eq("storehouse_positions_id", id).eq("display",1).list();
+        List<StockDetails> stockDetails = detailsService.query().eq("storehouse_positions_id", id).eq("display", 1).list();
         if (ToolUtil.isNotEmpty(stockDetails)) {
             List<Long> inkindIds = new ArrayList<>();
             List<StockDetailsResult> detailsResults = new ArrayList<>();
