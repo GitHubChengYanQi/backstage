@@ -73,7 +73,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public void delete(StockDetailsParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

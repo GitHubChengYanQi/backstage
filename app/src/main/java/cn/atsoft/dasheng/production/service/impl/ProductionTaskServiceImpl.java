@@ -280,7 +280,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
     @Override
     public void delete(ProductionTaskParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(this.getEntity(param));
     }
 
     private void checkStockDetail(ProductionTaskParam param, ProductionWorkOrder workOrder) {

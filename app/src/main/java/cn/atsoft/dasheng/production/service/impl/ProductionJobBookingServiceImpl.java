@@ -237,7 +237,8 @@ public class ProductionJobBookingServiceImpl extends ServiceImpl<ProductionJobBo
 
     @Override
     public void delete(ProductionJobBookingParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(this.getEntity(param));
     }
 
     @Override

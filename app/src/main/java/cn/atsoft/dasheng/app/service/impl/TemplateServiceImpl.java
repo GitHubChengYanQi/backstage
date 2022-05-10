@@ -52,7 +52,8 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
 
     @Override
     public void delete(TemplateParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

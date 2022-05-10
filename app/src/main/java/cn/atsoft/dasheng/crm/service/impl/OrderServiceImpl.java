@@ -151,7 +151,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public void delete(OrderParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(this.getEntity(param));
     }
 
     @Override

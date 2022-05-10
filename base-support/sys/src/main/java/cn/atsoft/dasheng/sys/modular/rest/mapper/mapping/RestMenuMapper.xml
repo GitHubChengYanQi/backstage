@@ -254,6 +254,7 @@
         SELECT
         m1.menu_id AS id,
         m1.icon AS icon,
+        m1.code As code,
         (
         CASE
         WHEN (m2.menu_id = 0 OR m2.menu_id IS NULL) THEN
