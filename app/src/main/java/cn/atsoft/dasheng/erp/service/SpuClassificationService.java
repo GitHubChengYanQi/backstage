@@ -68,4 +68,5 @@ public interface SpuClassificationService extends IService<SpuClassification> {
      */
      PageInfo<SpuClassificationResult> findPageBySpec(SpuClassificationParam param);
 
+    String getCodings(Long classId);
 }
