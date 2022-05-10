@@ -2,8 +2,15 @@ package cn.atsoft.dasheng.message.service;
 
 import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
+import cn.atsoft.dasheng.app.model.params.InstockParam;
+import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
+import cn.atsoft.dasheng.app.model.params.OutstockParam;
+import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
@@ -27,6 +34,12 @@ public class MicroService {
 
     @Autowired
     private ProductionPlanService productionPlanService;
+
+    @Autowired
+    private InstockOrderService instockOrderService;
+
+    @Autowired
+    private OutstockOrderService outstockOrderService;
 
     @Autowired
     private ProductionWorkOrderService productionWorkOrderService;
@@ -96,6 +109,20 @@ public class MicroService {
                     case ADD:
                         QualityTaskParam qualityTaskParam = JSON.parseObject(microServiceEntity.getObject().toString(), QualityTaskParam.class);
                         qualityTaskService.microAdd(qualityTaskParam);
+                }
+                break;
+                case INSTOCKORDER:
+                switch (microServiceEntity.getOperationType()) {
+                    case SAVE:
+                        InstockOrderParam instockOrderParam = JSON.parseObject(microServiceEntity.getObject().toString(), InstockOrderParam.class);
+                        instockOrderService.addRecord(instockOrderParam);
+                }
+                break;
+                case OUTSTOCKORDER:
+                switch (microServiceEntity.getOperationType()) {
+                    case SAVE:
+                        OutstockOrderParam outstockOrderParam = JSON.parseObject(microServiceEntity.getObject().toString(), OutstockOrderParam.class);
+                        outstockOrderService.addRecord(outstockOrderParam);
                 }
                 break;
             default:
