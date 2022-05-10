@@ -212,6 +212,10 @@ public class LoginController extends BaseController {
         }
     }
 
+    /**
+     * 验证码是否开启
+     * @return
+     */
     @RequestMapping(value = "/getKaptchaOpen")
     @ResponseBody
     public ResponseData getKaptchaOpen() {
