@@ -157,12 +157,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         List<Long> sotckIds = new ArrayList<>();
         List<Long> stockInkinds = new ArrayList<>();
+
+        Inventory invent = new Inventory();
+        invent.setInventoryTaskName(new Date() + "盘点任务");
+        this.save(invent);
+        
         InventoryDetail inventory = null;
 
         //添加盘点数据----------------------------------------------------------------------------------------------------
 
         List<OutstockListingParam> outParams = new ArrayList<>();
         List<InstockListParam> inListParams = new ArrayList<>();
+
 
         for (StockDetails detail : details) {
             stockInkinds.add(detail.getInkindId());
@@ -179,10 +185,11 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         outParams.add(outstockListingParam);
 
                         inventory = new InventoryDetail();
+                        inventory.setInventoryId(invent.getInventoryTaskId());
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(2);
-
                         inventories.add(inventory);
+
                     } else if (detail.getNumber() < param.getNumber()) { //修正入库
 
                         InstockListParam instockListParam = new InstockListParam();//添加记录
@@ -191,6 +198,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         inListParams.add(instockListParam);
 
                         inventory = new InventoryDetail();
+                        inventory.setInventoryId(invent.getInventoryTaskId());
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(1);
                         inventories.add(inventory);
