@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
@@ -36,6 +37,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
      * @Date 2021-10-06
      */
     void add(InstockOrderParam param);
+
+    void addRecord(InstockOrderParam param);
 
     void checkNumberTrue(Long id, Integer status);
 
@@ -108,6 +111,10 @@ public interface InstockOrderService extends IService<InstockOrder> {
      */
     void freeInStockByPositions(FreeInStockParam stockParam);
 
+
+
+
+    void addInStockRecord(List<InstockListParam> instockListParams, String source);
 
     Stock judgeStockExist(Inkind inkind, List<Stock> stocks);
 

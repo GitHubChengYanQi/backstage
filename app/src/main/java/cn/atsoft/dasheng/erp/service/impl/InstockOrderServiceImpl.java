@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
@@ -251,9 +252,31 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     }
 
-    private void createProcessTask() {
+
+    /**
+     * 添加入库记录
+     *
+     * @param param
+     */
+    @Override
+    public void addRecord(InstockOrderParam param) {
+        if (ToolUtil.isNotEmpty(param)) {
+
+            InstockOrder entity = new InstockOrder();
+            ToolUtil.copyProperties(param, entity);
+            entity.setDisplay(0);
+            this.save(entity);
+
+            List<InstockList> instockLists = BeanUtil.copyToList(param.getListParams(), InstockList.class, new CopyOptions());
+            for (InstockList instockList : instockLists) {
+                instockList.setInstockOrderId(entity.getInstockOrderId());
+            }
+
+            instockListService.saveBatch(instockLists);
+        }
 
     }
+
 
     public void createQualityTask(InstockOrderParam param, List<Sku> skus) {
         QualityTaskParam qualityTaskParam = new QualityTaskParam();
@@ -677,10 +700,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         instockLogService.save(instockLog);
 
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
+
+        List<InstockListParam> instockListParams = new ArrayList<>();
         for (Inkind inkind : inkinds) {
 //            if (judgePosition(binds, inkind)) {
 //                throw new ServiceException(500, "入库的物料 未和库位绑定");
 //            }
+            InstockListParam instockListParam = new InstockListParam();
+            instockListParam.setNumber(inkind.getNumber());
+            instockListParam.setSkuId(inkind.getSkuId());
+            instockListParams.add(instockListParam);
+
             StockDetails stockDetails = new StockDetails();
             stockDetails.setNumber(inkind.getNumber());
             stockDetails.setStorehousePositionsId(positions.get(inkind.getInkindId()));
@@ -707,6 +737,31 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockDetailsService.saveBatch(stockDetailsList);
         inkindService.updateBatchById(inkinds);
 
+
+        addInStockRecord(instockListParams, "自由入库记录");  //添加记录
+    }
+
+    /**
+     * 添加入库记录
+     *
+     * @param instockListParams
+     */
+    @Override
+    public void addInStockRecord(List<InstockListParam> instockListParams, String source) {
+        InstockOrderParam param = new InstockOrderParam();  //往入库单中添加记录
+        param.setSource(source);
+        param.setState(60);
+        param.setDisplay(0);
+        param.setCreateUser(LoginContextHolder.getContext().getUserId());
+        param.setListParams(instockListParams);
+
+        MicroServiceEntity microServiceEntity = new MicroServiceEntity(); //添加入库记录
+        microServiceEntity.setOperationType(OperationType.SAVE);
+        microServiceEntity.setType(MicroServiceType.INSTOCKORDER);
+        microServiceEntity.setObject(param);
+        microServiceEntity.setMaxTimes(2);
+        microServiceEntity.setTimes(0);
+        messageProducer.microService(microServiceEntity);
     }
 
     /**

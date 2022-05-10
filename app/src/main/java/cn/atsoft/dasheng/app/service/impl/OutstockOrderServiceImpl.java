@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.app.pojo.Listing;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
@@ -22,6 +23,10 @@ import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
@@ -78,6 +83,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private StorehousePositionsService positionsService;
     @Autowired
     private MobileService mobileService;
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -148,6 +155,54 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         return entity;
     }
 
+
+    /**
+     * 出库单添加出库记录
+     *
+     * @param param
+     */
+    @Override
+    public void addRecord(OutstockOrderParam param) {
+
+        if (ToolUtil.isNotEmpty(param)) {
+            OutstockOrder entity = new OutstockOrder();
+            ToolUtil.copyProperties(param, entity);
+            entity.setDisplay(0);
+            this.save(entity);
+            List<OutstockListing> listings = BeanUtil.copyToList(param.getListingParams(), OutstockListing.class, new CopyOptions());
+            for (OutstockListing listing : listings) {
+                listing.setOutstockOrderId(entity.getOutstockOrderId());
+            }
+            outstockListingService.saveBatch(listings);
+        }
+    }
+
+    /**
+     * 添加出库记录
+     *
+     * @param outstockListingParams
+     */
+    @Override
+    public void addOutStockRecord(List<OutstockListingParam> outstockListingParams,String source) {
+
+        OutstockOrderParam param = new OutstockOrderParam();
+        param.setSource(source);
+        param.setState(60);
+        param.setDisplay(0);
+        param.setCreateUser(LoginContextHolder.getContext().getUserId());
+        param.setListingParams(outstockListingParams);
+
+        /**
+         * 调用消息队列
+         */
+        MicroServiceEntity microServiceEntity = new MicroServiceEntity();
+        microServiceEntity.setOperationType(OperationType.SAVE);
+        microServiceEntity.setType(MicroServiceType.OUTSTOCKORDER);
+        microServiceEntity.setObject(param);
+        microServiceEntity.setMaxTimes(2);
+        microServiceEntity.setTimes(0);
+        messageProducer.microService(microServiceEntity);
+    }
 
     @Override
     public void saveOutStockOrderByPickLists(OutstockOrderParam param) {
@@ -278,9 +333,16 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             }
         }
         stockDetailsService.updateBatchById(details);
-        stockDetailsService.remove(new QueryWrapper<StockDetails>() {{
+
+        StockDetails stockDetails = new StockDetails();
+        stockDetails.setDisplay(0);
+        stockDetailsService.update(stockDetails, new QueryWrapper<StockDetails>() {{
             eq("stage", 2);
         }});
+//        stockDetailsService.remove(new QueryWrapper<StockDetails>() {{
+//            eq("stage", 2);
+//        }});
+        addOutStockRecord(listings,"自由出库记录");  //添加记录
     }
 
     /**
@@ -376,10 +438,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         stockDetails.setNumber(newNumber);
         if (stockDetails.getNumber() == 0) {
             stockDetails.setDisplay(0);
-            stockDetailsService.updateById(stockDetails);
-        } else {
-            stockDetailsService.updateById(stockDetails);
         }
+        stockDetailsService.updateById(stockDetails);
+
 
         //修改库存数量
         Inkind instockInkind = inkindService.getById(stockDetails.getInkindId());
