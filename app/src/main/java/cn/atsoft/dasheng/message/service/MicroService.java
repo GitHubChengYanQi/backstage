@@ -98,6 +98,20 @@ public class MicroService {
                         qualityTaskService.microAdd(qualityTaskParam);
                 }
                 break;
+                case INSTOCKORDER:
+                switch (microServiceEntity.getOperationType()) {
+                    case SAVE:
+                        QualityTaskParam qualityTaskParam = JSON.parseObject(microServiceEntity.getObject().toString(), QualityTaskParam.class);
+                        qualityTaskService.microAdd(qualityTaskParam);
+                }
+                break;
+                case OUTSTOCKORDER:
+                switch (microServiceEntity.getOperationType()) {
+                    case SAVE:
+                        QualityTaskParam qualityTaskParam = JSON.parseObject(microServiceEntity.getObject().toString(), QualityTaskParam.class);
+                        qualityTaskService.microAdd(qualityTaskParam);
+                }
+                break;
             default:
         }
     }
