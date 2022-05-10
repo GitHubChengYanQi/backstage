@@ -145,9 +145,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         InventoryDetail inventory = null;
 
         //添加盘点数据----------------------------------------------------------------------------------------------------
+
         for (StockDetails detail : details) {
             stockInkinds.add(detail.getInkindId());
-
             for (InventoryRequest.InkindParam param : params) {
                 if (detail.getInkindId().equals(param.getInkindId())) {  //相同实物
 
