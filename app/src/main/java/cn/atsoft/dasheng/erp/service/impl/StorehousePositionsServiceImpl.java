@@ -282,7 +282,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         StorehousePositions storehousePositions = this.getById(Id);
 
-        if (ToolUtil.isNotEmpty(storehousePositions) && ToolUtil.isEmpty(storehousePositions.getChildren())) {
+        if (ToolUtil.isNotEmpty(storehousePositions)) {
             StorehousePositionsResult positionsResult = new StorehousePositionsResult();
             ToolUtil.copyProperties(storehousePositions, positionsResult);
             StorehouseResult serviceDetail = storehouseService.getDetail(positionsResult.getStorehouseId());

@@ -86,12 +86,12 @@ public class StockDetailsController extends BaseController {
             stockDetailsParam = new StockDetailsParam();
         }
 //        return this.stockDetailsService.findPageBySpec(stockDetailsParam);
-        if (LoginContextHolder.getContext().isAdmin()) {
+//        if (LoginContextHolder.getContext().isAdmin()) {
             return this.stockDetailsService.findPageBySpec(stockDetailsParam, null);
-        } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.stockDetailsService.findPageBySpec(stockDetailsParam, dataScope);
-        }
+//        } else {
+//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+//            return this.stockDetailsService.findPageBySpec(stockDetailsParam, dataScope);
+//        }
     }
 
     /**
