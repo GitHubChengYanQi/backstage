@@ -39,7 +39,8 @@ public class OriginServiceImpl extends ServiceImpl<OriginMapper, Origin> impleme
 
     @Override
     public void delete(OriginParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

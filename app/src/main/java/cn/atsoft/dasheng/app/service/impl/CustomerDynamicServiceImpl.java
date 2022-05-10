@@ -45,7 +45,8 @@ public class CustomerDynamicServiceImpl extends ServiceImpl<CustomerDynamicMappe
 
     @Override
     public void delete(CustomerDynamicParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

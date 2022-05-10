@@ -54,7 +54,8 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
 
     @Override
     public void delete(PhoneParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

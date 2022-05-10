@@ -90,7 +90,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
     @Override
     public void delete(OrderDetailParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(this.getEntity(param));
     }
 
     @Override

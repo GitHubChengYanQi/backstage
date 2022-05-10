@@ -39,7 +39,8 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
 
     @Override
     public void delete(CrmBusinessSalesProcessParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

@@ -59,7 +59,8 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
 
     @Override
     public void delete(DeliveryDetailsParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

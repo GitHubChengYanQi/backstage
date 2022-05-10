@@ -40,8 +40,8 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
 
     @Override
     public void delete(CrmIndustryParam param) {
-        CrmIndustry byId = this.getById(param.getIndustryId());
-        this.removeById(byId);
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

@@ -38,7 +38,8 @@ public class BankServiceImpl extends ServiceImpl<BankMapper, Bank> implements Ba
 
     @Override
     public void delete(BankParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override
