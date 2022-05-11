@@ -466,11 +466,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Phone AcompanyPhone = ToolUtil.isEmpty(result.getPartyACompanyPhone()) ? new Phone() : phoneService.getById(result.getPartyACompanyPhone());  //甲方公司电话
         Phone BcompanyPhone = ToolUtil.isEmpty(result.getPartyBCompanyPhone()) ? new Phone() : phoneService.getById(result.getPartyBCompanyPhone());  //乙方公司电话
 
-        if (ToolUtil.isNotEmpty(AcompanyPhone.getPhoneNumber())) {
+        if (ToolUtil.isNotEmpty(AcompanyPhone) &&ToolUtil.isNotEmpty(AcompanyPhone.getPhoneNumber())) {
             result.setACompanyPhone(AcompanyPhone.getPhoneNumber());
         }
 
-        if (ToolUtil.isNotEmpty(BcompanyPhone.getPhoneNumber())) {
+        if (ToolUtil.isNotEmpty(BcompanyPhone) && ToolUtil.isNotEmpty(BcompanyPhone.getPhoneNumber())) {
             result.setBCompanyPhone(BcompanyPhone.getPhoneNumber());
         }
 
