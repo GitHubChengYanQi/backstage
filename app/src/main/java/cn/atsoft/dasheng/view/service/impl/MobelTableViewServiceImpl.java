@@ -43,7 +43,7 @@ public class MobelTableViewServiceImpl extends ServiceImpl<MobelTableViewMapper,
                 view.setDisplay(0);
             }
             this.updateBatchById(views);
-        }else {
+        }
             MobelTableView entity = getEntity(param);
             if(ToolUtil.isNotEmpty(param.getDetails())){
                 entity.setField(JSON.toJSONString(param.getDetails()));
@@ -56,7 +56,7 @@ public class MobelTableViewServiceImpl extends ServiceImpl<MobelTableViewMapper,
             entity.setUserId(userId);
 
             this.save(entity);
-        }
+        
 
     }
 
