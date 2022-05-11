@@ -1,28 +1,60 @@
 package cn.atsoft.dasheng.message.entity;
 
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.message.enmu.AuditEnum;
+import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 public class AuditEntity {
     /**
-     * 参数对象
+     * 审批任务id
      */
     private Long taskId;
 
+    /**
+     * 审批动作
+     */
     private Integer auditStatus;
 
+
+    /**
+     * 单据状态
+     */
     private Long formStatus;
 
+    /**
+     * 来源
+     */
     private String form;
+
+    /**
+     * 来源id
+     */
     private Long formId;
 
+    /**
+     * 单据动作id
+     */
     private Long actionId;
 
+    /**
+     * 审批动作枚举）
+     */
     private AuditEnum auditType;
-
+    /**
+     * 消息类型（创建审批任务 || 执行审批动作）
+     */
+    @NotNull
+    private AuditMessageType messageType;
+    /**
+     * 审批流程
+     */
+    ActivitiProcess activitiProcess;
 
     /**
      * 延迟时间

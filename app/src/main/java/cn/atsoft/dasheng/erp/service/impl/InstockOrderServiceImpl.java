@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
@@ -61,7 +62,7 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
 
-import static cn.atsoft.dasheng.message.enmu.AuditEnum.checkAction;
+import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
 
 /**
  * <p>
@@ -244,8 +245,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 wxCpSendTemplate.setSource("processTask");
                 wxCpSendTemplate.setSourceId(taskId);
                 //添加log
-                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-                activitiProcessLogService.autoAudit(taskId, 1);
+
+                messageProducer.auditMessageDo(new AuditEntity(){{
+                    setMessageType(AuditMessageType.CREATE_TASK);
+                    setActivitiProcess(activitiProcess);
+                    setTaskId(taskId);
+                }});
+//                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+//                activitiProcessLogService.autoAudit(taskId, 1);
             } else {
                 entity.setState(1);
                 this.updateById(entity);
@@ -298,7 +305,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             throw new ServiceException(500, "您传入的状态不正确");
         } else {
             messageProducer.auditMessageDo(new AuditEntity(){{
-                setAuditType(checkAction);
+                setAuditType(CHECK_ACTION);
+                setMessageType(AuditMessageType.AUDIT);
                 setFormId(id);
                 setForm("instock");
                 setActionId(actionId);
@@ -614,7 +622,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              * 消息队列完成动作
              */
             messageProducer.auditMessageDo(new AuditEntity(){{
-                setAuditType(checkAction);
+                setAuditType(CHECK_ACTION);
+                setMessageType(AuditMessageType.AUDIT);
                 setFormId(param.getInstockOrderId());
                 setForm("instock");
                 setActionId(param.getActionId());
@@ -813,7 +822,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (order.getState() != 50) {
             DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
             messageProducer.auditMessageDo(new AuditEntity(){{
-                setAuditType(checkAction);
+                setAuditType(CHECK_ACTION);
+                setMessageType(AuditMessageType.AUDIT);
                 setFormId(order.getInstockOrderId());
                 setForm(ReceiptsEnum.INSTOCK.name());
                 setActionId(action.getDocumentsActionId());
