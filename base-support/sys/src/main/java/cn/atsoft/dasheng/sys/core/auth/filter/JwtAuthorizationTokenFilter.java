@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.sys.core.auth.filter;
 
 import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
+import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
 import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
 import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
@@ -84,18 +85,25 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
         // 4.如果账号不为空，并且没有设置security上下文
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            sessionManager.createSession(authToken, authService.user(username));
             // 5.从缓存中拿userDetails，如果不为空，就设置登录上下文和权限上下文
             UserDetails userDetails = sessionManager.getSession(authToken);
+
+            //用户信息不存在   判断jwt是否过期 不过期就设置登陆上下文和权限上下文
+            if (ToolUtil.isEmpty(userDetails)) {
+                JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(authToken);
+                if (ToolUtil.isNotEmpty(jwtPayLoad)) {
+                    //没过期  重新赋值 取用户信息
+                    sessionManager.createSession(authToken, authService.user(username));
+                     userDetails = sessionManager.getSession(authToken);
+                }
+            }
             if (userDetails != null) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
                 chain.doFilter(request, response);
                 return;
             } else {
-
                 // 6.当用户的token过期了，缓存中没有用户信息，则删除相关cookies
                 Cookie[] tempCookies = request.getCookies();
                 if (tempCookies != null) {
@@ -120,6 +128,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
                 //跳转到登录超时
                 response.setHeader("Guns-Session-Timeout", "true");
                 request.getRequestDispatcher("/global/sessionError").forward(request, response);
+
             }
         }
 
