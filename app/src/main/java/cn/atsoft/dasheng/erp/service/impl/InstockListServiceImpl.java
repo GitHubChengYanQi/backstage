@@ -328,7 +328,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 //        );
         for (InstockListResult datum : data) {
 
-            datum.setNotNumber(datum.getNumber()-datum.getRealNumber());
+            datum.setNotNumber(datum.getNumber() - datum.getRealNumber());
 
             List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
             datum.setBackSkus(backSkus);
@@ -360,7 +360,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 //                }
 //            }
             for (Brand brand : brands) {
-                if (datum.getBrandId().equals(brand.getBrandId())) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult = new BrandResult();
                     ToolUtil.copyProperties(brand, brandResult);
                     datum.setBrandResult(brandResult);
@@ -368,7 +368,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
                 }
             }
             for (Storehouse storehouse : storehouses) {
-                if (datum.getStoreHouseId().equals(storehouse.getStorehouseId())) {
+                if (ToolUtil.isNotEmpty(datum.getStoreHouseId()) && datum.getStoreHouseId().equals(storehouse.getStorehouseId())) {
                     StorehouseResult storehouseResult = new StorehouseResult();
                     ToolUtil.copyProperties(storehouse, storehouseResult);
                     datum.setStorehouseResult(storehouseResult);

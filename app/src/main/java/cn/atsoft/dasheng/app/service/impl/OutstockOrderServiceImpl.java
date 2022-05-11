@@ -90,25 +90,20 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     public OutstockOrder add(OutstockOrderParam param) {
 
 
-        if (ToolUtil.isEmpty(param.getCoding())) {
-            CodingRules codingRules = codingRulesService.query().eq("module", 2).eq("state", 1).one();
-            if (ToolUtil.isNotEmpty(codingRules)) {
-                String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-                Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
-                if (ToolUtil.isNotEmpty(storehouse)) {
-                    String replace = "";
-                    if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
-                        replace = backCoding.replace("${storehouse}", storehouse.getCoding());
-                    } else {
-                        replace = backCoding.replace("${storehouse}", "");
-                    }
-                    param.setCoding(replace);
+        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
+        if (ToolUtil.isNotEmpty(codingRules)) {
+            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+            Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
+            if (ToolUtil.isNotEmpty(storehouse)) {
+                String replace = "";
+                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
+                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
+                } else {
+                    replace = backCoding.replace("${storehouse}", "");
                 }
-            } else {
-                throw new ServiceException(500, "请先设置出库单 默认生成编码的规则");
+                param.setCoding(replace);
             }
         }
-
 
         OutstockOrder entity = getEntity(param);
         this.save(entity);
