@@ -77,6 +77,12 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     @ApiModelProperty("备注")
     private String remarks;
 
+
+    @ApiModelProperty("图片")
+    private String images;
+
+    private String drawing;
+
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
     @ApiModelProperty("是否禁用")

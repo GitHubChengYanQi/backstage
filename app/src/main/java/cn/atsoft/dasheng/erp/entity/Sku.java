@@ -32,6 +32,12 @@ public class Sku implements Serializable {
 
     @TableField("file_id")
     private String fileId;
+
+    @TableField("images")
+    private String images;
+
+    @TableField("drawing")
+    private String drawing;
     /**
      * 批量
      */
@@ -209,6 +215,22 @@ public class Sku implements Serializable {
 
     public String getSkuName() {
         return skuName;
+    }
+
+    public String getImages() {
+        return images;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
+    }
+
+    public String getDrawing() {
+        return drawing;
+    }
+
+    public void setDrawing(String drawing) {
+        this.drawing = drawing;
     }
 
     public void setSkuName(String skuName) {
