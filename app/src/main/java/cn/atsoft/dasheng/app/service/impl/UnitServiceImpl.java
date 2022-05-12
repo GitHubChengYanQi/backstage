@@ -37,7 +37,8 @@ public class UnitServiceImpl extends ServiceImpl<UnitMapper, Unit> implements Un
 
     @Override
     public void delete(UnitParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

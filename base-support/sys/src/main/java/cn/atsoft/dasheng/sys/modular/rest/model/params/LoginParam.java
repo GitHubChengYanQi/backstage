@@ -15,4 +15,6 @@ public class LoginParam implements Serializable, BaseValidatingParam {
 
     @NotEmpty
     private String Password;
+
+    private String kaptcha;
 }

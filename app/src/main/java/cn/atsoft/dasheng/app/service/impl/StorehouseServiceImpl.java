@@ -50,7 +50,8 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
 
     @Override
     public void delete(StorehouseParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

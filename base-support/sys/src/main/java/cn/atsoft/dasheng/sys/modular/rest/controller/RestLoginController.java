@@ -15,11 +15,15 @@
  */
 package cn.atsoft.dasheng.sys.modular.rest.controller;
 
+import cn.atsoft.dasheng.base.consts.ConstantsContext;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.core.exception.InvalidKaptchaException;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
 import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import com.google.code.kaptcha.Constants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
@@ -49,6 +53,15 @@ public class RestLoginController extends BaseController {
 
         String username = loginParam.getUserName();
         String password = loginParam.getPassword();
+        String kaptcha = loginParam.getKaptcha();  //验证码
+
+        //验证验证码是否正确
+        if (ConstantsContext.getKaptchaOpen()) {
+            String code = (String) super.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
+            if (ToolUtil.isEmpty(kaptcha) || !kaptcha.equalsIgnoreCase(code)) {
+                throw new InvalidKaptchaException();
+            }
+        }
 
         //登录并创建token
         String token = authService.login(username, password);
@@ -70,7 +83,7 @@ public class RestLoginController extends BaseController {
         return new SuccessResponseData();
     }
 
-    @RequestMapping(value = "/refreshToken" , method = RequestMethod.GET)
+    @RequestMapping(value = "/refreshToken", method = RequestMethod.GET)
     @ApiOperation(value = "刷新token")
     @ResponseBody
     public ResponseData refreshToken() {

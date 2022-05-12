@@ -45,7 +45,8 @@ public class ItemBrandBindServiceImpl extends ServiceImpl<ItemBrandBindMapper, I
 
     @Override
     public void delete(ItemBrandBindParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(getEntity(param));
     }
 
     @Override

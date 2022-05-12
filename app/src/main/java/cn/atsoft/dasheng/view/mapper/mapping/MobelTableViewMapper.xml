@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.view.mapper.MobelTableViewMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.view.entity.MobelTableView">
+        <id column="mobel_table_view_id" property="mobelTableViewId" />
+        <result column="user_id" property="userId" />
+        <result column="field" property="field" />
+        <result column="table_key" property="tableKey" />
+        <result column="name" property="name" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        mobel_table_view_id AS "mobelTableViewId", user_id AS "userId", field AS "field", table_key AS "tableKey", name AS "name", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.view.model.result.MobelTableViewResult" parameterType="cn.atsoft.dasheng.view.model.params.MobelTableViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from view_mobel_table_view where 1 = 1
+            <if test="paramCondition.mobelTableViewId != null">
+                and mobel_table_view_id like CONCAT('%',#{paramCondition.mobelTableViewId},'%')
+            </if>
+            <if test="paramCondition.userId != null">
+                and user_id like CONCAT('%',#{paramCondition.userId},'%')
+            </if>
+            <if test="paramCondition.field != null and paramCondition.field != ''">
+                and field like CONCAT('%',#{paramCondition.field},'%')
+            </if>
+            <if test="paramCondition.tableKey != null and paramCondition.tableKey != ''">
+                and table_key like CONCAT('%',#{paramCondition.tableKey},'%')
+            </if>
+            <if test="paramCondition.name != null and paramCondition.name != ''">
+                and name like CONCAT('%',#{paramCondition.name},'%')
+            </if>
+            <if test="paramCondition.createUser != null">
+                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+            <if test="paramCondition.updateUser != null">
+                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+            </if>
+            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+            </if>
+            <if test="paramCondition.display != null">
+                and display like CONCAT('%',#{paramCondition.display},'%')
+            </if>
+            <if test="paramCondition.deptId != null">
+                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.view.model.params.MobelTableViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from view_mobel_table_view where 1 = 1
+                <if test="paramCondition.mobelTableViewId != null">
+                        and mobel_table_view_id like CONCAT('%',#{paramCondition.mobelTableViewId},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.field != null and paramCondition.field != ''">
+                        and field like CONCAT('%',#{paramCondition.field},'%')
+                </if>
+                <if test="paramCondition.tableKey != null and paramCondition.tableKey != ''">
+                        and table_key like CONCAT('%',#{paramCondition.tableKey},'%')
+                </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.view.model.result.MobelTableViewResult" parameterType="cn.atsoft.dasheng.view.model.params.MobelTableViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from view_mobel_table_view where 1 = 1
+                <if test="paramCondition.mobelTableViewId != null">
+                        and mobel_table_view_id like CONCAT('%',#{paramCondition.mobelTableViewId},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.field != null and paramCondition.field != ''">
+                        and field like CONCAT('%',#{paramCondition.field},'%')
+                </if>
+                <if test="paramCondition.tableKey != null and paramCondition.tableKey != ''">
+                        and table_key like CONCAT('%',#{paramCondition.tableKey},'%')
+                </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.view.model.params.MobelTableViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from view_mobel_table_view where 1 = 1
+                <if test="paramCondition.mobelTableViewId != null">
+                        and mobel_table_view_id like CONCAT('%',#{paramCondition.mobelTableViewId},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.field != null and paramCondition.field != ''">
+                        and field like CONCAT('%',#{paramCondition.field},'%')
+                </if>
+                <if test="paramCondition.tableKey != null and paramCondition.tableKey != ''">
+                        and table_key like CONCAT('%',#{paramCondition.tableKey},'%')
+                </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+</mapper>
