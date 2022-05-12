@@ -26,6 +26,10 @@ import cn.atsoft.dasheng.base.tenant.context.DataBaseNameHolder;
 import cn.atsoft.dasheng.base.tenant.context.TenantCodeHolder;
 import cn.atsoft.dasheng.base.tenant.entity.TenantInfo;
 import cn.atsoft.dasheng.base.tenant.service.TenantInfoService;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
+import cn.atsoft.dasheng.sys.modular.system.entity.DictType;
+import cn.atsoft.dasheng.sys.modular.system.service.DictService;
+import cn.atsoft.dasheng.sys.modular.system.service.DictTypeService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.mutidatasource.DataSourceContextHolder;
@@ -49,7 +53,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,6 +75,12 @@ public class LoginController extends BaseController {
 
     @Autowired
     private SessionManager sessionManager;
+
+    @Autowired
+    private DictService dictService;
+
+    @Autowired
+    private DictTypeService dictTypeService;
 
     /**
      * 跳转到主页
@@ -219,9 +231,20 @@ public class LoginController extends BaseController {
     @RequestMapping(value = "/getKaptchaOpen")
     @ResponseBody
     public ResponseData getKaptchaOpen() {
-        Map<String, Boolean> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         Boolean aBoolean = ConstantsContext.getKaptchaOpen();
-        map.put("kaptchaOpen", aBoolean);
+        map.put("kaptchaOpen", aBoolean.toString());
+        DictType dictType = dictTypeService.query().eq("code", "SYSTEM_INFO").one();
+
+        List<Dict> systemInfos = ToolUtil.isEmpty(dictType) ? new ArrayList<>() :  dictService.listDicts(dictType.getDictTypeId());
+        if (ToolUtil.isNotEmpty(systemInfos)){
+            for (Dict systemInfo : systemInfos) {
+                map.put(systemInfo.getCode(),systemInfo.getName());
+            }
+
+        }
+
+
         return ResponseData.success(map);
     }
 
