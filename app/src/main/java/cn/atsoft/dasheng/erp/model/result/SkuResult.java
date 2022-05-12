@@ -110,6 +110,10 @@ public class SkuResult implements Serializable {
     @ApiModelProperty("执行标准")
     private String standard;
 
+    @ApiModelProperty("图片")
+    private String images;
+
+    private String drawing;
 
     /**
      * spu id
