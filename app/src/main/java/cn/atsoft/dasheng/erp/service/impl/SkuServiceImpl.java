@@ -809,13 +809,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     @BussinessLog
+    @Transactional
     public void update(SkuParam param) {
-        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().eq(ErpPartsDetail::getSkuId, param.getSkuId()).list();
-        List<Parts> partList = partsService.lambdaQuery().eq(Parts::getSkuId, param.getSkuId()).and(i -> i.eq(Parts::getDisplay, 1)).list();
-        if (ToolUtil.isNotEmpty(partsDetailList) || ToolUtil.isNotEmpty(partList)) {
-            throw new ServiceException(500, "清单中有此物品数据,不可修改");
-        }
-        
+        Sku oldEntity = getOldEntity(param);
+
         Category category = this.getOrSaveCategory(param);
         Long categoryId = category.getCategoryId();
 
@@ -824,18 +821,33 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
         Long spuClassificationId = spuClassification.getSpuClassificationId();
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
+
+        Long spuId = oldEntity.getSpuId();
+        Spu oldSpu  = spuService.getById(spuId);
+
+
         if (ToolUtil.isEmpty(param.getStandard())) {
             getCoding(param, orSaveSpu.getSpuId());
         }
-        Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
         newEntity.setSpuId(orSaveSpu.getSpuId());
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);
+
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
         String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
+        if(!oldEntity.getSkuValueMd5().equals(md5) || !oldEntity.getSpecifications().equals(newEntity.getSpecifications()) || !param.getUnitId().equals(orSaveSpu.getUnitId()) || !oldEntity.getStandard().equals(newEntity.getStandard()) || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))){
+            /**
+             * 如要变更sku主要信息数据  需要验证物料是否正在被 物料清单所使用   如果被使用则不可更改
+             * 如果只是更新 上传附件与图片之类资料完善则不需查询清单中是否被使用
+             */
+            List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().eq(ErpPartsDetail::getSkuId, param.getSkuId()).list();
+            List<Parts> partList = partsService.lambdaQuery().eq(Parts::getSkuId, param.getSkuId()).and(i -> i.eq(Parts::getDisplay, 1)).list();
+            if (ToolUtil.isNotEmpty(partsDetailList) || ToolUtil.isNotEmpty(partList)) {
+                throw new ServiceException(500, "清单中有此物品数据,不可修改");
 
+            }
+        }
         newEntity.setSkuValueMd5(md5);
 
 
