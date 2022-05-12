@@ -105,6 +105,10 @@ public class LoginUser implements UserDetails, Serializable {
      * 租户的数据源名称
      */
     private String tenantDataSourceName;
+    /**
+     * 用户账号状态
+     */
+    private String status;
 
     @Override
     public List<MyRole> getAuthorities() {
