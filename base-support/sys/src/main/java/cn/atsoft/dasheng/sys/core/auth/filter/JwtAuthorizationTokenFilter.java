@@ -91,8 +91,12 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
             //用户信息不存在   重新赋值
             if (ToolUtil.isEmpty(userDetails)) {
-                userDetails = authService.user(username);
-                sessionManager.createSession(authToken, authService.user(username));
+                LoginUser loginUser = authService.user(username);
+                if (ToolUtil.isNotEmpty(loginUser)) {
+                    sessionManager.createSession(authToken, loginUser);
+                    userDetails = new LoginUser();
+                    ToolUtil.copyProperties(loginUser, userDetails);
+                }
             }
             if (userDetails != null) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

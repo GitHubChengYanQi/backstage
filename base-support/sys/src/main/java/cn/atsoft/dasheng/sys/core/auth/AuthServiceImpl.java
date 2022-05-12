@@ -179,6 +179,10 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userMapper.getByAccount(account);
 
+        if (ToolUtil.isEmpty(user)) {
+            return new LoginUser();
+        }
+
         LoginUser loginUser = UserFactory.createLoginUser(user);
 
         if (!loginUser.getStatus().equals(CommonStatus.ENABLE.getCode())) {
