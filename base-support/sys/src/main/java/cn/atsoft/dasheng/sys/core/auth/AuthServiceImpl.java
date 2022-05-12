@@ -15,6 +15,8 @@
  */
 package cn.atsoft.dasheng.sys.core.auth;
 
+import cn.atsoft.dasheng.base.enums.CommonStatus;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
 import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
@@ -177,10 +179,18 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userMapper.getByAccount(account);
 
+        if (ToolUtil.isEmpty(user)) {
+            return new LoginUser();
+        }
+
         LoginUser loginUser = UserFactory.createLoginUser(user);
 
+        if (!loginUser.getStatus().equals(CommonStatus.ENABLE.getCode())) {
+            return new LoginUser();
+        }
         //用户角色数组
         Long[] roleArray = Convert.toLongArray(user.getRoleId());
+
 
         //如果角色是空就直接返回
         if (roleArray == null || roleArray.length == 0) {

@@ -112,7 +112,7 @@ public class UserFactory {
         if (user == null) {
             return loginUser;
         }
-
+        loginUser.setStatus(user.getStatus());
         loginUser.setId(user.getUserId());
         loginUser.setAccount(user.getAccount());
         loginUser.setDeptId(user.getDeptId());
