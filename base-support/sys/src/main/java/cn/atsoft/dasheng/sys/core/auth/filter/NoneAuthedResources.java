@@ -38,6 +38,9 @@ public class NoneAuthedResources {
             //rest方式获取token入口
             "/rest/login",
 
+            //验证码是否开启
+            "/getKaptchaOpen",
+
             //oauth登录的接口
             "/oauth/render/*",
             "/oauth/callback/*",

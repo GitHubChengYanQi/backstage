@@ -39,7 +39,8 @@ public class ActivitiSetpSetServiceImpl extends ServiceImpl<ActivitiSetpSetMappe
 
     @Override
     public void delete(ActivitiSetpSetParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.updateById(this.getEntity(param));
     }
 
     @Override

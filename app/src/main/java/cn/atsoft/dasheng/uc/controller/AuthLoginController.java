@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
 import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
 import cn.atsoft.dasheng.base.auth.service.AuthService;
+import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
@@ -11,6 +12,7 @@ import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import cn.atsoft.dasheng.sys.core.auth.AuthServiceImpl;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
+import cn.atsoft.dasheng.sys.core.exception.InvalidKaptchaException;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -36,6 +38,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.code.kaptcha.Constants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -274,6 +277,15 @@ public class AuthLoginController extends BaseController {
     public ResponseData restLogin(@RequestBody @Valid LoginParam loginParam) {
         String username = loginParam.getUserName();
         String password = loginParam.getPassword();
+        String kaptcha = loginParam.getKaptcha();  //验证码
+
+        //验证验证码是否正确
+        if (ConstantsContext.getKaptchaOpen()) {
+            String code = (String) super.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
+            if (ToolUtil.isEmpty(kaptcha) || !kaptcha.equalsIgnoreCase(code)) {
+                throw new InvalidKaptchaException();
+            }
+        }
 
         //登录并创建token
         String token = authService.login(username, password);
