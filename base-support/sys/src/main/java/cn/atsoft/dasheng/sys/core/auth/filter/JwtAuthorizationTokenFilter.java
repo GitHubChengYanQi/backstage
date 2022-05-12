@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.sys.core.auth.filter;
 
 import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
 import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
 import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
@@ -88,7 +89,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
             // 5.从缓存中拿userDetails，如果不为空，就设置登录上下文和权限上下文
             UserDetails userDetails = sessionManager.getSession(authToken);
 
-            //用户信息不存在   判断jwt 不过期就设置登陆上下文和权限上下文
+            //用户信息不存在   重新赋值
             if (ToolUtil.isEmpty(userDetails)) {
                 userDetails = authService.user(username);
                 sessionManager.createSession(authToken, authService.user(username));
