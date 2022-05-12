@@ -88,14 +88,10 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
             // 5.从缓存中拿userDetails，如果不为空，就设置登录上下文和权限上下文
             UserDetails userDetails = sessionManager.getSession(authToken);
 
-            //用户信息不存在   判断jwt是否过期 不过期就设置登陆上下文和权限上下文
+            //用户信息不存在   判断jwt 不过期就设置登陆上下文和权限上下文
             if (ToolUtil.isEmpty(userDetails)) {
-                JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(authToken);
-                if (ToolUtil.isNotEmpty(jwtPayLoad)) {
-                    //没过期  重新赋值 取用户信息
-                    sessionManager.createSession(authToken, authService.user(username));
-                     userDetails = sessionManager.getSession(authToken);
-                }
+                userDetails = authService.user(username);
+                sessionManager.createSession(authToken, authService.user(username));
             }
             if (userDetails != null) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
