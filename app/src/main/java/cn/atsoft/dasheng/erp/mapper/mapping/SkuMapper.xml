@@ -24,11 +24,13 @@
         <result column="batch" property="batch"/>
         <result column="quality_plan_id" property="qualityPlanId"/>
         <result column="file_id" property="fileId"/>
+        <result column="images" property="images"/>
+        <result column="drawing" property="drawing"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">type
-    AS "type",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId", add_method AS "addMethod" ,
+    AS "type",images AS "images",drawing AS "drawing",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId", add_method AS "addMethod" ,
         sku_id
         AS "skuId",batch AS "batch", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>

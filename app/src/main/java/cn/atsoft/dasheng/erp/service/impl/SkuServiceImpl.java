@@ -836,7 +836,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
         String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
-        if(!oldEntity.getSkuValueMd5().equals(md5) || !oldEntity.getSpecifications().equals(newEntity.getSpecifications()) || !param.getUnitId().equals(orSaveSpu.getUnitId()) || !oldEntity.getStandard().equals(newEntity.getStandard()) || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))){
+        if(!oldEntity.getSkuValueMd5().equals(md5)  || !param.getUnitId().equals(orSaveSpu.getUnitId()) || !oldEntity.getStandard().equals(newEntity.getStandard()) || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))){
             /**
              * 如要变更sku主要信息数据  需要验证物料是否正在被 物料清单所使用   如果被使用则不可更改
              * 如果只是更新 上传附件与图片之类资料完善则不需查询清单中是否被使用
