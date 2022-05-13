@@ -180,13 +180,13 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.getByAccount(account);
 
         if (ToolUtil.isEmpty(user)) {
-            return new LoginUser();
+            return null;
         }
 
         LoginUser loginUser = UserFactory.createLoginUser(user);
 
-        if (!loginUser.getStatus().equals(CommonStatus.ENABLE.getCode())) {
-            return new LoginUser();
+        if (loginUser.getStatus().equals(CommonStatus.DISABLE.getCode())) {
+            return null;
         }
         //用户角色数组
         Long[] roleArray = Convert.toLongArray(user.getRoleId());
