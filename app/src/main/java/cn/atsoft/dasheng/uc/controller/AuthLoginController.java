@@ -221,8 +221,12 @@ public class AuthLoginController extends BaseController {
             QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("member_id", memberId);
             queryWrapper.in("source", "wxCp");
+            queryWrapper.last("limit 1");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(queryWrapper);
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
+                if(ToolUtil.isEmpty(wxuserInfo.getUserId())){
+                    throw new ServiceException(500,"账号绑定错误,请联系客服");
+                }
                 User user = userService.getById(wxuserInfo.getUserId());
                 if (ToolUtil.isNotEmpty(user)) {
                     JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(), "xxxx");
@@ -299,7 +303,7 @@ public class AuthLoginController extends BaseController {
         Long userId = jwtPayLoad.getUserId();//userId
         try{
             UcJwtPayLoad ucJwtPayLoad = getPayLoad();
-            if (ucJwtPayLoad.getType().equals("wxCp")){
+            if (ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)){
                 WxuserInfo wxuserInfo = new WxuserInfo();
                 wxuserInfo.setMemberId(ucJwtPayLoad.getUserId());
                 wxuserInfo.setUserId(userId);
