@@ -221,12 +221,10 @@ public class AuthLoginController extends BaseController {
             QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("member_id", memberId);
             queryWrapper.in("source", "wxCp");
+            queryWrapper.isNotNull("user_id");
             queryWrapper.last("limit 1");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(queryWrapper);
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
-                if(ToolUtil.isEmpty(wxuserInfo.getUserId())){
-                    throw new ServiceException(500,"账号绑定错误,请联系客服");
-                }
                 User user = userService.getById(wxuserInfo.getUserId());
                 if (ToolUtil.isNotEmpty(user)) {
                     JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(), "xxxx");
