@@ -106,6 +106,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SupplyService supplyService;
     @Autowired
     private PurchaseListingService purchaseListingService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
 
     @Transactional
@@ -334,24 +336,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
-//    private void loopFormatActivitiStepsResult(ActivitiStepsResult activitiStepsResult){
-//        //清除步骤id
-//
-//
-//
-//
-//
-//
-//
-//
-//        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-//            loopFormatActivitiStepsResult(activitiStepsResult.getChildNode());
-//        }else if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList())){
-//            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-//                loopFormatActivitiStepsResult(stepsResult);
-//            }
-//        }
-//    }
+
 
     @Override
     public List<SkuResult> getSkuByMd5(SkuParam param) {
@@ -823,7 +808,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
 
         Long spuId = oldEntity.getSpuId();
-        Spu oldSpu  = spuService.getById(spuId);
+        Spu oldSpu = spuService.getById(spuId);
 
 
         if (ToolUtil.isEmpty(param.getStandard())) {
@@ -836,7 +821,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
         String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
-        if(!oldEntity.getSkuValueMd5().equals(md5)  || !param.getUnitId().equals(orSaveSpu.getUnitId()) || !oldEntity.getStandard().equals(newEntity.getStandard()) || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))){
+        if (!oldEntity.getSkuValueMd5().equals(md5) || !param.getUnitId().equals(orSaveSpu.getUnitId()) || !oldEntity.getStandard().equals(newEntity.getStandard()) || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))) {
             /**
              * 如要变更sku主要信息数据  需要验证物料是否正在被 物料清单所使用   如果被使用则不可更改
              * 如果只是更新 上传附件与图片之类资料完善则不需查询清单中是否被使用
@@ -929,11 +914,49 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 return null;
             }
         }
+
+        /**
+         *通过当前库位查询物料
+         */
+        if (ToolUtil.isNotEmpty(param.getStorehousePositionsId())) {
+            List<Long> skuIds = positionsService.getSkuIdsByPositionId(param.getStorehousePositionsId());
+            param.setSkuIds(skuIds);
+        }
+
+        /**
+         * 查询这个物料的bom
+         */
+        if (ToolUtil.isNotEmpty(param.getSelectBom()) && ToolUtil.isNotEmpty(param.getSkuId())) {
+            switch (param.getSelectBom()) {
+                case All:
+                    List<Long> skuIdsByBom = partsService.getSkuIdsByBom(param.getSkuId());
+                    param.setSkuIds(skuIdsByBom);
+                    param.setSkuId(null);
+                    break;
+                case Present:
+                    Parts parts = partsService.query().eq("sku_id", param.getSkuId()).eq("status", 99).eq("display", 1).one();
+                    if (ToolUtil.isNotEmpty(parts)) {
+                        List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
+                        for (ErpPartsDetail partsDetail : partsDetails) {
+                            param.setSkuId(partsDetail.getSkuId());
+                        }
+                    }
+                    break;
+            }
+        }
+
         Page<SkuResult> pageContext = getPageContext();
         IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
-        this.format(page.getRecords());
-        this.isSupply(param, page.getRecords());
 
+        this.format(page.getRecords());
+        /**
+         * 是否查询仓库和库位
+         */
+        if (param.getStockView()) {
+            positionsService.skuFormat(page.getRecords());
+        }
+
+        this.isSupply(param, page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -981,7 +1004,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
 
-        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().select("sku_id,sum(number) as num").in("sku_id", skuIds).groupBy("sku_id").eq("display", 1).list();
+//        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().select("sku_id,sum(number) as num").in("sku_id", skuIds).groupBy("sku_id").eq("display", 1).list();
         List<PurchaseListing> purchaseListings = skuIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().select("sku_id , sum(apply_number) as num").in("sku_id", skuIds).eq("status", 0).eq("display", 1).groupBy("sku_id").list();
 
 //        List<Parts> list1 = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
@@ -1039,15 +1062,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
 
         for (SkuResult skuResult : param) {
-            /**
-             * 库存数量
-             */
-            for (StockDetails stockDetail : stockDetails) {
-                if (skuResult.getSkuId().equals(stockDetail.getSkuId())) {
-                    skuResult.setStockNumber(Math.toIntExact(stockDetail.getNum()));
-                    break;
-                }
-            }
+//            /**
+//             * 库存数量
+//             */
+//            for (StockDetails stockDetail : stockDetails) {
+//                if (skuResult.getSkuId().equals(stockDetail.getSkuId())) {
+//                    skuResult.setStockNumber(Math.toIntExact(stockDetail.getNum()));
+//                    break;
+//                }
+//            }
             /**
              * 预购数量
              */
@@ -1183,6 +1206,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     public SkuResult getSku(Long id) {
         Sku sku = this.getById(id);
         SkuResult skuResult = new SkuResult();
+        if (ToolUtil.isEmpty(sku)) {
+            return skuResult;
+        }
         ToolUtil.copyProperties(sku, skuResult);
         //返回附件图片等
         if (ToolUtil.isNotEmpty(skuResult.getFileId())) {

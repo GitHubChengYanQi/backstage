@@ -80,6 +80,8 @@ public interface PartsService extends IService<Parts> {
     PageInfo<PartsResult> findPageBySpec(PartsParam param);
 
 
+    List<Long> getSkuIdsByBom(Long skuId);
+
     PartsResult getBOM(Long partId);
 
     List<ErpPartsDetailResult> backDetails(Long skuId, Long partsId, String type);

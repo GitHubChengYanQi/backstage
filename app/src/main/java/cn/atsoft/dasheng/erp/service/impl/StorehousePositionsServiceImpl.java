@@ -138,6 +138,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return result;
     }
 
+
     /**
      * 更新包含它的
      */
@@ -379,6 +380,59 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
 
         return stringBuffer.toString();
+    }
+
+    /**
+     * 通过库位查询skuId
+     *
+     * @return
+     */
+    @Override
+    public List<Long> getSkuIdsByPositionId(Long positionId) {
+        List<Long> skuIds = new ArrayList<>();
+        List<StorehousePositions> positions = this.query().eq("display", 1).list();
+
+        for (StorehousePositions position : positions) {
+            if (position.getStorehousePositionsId().equals(positionId)) {
+                List<Long> positionIds = loopChild(position, positions);
+                skuIds.addAll(getSkuIdsByBind(positionIds));
+            }
+        }
+
+        return skuIds;
+    }
+
+    /**
+     * 递归找下级库位id
+     *
+     * @param position
+     * @param positions
+     * @return
+     */
+    private List<Long> loopChild(StorehousePositions position, List<StorehousePositions> positions) {
+
+        List<Long> positionIds = new ArrayList<>();
+        positionIds.add(position.getStorehousePositionsId());
+
+        for (StorehousePositions storehousePositions : positions) {
+            if (storehousePositions.getPid().equals(position.getStorehousePositionsId())) {
+                positionIds.addAll(loopChild(storehousePositions, positions));
+            }
+        }
+
+        return positionIds;
+    }
+
+    private List<Long> getSkuIdsByBind(List<Long> positionIds) {
+        List<Long> skuIds = new ArrayList<>();
+        if (ToolUtil.isEmpty(positionIds)) {
+            return skuIds;
+        }
+        List<StorehousePositionsBind> bindList = storehousePositionsBindService.query().in("position_id", positionIds).eq("display", 1).list();
+        for (StorehousePositionsBind positionsBind : bindList) {
+            skuIds.add(positionsBind.getSkuId());
+        }
+        return skuIds;
     }
 
     /**
@@ -779,6 +833,44 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                         ToolUtil.copyProperties(datum, storehousePositionsResult);
                         datum.setStorehousePositionsResult(storehousePositionsResult);
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * 专门为物料查询仓库与库位
+     *
+     * @param data
+     */
+    @Override
+    public void skuFormat(List<SkuResult> data) {
+
+        List<Long> houseIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+
+        for (SkuResult datum : data) {
+            houseIds.add(datum.getStorehouseId());
+            positionIds.add(datum.getPositionId());
+        }
+
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+
+        List<Storehouse> storehouses = houseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(houseIds);
+        List<StorehouseResult> storehouseResults = BeanUtil.copyToList(storehouses, StorehouseResult.class, new CopyOptions());
+
+        for (SkuResult datum : data) {
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+                    datum.setPositionsResult(positionsResult);
+                    break;
+                }
+            }
+            for (StorehouseResult storehouseResult : storehouseResults) {
+                if ( ToolUtil.isNotEmpty(datum.getStorehouseId()) && storehouseResult.getStorehouseId().equals(datum.getStorehouseId())) {
+                    datum.setStorehouseResult(storehouseResult);
+                    break;
                 }
             }
         }
