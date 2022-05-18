@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.appBase.aop.DocumentFieldAop;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
@@ -85,6 +86,7 @@ public class SpuResult implements Serializable {
     /**
      * 物品名字
      */
+    @DocumentFieldAop(value = true)
     @ApiModelProperty("物品名字")
     private String name;
 

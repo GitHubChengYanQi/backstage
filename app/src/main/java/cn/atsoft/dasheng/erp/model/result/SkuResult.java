@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.appBase.aop.DocumentFieldAop;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -95,6 +96,7 @@ public class SkuResult implements Serializable {
      * sku名字
      */
     @ApiModelProperty("sku名字")
+    @DocumentFieldAop(value = true)
     private String skuName;
 
     @ApiModelProperty("是否禁用")
