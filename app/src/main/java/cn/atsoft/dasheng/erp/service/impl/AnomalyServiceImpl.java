@@ -48,7 +48,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
-import static cn.atsoft.dasheng.message.enmu.AuditEnum.checkAction;
+import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
+
 
 /**
  * <p>
@@ -161,7 +162,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             instockOrderService.updateById(instockOrder);
             DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
             messageProducer.auditMessageDo(new AuditEntity(){{
-                setAuditType(checkAction);
+                setAuditType(CHECK_ACTION);
                 setFormId(instockOrder.getInstockOrderId());
                 setForm(ReceiptsEnum.INSTOCK.name());
                 setActionId(action.getDocumentsActionId());
