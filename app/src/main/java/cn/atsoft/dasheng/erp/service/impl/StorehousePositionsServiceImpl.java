@@ -428,10 +428,19 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         if (ToolUtil.isEmpty(positionIds)) {
             return skuIds;
         }
-        List<StorehousePositionsBind> bindList = storehousePositionsBindService.query().in("position_id", positionIds).eq("display", 1).list();
-        for (StorehousePositionsBind positionsBind : bindList) {
-            skuIds.add(positionsBind.getSkuId());
+        List<StockDetails> details = stockDetailsService.query().in("storehouse_positions_id", positionIds).eq("display", 1).list();
+
+        for (StockDetails detail : details) {
+            skuIds.add(detail.getSkuId());
         }
+
+        /**
+         * 插叙绑定
+         */
+//        List<StorehousePositionsBind> bindList = storehousePositionsBindService.query().in("position_id", positionIds).eq("display", 1).list();
+//        for (StorehousePositionsBind positionsBind : bindList) {
+//            skuIds.add(positionsBind.getSkuId());
+//        }
         return skuIds;
     }
 
@@ -861,14 +870,15 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<StorehouseResult> storehouseResults = BeanUtil.copyToList(storehouses, StorehouseResult.class, new CopyOptions());
 
         for (SkuResult datum : data) {
+            List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
             for (StorehousePositionsResult positionsResult : positionsResults) {
                 if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
-                    datum.setPositionsResult(positionsResult);
-                    break;
+                    positionsResultList.add(positionsResult);
                 }
             }
+            datum.setPositionsResult(positionsResultList);
             for (StorehouseResult storehouseResult : storehouseResults) {
-                if ( ToolUtil.isNotEmpty(datum.getStorehouseId()) && storehouseResult.getStorehouseId().equals(datum.getStorehouseId())) {
+                if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && storehouseResult.getStorehouseId().equals(datum.getStorehouseId())) {
                     datum.setStorehouseResult(storehouseResult);
                     break;
                 }

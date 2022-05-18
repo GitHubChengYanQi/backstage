@@ -75,7 +75,8 @@ public class SkuResult implements Serializable {
     private Long positionId;
     private Integer stockNumber = 0;
 
-    private StorehousePositionsResult positionsResult;
+
+    private List<StorehousePositionsResult> positionsResult;
 
     private StorehouseResult storehouseResult;
     /**

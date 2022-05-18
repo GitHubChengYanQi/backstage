@@ -182,7 +182,9 @@
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
-        LEFT JOIN daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
+        LEFT JOIN
+            (select * from daoxin_erp_stock_details where display = 1 group by sku_id) as
+            daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
         WHERE 1=1 and goods_sku.display = 1
 --         and daoxin_erp_stock_details.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">

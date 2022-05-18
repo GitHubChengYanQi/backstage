@@ -372,13 +372,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
 
-
-
-    /**
-     * 获取当前物料 bom的所有skuId
-     * @param skuId
-     * @return
-     */
     @Override
     public List<Long> getSkuIdsByBom(Long skuId) {
         List<Long> ids = new ArrayList<>();

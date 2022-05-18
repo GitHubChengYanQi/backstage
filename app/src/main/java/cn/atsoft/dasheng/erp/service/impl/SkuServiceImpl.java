@@ -909,11 +909,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public PageInfo<SkuResult> changePageBySpec(SkuParam param) {
-        if (param.getSkuIds() != null) {
-            if (param.getSkuIds().size() == 0) {
-                return null;
-            }
-        }
+
 
         /**
          *通过当前库位查询物料
@@ -926,21 +922,23 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * 查询这个物料的bom
          */
-        if (ToolUtil.isNotEmpty(param.getSelectBom()) && ToolUtil.isNotEmpty(param.getSkuId())) {
+        if (ToolUtil.isNotEmpty(param.getSelectBom()) && ToolUtil.isNotEmpty(param.getPartsId())) {
+            Parts parts = partsService.getById(param.getPartsId());
+            if (ToolUtil.isEmpty(parts)) {
+                return new PageInfo<>();
+            }
             switch (param.getSelectBom()) {
                 case All:
-                    List<Long> skuIdsByBom = partsService.getSkuIdsByBom(param.getSkuId());
+                    List<Long> skuIdsByBom = partsService.getSkuIdsByBom(parts.getSkuId());
                     param.setSkuIds(skuIdsByBom);
-                    param.setSkuId(null);
                     break;
                 case Present:
-                    Parts parts = partsService.query().eq("sku_id", param.getSkuId()).eq("status", 99).eq("display", 1).one();
-                    if (ToolUtil.isNotEmpty(parts)) {
-                        List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
-                        for (ErpPartsDetail partsDetail : partsDetails) {
-                            param.setSkuId(partsDetail.getSkuId());
-                        }
+                    List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
+                    List<Long> skuIds = param.getSkuIds();
+                    for (ErpPartsDetail partsDetail : partsDetails) {
+                        skuIds.add(partsDetail.getSkuId());
                     }
+
                     break;
             }
         }
@@ -1004,17 +1002,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
 
-//        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().select("sku_id,sum(number) as num").in("sku_id", skuIds).groupBy("sku_id").eq("display", 1).list();
+
         List<PurchaseListing> purchaseListings = skuIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().select("sku_id , sum(apply_number) as num").in("sku_id", skuIds).eq("status", 0).eq("display", 1).groupBy("sku_id").list();
-
-//        List<Parts> list1 = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
-
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
                 .list();
-
-
         List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).eq("display", 1).list();
         List<Long> unitIds = new ArrayList<>();
         List<Long> spuClassId = new ArrayList<>();
@@ -1062,15 +1055,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
 
         for (SkuResult skuResult : param) {
-//            /**
-//             * 库存数量
-//             */
-//            for (StockDetails stockDetail : stockDetails) {
-//                if (skuResult.getSkuId().equals(stockDetail.getSkuId())) {
-//                    skuResult.setStockNumber(Math.toIntExact(stockDetail.getNum()));
-//                    break;
-//                }
-//            }
+
+
             /**
              * 预购数量
              */

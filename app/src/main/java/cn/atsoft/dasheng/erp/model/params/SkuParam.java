@@ -15,6 +15,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private List<Long> brandIds;
     private Long skuId;
     private Long customerId;
-    private List<Long> skuIds;
+    private List<Long> skuIds = new ArrayList<>();
     private SpuParam spu;
     private Long spuClassificationId;
     private Long spuStandard;
@@ -51,7 +52,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private SpuClassificationParam spuClassification;
     private String spuClassName;
     private Long oldSkuId;
-
+    private Long partsId;
     private List<SkuAttributeAndValue> sku;
     private String customerName;
 
