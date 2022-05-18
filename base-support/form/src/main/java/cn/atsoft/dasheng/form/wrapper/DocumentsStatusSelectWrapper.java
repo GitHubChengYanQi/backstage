@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.crm.wrapper;
+package cn.atsoft.dasheng.form.wrapper;
 
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.hutool.core.convert.Convert;
@@ -15,5 +15,12 @@ public class DocumentsStatusSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+        String label = Convert.toStr(map.get("name"));
+        String value = Convert.toStr(map.get("documents_status_id"));
+        map.clear();
+        map.put("label",label);
+        map.put("value",value);
     }
+
+
 }

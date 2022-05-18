@@ -10,10 +10,13 @@ import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
+import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import cn.atsoft.dasheng.form.service.DocumentStatusService;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -39,6 +42,8 @@ import java.util.List;
 @Service
 public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, ActivitiAudit> implements ActivitiAuditService {
 
+    @Autowired
+    private DocumentStatusService documentStatusService;
 
     @Override
     @Transactional
@@ -48,24 +53,25 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
         this.save(entity);
 
     }
+
     @Override
-    public List<ActivitiAudit> getListBySteps(List<ActivitiSteps> steps){
+    public List<ActivitiAudit> getListBySteps(List<ActivitiSteps> steps) {
         List<Long> stepsId = new ArrayList<>();
         for (ActivitiSteps step : steps) {
             stepsId.add(step.getSetpsId());
         }
-       return this.list(new QueryWrapper<ActivitiAudit>(){{
-            in("setps_id",stepsId);
+        return this.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", stepsId);
         }});
     }
 
     @Override
     public List<ActivitiAudit> getListByStepsId(List<Long> stepsIds) {
         if (ToolUtil.isEmpty(stepsIds)) {
-            return  new ArrayList<>();
+            return new ArrayList<>();
         }
-        return this.list(new QueryWrapper<ActivitiAudit>(){{
-            in("setps_id",stepsIds);
+        return this.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", stepsIds);
         }});
     }
 
@@ -121,6 +127,12 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
             for (ActivitiAudit audit : audits) {
                 ActivitiAuditResult auditResult = new ActivitiAuditResult();
                 ToolUtil.copyProperties(audit, auditResult);
+                DocumentsStatusResult detail = documentStatusService.detail(auditResult.getDocumentsStatusId());
+                auditResult.setStatusResult(detail);
+                if (ToolUtil.isNotEmpty(auditResult.getAction())) {
+                    List<ActionStatus> statuses = JSON.parseArray(auditResult.getAction(), ActionStatus.class);
+                    auditResult.setStatuses(statuses);
+                }
                 auditResults.add(auditResult);
             }
         }

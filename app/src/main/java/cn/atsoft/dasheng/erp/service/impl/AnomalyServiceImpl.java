@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
+import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -24,9 +26,13 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.message.entity.AuditEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,6 +48,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
+import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
+
 
 /**
  * <p>
@@ -74,7 +82,13 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InstockListService instockListService;
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private DocumentsActionService documentsActionService;
+    @Autowired
+    private MessageProducer messageProducer;
 
+    @Autowired
+    private GetOrigin getOrigin;
 
     @Transactional
     @Override
@@ -86,16 +100,23 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (ToolUtil.isEmpty(order)) {
                     throw new ServiceException(500, "入库单不存在");
                 }
-                if (order.getState() != 1 ) {
-                    throw new ServiceException(500, "入库单状态不符");
-                }
-                order.setState(49);
-                instockOrderService.updateById(order);
+//                if (order.getState() != 1) {
+//                    throw new ServiceException(500, "入库单状态不符");
+//                }
+//                order.setState(49);
+//                instockOrderService.updateById(order);
                 param.setType(param.getAnomalyType().toString());
+
                 break;
         }
         Anomaly entity = getEntity(param);
         this.save(entity);
+
+         if (ToolUtil.isNotEmpty(param.getSource()) && ToolUtil.isNotEmpty(param.getSourceId())) {
+                String origin = getOrigin.newThemeAndOrigin("anomaly", entity.getAnomalyId(), entity.getSource(), entity.getSourceId());
+                entity.setOrigin(origin);
+                this.updateById(entity);
+         }
 
         List<AnomalyDetail> details = new ArrayList<>();
         for (AnomalyDetailParam detailParam : param.getDetailParams()) {
@@ -133,6 +154,19 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
+        } else {
+            /**
+             * 没有异常流程直接算完成
+             */
+            InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
+            instockOrderService.updateById(instockOrder);
+            DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
+            messageProducer.auditMessageDo(new AuditEntity(){{
+                setAuditType(CHECK_ACTION);
+                setFormId(instockOrder.getInstockOrderId());
+                setForm(ReceiptsEnum.INSTOCK.name());
+                setActionId(action.getDocumentsActionId());
+            }});
         }
     }
 

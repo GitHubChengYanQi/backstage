@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -60,6 +61,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     private ActivitiSetpSetService setpSetService;
     @Autowired
     private ActivitiSetpSetDetailService setpSetDetailService;
+    @Autowired
+    private DocumentsActionService actionService;
 
 
     @Override
@@ -231,6 +234,15 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 break;
             case route:
                 break;
+        }
+        if (ToolUtil.isNotEmpty(auditRule)) {
+            activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
+            activitiAudit.setFormType(auditRule.getFormType());
+            if (ToolUtil.isNotEmpty(auditRule.getActionStatuses())) {
+                actionService.combination(auditRule.getActionStatuses());
+                String action = JSON.toJSONString(auditRule.getActionStatuses());
+                activitiAudit.setAction(action);
+            }
         }
         activitiAudit.setType(String.valueOf(auditType));
         auditService.save(activitiAudit);
@@ -455,7 +467,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                     users.addAll(allUsersId);
                     break;
                 case DeptPositions:
-                    Map<String, List> map = new HashMap<>();
                     for (DeptPosition deptPosition : rule.getDeptPositions()) {
                         List<Long> positionIds = new ArrayList<>();
                         for (DeptPosition.Position position : deptPosition.getPositions()) {
@@ -514,8 +525,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         //取出所有步骤
         List<ActivitiAuditResult> auditResults = auditService.backAudits(stepIds);
-        ActivitiStepsResult result = groupSteps(steps, auditResults, top);
-        return result;
+        return groupSteps(steps, auditResults, top);
     }
 
     /**
@@ -586,13 +596,13 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @return
      */
     List<ActivitiStepsResult> getBranch(List<ActivitiStepsResult> steps, List<ActivitiAuditResult> auditResults, ActivitiStepsResult branchStep) {
-        List<ActivitiStepsResult> branchs = new ArrayList<>();
+        List<ActivitiStepsResult> branchList = new ArrayList<>();
         ActivitiStepsResult branch = new ActivitiStepsResult();
         for (ActivitiStepsResult step : steps) {
             if (branchStep.getSetpsId().equals(step.getSetpsId())) {
                 branch = step;
                 getAudit(auditResults, branch);
-                branchs.add(step);
+                branchList.add(step);
                 break;
             }
         }
@@ -605,7 +615,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             }
         }
 
-        return branchs;
+        return branchList;
     }
 
 
@@ -618,6 +628,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 if (auditResult.getSetpsId().equals(stepsResult.getSetpsId())) {
                     stepsResult.setAuditRule(auditResult.getRule());
                     stepsResult.setAuditType(auditResult.getType());
+                    stepsResult.setServiceAudit(auditResult);
                 }
             }
         }
@@ -662,7 +673,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     @Override
     public ActivitiStepsResult getStepResultByType(String type) {
-        ActivitiProcess process = processService.query().eq("module", type).eq("status", 99).one();
+        ActivitiProcess process = processService.query().eq("module", type).eq("status", 99).eq("display", 1).one();
         if (ToolUtil.isNotEmpty(process)) {
             return getStepResult(process.getProcessId());
         }

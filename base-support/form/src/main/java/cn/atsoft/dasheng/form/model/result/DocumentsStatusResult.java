@@ -1,13 +1,14 @@
-package cn.atsoft.dasheng.crm.model.params;
+package cn.atsoft.dasheng.form.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
+import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,20 +17,22 @@ import java.util.List;
  * </p>
  *
  * @author song
- * @since 2022-04-23
+ * @since 2022-04-28
  */
 @Data
 @ApiModel
-public class DocumentsStatusParam implements Serializable, BaseValidatingParam {
+public class DocumentsStatusResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<DocumentsActionResult> actionResults;
     /**
      * 通用单据状态id
      */
     @ApiModelProperty("通用单据状态id")
     private Long documentsStatusId;
+
+    private String name;
 
     /**
      * 动作
@@ -46,24 +49,28 @@ public class DocumentsStatusParam implements Serializable, BaseValidatingParam {
     /**
      * 表单类型
      */
+
     @ApiModelProperty("表单类型")
     private String formType;
 
     /**
      * 创建者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 创建时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
@@ -71,20 +78,16 @@ public class DocumentsStatusParam implements Serializable, BaseValidatingParam {
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false)
     private Integer display;
-
     @ApiModelProperty("父ID顺序数组")
+    @JSONField(serialize = false)
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

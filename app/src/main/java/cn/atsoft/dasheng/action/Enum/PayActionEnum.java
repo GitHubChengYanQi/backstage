@@ -1,7 +1,7 @@
-package cn.atsoft.dasheng.action;
+package cn.atsoft.dasheng.action.Enum;
 
 
-import cn.atsoft.dasheng.action.FormActionInterface;
+import cn.atsoft.dasheng.action.service.FormActionInterface;
 
 public enum PayActionEnum implements FormActionInterface {
 
@@ -15,10 +15,9 @@ public enum PayActionEnum implements FormActionInterface {
             return 99L;
         }
     },
-    pay {
-        @Override
+    refuse {
         public Long getStatus() {
-            return null;
+            return 50L;
         }
     }
 }

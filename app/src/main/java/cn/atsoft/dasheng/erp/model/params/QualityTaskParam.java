@@ -125,7 +125,7 @@ public class QualityTaskParam extends AbstractDictMap implements Serializable, B
 
     private Integer state;
 
-    private Integer status;
+    private Long status;
 
     /**
      * 部门id

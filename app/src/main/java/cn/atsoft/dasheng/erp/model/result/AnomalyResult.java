@@ -34,6 +34,17 @@ public class AnomalyResult implements Serializable {
 
     private String enclosure;
 
+
+    /**
+     * 主题
+     */
+    private String theme;
+
+    /**
+     * 来源
+     */
+    private String origin;
+
     /**
      * 异常id
      */
@@ -51,6 +62,19 @@ public class AnomalyResult implements Serializable {
      */
     @ApiModelProperty("单据id")
     private Long formId;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @ApiModelProperty("来源id")
+    private Long sourceId;
+
 
     /**
      * 创建者

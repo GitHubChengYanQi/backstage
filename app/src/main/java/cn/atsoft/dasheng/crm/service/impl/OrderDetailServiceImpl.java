@@ -225,7 +225,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 }
             }
             for (BrandResult brandResult : brandResults) {
-                if (orderDetailResult.getBrandId().equals(brandResult.getBrandId())) {
+                if (ToolUtil.isNotEmpty(orderDetailResult.getBrandId()) && ToolUtil.isNotEmpty(brandResult.getBrandId()) && orderDetailResult.getBrandId().equals(brandResult.getBrandId())) {
                     orderDetailResult.setBrandResult(brandResult);
                     break;
                 }
