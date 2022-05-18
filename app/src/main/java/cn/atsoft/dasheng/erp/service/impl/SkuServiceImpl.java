@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.SelectBomEnum;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -922,7 +923,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * 查询这个物料的bom
          */
-        if (ToolUtil.isNotEmpty(param.getSelectBom()) && ToolUtil.isNotEmpty(param.getPartsId())) {
+        if (ToolUtil.isNotEmpty(param.getPartsId())) {
+            if (ToolUtil.isEmpty(param.getSelectBom())) {
+                param.setSelectBom(SelectBomEnum.Present);
+            }
             Parts parts = partsService.getById(param.getPartsId());
             if (ToolUtil.isEmpty(parts)) {
                 return new PageInfo<>();
