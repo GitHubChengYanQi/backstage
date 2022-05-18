@@ -28,10 +28,11 @@ public interface DocumentsPermissionsService extends IService<DocumentsPermissio
      */
     void add(DocumentsPermissionsParam param);
 
-    @Transactional
+
     void addList(PermissionParam param);
 
 
+    List<DocumentsPermissionsResult> getDetails(String formType);
 
     /**
      * 删除

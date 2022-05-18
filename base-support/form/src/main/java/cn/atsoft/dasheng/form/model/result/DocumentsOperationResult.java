@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.form.pojo.CanDo;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,7 +21,7 @@ public class DocumentsOperationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<CanDo> canDos;
     /**
      * 详情
      */

@@ -1,17 +1,21 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 单据权限
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-05-18
  */
 @Data
@@ -19,7 +23,7 @@ import java.util.List;
 public class DocumentsPermissionsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private List<DocumentsOperationResult> operationResults;
 
     /**
      * 通用单据权限

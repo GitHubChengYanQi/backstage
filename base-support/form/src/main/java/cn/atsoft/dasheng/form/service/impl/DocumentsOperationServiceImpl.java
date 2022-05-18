@@ -4,17 +4,23 @@ package cn.atsoft.dasheng.form.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.DocumentsOperation;
+import cn.atsoft.dasheng.form.entity.DocumentsPermissions;
 import cn.atsoft.dasheng.form.mapper.DocumentsOperationMapper;
 import cn.atsoft.dasheng.form.model.params.DocumentsOperationParam;
 import cn.atsoft.dasheng.form.model.result.DocumentsOperationResult;
+import cn.atsoft.dasheng.form.pojo.CanDo;
 import cn.atsoft.dasheng.form.service.DocumentsOperationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,7 +42,9 @@ public class DocumentsOperationServiceImpl extends ServiceImpl<DocumentsOperatio
 
     @Override
     public void delete(DocumentsOperationParam param) {
-        this.removeById(getKey(param));
+        DocumentsOperation entity = getEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
     }
 
     @Override
@@ -46,6 +54,27 @@ public class DocumentsOperationServiceImpl extends ServiceImpl<DocumentsOperatio
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
+
+    @Override
+    public List<DocumentsOperationResult> getResultsByPermissionId(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<DocumentsOperation> operations = this.query().in("permissions_id", ids).eq("display", 1).list();
+
+        List<DocumentsOperationResult> results = BeanUtil.copyToList(operations, DocumentsOperationResult.class, new CopyOptions());
+        for (DocumentsOperationResult result : results) {
+            if (ToolUtil.isNotEmpty(result.getOperational())) {
+                List<CanDo> canDos = JSON.parseArray(result.getOperational(), CanDo.class);
+                result.setCanDos(canDos);
+            }
+
+        }
+        return results;
+    }
+
+
+
 
     @Override
     public DocumentsOperationResult findBySpec(DocumentsOperationParam param) {

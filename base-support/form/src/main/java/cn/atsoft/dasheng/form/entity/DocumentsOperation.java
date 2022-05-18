@@ -1,22 +1,25 @@
 package cn.atsoft.dasheng.form.entity;
 
+import cn.atsoft.dasheng.form.pojo.CanDo;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
  * 单据权限操作
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-05-18
  */
 @TableName("daoxin_documents_operation")
 public class DocumentsOperation implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
 
     /**
      * 详情
@@ -45,25 +48,25 @@ public class DocumentsOperation implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -148,15 +151,15 @@ public class DocumentsOperation implements Serializable {
     @Override
     public String toString() {
         return "DocumentsOperation{" +
-        "detailsId=" + detailsId +
-        ", permissionsId=" + permissionsId +
-        ", roleId=" + roleId +
-        ", operational=" + operational +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "detailsId=" + detailsId +
+                ", permissionsId=" + permissionsId +
+                ", roleId=" + roleId +
+                ", operational=" + operational +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

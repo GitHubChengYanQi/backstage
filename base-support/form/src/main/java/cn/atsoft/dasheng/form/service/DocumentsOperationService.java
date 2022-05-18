@@ -42,6 +42,10 @@ public interface DocumentsOperationService extends IService<DocumentsOperation> 
      */
     void update(DocumentsOperationParam param);
 
+
+
+    List<DocumentsOperationResult> getResultsByPermissionId(List<Long> ids);
+
     /**
      * 查询单条数据，Specification模式
      *

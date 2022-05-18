@@ -8,12 +8,16 @@ import cn.atsoft.dasheng.form.entity.DocumentsPermissions;
 import cn.atsoft.dasheng.form.mapper.DocumentsPermissionsMapper;
 import cn.atsoft.dasheng.form.model.params.DocumentsOperationParam;
 import cn.atsoft.dasheng.form.model.params.DocumentsPermissionsParam;
+import cn.atsoft.dasheng.form.model.result.DocumentsOperationResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsPermissionsResult;
 import cn.atsoft.dasheng.form.pojo.PermissionParam;
 import cn.atsoft.dasheng.form.service.DocumentsOperationService;
 import cn.atsoft.dasheng.form.service.DocumentsPermissionsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,7 +58,9 @@ public class DocumentsPermissionsServiceImpl extends ServiceImpl<DocumentsPermis
     @Transactional
     public void addList(PermissionParam param) {
 
+        updateDisplay(param.getFormType());
         for (DocumentsPermissionsParam paramParam : param.getParams()) {   //主表
+            paramParam.setFormType(param.getFormType());
             DocumentsPermissions entity = getEntity(paramParam);
             this.save(entity);
 
@@ -68,9 +75,63 @@ public class DocumentsPermissionsServiceImpl extends ServiceImpl<DocumentsPermis
         }
     }
 
+    /**
+     * 更新状态
+     *
+     * @param formType
+     */
+    private void updateDisplay(String formType) {
+
+        List<DocumentsPermissions> permissions = this.query().eq("form_type", formType).list();
+        List<Long> ids = new ArrayList<>();
+
+        for (DocumentsPermissions permission : permissions) {
+            permission.setDisplay(0);
+            ids.add(permission.getPermissionsId());
+        }
+
+        QueryWrapper<DocumentsOperation> operationQueryWrapper = new QueryWrapper<>();
+        operationQueryWrapper.in("permissions_id", ids);
+        DocumentsOperation documentsOperation = new DocumentsOperation();
+        documentsOperation.setDisplay(0);
+        operationService.update(documentsOperation, operationQueryWrapper);
+
+
+        this.updateBatchById(permissions);
+    }
+
+    @Override
+    public List<DocumentsPermissionsResult> getDetails(String formType) {
+        List<DocumentsPermissions> permissions = this.query().eq("form_type", formType).eq("display", 1).list();
+        List<DocumentsPermissionsResult> results = BeanUtil.copyToList(permissions, DocumentsPermissionsResult.class, new CopyOptions());
+
+        List<Long> ids = new ArrayList<>();
+        for (DocumentsPermissionsResult result : results) {
+            ids.add(result.getPermissionsId());
+        }
+        List<DocumentsOperationResult> operationResultList = operationService.getResultsByPermissionId(ids);
+
+        for (DocumentsPermissionsResult result : results) {
+            List<DocumentsOperationResult> operationResults = new ArrayList<>();
+
+            for (DocumentsOperationResult documentsOperationResult : operationResultList) {
+                if (result.getPermissionsId().equals(documentsOperationResult.getPermissionsId())) {
+                    operationResults.add(documentsOperationResult);
+                }
+                result.setOperationResults(operationResults);
+            }
+
+        }
+
+        return results;
+    }
+
+
     @Override
     public void delete(DocumentsPermissionsParam param) {
-        this.removeById(getKey(param));
+        DocumentsPermissions entity = getEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
     }
 
     @Override
