@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.form.mapper.DocumentsOperationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.DocumentsOperation">
+        <result column="details_id" property="detailsId" />
+        <result column="permissions_id" property="permissionsId" />
+        <result column="role_id" property="roleId" />
+        <result column="operational" property="operational" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        details_id AS "detailsId", permissions_id AS "permissionsId", role_id AS "roleId", operational AS "operational", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.DocumentsOperationResult" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsOperationParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_documents_operation where 1 = 1
+            <if test="paramCondition.detailsId != null">
+                and details_id like CONCAT('%',#{paramCondition.detailsId},'%')
+            </if>
+            <if test="paramCondition.permissionsId != null">
+                and permissions_id like CONCAT('%',#{paramCondition.permissionsId},'%')
+            </if>
+            <if test="paramCondition.roleId != null">
+                and role_id like CONCAT('%',#{paramCondition.roleId},'%')
+            </if>
+            <if test="paramCondition.operational != null and paramCondition.operational != ''">
+                and operational like CONCAT('%',#{paramCondition.operational},'%')
+            </if>
+            <if test="paramCondition.createUser != null">
+                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </if>
+            <if test="paramCondition.updateUser != null">
+                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+            </if>
+            <if test="paramCondition.display != null">
+                and display like CONCAT('%',#{paramCondition.display},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsOperationParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_documents_operation where 1 = 1
+                <if test="paramCondition.detailsId != null">
+                        and details_id like CONCAT('%',#{paramCondition.detailsId},'%')
+                </if>
+                <if test="paramCondition.permissionsId != null">
+                        and permissions_id like CONCAT('%',#{paramCondition.permissionsId},'%')
+                </if>
+                <if test="paramCondition.roleId != null">
+                        and role_id like CONCAT('%',#{paramCondition.roleId},'%')
+                </if>
+                <if test="paramCondition.operational != null and paramCondition.operational != ''">
+                        and operational like CONCAT('%',#{paramCondition.operational},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.DocumentsOperationResult" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsOperationParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_documents_operation where 1 = 1
+                <if test="paramCondition.detailsId != null">
+                        and details_id like CONCAT('%',#{paramCondition.detailsId},'%')
+                </if>
+                <if test="paramCondition.permissionsId != null">
+                        and permissions_id like CONCAT('%',#{paramCondition.permissionsId},'%')
+                </if>
+                <if test="paramCondition.roleId != null">
+                        and role_id like CONCAT('%',#{paramCondition.roleId},'%')
+                </if>
+                <if test="paramCondition.operational != null and paramCondition.operational != ''">
+                        and operational like CONCAT('%',#{paramCondition.operational},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.DocumentsOperationParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_documents_operation where 1 = 1
+                <if test="paramCondition.detailsId != null">
+                        and details_id like CONCAT('%',#{paramCondition.detailsId},'%')
+                </if>
+                <if test="paramCondition.permissionsId != null">
+                        and permissions_id like CONCAT('%',#{paramCondition.permissionsId},'%')
+                </if>
+                <if test="paramCondition.roleId != null">
+                        and role_id like CONCAT('%',#{paramCondition.roleId},'%')
+                </if>
+                <if test="paramCondition.operational != null and paramCondition.operational != ''">
+                        and operational like CONCAT('%',#{paramCondition.operational},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+    </select>
+
+</mapper>
