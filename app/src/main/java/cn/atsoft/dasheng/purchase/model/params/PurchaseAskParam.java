@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.params;
 
+import cn.atsoft.dasheng.form.service.DocumentStatusService;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -54,7 +55,7 @@ public class PurchaseAskParam implements Serializable, BaseValidatingParam {
      * 申请状态
      */
     @ApiModelProperty("申请状态")
-    private Integer status;
+    private Long status;
 
     /**
      * 总金额

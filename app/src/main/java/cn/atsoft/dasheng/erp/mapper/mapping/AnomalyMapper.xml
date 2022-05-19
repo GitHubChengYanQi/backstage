@@ -7,6 +7,8 @@
         <id column="anomaly_id" property="anomalyId"/>
         <result column="type" property="type"/>
         <result column="form_id" property="formId"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -15,12 +17,14 @@
         <result column="deptId" property="deptId"/>
         <result column="remark" property="remark"/>
         <result property="enclosure" column="enclosure"/>
+        <result property="origin" column="origin"/>
+        <result property="theme" column="theme"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">enclosure
-    AS "enclosure",
+    AS "enclosure",origin AS "origin",theme AS "theme",source AS "source",source_id AS "source_id",
         remark
         AS "remark",anomaly_id AS "anomalyId", type AS "type", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>

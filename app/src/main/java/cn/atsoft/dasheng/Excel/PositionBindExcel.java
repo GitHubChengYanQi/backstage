@@ -87,7 +87,7 @@ public class PositionBindExcel {
     }
 
     @RequestMapping(value = "/positionTemp", method = RequestMethod.GET)
-    public void spuTemp(HttpServletResponse response) {
+    public void positionTemp(HttpServletResponse response) {
 
         String[] header = {"物料编码", "分类", "产品", "型号","库存余额","上级库位","库位","品牌"};
 

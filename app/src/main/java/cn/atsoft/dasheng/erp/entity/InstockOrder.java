@@ -105,6 +105,12 @@ public class InstockOrder implements Serializable {
     private String enclosure;
 
     /**
+     * 状态
+     */
+    @TableField("status")
+    private Long status;
+
+    /**
      * 负责人
      */
     @TableField("user_id")
@@ -148,6 +154,14 @@ public class InstockOrder implements Serializable {
      */
     @TableField("origin")
     private String origin;
+
+    public Long getStatus() {
+        return status;
+    }
+
+    public void setStatus(Long status) {
+        this.status = status;
+    }
 
     public String getType() {
         return type;

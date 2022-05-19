@@ -55,7 +55,7 @@ public class ProcurementOrder implements Serializable {
      * 状态
      */
     @TableField("status")
-    private Integer status;
+    private Long status;
 
     /**
      * z
@@ -138,11 +138,11 @@ public class ProcurementOrder implements Serializable {
         this.procurementPlanId = procurementPlanId;
     }
 
-    public Integer getStatus() {
+    public Long getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(Long status) {
         this.status = status;
     }
 

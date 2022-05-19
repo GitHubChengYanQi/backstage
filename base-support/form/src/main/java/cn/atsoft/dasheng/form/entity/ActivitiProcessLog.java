@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.form.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,7 +27,7 @@ public class ActivitiProcessLog implements Serializable {
     /**
      * 主键
      */
-      @TableId(value = "log_id", type = IdType.ID_WORKER)
+    @TableId(value = "log_id", type = IdType.ID_WORKER)
     private Long logId;
 
     /**
@@ -34,11 +37,17 @@ public class ActivitiProcessLog implements Serializable {
     private Long peocessId;
 
     /**
+     * 动作状态
+     */
+    @TableField("action_status")
+    private String actionStatus;
+
+    /**
      * 步骤Id
      */
     @TableField("setps_id")
     private Long setpsId;
-/**
+    /**
      * 步骤Id
      */
     @TableField("task_id")
@@ -56,16 +65,16 @@ public class ActivitiProcessLog implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
 
@@ -92,6 +101,7 @@ public class ActivitiProcessLog implements Serializable {
     public void setSetpsId(Long setpsId) {
         this.setpsId = setpsId;
     }
+
     public Long getTaskId() {
         return taskId;
     }
@@ -148,18 +158,26 @@ public class ActivitiProcessLog implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public String getActionStatus() {
+        return actionStatus;
+    }
+
+    public void setActionStatus(String actionStatus) {
+        this.actionStatus = actionStatus;
+    }
+
     @Override
     public String toString() {
         return "ActivitiProcessLog{" +
-        "logId=" + logId +
-        ", peocessId=" + peocessId +
-        ", setpsId=" + setpsId +
-        ", status=" + status +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "logId=" + logId +
+                ", peocessId=" + peocessId +
+                ", setpsId=" + setpsId +
+                ", status=" + status +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }

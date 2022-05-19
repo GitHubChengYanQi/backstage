@@ -49,7 +49,7 @@ public class PurchaseAsk implements Serializable {
      * 申请状态
      */
     @TableField("status")
-    private Integer status;
+    private Long status;
 
     /**
      * 总金额
@@ -178,11 +178,11 @@ public class PurchaseAsk implements Serializable {
         this.note = note;
     }
 
-    public Integer getStatus() {
+    public Long getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(Long status) {
         this.status = status;
     }
 

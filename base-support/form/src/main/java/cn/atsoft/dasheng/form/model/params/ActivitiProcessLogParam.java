@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -37,6 +38,8 @@ public class ActivitiProcessLogParam implements Serializable, BaseValidatingPara
     private String url;
 
     private Long formId;
+
+    private String actionStatus;
 
     /**
      * 流程Id

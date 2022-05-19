@@ -28,11 +28,12 @@
         <result column="source" property="source"/>
         <result column="source_id" property="sourceId"/>
         <result column="type" property="type"/>
+        <result column="status" property="status"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">stock_user_id
-    AS "stockUserId",urgent AS "urgent",enclosure AS "enclosure",type AS "type",
+    AS "stockUserId",urgent AS "urgent",enclosure AS "enclosure",type AS "type",status AS "status",
         storehouse_id AS "storeHouseId",register_time AS "registerTime", theme AS "theme" , origin AS "origin" ,storehouse_positions_id AS "storehousePositionsId",source AS "source",
           source_id AS "sourceId",
         instock_order_id AS "instockOrderId", user_id AS "userId", coding AS "coding", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", state AS "state"
