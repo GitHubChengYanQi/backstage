@@ -17,6 +17,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.query.entity.QueryLog;
+import cn.atsoft.dasheng.query.service.QueryLogService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -53,6 +55,8 @@ public class SkuController extends BaseController {
     private QualityPlanService qualityPlanService;
     @Autowired
     private SpuClassificationService spuClassificationService;
+    @Autowired
+    private QueryLogService queryLogService;
 
     /**
      * 直接物料 新增接口
@@ -70,19 +74,19 @@ public class SkuController extends BaseController {
         Map<String, Sku> skuMap = this.skuService.add(skuParam);
         if (ToolUtil.isNotEmpty(skuMap.get("success"))) {
             return ResponseData.success(skuMap.get("success").getSkuId());
-        }else {
+        } else {
             Sku error = skuMap.get("error");
             SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(error,skuResult);
-            skuService.format(new ArrayList<SkuResult>(){{
+            ToolUtil.copyProperties(error, skuResult);
+            skuService.format(new ArrayList<SkuResult>() {{
                 add(skuResult);
             }});
-            return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(),BizExceptionEnum.USER_CHECK.getMessage(),skuResult);
+            return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), skuResult);
         }
 
 
-
     }
+
     /**
      * 直接物料 新增接口
      *
@@ -230,6 +234,12 @@ public class SkuController extends BaseController {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
+        if (ToolUtil.isNotEmpty(skuParam.getSkuName())) {
+            QueryLog queryLog = new QueryLog();
+            queryLog.setFormType("sku");
+            queryLog.setRecord(skuParam.getSkuName());
+        }
+
         //ServiceMapper中区别于普通list因为排序方式不相同
 
         return this.skuService.changePageBySpec(skuParam);
@@ -302,6 +312,7 @@ public class SkuController extends BaseController {
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
+
     /**
      * 选择列表
      *

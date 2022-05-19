@@ -213,36 +213,34 @@
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
 
-        <if test="paramCondition.skuName == null or paramCondition.skuName == ''">
-
-            <if test="paramCondition.skuId != null">
-                AND goods_sku.sku_id = #{paramCondition.skuId}
-            </if>
-            <if test="paramCondition.name != null">
-                AND goods_sku.sku_name like CONCAT('%',#{paramCondition.name},'%')
-            </if>
-            <if test="paramCondition.coding != null">
-                and goods_sku.coding like CONCAT('%',#{paramCondition.coding},'%')
-            </if>
-            <if test="paramCondition.standard != null">
-                and goods_sku.standard like CONCAT('%',#{paramCondition.standard},'%')
-            </if>
-            <if test="paramCondition.type != null">
-                and goods_sku.type = #{paramCondition.type}
-            </if>
-            <if test="paramCondition.spuId != null">
-                and goods_sku.spu_id = #{paramCondition.spuId}
-            </if>
-            <if test="paramCondition.spuName != null">
-                and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
-            </if>
-            <if test="paramCondition.spuClassName != null">
-                and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
-            </if>
-            <if test="paramCondition.spuClass != null">
-                and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
-            </if>
+          <if test="paramCondition.skuId != null">
+            AND goods_sku.sku_id = #{paramCondition.skuId}
         </if>
+        <if test="paramCondition.name != null">
+            AND goods_sku.sku_name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.coding != null">
+            and goods_sku.coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.standard != null">
+            and goods_sku.standard like CONCAT('%',#{paramCondition.standard},'%')
+        </if>
+        <if test="paramCondition.type != null">
+            and goods_sku.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.spuId != null">
+            and goods_sku.spu_id = #{paramCondition.spuId}
+        </if>
+        <if test="paramCondition.spuName != null">
+            and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
+        </if>
+        <if test="paramCondition.spuClassName != null">
+            and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
+        </if>
+        <if test="paramCondition.spuClass != null">
+            and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+        </if>
+
         <if test="spuIds != null  and spuIds.size > 0 ">
             and goods_sku.spu_id in
             <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
@@ -270,7 +268,8 @@
         </if>
         <if test="paramCondition.spuClassIds !=null and paramCondition.spuClassIds.size>0">
             and goods_spu_class.spu_classification_id in
-            <foreach collection="paramCondition.spuClassIds" index="index" item="state" separator="," close=")" open="(">
+            <foreach collection="paramCondition.spuClassIds" index="index" item="state" separator="," close=")"
+                     open="(">
                 #{state}
             </foreach>
         </if>
