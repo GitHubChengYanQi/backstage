@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.form.entity.DocumentsPermissions;
 import cn.atsoft.dasheng.form.model.params.DocumentsPermissionsParam;
 import cn.atsoft.dasheng.form.model.result.DocumentsPermissionsResult;
 import cn.atsoft.dasheng.form.pojo.PermissionParam;
+import cn.atsoft.dasheng.form.pojo.RolePermission;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.transaction.Transactional;
@@ -31,6 +32,8 @@ public interface DocumentsPermissionsService extends IService<DocumentsPermissio
 
     void addList(PermissionParam param);
 
+
+    List<RolePermission> getRolePermission(String formType, String filedName);
 
     List<DocumentsPermissionsResult> getDetails(String formType);
 

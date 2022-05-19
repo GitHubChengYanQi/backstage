@@ -10,7 +10,9 @@ import cn.atsoft.dasheng.form.model.params.DocumentsOperationParam;
 import cn.atsoft.dasheng.form.model.params.DocumentsPermissionsParam;
 import cn.atsoft.dasheng.form.model.result.DocumentsOperationResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsPermissionsResult;
+import cn.atsoft.dasheng.form.pojo.CanDo;
 import cn.atsoft.dasheng.form.pojo.PermissionParam;
+import cn.atsoft.dasheng.form.pojo.RolePermission;
 import cn.atsoft.dasheng.form.service.DocumentsOperationService;
 import cn.atsoft.dasheng.form.service.DocumentsPermissionsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -100,6 +102,35 @@ public class DocumentsPermissionsServiceImpl extends ServiceImpl<DocumentsPermis
 
 
         this.updateBatchById(permissions);
+    }
+
+    /**
+     * 获取角色权限
+     * @param formType
+     * @param filedName
+     * @return
+     */
+    @Override
+    public List<RolePermission> getRolePermission(String formType, String filedName) {
+        List<RolePermission> rolePermissions = new ArrayList<>();
+        if (ToolUtil.isEmpty(formType)&&ToolUtil.isEmpty(filedName)) {
+            return rolePermissions;
+        }
+
+        DocumentsPermissions permissions = this.query().eq("form_type", formType).eq("filed_name", filedName).eq("display", 1).one();
+        if (ToolUtil.isEmpty(permissions)) {
+            return rolePermissions;
+        }
+        List<DocumentsOperation> operationList = operationService.query().eq("permissions_id", permissions.getPermissionsId()).eq("display", 1).list();
+        for (DocumentsOperation documentsOperation : operationList) {
+            RolePermission rolePermission = new RolePermission();
+
+            rolePermission.setRoleId(documentsOperation.getRoleId());
+            List<CanDo> canDos = JSON.parseArray(documentsOperation.getOperational(), CanDo.class);
+            rolePermission.setCanDos(canDos);
+            rolePermissions.add(rolePermission);
+        }
+        return rolePermissions;
     }
 
     @Override
