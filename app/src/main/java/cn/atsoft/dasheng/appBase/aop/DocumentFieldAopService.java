@@ -4,29 +4,18 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.fieldAuthority.entity.FieldAuthority;
-import cn.atsoft.dasheng.fieldAuthority.model.request.FieldRole;
 
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 
 
-import java.awt.print.PrinterException;
 import java.lang.reflect.Field;
 import java.util.*;
 
 
 @Aspect
 public class DocumentFieldAopService {
+    String formType = null;
 
     //        @Pointcut(value = "@annotation(cn.atsoft.dasheng.appBase.aop.DocumentFieldAop)")
     @Pointcut("execution(* cn.atsoft.dasheng..*.*Controller.*(..))")
@@ -34,78 +23,91 @@ public class DocumentFieldAopService {
     }
 
     @Before("field()")
-    public void doBefore(JoinPoint joinPoint) throws Throwable {
-//        Object[] args = joinPoint.getArgs();
-//        for (Object obj : args) {
-//            filterField(obj);
-//        }
+    public void doBefore(JoinPoint joinPoint) throws IllegalAccessException {
+        Integer type = 0;
+        switch (joinPoint.getSignature().getName()) {
+            case "edit":
+            case "add":
+            case "delete":
+                type = 1;
+                break;
+        }
+        if (type == 1) {
+            Object[] args = joinPoint.getArgs();
+            for (Object obj : args) {
+                filterField(obj, type);
+            }
+        }
+
+        ClassName = joinPoint.getTarget().getClass().getSimpleName();
+
     }
 
     @AfterReturning(returning = "obj", pointcut = "field()")
+//    @After("field()")
     public void doAfterReturning(Object obj) throws Throwable {
-        filterField(obj);
+
+        filterField(obj, 2);
+
     }
 
-    private void filterField(Object obj) throws IllegalAccessException {
-//        if (obj.getClass().getSimpleName().equals("PageInfo")) {
-//
-//        } else
+    private void filterField(Object obj, Integer type) throws IllegalAccessException {
+
         if (ToolUtil.isNotEmpty(obj)) {
             if (obj instanceof List) {
                 for (Object datum : (List) obj) {
-                    this.filterField(datum);
+                    this.filterField(datum, type);
                 }
-            }  else if (obj instanceof Map) {
+            } else if (obj instanceof Map) {
                 Iterator it = ((Map) obj).entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry entry = (Map.Entry) it.next();
                     Object value = entry.getValue();
                     if (value instanceof Object) {
-                        this.filterField(value);
+                        this.filterField(value, type);
                     }
                 }
             } else if (obj instanceof PageInfo) {
-                    PageInfo pageInfo = (PageInfo) obj;
-                    List data = pageInfo.getData();
-                    for (Object datum : data) {
-                        this.filterField(datum);
-                    }
-                }else {
+                PageInfo pageInfo = (PageInfo) obj;
+                List data = pageInfo.getData();
+                for (Object datum : data) {
+                    this.filterField(datum, type);
+                }
+            } else {
                 Class objClass = (Class) obj.getClass();
                 Field[] fs = objClass.getDeclaredFields();
+                objClass.getGenericSuperclass();
                 for (Field f : fs) {
+                    f.getType();
                     f.setAccessible(true);
-                    type(f.getType().getSimpleName());
+                    Object o = f.get(obj);
+
                     if (type(f.getType().getSimpleName())) {
-                        Object o = f.get(obj);
-                        if(ToolUtil.isNotEmpty(o)){
-                            this.filterField(o);
+                        if (ToolUtil.isNotEmpty(o)) {
+                            this.filterField(o, type);
                         }
                     }
                 }
             }
-            this.setNull(obj);
+            this.setNull(obj, type);
         }
     }
-    private Boolean type(String type){
-        switch (type){
+
+    private Boolean type(String type) {
+        switch (type) {
             case "long":
             case "Long":
-            case "List":
             case "String":
             case "Boolean":
             case "boolean":
             case "int":
-            case "integer":
             case "Integer":
-            case "ArrayList":
             case "array":
             case "byte":
             case "Byte":
             case "Date":
             case "DateTime":
             case "Map":
-            case "map":
                 return false;
             default:
                 return true;
@@ -114,7 +116,8 @@ public class DocumentFieldAopService {
 
     }
 
-    private void setNull(Object obj) throws IllegalAccessException {
+    private void setNull(Object obj, Integer type) throws IllegalAccessException {
+        this.formatFormType(formType);
         Field[] fields = obj.getClass().getDeclaredFields();
         String simpleName = obj.getClass().getSimpleName();
         for (Field field : fields) {
@@ -128,40 +131,29 @@ public class DocumentFieldAopService {
                     hidden = false;
                 } else {
                     for (Long roleId : roleList) {
-                        FieldAuthority fieldAuthority = new FieldAuthority();
-                        List<FieldRole> fieldRoles = JSON.parseArray(fieldAuthority.getDetail(), FieldRole.class);
-                        if (ToolUtil.isEmpty(fieldRoles)) {
-                            fieldRoles = new ArrayList<>();
-                        }
-                        fieldRoles.add(new FieldRole() {{
-                            setFieldName("skuName");
-                            setRoleAuthorities(new ArrayList<FieldRole.RoleAuthority>() {{
-                                add(new FieldRole.RoleAuthority() {{
-                                    setChmod(7);
-                                    setRoleId(12L);
-                                }});
-                            }});
-                        }});
-                        fieldRoles.add(new FieldRole() {{
-                            setFieldName("name");
-                            setRoleAuthorities(new ArrayList<FieldRole.RoleAuthority>() {{
-                                add(new FieldRole.RoleAuthority() {{
-                                    setChmod(1);
-                                    setRoleId(15L);
-                                }});
-                            }});
-                        }});
+                        List<Object> fieldRoles = new ArrayList<>();
 
-                        for (FieldRole fieldRole : fieldRoles) {
+                        for (Object fieldRole : fieldRoles) {
                             if (fieldRole.getFieldName().equals(field.getName())) {
                                 for (FieldRole.RoleAuthority roleAuthority : fieldRole.getRoleAuthorities()) {
                                     if (roleAuthority.getRoleId().equals(roleId)) {
-                                        switch (roleAuthority.getChmod()) {
-                                            case 7:
-                                            case 4:
-                                            case 2:
+                                        switch (type) {
                                             case 1:
-                                                hidden = false;
+                                                //增删改接传入返回参数校验
+                                                switch (roleAuthority.getChmod()) {
+                                                    case 2:
+                                                        hidden = false;
+                                                        break;
+                                                }
+                                                break;
+                                            case 0:
+                                                //其他接口传入返回校验
+                                                switch (roleAuthority.getChmod()) {
+                                                    case 2:
+                                                    case 1:
+                                                        hidden = false;
+                                                        break;
+                                                }
                                                 break;
                                         }
                                     }
@@ -169,7 +161,7 @@ public class DocumentFieldAopService {
                             }
                         }
                     }
-                
+
                 }
 
                 if (hidden) {
@@ -179,48 +171,16 @@ public class DocumentFieldAopService {
         }
     }
 
-    private void checkAuthority(List<Long> roleList, Field field, String filedName, Boolean hidden) {
-        for (Long roleId : roleList) {
-            FieldAuthority fieldAuthority = new FieldAuthority();
-            List<FieldRole> fieldRoles = JSON.parseArray(fieldAuthority.getDetail(), FieldRole.class);
-            if (ToolUtil.isEmpty(fieldRoles)) {
-                fieldRoles = new ArrayList<>();
-            }
-            fieldRoles.add(new FieldRole() {{
-                setFieldName("skuName");
-                setRoleAuthorities(new ArrayList<FieldRole.RoleAuthority>() {{
-                    add(new FieldRole.RoleAuthority() {{
-                        setChmod(7);
-                        setRoleId(12L);
-                    }});
-                }});
-            }});
-            fieldRoles.add(new FieldRole() {{
-                setFieldName("name");
-                setRoleAuthorities(new ArrayList<FieldRole.RoleAuthority>() {{
-                    add(new FieldRole.RoleAuthority() {{
-                        setChmod(1);
-                        setRoleId(15L);
-                    }});
-                }});
-            }});
 
-            for (FieldRole fieldRole : fieldRoles) {
-                if (filedName.equals(fieldAuthority.getModelNames()) && fieldRole.getFieldName().equals(field.getName())) {
-                    for (FieldRole.RoleAuthority roleAuthority : fieldRole.getRoleAuthorities()) {
-                        if (roleAuthority.getRoleId().equals(roleId)) {
-                            switch (roleAuthority.getChmod()) {
-                                case 7:
-                                case 4:
-                                case 2:
-                                case 1:
-                                    hidden = true;
-                                    break;
-                            }
-                        }
-                    }
-                }
+    private String formatFormType(String formType){
+        if (ToolUtil.isNotEmpty(this.formType)) {
+            switch (this.formType){
+                case "purchaseASKController":
+                    return "PURCHASE";
+                default:
+                    return null;
             }
         }
+        return null;
     }
 }
