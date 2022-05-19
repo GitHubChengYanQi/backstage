@@ -29,6 +29,8 @@ import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
@@ -535,5 +537,42 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             }
         }
         return true;
+    }
+
+    /**
+     * 通过物料查询供应商
+     *
+     * @param skuIds
+     * @return
+     */
+    @Override
+    public List<CustomerResult> getCustomerBySkuIds(List<Long> skuIds) {
+
+
+        List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<Long> customerIds = new ArrayList<>();
+        for (Supply supply : supplies) {
+            customerIds.add(supply.getCustomerId());
+        }
+        List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+
+        return BeanUtil.copyToList(customerList, CustomerResult.class, new CopyOptions());
+    }
+
+    /**
+     * 获取物料绑定的品牌
+     *
+     * @param skuIds
+     * @return
+     */
+    @Override
+    public List<BrandResult> getBrandBySkuIds(List<Long> skuIds) {
+
+        List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<Long> brandIds = new ArrayList<>();
+        for (Supply supply : supplies) {
+            brandIds.add(supply.getBrandId());
+        }
+        return brandService.getBrandResults(brandIds);
     }
 }

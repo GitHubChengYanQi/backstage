@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.MediaService;
@@ -15,11 +16,13 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.erp.SearchTypeEnum;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.SearchObject;
 import cn.atsoft.dasheng.erp.pojo.SelectBomEnum;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -959,7 +962,82 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         this.isSupply(param, page.getRecords());
-        return PageFactory.createPageInfo(page);
+        PageInfo<SkuResult> pageInfo = PageFactory.createPageInfo(page);
+        search(pageInfo);
+        return pageInfo;
+    }
+
+    /**
+     * 添加条件
+     *
+     * @param pageInfo
+     */
+    private void search(PageInfo<SkuResult> pageInfo) {
+        SearchObject spuClassSearch = spuClassSearch(pageInfo.getData());
+        SearchObject customerSearch = customerSearch(pageInfo.getData());
+        SearchObject brandSearch = brandSearch(pageInfo.getData());
+        pageInfo.setSearch(new ArrayList<Object>() {{
+            add(spuClassSearch);
+            add(customerSearch);
+            add(brandSearch);
+        }});
+    }
+
+    /**
+     * 分类条件
+     *
+     * @param skuResults
+     * @return
+     */
+    private SearchObject spuClassSearch(List<SkuResult> skuResults) {
+        SearchObject searchObject = new SearchObject();
+
+        List<Object> results = new ArrayList<>();
+        for (SkuResult skuResult : skuResults) {
+            SpuClassificationResult spuClassificationResult = skuResult.getSpuResult().getSpuClassificationResult();
+            if (ToolUtil.isNotEmpty(spuClassificationResult)) {
+                results.add(spuClassificationResult);
+            }
+        }
+        searchObject.setKey("spuClass");
+        searchObject.setTitle("分类");
+        searchObject.setTypeEnum(SearchTypeEnum.List);
+        searchObject.setObjects(results);
+        return searchObject;
+    }
+
+    /**
+     * 供应商条件
+     *
+     * @param skuResults
+     * @return
+     */
+    private SearchObject customerSearch(List<SkuResult> skuResults) {
+        SearchObject searchObject = new SearchObject();
+        List<Long> skuIds = new ArrayList<>();
+        for (SkuResult skuResult : skuResults) {
+            skuIds.add(skuResult.getSkuId());
+        }
+        List<CustomerResult> customerResults = supplyService.getCustomerBySkuIds(skuIds);
+        searchObject.setTitle("供应商");
+        searchObject.setKey("customer");
+        searchObject.setTypeEnum(SearchTypeEnum.List);
+        searchObject.setObjects(customerResults);
+        return searchObject;
+    }
+
+    private SearchObject brandSearch(List<SkuResult> skuResults) {
+        SearchObject searchObject = new SearchObject();
+        List<Long> skuIds = new ArrayList<>();
+        for (SkuResult skuResult : skuResults) {
+            skuIds.add(skuResult.getSkuId());
+        }
+        List<BrandResult> brandBySkuIds = supplyService.getBrandBySkuIds(skuIds);
+        searchObject.setObjects(brandBySkuIds);
+        searchObject.setTitle("品牌");
+        searchObject.setKey("brand");
+        searchObject.setTypeEnum(SearchTypeEnum.List);
+        return searchObject;
     }
 
     public void isSupply(SkuParam skuParam, List<SkuResult> results) {
