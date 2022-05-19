@@ -22,8 +22,7 @@ import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.pojo.SearchObject;
-import cn.atsoft.dasheng.erp.pojo.SelectBomEnum;
+import cn.atsoft.dasheng.erp.pojo.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -44,6 +43,8 @@ import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -914,7 +915,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public PageInfo<SkuResult> changePageBySpec(SkuParam param) {
 
-
+        if (ToolUtil.isNotEmpty(param.getBrandIds())) {
+            List<Supply> supplies = supplyService.query().in("brand_id", param.getBrandIds()).eq("display", 1).list();
+            for (Supply supply : supplies) {
+                param.getSkuIds().add(supply.getSkuId());
+            }
+        }
+        /**
+         * 供应商查询
+         */
+        if (ToolUtil.isNotEmpty(param.getCustomerIds())) {
+            List<Supply> supplies = supplyService.query().in("customer_id", param.getCustomerIds()).eq("display", 1).list();
+            for (Supply supply : supplies) {
+                param.getSkuIds().add(supply.getSkuId());
+            }
+        }
         /**
          *通过当前库位查询物料
          */
@@ -976,10 +991,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SearchObject spuClassSearch = spuClassSearch(pageInfo.getData());
         SearchObject customerSearch = customerSearch(pageInfo.getData());
         SearchObject brandSearch = brandSearch(pageInfo.getData());
+        SearchObject bomSearch = bomSearch(pageInfo.getData());
         pageInfo.setSearch(new ArrayList<Object>() {{
             add(spuClassSearch);
             add(customerSearch);
             add(brandSearch);
+            add(bomSearch);
         }});
     }
 
@@ -992,11 +1009,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SearchObject spuClassSearch(List<SkuResult> skuResults) {
         SearchObject searchObject = new SearchObject();
 
-        List<Object> results = new ArrayList<>();
+        List<SpuClassSearch> results = new ArrayList<>();
         for (SkuResult skuResult : skuResults) {
             SpuClassificationResult spuClassificationResult = skuResult.getSpuResult().getSpuClassificationResult();
             if (ToolUtil.isNotEmpty(spuClassificationResult)) {
-                results.add(spuClassificationResult);
+                SpuClassSearch spuClassSearch = new SpuClassSearch();
+                spuClassSearch.setKey(spuClassificationResult.getSpuClassificationId());
+                spuClassSearch.setTitle(spuClassificationResult.getName());
+                if (results.stream().noneMatch(i -> i.getKey().equals(spuClassificationResult.getSpuClassificationId()))) {
+                    results.add(spuClassSearch);
+                }
             }
         }
         searchObject.setKey("spuClass");
@@ -1015,17 +1037,33 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SearchObject customerSearch(List<SkuResult> skuResults) {
         SearchObject searchObject = new SearchObject();
         List<Long> skuIds = new ArrayList<>();
+        List<CustomerSearch> results = new ArrayList<>();
         for (SkuResult skuResult : skuResults) {
             skuIds.add(skuResult.getSkuId());
         }
         List<CustomerResult> customerResults = supplyService.getCustomerBySkuIds(skuIds);
+
+        for (CustomerResult customerResult : customerResults) {
+            CustomerSearch customerSearch = new CustomerSearch();
+            customerSearch.setTitle(customerResult.getCustomerName());
+            customerSearch.setKey(customerResult.getCustomerId());
+            if (results.stream().noneMatch(i -> i.getKey().equals(customerResult.getCustomerId()))) {
+                results.add(customerSearch);
+            }
+        }
         searchObject.setTitle("供应商");
         searchObject.setKey("customer");
         searchObject.setTypeEnum(SearchTypeEnum.List);
-        searchObject.setObjects(customerResults);
+        searchObject.setObjects(results);
         return searchObject;
     }
 
+    /**
+     * 品牌条件
+     *
+     * @param skuResults
+     * @return
+     */
     private SearchObject brandSearch(List<SkuResult> skuResults) {
         SearchObject searchObject = new SearchObject();
         List<Long> skuIds = new ArrayList<>();
@@ -1033,10 +1071,63 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             skuIds.add(skuResult.getSkuId());
         }
         List<BrandResult> brandBySkuIds = supplyService.getBrandBySkuIds(skuIds);
-        searchObject.setObjects(brandBySkuIds);
+        List<BrandSearch> results = new ArrayList<>();
+        for (BrandResult brandBySkuId : brandBySkuIds) {
+            BrandSearch brandSearch = new BrandSearch();
+            brandSearch.setKey(brandBySkuId.getBrandId());
+            brandSearch.setTitle(brandBySkuId.getBrandName());
+            if (results.stream().noneMatch(i -> i.getKey().equals(brandBySkuId.getBrandId()))) {
+                results.add(brandSearch);
+            }
+        }
+
+        searchObject.setObjects(results);
         searchObject.setTitle("品牌");
         searchObject.setKey("brand");
         searchObject.setTypeEnum(SearchTypeEnum.List);
+        return searchObject;
+    }
+
+    /**
+     * bom 条件
+     *
+     * @param skuResults
+     * @return
+     */
+    private SearchObject bomSearch(List<SkuResult> skuResults) {
+        SearchObject searchObject = new SearchObject();
+        List<Long> skuIds = new ArrayList<>();
+        for (SkuResult skuResult : skuResults) {
+            skuIds.add(skuResult.getSkuId());
+        }
+        List<Parts> parts = partsService.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
+        skuIds.clear();
+        for (Parts part : parts) {
+            skuIds.add(part.getSkuId());
+        }
+        List<Sku> skuList = this.listByIds(skuIds);
+        List<SkuResult> skuResultList = BeanUtil.copyToList(skuList, SkuResult.class, new CopyOptions());
+
+
+        List<BomSearch> results = new ArrayList<>();
+        for (SkuResult skuResult : skuResultList) {
+            for (Parts part : parts) {
+                if (part.getSkuId().equals(skuResult.getSkuId())) {
+                    BomSearch bomSearch = new BomSearch();
+                    bomSearch.setKey(part.getPartsId());
+                    bomSearch.setTitle(skuResult.getSkuName());
+                    if (results.stream().noneMatch(i -> i.getKey().equals(skuResult.getSkuId()))) {
+                        results.add(bomSearch);
+                    }
+                    break;
+                }
+            }
+
+        }
+        searchObject.setKey("bom");
+        searchObject.setTypeEnum(SearchTypeEnum.bom);
+        searchObject.setTitle("物料清单");
+        searchObject.setObjects(results);
         return searchObject;
     }
 

@@ -176,6 +176,8 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select
         <include refid="Left_Join_List"/>
+        ,goods_spu.spu_id
+        ,goods_spu_class.spu_classification_id
         , sum (daoxin_erp_stock_details.number ) as stockNumber
         ,daoxin_erp_stock_details.storehouse_id as storehouseId
         ,daoxin_erp_stock_details.storehouse_positions_id as positionId
@@ -265,6 +267,12 @@
             SELECT sku_id FROM daoxin_supply WHERE customer_id IN ( SELECT customer_id FROM daoxin_crm_customer
             WHERE supply = 1 AND display = 1 and customer_name LIKE CONCAT('%',#{paramCondition.customerName},'%' )
             ))
+        </if>
+        <if test="paramCondition.spuClassIds !=null and paramCondition.spuClassIds.size>0">
+            and goods_spu_class.spu_classification_id in
+            <foreach collection="paramCondition.spuClassIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
         </if>
         group by goods_sku.sku_id
         <if test="paramCondition.mixNum != null

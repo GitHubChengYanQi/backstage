@@ -3,8 +3,6 @@ package cn.atsoft.dasheng.erp.pojo;
 import cn.atsoft.dasheng.erp.SearchTypeEnum;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class SearchObject {
 
@@ -14,5 +12,11 @@ public class SearchObject {
 
     private SearchTypeEnum typeEnum;
 
-    private Object objects;
+    public Object objects;
+
+    @Data
+    public class SearchDetail {
+        public Long title;
+        public Long key;
+    }
 }

@@ -60,6 +60,8 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
 
     private Long storehousePositionsId;
     private Long storehouseId;
+    private List<Long> customerIds;
+    private List<Long> spuClassIds;  //物料分类查询条件
     /**
      * 是否查询仓库
      */
