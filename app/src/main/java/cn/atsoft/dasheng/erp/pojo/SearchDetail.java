@@ -3,7 +3,7 @@ package cn.atsoft.dasheng.erp.pojo;
 import lombok.Data;
 
 @Data
-public class BrandSearch {
+public class SearchDetail {
     private Long key;
     private String title;
 }

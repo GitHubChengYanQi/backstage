@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.Attribute;
-import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
@@ -32,13 +31,8 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.StepsService;
-import cn.atsoft.dasheng.message.enmu.MicroServiceType;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -1009,15 +1003,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SearchObject spuClassSearch(List<SkuResult> skuResults) {
         SearchObject searchObject = new SearchObject();
 
-        List<SpuClassSearch> results = new ArrayList<>();
+        List<SearchDetail> results = new ArrayList<>();
         for (SkuResult skuResult : skuResults) {
             SpuClassificationResult spuClassificationResult = skuResult.getSpuResult().getSpuClassificationResult();
             if (ToolUtil.isNotEmpty(spuClassificationResult)) {
-                SpuClassSearch spuClassSearch = new SpuClassSearch();
-                spuClassSearch.setKey(spuClassificationResult.getSpuClassificationId());
-                spuClassSearch.setTitle(spuClassificationResult.getName());
+                SearchDetail searchDetail = new SearchDetail();
+                searchDetail.setKey(spuClassificationResult.getSpuClassificationId());
+                searchDetail.setTitle(spuClassificationResult.getName());
                 if (results.stream().noneMatch(i -> i.getKey().equals(spuClassificationResult.getSpuClassificationId()))) {
-                    results.add(spuClassSearch);
+                    results.add(searchDetail);
                 }
             }
         }
@@ -1037,14 +1031,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SearchObject customerSearch(List<SkuResult> skuResults) {
         SearchObject searchObject = new SearchObject();
         List<Long> skuIds = new ArrayList<>();
-        List<CustomerSearch> results = new ArrayList<>();
+        List<SearchDetail> results = new ArrayList<>();
         for (SkuResult skuResult : skuResults) {
             skuIds.add(skuResult.getSkuId());
         }
         List<CustomerResult> customerResults = supplyService.getCustomerBySkuIds(skuIds);
 
         for (CustomerResult customerResult : customerResults) {
-            CustomerSearch customerSearch = new CustomerSearch();
+            SearchDetail customerSearch = new SearchDetail();
             customerSearch.setTitle(customerResult.getCustomerName());
             customerSearch.setKey(customerResult.getCustomerId());
             if (results.stream().noneMatch(i -> i.getKey().equals(customerResult.getCustomerId()))) {
@@ -1071,9 +1065,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             skuIds.add(skuResult.getSkuId());
         }
         List<BrandResult> brandBySkuIds = supplyService.getBrandBySkuIds(skuIds);
-        List<BrandSearch> results = new ArrayList<>();
+        List<SearchDetail> results = new ArrayList<>();
         for (BrandResult brandBySkuId : brandBySkuIds) {
-            BrandSearch brandSearch = new BrandSearch();
+            SearchDetail brandSearch = new SearchDetail();
             brandSearch.setKey(brandBySkuId.getBrandId());
             brandSearch.setTitle(brandBySkuId.getBrandName());
             if (results.stream().noneMatch(i -> i.getKey().equals(brandBySkuId.getBrandId()))) {
@@ -1109,11 +1103,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<SkuResult> skuResultList = BeanUtil.copyToList(skuList, SkuResult.class, new CopyOptions());
 
 
-        List<BomSearch> results = new ArrayList<>();
+        List<SearchDetail> results = new ArrayList<>();
         for (SkuResult skuResult : skuResultList) {
             for (Parts part : parts) {
                 if (part.getSkuId().equals(skuResult.getSkuId())) {
-                    BomSearch bomSearch = new BomSearch();
+                    SearchDetail bomSearch = new SearchDetail();
                     bomSearch.setKey(part.getPartsId());
                     bomSearch.setTitle(skuResult.getSkuName());
                     if (results.stream().noneMatch(i -> i.getKey().equals(skuResult.getSkuId()))) {

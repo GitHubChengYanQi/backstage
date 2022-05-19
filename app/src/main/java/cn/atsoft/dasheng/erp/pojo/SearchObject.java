@@ -14,9 +14,4 @@ public class SearchObject {
 
     public Object objects;
 
-    @Data
-    public class SearchDetail {
-        public Long title;
-        public Long key;
-    }
 }
