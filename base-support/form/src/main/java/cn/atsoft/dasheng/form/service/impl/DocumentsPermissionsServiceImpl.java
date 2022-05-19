@@ -91,7 +91,9 @@ public class DocumentsPermissionsServiceImpl extends ServiceImpl<DocumentsPermis
         }
 
         QueryWrapper<DocumentsOperation> operationQueryWrapper = new QueryWrapper<>();
-        operationQueryWrapper.in("permissions_id", ids);
+        if (ToolUtil.isNotEmpty(ids)) {
+            operationQueryWrapper.in("permissions_id", ids);
+        }
         DocumentsOperation documentsOperation = new DocumentsOperation();
         documentsOperation.setDisplay(0);
         operationService.update(documentsOperation, operationQueryWrapper);

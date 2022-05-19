@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.action.Controller;
 
 import cn.atsoft.dasheng.action.Enum.*;
+import cn.atsoft.dasheng.action.dict.PurchaseAskDictEnum;
 import cn.atsoft.dasheng.action.model.param.AddAction;
 import cn.atsoft.dasheng.action.model.param.StatusParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -30,6 +31,11 @@ public class ActionController {
     @Autowired
     private DocumentsActionService documentsActionService;
 
+    @RequestMapping(value = "/selectDict", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData selectDict() {
+        return  ResponseData.success(PurchaseAskDictEnum.enumList());
+    }
     /**
      * 新增采购申请动作
      *

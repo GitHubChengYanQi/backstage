@@ -1,23 +1,19 @@
-package cn.atsoft.dasheng.purchase.model.dict;
-
-import cn.atsoft.dasheng.form.pojo.MoneyTypeEnum;
+package cn.atsoft.dasheng.action.dict;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum PurchaseAskDictEnum {
+public enum QualityDictEnum {
 
-    purchaseAskId("purchaseAskId", "采购申请id")
-    , coding("coding", "编号")
-    , type("type", "采购类型")
-    , note("note", "备注")
+    coding("coding", "编码")
+    , type("type", "类型")
     , status("status", "申请状态")
-    , money("money", "总金额")
+    , remark("remark", "备注")
     , number("number", "总数量")
-    , typeNumber("typeNumber", "种类数量")
-    , theme("theme", "主题")
+    , userId("userId", "负责人")
+    , time("time", "时间")
     ;
 
     private String name;
@@ -39,7 +35,7 @@ public enum PurchaseAskDictEnum {
         this.filedName = filedName;
     }
 
-    PurchaseAskDictEnum(String name, String filedName) {
+    QualityDictEnum(String name, String filedName) {
         this.name = name;
         this.filedName = filedName;
     }
@@ -47,7 +43,7 @@ public enum PurchaseAskDictEnum {
 
     public static List<Map<String, String>> enumList() {
         List<Map<String, String>> enumList = new ArrayList<>();
-        for (PurchaseAskDictEnum value : PurchaseAskDictEnum.values()) {
+        for (QualityDictEnum value : QualityDictEnum.values()) {
             Map<String, String> map = new HashMap<>();
             map.put("label",value.name);
             map.put("value",value.filedName);
