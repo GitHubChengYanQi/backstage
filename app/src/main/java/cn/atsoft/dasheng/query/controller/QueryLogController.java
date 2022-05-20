@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.query.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.query.entity.QueryLog;
 import cn.atsoft.dasheng.query.model.params.QueryLogParam;
 import cn.atsoft.dasheng.query.model.result.QueryLogResult;
 import cn.atsoft.dasheng.query.service.QueryLogService;

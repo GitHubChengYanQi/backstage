@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
+import cn.atsoft.dasheng.erp.pojo.SearchObject;
 import cn.atsoft.dasheng.erp.pojo.SelectBomEnum;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
@@ -58,10 +59,20 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
 
     private String selectType;
 
+    private List<Long> partSkuIds;
     private Long storehousePositionsId;
     private Long storehouseId;
     private List<Long> customerIds;
     private List<Long> spuClassIds;  //物料分类查询条件
+
+
+    private SearchObject classSearch;
+    private SearchObject customerSearch;
+    private SearchObject brandSearch;
+    private SearchObject bomSearch;
+    private SearchObject positionSearch;
+    private SearchObject statusSearch;
+
     /**
      * 是否查询仓库
      */

@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.pojo.PositionLoop;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -381,6 +382,69 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         return stringBuffer.toString();
     }
+
+
+    @Override
+    public List<PositionLoop> treeView(List<Long> skuIds) {
+        List<StorehousePositionsBind> positionsBindList = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<Long> positionIds = new ArrayList<>();  //最下级库位id
+        for (StorehousePositionsBind positionsBind : positionsBindList) {
+            positionIds.add(positionsBind.getPositionId());
+        }
+
+        //所有库位
+        List<StorehousePositions> positions = this.query().eq("display", 1).list();
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+
+        List<PositionLoop> allPositionLoop = new ArrayList<>();
+        for (StorehousePositionsResult positionsResult : positionsResults) {
+            PositionLoop loop = new PositionLoop();
+            loop.setTitle(positionsResult.getName());
+            loop.setKey(positionsResult.getStorehousePositionsId());
+            loop.setPid(positionsResult.getPid());
+            allPositionLoop.add(loop);
+        }
+
+
+        //需要的下级库位
+        List<PositionLoop> childs = new ArrayList<>();
+        for (Long positionId : positionIds) {
+            for (PositionLoop loop : allPositionLoop) {
+                if (loop.getKey().equals(positionId)) {
+                    childs.add(loop);
+                    break;
+                }
+            }
+
+        }
+        for (PositionLoop child : childs) {
+            loop(child, allPositionLoop);
+        }
+        childs.clear();
+
+        for ( PositionLoop loop : allPositionLoop) {
+            if (loop.getPid() == 0 && ToolUtil.isNotEmpty(loop.getLoops())) {
+                childs.add(loop);
+            }
+        }
+        return childs;
+    }
+
+    private void loop(PositionLoop child, List<PositionLoop> positions) {
+        for (PositionLoop position : positions) {
+            if (position.getKey().equals(child.getPid())) {
+
+                if (ToolUtil.isEmpty(position.getLoops())) {
+                    position.setLoops(new ArrayList<>());
+                }
+                if (position.getLoops().stream().noneMatch(i->i.getKey().equals(child.getKey()))) {
+                    position.getLoops().add(child);
+                }
+                loop(position, positions);
+            }
+        }
+    }
+
 
     /**
      * 通过库位查询skuId

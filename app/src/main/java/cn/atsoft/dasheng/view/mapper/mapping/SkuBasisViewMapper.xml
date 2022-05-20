@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.view.mapper.SkuBasisViewMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.view.entity.SkuBasisView">
+        <result column="sku_id" property="skuId" />
+        <result column="sku_name" property="skuName" />
+        <result column="spu_id" property="spuId" />
+        <result column="spu_name" property="spuName" />
+        <result column="spu_class_name" property="spuClassName" />
+        <result column="spu_classification_id" property="spuClassificationId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sku_id AS "skuId", sku_name AS "skuName", spu_id AS "spuId", spu_name AS "spuName", spu_class_name AS "spuClassName", spu_classification_id AS "spuClassificationId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.view.model.result.SkuBasisViewResult" parameterType="cn.atsoft.dasheng.view.model.params.SkuBasisViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sku_basis_view where 1 = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.view.model.params.SkuBasisViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sku_basis_view where 1 = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.view.model.result.SkuBasisViewResult" parameterType="cn.atsoft.dasheng.view.model.params.SkuBasisViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sku_basis_view where 1 = 1
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.view.model.params.SkuBasisViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sku_basis_view where 1 = 1
+    </select>
+
+</mapper>

@@ -55,6 +55,8 @@ public interface SkuMapper extends BaseMapper<Sku> {
      */
     Page<SkuResult> changeCustomPageList(@Param("spuIds") List<Long> spuIds, @Param("page") Page page, @Param("paramCondition") SkuParam paramCondition);
 
+
+    List<SkuResult> allList(@Param("spuIds") List<Long> spuIds, @Param("paramCondition") SkuParam paramCondition);
     /**
      * 获取分页map列表
      *
