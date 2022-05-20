@@ -1,10 +1,9 @@
 package cn.atsoft.dasheng.erp.model.result;
 
-import cn.atsoft.dasheng.appBase.aop.DocumentFieldAop;
+import cn.atsoft.dasheng.appBase.aop.FieldPermission;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -74,7 +73,7 @@ public class SpuClassificationResult implements Serializable {
      * 名称
      */
     @ApiModelProperty("名称")
-    @DocumentFieldAop(value = true)
+    @FieldPermission(value = true)
     private String name;
 
     /**

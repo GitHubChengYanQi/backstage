@@ -132,7 +132,6 @@ public class DocumentsPermissionsServiceImpl extends ServiceImpl<DocumentsPermis
         }
         return rolePermissions;
     }
-
     @Override
     public List<DocumentsPermissionsResult> getDetails(String formType) {
         List<DocumentsPermissions> permissions = this.query().eq("form_type", formType).eq("display", 1).list();
@@ -209,5 +208,31 @@ public class DocumentsPermissionsServiceImpl extends ServiceImpl<DocumentsPermis
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+    @Override
+    public List<DocumentsPermissionsResult> getAllPermissions() {
+        List<DocumentsPermissions> permissions = this.query().eq("display", 1).list();
+        List<DocumentsPermissionsResult> results = BeanUtil.copyToList(permissions, DocumentsPermissionsResult.class, new CopyOptions());
+
+        List<Long> ids = new ArrayList<>();
+        for (DocumentsPermissionsResult result : results) {
+            ids.add(result.getPermissionsId());
+        }
+        List<DocumentsOperationResult> operationResultList = operationService.getResultsByPermissionId(ids);
+
+        for (DocumentsPermissionsResult result : results) {
+            List<DocumentsOperationResult> operationResults = new ArrayList<>();
+
+            for (DocumentsOperationResult documentsOperationResult : operationResultList) {
+                if (result.getPermissionsId().equals(documentsOperationResult.getPermissionsId())) {
+                    operationResults.add(documentsOperationResult);
+                }
+                result.setOperationResults(operationResults);
+            }
+
+        }
+
+        return results;
+    }
+
 
 }

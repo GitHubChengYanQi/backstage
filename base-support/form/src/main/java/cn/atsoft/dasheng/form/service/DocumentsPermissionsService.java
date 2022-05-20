@@ -35,6 +35,7 @@ public interface DocumentsPermissionsService extends IService<DocumentsPermissio
 
     List<RolePermission> getRolePermission(String formType, String filedName);
 
+
     List<DocumentsPermissionsResult> getDetails(String formType);
 
     /**
@@ -77,4 +78,5 @@ public interface DocumentsPermissionsService extends IService<DocumentsPermissio
      */
      PageInfo<DocumentsPermissionsResult> findPageBySpec(DocumentsPermissionsParam param);
 
+    List<DocumentsPermissionsResult> getAllPermissions();
 }

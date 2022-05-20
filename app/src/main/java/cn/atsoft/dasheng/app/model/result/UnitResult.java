@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
-import cn.atsoft.dasheng.appBase.aop.DocumentFieldAop;
+import cn.atsoft.dasheng.appBase.aop.FieldPermission;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
@@ -35,7 +35,7 @@ public class UnitResult implements Serializable {
      * 单位名称
      */
     @ApiModelProperty("单位名称")
-    @DocumentFieldAop(value = true)
+    @FieldPermission(value = true)
     private String unitName;
 
     /**

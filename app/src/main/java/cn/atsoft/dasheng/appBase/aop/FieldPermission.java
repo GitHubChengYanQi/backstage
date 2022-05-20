@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD,ElementType.FIELD, ElementType.PARAMETER})
-public @interface DocumentFieldAop {
+public @interface FieldPermission {
     boolean value()default false;
 }
