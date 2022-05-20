@@ -60,6 +60,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static cn.atsoft.dasheng.uc.utils.UserUtils.getPayLoad;
+
 @RestController
 @RequestMapping("/login")
 @Api(tags = "前台用户登录接口")
@@ -219,13 +221,19 @@ public class AuthLoginController extends BaseController {
             QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("member_id", memberId);
             queryWrapper.in("source", "wxCp");
+            queryWrapper.isNotNull("user_id");
+            queryWrapper.last("limit 1");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(queryWrapper);
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
-                JwtPayLoad payLoad = new JwtPayLoad(wxuserInfo.getUserId(), jwtPayLoad.getAccount(), "xxxx");
-                token = JwtTokenUtil.generateToken(payLoad);
-                User byId = userService.getById(wxuserInfo.getUserId());
-                //创建登录会话
-                sessionManager.createSession(token, authService.user(byId.getAccount()));
+                User user = userService.getById(wxuserInfo.getUserId());
+                if (ToolUtil.isNotEmpty(user)) {
+                    JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(), "xxxx");
+                    token = JwtTokenUtil.generateToken(payLoad);
+                    User byId = userService.getById(wxuserInfo.getUserId());
+                    //创建登录会话
+                    sessionManager.createSession(token, authService.user(byId.getAccount()));
+                }
+
             }
         }
 
@@ -292,16 +300,17 @@ public class AuthLoginController extends BaseController {
         JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
         Long userId = jwtPayLoad.getUserId();//userId
         try{
-            Long memberId = UserUtils.getUserId();//memberId
-            WxuserInfo wxuserInfo = new WxuserInfo();
-            wxuserInfo.setMemberId(memberId);
-            wxuserInfo.setUserId(userId);
-            wxuserInfo.setSource("wxCp");
-            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-            wxuserInfoQueryWrapper.eq("user_id", userId);
-            wxuserInfoQueryWrapper.eq("source", "wxCp");
-            wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
-
+            UcJwtPayLoad ucJwtPayLoad = getPayLoad();
+            if (ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)){
+                WxuserInfo wxuserInfo = new WxuserInfo();
+                wxuserInfo.setMemberId(ucJwtPayLoad.getUserId());
+                wxuserInfo.setUserId(userId);
+                wxuserInfo.setSource("wxCp");
+                QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+                wxuserInfoQueryWrapper.eq("user_id", userId);
+                wxuserInfoQueryWrapper.eq("source", "wxCp");
+                wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
+            }
         }catch (Exception e){
 
         }
