@@ -41,6 +41,7 @@
         name
         AS "spuName",
         goods_sku.add_method AS "addMethod",
+        goods_sku.images AS "images",
         goods_sku.standard AS "standard",
         goods_sku.type AS "type",
         goods_sku.coding AS "coding",
