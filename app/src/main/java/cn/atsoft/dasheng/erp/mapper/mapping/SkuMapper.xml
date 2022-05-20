@@ -253,12 +253,7 @@
                 #{state}
             </foreach>
         </if>
-        <if test="paramCondition.partSkuIds != null  and paramCondition.partSkuIds.size > 0 ">
-            and goods_sku.sku_id in
-            <foreach collection="paramCondition.partSkuIds" index="index" item="state" separator="," close=")" open="(">
-                #{state}
-            </foreach>
-        </if>
+
         <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
             and goods_sku.sku_id not in
             <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
@@ -296,6 +291,11 @@
                 #{state}
             </foreach>
             )
+        </if>
+        <if test="paramCondition.storehousePositionsId !=null and paramCondition.storehousePositionsId != ''">
+            and goods_sku.sku_id in
+            (select sku_id from sku_position_view where storehouse_positions_id =
+            #{paramCondition.storehousePositionsId} )
         </if>
         group by goods_sku.sku_id
         <if test="paramCondition.mixNum != null
@@ -390,12 +390,7 @@
         <if test="paramCondition.spuClass != null">
             and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
         </if>
-        <if test="paramCondition.partSkuIds != null  and paramCondition.partSkuIds.size > 0 ">
-            and goods_sku.sku_id in
-            <foreach collection="paramCondition.partSkuIds" index="index" item="state" separator="," close=")" open="(">
-                #{state}
-            </foreach>
-        </if>
+
         <if test="spuIds != null  and spuIds.size > 0 ">
             and goods_sku.spu_id in
             <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
@@ -445,6 +440,11 @@
                 #{state}
             </foreach>
             )
+        </if>
+        <if test="paramCondition.storehousePositionsId !=null and paramCondition.storehousePositionsId != ''">
+            and goods_sku.sku_id in
+            (select sku_id from sku_position_view where storehouse_positions_id =
+            #{paramCondition.storehousePositionsId} )
         </if>
         group by goods_sku.sku_id
         <if test="paramCondition.mixNum != null

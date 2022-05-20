@@ -15,4 +15,5 @@ public class SearchDetail {
 
     private Long key;
     private String title;
+
 }

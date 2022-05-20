@@ -53,25 +53,17 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private SpuClassificationParam spuClassification;
     private String spuClassName;
     private Long oldSkuId;
-    private Long partsId;
+    private Long partsSkuId;
     private List<SkuAttributeAndValue> sku;
     private String customerName;
-
     private String selectType;
-
-    private List<Long> partSkuIds;
     private Long storehousePositionsId;
     private Long storehouseId;
     private List<Long> customerIds;
     private List<Long> spuClassIds;  //物料分类查询条件
+    private String fromType;
 
 
-    private SearchObject classSearch;
-    private SearchObject customerSearch;
-    private SearchObject brandSearch;
-    private SearchObject bomSearch;
-    private SearchObject positionSearch;
-    private SearchObject statusSearch;
 
     /**
      * 是否查询仓库
