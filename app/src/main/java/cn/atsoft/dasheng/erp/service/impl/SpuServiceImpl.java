@@ -435,7 +435,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         for (SkuResult skuResult : skuResults) {
             spuIds.add(skuResult.getSpuId());
         }
-        List<Spu> spus = this.listByIds(spuIds);
+        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : this.listByIds(spuIds);
 
         for (SkuResult skuResult : skuResults) {
             for (Spu spu : spus) {
