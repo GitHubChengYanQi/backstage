@@ -26,6 +26,8 @@ public class NoneAuthedResources {
      */
     public static final String[] BACKEND_RESOURCES = {
 
+            "/druid/**",
+
             //主页
             "/",
 

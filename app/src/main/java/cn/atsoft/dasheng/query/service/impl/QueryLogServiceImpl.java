@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.query.model.params.QueryLogParam;
 import cn.atsoft.dasheng.query.model.result.QueryLogResult;
 import cn.atsoft.dasheng.query.service.QueryLogService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -31,8 +32,37 @@ public class QueryLogServiceImpl extends ServiceImpl<QueryLogMapper, QueryLog> i
 
     @Override
     public void add(QueryLogParam param) {
-        QueryLog entity = getEntity(param);
-        this.save(entity);
+        // 判断重复
+        QueryWrapper<QueryLog> queryLogQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getFormType()) && ToolUtil.isNotEmpty(param.getRecord())) {
+            queryLogQueryWrapper.eq("record", param.getRecord());
+            queryLogQueryWrapper.eq("form_type", param.getFormType());
+            queryLogQueryWrapper.last("limit 1");
+            QueryLog queryLog = this.getOne(queryLogQueryWrapper);
+            if (ToolUtil.isNotEmpty(queryLog)) {
+                return;
+            } else {
+                QueryLog entity = getEntity(param);
+                this.save(entity);
+            }
+        }
+
+
+    }
+
+    @Override
+    public void deleteBatch(QueryLogParam param) {
+        QueryLog log = new QueryLog();
+        log.setDisplay(0);
+        QueryWrapper<QueryLog> logQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getFormType())) {
+            logQueryWrapper.eq("form_type", param.getFormType());
+        }
+        Long userId = LoginContextHolder.getContext().getUserId();
+        if (ToolUtil.isNotEmpty(userId)) {
+            logQueryWrapper.eq("create_user", userId);
+        }
+        this.update(log, logQueryWrapper);
     }
 
     @Override

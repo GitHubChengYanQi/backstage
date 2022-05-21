@@ -179,9 +179,7 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-        , sum (daoxin_erp_stock_details.number ) as stockNumber
         ,daoxin_erp_stock_details.storehouse_id as storehouseId
-        ,daoxin_erp_stock_details.storehouse_positions_id as positionId
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
@@ -293,10 +291,15 @@
             </foreach>
             )
         </if>
-        <if test="paramCondition.storehousePositionsId !=null and paramCondition.storehousePositionsId != ''">
+        <if test="paramCondition.storehousePositionsIds !=null and paramCondition.storehousePositionsIds.size>0">
             and goods_sku.sku_id in
-            (select sku_id from sku_position_view where storehouse_positions_id =
-            #{paramCondition.storehousePositionsId} )
+            (select sku_id from sku_position_view where storehouse_positions_id in
+            <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                     close=")"
+                     open="(">
+                #{state}
+            </foreach>
+            )
         </if>
         group by goods_sku.sku_id
         <if test="paramCondition.mixNum != null
@@ -332,7 +335,6 @@
         ,goods_spu_class.spu_classification_id
         , sum(daoxin_erp_stock_details.number ) as stockNumber
         ,daoxin_erp_stock_details.storehouse_id as storehouseId
-        ,daoxin_erp_stock_details.storehouse_positions_id as positionId
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
@@ -442,10 +444,15 @@
             </foreach>
             )
         </if>
-        <if test="paramCondition.storehousePositionsId !=null and paramCondition.storehousePositionsId != ''">
+        <if test="paramCondition.storehousePositionsIds !=null and paramCondition.storehousePositionsIds.size>0">
             and goods_sku.sku_id in
-            (select sku_id from sku_position_view where storehouse_positions_id =
-            #{paramCondition.storehousePositionsId} )
+            (select sku_id from sku_position_view where storehouse_positions_id in
+            <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                     close=")"
+                     open="(">
+                #{state}
+            </foreach>
+            )
         </if>
         group by goods_sku.sku_id
         <if test="paramCondition.mixNum != null

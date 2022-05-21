@@ -26,6 +26,8 @@ public interface QueryLogService extends IService<QueryLog> {
      */
     void add(QueryLogParam param);
 
+    void deleteBatch(QueryLogParam param);
+
     /**
      * 删除
      *

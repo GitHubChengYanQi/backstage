@@ -31,18 +31,18 @@ public class QueryLogController extends BaseController {
     @Autowired
     private QueryLogService queryLogService;
 
-//    /**
-//     * 新增接口
-//     *
-//     * @author song
-//     * @Date 2022-05-19
-//     */
-//    @RequestMapping(value = "/add", method = RequestMethod.POST)
-//    @ApiOperation("新增")
-//    public ResponseData addItem(@RequestBody QueryLogParam queryLogParam) {
-//        this.queryLogService.add(queryLogParam);
-//        return ResponseData.success();
-//    }
+    /**
+     * 新增接口
+     *
+     * @author song
+     * @Date 2022-05-19
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addItem(@RequestBody QueryLogParam queryLogParam) {
+        this.queryLogService.add(queryLogParam);
+        return ResponseData.success();
+    }
 //
 //    /**
 //     * 编辑接口
@@ -86,6 +86,19 @@ public class QueryLogController extends BaseController {
 //
 //        return ResponseData.success(result);
 //    }
+
+    /**
+     //     * 删除接口
+     //     *
+     //     * @author song
+     //     * @Date 2022-05-19
+     //     */
+    @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData delete(@RequestBody QueryLogParam queryLogParam)  {
+        this.queryLogService.deleteBatch(queryLogParam);
+        return ResponseData.success();
+    }
 
     /**
      * 查询列表
