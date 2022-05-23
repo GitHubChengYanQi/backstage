@@ -930,15 +930,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public PageInfo<SkuResult> changePageBySpec(SkuParam param) {
         /**
-         * 搜索记录
+         * 库位条件查询
          */
-//        if (ToolUtil.isNotEmpty(param.getSkuName())) {
-//            QueryLog queryLog = new QueryLog();
-//            queryLog.setRecord(param.getSkuName());
-//            queryLog.setFormType(param.getFromType());
-//            queryLogService.save(queryLog);
-//        }
-
+        if (ToolUtil.isNotEmpty(param.getStorehousePositionsId())) {
+            List<Long> loopPositionIds = positionsService.getLoopPositionIds(param.getStorehousePositionsId());
+            param.setStorehousePositionsIds(loopPositionIds);
+        }
         /**
          * 查询这个物料的bom
          */
@@ -967,17 +964,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         Page<SkuResult> pageContext = getPageContext();
-        List<SkuResult> skuResultList = this.baseMapper.allList(new ArrayList<>(), param);
+        IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
+        PageInfo<SkuResult> pageInfo = PageFactory.createPageInfo(page);
 
+
+        List<SkuResult> skuResultList = this.baseMapper.allList(new ArrayList<>(), param);  //查询所有结果集
         List<Long> skuIds = new ArrayList<>();
+        skuIds.add(0L);
         for (SkuResult skuResult : skuResultList) {
             skuIds.add(skuResult.getSkuId());
         }
-        IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
-        this.format(page.getRecords());
-
-        PageInfo<SkuResult> pageInfo = PageFactory.createPageInfo(page);
-
         if (param.getStockView()) {
 
             List<Object> searchObjects = new ArrayList<>();
@@ -1094,7 +1090,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         this.isSupply(param, page.getRecords());
-
+        this.format(page.getRecords());
 
         return pageInfo;
     }
@@ -1227,7 +1223,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
      */
     private SearchObject bomSearch(List<Long> skuIds) {
         SearchObject searchObject = new SearchObject();
-
 
 
         List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();

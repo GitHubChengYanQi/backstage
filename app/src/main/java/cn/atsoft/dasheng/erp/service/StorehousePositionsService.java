@@ -54,7 +54,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
     List<PositionLoop> treeView(List<Long> skuIds);
 
-    List<Long> getSkuIdsByPositionId(Long positionId);
+    List<Long> getLoopPositionIds(Long positionId);
 
     /**
      * 查询单条数据，Specification模式

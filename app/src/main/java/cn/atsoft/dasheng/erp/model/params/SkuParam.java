@@ -58,11 +58,11 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String customerName;
     private String selectType;
     private List<Long> storehousePositionsIds;
+    private Long storehousePositionsId;
     private Long storehouseId;
     private List<Long> customerIds;
     private List<Long> spuClassIds;  //物料分类查询条件
     private String fromType;
-
 
 
     /**
