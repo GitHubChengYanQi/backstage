@@ -33,24 +33,24 @@ public class DocumentFieldAopService {
 
     @Before("field()")
     public void doBefore(JoinPoint joinPoint) throws IllegalAccessException {
-        details = documentsPermissionsService.getAllPermissions();
-        formType = joinPoint.getTarget().getClass().getSimpleName();
-
-
-        Integer type = 0;
-        switch (joinPoint.getSignature().getName()) {
-            case "edit":
-            case "add":
-            case "delete":
-                type = 1;
-                break;
-        }
-        if (type == 1) {
-            Object[] args = joinPoint.getArgs();
-            for (Object obj : args) {
-                filterField(obj, type);
-            }
-        }
+//        details = documentsPermissionsService.getAllPermissions();
+//        formType = joinPoint.getTarget().getClass().getSimpleName();
+//
+//
+//        Integer type = 0;
+//        switch (joinPoint.getSignature().getName()) {
+//            case "edit":
+//            case "add":
+//            case "delete":
+//                type = 1;
+//                break;
+//        }
+//        if (type == 1) {
+//            Object[] args = joinPoint.getArgs();
+//            for (Object obj : args) {
+//                filterField(obj, type);
+//            }
+//        }
 
 
     }
@@ -59,7 +59,7 @@ public class DocumentFieldAopService {
 //    @After("field()")
     public void doAfterReturning(Object obj) throws Throwable {
 //        details = documentsPermissionsService.getAllPermissions();
-        filterField(obj, 2);
+//        filterField(obj, 2);
 
     }
 
@@ -129,9 +129,7 @@ public class DocumentFieldAopService {
 
     private void setNull(Object obj, Integer type) throws IllegalAccessException {
         String formTypeStr = this.formatFormType(formType);
-        if (ToolUtil.isNotEmpty(formTypeStr)) {
-
-
+        if (ToolUtil.isNotEmpty(formTypeStr) || formTypeStr != null) {
             Field[] fields = obj.getClass().getDeclaredFields();
             String simpleName = obj.getClass().getSimpleName();
             for (Field field : fields) {

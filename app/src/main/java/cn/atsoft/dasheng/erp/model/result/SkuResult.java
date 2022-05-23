@@ -40,25 +40,19 @@ public class SkuResult implements Serializable {
     List<String> imgUrls;
     List<AttributeValuesResult> list;
     private List<SkuJson> skuJsons;
-    private String categoryName;
     private SpuResult spuResult;
     private String spuName;
     private Long partsId;
     private String createUserName;
     private String skuTextValue;
     private Long spuClass;
-    private Long brandId;
     private Long skuId;
-    private Spu spu;
     private QualityPlan qualityPlan;
     private Unit unit;
     private SpuClassification spuClassification;
     private String fileId;
     private Integer batch;
     private SkuRequest skuTree;
-    private SpuClassification skuClass;
-    private List<BrandResult> brandResultList;
-    private BrandResult brandResult;
     private User user;
     private Boolean inBom;
     private ActivitiProcessResult processResult;
@@ -67,7 +61,6 @@ public class SkuResult implements Serializable {
     private List<String> filedUrls;
     private Long produceMix;   //生产数
     private Long lackNumber;  //缺料数
-
     private Long storehouseId;
     private Long positionId;
     private Integer stockNumber = 0;
