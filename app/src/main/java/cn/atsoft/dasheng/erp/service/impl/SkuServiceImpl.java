@@ -1163,7 +1163,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SearchObject customerSearch(List<Long> customerIds) {
         SearchObject searchObject = new SearchObject();
         List<SearchDetail> results = new ArrayList<>();
-        if (customerIds.size() > 10) {
+        if (customerIds.size() > 50) {
             searchObject.setTypeEnum(SearchTypeEnum.overLength);
         } else {
             List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
@@ -1192,7 +1192,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
      */
     private SearchObject brandSearch(List<Long> brandIds) {
         SearchObject searchObject = new SearchObject();
-        if (brandIds.size() > 10) {     //判断超长
+        if (brandIds.size() > 50) {     //判断超长
             searchObject.setTypeEnum(SearchTypeEnum.overLength);
         } else {
             List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
