@@ -26,6 +26,8 @@ public class NoneAuthedResources {
      */
     public static final String[] BACKEND_RESOURCES = {
 
+            "/druid/**",
+
             //主页
             "/",
 
@@ -38,8 +40,8 @@ public class NoneAuthedResources {
             //rest方式获取token入口
             "/rest/login",
 
-            //验证码是否开启
-            "/getKaptchaOpen",
+            //系统公共信息
+            "/getPublicInfo",
 
             //oauth登录的接口
             "/oauth/render/*",

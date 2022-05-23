@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.service;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
@@ -11,6 +12,7 @@ import io.swagger.models.auth.In;
 import org.aspectj.apache.bcel.generic.LineNumberGen;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -96,4 +98,8 @@ public interface SupplyService extends IService<Supply> {
     List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds);
 
     void OrdersBackFill(Long customerId, List<OrderDetailParam> params);
+
+    List<CustomerResult> getCustomerBySkuIds(List<Long> skuIds);
+
+    List<BrandResult> getBrandBySkuIds(List<Long> skuIds);
 }

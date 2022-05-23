@@ -225,16 +225,17 @@ public class LoginController extends BaseController {
     }
 
     /**
-     * 验证码是否开启
+     * 获取公共公共信息
      * @return
      */
-    @RequestMapping(value = "/getKaptchaOpen")
+    @RequestMapping(value = "/getPublicInfo")
     @ResponseBody
     public ResponseData getKaptchaOpen() {
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         Boolean aBoolean = ConstantsContext.getKaptchaOpen();
-        map.put("kaptchaOpen", aBoolean.toString());
-        DictType dictType = dictTypeService.query().eq("code", "SYSTEM_INFO").one();
+        map.put("kaptchaOpen", aBoolean);   //是否开启验证码
+
+        DictType dictType = dictTypeService.query().eq("code", "SYSTEM_INFO").one();  //获取系统信息
 
         List<Dict> systemInfos = ToolUtil.isEmpty(dictType) ? new ArrayList<>() :  dictService.listDicts(dictType.getDictTypeId());
         if (ToolUtil.isNotEmpty(systemInfos)){

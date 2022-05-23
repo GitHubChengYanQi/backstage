@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -40,6 +41,7 @@ public class SkuResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Boolean inSupply;
+    List<String> imgUrls;
     List<AttributeValuesResult> list;
     private List<SkuJson> skuJsons;
     private String categoryName;
@@ -70,8 +72,14 @@ public class SkuResult implements Serializable {
     private Long produceMix;   //生产数
     private Long lackNumber;  //缺料数
 
+    private Long storehouseId;
+    private Long positionId;
+    private Integer stockNumber = 0;
 
-    private Integer stockNumber;
+
+    private List<StorehousePositionsResult> positionsResult;
+
+    private StorehouseResult storehouseResult;
     /**
      * 预购数量
      */

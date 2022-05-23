@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.pojo.PositionLoop;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -68,12 +69,7 @@ public class StorehousePositionsController extends BaseController {
     @Autowired
     private OrCodeBindService orCodeBindService;
 
-    /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2021-10-29
-     */
+
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody StorehousePositionsParam storehousePositionsParam) {
@@ -123,6 +119,8 @@ public class StorehousePositionsController extends BaseController {
         this.storehousePositionsService.delete(storehousePositionsParam);
         return ResponseData.success();
     }
+
+
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     public ResponseData detail(@RequestParam Long id) {

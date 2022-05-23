@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.view.mapper.SkuPositionViewMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.view.entity.SkuPositionView">
+        <result column="sku_name" property="skuName" />
+        <result column="sku_id" property="skuId" />
+        <result column="storehouse_positions_id" property="storehousePositionsId" />
+        <result column="name" property="name" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sku_name AS "skuName", sku_id AS "skuId", storehouse_positions_id AS "storehousePositionsId", name AS "name"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.view.model.result.SkuPositionViewResult" parameterType="cn.atsoft.dasheng.view.model.params.SkuPositionViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sku_position_view where 1 = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.view.model.params.SkuPositionViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sku_position_view where 1 = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.view.model.result.SkuPositionViewResult" parameterType="cn.atsoft.dasheng.view.model.params.SkuPositionViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sku_position_view where 1 = 1
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.view.model.params.SkuPositionViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sku_position_view where 1 = 1
+    </select>
+
+</mapper>

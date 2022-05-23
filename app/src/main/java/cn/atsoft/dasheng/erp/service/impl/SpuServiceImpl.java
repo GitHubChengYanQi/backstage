@@ -429,5 +429,22 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         return entity;
     }
 
+    @Override
+    public void skuFormat(List<SkuResult> skuResults) {
+        List<Long> spuIds = new ArrayList<>();
+        for (SkuResult skuResult : skuResults) {
+            spuIds.add(skuResult.getSpuId());
+        }
+        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : this.listByIds(spuIds);
+
+        for (SkuResult skuResult : skuResults) {
+            for (Spu spu : spus) {
+                if (skuResult.getSpuId().equals(spu.getSpuId())) {
+                    skuResult.setSpuName(spu.getName());
+                    break;
+                }
+            }
+        }
+    }
 
 }

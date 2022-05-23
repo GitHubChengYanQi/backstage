@@ -3,23 +3,26 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.Attribute;
-import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.erp.SearchTypeEnum;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -29,17 +32,22 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.StepsService;
-import cn.atsoft.dasheng.message.enmu.MicroServiceType;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
+import cn.atsoft.dasheng.query.entity.QueryLog;
+import cn.atsoft.dasheng.query.service.QueryLogService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.view.entity.SkuBasisView;
+import cn.atsoft.dasheng.view.entity.SkuPositionView;
+import cn.atsoft.dasheng.view.entity.SkuSupplyView;
+import cn.atsoft.dasheng.view.service.SkuBasisViewService;
+import cn.atsoft.dasheng.view.service.SkuPositionViewService;
+import cn.atsoft.dasheng.view.service.SkuSupplyViewService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -106,6 +114,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SupplyService supplyService;
     @Autowired
     private PurchaseListingService purchaseListingService;
+    @Autowired
+    private StorehousePositionsService positionsService;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
+    @Autowired
+    private SkuBasisViewService skuBasisViewService;
+    @Autowired
+    private SkuSupplyViewService skuSupplyViewService;
+    @Autowired
+    private SkuPositionViewService skuPositionViewService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private QueryLogService queryLogService;
 
 
     @Transactional
@@ -334,24 +356,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
-//    private void loopFormatActivitiStepsResult(ActivitiStepsResult activitiStepsResult){
-//        //清除步骤id
-//
-//
-//
-//
-//
-//
-//
-//
-//        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-//            loopFormatActivitiStepsResult(activitiStepsResult.getChildNode());
-//        }else if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList())){
-//            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-//                loopFormatActivitiStepsResult(stepsResult);
-//            }
-//        }
-//    }
+
 
     @Override
     public List<SkuResult> getSkuByMd5(SkuParam param) {
@@ -823,7 +828,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
 
         Long spuId = oldEntity.getSpuId();
-        Spu oldSpu  = spuService.getById(spuId);
+        Spu oldSpu = spuService.getById(spuId);
 
 
         if (ToolUtil.isEmpty(param.getStandard())) {
@@ -836,7 +841,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
         String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
-        if(!oldEntity.getSkuValueMd5().equals(md5)  || !param.getUnitId().equals(orSaveSpu.getUnitId()) || !oldEntity.getStandard().equals(newEntity.getStandard()) || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))){
+        if (!oldEntity.getSkuValueMd5().equals(md5) || !param.getUnitId().equals(orSaveSpu.getUnitId()) || !oldEntity.getStandard().equals(newEntity.getStandard()) || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))) {
             /**
              * 如要变更sku主要信息数据  需要验证物料是否正在被 物料清单所使用   如果被使用则不可更改
              * 如果只是更新 上传附件与图片之类资料完善则不需查询清单中是否被使用
@@ -924,17 +929,338 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public PageInfo<SkuResult> changePageBySpec(SkuParam param) {
-        if (param.getSkuIds() != null) {
-            if (param.getSkuIds().size() == 0) {
-                return null;
+        /**
+         * 搜索记录
+         */
+//        if (ToolUtil.isNotEmpty(param.getSkuName())) {
+//            QueryLog queryLog = new QueryLog();
+//            queryLog.setRecord(param.getSkuName());
+//            queryLog.setFormType(param.getFromType());
+//            queryLogService.save(queryLog);
+//        }
+
+        /**
+         * 查询这个物料的bom
+         */
+        if (ToolUtil.isNotEmpty(param.getPartsSkuId())) {
+            if (ToolUtil.isEmpty(param.getSelectBom())) {
+                param.setSelectBom(SelectBomEnum.Present);
+            }
+            Parts parts = partsService.query().eq("sku_id", param.getPartsSkuId()).eq("status", 99).eq("display", 1).one();
+            if (ToolUtil.isEmpty(parts)) {
+                return new PageInfo<>();
+            }
+            switch (param.getSelectBom()) {
+                case All:
+                    List<Long> skuIdsByBom = partsService.getSkuIdsByBom(parts.getSkuId());
+                    param.setSkuIds(skuIdsByBom);
+                    break;
+                case Present:
+                    List<ErpPartsDetail> partsDetails = partsDetailService.query().eq("parts_id", parts.getPartsId()).list();
+                    List<Long> skuIds = param.getSkuIds();
+                    for (ErpPartsDetail partsDetail : partsDetails) {
+                        skuIds.add(partsDetail.getSkuId());
+                    }
+
+                    break;
             }
         }
+
         Page<SkuResult> pageContext = getPageContext();
+        List<SkuResult> skuResultList = this.baseMapper.allList(new ArrayList<>(), param);
+
+        List<Long> skuIds = new ArrayList<>();
+        for (SkuResult skuResult : skuResultList) {
+            skuIds.add(skuResult.getSkuId());
+        }
         IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
         this.format(page.getRecords());
+
+        PageInfo<SkuResult> pageInfo = PageFactory.createPageInfo(page);
+
+        if (param.getStockView()) {
+
+            List<Object> searchObjects = new ArrayList<>();
+
+            /**
+             * bom查询
+             */
+            SearchObject bomSearch = null;
+            if (ToolUtil.isNotEmpty(param.getPartsSkuId())) {
+                List<Parts> parts = partsService.query().eq("status", 99).eq("display", 1).list();
+                bomSearch = bomSearch(new ArrayList<Long>() {{
+                    for (Parts part : parts) {
+                        add(part.getSkuId());
+                    }
+                }});
+            } else {
+                bomSearch = bomSearch(skuIds);
+            }
+
+            /**
+             * 分類查詢
+             */
+            SearchObject classSearch = null;
+            if (ToolUtil.isNotEmpty(param.getSpuClassIds())) {
+                List<SkuBasisView> basisViews = skuBasisViewService.list();
+                classSearch = spuClassSearch(new ArrayList<Long>() {{
+                    for (SkuBasisView basisView : basisViews) {
+                        add(basisView.getSpuClassificationId());
+                    }
+                }});
+            } else {
+                List<SkuBasisView> skuBasisViews = skuIds.size() == 0 ? new ArrayList<>() : skuBasisViewService.query().in("sku_id", skuIds).list();
+                List<Long> classIds = new ArrayList<>();
+                for (SkuBasisView skuBasisView : skuBasisViews) {
+                    classIds.add(skuBasisView.getSpuClassificationId());
+                }
+                classSearch = spuClassSearch(classIds);
+            }
+
+            /**
+             *  供应商过滤
+             */
+            List<Long> brandIds = new ArrayList<>();
+            List<Long> customerIds = new ArrayList<>();
+            List<SkuSupplyView> skuSupplyViews = skuSupplyViewService.list();
+            SearchObject customerSearch = null;
+            if (ToolUtil.isNotEmpty(param.getCustomerIds())) {  //不筛选
+
+                for (SkuSupplyView skuSupplyView : skuSupplyViews) {
+                    customerIds.add(skuSupplyView.getCustomerId());
+                }
+                customerSearch = customerSearch(customerIds);
+            } else {
+                for (SkuSupplyView skuSupplyView : skuSupplyViews) {
+                    for (Long skuId : skuIds) {
+                        if (skuId.equals(skuSupplyView.getSkuId())) {
+                            customerIds.add(skuSupplyView.getCustomerId());
+                        }
+                    }
+                    customerSearch = customerSearch(customerIds);
+                }
+            }
+
+            /**
+             *  品牌过滤
+             */
+            SearchObject brandSearch = null;
+            if (ToolUtil.isNotEmpty(param.getBrandIds())) {
+                for (SkuSupplyView skuSupplyView : skuSupplyViews) {
+                    brandIds.add(skuSupplyView.getBrandId());
+                }
+                brandSearch = brandSearch(brandIds);
+            } else {
+                for (SkuSupplyView skuSupplyView : skuSupplyViews) {
+                    for (Long skuId : skuIds) {
+                        if (skuId.equals(skuSupplyView.getSkuId())) {
+                            brandIds.add(skuSupplyView.getBrandId());
+                        }
+                    }
+                }
+                brandSearch = brandSearch(brandIds);
+            }
+
+
+            /**
+             *通过当前库位查询物料
+             */
+            SearchObject positionSearch = null;
+            if (ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
+                List<SkuPositionView> skuPositionViews = skuPositionViewService.list();
+                positionSearch = positionSearch(new ArrayList<Long>() {{
+                    for (SkuPositionView skuPositionView : skuPositionViews) {
+                        add(skuPositionView.getSkuId());
+                    }
+                }});
+            } else {
+                positionSearch = positionSearch(skuIds);
+            }
+
+
+            /**
+             * 是否查询仓库和库位
+             */
+            positionsService.skuFormat(page.getRecords());
+
+
+            searchObjects.add(positionSearch);
+            searchObjects.add(customerSearch);
+            searchObjects.add(brandSearch);
+            searchObjects.add(classSearch);
+            searchObjects.add(bomSearch);
+            searchObjects.add(statusSearch());
+            pageInfo.setSearch(searchObjects);
+        }
+
         this.isSupply(param, page.getRecords());
 
-        return PageFactory.createPageInfo(page);
+
+        return pageInfo;
+    }
+
+    /**
+     * 状态条件
+     */
+    private SearchObject statusSearch() {
+        SearchObject searchObject = new SearchObject();
+
+        searchObject.setTitle("状态");
+        searchObject.setKey("status");
+        searchObject.setTypeEnum(SearchTypeEnum.List);
+        searchObject.setObjects(new ArrayList<SearchDetail>() {{
+            add(new SearchDetail(0L, "特别关注"));
+            add(new SearchDetail(1L, "上限预警"));
+            add(new SearchDetail(2L, "下线预警"));
+            add(new SearchDetail(3L, "入库超期"));
+            add(new SearchDetail(4L, "停用"));
+        }});
+        return searchObject;
+    }
+
+    /**
+     * 库位条件
+     */
+    private SearchObject positionSearch(List<Long> skuIds) {
+        SearchObject searchObject = new SearchObject();
+        List<PositionLoop> positionLoops = positionsService.treeView(skuIds);
+        searchObject.setKey("position");
+        searchObject.setTitle("库位");
+        searchObject.setObjects(positionLoops);
+        searchObject.setTypeEnum(SearchTypeEnum.position);
+        return searchObject;
+    }
+
+    /**
+     * 分类条件
+     *
+     * @param
+     * @return
+     */
+    private SearchObject spuClassSearch(List<Long> classIds) {
+        SearchObject searchObject = new SearchObject();
+        List<SearchDetail> results = new ArrayList<>();
+        List<SpuClassification> spuClassifications = classIds.size() == 0 ? new ArrayList<>() : spuClassificationService.listByIds(classIds);
+        for (SpuClassification spuClassification : spuClassifications) {
+            SearchDetail searchDetail = new SearchDetail();
+            searchDetail.setKey(spuClassification.getSpuClassificationId());
+            searchDetail.setTitle(spuClassification.getName());
+            if (results.stream().noneMatch(i -> i.getKey().equals(spuClassification.getSpuClassificationId()))) {
+                results.add(searchDetail);
+            }
+        }
+
+        searchObject.setKey("spuClass");
+        searchObject.setTitle("分类");
+        searchObject.setTypeEnum(SearchTypeEnum.List);
+        searchObject.setObjects(results);
+        return searchObject;
+    }
+
+    /**
+     * 供应商条件
+     *
+     * @param
+     * @return
+     */
+    private SearchObject customerSearch(List<Long> customerIds) {
+        SearchObject searchObject = new SearchObject();
+        List<SearchDetail> results = new ArrayList<>();
+        if (customerIds.size() > 10) {
+            searchObject.setTypeEnum(SearchTypeEnum.overLength);
+        } else {
+            List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+            for (Customer customerResult : customerList) {
+                SearchDetail customerSearch = new SearchDetail();
+                customerSearch.setTitle(customerResult.getCustomerName());
+                customerSearch.setKey(customerResult.getCustomerId());
+                if (results.stream().noneMatch(i -> i.getKey().equals(customerResult.getCustomerId()))) {
+                    results.add(customerSearch);
+                }
+            }
+            searchObject.setObjects(results);
+            searchObject.setTypeEnum(SearchTypeEnum.List);
+        }
+
+        searchObject.setTitle("供应商");
+        searchObject.setKey("customer");
+        return searchObject;
+    }
+
+    /**
+     * 品牌条件
+     *
+     * @param
+     * @return
+     */
+    private SearchObject brandSearch(List<Long> brandIds) {
+        SearchObject searchObject = new SearchObject();
+        if (brandIds.size() > 10) {     //判断超长
+            searchObject.setTypeEnum(SearchTypeEnum.overLength);
+        } else {
+            List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
+            List<SearchDetail> results = new ArrayList<>();
+
+            for (Brand brand : brandList) {
+                SearchDetail brandSearch = new SearchDetail();
+                brandSearch.setKey(brand.getBrandId());
+                brandSearch.setTitle(brand.getBrandName());
+                if (results.stream().noneMatch(i -> i.getKey().equals(brand.getBrandId()))) {
+                    results.add(brandSearch);
+                }
+            }
+            searchObject.setTypeEnum(SearchTypeEnum.List);
+            searchObject.setObjects(results);
+        }
+
+        searchObject.setTitle("品牌");
+        searchObject.setKey("brand");
+
+        return searchObject;
+    }
+
+    /**
+     * bom 条件
+     *
+     * @param
+     * @return
+     */
+    private SearchObject bomSearch(List<Long> skuIds) {
+        SearchObject searchObject = new SearchObject();
+
+
+
+        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
+
+        List<Long> partSkuIds = new ArrayList<>();
+        for (Parts part : parts) {
+            partSkuIds.add(part.getSkuId());
+        }
+
+        List<Sku> skus = partSkuIds.size() == 0 ? new ArrayList<>() : this.listByIds(partSkuIds);
+        List<SkuResult> skuResults = BeanUtil.copyToList(skus, SkuResult.class, new CopyOptions());
+        spuService.skuFormat(skuResults);
+
+        List<SearchDetail> results = new ArrayList<>();
+        for (SkuResult skuResult : skuResults) {
+            for (Parts part : parts) {
+                if (part.getSkuId().equals(skuResult.getSkuId())) {
+                    SearchDetail bomSearch = new SearchDetail();
+                    bomSearch.setKey(part.getSkuId());
+                    bomSearch.setTitle(skuResult.getSpuName() + " " + skuResult.getSkuName());
+                    if (results.stream().noneMatch(i -> i.getKey().equals(skuResult.getSkuId()))) {
+                        results.add(bomSearch);
+                    }
+                    break;
+                }
+            }
+
+        }
+        searchObject.setKey("bom");
+        searchObject.setTypeEnum(SearchTypeEnum.bom);
+        searchObject.setTitle("物料清单");
+        searchObject.setObjects(results);
+        return searchObject;
     }
 
     public void isSupply(SkuParam skuParam, List<SkuResult> results) {
@@ -961,6 +1287,27 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return skuResults;
     }
 
+    private void getSpu(List<SkuResult> skuResults) {
+        List<Long> spuIds = new ArrayList<>();
+        for (SkuResult skuResult : skuResults) {
+            spuIds.add(skuResult.getSpuId());
+        }
+        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).eq("display", 1).list();
+        List<SpuResult> spuResults = BeanUtil.copyToList(spus, SpuResult.class, new CopyOptions());
+
+        for (SkuResult skuResult : skuResults) {
+            for (SpuResult spuResult : spuResults) {
+                if (skuResult.getSpuId().equals(spuResult.getSpuId())) {
+                    skuResult.setSpuResult(spuResult);
+                    break;
+                }
+            }
+        }
+
+
+    }
+
+
     @Override
     public void format(List<SkuResult> param) {
 
@@ -981,17 +1328,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
 
-        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().select("sku_id,sum(number) as num").in("sku_id", skuIds).groupBy("sku_id").eq("display", 1).list();
+
         List<PurchaseListing> purchaseListings = skuIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().select("sku_id , sum(apply_number) as num").in("sku_id", skuIds).eq("status", 0).eq("display", 1).groupBy("sku_id").list();
-
-//        List<Parts> list1 = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
-
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
                 .list();
-
-
         List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).eq("display", 1).list();
         List<Long> unitIds = new ArrayList<>();
         List<Long> spuClassId = new ArrayList<>();
@@ -1031,23 +1373,39 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 查询清单
          */
 
+
         List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
         List<Long> partsIds = new ArrayList<>();
         for (Parts part : parts) {
             partsIds.add(part.getPartsId());
         }
         List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
+        /**
+         * 库存数
+         */
+        List<StockDetails> stockDetailsList = stockDetailsService.query().select("sku_id, sum(number) as num").eq("display", 1).groupBy("sku_id").list();
 
         for (SkuResult skuResult : param) {
-            /**
-             * 库存数量
-             */
-            for (StockDetails stockDetail : stockDetails) {
-                if (skuResult.getSkuId().equals(stockDetail.getSkuId())) {
-                    skuResult.setStockNumber(Math.toIntExact(stockDetail.getNum()));
-                    break;
+
+
+            for (StockDetails stockDetails : stockDetailsList) {
+                if (skuResult.getSkuId().equals(stockDetails.getSkuId())) {
+                    skuResult.setStockNumber(Math.toIntExact(stockDetails.getNum()));
                 }
             }
+
+
+            //图片
+
+//            List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",").stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+            List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<String> imageUrls = new ArrayList<>();
+            for (Long imageid : imageids) {
+                imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
+            }
+            skuResult.setImgUrls(imageUrls);
+
+
             /**
              * 预购数量
              */
@@ -1183,6 +1541,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     public SkuResult getSku(Long id) {
         Sku sku = this.getById(id);
         SkuResult skuResult = new SkuResult();
+        if (ToolUtil.isEmpty(sku)) {
+            return skuResult;
+        }
         ToolUtil.copyProperties(sku, skuResult);
         //返回附件图片等
         if (ToolUtil.isNotEmpty(skuResult.getFileId())) {

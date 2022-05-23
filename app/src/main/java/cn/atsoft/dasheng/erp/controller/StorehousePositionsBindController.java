@@ -47,7 +47,6 @@ public class StorehousePositionsBindController extends BaseController {
         StorehousePositionsBind bind = this.storehousePositionsBindService.add(storehousePositionsBindParam);
         return ResponseData.success(bind);
     }
-
     /**
      * 批量新增接口
      *

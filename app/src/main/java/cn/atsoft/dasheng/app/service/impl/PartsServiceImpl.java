@@ -371,6 +371,32 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         return PageFactory.createPageInfo(page);
     }
 
+
+    @Override
+    public List<Long> getSkuIdsByBom(Long skuId) {
+        List<Long> ids = new ArrayList<>();
+
+        Parts parts = this.query().eq("sku_id", skuId).eq("status", 99).eq("display", 1).one();
+        if (ToolUtil.isEmpty(parts)) {
+            return ids;
+        } else {
+            ids.add(parts.getSkuId());
+             ids.addAll(getSkuIdsByPart(parts.getPartsId()));
+        }
+        return ids;
+    }
+
+    private List<Long> getSkuIdsByPart(Long partId) {
+        List<Long> ids = new ArrayList<>();
+        List<ErpPartsDetail> partsDetails = erpPartsDetailService.query().eq("parts_id", partId).eq("display", 1).list();
+        for (ErpPartsDetail partsDetail : partsDetails) {
+            ids.add(partsDetail.getSkuId());
+            ids.addAll(getSkuIdsByBom(partsDetail.getSkuId()));
+        }
+        return ids;
+    }
+
+
     @Override
     public PartsResult getBOM(Long partId) {
         Parts parts = this.getById(partId);
@@ -704,4 +730,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             }
         }
     }
+
+
 }

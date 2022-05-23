@@ -4,7 +4,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.pojo.PositionLoop;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -48,6 +50,11 @@ public interface StorehousePositionsService extends IService<StorehousePositions
     void update(StorehousePositionsParam param);
 
     StorehousePositionsResult positionsResultById(Long codeId);
+
+
+    List<PositionLoop> treeView(List<Long> skuIds);
+
+    List<Long> getSkuIdsByPositionId(Long positionId);
 
     /**
      * 查询单条数据，Specification模式
@@ -100,4 +107,6 @@ public interface StorehousePositionsService extends IService<StorehousePositions
     List<StorehousePositionsResult> getSupperBySkuId(Long skuId);
 
     Map<Long, Long> getHouseByPositionId(List<Long> postitionIds);
+
+    void skuFormat(List<SkuResult> data);
 }

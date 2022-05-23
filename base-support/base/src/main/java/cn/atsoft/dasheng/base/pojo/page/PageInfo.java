@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 分页结果的封装(for Layui Table)
@@ -44,5 +45,8 @@ public class PageInfo<T> {
 
     @ApiModelProperty("每页条数")
     private long pageSize;
+
+    @ApiModelProperty("搜索")
+    private List<Object> search;
 
 }

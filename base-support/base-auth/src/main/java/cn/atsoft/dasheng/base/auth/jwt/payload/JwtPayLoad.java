@@ -65,7 +65,7 @@ public class JwtPayLoad {
             JwtPayLoad jwtPayLoad = new JwtPayLoad();
 
             Object userId = map.get("userId");
-            if (userId instanceof Long) {
+            if (userId instanceof Long || userId instanceof Integer) {
                 jwtPayLoad.setUserId(Long.valueOf(map.get("userId").toString()));
             }
 
