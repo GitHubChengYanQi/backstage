@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.appBase.aop.FieldPermission;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ViewUpdate;
+import cn.atsoft.dasheng.form.service.DocumentStatusService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
@@ -36,21 +39,27 @@ public class PurchaseAskResult implements Serializable {
     private Integer applyType;
 
     private User user;
+
+    private DocumentsStatusResult statusResult;
+
     /**
      * 采购申请id
      */
     @ApiModelProperty("采购申请id")
+    @FieldPermission(value = true)
     private Long purchaseAskId;
 
     /**
      * 编号
      */
+    @FieldPermission(value = true)
     @ApiModelProperty("编号")
     private String coding;
 
     /**
      * 采购类型
      */
+    @FieldPermission(value = true)
     @ApiModelProperty("采购类型")
     private String type;
 
@@ -63,24 +72,28 @@ public class PurchaseAskResult implements Serializable {
     /**
      * 申请状态
      */
+    @FieldPermission(value = true)
     @ApiModelProperty("申请状态")
-    private Integer status;
+    private Long status;
 
     /**
      * 总金额
      */
+    @FieldPermission(value = true)
     @ApiModelProperty("总金额")
     private Integer money;
 
     /**
      * 总数量
      */
+    @FieldPermission(value = true)
     @ApiModelProperty("总数量")
     private Long number;
 
     /**
      * 种类数量
      */
+    @FieldPermission(value = true)
     @ApiModelProperty("种类数量")
     private Long typeNumber;
 
@@ -137,6 +150,7 @@ public class PurchaseAskResult implements Serializable {
      * 状态
      */
     @ApiModelProperty("状态")
+    @FieldPermission(value = true)
     private Long display;
 
     /**

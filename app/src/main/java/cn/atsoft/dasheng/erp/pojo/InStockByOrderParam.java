@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.pojo;
 
 import lombok.Data;
+import org.omg.CORBA.LongHolder;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -14,6 +15,10 @@ public class InStockByOrderParam {
     private String remark;
 
     private Date instockTime;
+
+    private Long instockOrderId;
+
+    private Long actionId;
 
     @Data
     public class SkuParam {

@@ -127,7 +127,7 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
     @Override
     public void updateOrderStatus(Long orderId) {
         ProcurementOrder order = new ProcurementOrder();
-        order.setStatus(98);
+        order.setStatus(98L);
         order.setProcurementOrderId(orderId);
         orderService.updateById(order);
     }

@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.form.model.result.*;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
@@ -92,6 +93,9 @@ public class taskController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     public ResponseData<ActivitiProcessTaskResult> detail(@Param("taskId") Long taskId) {
         //流程任务
+        if (ToolUtil.isEmpty(taskId)) {
+            throw  new ServiceException(500,"缺少taskId");
+        }
         ActivitiProcessTask processTask = taskService.getById(taskId);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(processTask, taskResult);

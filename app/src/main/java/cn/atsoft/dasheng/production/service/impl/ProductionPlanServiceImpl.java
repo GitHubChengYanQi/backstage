@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -20,7 +19,6 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionPlanDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPlanMapper;
-import cn.atsoft.dasheng.production.model.params.ProductionPlanDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
 import cn.atsoft.dasheng.production.model.result.*;
 import cn.atsoft.dasheng.production.service.ProductionCardService;
@@ -30,13 +28,14 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.rmi.log.LogInputStream;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -262,6 +261,16 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         ProductionPlan entity = new ProductionPlan();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public List<ProductionPlanResult> resultsByIds(List<Long> ids){
+        if (ToolUtil.isEmpty(ids) || ids.size() == 0) {
+            return new ArrayList<>();
+        }
+        List<ProductionPlan> productionPlanList = this.listByIds(ids);
+        List<ProductionPlanResult> productionPlanResults = BeanUtil.copyToList(productionPlanList, ProductionPlanResult.class, new CopyOptions());
+        this.format(productionPlanResults);
+        return productionPlanResults;
     }
 
 }

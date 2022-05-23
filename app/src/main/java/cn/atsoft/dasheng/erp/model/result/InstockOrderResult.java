@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -35,9 +36,11 @@ public class InstockOrderResult implements Serializable {
     private UserResult createUserResult;
     private UserResult updateUserResult;
     private ThemeAndOrigin themeAndOrigin;
+    private DocumentsStatusResult statusResult;
 
     private String type;
 
+    private Long status;
 
     private Long enoughNumber;
     private Long realNumber;
