@@ -333,7 +333,6 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-        , sum(daoxin_erp_stock_details.number ) as stockNumber
         ,daoxin_erp_stock_details.storehouse_id as storehouseId
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
