@@ -36,6 +36,12 @@ public class ActivitiAudit implements Serializable {
     private Long auditId;
 
     /**
+     * 动作
+     */
+    @TableField("action")
+    private String action;
+
+    /**
      * 步骤Id
      */
     @TableField("setps_id")
@@ -57,10 +63,23 @@ public class ActivitiAudit implements Serializable {
     private AuditRule rule;
 
     /**
+     * 单据类型
+     */
+    @TableField("form_type")
+    private String formType;
+
+    /**
+     * 单据动作
+     */
+    @TableField("documents_status_id")
+    private Long documentsStatusId;
+
+    /**
      * 删除状态
      */
     @TableField("display")
     private Integer display;
+
 
     @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
@@ -74,6 +93,13 @@ public class ActivitiAudit implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
+    public Long getDocumentsStatusId() {
+        return documentsStatusId;
+    }
+
+    public void setDocumentsStatusId(Long documentsStatusId) {
+        this.documentsStatusId = documentsStatusId;
+    }
 
     public Long getAuditId() {
         return auditId;
@@ -106,6 +132,15 @@ public class ActivitiAudit implements Serializable {
 //    public void setRule(String rule) {
 //        this.rule = rule;
 //    }
+
+
+    public String getFormType() {
+        return formType;
+    }
+
+    public void setFormType(String formType) {
+        this.formType = formType;
+    }
 
     public Integer getDisplay() {
         return display;
@@ -153,6 +188,14 @@ public class ActivitiAudit implements Serializable {
 
     public void setRule(AuditRule rule) {
         this.rule = rule;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     @Override

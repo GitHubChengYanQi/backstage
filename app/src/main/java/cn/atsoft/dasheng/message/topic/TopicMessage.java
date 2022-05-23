@@ -8,8 +8,10 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.service.AuditMessageService;
 import cn.atsoft.dasheng.message.service.MicroService;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
@@ -25,9 +27,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-
-import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MESSAGE_REAL_QUEUE;
-import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MICROSERVICE_REAL_QUEUE;
+import static cn.atsoft.dasheng.message.config.DirectQueueConfig.*;
 
 
 @Component
@@ -40,6 +40,9 @@ public class TopicMessage {
 
     @Autowired
     private MicroService microService;
+
+    @Autowired
+    private AuditMessageService auditMessageService;
 
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
@@ -79,5 +82,12 @@ public class TopicMessage {
         MicroServiceEntity microServiceEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
         microService.microServiceDo(microServiceEntity);
         logger.info("内部调用创建单据:"+microServiceEntity.getType()+"/"+microServiceEntity.getOperationType());
+    }
+    @RabbitListener(queues = "${spring.rabbitmq.prefix}" + AUDIT_REAL_QUEUE)
+    public void readAudit(Message message, Channel channel) throws IOException {
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        AuditEntity auditEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
+        auditMessageService.auditDo(auditEntity);
+        logger.info("审批队列:"+auditEntity.getAuditType()+"/"+auditEntity.getAuditType());
     }
 }

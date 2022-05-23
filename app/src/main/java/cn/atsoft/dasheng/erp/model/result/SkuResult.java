@@ -3,18 +3,15 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.appBase.aop.FieldPermission;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
-import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuRequest;
-import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
-import cn.atsoft.dasheng.production.model.result.ProcessRouteResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -24,7 +21,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>

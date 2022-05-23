@@ -1,14 +1,11 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Material;
-import cn.atsoft.dasheng.app.entity.Unit;
-import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.appBase.aop.FieldPermission;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
-import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuRequest;
-import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
@@ -20,7 +17,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
