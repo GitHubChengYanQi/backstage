@@ -452,18 +452,18 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * @return
      */
     @Override
-    public List<Long> getSkuIdsByPositionId(Long positionId) {
-        List<Long> skuIds = new ArrayList<>();
+    public List<Long> getLoopPositionIds(Long positionId) {
+        List<Long> ids = new ArrayList<>();
         List<StorehousePositions> positions = this.query().eq("display", 1).list();
 
         for (StorehousePositions position : positions) {
             if (position.getStorehousePositionsId().equals(positionId)) {
                 List<Long> positionIds = loopChild(position, positions);
-                skuIds.addAll(getSkuIdsByBind(positionIds));
+                ids.addAll(positionIds);
             }
         }
 
-        return skuIds;
+        return ids;
     }
 
     /**
@@ -480,6 +480,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         for (StorehousePositions storehousePositions : positions) {
             if (storehousePositions.getPid().equals(position.getStorehousePositionsId())) {
+
                 positionIds.addAll(loopChild(storehousePositions, positions));
             }
         }
