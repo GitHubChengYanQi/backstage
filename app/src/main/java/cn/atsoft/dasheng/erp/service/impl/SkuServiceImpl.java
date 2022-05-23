@@ -968,13 +968,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         PageInfo<SkuResult> pageInfo = PageFactory.createPageInfo(page);
 
 
-        List<SkuResult> skuResultList = this.baseMapper.allList(new ArrayList<>(), param);  //查询所有结果集
-        List<Long> skuIds = new ArrayList<>();
-        skuIds.add(0L);
-        for (SkuResult skuResult : skuResultList) {
-            skuIds.add(skuResult.getSkuId());
-        }
-        if (param.getStockView()) {
+        if (param.getStockView()) {  //是否开启查询
+
+            List<SkuResult> skuResultList = this.baseMapper.allList(new ArrayList<>(), param);  //查询所有结果集
+            List<Long> skuIds = new ArrayList<>();
+            skuIds.add(0L);
+            for (SkuResult skuResult : skuResultList) {
+                skuIds.add(skuResult.getSkuId());
+            }
 
             List<Object> searchObjects = new ArrayList<>();
 
