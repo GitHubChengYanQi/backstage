@@ -34,6 +34,7 @@
         <result column="source_id" property="sourceId"/>
         <result column="payment" property="payment" jdbcType="VARCHAR" javaType="cn.atsoft.dasheng.crm.pojo.Payment"
                 typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
+        <result column="coding" property="coding"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
