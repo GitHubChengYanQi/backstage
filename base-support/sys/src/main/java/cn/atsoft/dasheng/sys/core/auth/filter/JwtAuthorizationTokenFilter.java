@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.sys.core.auth.filter;
 
+import cn.atsoft.dasheng.base.auth.exception.AuthException;
+import cn.atsoft.dasheng.base.auth.exception.enums.AuthExceptionEnum;
 import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
 import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -44,6 +46,8 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
     private SessionManager sessionManager;
     @Autowired
     private AuthService authService;
+
+
 
     public JwtAuthorizationTokenFilter() {
     }

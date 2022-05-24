@@ -688,6 +688,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<ErpPartsDetailResult> details = erpPartsDetailService.getDetails(pids);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
 
+
+
         for (PartsResult datum : data) {
             List<ErpPartsDetailResult> detailResults = new ArrayList<>();
 
@@ -697,10 +699,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 }
             }
             datum.setParts(detailResults);
-            if (ToolUtil.isNotEmpty(datum.getSkuId())) {
-                Sku sku = skuService.getById(datum.getSkuId());
-                datum.setSku(sku);
-            }
+
+//            if (ToolUtil.isNotEmpty(datum.getSkuId())) {
+//                Sku sku = skuService.getById(datum.getSkuId());
+//                datum.setSku(sku);
+//            }
 
             List<PartsResult> partsResults = new ArrayList<>();
             for (Parts part : parts) {

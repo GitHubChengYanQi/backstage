@@ -74,7 +74,7 @@ public class QualityTaskResult implements Serializable {
      */
     private String userIds;
 
-    private Integer status;
+    private Long status;
 
 
     /**

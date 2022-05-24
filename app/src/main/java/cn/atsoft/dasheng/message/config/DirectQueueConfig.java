@@ -36,7 +36,9 @@ public class DirectQueueConfig {
     public final static String MESSAGE_DELAY_QUEUE = ".message.delay.queue";
 
 
-
+    /**
+     * 内部调用消息队列
+     */
     public final static String MICROSERVICE_REAL_EXCHANGE = ".microService.real.topicExchange";
     public final static String MICROSERVICE_REAL_ROUTE = ".microService.real.route";
     public final static String MICROSERVICE_REAL_QUEUE = ".microService.real.queue";
@@ -45,6 +47,19 @@ public class DirectQueueConfig {
     public final static String MICROSERVICE_DELAY_EXCHANGE = ".microService.delay.topicExchange";
     public final static String MICROSERVICE_DELAY_ROUTE = ".microService.delay.route";
     public final static String MICROSERVICE_DELAY_QUEUE = ".microService.delay.queue";
+
+    /**
+     * 审批流消息队列
+     */
+
+    public final static String AUDIT_REAL_EXCHANGE = ".auditService.real.topicExchange";
+    public final static String AUDIT_REAL_ROUTE = ".auditService.real.route";
+    public final static String AUDIT_REAL_QUEUE = ".auditService.real.queue";
+
+
+    public final static String AUDIT_DELAY_EXCHANGE = ".auditService.delay.topicExchange";
+    public final static String AUDIT_DELAY_ROUTE = ".auditService.delay.route";
+    public final static String AUDIT_DELAY_QUEUE = ".auditService.delay.queue";
 
 
 
@@ -134,7 +149,7 @@ public class DirectQueueConfig {
 
 
     /**
-     * 声明队列
+     * 声明内部调用服务队列
      *
      * @return Queue
      */
@@ -208,6 +223,86 @@ public class DirectQueueConfig {
 
     public static String getMicroServiceDelayQueue() {
         return mqPrefix + MICROSERVICE_DELAY_QUEUE;
+    }
+
+
+
+
+    /**
+     * 声明审批流服务队列
+     *
+     * @return Queue
+     */
+    @Bean
+    public Queue auditQueue() {
+        logger.info(mqPrefix);
+        logger.info(getAuditRealQueue());
+        return new Queue(getAuditRealQueue());
+    }
+
+
+    @Bean
+    public Queue auditDelayQueue() {
+
+        Map<String, Object> argsMap = Maps.newHashMap();
+        argsMap.put("x-dead-letter-exchange", getAuditRealExchange()); //真正的交换机
+        argsMap.put("x-dead-letter-routing-key", getAuditRealRoute()); //真正的路由键
+        return new Queue(getAuditDelayExchange() , true, false, false, argsMap);
+    }
+
+    /**
+     * 声明交换机
+     *
+     * @return TopicExchange
+     */
+    @Bean
+    public TopicExchange auditExchange() {
+        return new TopicExchange(getAuditRealExchange());
+    }
+
+    @Bean
+    public TopicExchange auditDelayExchange() {
+        return new TopicExchange(getAuditDelayExchange());
+    }
+
+    /**
+     * 绑定交换机
+     */
+    @Bean
+    Binding auditServiceTopicExchange() {
+        logger.info("绑定队列");
+        return BindingBuilder.bind(auditQueue()).to(auditExchange()).with(getAuditRealRoute());
+    }
+
+    @Bean
+    Binding auditServiceTopicDelayExchange() {
+        logger.info("绑定延迟队列");
+        return BindingBuilder.bind(auditDelayQueue()).to(auditDelayExchange()).with(getAuditRealRoute());
+    }
+
+
+    public static String getAuditRealExchange() {
+        return mqPrefix + AUDIT_REAL_EXCHANGE;
+    }
+
+    public static String getAuditRealRoute() {
+        return mqPrefix + AUDIT_REAL_ROUTE;
+    }
+
+    public static String getAuditRealQueue() {
+        return mqPrefix + AUDIT_REAL_QUEUE;
+    }
+
+    public static String getAuditDelayRoute() {
+        return mqPrefix + AUDIT_DELAY_ROUTE;
+    }
+
+    public static String getAuditDelayExchange() {
+        return mqPrefix + AUDIT_DELAY_EXCHANGE;
+    }
+
+    public static String getAuditDelayQueue() {
+        return mqPrefix + AUDIT_DELAY_QUEUE;
     }
 
 }

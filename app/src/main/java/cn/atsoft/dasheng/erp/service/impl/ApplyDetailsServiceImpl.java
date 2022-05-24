@@ -20,7 +20,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.sys.core.constant.dictmap.DeleteDict;
+
 import cn.atsoft.dasheng.sys.core.constant.dictmap.MenuDict;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;

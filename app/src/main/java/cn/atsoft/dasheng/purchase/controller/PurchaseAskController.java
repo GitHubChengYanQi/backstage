@@ -2,23 +2,18 @@ package cn.atsoft.dasheng.purchase.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
+
+import cn.atsoft.dasheng.action.dict.PurchaseAskDictEnum;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
-import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -45,17 +40,22 @@ public class PurchaseAskController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PurchaseAskParam purchaseAskParam) {
+
         this.purchaseAskService.add(purchaseAskParam);
         return ResponseData.success();
     }
 
 
+
+
+
     @RequestMapping(value = "/rejected", method = RequestMethod.GET)
     @ApiOperation("驳回")
-    public ResponseData rejected(@RequestParam Long askId  ) {
+    public ResponseData rejected(@RequestParam Long askId) {
         this.purchaseAskService.rejected(askId);
         return ResponseData.success();
     }
+
     /**
      * 编辑接口
      *

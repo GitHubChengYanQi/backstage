@@ -49,6 +49,9 @@
         <if test="paramCondition.type!=null">
             and type = #{paramCondition.type}
         </if>
+        <if test="paramCondition.module!=null">
+            and module = #{paramCondition.module}
+        </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and form_id in (
             select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
@@ -68,6 +71,9 @@
         from activiti_process where display = 1
         <if test="paramCondition.type!=null">
             and type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.module!=null">
+            and type = #{paramCondition.module}
         </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and form_id in (

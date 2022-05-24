@@ -1,18 +1,11 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
-import cn.atsoft.dasheng.Excel.pojo.ContractLabel;
-import cn.atsoft.dasheng.action.OrderActionEnum;
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.*;
@@ -26,22 +19,13 @@ import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.convert.NumberChineseFormatter;
-import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -466,7 +450,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Phone AcompanyPhone = ToolUtil.isEmpty(result.getPartyACompanyPhone()) ? new Phone() : phoneService.getById(result.getPartyACompanyPhone());  //甲方公司电话
         Phone BcompanyPhone = ToolUtil.isEmpty(result.getPartyBCompanyPhone()) ? new Phone() : phoneService.getById(result.getPartyBCompanyPhone());  //乙方公司电话
 
-        if (ToolUtil.isNotEmpty(AcompanyPhone) &&ToolUtil.isNotEmpty(AcompanyPhone.getPhoneNumber())) {
+        if (ToolUtil.isNotEmpty(AcompanyPhone) && ToolUtil.isNotEmpty(AcompanyPhone.getPhoneNumber())) {
             result.setACompanyPhone(AcompanyPhone.getPhoneNumber());
         }
 
@@ -605,18 +589,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private void format(List<OrderResult> data) {
         List<Long> customerIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
         for (OrderResult datum : data) {
             customerIds.add(datum.getBuyerId());
             customerIds.add(datum.getSellerId());
             userIds.add(datum.getCreateUser());
+            orderIds.add(datum.getOrderId());
         }
 
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
-
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
-        for (OrderResult datum : data) {
+        List<OrderDetail> orderDetails = detailService.query().in("order_id", orderIds).eq("display", 1).list();
+        List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
+        detailService.format(detailResults);
 
+
+        for (OrderResult datum : data) {
             for (Customer customer : customers) {
                 if (customer.getCustomerId().equals(datum.getBuyerId())) {
                     datum.setAcustomer(customer);
@@ -625,6 +614,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     datum.setBcustomer(customer);
                 }
             }
+
+            List<OrderDetailResult> orderDetailResults = new ArrayList<>();
+            for (OrderDetailResult detailResult : detailResults) {
+                if (detailResult.getOrderId().equals(datum.getOrderId())) {
+                    orderDetailResults.add(detailResult);
+                }
+            }
+            datum.setDetailResults(orderDetailResults);
+
 
             for (User user : userList) {
                 if (user.getUserId().equals(datum.getCreateUser())) {

@@ -34,6 +34,10 @@ public class ActivitiProcessLogResult implements Serializable {
 
     private ActivitiProcessTaskResult taskResult;
 
+    private List<DocumentsActionResult> actionResults;
+
+
+    private String actionStatus;
     /**
      * 主键
      */

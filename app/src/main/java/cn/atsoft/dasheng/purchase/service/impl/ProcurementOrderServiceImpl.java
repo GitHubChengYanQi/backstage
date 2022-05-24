@@ -171,7 +171,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             wxCpSendTemplate.setSource("procurementOrder");
             wxCpSendTemplate.setSourceId(taskId);
         } else {
-            entity.setStatus(99);
+            entity.setStatus(99L);
             this.updateById(entity);
             List<Contract> contractList = contractService.query().eq("source_id", entity.getProcurementOrderId()).eq("source", "采购单").list();
             for (Contract contract : contractList) {
@@ -255,7 +255,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
         } else {
-            entity.setStatus(99);
+            entity.setStatus(99L);
             this.updateById(entity);
             List<Contract> contractList = contractService.query().eq("source_id", entity.getProcurementOrderId()).eq("source", "采购单").list();
             for (Contract contract : contractList) {
@@ -323,7 +323,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     @Override
     public void updateStatus(ActivitiProcessTask processTask) {
         ProcurementOrder entity = this.getById(processTask.getFormId());
-        entity.setStatus(99);
+        entity.setStatus(99L);
         this.updateById(entity);
         List<Contract> contractList = contractService.query().eq("source_id", processTask.getFormId()).eq("source", "采购单").list();
         for (Contract contract : contractList) {
@@ -336,7 +336,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     @Override
     public void updateRefuseStatus(ActivitiProcessTask processTask) {
         ProcurementOrder entity = this.getById(processTask.getFormId());
-        entity.setStatus(97);
+        entity.setStatus(97L);
         this.updateById(entity);
     }
 

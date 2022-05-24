@@ -422,7 +422,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         childs.clear();
 
-        for ( PositionLoop loop : allPositionLoop) {
+        for (PositionLoop loop : allPositionLoop) {
             if (loop.getPid() == 0 && ToolUtil.isNotEmpty(loop.getLoops())) {
                 childs.add(loop);
             }
@@ -437,7 +437,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 if (ToolUtil.isEmpty(position.getLoops())) {
                     position.setLoops(new ArrayList<>());
                 }
-                if (position.getLoops().stream().noneMatch(i->i.getKey().equals(child.getKey()))) {
+                if (position.getLoops().stream().noneMatch(i -> i.getKey().equals(child.getKey()))) {
                     position.getLoops().add(child);
                 }
                 loop(position, positions);
@@ -913,7 +913,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     /**
-     * 专门为物料查询仓库与库位
+     * 专门为物料查询仓库与库位 (库存对比)
      *
      * @param data
      */
@@ -921,27 +921,48 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     public void skuFormat(List<SkuResult> data) {
 
         List<Long> houseIds = new ArrayList<>();
-        List<Long> positionIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
 
         for (SkuResult datum : data) {
             houseIds.add(datum.getStorehouseId());
-            positionIds.add(datum.getPositionId());
+            skuIds.add(datum.getSkuId());
         }
+        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list();
 
+        List<Long> positionIds = new ArrayList<>();
+        for (StockDetails stockDetail : stockDetails) {
+            positionIds.add(stockDetail.getStorehousePositionsId());
+        }
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+
+
+        Map<Long, List<StorehousePositionsResult>> map = new HashMap<>();
+        for (StockDetails stockDetail : stockDetails) {
+
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                if (stockDetail.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
+
+                    List<StorehousePositionsResult> positionsResultList = map.get(stockDetail.getSkuId());
+                    if (ToolUtil.isEmpty(positionsResultList)) {
+                        positionsResultList = new ArrayList<>();
+                    }
+                    if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
+                        positionsResultList.add(positionsResult);
+                    }
+                    map.put(stockDetail.getSkuId(), positionsResultList);
+                }
+            }
+        }
+
 
         List<Storehouse> storehouses = houseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(houseIds);
         List<StorehouseResult> storehouseResults = BeanUtil.copyToList(storehouses, StorehouseResult.class, new CopyOptions());
 
         for (SkuResult datum : data) {
-            List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
-            for (StorehousePositionsResult positionsResult : positionsResults) {
-                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
-                    positionsResultList.add(positionsResult);
-                }
-            }
-            datum.setPositionsResult(positionsResultList);
+
+            datum.setPositionsResult(map.get(datum.getSkuId()));
+
             for (StorehouseResult storehouseResult : storehouseResults) {
                 if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && storehouseResult.getStorehouseId().equals(datum.getStorehouseId())) {
                     datum.setStorehouseResult(storehouseResult);
