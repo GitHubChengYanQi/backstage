@@ -294,7 +294,7 @@
         </if>
         <if test="paramCondition.storehousePositionsIds !=null and paramCondition.storehousePositionsIds.size>0">
             and goods_sku.sku_id in
-            (select sku_id from sku_position_view where storehouse_positions_id in
+            (select sku_id from daoxin_erp_storehouse_positions_bind where storehouse_positions_id in
             <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
                      close=")"
                      open="(">
@@ -447,7 +447,7 @@
         </if>
         <if test="paramCondition.storehousePositionsIds !=null and paramCondition.storehousePositionsIds.size>0">
             and goods_sku.sku_id in
-            (select sku_id from sku_position_view where storehouse_positions_id in
+            (select sku_id from daoxin_erp_storehouse_positions_bind where storehouse_positions_id in
             <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
                      close=")"
                      open="(">
