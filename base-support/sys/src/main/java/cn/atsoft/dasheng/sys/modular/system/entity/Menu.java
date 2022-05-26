@@ -39,6 +39,12 @@ public class Menu implements Serializable {
     private String pcode;
 
     /**
+     * 分类
+     */
+    @TableField("type")
+    private String type;
+
+    /**
      * 当前菜单的所有父菜单编号
      */
     @TableField("pcodes")
