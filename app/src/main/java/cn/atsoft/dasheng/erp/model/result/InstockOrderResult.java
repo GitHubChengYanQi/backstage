@@ -52,6 +52,11 @@ public class InstockOrderResult implements Serializable {
     private String source;
 
     /**
+     * 注意事项
+     */
+    private String noticeId;
+
+    /**
      * 来源id
      */
     private Long sourceId;

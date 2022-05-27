@@ -17,12 +17,13 @@
         <result column="deptId" property="deptId"/>
         <result column="plan_number" property="planNumber"/>
         <result column="real_number" property="realNumber"/>
+        <result column="inkind_id" property="inkindId"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List"> plan_number
-    AS "planNumber" ,real_number AS "realNumber",
+    AS "planNumber" ,real_number AS "realNumber",inkind_id AS "inkindId",
         detail_id
         AS "detailId", anomaly_id AS "anomalyId", sku_id AS "skuId", type AS "type", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>

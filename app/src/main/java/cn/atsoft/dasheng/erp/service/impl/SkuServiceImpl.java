@@ -1362,15 +1362,28 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         /**
+         * 查询品牌
+         */
+        List<SkuBrandBind> skuBrandBinds = skuBrandBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+
+        Map<Long, List<Long>> brandMapIds = new HashMap<>();
+        List<Long> brandIds = new ArrayList<>();
+        for (SkuBrandBind bind : skuBrandBinds) {
+            brandIds.add(bind.getBrandId());
+
+            List<Long> list = brandMapIds.get(bind.getSkuId());
+            if (ToolUtil.isEmpty(list)) {
+                list = new ArrayList<>();
+            }
+            list.add(bind.getBrandId());
+            brandMapIds.put(bind.getSkuId(), list);
+        }
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+        /**
          * 查询清单
          */
-
-
         List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
-        List<Long> partsIds = new ArrayList<>();
-        for (Parts part : parts) {
-            partsIds.add(part.getPartsId());
-        }
         List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
         /**
          * 库存数
@@ -1378,6 +1391,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<StockDetails> stockDetailsList = stockDetailsService.query().select("sku_id, sum(number) as num").eq("display", 1).groupBy("sku_id").list();
 
         for (SkuResult skuResult : param) {
+
+            List<BrandResult> brandResultList = new ArrayList<>();
+            List<Long> allBrandIds = brandMapIds.get(skuResult.getSkuId());
+            if (ToolUtil.isNotEmpty(allBrandIds)) {
+                for (Long allBrandId : allBrandIds) {
+                    for (BrandResult brandResult : brandResults) {
+                        if (allBrandId.equals(brandResult.getBrandId())) {
+                            brandResultList.add(brandResult);
+                        }
+                    }
+                }
+                skuResult.setBrandResults(brandResultList);
+            }
 
 
             for (StockDetails stockDetails : stockDetailsList) {

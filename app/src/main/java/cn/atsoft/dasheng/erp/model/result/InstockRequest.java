@@ -17,6 +17,7 @@ public class InstockRequest {
     private Long skuId;
     private Long qualityTaskDetailId;
     private Long instockNumber;
+    private Long customerId;
     /**
      * 到货时间
      */
