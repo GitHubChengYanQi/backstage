@@ -34,7 +34,11 @@ public class RestMenu implements Serializable {
 
     @TableField("pid")
     private Long pid;
-
+    /**
+     * 分类
+     */
+    @TableField("type")
+    private String type;
     /**
      * 菜单父编号
      */

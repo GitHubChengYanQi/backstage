@@ -7,6 +7,7 @@
         <id column="menu_id" property="menuId"/>
         <result column="code" property="code"/>
         <result column="pid" property="pid"/>
+        <result column="type" property="type"/>
         <result column="pcode" property="pcode"/>
         <result column="pcodes" property="pcodes"/>
         <result column="pids" property="pids"/>
@@ -28,7 +29,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        menu_id AS "menuId", code AS "code", pcode AS "pcode", pcodes AS "pcodes", name AS "name", icon AS "icon", url AS "url", sort AS "sort", levels AS "levels", menu_flag AS "menuFlag", description AS "description", status AS "status", new_page_flag AS "newPageFlag", open_flag AS "openFlag", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
+        menu_id AS "menuId" ,type AS "type", code AS "code", pcode AS "pcode", pcodes AS "pcodes", name AS "name", icon AS "icon", url AS "url", sort AS "sort", levels AS "levels", menu_flag AS "menuFlag", description AS "description", status AS "status", new_page_flag AS "newPageFlag", open_flag AS "openFlag", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
     <sql id="Tree_Column_List">
         menu_id AS "key",menu_id AS "value",menu_id AS "id", pid AS "parentId", name AS "label", name AS "title"
@@ -255,6 +256,7 @@
         m1.menu_id AS id,
         m1.icon AS icon,
         m1.code As code,
+        m1.type As type,
         (
         CASE
         WHEN (m2.menu_id = 0 OR m2.menu_id IS NULL) THEN
@@ -293,6 +295,50 @@
         where m1.menu_flag = 'Y'
         order by levels,m1.sort asc
     </select>
+     <select id="getMobileMenusByRoleIds" resultType="cn.atsoft.dasheng.base.pojo.node.MenuNode">
+            SELECT
+            m1.menu_id AS id,
+            m1.icon AS icon,
+            m1.code As code,
+            m1.type As type,
+            (
+            CASE
+            WHEN (m2.menu_id = 0 OR m2.menu_id IS NULL) THEN
+            0
+            ELSE
+            m2.menu_id
+            END
+            ) AS "parentId",
+            m1.name as name,
+            m1.url as url,
+            m1.levels as levels,
+            m1.menu_flag as ismenu,
+            m1.system_type as systemType,
+            m1.sort as num
+            FROM
+            sys_menu m1
+            LEFT join sys_menu m2 ON m1.pcode = m2.code
+            INNER JOIN (
+            SELECT
+            menu_id
+            FROM
+            sys_menu
+            WHERE
+            menu_id IN (
+            SELECT
+            menu_id
+            FROM
+            sys_relation rela
+            WHERE
+            rela.role_id IN
+            <foreach collection="list" index="index" item="i" open="(" separator="," close=")">
+                #{i}
+            </foreach>
+            )
+            ) m3 ON m1.menu_id = m3.menu_id
+            where 1=1 and m1.type = 1
+            order by levels,m1.sort asc
+        </select>
 
     <select id="selectMenuTree" resultType="java.util.Map">
         select

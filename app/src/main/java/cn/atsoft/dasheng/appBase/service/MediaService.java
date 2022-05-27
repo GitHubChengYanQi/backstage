@@ -81,4 +81,6 @@ public interface MediaService extends IService<Media> {
 
 
     String getMediaPathPublic(Long mediaId, Long userId);
+
+   Long getTemporaryFile(String mediaId);
 }

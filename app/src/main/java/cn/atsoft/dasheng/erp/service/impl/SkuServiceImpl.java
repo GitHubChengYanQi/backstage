@@ -1073,14 +1073,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             } else {
                 positionSearch = positionSearch(skuIds);
             }
-
-
-            /**
-             * 是否查询仓库和库位
-             */
-            positionsService.skuFormat(page.getRecords());
-
-
             searchObjects.add(positionSearch);
             searchObjects.add(customerSearch);
             searchObjects.add(brandSearch);
@@ -1092,6 +1084,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         this.isSupply(param, page.getRecords());
         this.format(page.getRecords());
+        /**
+         * 是否查询仓库和库位
+         */
+        positionsService.skuFormat(page.getRecords());
 
         return pageInfo;
     }
@@ -1366,15 +1362,28 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         /**
+         * 查询品牌
+         */
+        List<SkuBrandBind> skuBrandBinds = skuBrandBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+
+        Map<Long, List<Long>> brandMapIds = new HashMap<>();
+        List<Long> brandIds = new ArrayList<>();
+        for (SkuBrandBind bind : skuBrandBinds) {
+            brandIds.add(bind.getBrandId());
+
+            List<Long> list = brandMapIds.get(bind.getSkuId());
+            if (ToolUtil.isEmpty(list)) {
+                list = new ArrayList<>();
+            }
+            list.add(bind.getBrandId());
+            brandMapIds.put(bind.getSkuId(), list);
+        }
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+        /**
          * 查询清单
          */
-
-
         List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
-        List<Long> partsIds = new ArrayList<>();
-        for (Parts part : parts) {
-            partsIds.add(part.getPartsId());
-        }
         List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
         /**
          * 库存数
@@ -1382,6 +1391,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<StockDetails> stockDetailsList = stockDetailsService.query().select("sku_id, sum(number) as num").eq("display", 1).groupBy("sku_id").list();
 
         for (SkuResult skuResult : param) {
+
+            List<BrandResult> brandResultList = new ArrayList<>();
+            List<Long> allBrandIds = brandMapIds.get(skuResult.getSkuId());
+            if (ToolUtil.isNotEmpty(allBrandIds)) {
+                for (Long allBrandId : allBrandIds) {
+                    for (BrandResult brandResult : brandResults) {
+                        if (allBrandId.equals(brandResult.getBrandId())) {
+                            brandResultList.add(brandResult);
+                        }
+                    }
+                }
+                skuResult.setBrandResults(brandResultList);
+            }
 
 
             for (StockDetails stockDetails : stockDetailsList) {
@@ -1485,53 +1507,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
     }
-//    public void formatSku(SkuResult skuResult){
-//        List<Long> valuesIds = new ArrayList<>();
-//        List<Long> attributeIds = new ArrayList<>();
-//        JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
-//        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-//        for (AttributeValues valuesRequest : valuesRequests) {
-//            valuesIds.add(valuesRequest.getAttributeValuesId());
-//            attributeIds.add(valuesRequest.getAttributeId());
-//        }
-//        List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
-//
-//        List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
-//                .in(AttributeValues::getAttributeId, attributeIds)
-//                .list();
-//        Spu spu = ToolUtil.isEmpty(skuResult.getSpu())? new Spu() : spuService.query().eq("spu_id", skuResult.getSpu()).one();
-//        SpuResult spuResult = new SpuResult();
-//        ToolUtil.copyProperties(spu,spuResult);
-//        Unit unit = unitService.getById(spu.getUnitId());
-//        UnitResult unitResult = new UnitResult();
-//        ToolUtil.copyProperties(unit,unitResult);
-//
-//        spuResult.setUnitResult(unitResult);
-//        skuResult.setSpuResult(spuResult);
-//        List<SkuJson> list = new ArrayList<>();
-//        for (AttributeValues valuesRequest : valuesRequests) {
-//            SkuJson skuJson = new SkuJson();
-//            for (ItemAttribute itemAttribute : itemAttributes) {
-//                if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
-//                    Attribute attribute = new Attribute();
-//                    attribute.setAttributeId(itemAttribute.getAttributeId().toString());
-//                    attribute.setAttribute(itemAttribute.getAttribute());
-//                    skuJson.setAttribute(attribute);
-//                }
-//            }
-//            for (AttributeValues attributeValue : attributeValues) {
-//                if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
-//                    Values values = new Values();
-//                    values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
-//                    values.setAttributeValues(attributeValue.getAttributeValues());
-//                    skuJson.setValues(values);
-//                }
-//            }
-//            list.add(skuJson);
-//        }
-//        skuResult.setSkuJsons(list);
-//
-//    }
 
     @Override
     public SkuResult getSku(Long id) {
