@@ -1,22 +1,18 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 异常单据
+ * 
  * </p>
  *
  * @author song
- * @since 2022-04-12
+ * @since 2022-05-27
  */
 @Data
 @ApiModel
@@ -24,44 +20,39 @@ public class AnomalyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<AnomalyDetailResult> results;
 
-    private InstockOrderResult orderResult;
+    @ApiModelProperty("")
+    private Long anomalyId;
 
-    private List<String> filedUrls;
+    @ApiModelProperty("")
+    private String type;
 
+    @ApiModelProperty("")
+    private Long formId;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
     private String remark;
 
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
     private String enclosure;
-
 
     /**
      * 主题
      */
+    @ApiModelProperty("主题")
     private String theme;
 
     /**
-     * 来源
+     * 来源Json字符串
      */
+    @ApiModelProperty("来源Json字符串")
     private String origin;
-
-    /**
-     * 异常id
-     */
-    @ApiModelProperty("异常id")
-    private Long anomalyId;
-
-    /**
-     * 类型
-     */
-    @ApiModelProperty("类型")
-    private String type;
-
-    /**
-     * 单据id
-     */
-    @ApiModelProperty("单据id")
-    private Long formId;
 
     /**
      * 来源
@@ -75,41 +66,55 @@ public class AnomalyResult implements Serializable {
     @ApiModelProperty("来源id")
     private Long sourceId;
 
+    /**
+     * 物料
+     */
+    @ApiModelProperty("物料")
+    private Long skuId;
 
     /**
-     * 创建者
+     * 需要数量
      */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
+    @ApiModelProperty("需要数量")
+    private Long needNumber;
 
     /**
-     * 修改者
+     * 实际数量
      */
-    @ApiModelProperty(hidden = true)
-    private Long updateUser;
+    @ApiModelProperty("实际数量")
+    private Long realNumber;
 
     /**
-     * 创建时间
+     * 原因说明
      */
+    @ApiModelProperty("原因说明")
+    private String reason;
+
+    /**
+     * 可以入库 
+     */
+    @ApiModelProperty("可以入库 ")
+    private Integer status;
+
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
-    /**
-     * 修改时间
-     */
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
+
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
-    /**
-     * 状态
-     */
-    @ApiModelProperty("状态")
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
+
+    @ApiModelProperty("")
     private Integer display;
 
     /**
-     * 部门id
+     * 部门编号
      */
-    @ApiModelProperty("部门id")
+    @ApiModelProperty("部门编号")
     private Long deptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

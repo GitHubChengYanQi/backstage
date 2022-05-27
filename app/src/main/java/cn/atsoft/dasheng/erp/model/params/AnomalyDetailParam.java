@@ -1,25 +1,22 @@
 package cn.atsoft.dasheng.erp.model.params;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 异常详情
+ * 
  * </p>
  *
  * @author song
- * @since 2022-04-12
+ * @since 2022-05-27
  */
 @Data
 @ApiModel
@@ -28,76 +25,76 @@ public class AnomalyDetailParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
-    private Long planNumber;
-
-    private Long realNumber;
-
-
-    private Long number;
-
-    private Long instockListId;
-    /**
-     * 详情id
-     */
-    @ApiModelProperty("详情id")
+    @ApiModelProperty("")
     private Long detailId;
 
-    /**
-     * 主表id
-     */
-    @ApiModelProperty("主表id")
+    @ApiModelProperty("")
     private Long anomalyId;
 
-    @NotNull
-    @ApiModelProperty("")
-    private Long skuId;
-
     /**
-     * 异常类型
+     * 实物id
      */
-    @ApiModelProperty("异常类型")
-    private String type;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String remark;
-
-    /**
-     * 创建者
-     */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
-
-    /**
-     * 修改者
-     */
-    @ApiModelProperty(hidden = true)
-    private Long updateUser;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date updateTime;
+    @ApiModelProperty("实物id")
+    private Long inkindId;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
-    private Integer display;
+    private Long stauts;
 
     /**
-     * 部门id
+     * 异常原因
      */
-    @ApiModelProperty("部门id")
+    @ApiModelProperty("异常原因")
+    private String remark;
+
+    /**
+     * 原因图片
+     */
+    @ApiModelProperty("原因图片")
+    private String reasonImg;
+
+    /**
+     * 处理人
+     */
+    @ApiModelProperty("处理人")
+    private Long userId;
+
+    /**
+     * 处理意见
+     */
+    @ApiModelProperty("处理意见")
+    private String opinion;
+
+    /**
+     * 意见图片
+     */
+    @ApiModelProperty("意见图片")
+    private String opinionImg;
+
+    /**
+     * 异常表述
+     */
+    @ApiModelProperty("异常表述")
+    private String describe;
+
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
+
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
+
+    @ApiModelProperty(hidden = true)
+    private Date updateTime;
+
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
+
+    @ApiModelProperty("")
+    private Integer display;
+
+    @ApiModelProperty("")
     private Long deptId;
 
     @ApiModelProperty("父ID顺序数组")

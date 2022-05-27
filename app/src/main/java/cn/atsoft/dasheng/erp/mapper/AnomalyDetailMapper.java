@@ -13,11 +13,11 @@ import java.util.Map;
 
 /**
  * <p>
- * 异常详情 Mapper 接口
+ *  Mapper 接口
  * </p>
  *
  * @author song
- * @since 2022-04-12
+ * @since 2022-05-27
  */
 public interface AnomalyDetailMapper extends BaseMapper<AnomalyDetail> {
 
@@ -25,7 +25,7 @@ public interface AnomalyDetailMapper extends BaseMapper<AnomalyDetail> {
      * 获取列表
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     List<AnomalyDetailResult> customList(@Param("paramCondition") AnomalyDetailParam paramCondition);
 
@@ -33,7 +33,7 @@ public interface AnomalyDetailMapper extends BaseMapper<AnomalyDetail> {
      * 获取map列表
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") AnomalyDetailParam paramCondition);
 
@@ -41,7 +41,7 @@ public interface AnomalyDetailMapper extends BaseMapper<AnomalyDetail> {
      * 获取分页实体列表
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     Page<AnomalyDetailResult> customPageList(@Param("page") Page page, @Param("paramCondition") AnomalyDetailParam paramCondition);
 
@@ -49,7 +49,7 @@ public interface AnomalyDetailMapper extends BaseMapper<AnomalyDetail> {
      * 获取分页map列表
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") AnomalyDetailParam paramCondition);
 
