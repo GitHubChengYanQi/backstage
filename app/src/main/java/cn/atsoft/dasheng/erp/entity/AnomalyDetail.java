@@ -35,6 +35,12 @@ public class AnomalyDetail implements Serializable {
     @TableId(value = "detail_id", type = IdType.ID_WORKER)
     private Long detailId;
 
+
+    /**
+     * 实物id
+     */
+    @TableField("inkind_id")
+    private Long inkindId;
     /**
      * 主表id
      */
@@ -195,6 +201,14 @@ public class AnomalyDetail implements Serializable {
 
     public void setRealNumber(Long realNumber) {
         this.realNumber = realNumber;
+    }
+
+    public Long getInkindId() {
+        return inkindId;
+    }
+
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
     }
 
     @Override

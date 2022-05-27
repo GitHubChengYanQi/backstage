@@ -23,6 +23,12 @@ import java.io.Serializable;
 public class InstockList implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 供应商
+     */
+    @TableField("customer_id")
+    private Long customerId;
     /**
      * skuId
      */
@@ -340,6 +346,14 @@ public class InstockList implements Serializable {
 
     public void setRealNumber(Long realNumber) {
         this.realNumber = realNumber;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
     @Override

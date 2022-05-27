@@ -46,6 +46,11 @@ public class InstockListResult implements Serializable {
     private Long inkindId;
 
     private Long notNumber;
+
+    /**
+     * 供应商
+     */
+    private Long customerId;
     /**
      * 实际数量
      */

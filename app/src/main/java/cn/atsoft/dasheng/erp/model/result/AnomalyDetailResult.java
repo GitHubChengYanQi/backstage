@@ -33,6 +33,11 @@ public class AnomalyDetailResult implements Serializable {
     private Long detailId;
 
 
+    /**
+     * 实物id
+     */
+    private Long inkindId;
+
     private Long planNumber;
 
 
