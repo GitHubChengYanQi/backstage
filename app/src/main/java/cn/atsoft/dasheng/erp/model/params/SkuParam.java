@@ -68,6 +68,8 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String startTime;
     private String endTime;
 
+    private Boolean openBom = false;
+    private Boolean openPosition = false;
     /**
      * 是否查询仓库
      */

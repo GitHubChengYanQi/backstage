@@ -983,7 +983,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              * bom查询
              */
             SearchObject bomSearch = null;
-            if (ToolUtil.isNotEmpty(param.getPartsSkuId())) {
+            if (param.getOpenBom() && ToolUtil.isNotEmpty(param.getPartsSkuId())) {
                 List<Parts> parts = partsService.query().eq("status", 99).eq("display", 1).list();
                 bomSearch = bomSearch(new ArrayList<Long>() {{
                     for (Parts part : parts) {
@@ -993,6 +993,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             } else {
                 bomSearch = bomSearch(skuIds);
             }
+
 
             /**
              * 分類查詢
@@ -1063,7 +1064,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              *通过当前库位查询物料
              */
             SearchObject positionSearch = null;
-            if (ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
+            if (param.getOpenPosition() && ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
                 List<SkuPositionView> skuPositionViews = skuPositionViewService.list();
                 positionSearch = positionSearch(new ArrayList<Long>() {{
                     for (SkuPositionView skuPositionView : skuPositionViews) {
