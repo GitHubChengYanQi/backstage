@@ -63,7 +63,10 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private List<Long> customerIds;
     private List<Long> spuClassIds;  //物料分类查询条件
     private String fromType;
-
+    private String thisMonth;   //本月
+    private Integer timeWithin; //查询条件(几天内)
+    private String startTime;
+    private String endTime;
 
     /**
      * 是否查询仓库

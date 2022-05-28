@@ -1364,7 +1364,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * 查询品牌
          */
-        List<SkuBrandBind> skuBrandBinds = skuBrandBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<SkuBrandBind> skuBrandBinds = skuIds.size() == 0 ? new ArrayList<>() : skuBrandBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         Map<Long, List<Long>> brandMapIds = new HashMap<>();
         List<Long> brandIds = new ArrayList<>();
