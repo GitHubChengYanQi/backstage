@@ -983,16 +983,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              * bom查询
              */
             SearchObject bomSearch = null;
-            if (ToolUtil.isNotEmpty(param.getPartsSkuId())) {
-                List<Parts> parts = partsService.query().eq("status", 99).eq("display", 1).list();
-                bomSearch = bomSearch(new ArrayList<Long>() {{
-                    for (Parts part : parts) {
-                        add(part.getSkuId());
-                    }
-                }});
-            } else {
-                bomSearch = bomSearch(skuIds);
+            if (param.getOpenBom()) {
+                if ( ToolUtil.isNotEmpty(param.getPartsSkuId())) {
+                    List<Parts> parts = partsService.query().eq("status", 99).eq("display", 1).list();
+                    bomSearch = bomSearch(new ArrayList<Long>() {{
+                        for (Parts part : parts) {
+                            add(part.getSkuId());
+                        }
+                    }});
+                } else {
+                    bomSearch = bomSearch(skuIds);
+                }
             }
+
+
 
             /**
              * 分類查詢
@@ -1063,16 +1067,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              *通过当前库位查询物料
              */
             SearchObject positionSearch = null;
-            if (ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
-                List<SkuPositionView> skuPositionViews = skuPositionViewService.list();
-                positionSearch = positionSearch(new ArrayList<Long>() {{
-                    for (SkuPositionView skuPositionView : skuPositionViews) {
-                        add(skuPositionView.getSkuId());
-                    }
-                }});
-            } else {
-                positionSearch = positionSearch(skuIds);
+            if (param.getOpenPosition()) {
+                if (  ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
+                    List<SkuPositionView> skuPositionViews = skuPositionViewService.list();
+                    positionSearch = positionSearch(new ArrayList<Long>() {{
+                        for (SkuPositionView skuPositionView : skuPositionViews) {
+                            add(skuPositionView.getSkuId());
+                        }
+                    }});
+                } else {
+                    positionSearch = positionSearch(skuIds);
+                }
             }
+
             searchObjects.add(positionSearch);
             searchObjects.add(customerSearch);
             searchObjects.add(brandSearch);
@@ -1364,7 +1371,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * 查询品牌
          */
-        List<SkuBrandBind> skuBrandBinds = skuBrandBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<SkuBrandBind> skuBrandBinds = skuIds.size() == 0 ? new ArrayList<>() : skuBrandBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         Map<Long, List<Long>> brandMapIds = new HashMap<>();
         List<Long> brandIds = new ArrayList<>();
