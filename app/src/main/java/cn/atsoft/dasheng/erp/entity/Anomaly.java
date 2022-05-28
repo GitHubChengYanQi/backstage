@@ -2,15 +2,18 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
@@ -21,7 +24,18 @@ public class Anomaly implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "anomaly_id", type = IdType.ID_WORKER)
+    /**
+     * 供应商id
+     */
+    @TableField("customer_id")
+    private Long customerId;
+    /**
+     * 品牌
+     */
+    @TableField("brand_id")
+    private Long brandId;
+
+    @TableId(value = "anomaly_id", type = IdType.ID_WORKER)
     private Long anomalyId;
 
     @TableField("type")
@@ -91,21 +105,21 @@ public class Anomaly implements Serializable {
     private String reason;
 
     /**
-     * 可以入库 
+     * 可以入库
      */
     @TableField("status")
     private Integer status;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     @TableField("display")
@@ -117,6 +131,22 @@ public class Anomaly implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
 
     public Long getAnomalyId() {
         return anomalyId;
@@ -281,26 +311,26 @@ public class Anomaly implements Serializable {
     @Override
     public String toString() {
         return "Anomaly{" +
-        "anomalyId=" + anomalyId +
-        ", type=" + type +
-        ", formId=" + formId +
-        ", remark=" + remark +
-        ", enclosure=" + enclosure +
-        ", theme=" + theme +
-        ", origin=" + origin +
-        ", source=" + source +
-        ", sourceId=" + sourceId +
-        ", skuId=" + skuId +
-        ", needNumber=" + needNumber +
-        ", realNumber=" + realNumber +
-        ", reason=" + reason +
-        ", status=" + status +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "anomalyId=" + anomalyId +
+                ", type=" + type +
+                ", formId=" + formId +
+                ", remark=" + remark +
+                ", enclosure=" + enclosure +
+                ", theme=" + theme +
+                ", origin=" + origin +
+                ", source=" + source +
+                ", sourceId=" + sourceId +
+                ", skuId=" + skuId +
+                ", needNumber=" + needNumber +
+                ", realNumber=" + realNumber +
+                ", reason=" + reason +
+                ", status=" + status +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

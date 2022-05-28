@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
@@ -31,6 +32,7 @@ public class AnomalyDetailParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("")
     private Long anomalyId;
 
+    private Long number;
     /**
      * 实物id
      */

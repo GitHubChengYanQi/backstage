@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +42,7 @@ public class AnomalyController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody AnomalyParam anomalyParam) {
+    public ResponseData addItem(@RequestBody @Valid AnomalyParam anomalyParam) {
         this.anomalyService.add(anomalyParam);
         return ResponseData.success();
     }
@@ -67,7 +69,7 @@ public class AnomalyController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AnomalyParam anomalyParam)  {
+    public ResponseData delete(@RequestBody AnomalyParam anomalyParam) {
         this.anomalyService.delete(anomalyParam);
         return ResponseData.success();
     }
@@ -98,13 +100,11 @@ public class AnomalyController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AnomalyResult> list(@RequestBody(required = false) AnomalyParam anomalyParam) {
-        if(ToolUtil.isEmpty(anomalyParam)){
+        if (ToolUtil.isEmpty(anomalyParam)) {
             anomalyParam = new AnomalyParam();
         }
         return this.anomalyService.findPageBySpec(anomalyParam);
     }
-
-
 
 
 }

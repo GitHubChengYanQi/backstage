@@ -1,18 +1,21 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
@@ -25,6 +28,9 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+
+    private List<AnomalyDetailParam> detailParams;
+
     @ApiModelProperty("")
     private Long anomalyId;
 
@@ -33,6 +39,18 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("")
     private Long formId;
+
+
+
+    /**
+     * 供应商id
+     */
+
+    private Long customerId;
+    /**
+     * 品牌
+     */
+    private Long brandId;
 
     /**
      * 备注
@@ -74,6 +92,7 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
      * 物料
      */
     @ApiModelProperty("物料")
+    @NotNull
     private Long skuId;
 
     /**
@@ -95,7 +114,7 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
     private String reason;
 
     /**
-     * 可以入库 
+     * 可以入库
      */
     @ApiModelProperty("可以入库 ")
     private Integer status;

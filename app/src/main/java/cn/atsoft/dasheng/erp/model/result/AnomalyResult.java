@@ -1,14 +1,20 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
@@ -19,6 +25,12 @@ import java.util.List;
 public class AnomalyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private SkuResult skuResult;
+
+    private BrandResult brandResult;
+
+    private CustomerResult customerResult;
 
 
     @ApiModelProperty("")
@@ -41,6 +53,16 @@ public class AnomalyResult implements Serializable {
      */
     @ApiModelProperty("附件")
     private String enclosure;
+
+    /**
+     * 供应商id
+     */
+
+    private Long customerId;
+    /**
+     * 品牌
+     */
+    private Long brandId;
 
     /**
      * 主题
@@ -91,7 +113,7 @@ public class AnomalyResult implements Serializable {
     private String reason;
 
     /**
-     * 可以入库 
+     * 可以入库
      */
     @ApiModelProperty("可以入库 ")
     private Integer status;
