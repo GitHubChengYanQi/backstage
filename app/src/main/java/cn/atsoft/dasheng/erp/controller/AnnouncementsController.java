@@ -48,8 +48,8 @@ public class AnnouncementsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AnnouncementsParam announcementsParam) {
-        this.announcementsService.add(announcementsParam);
-        return ResponseData.success();
+        Announcements announcements = this.announcementsService.add(announcementsParam);
+        return ResponseData.success(announcements);
     }
 
     /**
@@ -113,8 +113,10 @@ public class AnnouncementsController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) AdressParam adressParam) {
-        List<Map<String, Object>> list = this.announcementsService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<Announcements> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("create_time");
+        List<Map<String, Object>> list = this.announcementsService.listMaps(queryWrapper);
         AnnouncementsSelectWrapper selectWrapper = new AnnouncementsSelectWrapper(list);
         List<Map<String, Object>> result = selectWrapper.wrap();
         return ResponseData.success(result);

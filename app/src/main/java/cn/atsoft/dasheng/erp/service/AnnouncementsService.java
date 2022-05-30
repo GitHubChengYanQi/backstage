@@ -24,7 +24,7 @@ public interface AnnouncementsService extends IService<Announcements> {
      * @author song
      * @Date 2022-05-27
      */
-    void add(AnnouncementsParam param);
+    Announcements add(AnnouncementsParam param);
 
     /**
      * 删除
