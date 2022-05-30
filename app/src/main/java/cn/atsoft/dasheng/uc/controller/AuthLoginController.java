@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.uc.controller;
 
+import cn.atsoft.dasheng.api.uc.entity.OpenUserInfo;
+import cn.atsoft.dasheng.api.uc.service.OpenUserInfoService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
 import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
@@ -44,6 +46,7 @@ import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
 import me.chanjar.weixin.cp.bean.WxCpOauth2UserInfo;
+import me.chanjar.weixin.cp.bean.WxCpUser;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
@@ -87,6 +90,8 @@ public class AuthLoginController extends BaseController {
 
     @Autowired
     private SessionManager sessionManager;
+
+
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
@@ -299,9 +304,9 @@ public class AuthLoginController extends BaseController {
         String token = authService.login(username, password);
         JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
         Long userId = jwtPayLoad.getUserId();//userId
-        try{
+        try {
             UcJwtPayLoad ucJwtPayLoad = getPayLoad();
-            if (ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)){
+            if (ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)) {
                 WxuserInfo wxuserInfo = new WxuserInfo();
                 wxuserInfo.setMemberId(ucJwtPayLoad.getUserId());
                 wxuserInfo.setUserId(userId);
@@ -311,11 +316,13 @@ public class AuthLoginController extends BaseController {
                 wxuserInfoQueryWrapper.eq("source", "wxCp");
                 wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
         return ResponseData.success(token);
     }
+
+
 
     @RequestMapping("/refreshToken")
     @ApiOperation(value = "刷新token")

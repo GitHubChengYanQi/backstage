@@ -253,12 +253,12 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(goods_sku.create_time,'%Y-%m-%d %H:%i:%s') &gt;= str_to_date(#{paramCondition.startTime},'%Y-%m-%d
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;= str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(goods_sku.create_time,'%Y-%m-%d %H:%i:%s') &lt;= str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;= str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         <if test="spuIds != null  and spuIds.size > 0 ">
             and goods_sku.spu_id in
@@ -434,12 +434,12 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(goods_sku.create_time,'%Y-%m-%d %H:%i:%s') &gt;= str_to_date(#{paramCondition.startTime},'%Y-%m-%d
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;= str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(goods_sku.create_time,'%Y-%m-%d %H:%i:%s') &lt;= str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;= str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
       <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
             and goods_sku.sku_id in
