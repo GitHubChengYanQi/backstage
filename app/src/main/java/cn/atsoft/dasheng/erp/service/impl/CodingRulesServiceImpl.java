@@ -209,10 +209,11 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
      */
     @Override
     public String backCoding(Long ids) {
-       return this.backCoding(ids,null);
+        return this.backCoding(ids, null);
     }
+
     @Override
-    public String backCoding(Long ids,Long spuId) {
+    public String backCoding(Long ids, Long spuId) {
         String rules = "";
         CodingRules codingRules = this.getById(ids);
         if (ToolUtil.isEmpty(codingRules.getCodingRules())) {
@@ -284,14 +285,17 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         }
         if (rules.contains("${spuCoding}")) {
             Spu spu = spuService.getById(spuId);
-            rules = rules.replace("${spuCoding}", ToolUtil.isEmpty(spu.getCoding())? "":spu.getCoding());
-            stringBuffer.append(ToolUtil.isEmpty(spu.getCoding())? "":spu.getCoding());
+            rules = rules.replace("${spuCoding}", ToolUtil.isEmpty(spu.getCoding()) ? "" : spu.getCoding());
+            stringBuffer.append(ToolUtil.isEmpty(spu.getCoding()) ? "" : spu.getCoding());
         }
 
         if (rules.contains("${skuClass}")) {
             Spu spu = spuService.getById(spuId);
             String codings = spuClassificationService.getCodings(spu.getSpuClassificationId());
-            rules = rules.replace("${skuClass}",codings);
+            if (ToolUtil.isEmpty(codings)) {
+                codings = "";
+            }
+            rules = rules.replace("${skuClass}", codings);
             stringBuffer.append(codings);
         }
 
@@ -308,8 +312,6 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         }
         return rules;
     }
-
-
 
 
     /**
