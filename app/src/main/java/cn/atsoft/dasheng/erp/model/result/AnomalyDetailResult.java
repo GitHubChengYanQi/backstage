@@ -1,14 +1,19 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import io.swagger.models.auth.In;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
@@ -20,6 +25,11 @@ public class AnomalyDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private List<String> reasonUrls;
+
+    private List<String> opinionUrls;
+
+    private Integer number;
 
     @ApiModelProperty("")
     private Long detailId;

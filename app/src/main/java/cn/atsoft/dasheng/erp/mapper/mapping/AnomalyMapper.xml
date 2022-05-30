@@ -173,7 +173,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.AnomalyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_anomaly where 1 = 1
+        from daoxin_anomaly where 1 = 1 and display = 1
         <if test="paramCondition.anomalyId != null">
             and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>

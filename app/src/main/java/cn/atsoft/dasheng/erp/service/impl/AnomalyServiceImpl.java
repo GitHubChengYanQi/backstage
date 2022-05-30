@@ -8,18 +8,17 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
+import cn.atsoft.dasheng.erp.entity.AnomalyBind;
 import cn.atsoft.dasheng.erp.entity.AnomalyDetail;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
+import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.service.AnomalyDetailService;
-import cn.atsoft.dasheng.erp.service.AnomalyService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.InkindService;
-import cn.atsoft.dasheng.erp.service.SkuService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -51,34 +50,76 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private BrandService brandService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private AnomalyBindService bindService;
 
     @Override
     public void add(AnomalyParam param) {
         Anomaly entity = getEntity(param);
         this.save(entity);
 
-        List<AnomalyDetail> anomalyDetails = new ArrayList<>();
+        /**
+         * 添加异常原因
+         */
         for (AnomalyDetailParam detailParam : param.getDetailParams()) {
+            AnomalyDetail anomalyDetail = new AnomalyDetail();
+            ToolUtil.copyProperties(detailParam, anomalyDetail);
+            detailService.save(anomalyDetail);
+            /**
+             * 当前原因 绑定实物
+             */
+            createInKind(detailParam.getNumber(), entity, anomalyDetail.getDetailId());
+        }
+
+    }
+
+    /**
+     * 异常物料创建实物
+     */
+    private void createInKind(int number, Anomaly anomaly, Long detailId) {
+        List<AnomalyBind> binds = new ArrayList<>();
+        for (int i = 0; i < number; i++) {
             //创建实物
             Inkind inkind = new Inkind();
-            inkind.setSkuId(param.getSkuId());
-            inkind.setBrandId(param.getBrandId());
-            inkind.setCustomerId(param.getCustomerId());
+            inkind.setSkuId(anomaly.getSkuId());
+            inkind.setBrandId(anomaly.getBrandId());
+            inkind.setCustomerId(anomaly.getCustomerId());
             inkind.setNumber(1L);
             inkind.setSource("入库异常");
             inkindService.save(inkind);
-            detailParam.setInkindId(inkind.getInkindId());
 
-            AnomalyDetail anomalyDetail = new AnomalyDetail();
-            ToolUtil.copyProperties(detailParam, anomalyDetail);
-            anomalyDetails.add(anomalyDetail);
+            AnomalyBind anomalyBind = new AnomalyBind();
+            anomalyBind.setAnomalyId(anomaly.getAnomalyId());
+            anomalyBind.setInkindId(inkind.getInkindId());
+            anomalyBind.setDetailId(detailId);
+            binds.add(anomalyBind);
         }
-        detailService.saveBatch(anomalyDetails);
+        bindService.saveBatch(binds);
     }
+
+
+    @Override
+    public AnomalyResult detail(Long id) {
+
+        Anomaly anomaly = this.getById(id);
+        AnomalyResult result = new AnomalyResult();
+        ToolUtil.copyProperties(anomaly, result);
+
+        List<AnomalyDetailResult> details = detailService.getDetails(result.getAnomalyId());
+        result.setDetails(details);
+
+        format(new ArrayList<AnomalyResult>() {{
+            add(result);
+        }});
+        return result;
+    }
+
 
     @Override
     public void delete(AnomalyParam param) {
-        this.removeById(getKey(param));
+        Anomaly entity = getEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
     }
 
     @Override

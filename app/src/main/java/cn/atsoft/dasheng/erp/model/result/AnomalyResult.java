@@ -33,6 +33,8 @@ public class AnomalyResult implements Serializable {
     private CustomerResult customerResult;
 
 
+    private List<AnomalyDetailResult> details;
+
     @ApiModelProperty("")
     private Long anomalyId;
 

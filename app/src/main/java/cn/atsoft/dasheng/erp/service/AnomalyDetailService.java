@@ -58,6 +58,8 @@ public interface AnomalyDetailService extends IService<AnomalyDetail> {
      */
     List<AnomalyDetailResult> findListBySpec(AnomalyDetailParam param);
 
+    List<AnomalyDetailResult> getDetails(Long anomalyId);
+
     /**
      * 查询分页数据，Specification模式
      *

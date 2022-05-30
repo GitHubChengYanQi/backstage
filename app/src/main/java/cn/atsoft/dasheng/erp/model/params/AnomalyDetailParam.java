@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import io.swagger.models.auth.In;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -25,14 +26,14 @@ public class AnomalyDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
     @ApiModelProperty("")
     private Long detailId;
+
 
     @ApiModelProperty("")
     private Long anomalyId;
 
-    private Long number;
+    private Integer number;
     /**
      * 实物id
      */

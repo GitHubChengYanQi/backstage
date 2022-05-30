@@ -26,6 +26,8 @@ public interface AnomalyService extends IService<Anomaly> {
      */
     void add(AnomalyParam param);
 
+    AnomalyResult detail(Long id);
+
     /**
      * 删除
      *
