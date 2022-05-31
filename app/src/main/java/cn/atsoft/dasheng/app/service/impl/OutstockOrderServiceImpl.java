@@ -89,19 +89,13 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
 
-
-        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
-        if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-            Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
-            if (ToolUtil.isNotEmpty(storehouse)) {
-                String replace = "";
-                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
-                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
-                } else {
-                    replace = backCoding.replace("${storehouse}", "");
-                }
-                param.setCoding(replace);
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "2").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置出库库单据自动生成编码规则");
             }
         }
 

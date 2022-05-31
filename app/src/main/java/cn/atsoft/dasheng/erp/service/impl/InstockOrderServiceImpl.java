@@ -274,7 +274,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
 
             //发起审批流程
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", module).one();
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", "createInstock").one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
 //            this.power(activitiProcess);//检查创建权限
                 LoginUser user = LoginContextHolder.getContext().getUser();
