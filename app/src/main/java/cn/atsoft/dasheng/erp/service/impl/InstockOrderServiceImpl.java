@@ -166,6 +166,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 setType(MicroServiceType.Announcements);
                 setObject(param.getNoticeIds());
                 setOperationType(OperationType.ORDER);
+                setMaxTimes(2);
+                setTimes(1);
             }});
 //            String json = announcementsService.toJson(param.getNoticeIds());
 //            param.setNoticeId(json);
