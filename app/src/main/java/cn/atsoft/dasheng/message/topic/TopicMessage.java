@@ -86,7 +86,7 @@ public class TopicMessage {
     @RabbitListener(queues = "${spring.rabbitmq.prefix}" + AUDIT_REAL_QUEUE)
     public void readAudit(Message message, Channel channel) throws IOException {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-        AuditEntity auditEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
+        AuditEntity auditEntity = JSON.parseObject(message.getBody(), AuditEntity.class);
         auditMessageService.auditDo(auditEntity);
         logger.info("审批队列:"+auditEntity.getAuditType()+"/"+auditEntity.getAuditType());
     }

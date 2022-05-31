@@ -38,6 +38,7 @@ public class InstockOrderResult implements Serializable {
     private ThemeAndOrigin themeAndOrigin;
     private DocumentsStatusResult statusResult;
 
+    private String pushPeople;
     private String type;
 
     private Long status;

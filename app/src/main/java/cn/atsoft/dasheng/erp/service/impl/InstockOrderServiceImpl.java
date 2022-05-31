@@ -150,7 +150,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
 
-
         //防止添加重复数据
 //        List<Long> judge = new ArrayList<>();
 //        for (InstockRequest instockRequest : param.getInstockRequest()) {
@@ -173,7 +172,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          * 注意事项
          */
         if (ToolUtil.isNotEmpty(param.getNoticeIds())) {
-
             messageProducer.microService(new MicroServiceEntity(){{
                 setType(MicroServiceType.Announcements);
                 setObject(param.getNoticeIds());
@@ -277,15 +275,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 wxCpSendTemplate.setSourceId(taskId);
                 //添加log
 
-//                messageProducer.auditMessageDo(new AuditEntity() {{
-//                    setMessageType(AuditMessageType.CREATE_TASK);
-//                    setActivitiProcess(activitiProcess);
-//                    setTaskId(taskId);
-//                    setTimes(0);
-//                    setMaxTimes(1);
-//                }});
-                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-                activitiProcessLogService.autoAudit(taskId, 1);
+                messageProducer.auditMessageDo(new AuditEntity() {{
+                    setMessageType(AuditMessageType.CREATE_TASK);
+                    setActivitiProcess(activitiProcess);
+                    setTaskId(taskId);
+                    setTimes(0);
+                    setMaxTimes(1);
+                }});
+//                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+//                activitiProcessLogService.autoAudit(taskId, 1);
             } else {
                 entity.setState(1);
                 this.updateById(entity);
