@@ -258,7 +258,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 内部调用创建质检
              */
-//            this.createQualityTask(param, skus);
+            this.createQualityTask(param, skus);
 
             //发起审批流程
             ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", "createInstock").one();
@@ -277,15 +277,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 wxCpSendTemplate.setSourceId(taskId);
                 //添加log
 
-                messageProducer.auditMessageDo(new AuditEntity() {{
-                    setMessageType(AuditMessageType.CREATE_TASK);
-                    setActivitiProcess(activitiProcess);
-                    setTaskId(taskId);
-                    setTimes(0);
-                    setMaxTimes(1);
-                }});
-//                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-//                activitiProcessLogService.autoAudit(taskId, 1);
+//                messageProducer.auditMessageDo(new AuditEntity() {{
+//                    setMessageType(AuditMessageType.CREATE_TASK);
+//                    setActivitiProcess(activitiProcess);
+//                    setTaskId(taskId);
+//                    setTimes(0);
+//                    setMaxTimes(1);
+//                }});
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+                activitiProcessLogService.autoAudit(taskId, 1);
             } else {
                 entity.setState(1);
                 this.updateById(entity);
