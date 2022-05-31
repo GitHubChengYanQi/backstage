@@ -114,18 +114,14 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         OutstockOrder entity = getEntity(param);
         this.save(entity);
 
-        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
-            List<ApplyDetails> applyDetails = param.getApplyDetails();
+        if (ToolUtil.isNotEmpty(param.getListingParams()) && param.getListingParams().size() > 0) {
+            List<OutstockListingParam> listingParams = param.getListingParams();
 
             List<OutstockListing> outstockListings = new ArrayList<>();
-            for (ApplyDetails applyDetail : applyDetails) {
+            for (OutstockListingParam listingParam : listingParams) {
                 OutstockListing outstockListing = new OutstockListing();
-                if (ToolUtil.isNotEmpty(applyDetail.getBrandId())) {
-                    outstockListing.setBrandId(applyDetail.getBrandId());
-                }
-                outstockListing.setSkuId(applyDetail.getSkuId());
-                outstockListing.setNumber(applyDetail.getNumber());
-                outstockListing.setDelivery(applyDetail.getNumber());
+                ToolUtil.copyProperties(listingParam, outstockListing);
+                outstockListing.setDelivery(listingParam.getNumber());
                 outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
                 outstockListings.add(outstockListing);
             }

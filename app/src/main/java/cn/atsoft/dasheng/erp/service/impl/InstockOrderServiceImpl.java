@@ -132,12 +132,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Autowired
     private AnnouncementsService announcementsService;
+    @Autowired
+    private RemarksService remarksService;
 
 
     @Override
     @Transactional
     public void add(InstockOrderParam param) {
-
 
 
         if (ToolUtil.isEmpty(param.getCoding())) {
@@ -172,7 +173,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          * 注意事项
          */
         if (ToolUtil.isNotEmpty(param.getNoticeIds())) {
-            messageProducer.microService(new MicroServiceEntity(){{
+            messageProducer.microService(new MicroServiceEntity() {{
                 setType(MicroServiceType.Announcements);
                 setObject(param.getNoticeIds());
                 setOperationType(OperationType.ORDER);
@@ -284,6 +285,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }});
 //                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
 //                activitiProcessLogService.autoAudit(taskId, 1);
+                /**
+                 * 指定人推送
+                 */
+                if (ToolUtil.isNotEmpty(param.getUserIds())) {
+                    remarksService.pushPeople(param.getUserIds(), taskId);
+                }
             } else {
                 entity.setState(1);
                 this.updateById(entity);

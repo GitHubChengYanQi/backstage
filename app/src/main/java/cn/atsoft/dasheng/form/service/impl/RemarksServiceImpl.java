@@ -195,15 +195,27 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setDescription("你有一条被@的消息");
-            wxCpTemplate.setTitle("新消息");
-            wxCpTemplate.setUserIds(userIds);
-            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?id=" + auditParam.getTaskId());
-            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-            wxCpSendTemplate.sendTemplate();
+            pushPeople(userIds, auditParam.getTaskId());
         }
     }
+
+    /**
+     * 指定人推送
+     *
+     * @param userIds
+     * @param taskId
+     */
+    @Override
+    public void pushPeople(List<Long> userIds, Long taskId) {
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setDescription("你有一条被@的消息");
+        wxCpTemplate.setTitle("新消息");
+        wxCpTemplate.setUserIds(userIds);
+        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?id=" + taskId);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
+
 
     @Override
     public List<RemarksResult> getComments(Long taskId) {
