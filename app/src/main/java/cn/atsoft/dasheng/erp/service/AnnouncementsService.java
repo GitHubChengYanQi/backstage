@@ -18,6 +18,8 @@ import java.util.List;
  */
 public interface AnnouncementsService extends IService<Announcements> {
 
+    String toJson(List<Long> ids);
+
     /**
      * 新增
      *

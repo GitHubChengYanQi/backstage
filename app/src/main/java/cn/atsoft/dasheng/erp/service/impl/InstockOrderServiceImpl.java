@@ -130,6 +130,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private DocumentsActionService documentsActionService;
 
+    @Autowired
+    private AnnouncementsService announcementsService;
+
 
     @Override
     @Transactional
@@ -153,12 +156,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             String mediaJson = JSON.toJSONString(param.getMediaIds());
             param.setEnclosure(mediaJson);
         }
+
         /**
          * 注意事项
          */
         if (ToolUtil.isNotEmpty(param.getNoticeIds())) {
-            String noticeJson = JSON.toJSONString(param.getNoticeIds());
-            param.setNoticeId(noticeJson);
+            String json = announcementsService.toJson(param.getNoticeIds());
+            param.setNoticeId(json);
         }
 
         InstockOrder entity = getEntity(param);
