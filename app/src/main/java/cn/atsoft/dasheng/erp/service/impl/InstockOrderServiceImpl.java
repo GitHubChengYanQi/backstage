@@ -181,8 +181,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 setMaxTimes(2);
                 setTimes(1);
             }});
-//            String json = announcementsService.toJson(param.getNoticeIds());
-//            param.setNoticeId(json);
+
         }
 
         InstockOrder entity = getEntity(param);
@@ -259,24 +258,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 内部调用创建质检
              */
-            this.createQualityTask(param, skus);
-
-            String module = "";
-            if (ToolUtil.isNotEmpty(param.getType())) {
-                switch (param.getType()) {
-                    case "采购入库":
-                        module = "purchaseInstock";
-                        break;
-                    case "生产入库":
-                        module = "productionInstock";
-                        break;
-                }
-            }
+//            this.createQualityTask(param, skus);
 
             //发起审批流程
             ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", "createInstock").one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
-//            this.power(activitiProcess);//检查创建权限
                 LoginUser user = LoginContextHolder.getContext().getUser();
                 ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
                 activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库 (" + param.getCoding() + ")");
@@ -295,6 +281,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     setMessageType(AuditMessageType.CREATE_TASK);
                     setActivitiProcess(activitiProcess);
                     setTaskId(taskId);
+                    setTimes(0);
+                    setMaxTimes(1);
                 }});
 //                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
 //                activitiProcessLogService.autoAudit(taskId, 1);
