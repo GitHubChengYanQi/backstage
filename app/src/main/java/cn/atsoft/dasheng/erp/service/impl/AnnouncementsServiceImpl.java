@@ -58,7 +58,10 @@ public class AnnouncementsServiceImpl extends ServiceImpl<AnnouncementsMapper, A
 
     @Override
     public void delete(AnnouncementsParam param) {
-        this.removeById(getKey(param));
+        Announcements entity = getEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
+
     }
 
     @Override

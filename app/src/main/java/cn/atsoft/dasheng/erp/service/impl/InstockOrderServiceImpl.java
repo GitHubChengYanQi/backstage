@@ -161,8 +161,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          * 注意事项
          */
         if (ToolUtil.isNotEmpty(param.getNoticeIds())) {
-            String json = announcementsService.toJson(param.getNoticeIds());
-            param.setNoticeId(json);
+
+            messageProducer.microService(new MicroServiceEntity(){{
+                setType(MicroServiceType.Announcements);
+                setObject(param.getNoticeIds());
+                setOperationType(OperationType.ORDER);
+            }});
+//            String json = announcementsService.toJson(param.getNoticeIds());
+//            param.setNoticeId(json);
         }
 
         InstockOrder entity = getEntity(param);
