@@ -1,21 +1,27 @@
 package cn.atsoft.dasheng.uc.controller;
 
 
+import cn.atsoft.dasheng.api.uc.entity.OpenUserInfo;
+import cn.atsoft.dasheng.api.uc.service.OpenUserInfoService;
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.model.params.UcMemberParam;
 import cn.atsoft.dasheng.uc.model.result.UcMemberResult;
 import cn.atsoft.dasheng.uc.service.UcMemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.bean.WxCpUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * member
@@ -31,6 +37,14 @@ public class UcMemberController extends BaseController {
 
     @Autowired
     private UcMemberService ucMemberService;
+    @Autowired
+    private WxCpService wxCpService;
+    @Autowired
+    private OpenUserInfoService openUserInfoService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
 
     /**
      * 新增接口
@@ -104,6 +118,32 @@ public class UcMemberController extends BaseController {
 
     }
 
+
+    @RequestMapping(value = "/getUserByCp", method = RequestMethod.GET)
+    @ApiOperation(value = "通过CpUserId 获取系统用户")
+    public ResponseData getUserByCp(@RequestParam String CpUserId) {
+        User user = null;
+        try {
+            WxCpUser wxCpUser = wxCpService.getWxCpClient().getUserService().getById(CpUserId);
+            if (ToolUtil.isNotEmpty(wxCpUser) && ToolUtil.isNotEmpty(wxCpUser.getUserId())) {
+
+                OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).eq("source", "wxCp").one();
+                if (ToolUtil.isEmpty(openUserInfo)) {
+                    openUserInfo = new OpenUserInfo();
+                }
+                Long memberId = openUserInfo.getMemberId();
+
+                WxuserInfo wxuserInfo = ToolUtil.isEmpty(memberId) ? new WxuserInfo() : wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").one();
+                if (ToolUtil.isEmpty(wxuserInfo)) {
+                    wxuserInfo = new WxuserInfo();
+                }
+                user = ToolUtil.isEmpty(wxuserInfo.getUserId()) ? new User() : userService.getById(wxuserInfo.getUserId());
+            }
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
+        return ResponseData.success(user);
+    }
 
 //    /**
 //     * 批量删除

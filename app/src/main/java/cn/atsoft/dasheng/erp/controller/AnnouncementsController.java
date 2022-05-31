@@ -12,6 +12,10 @@ import cn.atsoft.dasheng.erp.service.AnnouncementsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.AnnouncementsSelectWrapper;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -39,6 +43,26 @@ public class AnnouncementsController extends BaseController {
     @Autowired
     private AnnouncementsService announcementsService;
 
+    @Autowired
+    private MessageProducer messageProducer;
+
+
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData test(@RequestBody AnnouncementsParam announcementsParam) {
+        if (ToolUtil.isNotEmpty(announcementsParam.getIds())) {
+            messageProducer.microService(new MicroServiceEntity() {{
+                setType(MicroServiceType.Announcements);
+                setObject(announcementsParam.getIds());
+                setOperationType(OperationType.ORDER);
+                setTimes(1);
+                setMaxTimes(3);
+            }});
+        }
+        return ResponseData.success();
+    }
+
+
     /**
      * 新增接口
      *
@@ -48,8 +72,8 @@ public class AnnouncementsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AnnouncementsParam announcementsParam) {
-        this.announcementsService.add(announcementsParam);
-        return ResponseData.success();
+        Announcements announcements = this.announcementsService.add(announcementsParam);
+        return ResponseData.success(announcements);
     }
 
     /**
@@ -113,8 +137,10 @@ public class AnnouncementsController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) AdressParam adressParam) {
-        List<Map<String, Object>> list = this.announcementsService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<Announcements> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("sort");
+        List<Map<String, Object>> list = this.announcementsService.listMaps(queryWrapper);
         AnnouncementsSelectWrapper selectWrapper = new AnnouncementsSelectWrapper(list);
         List<Map<String, Object>> result = selectWrapper.wrap();
         return ResponseData.success(result);

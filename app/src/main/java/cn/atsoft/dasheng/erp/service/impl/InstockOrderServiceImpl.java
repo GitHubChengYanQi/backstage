@@ -130,10 +130,25 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private DocumentsActionService documentsActionService;
 
+    @Autowired
+    private AnnouncementsService announcementsService;
+    @Autowired
+    private RemarksService remarksService;
+
 
     @Override
     @Transactional
     public void add(InstockOrderParam param) {
+
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "1").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+            }
+        }
 
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "1").eq("state", 1).one();
@@ -162,17 +177,24 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             String mediaJson = JSON.toJSONString(param.getMediaIds());
             param.setEnclosure(mediaJson);
         }
+
         /**
          * 注意事项
          */
         if (ToolUtil.isNotEmpty(param.getNoticeIds())) {
-            String noticeJson = JSON.toJSONString(param.getNoticeIds());
-            param.setNoticeId(noticeJson);
+            messageProducer.microService(new MicroServiceEntity() {{
+                setType(MicroServiceType.Announcements);
+                setObject(param.getNoticeIds());
+                setOperationType(OperationType.ORDER);
+                setMaxTimes(2);
+                setTimes(1);
+            }});
+
         }
 
         InstockOrder entity = getEntity(param);
-
         this.save(entity);
+
         List<Long> skuIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
             for (InstockRequest instockRequest : param.getInstockRequest()) {
@@ -246,22 +268,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              */
             this.createQualityTask(param, skus);
 
-            String module = "";
-            if (ToolUtil.isNotEmpty(param.getType())) {
-                switch (param.getType()) {
-                    case "采购入库":
-                        module = "purchaseInstock";
-                        break;
-                    case "生产入库":
-                        module = "productionInstock";
-                        break;
-                }
-            }
-
             //发起审批流程
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", module).one();
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", "createInstock").one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
-//            this.power(activitiProcess);//检查创建权限
                 LoginUser user = LoginContextHolder.getContext().getUser();
                 ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
                 activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库 (" + param.getCoding() + ")");
@@ -280,9 +289,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     setMessageType(AuditMessageType.CREATE_TASK);
                     setActivitiProcess(activitiProcess);
                     setTaskId(taskId);
+                    setTimes(0);
+                    setMaxTimes(1);
                 }});
 //                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
 //                activitiProcessLogService.autoAudit(taskId, 1);
+                /**
+                 * 指定人推送
+                 */
+                if (ToolUtil.isNotEmpty(param.getUserIds())) {
+                    remarksService.pushPeople(param.getUserIds(), taskId);
+                }
             } else {
                 entity.setState(1);
                 this.updateById(entity);

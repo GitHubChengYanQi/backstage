@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
@@ -8,6 +9,7 @@ import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.app.pojo.Listing;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
@@ -23,8 +25,14 @@ import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -85,41 +93,35 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private MobileService mobileService;
     @Autowired
     private MessageProducer messageProducer;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
 
-
-        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
-        if (ToolUtil.isNotEmpty(codingRules)) {
-            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-            Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
-            if (ToolUtil.isNotEmpty(storehouse)) {
-                String replace = "";
-                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
-                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
-                } else {
-                    replace = backCoding.replace("${storehouse}", "");
-                }
-                param.setCoding(replace);
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "2").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置出库库单据自动生成编码规则");
             }
         }
 
         OutstockOrder entity = getEntity(param);
         this.save(entity);
 
-        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
-            List<ApplyDetails> applyDetails = param.getApplyDetails();
+        if (ToolUtil.isNotEmpty(param.getListingParams()) && param.getListingParams().size() > 0) {
+            List<OutstockListingParam> listingParams = param.getListingParams();
 
             List<OutstockListing> outstockListings = new ArrayList<>();
-            for (ApplyDetails applyDetail : applyDetails) {
+            for (OutstockListingParam listingParam : listingParams) {
                 OutstockListing outstockListing = new OutstockListing();
-                if (ToolUtil.isNotEmpty(applyDetail.getBrandId())) {
-                    outstockListing.setBrandId(applyDetail.getBrandId());
-                }
-                outstockListing.setSkuId(applyDetail.getSkuId());
-                outstockListing.setNumber(applyDetail.getNumber());
-                outstockListing.setDelivery(applyDetail.getNumber());
+                ToolUtil.copyProperties(listingParam, outstockListing);
+                outstockListing.setDelivery(listingParam.getNumber());
                 outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
                 outstockListings.add(outstockListing);
             }
@@ -127,26 +129,35 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             outstockListingService.saveBatch(outstockListings);
         }
 
-        BackCodeRequest backCodeRequest = new BackCodeRequest();
-        backCodeRequest.setId(entity.getOutstockOrderId());
-        backCodeRequest.setSource("outstock");
-        Long aLong = orCodeService.backCode(backCodeRequest);
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.OUTSTOCK.name()).eq("status", 99).eq("module", "createOutstock").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的出库 (" + param.getCoding() + ")");
+            activitiProcessTaskParam.setQTaskId(entity.getOutstockOrderId());
+            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setFormId(entity.getOutstockOrderId());
+            activitiProcessTaskParam.setType(ReceiptsEnum.OUTSTOCK.name());
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("processTask");
+            wxCpSendTemplate.setSourceId(taskId);
+            //添加log
 
-        String url = mobileService.getMobileConfig().getUrl() + "/#/Work/OrCode?id=" + aLong;
-        User createUser = userService.getById(entity.getCreateUser());
-        //新微信推送
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("新的出库提醒");
-        wxCpTemplate.setDescription(createUser.getName() + "创建了新的出库库任务" + entity.getCoding());
-        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-            add(entity.getUserId());
-        }});
-        wxCpSendTemplate.setSource("outstockOrder");
-        wxCpSendTemplate.setSourceId(aLong);
-        wxCpTemplate.setType(0);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+            messageProducer.auditMessageDo(new AuditEntity() {{
+                setMessageType(AuditMessageType.CREATE_TASK);
+                setActivitiProcess(activitiProcess);
+                setTaskId(taskId);
+                setTimes(0);
+                setMaxTimes(1);
+            }});
+//                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+//                activitiProcessLogService.autoAudit(taskId, 1);
+        } else {
+            entity.setState(1);
+            this.updateById(entity);
+        }
         return entity;
     }
 
@@ -178,7 +189,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
      * @param outstockListingParams
      */
     @Override
-    public void addOutStockRecord(List<OutstockListingParam> outstockListingParams,String source) {
+    public void addOutStockRecord(List<OutstockListingParam> outstockListingParams, String source) {
 
         OutstockOrderParam param = new OutstockOrderParam();
         param.setSource(source);
@@ -337,7 +348,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //        stockDetailsService.remove(new QueryWrapper<StockDetails>() {{
 //            eq("stage", 2);
 //        }});
-        addOutStockRecord(listings,"自由出库记录");  //添加记录
+        addOutStockRecord(listings, "自由出库记录");  //添加记录
     }
 
     /**
