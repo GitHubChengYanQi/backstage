@@ -77,6 +77,19 @@ public class SupplyController extends BaseController {
     }
 
     /**
+     * 通过物料查询供应商
+     *
+     * @param supplyParam
+     * @return
+     */
+    @RequestMapping(value = "/getCustomerBySku", method = RequestMethod.POST)
+    public ResponseData getCustomerBySku(@RequestBody SupplyParam supplyParam) {
+        List<CustomerResult> supplyBySku = this.supplyService.getCustomerBySku(supplyParam.getSkuId());
+        return ResponseData.success(supplyBySku);
+    }
+
+
+    /**
      * 批量增加
      *
      * @author song

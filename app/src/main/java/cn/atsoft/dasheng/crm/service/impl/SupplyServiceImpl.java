@@ -42,10 +42,7 @@ import sun.util.resources.cldr.nmg.LocaleNames_nmg;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -275,6 +272,23 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         return customerResults;
     }
 
+    /**
+     * 查询供应商
+      * @param skuId
+     * @return
+     */
+    @Override
+    public List<CustomerResult> getCustomerBySku(Long skuId) {
+        if (ToolUtil.isEmpty(skuId)) {
+            throw new ServiceException(500, "请确定物料");
+        }
+        List<Supply> supplyList = this.query().eq("sku_id", skuId).eq("display", 1).list();
+        Set<Long> customerIds = new HashSet<>();
+        for (Supply supply : supplyList) {
+            customerIds.add(supply.getCustomerId());
+        }
+        return customerService.getResults(new ArrayList<>(customerIds));
+    }
 
     @Override
     public List<CustomerResult> getSupplyBySku(List<Long> skuIds, Long supplierLevel) {

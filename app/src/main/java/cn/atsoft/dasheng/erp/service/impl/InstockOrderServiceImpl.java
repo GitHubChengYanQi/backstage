@@ -57,6 +57,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -129,10 +130,25 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private DocumentsActionService documentsActionService;
 
+    @Autowired
+    private AnnouncementsService announcementsService;
+
 
     @Override
     @Transactional
     public void add(InstockOrderParam param) {
+
+
+
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "1").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+            }
+        }
 
 
         //防止添加重复数据
@@ -145,9 +161,33 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //        if (param.getInstockRequest().size() > count) {
 //            throw new ServiceException(500, "请勿重复添加");
 //        }
-        InstockOrder entity = getEntity(param);
+        /**
+         * 附件
+         */
+        if (ToolUtil.isNotEmpty(param.getMediaIds())) {
+            String mediaJson = JSON.toJSONString(param.getMediaIds());
+            param.setEnclosure(mediaJson);
+        }
 
+        /**
+         * 注意事项
+         */
+        if (ToolUtil.isNotEmpty(param.getNoticeIds())) {
+
+            messageProducer.microService(new MicroServiceEntity(){{
+                setType(MicroServiceType.Announcements);
+                setObject(param.getNoticeIds());
+                setOperationType(OperationType.ORDER);
+                setMaxTimes(2);
+                setTimes(1);
+            }});
+//            String json = announcementsService.toJson(param.getNoticeIds());
+//            param.setNoticeId(json);
+        }
+
+        InstockOrder entity = getEntity(param);
         this.save(entity);
+
         List<Long> skuIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
             for (InstockRequest instockRequest : param.getInstockRequest()) {
@@ -166,6 +206,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                             instockList.setInstockOrderId(entity.getInstockOrderId());
                             instockList.setInstockNumber(instockRequest.getNumber());
                             instockList.setBrandId(instockRequest.getBrandId());
+                            if (ToolUtil.isEmpty(instockRequest.getCustomerId())) {
+                                throw new ServiceException(500, "请添加供应商");
+                            }
+                            instockList.setCustomerId(instockRequest.getCustomerId());
                             instockList.setLotNumber(instockRequest.getLotNumber());
                             instockList.setSerialNumber(instockRequest.getSerialNumber());
                             instockList.setReceivedDate(instockRequest.getReceivedDate());
@@ -230,7 +274,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
 
             //发起审批流程
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", module).one();
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", "createInstock").one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
 //            this.power(activitiProcess);//检查创建权限
                 LoginUser user = LoginContextHolder.getContext().getUser();
@@ -247,7 +291,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 wxCpSendTemplate.setSourceId(taskId);
                 //添加log
 
-                messageProducer.auditMessageDo(new AuditEntity(){{
+                messageProducer.auditMessageDo(new AuditEntity() {{
                     setMessageType(AuditMessageType.CREATE_TASK);
                     setActivitiProcess(activitiProcess);
                     setTaskId(taskId);
@@ -327,7 +371,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (status != 98) {
             throw new ServiceException(500, "您传入的状态不正确");
         } else {
-            messageProducer.auditMessageDo(new AuditEntity(){{
+            messageProducer.auditMessageDo(new AuditEntity() {{
                 setAuditType(CHECK_ACTION);
                 setMessageType(AuditMessageType.AUDIT);
                 setFormId(id);
@@ -644,7 +688,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 消息队列完成动作
              */
-            messageProducer.auditMessageDo(new AuditEntity(){{
+            messageProducer.auditMessageDo(new AuditEntity() {{
                 setAuditType(CHECK_ACTION);
                 setMessageType(AuditMessageType.AUDIT);
                 setFormId(param.getInstockOrderId());
@@ -876,7 +920,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         InstockOrder order = this.getById(processTask.getFormId());
         if (order.getState() != 50) {
             DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
-            messageProducer.auditMessageDo(new AuditEntity(){{
+            messageProducer.auditMessageDo(new AuditEntity() {{
                 setAuditType(CHECK_ACTION);
                 setMessageType(AuditMessageType.AUDIT);
                 setFormId(order.getInstockOrderId());

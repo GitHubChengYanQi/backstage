@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.AnnouncementsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.Announcements">
+        <id column="notice_id" property="noticeId"/>
+        <result column="content" property="content"/>
+        <result column="sort" property="sort"/>
+        <result column="deptId" property="deptId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        notice_id
+        AS "noticeId", content AS "content", sort AS "sort", deptId AS "deptId", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.AnnouncementsResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.AnnouncementsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_announcements where 1 = 1
+        <if test="paramCondition.noticeId != null">
+            and notice_id like CONCAT('%',#{paramCondition.noticeId},'%')
+        </if>
+        <if test="paramCondition.content != null and paramCondition.content != ''">
+            and content like CONCAT('%',#{paramCondition.content},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.AnnouncementsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_announcements where 1 = 1
+        <if test="paramCondition.noticeId != null">
+            and notice_id like CONCAT('%',#{paramCondition.noticeId},'%')
+        </if>
+        <if test="paramCondition.content != null and paramCondition.content != ''">
+            and content like CONCAT('%',#{paramCondition.content},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.AnnouncementsResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.AnnouncementsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_announcements where 1 = 1 and display = 1
+        <if test="paramCondition.noticeId != null">
+            and notice_id like CONCAT('%',#{paramCondition.noticeId},'%')
+        </if>
+        <if test="paramCondition.content != null and paramCondition.content != ''">
+            and content like CONCAT('%',#{paramCondition.content},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        order by sort
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.AnnouncementsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_announcements where 1 = 1
+        <if test="paramCondition.noticeId != null">
+            and notice_id like CONCAT('%',#{paramCondition.noticeId},'%')
+        </if>
+        <if test="paramCondition.content != null and paramCondition.content != ''">
+            and content like CONCAT('%',#{paramCondition.content},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+</mapper>

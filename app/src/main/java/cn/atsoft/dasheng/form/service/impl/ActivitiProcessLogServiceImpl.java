@@ -446,16 +446,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
                 if (ToolUtil.isNotEmpty(instockOrder.getOrigin())) {
                     origin = getOrigin.getOrigin(JSON.parseObject(instockOrder.getOrigin(), ThemeAndOrigin.class));
-                    if (ToolUtil.isNotEmpty(origin.getParent())){
+                    if (ToolUtil.isNotEmpty(origin.getParent())) {
                         for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
                             if (themeAndOrigin.getSource().equals("processTask")) {
                                 //如果来源存的是流程任务的id
                                 ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
 
                                 checkAction(parentProcessTask.getProcessTaskId(), InstockErrorActionEnum.done.getStatus());
-                            }else{
+                            } else {
                                 //如果来源存的是主单据的id
-                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCKERROR.name(),InstockErrorActionEnum.done.getStatus());
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCKERROR.name(), InstockErrorActionEnum.done.getStatus());
                             }
                         }
                     }
@@ -568,7 +568,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
         }
     }
-    public void checkAction(Long id,Long actionId) {
+
+    public void checkAction(Long id, Long actionId) {
 
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(id);
         List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
@@ -1344,7 +1345,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             taskIds.add(datum.getTaskId());
             userIds.add(datum.getCreateUser());
         }
-        List<ActivitiProcessTask> tasks = activitiProcessTaskService.listByIds(taskIds);
+        List<ActivitiProcessTask> tasks = taskIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.listByIds(taskIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
 

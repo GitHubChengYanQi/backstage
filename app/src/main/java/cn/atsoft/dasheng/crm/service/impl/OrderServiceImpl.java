@@ -600,7 +600,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
-        List<OrderDetail> orderDetails = detailService.query().in("order_id", orderIds).eq("display", 1).list();
+        List<OrderDetail> orderDetails = orderIds.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", orderIds).eq("display", 1).list();
         List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
         detailService.format(detailResults);
 

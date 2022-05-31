@@ -33,6 +33,12 @@ public class AnomalyDetailParam implements Serializable, BaseValidatingParam {
     private Long realNumber;
 
 
+    /**
+     * 实物id
+     */
+    private Long inkindId;
+
+
     private Long number;
 
     private Long instockListId;

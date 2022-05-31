@@ -33,7 +33,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/anomaly")
 @Api(tags = "异常单据")
-public class AnomalyController extends BaseController {
+public class
+AnomalyController extends BaseController {
 
     @Autowired
     private AnomalyService anomalyService;

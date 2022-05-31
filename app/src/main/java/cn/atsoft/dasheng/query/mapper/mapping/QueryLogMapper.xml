@@ -97,7 +97,7 @@
             and record like CONCAT('%',#{paramCondition.record},'%')
         </if>
         <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            and create_user =#{paramCondition.createUser}
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')

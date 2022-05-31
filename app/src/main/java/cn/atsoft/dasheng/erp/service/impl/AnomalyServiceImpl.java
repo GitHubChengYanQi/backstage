@@ -100,23 +100,19 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (ToolUtil.isEmpty(order)) {
                     throw new ServiceException(500, "入库单不存在");
                 }
-//                if (order.getState() != 1) {
-//                    throw new ServiceException(500, "入库单状态不符");
-//                }
-//                order.setState(49);
-//                instockOrderService.updateById(order);
                 param.setType(param.getAnomalyType().toString());
-
                 break;
         }
         Anomaly entity = getEntity(param);
         this.save(entity);
-
-         if (ToolUtil.isNotEmpty(param.getSource()) && ToolUtil.isNotEmpty(param.getSourceId())) {
-                String origin = getOrigin.newThemeAndOrigin("anomaly", entity.getAnomalyId(), entity.getSource(), entity.getSourceId());
-                entity.setOrigin(origin);
-                this.updateById(entity);
-         }
+        /**
+         * 来源
+         */
+        if (ToolUtil.isNotEmpty(param.getSource()) && ToolUtil.isNotEmpty(param.getSourceId())) {
+            String origin = getOrigin.newThemeAndOrigin("anomaly", entity.getAnomalyId(), entity.getSource(), entity.getSourceId());
+            entity.setOrigin(origin);
+            this.updateById(entity);
+        }
 
         List<AnomalyDetail> details = new ArrayList<>();
         for (AnomalyDetailParam detailParam : param.getDetailParams()) {
@@ -161,7 +157,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
             instockOrderService.updateById(instockOrder);
             DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
-            messageProducer.auditMessageDo(new AuditEntity(){{
+            messageProducer.auditMessageDo(new AuditEntity() {{
                 setAuditType(CHECK_ACTION);
                 setFormId(instockOrder.getInstockOrderId());
                 setForm(ReceiptsEnum.INSTOCK.name());

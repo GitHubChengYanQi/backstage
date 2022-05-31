@@ -64,6 +64,8 @@ public class MenuNode implements Comparable, Serializable {
      */
     private Integer num;
 
+    private Integer type;
+
     /**
      * 节点的url
      */
@@ -134,6 +136,21 @@ public class MenuNode implements Comparable, Serializable {
 
         //剔除非菜单
         nodes.removeIf(node -> !node.getIsmenu().equals(YesOrNotEnum.Y.name()));
+
+        //对菜单排序，返回列表按菜单等级，序号的排序方式排列
+        Collections.sort(nodes);
+        return mergeList(nodes, nodes.get(nodes.size() - 1).getLevels(), null);
+    }
+    /**
+     * 构建页面菜单列表
+     */
+    public static List<MenuNode> buildMobileTitle(List<MenuNode> nodes) {
+        if (nodes.size() <= 0) {
+            return nodes;
+        }
+
+        //剔除非菜单
+//        nodes.removeIf(node -> !node.getIsmenu().equals(YesOrNotEnum.Y.name()));
 
         //对菜单排序，返回列表按菜单等级，序号的排序方式排列
         Collections.sort(nodes);

@@ -7,6 +7,7 @@
         <id column="menu_id" property="menuId"/>
         <result column="code" property="code"/>
         <result column="pcode" property="pcode"/>
+        <result column="type" property="type"/>
         <result column="pcodes" property="pcodes"/>
         <result column="name" property="name"/>
         <result column="icon" property="icon"/>
@@ -26,7 +27,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        menu_id AS "menuId", code AS "code", pcode AS "pcode", pcodes AS "pcodes", name AS "name", icon AS "icon", url AS "url", sort AS "sort", levels AS "levels", menu_flag AS "menuFlag", description AS "description", status AS "status", new_page_flag AS "newPageFlag", open_flag AS "openFlag", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
+        menu_id AS "menuId",type AS "type", code AS "code", pcode AS "pcode", pcodes AS "pcodes", name AS "name", icon AS "icon", url AS "url", sort AS "sort", levels AS "levels", menu_flag AS "menuFlag", description AS "description", status AS "status", new_page_flag AS "newPageFlag", open_flag AS "openFlag", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
 
     <select id="selectMenus" resultType="map">

@@ -224,6 +224,9 @@
         <if test="paramCondition.standard != null">
             and goods_sku.standard like CONCAT('%',#{paramCondition.standard},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and goods_sku.create_user = #{paramCondition.createUser}
+        </if>
         <if test="paramCondition.type != null">
             and goods_sku.type = #{paramCondition.type}
         </if>
@@ -240,6 +243,23 @@
             and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
         </if>
 
+        <!--查询时间内-->
+        <if test="paramCondition.timeWithin != null and paramCondition.timeWithin!= '' ">
+            and DATE_SUB(CURDATE(), INTERVAL #{paramCondition.timeWithin} DAY) <![CDATA[<=date(goods_sku.create_time)]]>
+        </if>
+        <!--本月内-->
+        <if test="paramCondition.thisMonth != null">
+            and DATE_FORMAT(goods_sku.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;= str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;= str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
         <if test="spuIds != null  and spuIds.size > 0 ">
             and goods_sku.spu_id in
             <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
@@ -366,7 +386,9 @@
         <if test="paramCondition.storehouseId">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
-
+        <if test="paramCondition.createUser != null">
+            and goods_sku.create_user = #{paramCondition.createUser}
+        </if>
         <if test="paramCondition.skuId != null">
             AND goods_sku.sku_id = #{paramCondition.skuId}
         </if>
@@ -402,7 +424,24 @@
             </foreach>
 
         </if>
-        <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
+        <!--查询时间内-->
+        <if test="paramCondition.timeWithin != null and paramCondition.timeWithin!= '' ">
+            and DATE_SUB(CURDATE(), INTERVAL #{paramCondition.timeWithin} DAY) <![CDATA[<=date(goods_sku.create_time)]]>
+        </if>
+        <!--本月内-->
+        <if test="paramCondition.thisMonth != null">
+            and DATE_FORMAT(goods_sku.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;= str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;= str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+      <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
             and goods_sku.sku_id in
             <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
                 #{state}
