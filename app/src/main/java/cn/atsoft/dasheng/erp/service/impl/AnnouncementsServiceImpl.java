@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.model.params.AnnouncementsParam;
 import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
 import cn.atsoft.dasheng.erp.service.AnnouncementsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,6 +28,26 @@ import java.util.List;
  */
 @Service
 public class AnnouncementsServiceImpl extends ServiceImpl<AnnouncementsMapper, Announcements> implements AnnouncementsService {
+    /**
+     * 更新使用频率
+     *
+     * @param ids
+     * @return
+     */
+
+    @Override
+    public String toJson(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return null;
+        }
+        List<Announcements> announcements = this.listByIds(ids);
+        for (Announcements announcement : announcements) {
+            announcement.setSort(announcement.getSort() + 1);
+        }
+        this.updateBatchById(announcements);
+        return JSON.toJSONString(ids);
+    }
+
 
     @Override
     public Announcements add(AnnouncementsParam param) {
