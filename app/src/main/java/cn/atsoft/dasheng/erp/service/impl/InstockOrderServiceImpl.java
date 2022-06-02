@@ -6,11 +6,13 @@ import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
+import cn.atsoft.dasheng.erp.controller.AnnouncementsController;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
@@ -135,6 +137,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private RemarksService remarksService;
 
+    @Autowired
+    private MediaService mediaService;
+
 
     @Override
     @Transactional
@@ -173,6 +178,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          * 注意事项
          */
         if (ToolUtil.isNotEmpty(param.getNoticeIds())) {
+            String json = JSON.toJSONString(param.getNoticeIds());
+            param.setNoticeId(json);
             messageProducer.microService(new MicroServiceEntity() {{
                 setType(MicroServiceType.Announcements);
                 setObject(param.getNoticeIds());
@@ -260,11 +267,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             this.createQualityTask(param, skus);
 
             //发起审批流程
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", "createInstock").one();
+            if (ToolUtil.isEmpty(param.getModule())) {
+                param.setModule("");
+            }
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
                 LoginUser user = LoginContextHolder.getContext().getUser();
                 ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-                activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库 (" + param.getCoding() + ")");
+                activitiProcessTaskParam.setTaskName(user.getName() + "的入库申请");
                 activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
                 activitiProcessTaskParam.setUserId(param.getCreateUser());
                 activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
@@ -931,6 +941,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (order.getState() != -1) {
             order.setState(1);
             this.updateById(order);
+            processTask.setStatus(99);
+            activitiProcessTaskService.updateById(processTask);
         }
     }
 
@@ -997,13 +1009,53 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         return entity;
     }
 
-    private void format(List<InstockOrderResult> data) {
+    @Override
+    public void setList(List<InstockOrderResult> data) {
+
+        List<Long> orderIds = new ArrayList<>();
+        for (InstockOrderResult datum : data) {
+            orderIds.add(datum.getInstockOrderId());
+        }
+        List<InstockList> instockListList = orderIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", orderIds).list();
+        List<InstockListResult> instockListResults = BeanUtil.copyToList(instockListList, InstockListResult.class, new CopyOptions());
+        format(data);
+
+
+        instockListService.format(instockListResults);
+
+        for (InstockOrderResult datum : data) {
+            List<InstockListResult> results = new ArrayList<>();
+            for (InstockListResult instockListResult : instockListResults) {
+                if (instockListResult.getInstockOrderId().equals(datum.getInstockOrderId())) {
+                    results.add(instockListResult);
+                }
+            }
+
+            datum.setInstockListResults(results);
+
+        }
+    }
+
+    @Override
+    public void format(List<InstockOrderResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
         List<Long> statusIds = new ArrayList<>();
+        List<Long> noticeIds = new ArrayList<>();
+        List<Long> mediaIds = new ArrayList<>();
 
         for (InstockOrderResult datum : data) {
+            if (ToolUtil.isNotEmpty(datum.getNoticeId())) {
+                List<Long> noticeId = JSON.parseArray(datum.getNoticeId(), Long.class);
+                noticeIds.addAll(noticeId);
+                datum.setNoticeIds(noticeId);
+            }
+            if (ToolUtil.isNotEmpty(datum.getEnclosure())) {
+                List<Long> mediaId = JSON.parseArray(datum.getEnclosure(), Long.class);
+                datum.setMediaIds(mediaId);
+                mediaIds.addAll(mediaId);
+            }
             userIds.add(datum.getUserId());
             if (ToolUtil.isNotEmpty(datum.getStockUserId())) {
                 userIds.add(datum.getStockUserId());
@@ -1015,6 +1067,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
 
+        List<Announcements> announcements = noticeIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(noticeIds);
         List<DocumentsStatusResult> documentsStatusResults = documentStatusService.resultsByIds(statusIds);
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
@@ -1041,6 +1094,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
             }
 
+
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(datum.getUserId())) {
                     if (datum.getUserId().equals(user.getUserId())) {
@@ -1064,6 +1118,21 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     break;
                 }
             }
+
+            List<String> url = new ArrayList<>();
+            for (Long mediaId : mediaIds) {
+                String mediaUrl = mediaService.getMediaUrl(mediaId, 0L);
+                url.add(mediaUrl);
+            }
+            datum.setUrl(url);
+
+            List<Announcements> announcementsList = new ArrayList<>();
+            for (Announcements announcement : announcements) {
+                if (ToolUtil.isNotEmpty(datum.getNoticeIds()) && datum.getNoticeIds().stream().anyMatch(i -> i.equals(announcement.getNoticeId()))) {
+                    announcementsList.add(announcement);
+                }
+            }
+            datum.setAnnouncementsList(announcementsList);
         }
     }
 }

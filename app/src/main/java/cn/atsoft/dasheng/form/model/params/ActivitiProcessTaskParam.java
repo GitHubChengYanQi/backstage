@@ -5,15 +5,17 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 流程任务表	
+ * 流程任务表
  * </p>
  *
  * @author Jazz
@@ -24,6 +26,11 @@ import java.util.List;
 public class ActivitiProcessTaskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private String auditType;
+
+    private List<Long> taskIds  =new ArrayList<>();
+
     private Long setpsId;
 
     private Long deptId;

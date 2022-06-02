@@ -304,6 +304,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
+
         for (InstockListResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());

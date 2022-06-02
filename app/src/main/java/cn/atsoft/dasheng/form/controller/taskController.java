@@ -94,7 +94,7 @@ public class taskController extends BaseController {
     public ResponseData<ActivitiProcessTaskResult> detail(@Param("taskId") Long taskId) {
         //流程任务
         if (ToolUtil.isEmpty(taskId)) {
-            throw  new ServiceException(500,"缺少taskId");
+            throw new ServiceException(500, "缺少taskId");
         }
         ActivitiProcessTask processTask = taskService.getById(taskId);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
@@ -131,6 +131,11 @@ public class taskController extends BaseController {
                 procurementPlanResult.setFounder(user);
                 procurementPlanService.detail(procurementPlanResult);
                 taskResult.setObject(procurementPlanResult);
+                break;
+            case "INSTOCK":
+                taskService.format(new ArrayList<ActivitiProcessTaskResult>() {{
+                    add(taskResult);
+                }});
                 break;
         }
         //树形结构

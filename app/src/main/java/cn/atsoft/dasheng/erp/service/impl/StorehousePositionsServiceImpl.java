@@ -927,30 +927,30 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             houseIds.add(datum.getStorehouseId());
             skuIds.add(datum.getSkuId());
         }
-        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<StorehousePositionsBind> binds = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         List<Long> positionIds = new ArrayList<>();
-        for (StockDetails stockDetail : stockDetails) {
-            positionIds.add(stockDetail.getStorehousePositionsId());
+        for (StorehousePositionsBind bind : binds) {
+            positionIds.add(bind.getPositionId());
         }
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
 
 
         Map<Long, List<StorehousePositionsResult>> map = new HashMap<>();
-        for (StockDetails stockDetail : stockDetails) {
+        for (StorehousePositionsBind bind : binds) {
 
             for (StorehousePositionsResult positionsResult : positionsResults) {
-                if (stockDetail.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
+                if (bind.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
 
-                    List<StorehousePositionsResult> positionsResultList = map.get(stockDetail.getSkuId());
+                    List<StorehousePositionsResult> positionsResultList = map.get(bind.getSkuId());
                     if (ToolUtil.isEmpty(positionsResultList)) {
                         positionsResultList = new ArrayList<>();
                     }
                     if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
                         positionsResultList.add(positionsResult);
                     }
-                    map.put(stockDetail.getSkuId(), positionsResultList);
+                    map.put(bind.getSkuId(), positionsResultList);
                 }
             }
         }
