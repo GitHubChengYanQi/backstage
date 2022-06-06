@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.form.service.impl;
 
 import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
 import cn.atsoft.dasheng.action.Enum.InstockErrorActionEnum;
+import cn.atsoft.dasheng.action.Enum.QualityActionEnum;
 import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -438,9 +439,47 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private void updateParentProcessTask(ActivitiProcessTask processTask) {
         ThemeAndOrigin origin = new ThemeAndOrigin();
         switch (processTask.getType()) {
+            case "outQuality":
             case "inQuality":
+                QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
+                if (ToolUtil.isNotEmpty(qualityTask.getOrigin())) {
+                    origin = getOrigin.getOrigin(JSON.parseObject(qualityTask.getOrigin(), ThemeAndOrigin.class));
+                    if (ToolUtil.isNotEmpty(origin.getParent())) {
+                        for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
+                            if (themeAndOrigin.getSource().equals("processTask")) {
+                                //如果来源存的是流程任务的id
+                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
+
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus());
+                            } else {
+                                //如果来源存的是主单据的id
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus());
+                            }
+                        }
+                    }
+                }
                 break;
             case "purchaseInstock":
+                break;
+
+            case "INSTOCK":
+                InstockOrder instockOrderByid = instockOrderService.getById(processTask.getFormId());
+                if (ToolUtil.isNotEmpty(instockOrderByid.getOrigin())) {
+                    origin = getOrigin.getOrigin(JSON.parseObject(instockOrderByid.getOrigin(), ThemeAndOrigin.class));
+                    if (ToolUtil.isNotEmpty(origin.getParent())) {
+                        for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
+                            if (themeAndOrigin.getSource().equals("processTask")) {
+                                //如果来源存的是流程任务的id
+                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
+
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus());
+                            } else {
+                                //如果来源存的是主单据的id
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus());
+                            }
+                        }
+                    }
+                }
                 break;
             case "INSTOCKERROR":
                 InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
@@ -464,6 +503,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         }
 
     }
+
 
     private void updateRefuseStatus(ActivitiProcessTask processTask) {
         switch (processTask.getType()) {

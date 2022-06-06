@@ -134,6 +134,28 @@ public class QualityTaskResult implements Serializable {
     private String remark;
 
     /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private Long source;
+
+    /**
+     * 来源id
+     */
+    @ApiModelProperty("来源id")
+    private String sourceId;
+    /**
+     * 主题
+     */
+    @ApiModelProperty("主题")
+    private String theme;
+    /**
+     * 来源Json
+     */
+    @ApiModelProperty("来源Json")
+    private String origin;
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)
