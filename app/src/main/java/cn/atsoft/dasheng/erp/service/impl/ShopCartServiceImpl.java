@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ShopCart;
@@ -45,9 +46,10 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
 
     @Override
-    public void add(ShopCartParam param) {
+    public Long add(ShopCartParam param) {
         ShopCart entity = getEntity(param);
         this.save(entity);
+        return entity.getCartId();
     }
 
     @Override
@@ -62,22 +64,35 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
 
     @Override
-    public void delete(ShopCartParam param) {
-        ShopCart entity = getEntity(param);
-        entity.setDisplay(0);
-        this.updateById(entity);
+    public List<Long> delete(ShopCartParam param) {
+
+        if (ToolUtil.isNotEmpty(param.getIds()) && param.getIds().size() > 0) {
+            List<ShopCart> shopCarts = this.listByIds(param.getIds());
+            for (ShopCart shopCart : shopCarts) {
+                shopCart.setDisplay(0);
+            }
+            this.updateBatchById(shopCarts);
+            return param.getIds();
+        }
+
+//        ShopCart entity = getEntity(param);
+//        entity.setDisplay(0);
+//        this.updateById(entity);
+        return null;
     }
 
     @Override
-    public void update(ShopCartParam param) {
+    public Long update(ShopCartParam param) {
         ShopCart oldEntity = getOldEntity(param);
         ShopCart newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return param.getCartId();
     }
 
     @Override
     public List<ShopCartResult> allList(ShopCartParam param) {
+        param.setCreateUser(LoginContextHolder.getContext().getUserId());
         List<ShopCartResult> shopCartResults = this.baseMapper.customList(param);
         format(shopCartResults);
         return shopCartResults;
@@ -117,6 +132,15 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         ShopCart entity = new ShopCart();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    private ShopCartResult getResult(ShopCartParam param) {
+        ShopCartResult result = new ShopCartResult();
+        ToolUtil.copyProperties(param, result);
+        format(new ArrayList<ShopCartResult>() {{
+            add(result);
+        }});
+        return result;
     }
 
     private void format(List<ShopCartResult> data) {

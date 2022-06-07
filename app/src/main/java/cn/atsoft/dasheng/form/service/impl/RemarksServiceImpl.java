@@ -151,7 +151,6 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     public void addNote(AuditParam auditParam) {
 
         List<ActivitiProcessLog> logs = logService.listByTaskId(auditParam.getTaskId());
-
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog activitiProcessLog : logs) {
             stepIds.add(activitiProcessLog.getSetpsId());

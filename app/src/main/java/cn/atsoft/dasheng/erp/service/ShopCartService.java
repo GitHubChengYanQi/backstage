@@ -24,7 +24,7 @@ public interface ShopCartService extends IService<ShopCart> {
      * @author song
      * @Date 2022-06-06
      */
-    void add(ShopCartParam param);
+    Long add(ShopCartParam param);
 
     void addList(List<ShopCartParam> params);
 
@@ -34,7 +34,7 @@ public interface ShopCartService extends IService<ShopCart> {
      * @author song
      * @Date 2022-06-06
      */
-    void delete(ShopCartParam param);
+    List<Long> delete(ShopCartParam param);
 
     /**
      * 更新
@@ -42,7 +42,7 @@ public interface ShopCartService extends IService<ShopCart> {
      * @author song
      * @Date 2022-06-06
      */
-    void update(ShopCartParam param);
+    Long update(ShopCartParam param);
 
     List<ShopCartResult> allList(ShopCartParam param);
 

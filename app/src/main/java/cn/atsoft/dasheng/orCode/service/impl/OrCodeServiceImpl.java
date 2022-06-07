@@ -153,7 +153,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Object obj = orcodeBackObj(datum.getOrCodeId());
             datum.setObject(obj);
         }
-
     }
 
 
@@ -670,9 +669,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     }
 
     @Override
-    public Map<String, Object> inkindDetail(Long qrcodeId) {
+    public Map<String, Object> inkindDetail(Long inkindId) {
+        if (ToolUtil.isEmpty(inkindId)) {
+            return  new HashMap<>();
+        }
         StockDetails stockDetails = stockDetailsService.getOne(new QueryWrapper<StockDetails>() {{
-            eq("qr_code_id", qrcodeId);
+            eq("inkind_id", inkindId);
         }});
 
         /**
@@ -701,7 +703,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
             Map<String, Object> result = new HashMap<>();
             result.put("stock", stockResult);
-            result.put("stockDetails", stockDetails);
             result.put("storehouse", storehouseResult);
             result.put("stockDetails", stockDetails);
             result.put("storehousePositions", storehousePositionsResult);
@@ -728,6 +729,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     try {
                         storehouseFormat(storehouseResult);
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     StoreHouseRequest storeHouseRequest = new StoreHouseRequest();
                     storeHouseRequest.setType("storehouse");
@@ -744,6 +746,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     try {
                         storehousePositionsFormat(storehousePositionsResult);
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     StoreHousePositionsRequest storeHousePositionsRequest = new StoreHousePositionsRequest();
                     storeHousePositionsRequest.setType("storehousePositions");
@@ -760,6 +763,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     try {
                         stockFormat(stockResult);
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     StockRequest stockRequest = new StockRequest();
                     stockRequest.setType("storehouse");

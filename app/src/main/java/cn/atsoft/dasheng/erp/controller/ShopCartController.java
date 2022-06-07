@@ -42,9 +42,19 @@ public class ShopCartController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ShopCartParam shopCartParam) {
+        Long id = this.shopCartService.add(shopCartParam);
+        return ResponseData.success(id);
+    }
+
+
+    @RequestMapping(value = "/addList", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addList(@RequestBody ShopCartParam shopCartParam) {
         this.shopCartService.addList(shopCartParam.getShopCartParams());
         return ResponseData.success();
     }
+
+
 
     /**
      * 编辑接口
@@ -55,8 +65,8 @@ public class ShopCartController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ShopCartParam shopCartParam) {
-        this.shopCartService.update(shopCartParam);
-        return ResponseData.success();
+        Long id = this.shopCartService.update(shopCartParam);
+        return ResponseData.success(id);
     }
 
 
@@ -85,8 +95,8 @@ public class ShopCartController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody ShopCartParam shopCartParam) {
-        this.shopCartService.delete(shopCartParam);
-        return ResponseData.success();
+        List<Long> ids = this.shopCartService.delete(shopCartParam);
+        return ResponseData.success(ids);
     }
 
     /**

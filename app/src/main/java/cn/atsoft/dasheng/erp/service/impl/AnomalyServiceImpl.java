@@ -114,57 +114,58 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             this.updateById(entity);
         }
 
-        List<AnomalyDetail> details = new ArrayList<>();
-        for (AnomalyDetailParam detailParam : param.getDetailParams()) {
-            AnomalyDetail detail = new AnomalyDetail();
-            ToolUtil.copyProperties(detailParam, detail);
-            detail.setAnomalyId(entity.getAnomalyId());
-
-            if (param.getAnomalyType() == AnomalyType.InstockError) {
-                InstockList instockList = instockListService.getById(detailParam.getInstockListId());
-                instockList.setNumber(detailParam.getRealNumber());
-                instockList.setRealNumber(detailParam.getRealNumber());
-                instockListService.updateById(instockList);
-            }
-            details.add(detail);
-        }
-        detailService.saveBatch(details);
+//        List<AnomalyDetail> details = new ArrayList<>();
+//        for (AnomalyDetailParam detailParam : param.getDetailParams()) {
+//            AnomalyDetail detail = new AnomalyDetail();
+//            ToolUtil.copyProperties(detailParam, detail);
+//            detail.setAnomalyId(entity.getAnomalyId());
+//
+//            if (param.getAnomalyType() == AnomalyType.InstockError) {
+//                InstockList instockList = instockListService.getById(detailParam.getInstockListId());
+//                instockList.setNumber(detailParam.getRealNumber());
+//                instockList.setRealNumber(detailParam.getRealNumber());
+//                instockListService.updateById(instockList);
+//            }
+//            details.add(detail);
+//        }
+//        detailService.saveBatch(details);
 
 
         //     发起审批流程
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "instock").eq("status", 99).eq("module", "instockError").one();
-        if (ToolUtil.isNotEmpty(activitiProcess)) {
-            this.power(activitiProcess);//检查创建权限
-            LoginUser user = LoginContextHolder.getContext().getUser();
-            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库异常 ");
-            activitiProcessTaskParam.setQTaskId(entity.getFormId());
-            activitiProcessTaskParam.setUserId(param.getCreateUser());
-            activitiProcessTaskParam.setFormId(entity.getFormId());
-            activitiProcessTaskParam.setType("instockError");
-            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-            //添加小铃铛
-            wxCpSendTemplate.setSource("processTask");
-            wxCpSendTemplate.setSourceId(taskId);
-            //添加log
-            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1);
-        } else {
-            /**
-             * 没有异常流程直接算完成
-             */
-            InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
-            instockOrderService.updateById(instockOrder);
-            DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
-            messageProducer.auditMessageDo(new AuditEntity() {{
-                setAuditType(CHECK_ACTION);
-                setFormId(instockOrder.getInstockOrderId());
-                setForm(ReceiptsEnum.INSTOCK.name());
-                setActionId(action.getDocumentsActionId());
-            }});
-        }
+//        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "instock").eq("status", 99).eq("module", "instockError").one();
+//        if (ToolUtil.isNotEmpty(activitiProcess)) {
+//            this.power(activitiProcess);//检查创建权限
+//            LoginUser user = LoginContextHolder.getContext().getUser();
+//            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+//            activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库异常 ");
+//            activitiProcessTaskParam.setQTaskId(entity.getFormId());
+//            activitiProcessTaskParam.setUserId(param.getCreateUser());
+//            activitiProcessTaskParam.setFormId(entity.getFormId());
+//            activitiProcessTaskParam.setType("instockError");
+//            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+//            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+//            //添加小铃铛
+//            wxCpSendTemplate.setSource("processTask");
+//            wxCpSendTemplate.setSourceId(taskId);
+//            //添加log
+//            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+//            activitiProcessLogService.autoAudit(taskId, 1);
+//        } else {
+//            /**
+//             * 没有异常流程直接算完成
+//             */
+//            InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
+//            instockOrderService.updateById(instockOrder);
+//            DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
+//            messageProducer.auditMessageDo(new AuditEntity() {{
+//                setAuditType(CHECK_ACTION);
+//                setFormId(instockOrder.getInstockOrderId());
+//                setForm(ReceiptsEnum.INSTOCK.name());
+//                setActionId(action.getDocumentsActionId());
+//            }});
+//        }
     }
+
 
     private void power(ActivitiProcess activitiProcess) {
         ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
@@ -174,6 +175,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 throw new ServiceException(500, "您没有权限创建任务");
             }
         }
+    }
+
+
+    public void addDetails(AnomalyParam param) {
+
     }
 
     @Override

@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,8 +24,12 @@ public class ShopCart implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "cart_id", type = IdType.ID_WORKER)
+    @TableId(value = "cart_id", type = IdType.ID_WORKER)
     private Long cartId;
+
+
+    @TableField("form_id")
+    private Long formId;
 
     /**
      * 类型
@@ -54,25 +61,25 @@ public class ShopCart implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -192,22 +199,30 @@ public class ShopCart implements Serializable {
         this.deptId = deptId;
     }
 
+    public Long getFormId() {
+        return formId;
+    }
+
+    public void setFormId(Long formId) {
+        this.formId = formId;
+    }
+
     @Override
     public String toString() {
         return "ShopCart{" +
-        "cartId=" + cartId +
-        ", type=" + type +
-        ", skuId=" + skuId +
-        ", brandId=" + brandId +
-        ", customerId=" + customerId +
-        ", status=" + status +
-        ", number=" + number +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "cartId=" + cartId +
+                ", type=" + type +
+                ", skuId=" + skuId +
+                ", brandId=" + brandId +
+                ", customerId=" + customerId +
+                ", status=" + status +
+                ", number=" + number +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }
