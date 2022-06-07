@@ -85,6 +85,9 @@ public class taskController extends BaseController {
     @RequestMapping(value = "/comments", method = RequestMethod.POST)
     @ApiOperation("新建评论")
     public ResponseData addComments(@RequestBody AuditParam auditParam) {
+        if (ToolUtil.isEmpty(auditParam.getTaskId())) {
+            throw new ServiceException(500, "请检查任务id");
+        }
         remarksService.addComments(auditParam);
         return ResponseData.success();
     }

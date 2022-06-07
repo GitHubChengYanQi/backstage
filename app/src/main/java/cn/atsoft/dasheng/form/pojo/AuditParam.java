@@ -14,4 +14,6 @@ public class AuditParam {
     private String userIds;
 
     private String photoId;
+
+    private Long pid;
 }
