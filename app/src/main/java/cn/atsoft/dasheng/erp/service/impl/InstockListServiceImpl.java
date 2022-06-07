@@ -292,7 +292,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         return this.getById(getKey(param));
     }
 
-    private InstockList getEntity(InstockListParam param) {
+    @Override
+    public InstockList getEntity(InstockListParam param) {
         InstockList entity = new InstockList();
         ToolUtil.copyProperties(param, entity);
         return entity;
@@ -310,8 +311,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             brandIds.add(datum.getBrandId());
             storeIds.add(datum.getStoreHouseId());
         }
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
-
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
 
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
@@ -341,17 +341,14 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
                 datum.setSku(sku);
             }
 
-            if (ToolUtil.isNotEmpty(skus)) {
-                for (Sku sku : skus) {
-                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
-                        SkuResult skuResult = new SkuResult();
-                        ToolUtil.copyProperties(sku, skuResult);
-                        datum.setSkuResult(skuResult);
 
+                for (SkuResult sku : skuResults) {
+                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
+                        datum.setSkuResult(sku);
                         break;
                     }
                 }
-            }
+
 //            for (StockDetails details : stockDetailsTotal) {
 //                if (datum.getSkuId().equals(details.getSkuId())){
 //                    Map<String,Object> stockDetial = new HashMap<>();

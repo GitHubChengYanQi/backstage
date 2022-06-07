@@ -76,8 +76,8 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     /**
      * 产品id
      */
-    @ApiModelProperty("产品id")
-    private Long itemId;
+
+    private Long status;
 
     /**
      * 数量
