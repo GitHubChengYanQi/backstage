@@ -34,6 +34,10 @@ public class ShopCartParam implements Serializable, BaseValidatingParam {
 
     private Long formId;
 
+    private Long formStatus;
+
+    private Long instockListId;
+
     /**
      * 类型
      */

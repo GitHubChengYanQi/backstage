@@ -9,11 +9,13 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.ShopCart;
 import cn.atsoft.dasheng.erp.mapper.ShopCartMapper;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.ShopCartResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.erp.service.ShopCartService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -23,6 +25,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +46,35 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private BrandService brandService;
     @Autowired
     private CustomerService customerService;
-
+    @Autowired
+    private InstockListService instockListService;
 
     @Override
+    @Transactional
     public Long add(ShopCartParam param) {
         ShopCart entity = getEntity(param);
         this.save(entity);
+        updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
+
         return entity.getCartId();
     }
+
+    /**
+     * 修改入库清单状态
+     *
+     * @param id
+     * @param status
+     */
+    private void updateInStockListStatus(Long id, Long status) {
+        if (ToolUtil.isEmpty(id)) {
+            return;
+        }
+        InstockList instockList = new InstockList();
+        instockList.setStatus(status);
+        instockList.setInstockListId(id);
+        this.instockListService.updateById(instockList);
+    }
+
 
     @Override
     public void addList(List<ShopCartParam> params) {
