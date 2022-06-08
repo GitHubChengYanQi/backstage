@@ -13,10 +13,12 @@
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
+        <result column="type" property="type"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">type
+    AS "type",
         notice_id
         AS "noticeId", content AS "content", sort AS "sort", deptId AS "deptId", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
@@ -120,6 +122,9 @@
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
         </if>
         order by sort
     </select>

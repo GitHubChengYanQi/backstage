@@ -23,9 +23,11 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class   InkindParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class InkindParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private Long pid;
 
     private Long number;
 

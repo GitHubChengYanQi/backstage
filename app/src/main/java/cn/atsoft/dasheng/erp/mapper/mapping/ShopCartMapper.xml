@@ -36,6 +36,11 @@
         <if test="paramCondition.cartId != null">
             and cart_id like CONCAT('%',#{paramCondition.cartId},'%')
         </if>
+        <if test="paramCondition.instockOrderId != null">
+            and form_id in (
+                select anomaly_id from daoxin_anomaly where form_id in (#{paramCondition.instockOrderId})
+            )
+        </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type like CONCAT('%',#{paramCondition.type},'%')
         </if>

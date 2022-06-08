@@ -27,6 +27,8 @@ public class ShopCartParam implements Serializable, BaseValidatingParam {
 
     private List<ShopCartParam> shopCartParams;
 
+    private Long instockOrderId;
+
     private List<Long> ids;
 
     @ApiModelProperty("")

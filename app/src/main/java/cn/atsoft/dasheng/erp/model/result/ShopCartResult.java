@@ -34,6 +34,10 @@ public class ShopCartResult implements Serializable {
 
     private Long formId;
 
+    private Long errorNumber;
+
+    private Long otherNumber;
+
     @ApiModelProperty("")
     private Long cartId;
 

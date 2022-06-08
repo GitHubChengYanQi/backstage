@@ -13,91 +13,100 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 异常详情
+ *
  * </p>
  *
  * @author song
- * @since 2022-04-12
+ * @since 2022-05-27
  */
 @TableName("daoxin_anomaly_detail")
 public class AnomalyDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableField("plan_number")
-    private Long planNumber;
-
-    @TableField("real_number")
-    private Long realNumber;
-    /**
-     * 详情id
-     */
     @TableId(value = "detail_id", type = IdType.ID_WORKER)
     private Long detailId;
 
+    @TableField("anomaly_id")
+    private Long anomalyId;
+
+    @TableField("number")
+    private Long number;
 
     /**
      * 实物id
      */
     @TableField("inkind_id")
     private Long inkindId;
+
     /**
-     * 主表id
+     * 状态
      */
-    @TableField("anomaly_id")
-    private Long anomalyId;
-
-    @TableField("sku_id")
-    private Long skuId;
+    @TableField("stauts")
+    private Long stauts;
 
     /**
-     * 异常类型
-     */
-    @TableField("type")
-    private String type;
-
-    /**
-     * 备注
+     * 异常原因
      */
     @TableField("remark")
     private String remark;
 
     /**
-     * 创建者
+     * 原因图片
      */
-    @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Long createUser;
+    @TableField("reason_img")
+    private String reasonImg;
 
     /**
-     * 修改者
+     * 处理人
      */
-    @TableField(value = "update_user", fill = FieldFill.UPDATE)
-    private Long updateUser;
+    @TableField("user_id")
+    private Long userId;
 
     /**
-     * 创建时间
+     * 处理意见
      */
+    @TableField("opinion")
+    private String opinion;
+
+    /**
+     * 意见图片
+     */
+    @TableField("opinion_img")
+    private String opinionImg;
+
+    /**
+     * 异常表述
+     */
+    @TableField("description")
+    private String description;
+
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-    /**
-     * 修改时间
-     */
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
+
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-    /**
-     * 状态
-     */
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    private Long updateUser;
+
     @TableField("display")
     private Integer display;
 
-    /**
-     * 部门id
-     */
     @TableField("deptId")
     private Long deptId;
 
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
 
     public Long getDetailId() {
         return detailId;
@@ -115,20 +124,20 @@ public class AnomalyDetail implements Serializable {
         this.anomalyId = anomalyId;
     }
 
-    public Long getSkuId() {
-        return skuId;
+    public Long getInkindId() {
+        return inkindId;
     }
 
-    public void setSkuId(Long skuId) {
-        this.skuId = skuId;
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
     }
 
-    public String getType() {
-        return type;
+    public Long getStauts() {
+        return stauts;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setStauts(Long stauts) {
+        this.stauts = stauts;
     }
 
     public String getRemark() {
@@ -139,20 +148,44 @@ public class AnomalyDetail implements Serializable {
         this.remark = remark;
     }
 
-    public Long getCreateUser() {
-        return createUser;
+    public String getReasonImg() {
+        return reasonImg;
     }
 
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
+    public void setReasonImg(String reasonImg) {
+        this.reasonImg = reasonImg;
     }
 
-    public Long getUpdateUser() {
-        return updateUser;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUpdateUser(Long updateUser) {
-        this.updateUser = updateUser;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getOpinion() {
+        return opinion;
+    }
+
+    public void setOpinion(String opinion) {
+        this.opinion = opinion;
+    }
+
+    public String getOpinionImg() {
+        return opinionImg;
+    }
+
+    public void setOpinionImg(String opinionImg) {
+        this.opinionImg = opinionImg;
+    }
+
+    public String getdescription() {
+        return description;
+    }
+
+    public void setdescription(String description) {
+        this.description = description;
     }
 
     public Date getCreateTime() {
@@ -163,12 +196,28 @@ public class AnomalyDetail implements Serializable {
         this.createTime = createTime;
     }
 
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
     public Date getUpdateTime() {
         return updateTime;
     }
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Long getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(Long updateUser) {
+        this.updateUser = updateUser;
     }
 
     public Integer getDisplay() {
@@ -187,42 +236,23 @@ public class AnomalyDetail implements Serializable {
         this.deptId = deptId;
     }
 
-    public Long getPlanNumber() {
-        return planNumber;
-    }
-
-    public void setPlanNumber(Long planNumber) {
-        this.planNumber = planNumber;
-    }
-
-    public Long getRealNumber() {
-        return realNumber;
-    }
-
-    public void setRealNumber(Long realNumber) {
-        this.realNumber = realNumber;
-    }
-
-    public Long getInkindId() {
-        return inkindId;
-    }
-
-    public void setInkindId(Long inkindId) {
-        this.inkindId = inkindId;
-    }
-
     @Override
     public String toString() {
         return "AnomalyDetail{" +
                 "detailId=" + detailId +
                 ", anomalyId=" + anomalyId +
-                ", skuId=" + skuId +
-                ", type=" + type +
+                ", inkindId=" + inkindId +
+                ", stauts=" + stauts +
                 ", remark=" + remark +
-                ", createUser=" + createUser +
-                ", updateUser=" + updateUser +
+                ", reasonImg=" + reasonImg +
+                ", userId=" + userId +
+                ", opinion=" + opinion +
+                ", opinionImg=" + opinionImg +
+                ", description=" + description +
                 ", createTime=" + createTime +
+                ", createUser=" + createUser +
                 ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
                 ", display=" + display +
                 ", deptId=" + deptId +
                 "}";

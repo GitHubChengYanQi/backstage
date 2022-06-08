@@ -7,26 +7,32 @@
         <id column="anomaly_id" property="anomalyId"/>
         <result column="type" property="type"/>
         <result column="form_id" property="formId"/>
+        <result column="remark" property="remark"/>
+        <result column="enclosure" property="enclosure"/>
+        <result column="theme" property="theme"/>
+        <result column="origin" property="origin"/>
         <result column="source" property="source"/>
         <result column="source_id" property="sourceId"/>
-        <result column="create_user" property="createUser"/>
-        <result column="update_user" property="updateUser"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="need_number" property="needNumber"/>
+        <result column="real_number" property="realNumber"/>
+        <result column="reason" property="reason"/>
+        <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
         <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
-        <result column="remark" property="remark"/>
-        <result property="enclosure" column="enclosure"/>
-        <result property="origin" column="origin"/>
-        <result property="theme" column="theme"/>
-
+        <result column="brand_id" property="brandId"/>
+        <result column="customer_id" property="customerId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">enclosure
-    AS "enclosure",origin AS "origin",theme AS "theme",source AS "source",source_id AS "source_id",
-        remark
-        AS "remark",anomaly_id AS "anomalyId", type AS "type", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    <sql id="Base_Column_List">brand_id
+    AS "brandId",customer_id AS"customerId",
+        anomaly_id
+        AS "anomalyId", type AS "type", form_id AS "formId", remark AS "remark", enclosure AS "enclosure", theme AS "theme", origin AS "origin", source AS "source", source_id AS "sourceId", sku_id AS "skuId", need_number AS "needNumber", real_number AS "realNumber", reason AS "reason", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -44,17 +50,50 @@
         <if test="paramCondition.formId != null">
             and form_id like CONCAT('%',#{paramCondition.formId},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        <if test="paramCondition.enclosure != null and paramCondition.enclosure != ''">
+            and enclosure like CONCAT('%',#{paramCondition.enclosure},'%')
+        </if>
+        <if test="paramCondition.theme != null and paramCondition.theme != ''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.origin != null and paramCondition.origin != ''">
+            and origin like CONCAT('%',#{paramCondition.origin},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.needNumber != null">
+            and need_number like CONCAT('%',#{paramCondition.needNumber},'%')
+        </if>
+        <if test="paramCondition.realNumber != null">
+            and real_number like CONCAT('%',#{paramCondition.realNumber},'%')
+        </if>
+        <if test="paramCondition.reason != null and paramCondition.reason != ''">
+            and reason like CONCAT('%',#{paramCondition.reason},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
@@ -77,17 +116,50 @@
         <if test="paramCondition.formId != null">
             and form_id like CONCAT('%',#{paramCondition.formId},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        <if test="paramCondition.enclosure != null and paramCondition.enclosure != ''">
+            and enclosure like CONCAT('%',#{paramCondition.enclosure},'%')
+        </if>
+        <if test="paramCondition.theme != null and paramCondition.theme != ''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.origin != null and paramCondition.origin != ''">
+            and origin like CONCAT('%',#{paramCondition.origin},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.needNumber != null">
+            and need_number like CONCAT('%',#{paramCondition.needNumber},'%')
+        </if>
+        <if test="paramCondition.realNumber != null">
+            and real_number like CONCAT('%',#{paramCondition.realNumber},'%')
+        </if>
+        <if test="paramCondition.reason != null and paramCondition.reason != ''">
+            and reason like CONCAT('%',#{paramCondition.reason},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
@@ -101,7 +173,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.AnomalyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_anomaly where 1 = 1
+        from daoxin_anomaly where 1 = 1 and display = 1
         <if test="paramCondition.anomalyId != null">
             and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>
@@ -111,17 +183,50 @@
         <if test="paramCondition.formId != null">
             and form_id like CONCAT('%',#{paramCondition.formId},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        <if test="paramCondition.enclosure != null and paramCondition.enclosure != ''">
+            and enclosure like CONCAT('%',#{paramCondition.enclosure},'%')
+        </if>
+        <if test="paramCondition.theme != null and paramCondition.theme != ''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.origin != null and paramCondition.origin != ''">
+            and origin like CONCAT('%',#{paramCondition.origin},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.needNumber != null">
+            and need_number like CONCAT('%',#{paramCondition.needNumber},'%')
+        </if>
+        <if test="paramCondition.realNumber != null">
+            and real_number like CONCAT('%',#{paramCondition.realNumber},'%')
+        </if>
+        <if test="paramCondition.reason != null and paramCondition.reason != ''">
+            and reason like CONCAT('%',#{paramCondition.reason},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
@@ -144,17 +249,50 @@
         <if test="paramCondition.formId != null">
             and form_id like CONCAT('%',#{paramCondition.formId},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        <if test="paramCondition.enclosure != null and paramCondition.enclosure != ''">
+            and enclosure like CONCAT('%',#{paramCondition.enclosure},'%')
+        </if>
+        <if test="paramCondition.theme != null and paramCondition.theme != ''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.origin != null and paramCondition.origin != ''">
+            and origin like CONCAT('%',#{paramCondition.origin},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.needNumber != null">
+            and need_number like CONCAT('%',#{paramCondition.needNumber},'%')
+        </if>
+        <if test="paramCondition.realNumber != null">
+            and real_number like CONCAT('%',#{paramCondition.realNumber},'%')
+        </if>
+        <if test="paramCondition.reason != null and paramCondition.reason != ''">
+            and reason like CONCAT('%',#{paramCondition.reason},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and status like CONCAT('%',#{paramCondition.status},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')

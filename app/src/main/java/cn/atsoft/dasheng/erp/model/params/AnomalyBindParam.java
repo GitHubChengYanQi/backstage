@@ -4,7 +4,6 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,75 +12,54 @@ import java.util.List;
 
 /**
  * <p>
- * 注意事项
+ * 异常生成的实物 绑定
  * </p>
  *
  * @author song
- * @since 2022-05-27
+ * @since 2022-05-28
  */
 @Data
 @ApiModel
-public class AnnouncementsParam implements Serializable, BaseValidatingParam {
+public class AnomalyBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
-    private String type;
-
-    private List<Long> ids;
     /**
-     * 注意事项
+     * 异常物品
      */
-    @ApiModelProperty("注意事项")
-    private Long noticeId;
+    @ApiModelProperty("异常物品")
+    private Long bindId;
 
     /**
-     * 内容
+     * 实物
      */
-    @ApiModelProperty("内容")
-    private String content;
+    @ApiModelProperty("实物")
+    private Long inkindId;
 
-    /**
-     * 排序
-     */
-    @ApiModelProperty("排序")
-    private Integer sort;
+    @ApiModelProperty("")
+    private Long detailId;
 
-    /**
-     * 部门id
-     */
-    @ApiModelProperty("部门id")
-    private Long deptId;
+    @ApiModelProperty("")
+    private Long anomalyId;
 
-    /**
-     * 创建时间
-     */
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
-    /**
-     * 修改时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date updateTime;
-
-    /**
-     * 创建用户
-     */
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
-    /**
-     * 修改用户
-     */
+    @ApiModelProperty(hidden = true)
+    private Date updateTime;
+
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
-    /**
-     * 状态
-     */
-    @ApiModelProperty("状态")
+    @ApiModelProperty("")
     private Integer display;
+
+    @ApiModelProperty("")
+    private Long deptId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

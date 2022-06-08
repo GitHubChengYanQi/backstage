@@ -1045,7 +1045,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         for (BackCodeRequest codeRequest : batchAutomatic.getCodeRequests()) {
             OrCode orCode = new OrCode();
-            orCode.setType(codeRequest.getSource());
+            orCode.setType(codeRequest.getInkindType());
             orCode.setState(1);
             this.save(orCode);
             //新建绑定实物
@@ -1054,7 +1054,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             inkindParam.setType("0");
             inkindParam.setNumber(codeRequest.getNumber());
             inkindParam.setBrandId(codeRequest.getBrandId());
-            inkindParam.setSource(codeRequest.getInkindType());
+            inkindParam.setSource(codeRequest.getSource());
             inkindParam.setSourceId(codeRequest.getSourceId());
             inkindParam.setCustomerId(codeRequest.getCustomerId());
             Long formId = inkindService.add(inkindParam);
@@ -1070,6 +1070,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             automaticBindResult.setInkindId(formId);
             automaticBindResult.setSkuId(codeRequest.getId());
             automaticBindResult.setNumber(codeRequest.getNumber());
+            automaticBindResult.setSource(inkindParam.getSource());
             bindResults.add(automaticBindResult);
         }
         return bindResults;

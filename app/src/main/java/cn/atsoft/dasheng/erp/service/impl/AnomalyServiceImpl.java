@@ -13,14 +13,11 @@ import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
+import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
-import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
-import cn.atsoft.dasheng.erp.service.AnomalyDetailService;
-import cn.atsoft.dasheng.erp.service.AnomalyService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.InstockListService;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
@@ -32,6 +29,9 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -40,9 +40,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
@@ -86,6 +84,13 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private MessageProducer messageProducer;
     @Autowired
     private GetOrigin getOrigin;
+    @Autowired
+    private ShopCartService shopCartService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private AnomalyBindService anomalyBindService;
+
 
     @Transactional
     @Override
@@ -111,15 +116,71 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             this.updateById(entity);
         }
 
+        if (ToolUtil.isEmpty(param.getInstockListId())) {
+            throw new ServiceException(500, "缺少入库清单参数");
+        }
+        InstockList instockList = instockListService.getById(param.getInstockListId());
+        instockList.setStatus(-1L);
+        instockListService.updateById(instockList);
+
+        /**
+         * 添加异常明细
+         */
         param.setAnomalyId(entity.getAnomalyId());
         addDetails(param);
-
 
         /**
          * 添加异常购物车
          */
         ShopCartParam shopCartParam = new ShopCartParam();
-        
+        shopCartParam.setSkuId(param.getSkuId());
+        shopCartParam.setBrandId(param.getBrandId());
+        shopCartParam.setCustomerId(param.getCustomerId());
+        shopCartParam.setType(param.getAnomalyType().name());
+        shopCartParam.setFormId(entity.getAnomalyId());
+        shopCartParam.setNumber(param.getNeedNumber());
+        shopCartService.add(shopCartParam);
+    }
+
+    @Override
+    public AnomalyResult detail(Long id) {
+        Anomaly anomaly = this.getById(id);
+        AnomalyResult anomalyResult = new AnomalyResult();
+        ToolUtil.copyProperties(anomaly, anomalyResult);
+        detailFormat(anomalyResult);
+        return anomalyResult;
+    }
+
+    /**
+     * 获取异常数量
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public Map<Long, AnomalyResult> getMap(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new HashMap<>();
+        }
+
+        Map<Long, AnomalyResult> map = new HashMap<>();
+        List<Anomaly> anomalies = this.listByIds(ids);
+        List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
+        List<AnomalyDetail> details = detailService.query().in("anomaly_id", ids).eq("display", 1).list();
+
+        for (AnomalyResult anomalyResult : anomalyResults) {
+            anomalyResult.setErrorNumber(anomalyResult.getRealNumber() - anomalyResult.getNeedNumber());
+            long otherNum = 0L;
+            for (AnomalyDetail detail : details) {
+                if (detail.getAnomalyId().equals(anomalyResult.getAnomalyId())) {
+                    otherNum = otherNum + detail.getNumber();
+                }
+            }
+            anomalyResult.setOtherNumber(otherNum);
+            map.put(anomalyResult.getAnomalyId(), anomalyResult);
+        }
+
+        return map;
     }
 
 
@@ -134,63 +195,105 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     }
 
     /**
-     * 添加详情
+     * 添加详情(区分批量)
      *
      * @param param
      */
     public void addDetails(AnomalyParam param) {
-        List<AnomalyDetail> details = new ArrayList<>();
+
+
         for (AnomalyDetailParam detailParam : param.getDetailParams()) {
+
+            List<Long> inkindIds = new ArrayList<>();
+            Inkind oldInkind = inkindService.getById(detailParam.getPidInKind());
+            switch (oldInkind.getSource()) {
+                case "inErrorSingle":
+                    for (long i = 0; i < detailParam.getNumber(); i++) {
+                        Inkind inkind = new Inkind();
+                        inkind.setNumber(detailParam.getNumber());
+                        inkind.setCustomerId(param.getCustomerId());
+                        inkind.setBrandId(param.getBrandId());
+                        inkind.setSkuId(param.getSkuId());
+                        inkind.setPid(detailParam.getPidInKind());
+                        inkind.setSource(AnomalyType.InstockError.getName());
+                        inkind.setSourceId(param.getFormId());
+                        inkindService.save(inkind);
+                        inkindIds.add(inkind.getInkindId());
+                    }
+                    break;
+                case "inErrorBatch":    //批量
+                    inkindIds.add(oldInkind.getInkindId());
+                    oldInkind.setNumber(detailParam.getNumber());
+                    oldInkind.setCustomerId(param.getCustomerId());
+                    oldInkind.setBrandId(param.getBrandId());
+                    oldInkind.setSkuId(param.getSkuId());
+                    oldInkind.setSourceId(param.getFormId());
+                    inkindService.updateById(oldInkind);
+                    break;
+            }
+
             AnomalyDetail detail = new AnomalyDetail();
             ToolUtil.copyProperties(detailParam, detail);
             detail.setAnomalyId(param.getAnomalyId());
+            detail.setInkindId(detailParam.getPidInKind());
 
-            if (param.getAnomalyType() == AnomalyType.InstockError) {
-                InstockList instockList = instockListService.getById(detailParam.getInstockListId());
-                instockList.setNumber(detailParam.getRealNumber());
-                instockList.setRealNumber(detailParam.getRealNumber());
-                instockListService.updateById(instockList);
+            if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
+                String json = JSON.toJSONString(detailParam.getNoticeIds());
+                detail.setRemark(json);
             }
-            details.add(detail);
+
+            detailService.save(detail);
+
+
+            for (Long inkindId : inkindIds) {
+                AnomalyBind anomalyBind = new AnomalyBind();
+                anomalyBind.setInkindId(inkindId);
+                anomalyBind.setDetailId(detail.getDetailId());
+                anomalyBind.setAnomalyId(param.getAnomalyId());
+                anomalyBindService.save(anomalyBind);
+            }
         }
-        detailService.saveBatch(details);
+
     }
 
-
+    @Override
     public void submit(AnomalyParam param) {
-        //     发起审批流程
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "instock").eq("status", 99).eq("module", "instockError").one();
+        //     发起审批流程
         if (ToolUtil.isNotEmpty(activitiProcess)) {
-            this.power(activitiProcess);//检查创建权限
-            LoginUser user = LoginContextHolder.getContext().getUser();
-            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库异常 ");
-            activitiProcessTaskParam.setQTaskId(param.getFormId());
-            activitiProcessTaskParam.setUserId(param.getCreateUser());
-            activitiProcessTaskParam.setFormId(param.getFormId());
-            activitiProcessTaskParam.setType("instockError");
-            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-            //添加小铃铛
-            wxCpSendTemplate.setSource("processTask");
-            wxCpSendTemplate.setSourceId(taskId);
-            //添加log
-            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1);
-        } else {
-            /**
-             * 没有异常流程直接算完成
-             */
-            InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
-            instockOrderService.updateById(instockOrder);
-            DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
-            messageProducer.auditMessageDo(new AuditEntity() {{
-                setAuditType(CHECK_ACTION);
-                setFormId(instockOrder.getInstockOrderId());
-                setForm(ReceiptsEnum.INSTOCK.name());
-                setActionId(action.getDocumentsActionId());
-            }});
+            for (AnomalyParam paramParam : param.getParams()) {
+                this.power(activitiProcess);//检查创建权限
+                LoginUser user = LoginContextHolder.getContext().getUser();
+                ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+                activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库异常 ");
+                activitiProcessTaskParam.setQTaskId(paramParam.getFormId());
+                activitiProcessTaskParam.setUserId(paramParam.getCreateUser());
+                activitiProcessTaskParam.setFormId(paramParam.getFormId());
+                activitiProcessTaskParam.setType("instockError");
+                activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+                Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+                //添加小铃铛
+                wxCpSendTemplate.setSource("processTask");
+                wxCpSendTemplate.setSourceId(taskId);
+                //添加log
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+                activitiProcessLogService.autoAudit(taskId, 1);
+            }
         }
+//        else {
+//            /**
+//             * 没有异常流程直接算完成
+//             */
+//            InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
+//            instockOrderService.updateById(instockOrder);
+//            DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
+//            messageProducer.auditMessageDo(new AuditEntity() {{
+//                setAuditType(CHECK_ACTION);
+//                setFormId(instockOrder.getInstockOrderId());
+//                setForm(ReceiptsEnum.INSTOCK.name());
+//                setActionId(action.getDocumentsActionId());
+//            }});
+//        }
     }
 
     @Override
@@ -244,17 +347,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Override
     public void detailFormat(AnomalyResult result) {
 
-        if (result.getType().equals("InstockError")) {
-            InstockOrder instockOrder = instockOrderService.getById(result.getFormId());
-            InstockOrderResult orderResult = new InstockOrderResult();
-            ToolUtil.copyProperties(instockOrder, orderResult);
-            instockOrderService.formatDetail(orderResult);
-            result.setOrderResult(orderResult);
-        }
+        List<AnomalyDetailResult> details = detailService.getDetails(result.getAnomalyId());
+        result.setDetails(details);
 
         //返回附件图片等
         if (ToolUtil.isNotEmpty(result.getEnclosure())) {
-            List<Long> filedIds = Arrays.asList(result.getEnclosure().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<Long> filedIds = Arrays.stream(result.getEnclosure().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<String> filedUrls = new ArrayList<>();
             for (Long filedId : filedIds) {
                 String mediaUrl = mediaService.getMediaUrl(filedId, 0L);

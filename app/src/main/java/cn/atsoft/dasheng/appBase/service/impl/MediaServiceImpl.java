@@ -298,7 +298,6 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
             return  null;
         }
         try {
-
             WxCpMediaService mediaService = wxCpService.getWxCpClient().getMediaService();
             File download = mediaService.download(mediaId);
             String bucket = aliyunService.getConfig().getOss().getBucket();

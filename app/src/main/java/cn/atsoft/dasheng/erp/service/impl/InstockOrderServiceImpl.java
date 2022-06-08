@@ -145,6 +145,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Transactional
     public void add(InstockOrderParam param) {
 
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "1").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+            }
+        }
 
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "1").eq("state", 1).one();
