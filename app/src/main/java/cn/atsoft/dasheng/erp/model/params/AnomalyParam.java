@@ -24,9 +24,11 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class  AnomalyParam implements Serializable, BaseValidatingParam {
+public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private Long orderId;
 
     private List<AnomalyParam> params;
 
@@ -46,7 +48,6 @@ public class  AnomalyParam implements Serializable, BaseValidatingParam {
 
     @NotNull
     private AnomalyType anomalyType;
-
 
 
     /**

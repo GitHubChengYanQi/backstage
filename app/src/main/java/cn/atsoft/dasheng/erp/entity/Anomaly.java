@@ -24,7 +24,8 @@ public class Anomaly implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    @TableField("order_id")
+    private Long orderId;
     /**
      * 供应商id
      */
@@ -307,6 +308,14 @@ public class Anomaly implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     @Override

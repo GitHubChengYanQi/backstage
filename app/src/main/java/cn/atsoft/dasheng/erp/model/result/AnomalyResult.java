@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import lombok.Data;
@@ -26,15 +28,17 @@ public class AnomalyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long   otherNumber;
-    
+    private Long otherNumber;
+
     private Long errorNumber;
 
     private SkuResult skuResult;
 
-    private BrandResult brandResult;
+    private SkuSimpleResult skuSimpleResult;
 
-    private CustomerResult customerResult;
+    private Brand brand;
+
+    private Customer customer;
 
 
     private List<AnomalyDetailResult> details;

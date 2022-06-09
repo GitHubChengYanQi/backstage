@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -75,9 +76,11 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         if (ToolUtil.isEmpty(id)) {
             return;
         }
-        InstockList instockList = new InstockList();
+        InstockList instockList = instockListService.getById(id);
+        if (instockList.getStatus() != 0) {
+            throw new ServiceException(500, "当前已操作");
+        }
         instockList.setStatus(status);
-        instockList.setInstockListId(id);
         this.instockListService.updateById(instockList);
     }
 
@@ -183,7 +186,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             customerIds.add(datum.getCustomerId());
             brandIds.add(datum.getBrandId());
             skuIds.add(datum.getSkuId());
-            if (ToolUtil.isNotEmpty(datum.getType()) && datum.getType().equals(AnomalyType.InstockError.getName())) {
+            if (ToolUtil.isNotEmpty(datum.getType()) && datum.getType().equals(AnomalyType.InstockError.name())) {
                 anomalyIds.add(datum.getFormId());
             }
         }
@@ -197,10 +200,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         for (ShopCartResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getFormId())) {
                 AnomalyResult result = map.get(datum.getFormId());
-                if (ToolUtil.isNotEmpty(result)) {
-                    result.setOtherNumber(result.getOtherNumber());
-                    result.setErrorNumber(result.getErrorNumber());
-                }
+                datum.setAnomalyResult(result);
             }
 
             for (SkuResult skuResult : skuResults) {

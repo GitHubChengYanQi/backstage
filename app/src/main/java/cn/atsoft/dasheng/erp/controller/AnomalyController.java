@@ -75,17 +75,7 @@ public class AnomalyController extends BaseController {
     }
 
 
-    /**
-     *提交
-     *
-     * @author song
-     * @Date 2022-05-27
-     */
-    @RequestMapping(value = "/submit", method = RequestMethod.POST)
-    public ResponseData submit(@RequestBody AnomalyParam anomalyParam) {
-        this.anomalyService.submit(anomalyParam);
-        return ResponseData.success();
-    }
+
 
 
     /**

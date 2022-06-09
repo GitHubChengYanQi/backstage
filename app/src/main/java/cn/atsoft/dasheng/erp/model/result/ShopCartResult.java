@@ -36,7 +36,10 @@ public class ShopCartResult implements Serializable {
 
     private Long errorNumber;
 
+
     private Long otherNumber;
+
+    private AnomalyResult anomalyResult;
 
     @ApiModelProperty("")
     private Long cartId;

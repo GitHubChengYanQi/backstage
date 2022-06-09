@@ -20,11 +20,8 @@ import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
-import cn.atsoft.dasheng.erp.service.InkindService;
-import cn.atsoft.dasheng.erp.service.InstockListService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
@@ -63,8 +60,6 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     @Autowired
     private BrandService brandService;
     @Autowired
-    private StorehouseService storehouseService;
-    @Autowired
     private SkuService skuService;
     @Autowired
     private InstockOrderService orderService;
@@ -74,6 +69,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private InkindService inkindService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Override
     public void add(InstockListParam param) {
@@ -319,7 +316,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<CustomerResult> customerResults = BeanUtil.copyToList(customerList, CustomerResult.class, new CopyOptions());
-
+        Map<Long, List<StorehousePositionsResult>> positionMap = positionsService.getMap(skuIds);
 
         for (InstockListResult datum : data) {
             for (CustomerResult customerResult : customerResults) {
@@ -331,6 +328,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 
 
             for (SkuResult sku : skuResults) {
+                List<StorehousePositionsResult> positionsResults = positionMap.get(sku.getPositionId());
+                sku.setPositionsResult(positionsResults);
                 if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
                     datum.setSkuResult(sku);
                     break;

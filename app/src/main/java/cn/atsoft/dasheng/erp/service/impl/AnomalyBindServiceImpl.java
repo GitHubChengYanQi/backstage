@@ -56,8 +56,9 @@ public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, Anoma
 
     @Override
     public List<AnomalyBindResult> findListBySpec(AnomalyBindParam param) {
-        return null;
+        return this.baseMapper.customList(param);
     }
+
 
     @Override
     public PageInfo<AnomalyBindResult> findPageBySpec(AnomalyBindParam param) {

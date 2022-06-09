@@ -1,13 +1,16 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
-import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
@@ -15,23 +18,21 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
-import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.*;
-import cn.atsoft.dasheng.message.entity.AuditEntity;
-import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,7 +45,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
-import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
 
 
 /**
@@ -79,10 +79,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Autowired
     private MediaService mediaService;
     @Autowired
-    private DocumentsActionService documentsActionService;
-    @Autowired
-    private MessageProducer messageProducer;
-    @Autowired
     private GetOrigin getOrigin;
     @Autowired
     private ShopCartService shopCartService;
@@ -90,7 +86,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InkindService inkindService;
     @Autowired
     private AnomalyBindService anomalyBindService;
-
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private CustomerService customerService;
 
     @Transactional
     @Override
@@ -184,15 +185,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     }
 
 
-    private void power(ActivitiProcess activitiProcess) {
-        ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
-        if (ToolUtil.isNotEmpty(startSteps)) {
-            ActivitiAudit audit = auditService.query().eq("setps_id", startSteps.getSetpsId()).one();
-            if (!stepsService.checkUser(audit.getRule())) {
-                throw new ServiceException(500, "您没有权限创建任务");
-            }
-        }
-    }
+//    private void power(ActivitiProcess activitiProcess) {
+//        ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
+//        if (ToolUtil.isNotEmpty(startSteps)) {
+//            ActivitiAudit audit = auditService.query().eq("setps_id", startSteps.getSetpsId()).one();
+//            if (!stepsService.checkUser(audit.getRule())) {
+//                throw new ServiceException(500, "您没有权限创建任务");
+//            }
+//        }
+//    }
 
     /**
      * 添加详情(区分批量)
@@ -200,43 +201,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @param param
      */
     public void addDetails(AnomalyParam param) {
-
-
         for (AnomalyDetailParam detailParam : param.getDetailParams()) {
-
-            List<Long> inkindIds = new ArrayList<>();
-            Inkind oldInkind = inkindService.getById(detailParam.getPidInKind());
-            switch (oldInkind.getSource()) {
-                case "inErrorSingle":
-                    for (long i = 0; i < detailParam.getNumber(); i++) {
-                        Inkind inkind = new Inkind();
-                        inkind.setNumber(detailParam.getNumber());
-                        inkind.setCustomerId(param.getCustomerId());
-                        inkind.setBrandId(param.getBrandId());
-                        inkind.setSkuId(param.getSkuId());
-                        inkind.setPid(detailParam.getPidInKind());
-                        inkind.setSource(AnomalyType.InstockError.getName());
-                        inkind.setSourceId(param.getFormId());
-                        inkindService.save(inkind);
-                        inkindIds.add(inkind.getInkindId());
-                    }
-                    break;
-                case "inErrorBatch":    //批量
-                    inkindIds.add(oldInkind.getInkindId());
-                    oldInkind.setNumber(detailParam.getNumber());
-                    oldInkind.setCustomerId(param.getCustomerId());
-                    oldInkind.setBrandId(param.getBrandId());
-                    oldInkind.setSkuId(param.getSkuId());
-                    oldInkind.setSourceId(param.getFormId());
-                    inkindService.updateById(oldInkind);
-                    break;
-            }
-
             AnomalyDetail detail = new AnomalyDetail();
             ToolUtil.copyProperties(detailParam, detail);
             detail.setAnomalyId(param.getAnomalyId());
             detail.setInkindId(detailParam.getPidInKind());
-
             if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
                 String json = JSON.toJSONString(detailParam.getNoticeIds());
                 detail.setRemark(json);
@@ -244,57 +213,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
             detailService.save(detail);
 
-
-            for (Long inkindId : inkindIds) {
-                AnomalyBind anomalyBind = new AnomalyBind();
-                anomalyBind.setInkindId(inkindId);
-                anomalyBind.setDetailId(detail.getDetailId());
-                anomalyBind.setAnomalyId(param.getAnomalyId());
-                anomalyBindService.save(anomalyBind);
-            }
         }
 
     }
 
-    @Override
-    public void submit(AnomalyParam param) {
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "instock").eq("status", 99).eq("module", "instockError").one();
-        //     发起审批流程
-        if (ToolUtil.isNotEmpty(activitiProcess)) {
-            for (AnomalyParam paramParam : param.getParams()) {
-                this.power(activitiProcess);//检查创建权限
-                LoginUser user = LoginContextHolder.getContext().getUser();
-                ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-                activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库异常 ");
-                activitiProcessTaskParam.setQTaskId(paramParam.getFormId());
-                activitiProcessTaskParam.setUserId(paramParam.getCreateUser());
-                activitiProcessTaskParam.setFormId(paramParam.getFormId());
-                activitiProcessTaskParam.setType("instockError");
-                activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-                Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-                //添加小铃铛
-                wxCpSendTemplate.setSource("processTask");
-                wxCpSendTemplate.setSourceId(taskId);
-                //添加log
-                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-                activitiProcessLogService.autoAudit(taskId, 1);
-            }
-        }
-//        else {
-//            /**
-//             * 没有异常流程直接算完成
-//             */
-//            InstockOrder instockOrder = instockOrderService.getById(param.getFormId());
-//            instockOrderService.updateById(instockOrder);
-//            DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();
-//            messageProducer.auditMessageDo(new AuditEntity() {{
-//                setAuditType(CHECK_ACTION);
-//                setFormId(instockOrder.getInstockOrderId());
-//                setForm(ReceiptsEnum.INSTOCK.name());
-//                setActionId(action.getDocumentsActionId());
-//            }});
-//        }
-    }
 
     @Override
     public void delete(AnomalyParam param) {
@@ -307,6 +229,43 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         Anomaly newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        detailService.remove(new QueryWrapper<AnomalyDetail>() {{
+            eq("anomaly_id", param.getAnomalyId());
+        }});
+        addDetails(param);
+
+    }
+
+    @Override
+    public List<Long> createInkind(AnomalyParam param, AnomalyDetailParam detailParam) {
+        List<Long> inkindIds = new ArrayList<>();
+        Inkind oldInkind = inkindService.getById(detailParam.getPidInKind());
+        switch (oldInkind.getSource()) {
+            case "inErrorSingle":
+                for (long i = 0; i < detailParam.getNumber(); i++) {
+                    Inkind inkind = new Inkind();
+                    inkind.setNumber(detailParam.getNumber());
+                    inkind.setCustomerId(param.getCustomerId());
+                    inkind.setBrandId(param.getBrandId());
+                    inkind.setSkuId(param.getSkuId());
+                    inkind.setPid(detailParam.getPidInKind());
+                    inkind.setSource(AnomalyType.InstockError.getName());
+                    inkind.setSourceId(param.getFormId());
+                    inkindService.save(inkind);
+                    inkindIds.add(inkind.getInkindId());
+                }
+                break;
+            case "inErrorBatch":    //批量
+                inkindIds.add(oldInkind.getInkindId());
+                oldInkind.setNumber(detailParam.getNumber());
+                oldInkind.setCustomerId(param.getCustomerId());
+                oldInkind.setBrandId(param.getBrandId());
+                oldInkind.setSkuId(param.getSkuId());
+                oldInkind.setSourceId(param.getFormId());
+                inkindService.updateById(oldInkind);
+                break;
+        }
+        return inkindIds;
     }
 
     @Override
@@ -349,6 +308,19 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         List<AnomalyDetailResult> details = detailService.getDetails(result.getAnomalyId());
         result.setDetails(details);
+
+        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(new ArrayList<Long>() {{
+            add(result.getSkuId());
+        }});
+
+        Brand brand = ToolUtil.isEmpty(result.getBrandId()) ? new Brand() : brandService.getById(result.getBrandId());
+        Customer customer = ToolUtil.isEmpty(result.getCustomerId()) ? new Customer() : customerService.getById(result.getCustomerId());
+
+        if (ToolUtil.isNotEmpty(skuSimpleResults)) {
+            result.setSkuSimpleResult(skuSimpleResults.get(0));
+        }
+        result.setBrand(brand);
+        result.setCustomer(customer);
 
         //返回附件图片等
         if (ToolUtil.isNotEmpty(result.getEnclosure())) {

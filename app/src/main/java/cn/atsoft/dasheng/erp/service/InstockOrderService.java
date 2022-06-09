@@ -106,6 +106,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     void formatResult(InstockOrderResult result);
 
+    List<Long> inStock(InstockOrderParam param);
+
     boolean inStockByOrder(InStockByOrderParam param);
 
     /**

@@ -36,9 +36,11 @@
         <if test="paramCondition.cartId != null">
             and cart_id like CONCAT('%',#{paramCondition.cartId},'%')
         </if>
-        <if test="paramCondition.instockOrderId != null">
+        <if test="paramCondition.sourceId != null">
             and form_id in (
-                select anomaly_id from daoxin_anomaly where form_id in (#{paramCondition.instockOrderId})
+            select anomaly_id from daoxin_anomaly where form_id = (#{paramCondition.sourceId})
+            union
+            select instock_list_id from daoxin_erp_instock_list where instock_order_id = (#{paramCondition.sourceId})
             )
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
@@ -78,7 +80,7 @@
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
         <if test="paramCondition.formId != null">
-            and form_id  = #{paramCondition.formId}
+            and form_id = #{paramCondition.formId}
         </if>
     </select>
 
@@ -172,7 +174,7 @@
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
         <if test="paramCondition.formId != null">
-            and form_id  = #{paramCondition.formId}
+            and form_id = #{paramCondition.formId}
         </if>
     </select>
 

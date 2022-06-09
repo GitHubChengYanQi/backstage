@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
+import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -31,8 +32,6 @@ public interface AnomalyService extends IService<Anomaly> {
 
     Map<Long, AnomalyResult> getMap(List<Long> ids);
 
-    void submit(AnomalyParam param);
-
     /**
      * 删除
      *
@@ -48,6 +47,8 @@ public interface AnomalyService extends IService<Anomaly> {
      * @Date 2022-05-27
      */
     void update(AnomalyParam param);
+
+    List<Long> createInkind(AnomalyParam param, AnomalyDetailParam detailParam);
 
     /**
      * 查询单条数据，Specification模式

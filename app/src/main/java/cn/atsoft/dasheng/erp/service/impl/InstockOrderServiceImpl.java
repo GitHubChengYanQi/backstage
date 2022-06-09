@@ -40,7 +40,9 @@ import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.message.service.AuditMessageService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
@@ -78,8 +80,7 @@ import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
  */
 @Service
 public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, InstockOrder> implements InstockOrderService {
-    @Autowired
-    private InstockService instockService;
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -139,6 +140,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private ShopCartService cartService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
 
     @Override
@@ -574,10 +579,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
             listResults.removeIf(i -> i.getRealNumber() == 0);
             instockListService.format(listResults);
-
             orderResult.setInstockListResults(listResults);
-
-
             List<Long> skuIds = new ArrayList<>();
             for (InstockList instockList : instockLists) {
                 skuIds.add(instockList.getSkuId());
@@ -585,14 +587,152 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             List<StorehousePositionsResult> results = positionsBindService.bindTreeView(skuIds);  //返回树形结构
             orderResult.setBindTreeView(results);
         }
-
-
     }
 
     @Override
     public void formatResult(InstockOrderResult result) {
         DocumentsStatusResult statusResult = documentStatusService.detail(result.getStatus());
         result.setStatusResult(statusResult);
+    }
+
+
+    @Override
+    @Transactional
+    public List<Long> inStock(InstockOrderParam param) {
+        List<Long> inkindIds = new ArrayList<>();
+
+        for (InstockListParam listParam : param.getListParams()) {
+
+            if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
+                handle(listParam, listParam.getInkindIds());
+
+            } else {   //创建实物入库
+                if (listParam.getBatch()) {   //批量
+                    Long inKind = createInKind(listParam);
+                    handle(listParam, inKind);
+                    inkindIds.add(inKind);
+                } else {
+                    for (long i = 0; i < listParam.getNumber(); i++) {
+                        Long inKind = createInKind(listParam);
+                        handle(listParam, inKind);
+                        inkindIds.add(inKind);
+                    }
+                }
+            }
+
+            updateStatus(listParam);
+        }
+        /**
+         * 更新单据状态
+         */
+        boolean b = instockOrderComplete(param.getInstockOrderId());
+        if (b) {
+            /**
+             * 消息队列完成动作
+             */
+            messageProducer.auditMessageDo(new AuditEntity() {{
+                setAuditType(CHECK_ACTION);
+                setMessageType(AuditMessageType.AUDIT);
+                setFormId(param.getInstockOrderId());
+                setForm("instock");
+                setActionId(param.getActionId());
+            }});
+
+        }
+        return inkindIds;
+    }
+
+    /**
+     * 更新清单 和 购物车
+     *
+     * @param listParam
+     */
+    private void updateStatus(InstockListParam listParam) {
+        InstockList instockList = instockListService.getById(listParam.getInstockListId());
+        instockList.setRealNumber(instockList.getRealNumber() - listParam.getNumber());
+        if (instockList.getRealNumber() < 0) {
+            throw new ServiceException(500, "当前入库数量与单据数量不符");
+        }
+        if (instockList.getRealNumber() == 0) {
+            instockList.setStatus(99L);
+        }
+        instockListService.updateById(instockList);
+
+        ShopCart shopCart = cartService.getById(listParam.getShopCartId());
+        shopCart.setNumber(shopCart.getNumber() - listParam.getNumber());
+        if (shopCart.getNumber() < 0) {
+            throw new ServiceException(500, "购物车数量不正确");
+        } else if (shopCart.getNumber() == 0) {
+            shopCart.setStatus(99);
+        }
+        cartService.updateById(shopCart);
+    }
+
+    /**
+     * 创建实物 绑定二维码
+     *
+     * @param param
+     * @return
+     */
+    private Long createInKind(InstockListParam param) {
+        Inkind inkind = new Inkind();
+        inkind.setNumber(param.getNumber());
+        inkind.setSkuId(param.getSkuId());
+        inkind.setCustomerId(param.getCustomerId());
+        inkind.setBrandId(param.getBrandId());
+        inkindService.save(inkind);
+
+        OrCode orCode = new OrCode();
+        orCode.setState(1);
+        orCode.setType("item");
+        orCodeService.save(orCode);
+
+        OrCodeBindParam bindParam = new OrCodeBindParam();
+        bindParam.setOrCodeId(orCode.getOrCodeId());
+        bindParam.setFormId(inkind.getInkindId());
+        bindParam.setSource("item");
+        orCodeBindService.add(bindParam);
+
+        return inkind.getInkindId();
+    }
+
+    /**
+     * 入库操作
+     *
+     * @param param
+     * @param inkindId
+     */
+    private void handle(InstockListParam param, Long inkindId) {
+        StockDetails stockDetails = new StockDetails();
+        stockDetails.setSkuId(param.getSkuId());
+        stockDetails.setBrandId(param.getBrandId());
+        stockDetails.setCustomerId(param.getCustomerId());
+        stockDetails.setInkindId(inkindId);
+        stockDetails.setStorehousePositionsId(param.getStorehousePositionsId());
+        stockDetails.setNumber(param.getNumber());
+
+        StorehousePositions storehousePositions = positionsService.getById(param.getStorehousePositionsId());
+        stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
+
+        stockDetailsService.save(stockDetails);
+    }
+
+    private void handle(InstockListParam param, List<Long> inkindIds) {
+
+        List<StockDetails> stockDetailList = new ArrayList<>();
+        for (Long inkindId : inkindIds) {
+            StockDetails stockDetails = new StockDetails();
+            stockDetails.setSkuId(param.getSkuId());
+            stockDetails.setBrandId(param.getBrandId());
+            stockDetails.setCustomerId(param.getCustomerId());
+            stockDetails.setInkindId(inkindId);
+            stockDetails.setStorehousePositionsId(param.getStorehousePositionsId());
+            stockDetails.setNumber(param.getNumber());
+            stockDetails.setStorehouseId(param.getStoreHouseId());
+            stockDetailList.add(stockDetails);
+        }
+
+        stockDetailsService.saveBatch(stockDetailList);
     }
 
 
@@ -690,8 +830,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
             inkindService.updateBatchById(inkinds);
         }
-        instockLogDetailService.saveBatch(instockLogDetails);
 
+        instockLogDetailService.saveBatch(instockLogDetails);
         instockListService.updateBatchById(instockLists);
         stockDetailsService.saveBatch(stockDetailsList);
 

@@ -26,11 +26,12 @@
         <result column="deptId" property="deptId"/>
         <result column="brand_id" property="brandId"/>
         <result column="customer_id" property="customerId"/>
+        <result column="order_id" property="orderId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">brand_id
-    AS "brandId",customer_id AS"customerId",
+    AS "brandId",customer_id AS"customerId",order_id AS "orderId",
         anomaly_id
         AS "anomalyId", type AS "type", form_id AS "formId", remark AS "remark", enclosure AS "enclosure", theme AS "theme", origin AS "origin", source AS "source", source_id AS "sourceId", sku_id AS "skuId", need_number AS "needNumber", real_number AS "realNumber", reason AS "reason", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>

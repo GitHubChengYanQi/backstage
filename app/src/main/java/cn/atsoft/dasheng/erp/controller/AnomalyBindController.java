@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,21 @@ public class AnomalyBindController extends BaseController {
 //    }
 //
 
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-05-28
+     */
+    @RequestMapping(value = "/allList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData allList(@RequestBody(required = false) AnomalyBindParam anomalyBindParam) {
+        if (ToolUtil.isEmpty(anomalyBindParam)) {
+            anomalyBindParam = new AnomalyBindParam();
+        }
+        List<AnomalyBindResult> list = this.anomalyBindService.findListBySpec(anomalyBindParam);
+        return ResponseData.success(list);
+    }
 
 
 }
