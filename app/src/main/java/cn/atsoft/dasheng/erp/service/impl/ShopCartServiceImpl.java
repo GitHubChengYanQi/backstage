@@ -16,12 +16,10 @@ import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.model.result.ShopCartResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
-import cn.atsoft.dasheng.erp.service.AnomalyService;
-import cn.atsoft.dasheng.erp.service.InstockListService;
-import cn.atsoft.dasheng.erp.service.ShopCartService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.SkuService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -54,6 +52,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private InstockListService instockListService;
     @Autowired
     private AnomalyService anomalyService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Override
     @Transactional
@@ -177,7 +177,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
-        List<Long> anomalyIds = new ArrayList<>();
+        List<Long> anomalyIds = new A rrayList<>();
 
         for (ShopCartResult datum : data) {
             customerIds.add(datum.getCustomerId());
@@ -188,6 +188,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             }
         }
 
+        Map<Long, List<StorehousePositionsResult>> positionMap = positionsService.getMap(skuIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
@@ -203,6 +204,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             }
 
             for (SkuResult skuResult : skuResults) {
+                List<StorehousePositionsResult> results = positionMap.get(skuResult.getSkuId());
+                skuResult.setPositionsResult(results);
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);
                     break;
