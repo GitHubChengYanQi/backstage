@@ -177,7 +177,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
-        List<Long> anomalyIds = new A rrayList<>();
+        List<Long> anomalyIds = new ArrayList<>();
 
         for (ShopCartResult datum : data) {
             customerIds.add(datum.getCustomerId());
