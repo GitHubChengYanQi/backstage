@@ -78,6 +78,15 @@ public class ActionController {
                         i++;
                     }
                 }
+            case INSTOCKERROR:
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (InstockErrorActionEnum instockErrorActionEnum : action.instockErrorActionEnums) {
+                        String value = instockErrorActionEnum.getValue();
+                        instockErrorActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
+                        i++;
+                    }
+                }
                 break;
         }
 

@@ -69,7 +69,6 @@ public enum ProcessType {
     }}),
     INSTOCKERROR("入库异常", "INSTOCKERROR", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.verifyError);
-
     }});
 
 

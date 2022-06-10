@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +71,12 @@ public class AnomalyController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody AnomalyParam anomalyParam) {
+        if (ToolUtil.isNotEmpty(anomalyParam.getAnomalyId())) {
+            throw new ServiceException(500, "缺少参数");
+        }
         this.anomalyService.delete(anomalyParam);
         return ResponseData.success();
     }
-
-
-
 
 
     /**
@@ -87,7 +88,7 @@ public class AnomalyController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<AnomalyResult> detail(@RequestBody AnomalyParam anomalyParam) {
-        AnomalyResult result =  this.anomalyService.detail(anomalyParam.getAnomalyId());
+        AnomalyResult result = this.anomalyService.detail(anomalyParam.getAnomalyId());
         return ResponseData.success(result);
     }
 

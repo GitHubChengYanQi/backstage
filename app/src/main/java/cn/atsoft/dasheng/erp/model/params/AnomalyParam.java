@@ -30,6 +30,8 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     private Long orderId;
 
+
+
     private List<AnomalyParam> params;
 
     private Long instockListId;

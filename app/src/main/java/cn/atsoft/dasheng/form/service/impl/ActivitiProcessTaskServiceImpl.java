@@ -7,10 +7,13 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
@@ -66,6 +69,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private InstockOrderService instockOrderService;
     @Autowired
     private DocumentStatusService statusService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -234,16 +239,16 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
      * @param rule
      * @return
      */
-    private boolean haveME(AuditRule rule,LoginContext loginContext) {
+    private boolean haveME(AuditRule rule, LoginContext loginContext) {
         LoginUser user = loginContext.getUser();
         List<Long> depts = loginContext.getDeptDataScope();
         if (ToolUtil.isEmpty(user.getId())) {
             return false;
         }
         for (AuditRule.Rule ruleRule : rule.getRules()) {
-            if (ToolUtil.isNotEmpty(ruleRule.getDeptPositions())){
+            if (ToolUtil.isNotEmpty(ruleRule.getDeptPositions())) {
                 for (Long dept : depts) {
-                    if(ruleRule.getDeptPositions().stream().anyMatch(i->i.getKey().equals(dept.toString()))){
+                    if (ruleRule.getDeptPositions().stream().anyMatch(i -> i.getKey().equals(dept.toString()))) {
                         return true;
                     }
                 }
@@ -267,11 +272,15 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     public void format(List<ActivitiProcessTaskResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> instockOrderIds = new ArrayList<>();
+        List<Long> anomalyIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
                 case "INSTOCK":
                     instockOrderIds.add(datum.getFormId());
+                    break;
+                case "INSTOCKERROR":
+                    anomalyIds.add(datum.getFormId());
                     break;
             }
         }
@@ -287,6 +296,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<InstockOrder> instockOrders = instockOrderIds.size() == 0 ? new ArrayList<>() : instockOrderService.listByIds(instockOrderIds);
         List<InstockOrderResult> orderResults = BeanUtil.copyToList(instockOrders, InstockOrderResult.class, new CopyOptions());
         instockOrderService.setList(orderResults);
+
+        List<AnomalyOrder> anomalyOrders =anomalyIds.size()==0? new ArrayList<>(): anomalyOrderService.listByIds(anomalyIds);
+        List<AnomalyOrderResult> orderResultList = BeanUtil.copyToList(anomalyOrders, AnomalyOrderResult.class, new CopyOptions());
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
@@ -307,9 +319,18 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 }
             }
 
+            for (AnomalyOrderResult anomalyOrderResult : orderResultList) {
+                if (datum.getType().equals("INSTOCKERROR") && datum.getFormId().equals(anomalyOrderResult.getOrderId())) {
+                    String statusName = statusMap.get(anomalyOrderResult.getStatus());
+                    anomalyOrderResult.setStatusName(statusName);
+                    datum.setReceipts(anomalyOrderResult);
+                    break;
+                }
+            }
+            }
         }
     }
-}
+
 
 
 

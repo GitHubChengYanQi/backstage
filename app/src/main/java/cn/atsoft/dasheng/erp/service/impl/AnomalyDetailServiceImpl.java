@@ -82,10 +82,6 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         }
         List<AnomalyDetail> details = this.query().eq("anomaly_id", anomalyId).eq("display", 1).list();
         List<AnomalyDetailResult> results = BeanUtil.copyToList(details, AnomalyDetailResult.class, new CopyOptions());
-        for (AnomalyDetailResult result : results) {
-            Integer count = bindService.query().eq("detail_id", result.getDetailId()).eq("display", 1).count();
-            result.setNumber(Long.valueOf(count));
-        }
         format(results);
         return results;
     }

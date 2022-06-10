@@ -2,11 +2,18 @@ package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-
+import cn.atsoft.dasheng.erp.entity.Anomaly;
+import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
+import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
-import cn.atsoft.dasheng.form.entity.*;
-import cn.atsoft.dasheng.form.model.result.*;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
@@ -71,6 +78,8 @@ public class taskController extends BaseController {
     private ProcurementOrderService procurementOrderService;
     @Autowired
     private ProcurementPlanService procurementPlanService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -139,6 +148,10 @@ public class taskController extends BaseController {
                 taskService.format(new ArrayList<ActivitiProcessTaskResult>() {{
                     add(taskResult);
                 }});
+                break;
+            case "INSTOCKERROR":
+                AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
+                taskResult.setReceipts(orderResult);
                 break;
         }
         //树形结构

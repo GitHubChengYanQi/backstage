@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
@@ -165,7 +166,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
 
         Map<Long, AnomalyResult> map = new HashMap<>();
-        List<Anomaly> anomalies = this.listByIds(ids);
+        List<Anomaly> anomalies = this.lambdaQuery().in(Anomaly::getAnomalyId, ids).eq(Anomaly::getStatus,0).eq(Anomaly::getDisplay, 1).list();
+
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
         List<AnomalyDetail> details = detailService.query().in("anomaly_id", ids).eq("display", 1).list();
 
@@ -185,16 +187,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     }
 
 
-//    private void power(ActivitiProcess activitiProcess) {
-//        ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
-//        if (ToolUtil.isNotEmpty(startSteps)) {
-//            ActivitiAudit audit = auditService.query().eq("setps_id", startSteps.getSetpsId()).one();
-//            if (!stepsService.checkUser(audit.getRule())) {
-//                throw new ServiceException(500, "您没有权限创建任务");
-//            }
-//        }
-//    }
-
     /**
      * 添加详情(区分批量)
      *
@@ -210,7 +202,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 String json = JSON.toJSONString(detailParam.getNoticeIds());
                 detail.setRemark(json);
             }
-
             detailService.save(detail);
 
         }
@@ -220,7 +211,28 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
     @Override
     public void delete(AnomalyParam param) {
-        this.removeById(getKey(param));
+        Anomaly anomaly = this.getById(param.getAnomalyId());
+        anomaly.setDisplay(0);
+        this.updateById(anomaly);
+
+        AnomalyDetail detail = new AnomalyDetail();
+        detail.setDisplay(0);
+        detailService.update(detail, new QueryWrapper<AnomalyDetail>() {{
+            eq("anomaly_id", anomaly.getAnomalyId());
+        }});
+
+        ShopCart shopCart = new ShopCart();
+        shopCart.setDisplay(0);
+        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+            eq("form_id", anomaly.getAnomalyId());
+        }});
+
+        if (ToolUtil.isNotEmpty(anomaly.getSourceId())) {
+            InstockList instockList = instockListService.getById(anomaly.getSourceId());
+            instockList.setStatus(0L);
+            instockListService.updateById(instockList);
+        }
+
     }
 
     @Override
@@ -334,4 +346,55 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
     }
 
+    @Override
+    public void format(List<AnomalyResult> data) {
+
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (AnomalyResult datum : data) {
+            skuIds.add(datum.getSkuId());
+            brandIds.add(datum.getBrandId());
+            customerIds.add(datum.getCustomerId());
+            ids.add(datum.getAnomalyId());
+        }
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
+        List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+        List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
+
+        for (AnomalyResult datum : data) {
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(datum.getSkuId())) {
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (Brand brand : brandList) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
+                    datum.setBrand(brand);
+                    break;
+                }
+            }
+
+            for (Customer customer : customers) {
+                if (ToolUtil.isNotEmpty(datum.getCustomerId()) && datum.getCustomerId().equals(customer.getCustomerId())) {
+                    datum.setCustomer(customer);
+                    break;
+                }
+            }
+
+            datum.setErrorNumber(datum.getRealNumber() - datum.getNeedNumber());
+            long otherNum = 0L;
+            for (AnomalyDetail detail : details) {
+                if (datum.getAnomalyId().equals(detail.getAnomalyId())) {
+                    otherNum = otherNum + detail.getNumber();
+                }
+            }
+            datum.setOtherNumber(otherNum);
+        }
+
+    }
 }

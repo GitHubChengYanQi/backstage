@@ -36,6 +36,8 @@ public interface AnomalyOrderService extends IService<AnomalyOrder> {
      */
     void delete(AnomalyOrderParam param);
 
+    AnomalyOrderResult detail(Long id);
+
     /**
      * 更新
      *
