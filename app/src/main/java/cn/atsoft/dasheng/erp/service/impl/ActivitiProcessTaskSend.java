@@ -173,12 +173,12 @@ public class ActivitiProcessTaskSend {
                     qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
                 }
 
-                 url = mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                 url = mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId();
                 qualityMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
             break;
             case purchase_complete:
                 users.add(processTask.getCreateUser());
-                url =url + "/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                url =url + "/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId();
                 purchaseMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
                 break;
         }
@@ -236,7 +236,7 @@ public class ActivitiProcessTaskSend {
         switch (type) {
             case audit:
             case send:
-                url = url + "/#/Work/Workflow?" + "id=" + map.get("taskId");
+                url = url + "/#/Receipts/ReceiptsDetail?" + "id=" + map.get("taskId");
                 break;
 //                case quality_perform:
 //                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");

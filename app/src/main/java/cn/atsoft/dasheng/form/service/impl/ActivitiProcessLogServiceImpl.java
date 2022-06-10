@@ -10,8 +10,10 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
@@ -112,6 +114,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private DocumentsActionService documentsActionService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
 
     @Override
@@ -396,7 +400,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     instockOrder.setStatus(documentsStatusId);
                     instockOrderService.updateById(instockOrder);
                     break;
-                case "instockError":
+                case "INSTOCKERROR":
+                    AnomalyOrder anomalyOrder =  anomalyOrderService.getById(formId);
+                    anomalyOrder.setStatus(documentsStatusId);
+                    anomalyOrderService.updateById(anomalyOrder);
                     break;
             }
 
