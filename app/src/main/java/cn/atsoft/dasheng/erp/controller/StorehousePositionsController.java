@@ -78,7 +78,15 @@ public class StorehousePositionsController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/treeView", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData treeView(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+        List<PositionLoop> positionLoops = this.storehousePositionsService.treeView(storehousePositionsParam.getSkuIds());
+        return ResponseData.success(positionLoops);
+    }
+
     /**
+     *
      * 库位二维码打印
      *
      * @author song

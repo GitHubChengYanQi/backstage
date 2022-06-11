@@ -11,8 +11,10 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
@@ -23,10 +25,7 @@ import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.*;
-import cn.atsoft.dasheng.form.pojo.ActionStatus;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
-import cn.atsoft.dasheng.form.pojo.RuleType;
+import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
@@ -116,6 +115,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private DocumentsActionService documentsActionService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
 
     @Override
@@ -400,7 +401,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     instockOrder.setStatus(documentsStatusId);
                     instockOrderService.updateById(instockOrder);
                     break;
-                case "instockError":
+                case "INSTOCKERROR":
+                    AnomalyOrder anomalyOrder =  anomalyOrderService.getById(formId);
+                    anomalyOrder.setStatus(documentsStatusId);
+                    anomalyOrderService.updateById(anomalyOrder);
                     break;
             }
 
@@ -430,7 +434,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "instockError":
                 instockOrderService.updateStatus(processTask);
                 break;
-            case "createInstock":
+            case "INSTOCK":
                 instockOrderService.updateCreateInstockStatus(processTask);
                 break;
         }
@@ -876,6 +880,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return false;
     }
 
+    public Boolean checkUser(AuditRule starUser,Long loginUserId) {
+        List<Long> users = taskSend.selectUsers(starUser);
+        for (Long aLong : users) {
+            if (aLong.equals(loginUserId)) {
+                return true;
+            }
+        }
+        return false;
+    }
     @Override
     public void delete(ActivitiProcessLogParam param) {
         int admin = activitiProcessTaskService.isAdmin(param.getTaskId());
@@ -1343,11 +1356,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Override
     public List<ActivitiProcessLogResult> auditList(ActivitiProcessLogParam param) {
-        List<Long> stepIds = getStepIdsByType("audit");
+        Long userId = LoginContextHolder.getContext().getUserId();
+        List<Long> stepIds = getStepIdsByType("audit", userId);
         List<ActivitiProcessLogResult> logResults = this.baseMapper.auditList(stepIds, param);
         format(logResults);
         return logResults;
     }
+
 
     @Override
     public List<ActivitiProcessLogResult> sendList(ActivitiProcessLogParam param) {
@@ -1358,7 +1373,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     /**
-     * 查出当前跪下的所有步骤
+     * 查出当前下的所有步骤
      *
      * @param type
      * @return
@@ -1375,6 +1390,53 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
         }
         return stepIds;
+    }
+
+    /**
+     * 查出当前下关于用户所有步骤
+     *
+     * @param type
+     * @return
+     */
+    List<Long> getStepIdsByType(String type, Long userId) {
+        List<ActivitiAudit> audits = auditService.list();
+        List<Long> stepIds = new ArrayList<>();
+
+        for (ActivitiAudit audit : audits) {
+            AuditRule rule = audit.getRule();
+            if (ToolUtil.isNotEmpty(rule)) {
+                if (ToolUtil.isNotEmpty(rule.getType()) && rule.getType().toString().equals(type)) {
+                    if (haveME(rule, userId)) {
+                        stepIds.add(audit.getSetpsId());
+                    }
+                }
+            }
+        }
+
+
+        return stepIds;
+    }
+
+    /**
+     * 当前规则指定人
+     *
+     * @param rule
+     * @param userId
+     * @return
+     */
+    private boolean haveME(AuditRule rule, Long userId) {
+        if (ToolUtil.isEmpty(userId)) {
+            return false;
+        }
+        for (AuditRule.Rule ruleRule : rule.getRules()) {
+            for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+                if (appointUser.getKey().equals(userId.toString())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 

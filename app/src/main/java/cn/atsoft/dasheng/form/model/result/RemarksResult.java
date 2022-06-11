@@ -27,9 +27,13 @@ public class RemarksResult implements Serializable {
 
     private ActivitiProcessTaskResult taskResult;
 
+    private List<RemarksResult> childrens;
+
     private Long sourceId;
 
     private String source;
+
+    private Long pid;
     /**
      * 备注id
      */

@@ -33,7 +33,7 @@ public class ProcessTaskEndSend {
         wxCpTemplate.setTitle("流程已结束");
         wxCpTemplate.setDescription(processTask.getTaskName());
         wxCpTemplate.setUserIds(users);
-        String url = mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?id=" + processTask.getProcessTaskId();
+        String url = mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + processTask.getProcessTaskId();
         wxCpTemplate.setUrl(url);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();

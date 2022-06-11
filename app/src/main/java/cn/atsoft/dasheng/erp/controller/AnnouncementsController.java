@@ -137,8 +137,14 @@ public class AnnouncementsController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) AnnouncementsParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new AnnouncementsParam();
+        }
         QueryWrapper<Announcements> queryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getType())) {
+            queryWrapper.eq("type", param.getType());
+        }
         queryWrapper.orderByDesc("sort");
         List<Map<String, Object>> list = this.announcementsService.listMaps(queryWrapper);
         AnnouncementsSelectWrapper selectWrapper = new AnnouncementsSelectWrapper(list);

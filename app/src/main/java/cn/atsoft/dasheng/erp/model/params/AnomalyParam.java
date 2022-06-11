@@ -9,7 +9,6 @@ import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.NonNull;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -17,11 +16,11 @@ import java.util.List;
 
 /**
  * <p>
- * 异常单据
+ *
  * </p>
  *
  * @author song
- * @since 2022-04-12
+ * @since 2022-05-27
  */
 @Data
 @ApiModel
@@ -29,43 +28,65 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private String enclosure;
+    private Long orderId;
 
-    private AnomalyType anomalyType;
+    private Long instockNumber;
+
+    private List<AnomalyParam> params;
+
+    private Long instockListId;
+
+    private List<AnomalyDetailParam> detailParams;
+
+    @ApiModelProperty("")
+    private Long anomalyId;
+
+    @ApiModelProperty("")
+    private String type;
+
+    @ApiModelProperty("")
+    private Long formId;
+
 
     @NotNull
-    private List<AnomalyDetailParam> detailParams;
+    private AnomalyType anomalyType;
+
+
+    private String checkNumber;
+    /**
+     * 供应商id
+     */
+
+    private Long customerId;
+    /**
+     * 品牌
+     */
+    private Long brandId;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String remark;
+
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
 
     /**
      * 主题
      */
+    @ApiModelProperty("主题")
     private String theme;
 
     /**
-     * 来源
+     * 来源Json字符串
      */
+    @ApiModelProperty("来源Json字符串")
     private String origin;
 
-
-    private String remark;
-    /**
-     * 异常id
-     */
-    @ApiModelProperty("异常id")
-    private Long anomalyId;
-
-    /**
-     * 类型
-     */
-    @ApiModelProperty("类型")
-    private String type;
-
-    /**
-     * 单据id
-     */
-    @NotNull
-    @ApiModelProperty("单据id")
-    private Long formId;
     /**
      * 来源
      */
@@ -79,39 +100,57 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
     private Long sourceId;
 
     /**
-     * 创建者
+     * 物料
      */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
+    @ApiModelProperty("物料")
+    @NotNull
+    private Long skuId;
 
     /**
-     * 修改者
+     * 需要数量
      */
-    @ApiModelProperty(hidden = true)
-    private Long updateUser;
+    @NotNull
+    @ApiModelProperty("需要数量")
+    private Long needNumber;
 
     /**
-     * 创建时间
+     * 实际数量
      */
+    @NotNull
+    @ApiModelProperty("实际数量")
+    private Long realNumber;
+
+    /**
+     * 原因说明
+     */
+    @ApiModelProperty("原因说明")
+    private String reason;
+
+    /**
+     * 可以入库
+     */
+    @ApiModelProperty("可以入库 ")
+    private Integer status;
+
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
-    /**
-     * 修改时间
-     */
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
+
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
-    /**
-     * 状态
-     */
-    @ApiModelProperty("状态")
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
+
+    @ApiModelProperty("")
     private Integer display;
 
     /**
-     * 部门id
+     * 部门编号
      */
-    @ApiModelProperty("部门id")
+    @ApiModelProperty("部门编号")
     private Long deptId;
 
     @ApiModelProperty("父ID顺序数组")

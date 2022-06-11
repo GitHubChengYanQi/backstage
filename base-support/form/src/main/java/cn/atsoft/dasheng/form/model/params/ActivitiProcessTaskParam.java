@@ -5,6 +5,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 /**
  * <p>
- * 流程任务表	
+ * 流程任务表
  * </p>
  *
  * @author Jazz

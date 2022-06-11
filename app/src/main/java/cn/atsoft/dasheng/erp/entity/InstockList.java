@@ -123,11 +123,9 @@ public class InstockList implements Serializable {
     @TableField("brand_id")
     private Long brandId;
 
-    /**
-     * 产品id
-     */
-    @TableField("item_id")
-    private Long itemId;
+
+    @TableField("status")
+    private Long status;
 
     /**
      * 数量
@@ -195,12 +193,12 @@ public class InstockList implements Serializable {
         this.brandId = brandId;
     }
 
-    public Long getItemId() {
-        return itemId;
+    public Long getStatus() {
+        return status;
     }
 
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
+    public void setStatus(Long status) {
+        this.status = status;
     }
 
     public Long getNumber() {
@@ -361,7 +359,6 @@ public class InstockList implements Serializable {
         return "InstockList{" +
                 "instockListId=" + instockListId +
                 ", brandId=" + brandId +
-                ", itemId=" + itemId +
                 ", number=" + number +
                 ", instockOrderId=" + instockOrderId +
                 ", createTime=" + createTime +

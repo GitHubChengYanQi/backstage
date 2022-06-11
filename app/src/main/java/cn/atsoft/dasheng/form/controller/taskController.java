@@ -2,11 +2,18 @@ package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-
+import cn.atsoft.dasheng.erp.entity.Anomaly;
+import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
+import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
-import cn.atsoft.dasheng.form.entity.*;
-import cn.atsoft.dasheng.form.model.result.*;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
@@ -71,6 +78,8 @@ public class taskController extends BaseController {
     private ProcurementOrderService procurementOrderService;
     @Autowired
     private ProcurementPlanService procurementPlanService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -85,6 +94,9 @@ public class taskController extends BaseController {
     @RequestMapping(value = "/comments", method = RequestMethod.POST)
     @ApiOperation("新建评论")
     public ResponseData addComments(@RequestBody AuditParam auditParam) {
+        if (ToolUtil.isEmpty(auditParam.getTaskId())) {
+            throw new ServiceException(500, "请检查任务id");
+        }
         remarksService.addComments(auditParam);
         return ResponseData.success();
     }
@@ -94,7 +106,7 @@ public class taskController extends BaseController {
     public ResponseData<ActivitiProcessTaskResult> detail(@Param("taskId") Long taskId) {
         //流程任务
         if (ToolUtil.isEmpty(taskId)) {
-            throw  new ServiceException(500,"缺少taskId");
+            throw new ServiceException(500, "缺少taskId");
         }
         ActivitiProcessTask processTask = taskService.getById(taskId);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
@@ -132,6 +144,15 @@ public class taskController extends BaseController {
                 procurementPlanService.detail(procurementPlanResult);
                 taskResult.setObject(procurementPlanResult);
                 break;
+            case "INSTOCK":
+                taskService.format(new ArrayList<ActivitiProcessTaskResult>() {{
+                    add(taskResult);
+                }});
+                break;
+            case "INSTOCKERROR":
+                AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
+                taskResult.setReceipts(orderResult);
+                break;
         }
         //树形结构
         ActivitiStepsResult stepResult = stepsService.getStepResult(taskResult.getProcessId());
@@ -164,8 +185,7 @@ public class taskController extends BaseController {
                  * 取节点规则
                  */
                 ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
-
-                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) && activitiAudit.getRule().getType() == RuleType.audit && activitiProcessLogService.checkUser(activitiAudit.getRule())) {
+                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) &&  activitiProcessLogService.checkUser(activitiAudit.getRule())) {
                     taskResult.setPermissions(true);
                     break;
                 }

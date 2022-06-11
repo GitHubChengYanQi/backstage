@@ -113,6 +113,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         entity.setNumber((long) totalCount);
         this.updateById(entity);
 
+
         //发起审批流程
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "purchase").eq("status", 99).eq("module", "purchaseAsk").one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
