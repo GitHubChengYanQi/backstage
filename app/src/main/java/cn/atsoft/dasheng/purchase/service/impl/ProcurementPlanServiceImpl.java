@@ -139,7 +139,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1);
+            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
         } else {
             entity.setStatus(98);
             this.updateById(entity);

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -156,7 +157,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
                     eq("quality_task_id", param.getQualityTaskId());
                 }});
                 ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
-                activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 0);
+                activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 0,LoginContextHolder.getContext().getUserId());
             }
         } else
             //  更新主任务状态
@@ -169,7 +170,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
                 }});
 
                 ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
-                activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1);
+                activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1, LoginContextHolder.getContext().getUserId());
             }
 
 

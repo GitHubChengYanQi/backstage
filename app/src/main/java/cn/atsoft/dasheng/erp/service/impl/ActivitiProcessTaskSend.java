@@ -124,7 +124,7 @@ public class ActivitiProcessTaskSend {
      * @param auditRule
      * @param taskId
      */
-    public void send(RuleType type, AuditRule auditRule, Long taskId) {
+    public void send(RuleType type, AuditRule auditRule, Long taskId,Long loginUserId) {
         List<Long> users = new ArrayList<>();
 
         Map<String, String> aboutSend = this.getAboutSend(taskId, type);//获取任务关联
@@ -148,7 +148,7 @@ public class ActivitiProcessTaskSend {
                 qualityMessageSend.send(taskId, type, users, url, createName);
                 break;
             case purchase_complete:
-                purchaseAskService.complateAsk(taskId);
+                purchaseAskService.complateAsk(taskId,loginUserId);
                 this.completeSend(type,aboutSend);
                 break;
         }

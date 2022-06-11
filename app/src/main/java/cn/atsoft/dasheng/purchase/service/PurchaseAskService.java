@@ -78,7 +78,7 @@ public interface PurchaseAskService extends IService<PurchaseAsk> {
 
     void rejected(Long askId);
 
-    void complateAsk(Long processTaskId);
+    void complateAsk(Long processTaskId,Long loginUserId);
 
     List<PurchaseAskResult> getResults(List<Long> askIds);
 

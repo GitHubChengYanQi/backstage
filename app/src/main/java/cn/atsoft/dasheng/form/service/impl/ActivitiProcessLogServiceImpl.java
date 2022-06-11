@@ -140,15 +140,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     public void audit(Long taskId, Integer status) {
 //        //判断采购申请状态
 //        askService.updateStatus(taskId, status);
-        this.auditPerson(taskId, status);
+        Long loginUserId = LoginContextHolder.getContext().getUserId();
+        this.auditPerson(taskId, status,loginUserId);
     }
 
     @Override
-    public void autoAudit(Long taskId, Integer status) {
+    public void autoAudit(Long taskId, Integer status,Long loginUserId) {
         if (ToolUtil.isEmpty(status)) {
             status = 1;
         }
-        this.auditPerson(taskId, status);
+        this.auditPerson(taskId, status,loginUserId);
     }
 
 
@@ -160,7 +161,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         }
     }
 
-    public void auditPerson(Long taskId, Integer status) {
+    public void auditPerson(Long taskId, Integer status,Long loginUserId) {
         if (ToolUtil.isEmpty(status)) {
             throw new ServiceException(500, "请填写审核状态");
         }
@@ -291,7 +292,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 }
             } else {
                 //判断权限  筛选对应log
-                if (this.checkUser(activitiAudit.getRule())) {
+                if (this.checkUser(activitiAudit.getRule(),loginUserId)) {
                     updateStatus(activitiProcessLog.getLogId(), status);
                     setStatus(logs, activitiProcessLog.getLogId());
                     //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
@@ -320,7 +321,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         /**
          * 自动审批 抄送节点以及判断上级更新上级路由与分支
          */
-        loopNext(task, activitiAudits, allSteps, auditCheck);
+        loopNext(task, activitiAudits, allSteps, auditCheck,loginUserId);
         /**
          * 流程结束需要重新获取需要审批的节点
          */
@@ -352,7 +353,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 /**
                  * 如果是子单据  子单据完成  反向去更新父级状态
                  */
-                this.updateParentProcessTask(task);
+                this.updateParentProcessTask(task,loginUserId);
             }
             //推送流程结束消息
             endSend.endSend(task.getProcessTaskId());
@@ -440,7 +441,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         }
     }
 
-    private void updateParentProcessTask(ActivitiProcessTask processTask) {
+    private void updateParentProcessTask(ActivitiProcessTask processTask,Long loginUserId) {
         ThemeAndOrigin origin = new ThemeAndOrigin();
         switch (processTask.getType()) {
             case "outQuality":
@@ -454,10 +455,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 //如果来源存的是流程任务的id
                                 ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
 
-                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus());
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus(),loginUserId);
                             } else {
                                 //如果来源存的是主单据的id
-                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus());
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus(),loginUserId);
                             }
                         }
                     }
@@ -476,10 +477,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 //如果来源存的是流程任务的id
                                 ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
 
-                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus());
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(),loginUserId);
                             } else {
                                 //如果来源存的是主单据的id
-                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus());
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(),loginUserId);
                             }
                         }
                     }
@@ -495,10 +496,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 //如果来源存的是流程任务的id
                                 ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
 
-                                checkAction(parentProcessTask.getProcessTaskId(), InstockErrorActionEnum.done.getStatus());
+                                checkAction(parentProcessTask.getProcessTaskId(), InstockErrorActionEnum.done.getStatus(),loginUserId);
                             } else {
                                 //如果来源存的是主单据的id
-                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCKERROR.name(), InstockErrorActionEnum.done.getStatus());
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCKERROR.name(), InstockErrorActionEnum.done.getStatus(),loginUserId);
                             }
                         }
                     }
@@ -543,12 +544,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         taskSend.refuseTask(processTask.getProcessTaskId());
     }
 
-    private void loopNext(ActivitiProcessTask task, List<ActivitiAudit> activitiAuditList, List<ActivitiSteps> allSteps, Boolean auditCheck) {
+    private void loopNext(ActivitiProcessTask task, List<ActivitiAudit> activitiAuditList, List<ActivitiSteps> allSteps, Boolean auditCheck,Long loginUserId) {
 
         List<ActivitiProcessLog> audit = this.getAudit(task.getProcessTaskId());
 
         if (auditCheck) {
-            this.sendNextStepsByTask(task, audit);
+            this.sendNextStepsByTask(task, audit,loginUserId);
         }
         List<ActivitiProcessLog> logs = listByTaskId(task.getProcessTaskId());
 
@@ -573,7 +574,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         processLog.setStatus(1);
                     }
                     this.updateBatchById(processLogs);
-                    loopNext(task, activitiAuditList, allSteps, auditCheck);
+                    loopNext(task, activitiAuditList, allSteps, auditCheck,loginUserId);
                 }
             }
         }
@@ -595,7 +596,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
      * @param
      */
     @Override
-    public void checkAction(Long id, String formType, Long actionId) {
+    public void checkAction(Long id, String formType, Long actionId,Long loginUserId) {
 
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", formType).eq("form_id", id).eq("display", 1).one();
         List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
@@ -607,13 +608,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         for (ActivitiProcessLog processLog : logs) {
             for (ActivitiSteps activitiStep : activitiSteps) {
                 if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
-                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId);
+                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId,loginUserId);
                 }
             }
         }
     }
 
-    public void checkAction(Long id, Long actionId) {
+    public void checkAction(Long id, Long actionId,Long loginUserId) {
 
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(id);
         List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
@@ -625,7 +626,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         for (ActivitiProcessLog processLog : logs) {
             for (ActivitiSteps activitiStep : activitiSteps) {
                 if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
-                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId);
+                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId,loginUserId);
                 }
             }
         }
@@ -639,7 +640,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
      * @param
      */
     @Override
-    public void checkLogActionComplete(Long taskId, Long stepId, Long actionId) {
+    public void checkLogActionComplete(Long taskId, Long stepId, Long actionId, Long loginUserId) {
         ActivitiProcessLog processLog = this.query().eq("task_id", taskId).eq("setps_id", stepId).one();
         ActivitiAuditResult audit = auditService.getAudit(stepId);
 
@@ -670,7 +671,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     }
                 }
                 if (completeFlag && isChecked) {
-                    this.autoAudit(taskId, 1);
+                    this.autoAudit(taskId, 1,loginUserId);
                 }
             }
 
@@ -1102,7 +1103,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
 
-    public void sendNextStepsByTask(ActivitiProcessTask task, List<ActivitiProcessLog> audit) {
+    public void sendNextStepsByTask(ActivitiProcessTask task, List<ActivitiProcessLog> audit,Long loginUserId) {
         if (ToolUtil.isEmpty(task)) {
             throw new ServiceException(500, "未找到相关流程任务");
         }
@@ -1126,7 +1127,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                 if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
                     RuleType ruleType = activitiAudit.getRule().getType();
-                    taskSend.send(ruleType, activitiAudit.getRule(), task.getProcessTaskId());
+                    taskSend.send(ruleType, activitiAudit.getRule(), task.getProcessTaskId(),loginUserId);
                 }
             }
         }
