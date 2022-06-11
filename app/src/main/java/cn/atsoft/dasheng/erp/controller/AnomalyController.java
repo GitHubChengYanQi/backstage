@@ -79,6 +79,13 @@ public class AnomalyController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/dealWithError", method = RequestMethod.POST)
+    @ApiOperation("处理")
+    public ResponseData dealWithError(@RequestBody AnomalyParam anomalyParam) {
+        this.anomalyService.dealWithError(anomalyParam);
+        return ResponseData.success();
+    }
+
     /**
      * 查看详情接口
      *

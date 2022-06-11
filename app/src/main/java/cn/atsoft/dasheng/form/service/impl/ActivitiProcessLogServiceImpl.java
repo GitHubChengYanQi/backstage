@@ -840,6 +840,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return false;
     }
 
+    public Boolean checkUser(AuditRule starUser,Long loginUserId) {
+        List<Long> users = taskSend.selectUsers(starUser);
+        for (Long aLong : users) {
+            if (aLong.equals(loginUserId)) {
+                return true;
+            }
+        }
+        return false;
+    }
     @Override
     public void delete(ActivitiProcessLogParam param) {
         int admin = activitiProcessTaskService.isAdmin(param.getTaskId());

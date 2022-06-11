@@ -13,6 +13,8 @@ import cn.atsoft.dasheng.erp.service.AnnouncementsService;
 import cn.atsoft.dasheng.erp.service.AnomalyBindService;
 import cn.atsoft.dasheng.erp.service.AnomalyDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
@@ -43,6 +45,8 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     private AnomalyBindService bindService;
     @Autowired
     private AnnouncementsService announcementsService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(AnomalyDetailParam param) {
@@ -113,9 +117,24 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         return entity;
     }
 
-    private void format(List<AnomalyDetailResult> data) {
+    @Override
+    public void format(List<AnomalyDetailResult> data) {
+
+        List<Long> userIds = new ArrayList<>();
+        for (AnomalyDetailResult datum : data) {
+            userIds.add(datum.getUserId());
+        }
+
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
         for (AnomalyDetailResult datum : data) {
+            for (User user : userList) {
+                if (ToolUtil.isNotEmpty(datum.getUserId()) && datum.getUserId().equals(user.getUserId())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
+
             if (ToolUtil.isNotEmpty(datum.getRemark())) {
                 List<Long> noticeIds = JSON.parseArray(datum.getRemark(), Long.class);
                 List<Announcements> announcementsList = announcementsService.listByIds(noticeIds);

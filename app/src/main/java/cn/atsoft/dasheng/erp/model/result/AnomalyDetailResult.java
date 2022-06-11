@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.Announcements;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import io.swagger.models.auth.In;
 import lombok.Data;
 
@@ -31,6 +32,8 @@ public class AnomalyDetailResult implements Serializable {
     private List<String> reasonUrls;
 
     private List<String> opinionUrls;
+
+    private User user;
 
     @ApiModelProperty("")
     private Long detailId;

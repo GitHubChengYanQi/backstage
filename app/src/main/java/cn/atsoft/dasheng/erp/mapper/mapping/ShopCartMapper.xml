@@ -56,7 +56,7 @@
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
         <if test="paramCondition.status != null">
-            and status like CONCAT('%',#{paramCondition.status},'%')
+            and status =#{paramCondition.status}
         </if>
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
@@ -81,6 +81,12 @@
         </if>
         <if test="paramCondition.formId != null">
             and form_id = #{paramCondition.formId}
+        </if>
+        <if test="paramCondition.types != null and paramCondition.types.size >0 ">
+            and type in
+            <foreach collection="paramCondition.types" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
         </if>
     </select>
 

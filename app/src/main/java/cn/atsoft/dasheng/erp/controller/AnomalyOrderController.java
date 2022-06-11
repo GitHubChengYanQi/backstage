@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,13 @@ public class AnomalyOrderController extends BaseController {
         return ResponseData.success();
     }
 
+
+    @RequestMapping(value = "/submit", method = RequestMethod.POST)
+    @ApiOperation("异常单据提交")
+    public ResponseData submit(@RequestBody AnomalyOrderParam anomalyOrderParam) {
+        this.anomalyOrderService.submit(anomalyOrderParam);
+        return ResponseData.success();
+    }
 //    /**
 //     * 编辑接口
 //     *
@@ -72,39 +80,37 @@ public class AnomalyOrderController extends BaseController {
 //        return ResponseData.success();
 //    }
 //
-//    /**
-//     * 查看详情接口
-//     *
-//     * @author song
-//     * @Date 2022-06-09
-//     */
-//    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-//    @ApiOperation("详情")
-//    public ResponseData<AnomalyOrderResult> detail(@RequestBody AnomalyOrderParam anomalyOrderParam) {
-//        AnomalyOrder detail = this.anomalyOrderService.getById(anomalyOrderParam.getOrderId());
-//        AnomalyOrderResult result = new AnomalyOrderResult();
-//        ToolUtil.copyProperties(detail, result);
-//
-//
-//        return ResponseData.success(result);
-//    }
-//
-//    /**
-//     * 查询列表
-//     *
-//     * @author song
-//     * @Date 2022-06-09
-//     */
-//    @RequestMapping(value = "/list", method = RequestMethod.POST)
-//    @ApiOperation("列表")
-//    public PageInfo<AnomalyOrderResult> list(@RequestBody(required = false) AnomalyOrderParam anomalyOrderParam) {
-//        if(ToolUtil.isEmpty(anomalyOrderParam)){
-//            anomalyOrderParam = new AnomalyOrderParam();
-//        }
-//        return this.anomalyOrderService.findPageBySpec(anomalyOrderParam);
-//    }
+    /**
+     * 查看详情接口
+     *
+     * @author song
+     * @Date 2022-06-09
+     */
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData<AnomalyOrderResult> detail(@RequestBody AnomalyOrderParam anomalyOrderParam) {
+        AnomalyOrder detail = this.anomalyOrderService.getById(anomalyOrderParam.getOrderId());
+        AnomalyOrderResult result = new AnomalyOrderResult();
+        ToolUtil.copyProperties(detail, result);
 
 
+        return ResponseData.success(result);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-06-09
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<AnomalyOrderResult> list(@RequestBody(required = false) AnomalyOrderParam anomalyOrderParam) {
+        if(ToolUtil.isEmpty(anomalyOrderParam)){
+            anomalyOrderParam = new AnomalyOrderParam();
+        }
+        return this.anomalyOrderService.findPageBySpec(anomalyOrderParam);
+    }
 
 
 }

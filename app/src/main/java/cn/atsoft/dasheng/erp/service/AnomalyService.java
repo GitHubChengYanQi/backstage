@@ -48,6 +48,8 @@ public interface AnomalyService extends IService<Anomaly> {
      */
     void update(AnomalyParam param);
 
+    void dealWithError(AnomalyParam param);
+
     List<Long> createInkind(AnomalyParam param, AnomalyDetailParam detailParam);
 
     /**

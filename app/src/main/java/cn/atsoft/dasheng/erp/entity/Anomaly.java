@@ -24,6 +24,15 @@ public class Anomaly implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("check_number")
+    private String checkNumber;
+
+    /**
+     * 可入库数量
+     */
+    @TableField("instock_number")
+    private Long instockNumber;
+
     @TableField("order_id")
     private Long orderId;
     /**
@@ -133,6 +142,21 @@ public class Anomaly implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public String getCheckNumber() {
+        return checkNumber;
+    }
+
+    public void setCheckNumber(String checkNumber) {
+        this.checkNumber = checkNumber;
+    }
+
+    public Long getInstockNumber() {
+        return instockNumber;
+    }
+
+    public void setInstockNumber(Long instockNumber) {
+        this.instockNumber = instockNumber;
+    }
 
     public Long getCustomerId() {
         return customerId;

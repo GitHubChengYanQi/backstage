@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -28,6 +29,10 @@ public class AnomalyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String checkNumber;
+
+    private User user;
+
     private Long otherNumber;
 
     private Long errorNumber;
@@ -40,6 +45,7 @@ public class AnomalyResult implements Serializable {
 
     private Customer customer;
 
+    private Long instockNumber;
 
     private List<AnomalyDetailResult> details;
 

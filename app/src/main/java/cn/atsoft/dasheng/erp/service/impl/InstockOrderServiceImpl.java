@@ -635,6 +635,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 setMessageType(AuditMessageType.AUDIT);
                 setFormId(param.getInstockOrderId());
                 setForm("instock");
+                setMaxTimes(2);
+                setTimes(1);
                 setActionId(param.getActionId());
             }});
 
