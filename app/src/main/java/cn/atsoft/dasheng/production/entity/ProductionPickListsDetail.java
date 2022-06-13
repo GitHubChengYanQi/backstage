@@ -46,6 +46,12 @@ public class ProductionPickListsDetail implements Serializable {
     @TableField("storehouse_id")
     private Long storehouseId;
 
+    @TableField("brand_id")
+    private Long brandId;
+
+    @TableField("customer_id")
+    private Long customerId;
+
 
 
     /**
@@ -100,6 +106,22 @@ public class ProductionPickListsDetail implements Serializable {
 
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
     public Integer getStatus() {

@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -39,6 +40,28 @@ public class ProductionPickListsResult implements Serializable {
     private List<ProductionPickListsCartResult> cartResults;
     private List<StorehouseResult> storehouseResults;
     private List<StorehousePositionsResult> storehousePositionsResults;
+
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
+    /**
+     * 附件
+     */
+    @ApiModelProperty("关联人（多）")
+    private String userIds;
+    /**
+     * remarks
+     */
+    @ApiModelProperty("注意事项")
+    private String remarks;
+
+    /**
+     * note
+     */
+    @ApiModelProperty("备注")
+    private String note;
 
     /**
      * 领料单

@@ -12,8 +12,6 @@ import org.omg.CORBA.LongHolder;
 public class StockSkuTotal {
 
     private Long skuId;
-    private Long storehousePositionsId;
     private Long number;
-    private StorehousePositionsResult storehousePositionsResult;
 
 }

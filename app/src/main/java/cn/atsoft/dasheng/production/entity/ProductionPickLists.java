@@ -38,11 +38,30 @@ public class ProductionPickLists implements Serializable {
     @TableField("user_id")
     private Long userId;
 
+    @TableField("user_ids")
+    private Long userIds;
+
     /**
      * 来源
      */
     @TableField("source")
     private String source;
+    /**
+     * 附件
+     */
+    @TableField("enclosure")
+    private String enclosure;
+    /**
+     * remark
+     */
+    @TableField("remarks")
+    private String remarks;
+
+    /**
+     * remark
+     */
+    @TableField("note")
+    private String note;
 
     /**
      * 来源id
@@ -92,6 +111,13 @@ public class ProductionPickLists implements Serializable {
     @TableField("status")
     private Integer status;
 
+    public Long getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(Long userIds) {
+        this.userIds = userIds;
+    }
 
     public Long getPickListsId() {
         return pickListsId;
@@ -187,6 +213,30 @@ public class ProductionPickLists implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     @Override

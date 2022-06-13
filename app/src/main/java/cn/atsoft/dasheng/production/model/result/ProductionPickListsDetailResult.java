@@ -34,6 +34,8 @@ public class ProductionPickListsDetailResult implements Serializable {
     private Long storehouseId;
     private UserResult userResult;
     private String pickListsCoding;
+    private Integer stockNumber;
+    private Boolean isMeet;
     /**
      * 子表id
      */
@@ -74,6 +76,22 @@ public class ProductionPickListsDetailResult implements Serializable {
     @ApiModelProperty(hidden = true)
     @JSONField(serialize = false,serializeUsing= ToStringSerializer.class)
     private Long updateUser;
+
+
+    /**
+     * 品牌
+     */
+    @ApiModelProperty("品牌")
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long brandId;
+
+    /**
+     * 供应商
+     */
+    @ApiModelProperty("供应商")
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long customerId;
+
 
     /**
      * 创建时间

@@ -47,6 +47,18 @@ public class ProductionPickListsDetailParam implements Serializable, BaseValidat
     @ApiModelProperty("物料id")
     private Long skuId;
 
+    /**
+     * 品牌
+     */
+    @ApiModelProperty("品牌")
+    private Long brandId;
+
+    /**
+     * 供应商
+     */
+    @ApiModelProperty("供应商")
+    private Long customerId;
+
     @ApiModelProperty("")
     private Integer number;
 

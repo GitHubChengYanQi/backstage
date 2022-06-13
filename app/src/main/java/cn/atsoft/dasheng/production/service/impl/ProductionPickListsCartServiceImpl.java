@@ -57,6 +57,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             ProductionPickListsCart entity = getEntity(productionPickListsCartParam);
             entitys.add(entity);
         }
+        //TODO 验证库存  锁定库存
 
         this.saveBatch(entitys);
     }
