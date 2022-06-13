@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
+import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
@@ -14,18 +16,16 @@ public class CheckInstock {
 
     @Autowired
     private InstockOrderService instockOrderService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
 
-    public Boolean checkTask(Long orderId, RuleType ruleType){
-        InstockOrder instockOrder = instockOrderService.getById(orderId);
+    public Boolean checkTask(Long orderId, RuleType ruleType) {
+        AnomalyOrder anomalyOrder = anomalyOrderService.getById(orderId);
         switch (ruleType) {
 
-            case purchase_complete:
-                if (instockOrder.getState().equals(98)) {
-                    return true;
-                } else {
-                    return false;
-                }
+            case status:
+                return true;
 
             default:
                 return false;

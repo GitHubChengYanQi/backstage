@@ -30,6 +30,10 @@ public class MenuDto implements Serializable {
      */
     private Long pid;
     /**
+     * 分类
+     */
+    private Integer type;
+    /**
      * 菜单父编号
      */
     private String pcode;

@@ -64,8 +64,6 @@ public class SkuResult implements Serializable {
     private Long storehouseId;
     private Long positionId;
     private Integer stockNumber = 0;
-
-
     private List<StorehousePositionsResult> positionsResult;
 
     private StorehouseResult storehouseResult;

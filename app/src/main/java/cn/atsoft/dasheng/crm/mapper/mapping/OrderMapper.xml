@@ -191,7 +191,9 @@
             select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
-             )
+            ) or buyer_id in (select customer_id from daoxin_crm_customer where customer_name like
+            #{paramCondition.skuName} and display = 1
+            ) or coding like #{paramCondition.skuName}
         </if>
     </select>
 

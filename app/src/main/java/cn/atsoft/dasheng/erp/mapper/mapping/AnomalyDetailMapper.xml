@@ -6,25 +6,27 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.AnomalyDetail">
         <id column="detail_id" property="detailId"/>
         <result column="anomaly_id" property="anomalyId"/>
-        <result column="sku_id" property="skuId"/>
-        <result column="type" property="type"/>
+        <result column="inkind_id" property="inkindId"/>
+        <result column="stauts" property="stauts"/>
         <result column="remark" property="remark"/>
-        <result column="create_user" property="createUser"/>
-        <result column="update_user" property="updateUser"/>
+        <result column="reason_img" property="reasonImg"/>
+        <result column="user_id" property="userId"/>
+        <result column="opinion" property="opinion"/>
+        <result column="opinion_img" property="opinionImg"/>
+        <result column="description" property="description"/>
         <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
         <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
-        <result column="plan_number" property="planNumber"/>
-        <result column="real_number" property="realNumber"/>
-
+        <result column="number" property="number"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List"> plan_number
-    AS "planNumber" ,real_number AS "realNumber",
-        detail_id
-        AS "detailId", anomaly_id AS "anomalyId", sku_id AS "skuId", type AS "type", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    <sql id="Base_Column_List">number
+    AS "number",
+        detail_id AS "detailId", anomaly_id AS "anomalyId", inkind_id AS "inkindId", stauts AS "stauts", remark AS "remark", reason_img AS "reasonImg", user_id AS "userId", opinion AS "opinion", opinion_img AS "opinionImg", description AS "description", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -39,26 +41,41 @@
         <if test="paramCondition.anomalyId != null">
             and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>
-        <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        <if test="paramCondition.inkindId != null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
         </if>
-        <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
+        <if test="paramCondition.stauts != null">
+            and stauts like CONCAT('%',#{paramCondition.stauts},'%')
         </if>
         <if test="paramCondition.remark != null and paramCondition.remark != ''">
             and remark like CONCAT('%',#{paramCondition.remark},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        <if test="paramCondition.reasonImg != null and paramCondition.reasonImg != ''">
+            and reason_img like CONCAT('%',#{paramCondition.reasonImg},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.opinion != null and paramCondition.opinion != ''">
+            and opinion like CONCAT('%',#{paramCondition.opinion},'%')
+        </if>
+        <if test="paramCondition.opinionImg != null and paramCondition.opinionImg != ''">
+            and opinion_img like CONCAT('%',#{paramCondition.opinionImg},'%')
+        </if>
+        <if test="paramCondition.description != null and paramCondition.description != ''">
+            and description like CONCAT('%',#{paramCondition.description},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
@@ -78,26 +95,41 @@
         <if test="paramCondition.anomalyId != null">
             and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>
-        <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        <if test="paramCondition.inkindId != null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
         </if>
-        <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
+        <if test="paramCondition.stauts != null">
+            and stauts like CONCAT('%',#{paramCondition.stauts},'%')
         </if>
         <if test="paramCondition.remark != null and paramCondition.remark != ''">
             and remark like CONCAT('%',#{paramCondition.remark},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        <if test="paramCondition.reasonImg != null and paramCondition.reasonImg != ''">
+            and reason_img like CONCAT('%',#{paramCondition.reasonImg},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.opinion != null and paramCondition.opinion != ''">
+            and opinion like CONCAT('%',#{paramCondition.opinion},'%')
+        </if>
+        <if test="paramCondition.opinionImg != null and paramCondition.opinionImg != ''">
+            and opinion_img like CONCAT('%',#{paramCondition.opinionImg},'%')
+        </if>
+        <if test="paramCondition.description != null and paramCondition.description != ''">
+            and description like CONCAT('%',#{paramCondition.description},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
@@ -118,26 +150,41 @@
         <if test="paramCondition.anomalyId != null">
             and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>
-        <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        <if test="paramCondition.inkindId != null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
         </if>
-        <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
+        <if test="paramCondition.stauts != null">
+            and stauts like CONCAT('%',#{paramCondition.stauts},'%')
         </if>
         <if test="paramCondition.remark != null and paramCondition.remark != ''">
             and remark like CONCAT('%',#{paramCondition.remark},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        <if test="paramCondition.reasonImg != null and paramCondition.reasonImg != ''">
+            and reason_img like CONCAT('%',#{paramCondition.reasonImg},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.opinion != null and paramCondition.opinion != ''">
+            and opinion like CONCAT('%',#{paramCondition.opinion},'%')
+        </if>
+        <if test="paramCondition.opinionImg != null and paramCondition.opinionImg != ''">
+            and opinion_img like CONCAT('%',#{paramCondition.opinionImg},'%')
+        </if>
+        <if test="paramCondition.description != null and paramCondition.description != ''">
+            and description like CONCAT('%',#{paramCondition.description},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
@@ -158,26 +205,41 @@
         <if test="paramCondition.anomalyId != null">
             and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>
-        <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        <if test="paramCondition.inkindId != null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
         </if>
-        <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
+        <if test="paramCondition.stauts != null">
+            and stauts like CONCAT('%',#{paramCondition.stauts},'%')
         </if>
         <if test="paramCondition.remark != null and paramCondition.remark != ''">
             and remark like CONCAT('%',#{paramCondition.remark},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        <if test="paramCondition.reasonImg != null and paramCondition.reasonImg != ''">
+            and reason_img like CONCAT('%',#{paramCondition.reasonImg},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.opinion != null and paramCondition.opinion != ''">
+            and opinion like CONCAT('%',#{paramCondition.opinion},'%')
+        </if>
+        <if test="paramCondition.opinionImg != null and paramCondition.opinionImg != ''">
+            and opinion_img like CONCAT('%',#{paramCondition.opinionImg},'%')
+        </if>
+        <if test="paramCondition.description != null and paramCondition.description != ''">
+            and description like CONCAT('%',#{paramCondition.description},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')

@@ -422,7 +422,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         childs.clear();
 
-        for ( PositionLoop loop : allPositionLoop) {
+        for (PositionLoop loop : allPositionLoop) {
             if (loop.getPid() == 0 && ToolUtil.isNotEmpty(loop.getLoops())) {
                 childs.add(loop);
             }
@@ -437,7 +437,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 if (ToolUtil.isEmpty(position.getLoops())) {
                     position.setLoops(new ArrayList<>());
                 }
-                if (position.getLoops().stream().noneMatch(i->i.getKey().equals(child.getKey()))) {
+                if (position.getLoops().stream().noneMatch(i -> i.getKey().equals(child.getKey()))) {
                     position.getLoops().add(child);
                 }
                 loop(position, positions);
@@ -508,6 +508,46 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 //        }
         return skuIds;
     }
+
+    /**
+     * 物料绑定的库位
+     *
+     * @param skuIds
+     * @return
+     */
+    @Override
+    public Map<Long, List<StorehousePositionsResult>> getMap(List<Long> skuIds) {
+
+        List<StorehousePositionsBind> positionsBinds = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<Long> positionIds = new ArrayList<>();
+
+
+        for (StorehousePositionsBind positionsBind : positionsBinds) {
+            positionIds.add(positionsBind.getPositionId());
+        }
+
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        format(positionsResults);
+        Map<Long, List<StorehousePositionsResult>> map = new HashMap<>();
+
+
+        for (StorehousePositionsBind positionsBind : positionsBinds) {
+            List<StorehousePositionsResult> results = new ArrayList<>();
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                if (positionsBind.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+                    results.add(positionsResult);
+                }
+            }
+            List<StorehousePositionsResult> list = map.get(positionsBind.getSkuId());
+            if (ToolUtil.isNotEmpty(list)) {
+                results.addAll(list);
+            }
+            map.put(positionsBind.getSkuId(), results);
+        }
+        return map;
+    }
+
 
     /**
      * 模板替换
@@ -880,15 +920,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     public void format(List<StorehousePositionsResult> data) {
         List<Long> storeIds = new ArrayList<>();
-        List<Long> pids = new ArrayList<>();
+
         for (StorehousePositionsResult datum : data) {
             storeIds.add(datum.getStorehouseId());
-            pids.add(datum.getPid());
+
         }
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.query().in("storehouse_id", storeIds).list();
 
-        List<StorehousePositions> positions = pids.size() == 0 ? new ArrayList<>() :
-                this.query().in("storehouse_positions_id", pids).list();
 
         for (StorehousePositionsResult datum : data) {
             if (ToolUtil.isNotEmpty(storehouses)) {
@@ -900,20 +938,12 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                     }
                 }
             }
-            if (ToolUtil.isNotEmpty(positions)) {
-                for (StorehousePositions position : positions) {
-                    if (position.getStorehousePositionsId().equals(datum.getPid())) {
-                        StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-                        ToolUtil.copyProperties(datum, storehousePositionsResult);
-                        datum.setStorehousePositionsResult(storehousePositionsResult);
-                    }
-                }
-            }
+
         }
     }
 
     /**
-     * 专门为物料查询仓库与库位
+     * 专门为物料查询仓库与库位 (库存对比)
      *
      * @param data
      */
@@ -921,27 +951,48 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     public void skuFormat(List<SkuResult> data) {
 
         List<Long> houseIds = new ArrayList<>();
-        List<Long> positionIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
 
         for (SkuResult datum : data) {
             houseIds.add(datum.getStorehouseId());
-            positionIds.add(datum.getPositionId());
+            skuIds.add(datum.getSkuId());
         }
+        List<StorehousePositionsBind> binds = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
+        List<Long> positionIds = new ArrayList<>();
+        for (StorehousePositionsBind bind : binds) {
+            positionIds.add(bind.getPositionId());
+        }
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+
+
+        Map<Long, List<StorehousePositionsResult>> map = new HashMap<>();
+        for (StorehousePositionsBind bind : binds) {
+
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                if (bind.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+
+                    List<StorehousePositionsResult> positionsResultList = map.get(bind.getSkuId());
+                    if (ToolUtil.isEmpty(positionsResultList)) {
+                        positionsResultList = new ArrayList<>();
+                    }
+                    if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
+                        positionsResultList.add(positionsResult);
+                    }
+                    map.put(bind.getSkuId(), positionsResultList);
+                }
+            }
+        }
+
 
         List<Storehouse> storehouses = houseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(houseIds);
         List<StorehouseResult> storehouseResults = BeanUtil.copyToList(storehouses, StorehouseResult.class, new CopyOptions());
 
         for (SkuResult datum : data) {
-            List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
-            for (StorehousePositionsResult positionsResult : positionsResults) {
-                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
-                    positionsResultList.add(positionsResult);
-                }
-            }
-            datum.setPositionsResult(positionsResultList);
+
+            datum.setPositionsResult(map.get(datum.getSkuId()));
+
             for (StorehouseResult storehouseResult : storehouseResults) {
                 if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && storehouseResult.getStorehouseId().equals(datum.getStorehouseId())) {
                     datum.setStorehouseResult(storehouseResult);

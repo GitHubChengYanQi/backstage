@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.Remarks;
+import cn.atsoft.dasheng.form.enums.RemarkEnum;
 import cn.atsoft.dasheng.form.mapper.RemarksMapper;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
@@ -28,6 +29,7 @@ import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -75,7 +77,9 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
 
     @Override
     public void delete(RemarksParam param) {
-        this.removeById(getKey(param));
+        Remarks entity = getEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
     }
 
     @Override
@@ -147,7 +151,6 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     public void addNote(AuditParam auditParam) {
 
         List<ActivitiProcessLog> logs = logService.listByTaskId(auditParam.getTaskId());
-
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog activitiProcessLog : logs) {
             stepIds.add(activitiProcessLog.getSetpsId());
@@ -160,33 +163,30 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             ActivitiAudit activitiAudit = logService.getRule(activitiAudits, activitiProcessLog.getSetpsId());
             AuditRule rule = activitiAudit.getRule();
             if (activitiAudit.getType().equals("process") && rule.getType().toString().equals("audit")) {
-
-                if (logService.checkUser(activitiAudit.getRule())) {
+                if (logService.checkUser(activitiAudit.getRule(), null)) {
                     Remarks remarks = new Remarks();
                     remarks.setContent(auditParam.getNote());
                     remarks.setUserIds(auditParam.getUserIds());
                     remarks.setTaskId(auditParam.getTaskId());
-                    remarks.setType("备注");
+                    remarks.setType(RemarkEnum.audit.name());
                     remarks.setStatus(auditParam.getStatus());
                     remarks.setPhotoId(auditParam.getPhotoId());
                     remarks.setLogId(activitiProcessLog.getLogId());
                     this.save(remarks);
                 }
-
             }
         }
     }
 
     @Override
     public void addComments(AuditParam auditParam) {
-        LoginUser user = LoginContextHolder.getContext().getUser();
-
         Remarks remarks = new Remarks();
         remarks.setTaskId(auditParam.getTaskId());
         remarks.setContent(auditParam.getNote());
-        remarks.setType("评论");
+        remarks.setType(RemarkEnum.comments.name());
         remarks.setPhotoId(auditParam.getPhotoId());
-        remarks.setUserIds(user.getId().toString());
+        remarks.setPid(auditParam.getPid());
+        remarks.setUserIds(auditParam.getUserIds());
         this.save(remarks);
 
         if (ToolUtil.isNotEmpty(auditParam.getUserIds())) {
@@ -195,54 +195,81 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setDescription("你有一条被@的消息");
-            wxCpTemplate.setTitle("新消息");
-            wxCpTemplate.setUserIds(userIds);
-            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?id=" + auditParam.getTaskId());
-            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-            wxCpSendTemplate.sendTemplate();
+            pushPeople(userIds, auditParam.getTaskId());
         }
     }
 
+    /**
+     * 指定人推送
+     *
+     * @param userIds
+     * @param taskId
+     */
+    @Override
+    public void pushPeople(List<Long> userIds, Long taskId) {
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setDescription("你有一条被@的消息");
+        wxCpTemplate.setTitle("新消息");
+        wxCpTemplate.setUserIds(userIds);
+        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
+
+
     @Override
     public List<RemarksResult> getComments(Long taskId) {
-
-        List<Remarks> remarks = this.query().eq("task_id", taskId).eq("type", "评论").orderByDesc("create_time").list();
-
+        List<Remarks> remarks = this.query().eq("task_id", taskId).orderByDesc("create_time").isNull("pid").eq("display", 1).list();
         List<RemarksResult> remarksResults = new ArrayList<>();
-        List<Long> userIds = new ArrayList<>();
-
+        List<Long> ids = new ArrayList<>();
         for (Remarks remark : remarks) {
+            ids.add(remark.getRemarksId());
             RemarksResult result = new RemarksResult();
             ToolUtil.copyProperties(remark, result);
             remarksResults.add(result);
-            userIds.add(Long.valueOf(remark.getUserIds()));
+
         }
-        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<Remarks> childs = ids.size() == 0 ? new ArrayList<>() : this.query().in("pid", ids).eq("display", 1).list();
+        List<RemarksResult> results = BeanUtil.copyToList(childs, RemarksResult.class);
 
-
+        /**
+         * 回复
+         */
+        formatUrl(results);
+        formatUrl(remarksResults);
         for (RemarksResult remarksResult : remarksResults) {
-            for (User user : userList) {
-                if (remarksResult.getUserIds().equals(user.getUserId().toString())) {
-                    remarksResult.setUser(user);
+            List<RemarksResult> children = new ArrayList<>();
+            for (RemarksResult result : results) {
+                if (remarksResult.getRemarksId().equals(result.getPid())) {
+                    children.add(result);
                 }
             }
+            remarksResult.setChildrens(children);
+
         }
-        for (RemarksResult remarksResult : remarksResults) {
-            if (ToolUtil.isNotEmpty(remarksResult.getPhotoId())) {
+        return remarksResults;
+    }
+
+    private void formatUrl(List<RemarksResult> data) {
+
+        List<User> userList = userService.list();
+        for (RemarksResult datum : data) {
+            for (User user : userList) {
+                if (datum.getCreateUser().equals(user.getUserId())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
+            if (ToolUtil.isNotEmpty(datum.getPhotoId())) {
                 StringBuffer stringBuffer = new StringBuffer();
-                List<String> photoUrl = ToolUtil.isEmpty(remarksResult.getPhotoId()) ? new ArrayList<>() : Arrays.asList(remarksResult.getPhotoId().split(","));
+                List<String> photoUrl = ToolUtil.isEmpty(datum.getPhotoId()) ? new ArrayList<>() : Arrays.asList(datum.getPhotoId().split(","));
                 for (String id : photoUrl) {
                     String url = mediaService.getMediaUrl(Long.valueOf(id), 1L);
                     stringBuffer.append(url + ",");
                 }
                 String substring = stringBuffer.toString().substring(0, stringBuffer.length() - 1);
-                remarksResult.setPhotoId(substring);
+                datum.setPhotoId(substring);
             }
-
         }
-
-        return remarksResults;
     }
 }

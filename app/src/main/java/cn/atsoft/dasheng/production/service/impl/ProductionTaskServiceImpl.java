@@ -220,7 +220,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1);
+            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
 
         } else if (ToolUtil.isNotEmpty(param.getUserId())) {
             /**

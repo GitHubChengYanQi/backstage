@@ -639,8 +639,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         Payment payment = paymentService.query().eq("order_id", orderId).one();
         List<PaymentDetail> details = ToolUtil.isEmpty(payment.getPaymentId()) ? new ArrayList<>() : paymentDetailService.query().eq("payment_id", payment.getPaymentId()).list();
-        List<PaymentDetailResult> results = BeanUtil.copyToList(details, PaymentDetailResult.class, new CopyOptions());
-        return results;
+        return BeanUtil.copyToList(details, PaymentDetailResult.class, new CopyOptions());
 
     }
 
@@ -667,7 +666,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 int i = 0;
                 for (OrderDetailResult result : results) {
                     String trString = tr.group(0);
-                    String tdText = "";
                     i++;
                     Matcher tdm;
                     while ((tdm = WordUtils.matcher(trString)).find()) {
@@ -715,16 +713,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                                     trString = trString.replace(ContractEnum.DeliveryDate.getDetail(), result.getDeliveryDate() + "");
                                     break;
                                 default:
-//                                    s = s.replace()
 
                             }
-
                         }
-//                        tdText = tdText + s;
-//                        s = tdm.replaceFirst("");
-
                     }
-
                     trText = trText + trString;
                 }
             }

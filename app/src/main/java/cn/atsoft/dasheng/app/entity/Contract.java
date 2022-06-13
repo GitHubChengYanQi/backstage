@@ -48,6 +48,11 @@ public class Contract implements Serializable {
     private Long contractId;
 
     /**
+     * 合同编号
+     */
+    @TableField("coding")
+    private String coding;
+    /**
      * 合同名称
      */
     @TableField("name")
@@ -159,6 +164,14 @@ public class Contract implements Serializable {
      */
     @TableField("origin")
     private String origin;
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
 
     public String getTheme() {
         return theme;

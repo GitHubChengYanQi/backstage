@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.erp.pojo;
 
-import cn.atsoft.dasheng.erp.SearchTypeEnum;
+import cn.atsoft.dasheng.erp.enums.SearchTypeEnum;
 import lombok.Data;
 
 @Data

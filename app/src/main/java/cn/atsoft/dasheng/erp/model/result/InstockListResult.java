@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -35,9 +36,8 @@ public class InstockListResult implements Serializable {
     private Map<String, Object> stockDetails;
     private Long storehousePositionsId;
     private Long instockNumber;
-    private List<BackSku> backSkus;
-    private SpuResult spuResult;
-    private ItemsResult itemsResult;
+
+    private CustomerResult customerResult;
     private BrandResult brandResult;
     private StorehouseResult storehouseResult;
     private SkuResult skuResult;
@@ -46,6 +46,11 @@ public class InstockListResult implements Serializable {
     private Long inkindId;
 
     private Long notNumber;
+
+    /**
+     * 供应商
+     */
+    private Long customerId;
     /**
      * 实际数量
      */
@@ -77,7 +82,7 @@ public class InstockListResult implements Serializable {
      * 产品id
      */
     @ApiModelProperty("产品id")
-    private Long itemId;
+    private Long status;
 
     /**
      * 数量

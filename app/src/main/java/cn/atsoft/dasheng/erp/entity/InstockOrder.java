@@ -25,6 +25,14 @@ import java.io.Serializable;
 public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @TableField("push_people")
+    private String pushPeople;
+    /**
+     * 注意事项
+     */
+    @TableField("notice_id")
+    private String noticeId;
     /**
      * 来源
      */
@@ -337,6 +345,22 @@ public class InstockOrder implements Serializable {
 
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public String getNoticeId() {
+        return noticeId;
+    }
+
+    public void setNoticeId(String noticeId) {
+        this.noticeId = noticeId;
+    }
+
+    public String getPushPeople() {
+        return pushPeople;
+    }
+
+    public void setPushPeople(String pushPeople) {
+        this.pushPeople = pushPeople;
     }
 
     @Override
