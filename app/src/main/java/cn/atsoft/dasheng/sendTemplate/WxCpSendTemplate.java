@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.message.enmu.MessageType;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.message.topic.TopicMessage;
@@ -50,6 +51,27 @@ public class WxCpSendTemplate {
         //获取uuid
         List<String> uuIds = new ArrayList<>();
         List<WxuserInfo> wxuserInfos = wxCpTemplate.getUserIds().size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", wxCpTemplate.getUserIds()).eq("source", "wxCp").list();
+
+        List<Long> memberIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(wxuserInfos)) {
+            for (WxuserInfo wxuserInfo : wxuserInfos) {
+                memberIds.add(wxuserInfo.getMemberId());
+            }
+        }
+
+        List<UcOpenUserInfo> userInfoList = memberIds.size() == 0 ? new ArrayList<>() : ucOpenUserInfoService.query().in("member_id", memberIds).eq("source", "wxCp").list();
+        if (ToolUtil.isNotEmpty(userInfoList)) {
+            for (UcOpenUserInfo ucOpenUserInfo : userInfoList) {
+                uuIds.add(ucOpenUserInfo.getUuid());
+            }
+        }
+
+        return uuIds;
+    }
+
+    private List<String> userIds2UuIds(List<Long> userIds){
+        List<String> uuIds = new ArrayList<>();
+        List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).eq("source", "wxCp").list();
 
         List<Long> memberIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(wxuserInfos)) {
@@ -114,6 +136,51 @@ public class WxCpSendTemplate {
             }
         }
 
+    }
+
+
+
+    public void sendMarkDownTemplate(MarkDownTemplate markDownTemplate) {
+        MessageEntity messageEntity = new MessageEntity();
+        messageEntity.setType(MessageType.CP);
+        WxCpMessage wxCpMessage = new WxCpMessage();
+        wxCpMessage.setMsgType("markdown");
+        wxCpMessage.setContent(markDownTemplate.getContent());
+        List<String> userIds = userIds2UuIds(markDownTemplate.getUserIds());
+        if (ToolUtil.isNotEmpty(userIds)) {
+            for (String userId : userIds) {
+                wxCpMessage.setToUser(userId);
+                messageEntity.setCpData(wxCpMessage);
+                messageEntity.setTimes(0);
+                messageEntity.setMaxTimes(2);
+                try {
+                    String randomString = ToolUtil.getRandomString(5);
+                    String s = messageEntity.getCpData().getDescription() + randomString;
+                    messageEntity.getCpData().setDescription(s);
+                    logger.info("微信MarkDown消息"+messageEntity.getCpData().getDescription());
+                    messageProducer.sendMessage(messageEntity);
+                    System.out.println(markDownTemplate.getContent());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            for (Long userId : markDownTemplate.getUserIds()) {
+                messageEntity.setType(MessageType.MESSAGE);
+                Message message = new Message();
+                message.setTime(new DateTime());
+                message.setTitle(markDownTemplate.getTitle());
+                message.setContent(markDownTemplate.getDescription());
+                message.setType(markDownTemplate.getType());
+                message.setUserId(userId);
+                message.setSort(0L);
+                message.setSourceId(getSourceId());
+                message.setSource(getSource());
+                message.setUrl(markDownTemplate.getUrl());
+                messageEntity.setMessage(message);
+                logger.info("铃铛发送"+messageEntity.getCpData().getDescription());
+                messageProducer.sendMessage(messageEntity);
+            }
+        }
     }
 
 }
