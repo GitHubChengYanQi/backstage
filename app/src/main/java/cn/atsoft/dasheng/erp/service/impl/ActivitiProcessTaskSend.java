@@ -64,7 +64,8 @@ public class ActivitiProcessTaskSend {
     private QualityMessageSend qualityMessageSend;
     @Autowired
     private AuditMessageSendImpl auditMessageSend;
-    @Autowired PurchaseMessageSend purchaseMessageSend;
+    @Autowired
+    PurchaseMessageSend purchaseMessageSend;
     @Autowired
     private PurchaseAskService purchaseAskService;
 
@@ -104,8 +105,8 @@ public class ActivitiProcessTaskSend {
                             users.add(user.getUserId());
                         }
                     }
-
                     break;
+
             }
         }
 
@@ -124,7 +125,7 @@ public class ActivitiProcessTaskSend {
      * @param auditRule
      * @param taskId
      */
-    public void send(RuleType type, AuditRule auditRule, Long taskId,Long loginUserId) {
+    public void send(RuleType type, AuditRule auditRule, Long taskId, Long loginUserId) {
         List<Long> users = new ArrayList<>();
 
         Map<String, String> aboutSend = this.getAboutSend(taskId, type);//获取任务关联
@@ -141,45 +142,45 @@ public class ActivitiProcessTaskSend {
                 auditMessageSend.send(taskId, type, users, url, createName);
                 break;
             case quality_complete:
-                this.completeSend(type,aboutSend);
+                this.completeSend(type, aboutSend);
                 break;
             case quality_perform:
             case quality_dispatch:
                 qualityMessageSend.send(taskId, type, users, url, createName);
                 break;
             case purchase_complete:
-                purchaseAskService.complateAsk(taskId,loginUserId);
-                this.completeSend(type,aboutSend);
+                purchaseAskService.complateAsk(taskId, loginUserId);
+                this.completeSend(type, aboutSend);
                 break;
         }
 
     }
 
-    private void completeSend(RuleType type,Map<String, String> aboutSend) {
+    private void completeSend(RuleType type, Map<String, String> aboutSend) {
         List<Long> users = new ArrayList<>();
         String url = mobileService.getMobileConfig().getUrl();
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(Long.valueOf(aboutSend.get("taskId")));
-        switch (type){
+        switch (type) {
             case quality_complete:
                 List<QualityTask> list = qualityTaskService.list(new QueryWrapper<QualityTask>() {{
                     eq("parent_id", processTask.getFormId());
                     ge("state", 1);
                 }});
                 for (QualityTask qualityTask : list) {
-                    if (ToolUtil.isNotEmpty(qualityTask.getUserIds())&& !qualityTask.getState().equals(-1)){
+                    if (ToolUtil.isNotEmpty(qualityTask.getUserIds()) && !qualityTask.getState().equals(-1)) {
                         users = Arrays.asList(qualityTask.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
                     }
                     url = mobileService.getMobileConfig().getUrl() + "/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
-                    qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
+                    qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url, aboutSend.get("byIdName"));
                 }
 
-                 url = mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId();
-                qualityMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
-            break;
+                url = mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId();
+                qualityMessageSend.send(processTask.getProcessTaskId(), type, users, url, aboutSend.get("byIdName"));
+                break;
             case purchase_complete:
                 users.add(processTask.getCreateUser());
-                url =url + "/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId();
-                purchaseMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
+                url = url + "/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId();
+                purchaseMessageSend.send(processTask.getProcessTaskId(), type, users, url, aboutSend.get("byIdName"));
                 break;
         }
     }
@@ -226,7 +227,7 @@ public class ActivitiProcessTaskSend {
 //        map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
 //        map.put("coding", qualityTask.getCoding());
         map.put("byIdName", byId.getName());
-        String url = this.changeUrl(type, map,task);//组装url
+        String url = this.changeUrl(type, map, task);//组装url
         map.put("url", url);
         return map;
     }
