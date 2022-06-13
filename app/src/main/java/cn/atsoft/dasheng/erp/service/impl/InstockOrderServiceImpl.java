@@ -635,7 +635,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              * 消息队列完成动作
              */
 
-            activitiProcessLogService.checkAction(param.getInstockOrderId(), "INSTOCK", param.getActionId(),LoginContextHolder.getContext().getUserId());
+            activitiProcessLogService.checkAction(param.getInstockOrderId(), "INSTOCK", param.getActionId(), LoginContextHolder.getContext().getUserId());
 //            messageProducer.auditMessageDo(new AuditEntity() {{
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);
@@ -670,7 +670,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         InstockList instockList = instockListService.getById(listParam.getInstockListId());
         if (ToolUtil.isEmpty(instockList)) {
-            throw  new ServiceException(500,"参数不正确");
+            throw new ServiceException(500, "参数不正确");
         }
         instockList.setRealNumber(instockList.getRealNumber() - listParam.getNumber());
         if (instockList.getRealNumber() < 0) {
@@ -873,7 +873,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         return orderComplete;
     }
-
 
 
     /**
@@ -1113,10 +1112,21 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Override
     public void updateCreateInstockStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
-        order.setStatus(InStockActionEnum.done.getStatus());
+        List<InstockList> instockLists = instockListService.lambdaQuery().eq(InstockList::getInstockOrderId, order.getInstockOrderId()).eq(InstockList::getDisplay, 1).list();
+
+        boolean t = true;
+        for (InstockList instockList : instockLists) {
+            if (instockList.getRealNumber() != 0) {
+                t = false;
+            }
+        }
+        if (t) {
+            order.setStatus(InStockActionEnum.done.getStatus());
             this.updateById(order);
             processTask.setStatus(99);
             activitiProcessTaskService.updateById(processTask);
+        }
+
     }
 
     @Override
