@@ -187,6 +187,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @param param
      */
     public void addDetails(AnomalyParam param) {
+        if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
+            throw new ServiceException(500, "缺少异常信息");
+        }
         for (AnomalyDetailParam detailParam : param.getDetailParams()) {
             AnomalyDetail detail = new AnomalyDetail();
             ToolUtil.copyProperties(detailParam, detail);

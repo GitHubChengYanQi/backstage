@@ -71,7 +71,7 @@ public class AnomalyController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody AnomalyParam anomalyParam) {
-        if (ToolUtil.isNotEmpty(anomalyParam.getAnomalyId())) {
+        if (ToolUtil.isEmpty(anomalyParam.getAnomalyId())) {
             throw new ServiceException(500, "缺少参数");
         }
         this.anomalyService.delete(anomalyParam);
