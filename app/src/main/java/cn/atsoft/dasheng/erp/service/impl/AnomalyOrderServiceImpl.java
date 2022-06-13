@@ -96,6 +96,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private ActivitiProcessLogService processLogService;
 
     @Override
+    @Transactional
     public void add(AnomalyOrderParam param) {
 
         if (ToolUtil.isEmpty(param.getCoding())) {
@@ -188,7 +189,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             wxCpSendTemplate.setSourceId(taskId);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
+            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
 
         } else {
             throw new ServiceException(500, "请先设置流程");
@@ -276,7 +277,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             /**
              * 消息队列完成动作
              */
-            processLogService.checkAction(param.getOrderId(), "INSTOCKERROR", param.getActionId(),LoginContextHolder.getContext().getUserId());
+            processLogService.checkAction(param.getOrderId(), "INSTOCKERROR", param.getActionId(), LoginContextHolder.getContext().getUserId());
 //            messageProducer.auditMessageDo(new AuditEntity() {{
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);
