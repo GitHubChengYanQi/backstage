@@ -35,15 +35,15 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
 
 //    void audit(Long taskId, Integer status, String type, Integer auto);
 
-    void autoAudit(Long taskId, Integer status,Long loginUserId);
+    void autoAudit(Long taskId, Integer status, Long loginUserId);
 
 
-    void checkAction(Long id, String formType, Long actionId,Long loginUserId);
+    void checkAction(Long id, String formType, Long actionId, Long loginUserId);
 
 
     void checkLogActionComplete(Long taskId, Long stepId, Long actionId, Long loginUserId);
 
-    Boolean checkUser(AuditRule starUser);
+    Boolean checkUser(AuditRule starUser, Long taskId);
 
     /**
      * 删除
@@ -111,7 +111,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      */
     List<ActivitiProcessLogResult> getLogAudit(Long taskId);
 
-     ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId);
+    ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId);
 
     /**
      * 查询未审核

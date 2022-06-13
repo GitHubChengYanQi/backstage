@@ -163,7 +163,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             ActivitiAudit activitiAudit = logService.getRule(activitiAudits, activitiProcessLog.getSetpsId());
             AuditRule rule = activitiAudit.getRule();
             if (activitiAudit.getType().equals("process") && rule.getType().toString().equals("audit")) {
-                if (logService.checkUser(activitiAudit.getRule())) {
+                if (logService.checkUser(activitiAudit.getRule(), null)) {
                     Remarks remarks = new Remarks();
                     remarks.setContent(auditParam.getNote());
                     remarks.setUserIds(auditParam.getUserIds());
@@ -219,7 +219,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
 
     @Override
     public List<RemarksResult> getComments(Long taskId) {
-        List<Remarks> remarks = this.query().eq("task_id", taskId).orderByDesc("create_time").isNull("pid" ).eq("display", 1).list();
+        List<Remarks> remarks = this.query().eq("task_id", taskId).orderByDesc("create_time").isNull("pid").eq("display", 1).list();
         List<RemarksResult> remarksResults = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         for (Remarks remark : remarks) {
@@ -250,9 +250,9 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         return remarksResults;
     }
 
-    private  void formatUrl(List<RemarksResult> data){
+    private void formatUrl(List<RemarksResult> data) {
 
-        List<User> userList =  userService.list();
+        List<User> userList = userService.list();
         for (RemarksResult datum : data) {
             for (User user : userList) {
                 if (datum.getCreateUser().equals(user.getUserId())) {

@@ -2,7 +2,11 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.config.MobileService;
+import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -68,6 +72,12 @@ public class ActivitiProcessTaskSend {
     PurchaseMessageSend purchaseMessageSend;
     @Autowired
     private PurchaseAskService purchaseAskService;
+    @Autowired
+    private ActivitiProcessTaskService processTaskService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private InstockOrderService instockOrderService;
 
     private Logger logger = LoggerFactory.getLogger(ActivitiProcessTaskSend.class);
 
@@ -77,7 +87,7 @@ public class ActivitiProcessTaskSend {
      * @param starUser
      * @return
      */
-    public List<Long> selectUsers(AuditRule starUser) {
+    public List<Long> selectUsers(AuditRule starUser, Long taskId) {
         List<Long> users = new ArrayList<>();
 
         for (AuditRule.Rule rule : starUser.getRules()) {
@@ -106,7 +116,15 @@ public class ActivitiProcessTaskSend {
                         }
                     }
                     break;
-
+                case MasterDocumentPromoter:    //主单据发起人
+                    if (ToolUtil.isNotEmpty(taskId)) {
+                        ActivitiProcessTask processTask = processTaskService.getById(taskId);
+                        if (processTask.getType().equals("INSTOCKERROR")) {
+                            AnomalyOrder anomalyOrder = anomalyOrderService.getById(processTask.getFormId());
+                            InstockOrder instockOrder = instockOrderService.getById(anomalyOrder);
+                            users.add(instockOrder.getCreateUser());
+                        }
+                    }
             }
         }
 
@@ -132,7 +150,7 @@ public class ActivitiProcessTaskSend {
         String url = aboutSend.get("url");//进入switch 拼装不同阶段使用不同的url
         String createName = aboutSend.get("byIdName");
         if (ToolUtil.isNotEmpty(auditRule)) {
-            users = this.selectUsers(auditRule);
+            users = this.selectUsers(auditRule, taskId);
             users = users.stream().distinct().collect(Collectors.toList());
         }
 

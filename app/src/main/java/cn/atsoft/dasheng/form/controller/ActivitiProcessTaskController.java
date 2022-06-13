@@ -56,7 +56,7 @@ public class ActivitiProcessTaskController extends BaseController {
     @ApiOperation("")
     public ResponseData getUsers(@RequestBody ActivitiAuditParam activitiAuditParam) {
         ActivitiAudit audit = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
-        List<Long> longs = taskSend.selectUsers(audit.getRule());
+        List<Long> longs = taskSend.selectUsers(audit.getRule(),null);
         return ResponseData.success(longs);
     }
 
