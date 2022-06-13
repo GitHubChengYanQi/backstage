@@ -110,6 +110,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     boolean inStockByOrder(InStockByOrderParam param);
 
+    boolean instockOrderComplete(Long orderId);
+
     /**
      * 多个库位入库
      *

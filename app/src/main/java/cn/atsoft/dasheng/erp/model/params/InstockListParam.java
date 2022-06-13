@@ -29,6 +29,8 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
 
     private static final long serialVersionUID = 1L;
 
+    private String type;
+
     private Long codeId;
 
     private Long num;

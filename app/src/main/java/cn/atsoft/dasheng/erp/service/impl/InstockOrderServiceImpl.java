@@ -144,6 +144,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private ShopCartService cartService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private AnomalyDetailService anomalyDetailService;
+    @Autowired
+    private AnomalyService anomalyService;
 
 
     @Override
@@ -630,15 +634,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 消息队列完成动作
              */
-            messageProducer.auditMessageDo(new AuditEntity() {{
-                setAuditType(CHECK_ACTION);
-                setMessageType(AuditMessageType.AUDIT);
-                setFormId(param.getInstockOrderId());
-                setForm("instock");
-                setMaxTimes(2);
-                setTimes(1);
-                setActionId(param.getActionId());
-            }});
+
+            activitiProcessLogService.checkAction(param.getInstockOrderId(), "instock", param.getActionId());
+//            messageProducer.auditMessageDo(new AuditEntity() {{
+//                setAuditType(CHECK_ACTION);
+//                setMessageType(AuditMessageType.AUDIT);
+//                setFormId(param.getInstockOrderId());
+//                setForm("instock");
+//                setMaxTimes(2);
+//                setTimes(1);
+//                setActionId(param.getActionId());
+//            }});
 
         }
         return inkindIds;
@@ -650,7 +656,22 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @param listParam
      */
     private void updateStatus(InstockListParam listParam) {
+
+        if (ToolUtil.isEmpty(listParam.getInstockListId())) {
+            throw new ServiceException(500, "参数错误");
+        }
+        /**
+         * 异常可入库
+         */
+        if (ToolUtil.isNotEmpty(listParam.getType()) && listParam.getType().equals("instockByAnomaly")) {
+            Anomaly anomaly = anomalyService.getById(listParam.getInstockListId());
+            listParam.setInstockListId(anomaly.getSourceId());
+        }
+
         InstockList instockList = instockListService.getById(listParam.getInstockListId());
+        if (ToolUtil.isEmpty(instockList)) {
+            throw  new ServiceException(500,"参数不正确");
+        }
         instockList.setRealNumber(instockList.getRealNumber() - listParam.getNumber());
         if (instockList.getRealNumber() < 0) {
             throw new ServiceException(500, "当前入库数量与单据数量不符");
@@ -854,12 +875,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
 
+
     /**
      * 入库单完成状态
      *
      * @param orderId
      */
-    private boolean instockOrderComplete(Long orderId) {
+    @Override
+    public boolean instockOrderComplete(Long orderId) {
         if (ToolUtil.isEmpty(orderId)) {
             return false;
         }
@@ -1071,6 +1094,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void updateStatus(ActivitiProcessTask processTask) {
+
         InstockOrder order = this.getById(processTask.getFormId());
         if (order.getState() != 50) {
             DocumentsAction action = documentsActionService.query().eq("form_type", ReceiptsEnum.INSTOCK.name()).eq("action", InStockActionEnum.verify.name()).eq("display", 1).one();

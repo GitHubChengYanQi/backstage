@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Announcements;
 import cn.atsoft.dasheng.erp.entity.AnomalyDetail;
 import cn.atsoft.dasheng.erp.mapper.AnomalyDetailMapper;
@@ -13,6 +14,8 @@ import cn.atsoft.dasheng.erp.service.AnnouncementsService;
 import cn.atsoft.dasheng.erp.service.AnomalyBindService;
 import cn.atsoft.dasheng.erp.service.AnomalyDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -47,6 +50,10 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     private AnnouncementsService announcementsService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MobileService mobileService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
     @Override
     public void add(AnomalyDetailParam param) {
@@ -66,9 +73,30 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         AnomalyDetail oldEntity = getOldEntity(param);
         AnomalyDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
-    }
+        if (ToolUtil.isNotEmpty(param.getUserId())&&oldEntity.getStauts()==0) {
+            pushPeople(param.getUserId(), oldEntity.getAnomalyId());
+        }
 
+        this.updateById(newEntity);
+
+    }
+    /**
+     * 转交人处理
+     *
+     * @param userId
+     * @param id
+     */
+    public void pushPeople(Long userId, Long id) {
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setDescription("入库异常 转交处理");
+        wxCpTemplate.setTitle("新消息");
+        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+            add(userId);
+        }});
+        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Error/Detail/Handle?id=" + id);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
     @Override
     public AnomalyDetailResult findBySpec(AnomalyDetailParam param) {
         return null;

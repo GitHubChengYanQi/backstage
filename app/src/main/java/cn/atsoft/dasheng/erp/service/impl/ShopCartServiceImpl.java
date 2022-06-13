@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.AnomalyDetail;
 import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.ShopCart;
 import cn.atsoft.dasheng.erp.mapper.ShopCartMapper;
@@ -55,6 +56,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private AnomalyService anomalyService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private AnomalyDetailService anomalyDetailService;
 
     @Override
     @Transactional
@@ -182,6 +185,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         List<Long> customerIds = new ArrayList<>();
         List<Long> anomalyIds = new ArrayList<>();
 
+
         for (ShopCartResult datum : data) {
             customerIds.add(datum.getCustomerId());
             brandIds.add(datum.getBrandId());
@@ -191,11 +195,14 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             }
         }
 
+
         Map<Long, List<StorehousePositionsResult>> positionMap = positionsService.getMap(skuIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         Map<Long, AnomalyResult> map = anomalyService.getMap(anomalyIds);
+
+
 
         for (ShopCartResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getFormId())) {

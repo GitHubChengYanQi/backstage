@@ -15,11 +15,12 @@
         <result column="deptId" property="deptId"/>
         <result column="instock_order_id" property="instockOrderId"/>
         <result column="type" property="type"/>
+        <result column="complete" property="complete"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">instock_order_id
-    AS "instockOrderId",type AS "type",
+    AS "instockOrderId",type AS "type",complete AS "complete",
         order_id
         AS "orderId", coding AS "coding", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>

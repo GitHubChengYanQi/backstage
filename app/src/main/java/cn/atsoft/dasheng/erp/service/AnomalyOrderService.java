@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.model.params.AnomalyOrderParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -38,6 +39,8 @@ public interface AnomalyOrderService extends IService<AnomalyOrder> {
     void delete(AnomalyOrderParam param);
 
     AnomalyOrderResult detail(Long id);
+
+    void updateStatus(ActivitiProcessTask processTask);
 
     /**
      * 更新

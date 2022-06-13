@@ -10,12 +10,8 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
-import cn.atsoft.dasheng.erp.entity.InstockOrder;
-import cn.atsoft.dasheng.erp.entity.QualityTask;
-import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.CheckInstock;
 import cn.atsoft.dasheng.erp.service.impl.CheckQualityTask;
@@ -116,6 +112,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private DocumentsActionService documentsActionService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private AnomalyService anomalyService;
+    @Autowired
+    private InstockListService instockListService;
 
 
     @Override
@@ -255,7 +255,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
-                        case "instockError":   //入库异常
+                        case "INSTOCKERROR":   //入库异常
                             if (checkInstock.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 updateStatus(activitiProcessLog.getLogId(), status);
                                 setStatus(logs, activitiProcessLog.getLogId());
@@ -401,7 +401,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     instockOrderService.updateById(instockOrder);
                     break;
                 case "INSTOCKERROR":
-                    AnomalyOrder anomalyOrder =  anomalyOrderService.getById(formId);
+                    AnomalyOrder anomalyOrder = anomalyOrderService.getById(formId);
                     anomalyOrder.setStatus(documentsStatusId);
                     anomalyOrderService.updateById(anomalyOrder);
                     break;
@@ -430,8 +430,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "inquiry":
                 inquiryTaskService.updateStatus(processTask);
                 break;
-            case "instockError":
-                instockOrderService.updateStatus(processTask);
+            case "INSTOCKERROR":
+                anomalyOrderService.updateStatus(processTask);
                 break;
             case "INSTOCK":
                 instockOrderService.updateCreateInstockStatus(processTask);
@@ -447,23 +447,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "purchaseInstock":
                 break;
             case "INSTOCKERROR":
-                InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
-                if (ToolUtil.isNotEmpty(instockOrder.getOrigin())) {
-                    origin = getOrigin.getOrigin(JSON.parseObject(instockOrder.getOrigin(), ThemeAndOrigin.class));
-                    if (ToolUtil.isNotEmpty(origin.getParent())) {
-                        for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
-                            if (themeAndOrigin.getSource().equals("processTask")) {
-                                //如果来源存的是流程任务的id
-                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
-
-                                checkAction(parentProcessTask.getProcessTaskId(), InstockErrorActionEnum.done.getStatus());
-                            } else {
-                                //如果来源存的是主单据的id
-                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.INSTOCKERROR.name(), InstockErrorActionEnum.done.getStatus());
-                            }
-                        }
+                List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();
+                if (ToolUtil.isNotEmpty(anomalies)) {
+                    Anomaly anomaly = anomalies.get(0);
+                    boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
+                    if (b) {
+                        ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
+                        audit(task.getProcessTaskId(), 1);
                     }
                 }
+
                 break;
         }
 
@@ -604,7 +597,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiAuditResult audit = auditService.getAudit(stepId);
 
 
-        if (!this.checkUser(audit.getRule())) {
+        if (this.checkUser(audit.getRule())) {
             if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
                 List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
                 for (ActionStatus actionStatus : actionStatuses) {
@@ -840,7 +833,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return false;
     }
 
-    public Boolean checkUser(AuditRule starUser,Long loginUserId) {
+    public Boolean checkUser(AuditRule starUser, Long loginUserId) {
         List<Long> users = taskSend.selectUsers(starUser);
         for (Long aLong : users) {
             if (aLong.equals(loginUserId)) {
@@ -849,6 +842,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         }
         return false;
     }
+
     @Override
     public void delete(ActivitiProcessLogParam param) {
         int admin = activitiProcessTaskService.isAdmin(param.getTaskId());

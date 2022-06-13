@@ -24,6 +24,9 @@ public class AnomalyOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("complete")
+    private Integer complete;
+
     @TableId(value = "order_id", type = IdType.ID_WORKER)
     private Long orderId;
 
@@ -59,6 +62,14 @@ public class AnomalyOrder implements Serializable {
      */
     @TableField("deptId")
     private Long deptId;
+
+    public Integer getComplete() {
+        return complete;
+    }
+
+    public void setComplete(Integer complete) {
+        this.complete = complete;
+    }
 
     public Long getInstockOrderId() {
         return instockOrderId;

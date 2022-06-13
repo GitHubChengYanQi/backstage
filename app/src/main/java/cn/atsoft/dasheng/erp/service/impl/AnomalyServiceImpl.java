@@ -66,8 +66,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
 
     @Autowired
-    private WxCpSendTemplate wxCpSendTemplate;
-    @Autowired
     private InstockOrderService instockOrderService;
     @Autowired
     private AnomalyDetailService detailService;
@@ -89,8 +87,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private CustomerService customerService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private MobileService mobileService;
+
 
     @Transactional
     @Override
@@ -255,17 +252,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
-        List<AnomalyDetail> anomalyDetails = BeanUtil.copyToList(param.getDetailParams(), AnomalyDetail.class, new CopyOptions());
-
-        for (AnomalyDetail anomalyDetail : anomalyDetails) {
-            if (ToolUtil.isNotEmpty(anomalyDetail.getUserId())) {
-                AnomalyDetail detail = detailService.getById(anomalyDetail.getDetailId());
-                if (detail.getStauts()==0) {     //   当前状态为默认 才能转交处理
-                    pushPeople(anomalyDetail.getUserId(), param.getAnomalyId());
-                }
-            }
+        if (ToolUtil.isNotEmpty(param.getInstockNumber())) {
+            InstockList instockList = new InstockList();
+            instockList.setInstockListId(oldEntity.getSourceId());
+            instockList.setRealNumber(param.getInstockNumber());
+            instockListService.updateById(instockList);
         }
-        detailService.updateBatchById(anomalyDetails);
+
+
         updateStatus(param.getAnomalyId()); //更新异常状态
     }
 
@@ -281,23 +275,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
     }
 
-    /**
-     * 转交人处理
-     *
-     * @param userId
-     * @param id
-     */
-    public void pushPeople(Long userId, Long id) {
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setDescription("入库异常 转交处理");
-        wxCpTemplate.setTitle("新消息");
-        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-            add(userId);
-        }});
-        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Error/Detail/Handle?id=" + id);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
-    }
 
     @Override
     public List<Long> createInkind(AnomalyParam param, AnomalyDetailParam detailParam) {

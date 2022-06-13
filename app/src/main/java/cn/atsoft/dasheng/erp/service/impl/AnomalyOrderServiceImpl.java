@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.InstockErrorActionEnum;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -91,6 +92,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private AnomalyDetailService anomalyDetailService;
     @Autowired
     private MessageProducer messageProducer;
+    @Autowired
+    private ActivitiProcessLogService processLogService;
 
     @Override
     public void add(AnomalyOrderParam param) {
@@ -219,7 +222,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         if (ToolUtil.isEmpty(anomalyOrder)) {
             throw new ServiceException(500, "单据不存在");
         }
-
+        if (anomalyOrder.getComplete() != 0) {
+            throw new ServiceException(500, "当前单据已被处理");
+        }
         List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, orderParam.getOrderId()).eq(Anomaly::getStatus, 99).eq(Anomaly::getDisplay, 1).list();
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
         anomalyService.format(anomalyResults);
@@ -231,6 +236,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         /**
          * 更新状态
          */
+        anomalyOrder.setComplete(99);
+        this.updateById(anomalyOrder);
         updateStatus(orderParam);
     }
 
@@ -256,7 +263,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     /**
      * 判断单据 状态
      */
-    private void updateStatus( AnomalyOrderParam param) {
+    private void updateStatus(AnomalyOrderParam param) {
         List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, param.getOrderId()).eq(Anomaly::getDisplay, 1).list();
         boolean t = true;
         for (Anomaly anomaly : anomalies) {
@@ -269,15 +276,16 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             /**
              * 消息队列完成动作
              */
-            messageProducer.auditMessageDo(new AuditEntity() {{
-                setAuditType(CHECK_ACTION);
-                setMessageType(AuditMessageType.AUDIT);
-                setFormId(param.getOrderId());
-                setMaxTimes(2);
-                setTimes(1);
-                setForm("INSTOCKERROR");
-                setActionId(param.getActionId());
-            }});
+            processLogService.checkAction(param.getOrderId(), "INSTOCKERROR", param.getActionId());
+//            messageProducer.auditMessageDo(new AuditEntity() {{
+//                setAuditType(CHECK_ACTION);
+//                setMessageType(AuditMessageType.AUDIT);
+//                setFormId(param.getOrderId());
+//                setMaxTimes(2);
+//                setTimes(1);
+//                setForm("INSTOCKERROR");
+//                setActionId(param.getActionId());
+//            }});
         }
     }
 
@@ -337,6 +345,12 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         return result;
     }
 
+    @Override
+    public void updateStatus(ActivitiProcessTask processTask) {
+        AnomalyOrder anomalyOrder = this.getById(processTask.getFormId());
+        anomalyOrder.setStatus(InstockErrorActionEnum.done.getStatus());
+        this.updateById(anomalyOrder);
+    }
 
     @Override
     public void update(AnomalyOrderParam param) {
