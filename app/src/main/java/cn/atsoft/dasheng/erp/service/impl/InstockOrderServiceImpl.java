@@ -57,6 +57,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -148,7 +149,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private AnomalyDetailService anomalyDetailService;
     @Autowired
     private AnomalyService anomalyService;
-
+    @Autowired
+    private ShopCartService shopCartService;
 
     @Override
     @Transactional
@@ -164,15 +166,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
 
-        if (ToolUtil.isEmpty(param.getCoding())) {
-            CodingRules codingRules = codingRulesService.query().eq("module", "1").eq("state", 1).one();
-            if (ToolUtil.isNotEmpty(codingRules)) {
-                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-                param.setCoding(coding);
-            } else {
-                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
-            }
-        }
 
         //防止添加重复数据
 //        List<Long> judge = new ArrayList<>();
@@ -224,6 +217,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         if (ToolUtil.isEmpty(sku.getQualityPlanId()) && sku.getSkuId().equals(instockRequest.getSkuId())) {
                             InstockList instockList = new InstockList();
                             instockList.setSkuId(instockRequest.getSkuId());
+                            if (instockRequest.getNumber() < 0) {
+                                throw new ServiceException(500, "不可以出现负数");
+                            }
                             instockList.setNumber(instockRequest.getNumber());
                             instockList.setRealNumber(instockRequest.getNumber());
                             instockList.setInstockOrderId(entity.getInstockOrderId());
@@ -278,6 +274,16 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder", entity.getInstockOrderId(), entity.getSource(), entity.getSourceId()));
             this.updateById(entity);
 
+
+            /**
+             * 清空购物车
+             */
+            ShopCart shopCart = new ShopCart();
+            shopCart.setDisplay(0);
+            shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+                eq("type", "inStock");
+                eq("create_user", LoginContextHolder.getContext().getUserId());
+            }});
 
             /**
              * 内部调用创建质检
