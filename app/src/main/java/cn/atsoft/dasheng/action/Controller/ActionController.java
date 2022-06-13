@@ -78,6 +78,7 @@ public class ActionController {
                         i++;
                     }
                 }
+                break;
             case INSTOCKERROR:
                 for (AddAction.Action action : actions) {
                     int i = 0;
