@@ -185,7 +185,7 @@ public class taskController extends BaseController {
                  * 取节点规则
                  */
                 ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
-                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) &&  activitiProcessLogService.checkUser(activitiAudit.getRule())) {
+                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) &&  activitiProcessLogService.checkUser(activitiAudit.getRule(),taskId)) {
                     taskResult.setPermissions(true);
                     break;
                 }

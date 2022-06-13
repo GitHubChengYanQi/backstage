@@ -120,6 +120,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<String> userList = ToolUtil.isEmpty(byId.getUserIds()) ? new ArrayList<>() : Arrays.asList(byId.getUserIds().split(","));
         boolean flag1 = deptList.contains(deptId.toString());
         boolean flag2 = userList.contains(deptId.toString());
+        LoginContextHolder.getContext().isAdmin();
         int flag = 0;
         if (LoginContextHolder.getContext().isAdmin()) {
             flag = 1;
@@ -222,7 +223,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
             if (ToolUtil.isNotEmpty(rule)) {
-                if (ToolUtil.isNotEmpty(rule.getType()) && rule.getType().toString().equals(type)) {
+                if (ToolUtil.isNotEmpty(rule.getType())) {
                     if (haveME(rule, context)) {
                         stepIds.add(audit.getSetpsId());
                     }
