@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.form.pojo;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,47 +46,33 @@ public enum ProcessType {
 //    }});
 
 
-
-    QUALITY("质检" ,"QUALITY",new ArrayList<ProcessModuleEnum>(){{
+    QUALITY("质检", "QUALITY", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.inQuality);
         add(ProcessModuleEnum.outQuality);
         add(ProcessModuleEnum.productionQuality);
     }}),
 
-    INSTOCK("入库操作" ,"INSTOCK", new ArrayList<ProcessModuleEnum>(){{
+    INSTOCK("入库操作", "INSTOCK", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.productionInstock);
         add(ProcessModuleEnum.purchaseInstock);
+        add(ProcessModuleEnum.createInstock);
     }}),
 
-    SHIP("工艺路线" ,"SHIP", new ArrayList<ProcessModuleEnum>(){{
+    SHIP("工艺路线", "SHIP", new ArrayList<ProcessModuleEnum>() {{
 
     }}),
-    PURCHASEASK("采购申请" ,"PURCHASEASK",new ArrayList<ProcessModuleEnum>(){{
+    PURCHASEASK("采购申请", "PURCHASEASK", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.purchaseAsk);
     }}),
-    PROCUREMENTORDER("采购单" ,"PROCUREMENTORDER",new ArrayList<ProcessModuleEnum>(){{
+    PROCUREMENTORDER("采购单", "PROCUREMENTORDER", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.procurementOrder);
     }}),
-    INSTOCKERROR("入库异常" ,"INSTOCKERROR",new ArrayList<ProcessModuleEnum>(){{
+    INSTOCKERROR("入库异常", "INSTOCKERROR", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.verifyError);
-
     }});
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
+    //
 //    @EnumValue
 //    private final Map<String, String> detail;
     @EnumValue
@@ -119,7 +104,7 @@ public enum ProcessType {
     }
 
 
-    ProcessType( String name, String type,List<ProcessModuleEnum> moduleEnums) {
+    ProcessType(String name, String type, List<ProcessModuleEnum> moduleEnums) {
         this.name = name;
         this.type = type;
         this.moduleEnums = moduleEnums;
@@ -142,28 +127,26 @@ public enum ProcessType {
     }
 
 
-    public static List<Map<String,Object>> enumList() {
+    public static List<Map<String, Object>> enumList() {
         List<Map<String, Object>> enumList = new ArrayList<>();
         for (ProcessType value : ProcessType.values()) {
-            Map<String,Object> enumDetail = new HashMap<>();
+            Map<String, Object> enumDetail = new HashMap<>();
 
 
-            List<Map<String,String>> detail = new ArrayList<>();
+            List<Map<String, String>> detail = new ArrayList<>();
             for (ProcessModuleEnum anEnum : value.getModuleEnums()) {
-                Map<String,String> map = new HashMap<>();
-                map.put("module",anEnum.name());
-                map.put("moduleName",anEnum.getModuleName());
+                Map<String, String> map = new HashMap<>();
+                map.put("module", anEnum.name());
+                map.put("moduleName", anEnum.getModuleName());
                 detail.add(map);
             }
 
 
-
-
             String type = value.getType();
             String name = value.getName();
-            enumDetail.put("details",detail);
-            enumDetail.put("name",name);
-            enumDetail.put("type",type);
+            enumDetail.put("details", detail);
+            enumDetail.put("name", name);
+            enumDetail.put("type", type);
             enumList.add(enumDetail);
         }
         return enumList;

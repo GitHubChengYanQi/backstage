@@ -138,7 +138,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1);
+            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
             //添加小铃铛
             wxCpSendTemplate.setSource("inquiry");
             wxCpSendTemplate.setSourceId(taskId);
@@ -151,7 +151,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
             wxCpTemplate.setUserIds(new ArrayList<Long>(){{
                 add(param.getUserId());
             }});
-            String url = mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?id=" ;
+            String url = mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" ;
             wxCpTemplate.setUrl(url);
            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
            wxCpSendTemplate.sendTemplate();

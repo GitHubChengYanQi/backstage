@@ -56,7 +56,7 @@
     <select id="auditList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult"
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam">
         select
-        <include refid="Base_Column_List"/>
+        task_id AS "taskId"
         from activiti_process_log where 1 = 1
         <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
             and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -70,21 +70,8 @@
                 #{state}
             </foreach>
         </if>
-        <if test="paramCondition.source!= null and paramCondition.source == '质检'">
-            and task_id in (select process_task_id from activiti_process_task where type ='quality_task' )
-        </if>
-        <if test="paramCondition.status!= null">
-            <if test="paramCondition.status == -1">
-                and status = -1
-            </if>
-            <if test="paramCondition.status == 1">
-                and status != -1
-            </if>
-        </if>
-        <if test="paramCondition.source!= null and paramCondition.source == '采购'">
-            and task_id in (select process_task_id from activiti_process_task where type ='purchase' )
-        </if>
-    </select>
+        group by task_id
+  </select>
 
     <select id="sendList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult"
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam">

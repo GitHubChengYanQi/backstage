@@ -92,7 +92,7 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
 
     @Override
     public List<DocumentsStatusResult> details(String formType) {
-        List<DocumentsStatus> statuses = this.query().eq("form_type", formType).eq("display",1).list();
+        List<DocumentsStatus> statuses = this.query().eq("form_type", formType).eq("display", 1).list();
 
         List<DocumentsStatusResult> statusResults = new ArrayList<>();
 
@@ -160,16 +160,17 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public List<DocumentsStatusResult> resultsByIds(List<Long> ids){
-        if (ToolUtil.isEmpty(ids) || ids .size() == 0){
+    public List<DocumentsStatusResult> resultsByIds(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids) || ids.size() == 0) {
             return new ArrayList<>();
         }
 
         List<DocumentsStatus> documentsStatuses = this.listByIds(ids);
         List<DocumentsStatusResult> documentsStatusResults = BeanUtil.copyToList(documentsStatuses, DocumentsStatusResult.class, new CopyOptions());
         for (Long id : ids) {
-            if (id == 0) {
+            if (ToolUtil.isEmpty(id) || id == 0) {
                 DocumentsStatusResult result = new DocumentsStatusResult();
                 result.setName("发起");
                 result.setDocumentsStatusId(0L);

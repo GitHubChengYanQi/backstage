@@ -11,6 +11,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -28,11 +29,22 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
 
     private static final long serialVersionUID = 1L;
 
+    private String type;
+
     private Long codeId;
+
     private Long num;
+
     private Long instockNumber;
 
+    private List<Long> inkindIds;
+
+    private Boolean batch = false;
+
     private List<InstockListRequest> requests;
+
+    @NotNull
+    private Long shopCartId;
 
     /**
      * 供应商
@@ -51,6 +63,7 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     /**
      * skuId
      */
+    @NotNull
     private Long skuId;
 
     private Long inkindId;
@@ -58,6 +71,7 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     /**
      * 入库清单
      */
+    @NotNull
     @ApiModelProperty("入库清单")
     private Long instockListId;
 
@@ -76,12 +90,13 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     /**
      * 产品id
      */
-    @ApiModelProperty("产品id")
-    private Long itemId;
+
+    private Long status;
 
     /**
      * 数量
      */
+    @NotNull
     @ApiModelProperty("数量")
     private Long number;
 

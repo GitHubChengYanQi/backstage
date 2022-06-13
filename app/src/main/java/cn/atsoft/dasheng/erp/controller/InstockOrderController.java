@@ -114,10 +114,9 @@ public class InstockOrderController extends BaseController {
      * @Date 2021-10-06
      */
     @RequestMapping(value = "/inStockByOrder", method = RequestMethod.POST)
-    @ApiOperation("自由入库")
-    public ResponseData inStockByOrder(@Valid @RequestBody InStockByOrderParam param) {
-        boolean b = this.instockOrderService.inStockByOrder(param);
-        return ResponseData.success(b);
+    public ResponseData inStockByOrder(@Valid @RequestBody InstockOrderParam param) {
+        List<Long> inkindIds = this.instockOrderService.inStock(param);
+        return ResponseData.success(inkindIds);
     }
 
     /**

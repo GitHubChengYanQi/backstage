@@ -26,7 +26,8 @@ public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    @TableField("push_people")
+    private String pushPeople;
     /**
      * 注意事项
      */
@@ -352,6 +353,14 @@ public class InstockOrder implements Serializable {
 
     public void setNoticeId(String noticeId) {
         this.noticeId = noticeId;
+    }
+
+    public String getPushPeople() {
+        return pushPeople;
+    }
+
+    public void setPushPeople(String pushPeople) {
+        this.pushPeople = pushPeople;
     }
 
     @Override

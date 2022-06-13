@@ -124,7 +124,7 @@ public class ActivitiProcessTaskSend {
      * @param auditRule
      * @param taskId
      */
-    public void send(RuleType type, AuditRule auditRule, Long taskId) {
+    public void send(RuleType type, AuditRule auditRule, Long taskId,Long loginUserId) {
         List<Long> users = new ArrayList<>();
 
         Map<String, String> aboutSend = this.getAboutSend(taskId, type);//获取任务关联
@@ -148,7 +148,7 @@ public class ActivitiProcessTaskSend {
                 qualityMessageSend.send(taskId, type, users, url, createName);
                 break;
             case purchase_complete:
-                purchaseAskService.complateAsk(taskId);
+                purchaseAskService.complateAsk(taskId,loginUserId);
                 this.completeSend(type,aboutSend);
                 break;
         }
@@ -173,12 +173,12 @@ public class ActivitiProcessTaskSend {
                     qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
                 }
 
-                 url = mobileService.getMobileConfig().getUrl() + "/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                 url = mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId();
                 qualityMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
             break;
             case purchase_complete:
                 users.add(processTask.getCreateUser());
-                url =url + "/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                url =url + "/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId();
                 purchaseMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
                 break;
         }
@@ -236,7 +236,7 @@ public class ActivitiProcessTaskSend {
         switch (type) {
             case audit:
             case send:
-                url = url + "/#/Work/Workflow?" + "id=" + map.get("taskId");
+                url = url + "/#/Receipts/ReceiptsDetail?" + "id=" + map.get("taskId");
                 break;
 //                case quality_perform:
 //                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");

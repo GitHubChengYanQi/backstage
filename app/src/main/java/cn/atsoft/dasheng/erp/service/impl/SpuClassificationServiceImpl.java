@@ -55,8 +55,8 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
                 throw new ServiceException(500, "当前分类下已有产品，不可创建");
             }
             Integer spuCount = spuService.query().eq("spu_classification_id", param.getPid()).eq("display", 1).count();
-            if(spuCount>0){
-                throw new ServiceException(500,"父级分类下已存在产品,不可添加");
+            if (spuCount > 0) {
+                throw new ServiceException(500, "父级分类下已存在产品,不可添加");
             }
 
         }
@@ -76,12 +76,12 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     public void delete(SpuClassificationParam param) {
         Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).and(i -> i.eq(Spu::getDisplay, 1)).count();
         Integer children = this.query().eq("pid", param.getSpuClassificationId()).eq("display", 1).count();
-        if (count > 0 ) {
+        if (count > 0) {
             throw new ServiceException(500, "此分类下有物品,无法删除");
-        } else if (children > 0){
+        } else if (children > 0) {
             throw new ServiceException(500, "此分类下有下级,无法删除");
 
-        } else{
+        } else {
             SpuClassification spuClassification = new SpuClassification();
             spuClassification.setSpuClassificationId(param.getSpuClassificationId());
             spuClassification.setDisplay(0);
@@ -318,15 +318,19 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     /**
      * 从子集到父级的所有编码拼接
+     *
      * @return
      */
     @Override
-    public String getCodings(Long classId){
+    public String getCodings(Long classId) {
         SpuClassification now = this.getById(classId);
         List<SpuClassification> all = this.list();
 //        String codings = now.getCodingClass() ;
 //        StringBuffer stringBuffer = this.loopGetCoding(now, all, new StringBuffer());
         String coding = getCoding(now, all);
+        if (ToolUtil.isEmpty(coding)) {
+            return "";
+        }
         return coding;
     }
 
@@ -350,7 +354,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         String coding = "";
         if (result.getPid() == 0) {
             coding = result.getCodingClass();
-        }else {
+        } else {
             for (SpuClassification spuClassification : resultList) {
                 if (result.getPid().equals(spuClassification.getSpuClassificationId())) {
                     String cod = getCoding(spuClassification, resultList);

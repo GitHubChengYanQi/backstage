@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,10 +24,14 @@ public class Announcements implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    @TableField("type")
+    private String type;
+
     /**
      * 注意事项
      */
-      @TableId(value = "notice_id", type = IdType.ID_WORKER)
+    @TableId(value = "notice_id", type = IdType.ID_WORKER)
     private Long noticeId;
 
     /**
@@ -48,25 +55,25 @@ public class Announcements implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建用户
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改用户
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -75,6 +82,13 @@ public class Announcements implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public Long getNoticeId() {
         return noticeId;
@@ -151,15 +165,15 @@ public class Announcements implements Serializable {
     @Override
     public String toString() {
         return "Announcements{" +
-        "noticeId=" + noticeId +
-        ", content=" + content +
-        ", sort=" + sort +
-        ", deptId=" + deptId +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "noticeId=" + noticeId +
+                ", content=" + content +
+                ", sort=" + sort +
+                ", deptId=" + deptId +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                "}";
     }
 }

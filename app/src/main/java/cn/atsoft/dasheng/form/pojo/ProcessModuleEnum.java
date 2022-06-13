@@ -19,7 +19,7 @@ public enum ProcessModuleEnum {
     procurementOrder("采购单"),
     inQuiry(""),
     instockError(""),
-    createInstock(""),
+    createInstock("直接入库"),
     INSTOCK(""),
     quality_task(""),
     verifyError("核实异常");

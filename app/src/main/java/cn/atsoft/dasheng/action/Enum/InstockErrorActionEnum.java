@@ -4,7 +4,7 @@ import cn.atsoft.dasheng.action.service.FormActionInterface;
 
 public enum InstockErrorActionEnum implements FormActionInterface {
 
-    start ("开始"){
+    start("开始") {
         public Long getStatus() {
             return 0L;
         }
@@ -13,6 +13,9 @@ public enum InstockErrorActionEnum implements FormActionInterface {
         public Long getStatus() {
             return 99L;
         }
+    },
+    verify("核实") {  //核实
+
     },
     refuse("拒绝") {
         public Long getStatus() {

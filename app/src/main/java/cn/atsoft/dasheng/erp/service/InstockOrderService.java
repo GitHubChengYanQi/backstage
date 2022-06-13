@@ -106,7 +106,11 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     void formatResult(InstockOrderResult result);
 
+    List<Long> inStock(InstockOrderParam param);
+
     boolean inStockByOrder(InStockByOrderParam param);
+
+    boolean instockOrderComplete(Long orderId);
 
     /**
      * 多个库位入库
@@ -134,4 +138,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
 
     void updateCreateInstockRefuseStatus(ActivitiProcessTask processTask);
+
+    void setList(List<InstockOrderResult> data);
+
+    void format(List<InstockOrderResult> data);
 }

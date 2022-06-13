@@ -2,12 +2,15 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.erp.entity.Announcements;
+import cn.atsoft.dasheng.form.entity.DocumentsStatus;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -30,6 +33,9 @@ public class InstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String statusName;
+    private List<Long> noticeIds = new ArrayList<>();
+    private List<Long> mediaIds = new ArrayList<>();
     private List<StorehousePositionsResult> bindTreeView;
     private List<InstockLogResult> logResults;
     private UserResult stockUserResult;
@@ -38,6 +44,7 @@ public class InstockOrderResult implements Serializable {
     private ThemeAndOrigin themeAndOrigin;
     private DocumentsStatusResult statusResult;
 
+    private String pushPeople;
     private String type;
 
     private Long status;
@@ -45,6 +52,8 @@ public class InstockOrderResult implements Serializable {
     private Long enoughNumber;
     private Long realNumber;
     private Long notNumber;
+    private List<Announcements> announcementsList;
+    private List<String> url;
 
     /**
      * 来源

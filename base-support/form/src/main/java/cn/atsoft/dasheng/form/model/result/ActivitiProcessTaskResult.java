@@ -26,6 +26,8 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Object receipts;
+
     private ActivitiStepsResult stepsResult;
 
     private User user;

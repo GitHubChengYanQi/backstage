@@ -56,6 +56,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
     List<Long> getLoopPositionIds(Long positionId);
 
+    Map<Long, List<StorehousePositionsResult>> getMap(List<Long> skuIds);
+
     /**
      * 查询单条数据，Specification模式
      *
