@@ -137,7 +137,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
         for (AnomalyDetail detail : details) {
             Inkind inkind = inkindService.getById(detail.getInkindId());
-            Inkind newInkind = new Inkind();
             switch (inkind.getSource()) {
                 case "inErrorBatch":
                     inkind.setNumber(detail.getNumber());
@@ -146,6 +145,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     break;
                 case "inErrorSingle":
                     for (long i = 0; i < detail.getNumber(); i++) {
+                        Inkind newInkind = new Inkind();
                         newInkind.setNumber(1L);
                         newInkind.setCustomerId(inkind.getCustomerId());
                         newInkind.setBrandId(inkind.getBrandId());

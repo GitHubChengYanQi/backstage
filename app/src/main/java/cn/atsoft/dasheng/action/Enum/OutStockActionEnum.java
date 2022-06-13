@@ -18,6 +18,9 @@ public enum OutStockActionEnum  implements FormActionInterface {
         public Long getStatus() {
             return 50L;
         }
+    },
+    stockPreparation("备料"){
+
     }
     ;
     public String getValue() {

@@ -52,7 +52,7 @@ public enum ProcessType {
         add(ProcessModuleEnum.productionQuality);
     }}),
 
-    INSTOCK("入库操作", "INSTOCK", new ArrayList<ProcessModuleEnum>() {{
+    INSTOCK("入库单", "INSTOCK", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.productionInstock);
         add(ProcessModuleEnum.purchaseInstock);
         add(ProcessModuleEnum.createInstock);
@@ -69,8 +69,12 @@ public enum ProcessType {
     }}),
     INSTOCKERROR("入库异常", "INSTOCKERROR", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.verifyError);
-    }});
+    }}),
 
+    OUTSTOCK("出库单", "OUTSTOCK", new ArrayList<ProcessModuleEnum>() {{
+        add(ProcessModuleEnum.productionOutStock);
+        add(ProcessModuleEnum.pickLists);
+    }});
 
     //
 //    @EnumValue

@@ -89,6 +89,16 @@ public class ActionController {
                     }
                 }
                 break;
+            case OUTSTOCK:
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (OutStockActionEnum outStockActionEnum : action.outStockActionEnums) {
+                        String value = outStockActionEnum.getValue();
+                        outStockActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
+                        i++;
+                    }
+                }
+                break;
         }
 
 
