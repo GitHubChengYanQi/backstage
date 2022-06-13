@@ -635,7 +635,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              * 消息队列完成动作
              */
 
-            activitiProcessLogService.checkAction(param.getInstockOrderId(), "instock", param.getActionId());
+            activitiProcessLogService.checkAction(param.getInstockOrderId(), "INSTOCK", param.getActionId(),LoginContextHolder.getContext().getUserId());
 //            messageProducer.auditMessageDo(new AuditEntity() {{
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);
@@ -1113,12 +1113,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Override
     public void updateCreateInstockStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
-        if (order.getState() != -1) {
-            order.setState(1);
+        order.setStatus(InStockActionEnum.done.getStatus());
             this.updateById(order);
             processTask.setStatus(99);
             activitiProcessTaskService.updateById(processTask);
-        }
     }
 
     @Override

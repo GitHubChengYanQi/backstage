@@ -132,7 +132,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             wxCpSendTemplate.setSourceId(taskId);
             //添加log
             activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getPurchaseAskId(), "purchaseAsk");
-            activitiProcessLogService.autoAudit(taskId, 1);
+            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
         } else {
             entity.setStatus(2L);
             this.updateById(entity);
@@ -322,12 +322,12 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     }
 
     @Override
-    public void complateAsk(Long processTaskId) {
+    public void complateAsk(Long processTaskId,Long loginUserId) {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(processTaskId);
         PurchaseAsk purchaseAsk = this.getById(processTask.getFormId());
         purchaseAsk.setStatus(2L);
         this.updateById(purchaseAsk);
-        activitiProcessLogService.autoAudit(processTaskId, 1);
+        activitiProcessLogService.autoAudit(processTaskId, 1,loginUserId);
     }
 
     @Override

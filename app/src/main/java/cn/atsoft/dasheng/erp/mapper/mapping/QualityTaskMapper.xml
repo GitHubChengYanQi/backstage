@@ -28,12 +28,17 @@
         <result column="note" property="note"/>
         <result column="parent_id" property="parentId"/>
         <result column="data_id" property="dataId"/>
+        <result column="theme" property="theme"/>
+        <result column="origin" property="origin"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        userIds
-        AS "userIds",data_id AS "dataId",
+
+        source AS "source",source_id AS "sourceId",theme AS "theme",origin AS "origin",
+        userIds AS "userIds",data_id AS "dataId",
 type
     AS "type",user_id AS "userId",address AS "address", person AS "person", phone AS "phone",note AS "note",parent_id AS "parentId",
         quality_task_id AS "qualityTaskId", time AS "time",status AS "status",state AS "state",url AS "url", user_id AS "userId",type AS "type",coding AS "coding", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"

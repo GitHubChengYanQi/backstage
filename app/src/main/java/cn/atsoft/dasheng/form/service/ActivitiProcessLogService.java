@@ -35,12 +35,13 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
 
 //    void audit(Long taskId, Integer status, String type, Integer auto);
 
-    void autoAudit(Long taskId, Integer status);
+    void autoAudit(Long taskId, Integer status,Long loginUserId);
 
 
-    void checkAction(Long id, String formType, Long actionId);
+    void checkAction(Long id, String formType, Long actionId,Long loginUserId);
 
-    void checkLogActionComplete(Long taskId, Long stepId, Long actionId);
+
+    void checkLogActionComplete(Long taskId, Long stepId, Long actionId, Long loginUserId);
 
     Boolean checkUser(AuditRule starUser);
 

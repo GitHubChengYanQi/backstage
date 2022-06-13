@@ -223,7 +223,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 wxCpSendTemplate.setSourceId(taskId);
                 //添加log
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-                activitiProcessLogService.autoAudit(taskId, 1);
+                activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
 
 
             } else {
@@ -304,7 +304,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     }});
 
                     ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getParentId());
-                    activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1);
+                    activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1,LoginContextHolder.getContext().getUserId());
                 }
 
                 if (param.getState() != -1) {
@@ -354,7 +354,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             wxCpSendTemplate.setSourceId(taskId);
             //添加log
             activitiProcessLogService.microAddLog(activitiProcess.getProcessId(), taskId, param.getMicroUserId());
-            activitiProcessLogService.autoAudit(taskId, 1);
+            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
 
 
         } else {
@@ -911,7 +911,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
              * TODO id错误
              */
             ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(task.getParentId());
-            activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1);
+            activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1,LoginContextHolder.getContext().getUserId());
         }
     }
 
@@ -1236,7 +1236,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             like("rule", "quality_dispatch");
             in("setps_id", stepsIds);
         }});
-        activitiProcessTaskSend.send(quality_dispatch, dispathAudit.getRule(), processTask.getProcessTaskId());
+        activitiProcessTaskSend.send(quality_dispatch, dispathAudit.getRule(), processTask.getProcessTaskId(),LoginContextHolder.getContext().getUserId());
     }
 
 

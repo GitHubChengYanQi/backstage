@@ -166,7 +166,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1);
+            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
             //添加小铃铛
             wxCpSendTemplate.setSource("procurementOrder");
             wxCpSendTemplate.setSourceId(taskId);
@@ -250,7 +250,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1);
+            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
