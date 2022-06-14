@@ -209,7 +209,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             for (InstockRequest instockRequest : param.getInstockRequest()) {
                 skuIds.add(instockRequest.getSkuId());
             }
-            List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
+//            List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
             List<InstockList> instockLists = new ArrayList<>();
             for (InstockRequest instockRequest : param.getInstockRequest()) {
                 if (ToolUtil.isNotEmpty(instockRequest)) {
