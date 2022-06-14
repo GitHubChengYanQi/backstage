@@ -422,17 +422,19 @@ public class OrCodeController extends BaseController {
                 case "item":
                     InkindResult inkindResult = inkindService.getInkindResult(codeBind.getFormId());
                     InkindBack inkindBack = new InkindBack();
-                    switch (inkindResult.getSource()) {
-                        case "质检":
-                            QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
-                            inkindResult.setTaskDetail(detail);
-                            break;
-                        case "入库":
-                        case "自由入库":
-                        case "盘点入库":
-                            Map<String, Object> inkindDetail = orCodeService.inkindDetail(inkindResult.getInkindId());
-                            inkindResult.setInkindDetail(inkindDetail);
-                            break;
+                    if (ToolUtil.isNotEmpty(inkindResult)&&ToolUtil.isNotEmpty(inkindResult.getSource())) {
+                        switch (inkindResult.getSource()) {
+                            case "质检":
+                                QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
+                                inkindResult.setTaskDetail(detail);
+                                break;
+                            case "入库":
+                            case "自由入库":
+                            case "盘点入库":
+                                Map<String, Object> inkindDetail = orCodeService.inkindDetail(inkindResult.getInkindId());
+                                inkindResult.setInkindDetail(inkindDetail);
+                                break;
+                        }
                     }
                     inkindBack.setInkindResult(inkindResult);
                     inkindBack.setType("item");
