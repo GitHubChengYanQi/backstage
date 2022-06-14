@@ -25,7 +25,10 @@ public class ProductionPickListsCartResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private SkuSimpleResult skuResult;
     private ProductionPickListsResult productionPickListsResult;
-
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long brandId;
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long customerId;
 
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehousePositionsId;

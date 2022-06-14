@@ -7,6 +7,8 @@
         <id column="pick_lists_cart" property="pickListsCart" />
         <result column="pick_lists_id" property="pickListsId" />
         <result column="sku_id" property="skuId" />
+        <result column="brand_id" property="brandId" />
+        <result column="customer_id" property="customerId" />
         <result column="storehouse_positions_id" property="storehousePositionsId" />
         <result column="storehouse_id" property="storehouseId" />
         <result column="number" property="number" />
