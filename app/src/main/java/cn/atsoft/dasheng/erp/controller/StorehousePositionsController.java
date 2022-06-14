@@ -78,6 +78,14 @@ public class StorehousePositionsController extends BaseController {
     }
 
 
+
+    @RequestMapping(value = "/selectBySku", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData selectBySku(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+        List<StorehousePositionsResult> results = this.storehousePositionsService.selectBySku(storehousePositionsParam.getSkuId());
+        return ResponseData.success(results);
+    }
+
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData treeView(@RequestBody StorehousePositionsParam storehousePositionsParam) {

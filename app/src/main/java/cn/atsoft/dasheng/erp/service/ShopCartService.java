@@ -26,6 +26,8 @@ public interface ShopCartService extends IService<ShopCart> {
      */
     Long add(ShopCartParam param);
 
+    void sendBack(Long id);
+
     void addList(List<ShopCartParam> params);
 
     /**
