@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
@@ -44,31 +45,31 @@ public class StorehousePositionsResult implements Serializable {
     private PrintTemplateResult printTemplateResult;
 
     private List<StockDetailsResult> detailsResults;
-//    @JSONField(serialize = false)
+    //    @JSONField(serialize = false)
     private List<SkuSimpleResult> skuResults;
 
     private List<String> skuIds;
     private List<StorehousePositionsResult> storehousePositionsResults;
 
-
+    private List<BrandResult> brandResults;
     /**
      * 仓库库位id
      */
     @ApiModelProperty("仓库库位id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long storehousePositionsId;
 
     /**
      * 仓库id
      */
     @ApiModelProperty("仓库id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long storehouseId;
 
     /**
      * skuId
      */
-    @JSONField(serialize = false,serializeUsing= ToStringSerializer.class)
+    @JSONField(serialize = false, serializeUsing = ToStringSerializer.class)
     @ApiModelProperty("skuId")
     private Long skuId;
 
@@ -84,7 +85,7 @@ public class StorehousePositionsResult implements Serializable {
      * 数量
      */
     @ApiModelProperty("数量")
-    @JSONField(serialize = false,serializeUsing= ToStringSerializer.class)
+    @JSONField(serialize = false, serializeUsing = ToStringSerializer.class)
     private Long number;
 
     /**

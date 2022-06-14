@@ -49,6 +49,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
     void update(StorehousePositionsParam param);
 
+    List<StorehousePositionsResult> selectBySku(Long skuId);
+
     StorehousePositionsResult positionsResultById(Long codeId);
 
 
