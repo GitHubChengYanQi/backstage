@@ -289,7 +289,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             return new ArrayList<>();
         }
 
-        List<StockDetails> stockDetails = stockDetailsService.lambdaQuery().eq(StockDetails::getSkuId, skuId).list();
+        List<StockDetails> stockDetails = stockDetailsService.lambdaQuery().eq(StockDetails::getSkuId, skuId).gt(StockDetails::getNumber, 0).list();
 
         List<Long> positionIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
@@ -303,15 +303,15 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         Map<Long, List<BrandResult>> map = new HashMap<>();
-        Map<Long, Integer> positionNum = new HashMap<>();
+        Map<Long, Long> positionNum = new HashMap<>();
 
         for (StockDetails stockDetail : stockDetails) {
-            Integer num = positionNum.get(stockDetail.getStorehousePositionsId());   //当前库位下的库存数
+            Long num = positionNum.get(stockDetail.getStorehousePositionsId());   //当前库位下的库存数
             if (ToolUtil.isEmpty(num)) {
-                num = 0;
-            } else {
-                num = num + 1;
+                num = 0L;
             }
+            num = num + stockDetail.getNumber();
+
             positionNum.put(stockDetail.getStorehousePositionsId(), num);
 
             for (BrandResult brandResult : brandResults) {
@@ -333,6 +333,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
 
         for (StorehousePositionsResult positionsResult : positionsResults) {
+            Long num = positionNum.get(positionsResult.getStorehousePositionsId());
+            positionsResult.setNumber(num);
             positionsResult.setBrandResults(map.get(positionsResult.getStorehousePositionsId()));
         }
 
@@ -351,7 +353,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private int getBrandNumber(List<StockDetails> stockDetails, Long positionId, Long brandId) {
         int num = 0;
         for (StockDetails stockDetail : stockDetails) {
-            if (stockDetail.getStorehousePositionsId().equals(positionId) && stockDetail.getBrandId().equals(brandId)) {
+            if (ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getStorehousePositionsId().equals(positionId) && stockDetail.getBrandId().equals(brandId)) {
                 num = (int) (num + stockDetail.getNumber());
             }
         }

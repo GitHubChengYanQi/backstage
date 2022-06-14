@@ -41,6 +41,7 @@ public class StorehousePositionsResult implements Serializable {
     @JSONField(serialize = false)
     private Integer skuNumber;
 
+    private Integer num;
 
     private PrintTemplateResult printTemplateResult;
 
@@ -85,7 +86,6 @@ public class StorehousePositionsResult implements Serializable {
      * 数量
      */
     @ApiModelProperty("数量")
-    @JSONField(serialize = false, serializeUsing = ToStringSerializer.class)
     private Long number;
 
     /**
