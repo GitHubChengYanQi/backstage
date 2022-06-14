@@ -14,6 +14,8 @@ import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsCartMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
+import cn.atsoft.dasheng.production.model.request.StockDetailSkuTotal;
+import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
 import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
@@ -75,6 +77,25 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             o1.setNumber(o1.getNumber() + o2.getNumber());
             return o1;
         })).values().stream().collect(Collectors.toList());
+
+        List<StockDetails> cartsTotalList = new ArrayList<>();
+
+
+
+
+
+        List<StockDetails> stockTotalList = new ArrayList<>();
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + item.getBrandId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                    }}).ifPresent(stockTotalList::add);
+                }
+        );
+
+
+
         //TODO 验证库存  锁定库存
 
         this.saveBatch(entitys);
