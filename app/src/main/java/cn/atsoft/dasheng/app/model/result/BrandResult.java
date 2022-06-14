@@ -25,7 +25,7 @@ public class BrandResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-//     private PartsResult partsResult;
+    //     private PartsResult partsResult;
     private List<Long> skuIds;
     private List<SkuResult> skuResults;
     /**
@@ -35,7 +35,7 @@ public class BrandResult implements Serializable {
     private Long brandId;
 
 
-
+    private Integer num;
 
     /**
      * 品牌名称

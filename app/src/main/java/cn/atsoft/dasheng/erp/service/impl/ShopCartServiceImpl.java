@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyDetail;
 import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.ShopCart;
@@ -67,6 +68,45 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
 
         return entity.getCartId();
+    }
+
+    /**
+     * 购物车退回
+     *
+     * @param id
+     */
+    @Override
+    public void sendBack(Long id) {
+        ShopCart shopCart = this.getById(id);
+        shopCart.setDisplay(0);
+
+        InstockList instockList = null;
+
+        switch (shopCart.getType()) {
+            case "InstockError":
+                Anomaly anomaly = anomalyService.getById(shopCart.getFormId());
+                anomaly.setDisplay(0);
+                anomalyService.updateById(anomaly);
+                instockList = instockListService.getById(anomaly.getSourceId());
+
+                break;
+            case "waitInStock":
+                instockList = instockListService.getById(shopCart.getFormId());
+                if (!instockList.getRealNumber().equals(instockList.getNumber())) {
+                    throw new ServiceException(500, "当前数据已被操作，不可退回");
+                }
+                break;
+            case "instockByAnomaly":
+                AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
+                anomalyDetail.setDisplay(0);
+                anomalyDetailService.updateById(anomalyDetail);
+                break;
+        }
+        if (instockList != null) {
+            instockList.setStatus(0L);
+            instockListService.updateById(instockList);
+        }
+        this.updateById(shopCart);
     }
 
     /**
@@ -201,7 +241,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         Map<Long, AnomalyResult> map = anomalyService.getMap(anomalyIds);
-
 
 
         for (ShopCartResult datum : data) {
