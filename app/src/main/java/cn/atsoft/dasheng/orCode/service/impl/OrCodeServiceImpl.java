@@ -107,6 +107,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private OutstockOrderService outstockOrderService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private CustomerService customerService;
 
 
     @Override
@@ -671,11 +673,15 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     public Map<String, Object> inkindDetail(Long inkindId) {
         if (ToolUtil.isEmpty(inkindId)) {
-            return  new HashMap<>();
+            return new HashMap<>();
         }
         StockDetails stockDetails = stockDetailsService.getOne(new QueryWrapper<StockDetails>() {{
             eq("inkind_id", inkindId);
         }});
+
+        Brand brand = ToolUtil.isEmpty(stockDetails.getBrandId()) ? new Brand() : brandService.getById(stockDetails.getBrandId());
+        Customer customer = ToolUtil.isEmpty(stockDetails.getCustomerId()) ? new Customer() : customerService.getById(stockDetails.getCustomerId());
+
 
         /**
          * 格式化sku 返回数据
@@ -690,7 +696,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
             Stock stock = stockService.getById(stockDetails.getStockId());
             StockResult stockResult = new StockResult();
-            ToolUtil.copyProperties(stock, stockResult);
+            if (ToolUtil.isNotEmpty(stock)) {
+                ToolUtil.copyProperties(stock, stockResult);
+            }
 
 
             Storehouse storehouse = storehouseService.getById(stockDetails.getStorehouseId());
@@ -707,6 +715,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             result.put("stockDetails", stockDetails);
             result.put("storehousePositions", storehousePositionsResult);
             result.put("inKindResult", inkindResult);
+            result.put("brand", brand);
+            result.put("customer", customer);
             return result;
         }
         return null;
