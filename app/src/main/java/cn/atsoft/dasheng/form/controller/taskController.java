@@ -19,6 +19,8 @@ import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
@@ -71,6 +73,9 @@ public class taskController extends BaseController {
 
     @Autowired
     private PurchaseAskService askService;
+
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
     @Autowired
     private RemarksService remarksService;
@@ -152,6 +157,11 @@ public class taskController extends BaseController {
             case "INSTOCKERROR":
                 AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
                 taskResult.setReceipts(orderResult);
+                break;
+                case "OUTSTOCK":
+                    ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
+
+                    taskResult.setReceipts(pickListsRestult);
                 break;
         }
         //树形结构

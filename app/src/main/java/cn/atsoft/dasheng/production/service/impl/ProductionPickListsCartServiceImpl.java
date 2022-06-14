@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -12,6 +14,7 @@ import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsCartMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
+import cn.atsoft.dasheng.production.model.result.ProductionJobBookingDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
@@ -28,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -49,14 +53,28 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public void add(ProductionPickListsCartParam param) {
+        List<Long> skuIds = new ArrayList<>();
         List<ProductionPickListsCart> entitys = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             ProductionPickListsCart entity = getEntity(productionPickListsCartParam);
             entitys.add(entity);
+            skuIds.add(productionPickListsCartParam.getSkuId());
         }
+        List<ProductionPickListsCart> pickListsCarts = this.query().in("sku_id", skuIds).eq("display", 1).list();
+        pickListsCarts = pickListsCarts.stream().collect(Collectors.toMap(ProductionPickListsCart::getSkuId, a -> a, (o1, o2) -> {
+            o1.setNumber(o1.getNumber() + o2.getNumber());
+            return o1;
+        })).values().stream().collect(Collectors.toList());
+        List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list();
+        stockDetails = stockDetails.stream().collect(Collectors.toMap(StockDetails::getSkuId, a -> a, (o1, o2) -> {
+            o1.setNumber(o1.getNumber() + o2.getNumber());
+            return o1;
+        })).values().stream().collect(Collectors.toList());
         //TODO 验证库存  锁定库存
 
         this.saveBatch(entitys);

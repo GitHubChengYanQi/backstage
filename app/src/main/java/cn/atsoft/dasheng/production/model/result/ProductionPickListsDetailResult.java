@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
@@ -13,6 +15,8 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 领料单详情表
@@ -36,6 +40,8 @@ public class ProductionPickListsDetailResult implements Serializable {
     private String pickListsCoding;
     private Integer stockNumber;
     private Boolean isMeet;
+    private Map<String,String> customerResult;
+    private Map<String,String> brandResult;
     /**
      * 子表id
      */

@@ -78,4 +78,6 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     List<StorehouseResult> getStockSkus(List<Long> skuIds);
 
     void outStock(ProductionPickListsParam param);
+
+    ProductionPickListsResult detail(Long id);
 }

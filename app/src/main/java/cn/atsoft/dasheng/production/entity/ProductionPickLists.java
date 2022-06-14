@@ -109,7 +109,7 @@ public class ProductionPickLists implements Serializable {
      * 状态
      */
     @TableField("status")
-    private Integer status;
+    private Long status;
 
     public Long getUserIds() {
         return userIds;
@@ -207,11 +207,11 @@ public class ProductionPickLists implements Serializable {
         this.deptId = deptId;
     }
 
-    public Integer getStatus() {
+    public Long getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(Long status) {
         this.status = status;
     }
 

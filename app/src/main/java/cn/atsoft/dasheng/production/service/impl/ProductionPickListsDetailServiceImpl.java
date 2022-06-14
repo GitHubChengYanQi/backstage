@@ -2,6 +2,10 @@ package cn.atsoft.dasheng.production.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -21,7 +25,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +42,10 @@ import java.util.stream.Collectors;
 public class ProductionPickListsDetailServiceImpl extends ServiceImpl<ProductionPickListsDetailMapper, ProductionPickListsDetail> implements ProductionPickListsDetailService {
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private BrandService brandService;
     @Override
     public void add(ProductionPickListsDetailParam param){
         ProductionPickListsDetail entity = getEntity(param);
@@ -62,14 +72,25 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
 
     @Override
     public List<ProductionPickListsDetailResult> findListBySpec(ProductionPickListsDetailParam param){
-      return this.baseMapper.customList2(param);
+        List<ProductionPickListsDetailResult> productionPickListsDetailResults = this.baseMapper.customList2(param);
+        this.format(productionPickListsDetailResults);
+        return productionPickListsDetailResults;
+
     }
 
 
     private void format(List<ProductionPickListsDetailResult> results){
         List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         for (ProductionPickListsDetailResult result : results) {
             skuIds.add(result.getSkuId());
+            if (ToolUtil.isNotEmpty(result.getBrandId())) {
+                brandIds.add(result.getBrandId());
+            }
+            if (ToolUtil.isNotEmpty(result.getCustomerId())){
+                customerIds.add(result.getCustomerId());
+            }
         }
         List<StockDetails> stockSkus =skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", skuIds).eq("display",1).list();
 
@@ -86,6 +107,8 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     transfer.stream().reduce((a, b) -> new StockSkuTotal(a.getSkuId(), a.getNumber() + b.getNumber())).ifPresent(totalList::add);
                 }
         );
+        List<CustomerResult> customerResults =customerIds.size() == 0 ? new ArrayList<>() : customerService.getResults(customerIds);
+        List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         for (ProductionPickListsDetailResult result : results) {
             for (StockSkuTotal stockSkuTotal : totalList) {
                 if (result.getSkuId().equals(stockSkuTotal.getSkuId())){
@@ -95,6 +118,20 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     }else {
                         result.setIsMeet(true);
                     }
+                }
+            }
+            for (CustomerResult customerResult : customerResults) {
+                if (ToolUtil.isNotEmpty(result.getCustomerId()) && result.getCustomerId().equals(customerResult.getCustomerId())){
+                    Map<String,String> customerMap = new HashMap<>();
+                    customerMap.put("customerId",customerResult.getCustomerId().toString());
+                    customerMap.put("customerName",customerResult.getCustomerName().toString());
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(result.getBrandId()) && result.getCustomerId().equals(brandResult.getBrandId())){
+                    Map<String,String> customerMap = new HashMap<>();
+                    customerMap.put("brandId",brandResult.getBrandId().toString());
+                    customerMap.put("brandName",brandResult.getBrandName().toString());
                 }
             }
         }

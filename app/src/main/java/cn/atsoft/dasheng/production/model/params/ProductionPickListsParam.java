@@ -122,7 +122,7 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
      * 状态
      */
     @ApiModelProperty("状态")
-    private Integer status;
+    private Long status;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

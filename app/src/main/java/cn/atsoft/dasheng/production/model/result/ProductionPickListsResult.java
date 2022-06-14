@@ -40,6 +40,7 @@ public class ProductionPickListsResult implements Serializable {
     private List<ProductionPickListsCartResult> cartResults;
     private List<StorehouseResult> storehouseResults;
     private List<StorehousePositionsResult> storehousePositionsResults;
+    private String statusName;
 
     /**
      * 附件
@@ -141,7 +142,7 @@ public class ProductionPickListsResult implements Serializable {
      * 状态
      */
     @ApiModelProperty("状态")
-    private Integer status;
+    private Long status;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
