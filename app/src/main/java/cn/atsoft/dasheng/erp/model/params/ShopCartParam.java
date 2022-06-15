@@ -27,6 +27,7 @@ public class ShopCartParam implements Serializable, BaseValidatingParam {
 
     private List<ShopCartParam> shopCartParams;
 
+
     private Long sourceId;
 
     private List<Long> ids;

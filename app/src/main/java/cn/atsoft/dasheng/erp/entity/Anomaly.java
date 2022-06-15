@@ -27,6 +27,7 @@ public class Anomaly implements Serializable {
     @TableField("check_number")
     private String checkNumber;
 
+
     /**
      * 可入库数量
      */
