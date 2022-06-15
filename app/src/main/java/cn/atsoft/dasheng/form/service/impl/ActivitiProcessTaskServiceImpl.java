@@ -305,6 +305,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<InstockOrder> instockOrders = instockOrderIds.size() == 0 ? new ArrayList<>() : instockOrderService.listByIds(instockOrderIds);
         List<InstockOrderResult> orderResults = BeanUtil.copyToList(instockOrders, InstockOrderResult.class, new CopyOptions());
+        instockOrderService.format(orderResults);
         instockOrderService.setList(orderResults);
 
         List<AnomalyOrder> anomalyOrders = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyOrderService.listByIds(anomalyIds);
