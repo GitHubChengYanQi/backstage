@@ -709,6 +709,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         inkind.setSkuId(param.getSkuId());
         inkind.setCustomerId(param.getCustomerId());
         inkind.setSource("入库");
+        inkind.setSourceId(param.getInstockListId());
         inkind.setType("1");
         inkind.setBrandId(param.getBrandId());
         inkindService.save(inkind);

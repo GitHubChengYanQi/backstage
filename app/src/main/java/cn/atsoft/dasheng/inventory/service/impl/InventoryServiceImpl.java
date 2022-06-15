@@ -193,7 +193,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         inventory.setStatus(2);
                         inventories.add(inventory);
 
-                    } else if (detail.getNumber() < param.getNumber()) { //修正入库
+                    } else if (detail.getNumber() < param.getNumber()) {  //修正入库
 
                         InstockListParam instockListParam = new InstockListParam();//添加记录
                         instockListParam.setSkuId(detail.getSkuId());
