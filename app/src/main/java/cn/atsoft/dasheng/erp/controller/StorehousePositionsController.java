@@ -82,7 +82,7 @@ public class StorehousePositionsController extends BaseController {
     @RequestMapping(value = "/selectBySku", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData selectBySku(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        List<StorehousePositionsResult> results = this.storehousePositionsService.selectBySku(storehousePositionsParam.getSkuId());
+        List<StorehousePositionsResult> results = this.storehousePositionsService.selectBySku(storehousePositionsParam);
         return ResponseData.success(results);
     }
 

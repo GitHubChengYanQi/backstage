@@ -284,12 +284,18 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<StorehousePositionsResult> selectBySku(Long skuId) {
-        if (ToolUtil.isEmpty(skuId)) {
+    public List<StorehousePositionsResult> selectBySku(StorehousePositionsParam param) {
+        if (ToolUtil.isEmpty(param.getSkuId())) {
             return new ArrayList<>();
         }
+        QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getBrandId())) {
+            stockDetailsQueryWrapper.eq("brand_id", param.getBrandId());
+        }
+        stockDetailsQueryWrapper.eq("sku_id", param.getSkuId());
+        stockDetailsQueryWrapper.gt("number",0);
 
-        List<StockDetails> stockDetails = stockDetailsService.lambdaQuery().eq(StockDetails::getSkuId, skuId).gt(StockDetails::getNumber, 0).list();
+        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);
 
         List<Long> positionIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
