@@ -1,6 +1,11 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
@@ -38,6 +43,11 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
     private SkuService skuService;
     @Autowired
     private InstockListService instockListService;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private CustomerService customerService;
+
 
     @Override
     public void add(InstockLogDetailParam param) {
@@ -72,6 +82,7 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
     public PageInfo<InstockLogDetailResult> findPageBySpec(InstockLogDetailParam param) {
         Page<InstockLogDetailResult> pageContext = getPageContext();
         IPage<InstockLogDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -92,6 +103,7 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
     public List<InstockLogDetailResult> resultsByLogIds(List<Long> logIds) {
         if (ToolUtil.isEmpty(logIds) || logIds.size() == 0) {
@@ -101,34 +113,53 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
         List<InstockLogDetailResult> results = new ArrayList<>();
         for (InstockLogDetail instockLogDetail : instockLogDetails) {
             InstockLogDetailResult result = new InstockLogDetailResult();
-            ToolUtil.copyProperties(instockLogDetail,result);
+            ToolUtil.copyProperties(instockLogDetail, result);
             results.add(result);
         }
         this.format(results);
         return results;
     }
 
-    private void format(List<InstockLogDetailResult> results){
-        List<Long> skuIds  = new ArrayList<>();
+    private void format(List<InstockLogDetailResult> results) {
+        List<Long> skuIds = new ArrayList<>();
         List<Long> instockOrderId = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         for (InstockLogDetailResult result : results) {
             skuIds.add(result.getSkuId());
             instockOrderId.add(result.getInstockOrderId());
+            brandIds.add(result.getBrandId());
+            customerIds.add(result.getCustomerId());
         }
         instockOrderId = instockOrderId.stream().distinct().collect(Collectors.toList());
-        List<InstockList> instockLists =instockOrderId.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", instockOrderId).list();
+        List<InstockList> instockLists = instockOrderId.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", instockOrderId).list();
 
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
 
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
         for (InstockLogDetailResult result : results) {
             for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                if (result.getSkuId().equals(skuSimpleResult.getSkuId())){
+                if (result.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     result.setSkuResult(skuSimpleResult);
                 }
             }
             for (InstockList instockList : instockLists) {
-                if (instockList.getInstockOrderId().equals(result.getInstockOrderId()) && instockList.getSkuId().equals(result.getSkuId())){
+                if (instockList.getInstockOrderId().equals(result.getInstockOrderId()) && instockList.getSkuId().equals(result.getSkuId())) {
                     result.setListNumber(Math.toIntExact(instockList.getNumber()));
+                }
+            }
+
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(result.getBrandId()) && brandResult.getBrandId().equals(result.getBrandId())) {
+                    result.setBrandResult(brandResult);
+                    break;
+                }
+            }
+            for (Customer customer : customerList) {
+                if (ToolUtil.isNotEmpty(result.getCustomerId()) && customer.getCustomerId().equals(result.getCustomerId())) {
+                    result.setCustomer(customer);
+                    break;
                 }
             }
         }

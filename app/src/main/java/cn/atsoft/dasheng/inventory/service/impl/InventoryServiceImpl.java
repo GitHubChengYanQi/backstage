@@ -159,16 +159,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 setMaxTimes(1);
             }});
 
-
             List<Long> userIds = new ArrayList<>();
             if (ToolUtil.isNotEmpty(param.getParticipants())) {
-                userIds.addAll(JSON.parseArray(param.getParticipants(),Long.class));
+                userIds.addAll(JSON.parseArray(param.getParticipants(), Long.class));
             }
             String name = LoginContextHolder.getContext().getUser().getName();
-            remarksService.pushPeople(userIds, taskId, name+"创建的盘点任务 需要你处理");
-
+            remarksService.pushPeople(userIds, taskId, name + "创建的盘点任务 需要你处理");
         }
-
     }
 
 
@@ -490,4 +487,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         return entity;
     }
 
+    private void format(List<InventoryResult> data) {
+
+        List<Long> inventoryIds = new ArrayList<>();
+
+        for (InventoryResult datum : data) {
+            inventoryIds.add(datum.getInventoryTaskId());
+        }
+
+
+    }
 }

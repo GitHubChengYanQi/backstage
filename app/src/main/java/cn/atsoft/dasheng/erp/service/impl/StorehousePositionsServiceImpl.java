@@ -332,7 +332,10 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                     if (ToolUtil.isEmpty(brandResultList)) {
                         brandResultList = new ArrayList<>();
                     }
-                    brandResultList.add(brandResult);
+                    //去重品牌
+                    if (brandResultList.stream().noneMatch(i -> i.getBrandId().equals(brandResult.getBrandId()))) {
+                        brandResultList.add(brandResult);
+                    }
                     map.put(stockDetail.getStorehousePositionsId(), brandResultList);
                 }
             }

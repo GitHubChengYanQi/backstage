@@ -322,7 +322,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                  * 指定人推送
                  */
                 if (ToolUtil.isNotEmpty(param.getUserIds())) {
-                    remarksService.pushPeople(param.getUserIds(), taskId,"你有一条被@的消息");
+                    remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
                 }
             } else {
                 entity.setState(1);
@@ -622,6 +622,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     inkindIds.add(inKind);
                 } else {
                     for (long i = 0; i < listParam.getNumber(); i++) {
+                        listParam.setNumber(1L);
                         Long inKind = createInKind(listParam);
                         handle(listParam, inKind);
                         inkindIds.add(inKind);
@@ -734,6 +735,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @param inkindId
      */
     private void handle(InstockListParam param, Long inkindId) {
+
+
         StockDetails stockDetails = new StockDetails();
         stockDetails.setSkuId(param.getSkuId());
         stockDetails.setBrandId(param.getBrandId());
@@ -744,8 +747,21 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         StorehousePositions storehousePositions = positionsService.getById(param.getStorehousePositionsId());
         stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
-
         stockDetailsService.save(stockDetails);
+
+        /**
+         * 添加入库记录
+         */
+        InstockLogDetail instockLogDetail = new InstockLogDetail();
+        instockLogDetail.setInstockOrderId(param.getInstockOrderId());
+        instockLogDetail.setSkuId(param.getSkuId());
+        instockLogDetail.setType("normal");
+        instockLogDetail.setBrandId(param.getBrandId());
+        instockLogDetail.setCustomerId(param.getCustomerId());
+        instockLogDetail.setStorehousePositionsId(param.getStorehousePositionsId());
+        instockLogDetail.setNumber(param.getNumber());
+        instockLogDetail.setInkindId(inkindId);
+        instockLogDetailService.save(instockLogDetail);
     }
 
     private void handle(InstockListParam param, List<Long> inkindIds) {

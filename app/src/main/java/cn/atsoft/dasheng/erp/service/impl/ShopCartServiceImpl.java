@@ -103,7 +103,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     break;
                 case "instockByAnomaly":
                     AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
-                    Anomaly  error  = anomalyService.getById(anomalyDetail.getAnomalyId());
+                    Anomaly error = anomalyService.getById(anomalyDetail.getAnomalyId());
                     error.setDisplay(0);
                     anomalyService.updateById(error);
                     instockList = instockListService.getById(error.getSourceId());
