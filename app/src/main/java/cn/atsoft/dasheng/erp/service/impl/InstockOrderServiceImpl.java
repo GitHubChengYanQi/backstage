@@ -242,10 +242,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         instockList.setSellingPrice(instockRequest.getSellingPrice());
                     }
                     instockLists.add(instockList);
-                    break;
+
 //                        }
 //                    }
-
                 }
             }
             if (ToolUtil.isNotEmpty(instockLists)) {
