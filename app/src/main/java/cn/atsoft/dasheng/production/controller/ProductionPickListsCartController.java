@@ -73,6 +73,22 @@ public class ProductionPickListsCartController extends BaseController {
         return ResponseData.success();
     }
 
+
+
+    @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData deleteBatch(@RequestBody ProductionPickListsCartParam productionPickListsCartParam)  {
+        List<Long> cartIds = new ArrayList<>();
+        List<ProductionPickListsCartParam> productionPickListsCartParams = productionPickListsCartParam.getProductionPickListsCartParams();
+        for (ProductionPickListsCartParam pickListsCartParam : productionPickListsCartParams) {
+            cartIds.add(pickListsCartParam.getPickListsCart());
+        }
+        if (cartIds.size()!= 0){
+            this.productionPickListsCartService.deleteBatchByIds(cartIds);
+        }
+        return ResponseData.success();
+    }
+
     /**
      * 查看详情接口
      *
@@ -132,7 +148,34 @@ public class ProductionPickListsCartController extends BaseController {
         }
         return ResponseData.success(this.productionPickListsCartService.getSelfCarts(productionPickListsCartParam));
     }
-
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/getSelfCartsByLists", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getSelfCartsByLists(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
+        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+            productionPickListsCartParam = new ProductionPickListsCartParam();
+        }
+        return ResponseData.success(this.productionPickListsCartService.getSelfCartsByLists(productionPickListsCartParam));
+    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/getSelfCartsBySku", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getSelfCartsBySku(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
+        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+            productionPickListsCartParam = new ProductionPickListsCartParam();
+        }
+        return ResponseData.success(this.productionPickListsCartService.getSelfCartsBySku(productionPickListsCartParam));
+    }
 
 
 

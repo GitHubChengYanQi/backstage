@@ -30,6 +30,8 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      */
     OutstockOrder add(OutstockOrderParam param);
 
+
+
     void addRecord(OutstockOrderParam param);
 
 
@@ -42,6 +44,7 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
 
     OutstockOrderResult getOrder(Long id);
 
+    List<OutstockListingParam> outBoundByLists(List<OutstockListingParam> listings);
     void outBound(List<OutstockListingParam> listings);
 
     /**

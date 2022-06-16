@@ -8,7 +8,7 @@
         <result column="pick_lists_id" property="pickListsId" />
         <result column="sku_id" property="skuId" />
         <result column="brand_id" property="brandId" />
-        <result column="customer_id" property="customerId" />
+        <result column="received_number" property="receivedNumber" />
         <result column="number" property="number" />
         <result column="status" property="status" />
         <result column="storehouse_positions_id" property="storehousePositionsId" />
@@ -23,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_detail_id AS "pickListsDetailId",brand_id AS "brandId",customer_id AS customerId, status AS "status",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId",pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        pick_lists_detail_id AS "pickListsDetailId",received_number AS "receivedNumber",brand_id AS "brandId",status AS "status",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId",pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
     <sql id="Base_Column_List2">
         a.storehouse_positions_id AS "storehousePositionsId",
@@ -31,7 +31,6 @@
         a.pick_lists_detail_id AS "pickListsDetailId",
 	    a.pick_lists_id AS "pickListsId",
         a.brand_id AS "brandId",
-        a.customer_id AS customerId,
 	    a.sku_id AS "skuId",
 	    a.number AS "number",
 	    a.create_user AS "createUser",

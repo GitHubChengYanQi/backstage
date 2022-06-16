@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -43,30 +44,35 @@ public class AnnouncementsResult implements Serializable {
     /**
      * 部门id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("部门id")
     private Long deptId;
 
     /**
      * 创建时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 创建用户
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改用户
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 

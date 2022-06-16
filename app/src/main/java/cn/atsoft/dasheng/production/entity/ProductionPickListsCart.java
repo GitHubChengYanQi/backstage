@@ -39,6 +39,10 @@ public class ProductionPickListsCart implements Serializable {
     @TableField("status")
     private Integer status;
 
+    @TableField("pick_lists_detail_id")
+    private Long pickListsDetailId;
+
+
 
 
     @TableField("storehouse_id")
@@ -128,6 +132,14 @@ public class ProductionPickListsCart implements Serializable {
 
     public Long getStorehouseId() {
         return storehouseId;
+    }
+
+    public Long getPickListsDetailId() {
+        return pickListsDetailId;
+    }
+
+    public void setPickListsDetailId(Long pickListsDetailId) {
+        this.pickListsDetailId = pickListsDetailId;
     }
 
     public void setStorehouseId(Long storehouseId) {

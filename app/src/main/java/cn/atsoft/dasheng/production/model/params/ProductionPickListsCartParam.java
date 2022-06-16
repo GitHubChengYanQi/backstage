@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.production.model.params;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -25,6 +27,7 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
 
     private static final long serialVersionUID = 1L;
     private List<Long> cartIds;
+    private List<Long> brandIds;
     private List<Long> pickListsIds;
 
     private List<ProductionPickListsCartParam> productionPickListsCartParams;
@@ -38,9 +41,9 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
 
 
     /**
-     * 子表id
+     * 购物车id
      */
-    @ApiModelProperty("子表id")
+    @ApiModelProperty("购物车id")
     private Long pickListsCart;
 
     /**
@@ -49,6 +52,14 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
     @ApiModelProperty("主表id")
 
     private Long pickListsId;
+
+    /**
+     * 子表id
+     */
+    @ApiModelProperty("子表id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long pickListsDetailId;
+
     /**
      * 物料id
      */

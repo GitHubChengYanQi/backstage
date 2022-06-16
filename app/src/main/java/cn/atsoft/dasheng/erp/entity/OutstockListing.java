@@ -29,6 +29,17 @@ public class OutstockListing implements Serializable {
      */
     @TableId(value = "outstock_listing_id", type = IdType.ID_WORKER)
     private Long outstockListingId;
+    @TableField("inkind_ids")
+
+    private String inkindIds;
+
+    public String getInkindIds() {
+        return inkindIds;
+    }
+
+    public void setInkindIds(String inkindIds) {
+        this.inkindIds = inkindIds;
+    }
 
     /**
      * 供应商id

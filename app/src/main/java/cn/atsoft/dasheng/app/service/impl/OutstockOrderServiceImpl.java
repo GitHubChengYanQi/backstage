@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -45,6 +46,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -160,6 +162,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         }
         return entity;
     }
+
+
 
 
     /**
@@ -350,6 +354,29 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //        }});
         addOutStockRecord(listings, "自由出库记录");  //添加记录
     }
+    @Override
+    public List<OutstockListingParam> outBoundByLists(List<OutstockListingParam> listings) {
+        List<StockDetails> details = stockDetailsService.query().eq("display",1).orderByAsc("create_time").list();
+        for (OutstockListingParam listing : listings) {
+            if (ToolUtil.isEmpty(listing.getBrandId())) {
+                AnyBrandOutBound(listing, details); //任意品牌
+            } else {
+                SkuBrandOutBound(listing, details);
+            }
+        }
+        stockDetailsService.updateBatchById(details);
+
+        StockDetails stockDetails = new StockDetails();
+        stockDetails.setDisplay(0);
+        stockDetailsService.update(stockDetails, new QueryWrapper<StockDetails>() {{
+            eq("stage", 2);
+        }});
+//        stockDetailsService.remove(new QueryWrapper<StockDetails>() {{
+//            eq("stage", 2);
+//        }});
+        addOutStockRecord(listings, "自由出库记录");
+        return listings;
+    }
 
     /**
      * 任意品牌出库
@@ -375,10 +402,38 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                     number = detail.getNumber() - listingParam.getNumber();
                     if (number > 0) {
                         detail.setNumber(number);
+                        Long newInkindId = inkindService.add(new InkindParam() {{
+                            setSkuId(listingParam.getSkuId());
+                            setNumber(listingParam.getNumber());
+                            setSource("pick_lists");
+                        }});
+                        if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                                add(newInkindId);
+                            }}));
+                        }else {
+                            List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
+                            longs.add(newInkindId);
+                            listingParam.setInkindIds(JSON.toJSONString(longs));
+
+                        }
+
+
                         break;
                     } else {
                         listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                        detail.setNumber(0L);
                         detail.setStage(2);
+                        if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                                add(detail.getInkindId());
+                            }}));
+                        }else {
+                            List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
+                            longs.add(detail.getInkindId());
+                            listingParam.setInkindIds(JSON.toJSONString(longs));
+
+                        }
                     }
                 }
             }
@@ -388,7 +443,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number = 0;
         for (StockDetails detail : details) {
-            if (listingParam.getSkuId().equals(detail.getSkuId())
+            if (ToolUtil.isNotEmpty(detail.getBrandId()) && listingParam.getSkuId().equals(detail.getSkuId())
                     && listingParam.getBrandId().equals(detail.getBrandId())
                     && listingParam.getPositionsId().equals(detail.getStorehousePositionsId())) {
                 number = number + detail.getNumber();
@@ -400,15 +455,42 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         number = 0;
         for (StockDetails detail : details) {
             if (detail.getStage() == 1) {
-                if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
+                if (ToolUtil.isNotEmpty(detail.getBrandId()) && detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
                         && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
                     number = detail.getNumber() - listingParam.getNumber();
                     if (number > 0) {
+
                         detail.setNumber(number);
+                        Long newInkindId = inkindService.add(new InkindParam() {{
+                            setSkuId(listingParam.getSkuId());
+                            setNumber(listingParam.getNumber());
+                            setSource("pick_lists");
+                        }});
+                        if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                                add(newInkindId);
+                            }}));
+                        }else {
+                            List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
+                            longs.add(newInkindId);
+                            listingParam.setInkindIds(JSON.toJSONString(longs));
+
+                        }
                         break;
                     } else {
                         listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                        detail.setNumber(0L);
                         detail.setStage(2);
+                        if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                                add(detail.getInkindId());
+                            }}));
+                        }else {
+                            List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
+                            longs.add(detail.getInkindId());
+                            listingParam.setInkindIds(JSON.toJSONString(longs));
+
+                        }
                     }
                 }
             }
