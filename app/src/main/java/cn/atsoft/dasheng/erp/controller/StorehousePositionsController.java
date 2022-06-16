@@ -86,12 +86,19 @@ public class StorehousePositionsController extends BaseController {
         return ResponseData.success(results);
     }
 
-    @RequestMapping(value = "/treeView", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData treeView(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        List<PositionLoop> positionLoops = this.storehousePositionsService.treeView(storehousePositionsParam.getSkuIds());
+    @RequestMapping(value = "/treeViewBySku", method = RequestMethod.POST)
+    public ResponseData treeViewBySku(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+        List<PositionLoop> positionLoops = this.storehousePositionsService.treeViewBySku(storehousePositionsParam.getSkuIds());
         return ResponseData.success(positionLoops);
     }
+
+    @RequestMapping(value = "/treeViewByName", method = RequestMethod.POST)
+    public ResponseData treeViewByName(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
+        List<PositionLoop> positionLoops = this.storehousePositionsService.treeViewByName(storehousePositionsParam.getName());
+        return ResponseData.success(positionLoops);
+    }
+
+
 
     /**
      *
