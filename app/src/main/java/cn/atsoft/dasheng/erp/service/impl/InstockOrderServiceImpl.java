@@ -209,7 +209,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             for (InstockRequest instockRequest : param.getInstockRequest()) {
                 skuIds.add(instockRequest.getSkuId());
             }
-            List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
+//            List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
             List<InstockList> instockLists = new ArrayList<>();
             for (InstockRequest instockRequest : param.getInstockRequest()) {
                 if (ToolUtil.isNotEmpty(instockRequest)) {
@@ -242,10 +242,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         instockList.setSellingPrice(instockRequest.getSellingPrice());
                     }
                     instockLists.add(instockList);
-                    break;
+
 //                        }
 //                    }
-
                 }
             }
             if (ToolUtil.isNotEmpty(instockLists)) {
@@ -709,6 +708,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         inkind.setSkuId(param.getSkuId());
         inkind.setCustomerId(param.getCustomerId());
         inkind.setSource("入库");
+        inkind.setSourceId(param.getInstockListId());
         inkind.setType("1");
         inkind.setBrandId(param.getBrandId());
         inkindService.save(inkind);

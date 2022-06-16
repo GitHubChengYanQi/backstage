@@ -49,12 +49,14 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
     void update(StorehousePositionsParam param);
 
-    List<StorehousePositionsResult> selectBySku(Long skuId);
+    List<StorehousePositionsResult> selectBySku(StorehousePositionsParam param);
 
     StorehousePositionsResult positionsResultById(Long codeId);
 
 
-    List<PositionLoop> treeView(List<Long> skuIds);
+    List<PositionLoop> treeViewBySku(List<Long> skuIds);
+
+    List<PositionLoop> treeViewByName(String name);
 
     List<Long> getLoopPositionIds(Long positionId);
 

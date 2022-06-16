@@ -140,7 +140,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                 if (ToolUtil.isNotEmpty(result.getBrandId()) && result.getBrandId().equals(brandResult.getBrandId())) {
                     Map<String, String> brandMap = new HashMap<>();
                     brandMap.put("brandId", brandResult.getBrandId().toString());
-                    brandMap.put("brandName", brandResult.getBrandName().toString());
+                    brandMap.put("brandName", brandResult.getBrandName());
                     result.setBrandResult(brandMap);
                 }
             }

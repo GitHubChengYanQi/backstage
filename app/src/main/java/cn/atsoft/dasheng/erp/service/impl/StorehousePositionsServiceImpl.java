@@ -284,12 +284,18 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<StorehousePositionsResult> selectBySku(Long skuId) {
-        if (ToolUtil.isEmpty(skuId)) {
+    public List<StorehousePositionsResult> selectBySku(StorehousePositionsParam param) {
+        if (ToolUtil.isEmpty(param.getSkuId())) {
             return new ArrayList<>();
         }
+        QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getBrandId())) {
+            stockDetailsQueryWrapper.eq("brand_id", param.getBrandId());
+        }
+        stockDetailsQueryWrapper.eq("sku_id", param.getSkuId());
+        stockDetailsQueryWrapper.gt("number", 0);
 
-        List<StockDetails> stockDetails = stockDetailsService.lambdaQuery().eq(StockDetails::getSkuId, skuId).gt(StockDetails::getNumber, 0).list();
+        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);
 
         List<Long> positionIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
@@ -466,27 +472,46 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
 
     @Override
-    public List<PositionLoop> treeView(List<Long> skuIds) {
+    public List<PositionLoop> treeViewBySku(List<Long> skuIds) {
+        if (ToolUtil.isEmpty(skuIds)) {
+            return null;
+        }
         List<StorehousePositionsBind> positionsBindList = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
         List<Long> positionIds = new ArrayList<>();  //最下级库位id
         for (StorehousePositionsBind positionsBind : positionsBindList) {
             positionIds.add(positionsBind.getPositionId());
         }
-
         //所有库位
         List<StorehousePositions> positions = this.query().eq("display", 1).list();
-        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        return treeView(positionIds, positions);
+
+    }
+
+    @Override
+    public List<PositionLoop> treeViewByName(String name) {
+        List<StorehousePositions> positions = this.query().eq("display", 1).list();
+        List<Long> positionIds = new ArrayList<>();
+        for (StorehousePositions position : positions) {
+            if (ToolUtil.isEmpty(name)) {
+                positionIds.add(position.getStorehousePositionsId());
+            } else if (position.getName().contains(name)) {
+                positionIds.add(position.getStorehousePositionsId());
+            }
+        }
+
+        return treeView(positionIds, positions);
+    }
+
+    private List<PositionLoop> treeView(List<Long> positionIds, List<StorehousePositions> positionsResults) {
 
         List<PositionLoop> allPositionLoop = new ArrayList<>();
-        for (StorehousePositionsResult positionsResult : positionsResults) {
+        for (StorehousePositions positionsResult : positionsResults) {
             PositionLoop loop = new PositionLoop();
             loop.setTitle(positionsResult.getName());
             loop.setKey(positionsResult.getStorehousePositionsId());
             loop.setPid(positionsResult.getPid());
             allPositionLoop.add(loop);
         }
-
-
         //需要的下级库位
         List<PositionLoop> childs = new ArrayList<>();
         for (Long positionId : positionIds) {
@@ -502,7 +527,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             loop(child, allPositionLoop);
         }
         childs.clear();
-
         for (PositionLoop loop : allPositionLoop) {
             if (loop.getPid() == 0 && ToolUtil.isNotEmpty(loop.getLoops())) {
                 childs.add(loop);
@@ -510,6 +534,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         return childs;
     }
+
 
     private void loop(PositionLoop child, List<PositionLoop> positions) {
         for (PositionLoop position : positions) {

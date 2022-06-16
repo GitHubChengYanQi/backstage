@@ -73,40 +73,46 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     /**
      * 购物车退回
      *
-     * @param id
+     * @param ids
      */
     @Override
-    public void sendBack(Long id) {
-        ShopCart shopCart = this.getById(id);
-        shopCart.setDisplay(0);
+    public void sendBack(List<Long> ids) {
 
-        InstockList instockList = null;
+        List<ShopCart> shopCarts = ids.size() == 0 ? new ArrayList<>() : this.listByIds(ids);
+        for (ShopCart shopCart : shopCarts) {
+            shopCart.setDisplay(0);
 
-        switch (shopCart.getType()) {
-            case "InstockError":
-                Anomaly anomaly = anomalyService.getById(shopCart.getFormId());
-                anomaly.setDisplay(0);
-                anomalyService.updateById(anomaly);
-                instockList = instockListService.getById(anomaly.getSourceId());
+            InstockList instockList = null;
 
-                break;
-            case "waitInStock":
-                instockList = instockListService.getById(shopCart.getFormId());
-                if (!instockList.getRealNumber().equals(instockList.getNumber())) {
-                    throw new ServiceException(500, "当前数据已被操作，不可退回");
-                }
-                break;
-            case "instockByAnomaly":
-                AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
-                anomalyDetail.setDisplay(0);
-                anomalyDetailService.updateById(anomalyDetail);
-                break;
+            switch (shopCart.getType()) {
+                case "InstockError":
+                    Anomaly anomaly = anomalyService.getById(shopCart.getFormId());
+                    anomaly.setDisplay(0);
+                    anomalyService.updateById(anomaly);
+                    instockList = instockListService.getById(anomaly.getSourceId());
+                    break;
+                case "waitInStock":
+                    instockList = instockListService.getById(shopCart.getFormId());
+                    if (!instockList.getRealNumber().equals(instockList.getNumber())) {
+                        throw new ServiceException(500, "当前数据已被操作，不可退回");
+                    }
+                    break;
+                case "instockByAnomaly":
+                    AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
+                    Anomaly  error  = anomalyService.getById(anomalyDetail.getAnomalyId());
+                    error.setDisplay(0);
+                    anomalyService.updateById(error);
+                    instockList = instockListService.getById(error.getSourceId());
+                    break;
+            }
+            if (instockList != null) {
+                instockList.setStatus(0L);
+                instockListService.updateById(instockList);
+            }
+            this.updateById(shopCart);
         }
-        if (instockList != null) {
-            instockList.setStatus(0L);
-            instockListService.updateById(instockList);
-        }
-        this.updateById(shopCart);
+
+
     }
 
     /**
