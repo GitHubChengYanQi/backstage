@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.inventory.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -19,12 +22,41 @@ import java.io.Serializable;
 @TableName("daoxin_erp_inventory")
 public class Inventory implements Serializable {
 
+    /**
+     * 附件
+     */
+    @TableField("enclosure")
+    private String enclosure;
+
+    @TableField("user_id")
+    private Long userId;
+    /**
+     * 参与人员
+     */
+    @TableField("participants")
+    private String participants;
+
+    @TableField("notice")
+    private String notice;
+
+    @TableField("end_time")
+    private Date endTime;
+
+    @TableField("begin_time")
+    private Date beginTime;
+
+    @TableField("mode")
+    private String mode;
+
+    @TableField("method")
+    private String method;
+
     private static final long serialVersionUID = 1L;
 
     /**
      * 盘点任务id
      */
-      @TableId(value = "inventory_task_id", type = IdType.ID_WORKER)
+    @TableId(value = "inventory_task_id", type = IdType.ID_WORKER)
     private Long inventoryTaskId;
 
     /**
@@ -45,16 +77,16 @@ public class Inventory implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -136,18 +168,82 @@ public class Inventory implements Serializable {
         this.deptId = deptId;
     }
 
+    public String getNotice() {
+        return notice;
+    }
+
+    public void setNotice(String notice) {
+        this.notice = notice;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public Date getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
+    }
+
+    public String getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(String participants) {
+        this.participants = participants;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return "Inventory{" +
-        "inventoryTaskId=" + inventoryTaskId +
-        ", inventoryTaskName=" + inventoryTaskName +
-        ", remark=" + remark +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", deptId=" + deptId +
-        "}";
+                "inventoryTaskId=" + inventoryTaskId +
+                ", inventoryTaskName=" + inventoryTaskName +
+                ", remark=" + remark +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", deptId=" + deptId +
+                "}";
     }
 }

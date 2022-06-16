@@ -368,7 +368,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         if (listingParam.getNumber() > number) {
             throw new ServiceException(500, "数量不足");
         }
-        number = 0;
+
         for (StockDetails detail : details) {
             if (detail.getStage() == 1) {
                 if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
@@ -397,7 +397,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         if (listingParam.getNumber() > number) {
             throw new ServiceException(500, "数量不足");
         }
-        number = 0;
+
         for (StockDetails detail : details) {
             if (detail.getStage() == 1) {
                 if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())

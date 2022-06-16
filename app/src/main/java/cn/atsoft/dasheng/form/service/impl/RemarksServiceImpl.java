@@ -195,7 +195,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
-            pushPeople(userIds, auditParam.getTaskId());
+            pushPeople(userIds, auditParam.getTaskId(), "你有一条被@的消息");
         }
     }
 
@@ -206,9 +206,9 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
      * @param taskId
      */
     @Override
-    public void pushPeople(List<Long> userIds, Long taskId) {
+    public void pushPeople(List<Long> userIds, Long taskId, String content) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setDescription("你有一条被@的消息");
+        wxCpTemplate.setDescription(content);
         wxCpTemplate.setTitle("新消息");
         wxCpTemplate.setUserIds(userIds);
         wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
