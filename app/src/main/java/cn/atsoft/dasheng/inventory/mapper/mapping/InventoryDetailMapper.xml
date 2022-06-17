@@ -13,11 +13,12 @@
         <result column="update_time" property="updateTime"/>
         <result column="deptId" property="deptId"/>
         <result column="status" property="status"/>
+        <result column="sku_id" property="skuId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List"> status
-    AS "status",
+    AS "status",sku_id AS "skuId",
         detail_id
         AS "detailId",inventory_id AS "inventoryId" ,inkind_id AS "inkindId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
     </sql>

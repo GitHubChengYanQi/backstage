@@ -65,7 +65,11 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     public Long add(ShopCartParam param) {
         ShopCart entity = getEntity(param);
         this.save(entity);
-        updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
+
+        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
+            updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
+
+        }
 
         return entity.getCartId();
     }
@@ -99,7 +103,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     break;
                 case "instockByAnomaly":
                     AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
-                    Anomaly  error  = anomalyService.getById(anomalyDetail.getAnomalyId());
+                    Anomaly error = anomalyService.getById(anomalyDetail.getAnomalyId());
                     error.setDisplay(0);
                     anomalyService.updateById(error);
                     instockList = instockListService.getById(error.getSourceId());

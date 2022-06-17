@@ -26,6 +26,7 @@ public class InventoryDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long skuId;
 
     private String type;
 

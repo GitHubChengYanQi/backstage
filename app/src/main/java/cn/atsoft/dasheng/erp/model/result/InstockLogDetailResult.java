@@ -1,14 +1,20 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Captain_Jazz
@@ -21,13 +27,19 @@ public class InstockLogDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private SkuSimpleResult skuResult;
     private Integer listNumber;
+    private Customer customer;
 
     @ApiModelProperty("")
     private Long instockLogDetailId;
 
+    private BrandResult brandResult;
+
     @ApiModelProperty("")
     private Long instockLogId;
 
+    private Long customerId;
+
+    private String type;
     /**
      * 实物id
      */

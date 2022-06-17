@@ -30,6 +30,12 @@ public class InventoryDetail implements Serializable {
     @TableId(value = "detail_id", type = IdType.ID_WORKER)
     private Long detailId;
 
+
+    /**
+     * 物料
+     */
+    @TableField("sku_id")
+    private Long skuId;
     /**
      * 状态
      */
@@ -74,6 +80,13 @@ public class InventoryDetail implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
 
     public Integer getDisplay() {
         return display;

@@ -294,6 +294,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         stockDetailsQueryWrapper.eq("sku_id", param.getSkuId());
         stockDetailsQueryWrapper.gt("number", 0);
+        stockDetailsQueryWrapper.eq("display", 1);
 
         List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);
 
@@ -332,7 +333,10 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                     if (ToolUtil.isEmpty(brandResultList)) {
                         brandResultList = new ArrayList<>();
                     }
-                    brandResultList.add(brandResult);
+                    //去重品牌
+                    if (brandResultList.stream().noneMatch(i -> i.getBrandId().equals(brandResult.getBrandId()))) {
+                        brandResultList.add(brandResult);
+                    }
                     map.put(stockDetail.getStorehousePositionsId(), brandResultList);
                 }
             }
