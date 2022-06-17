@@ -78,15 +78,30 @@ public class StorehousePositionsController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/treeView", method = RequestMethod.POST)
+    @RequestMapping(value = "/selectBySku", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData treeView(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        List<PositionLoop> positionLoops = this.storehousePositionsService.treeView(storehousePositionsParam.getSkuIds());
+    public ResponseData selectBySku(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+        List<StorehousePositionsResult> results = this.storehousePositionsService.selectBySku(storehousePositionsParam);
+        return ResponseData.success(results);
+    }
+
+    @RequestMapping(value = "/treeViewBySku", method = RequestMethod.POST)
+    public ResponseData treeViewBySku(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+        List<PositionLoop> positionLoops = this.storehousePositionsService.treeViewBySku(storehousePositionsParam.getSkuIds());
         return ResponseData.success(positionLoops);
     }
 
+    @RequestMapping(value = "/treeViewByName", method = RequestMethod.POST)
+    public ResponseData treeViewByName(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
+        if (ToolUtil.isEmpty(storehousePositionsParam)) {
+            storehousePositionsParam = new StorehousePositionsParam();
+        }
+        List<PositionLoop> positionLoops = this.storehousePositionsService.treeViewByName(storehousePositionsParam.getName());
+        return ResponseData.success(positionLoops);
+    }
+
+
     /**
-     *
      * 库位二维码打印
      *
      * @author song
@@ -127,7 +142,6 @@ public class StorehousePositionsController extends BaseController {
         this.storehousePositionsService.delete(storehousePositionsParam);
         return ResponseData.success();
     }
-
 
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)

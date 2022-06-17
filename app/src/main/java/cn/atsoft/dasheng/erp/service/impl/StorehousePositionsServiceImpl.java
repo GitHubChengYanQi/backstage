@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -82,6 +84,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private OrCodeService codeService;
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
+    @Autowired
+    private BrandService brandService;
 
     @Override
     public void add(StorehousePositionsParam param) {
@@ -280,6 +284,93 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
+    public List<StorehousePositionsResult> selectBySku(StorehousePositionsParam param) {
+        if (ToolUtil.isEmpty(param.getSkuId())) {
+            return new ArrayList<>();
+        }
+        QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getBrandId())) {
+            stockDetailsQueryWrapper.eq("brand_id", param.getBrandId());
+        }
+        stockDetailsQueryWrapper.eq("sku_id", param.getSkuId());
+        stockDetailsQueryWrapper.gt("number", 0);
+        stockDetailsQueryWrapper.eq("display", 1);
+
+        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);
+
+        List<Long> positionIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+
+        for (StockDetails stockDetail : stockDetails) {
+            positionIds.add(stockDetail.getStorehousePositionsId());
+            brandIds.add(stockDetail.getBrandId());
+
+        }
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        Map<Long, List<BrandResult>> map = new HashMap<>();
+        Map<Long, Long> positionNum = new HashMap<>();
+
+        for (StockDetails stockDetail : stockDetails) {
+            Long num = positionNum.get(stockDetail.getStorehousePositionsId());   //当前库位下的库存数
+            if (ToolUtil.isEmpty(num)) {
+                num = 0L;
+            }
+            num = num + stockDetail.getNumber();
+
+            positionNum.put(stockDetail.getStorehousePositionsId(), num);
+
+            for (BrandResult brandResult : brandResults) {
+
+
+                if (ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getBrandId().equals(brandResult.getBrandId())) {
+
+                    int brandNumber = getBrandNumber(stockDetails, stockDetail.getStorehousePositionsId(), brandResult.getBrandId());
+                    brandResult.setNum(brandNumber);
+
+                    List<BrandResult> brandResultList = map.get(stockDetail.getStorehousePositionsId());
+                    if (ToolUtil.isEmpty(brandResultList)) {
+                        brandResultList = new ArrayList<>();
+                    }
+                    //去重品牌
+                    if (brandResultList.stream().noneMatch(i -> i.getBrandId().equals(brandResult.getBrandId()))) {
+                        brandResultList.add(brandResult);
+                    }
+                    map.put(stockDetail.getStorehousePositionsId(), brandResultList);
+                }
+            }
+        }
+
+        for (StorehousePositionsResult positionsResult : positionsResults) {
+            Long num = positionNum.get(positionsResult.getStorehousePositionsId());
+            positionsResult.setNumber(num);
+            positionsResult.setBrandResults(map.get(positionsResult.getStorehousePositionsId()));
+        }
+
+
+        return positionsResults;
+    }
+
+    /**
+     * 品牌数量
+     *
+     * @param stockDetails
+     * @param positionId
+     * @param brandId
+     * @return
+     */
+    private int getBrandNumber(List<StockDetails> stockDetails, Long positionId, Long brandId) {
+        int num = 0;
+        for (StockDetails stockDetail : stockDetails) {
+            if (ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getStorehousePositionsId().equals(positionId) && stockDetail.getBrandId().equals(brandId)) {
+                num = (int) (num + stockDetail.getNumber());
+            }
+        }
+        return num;
+    }
+
+    @Override
     public StorehousePositionsResult positionsResultById(Long Id) {
 
         StorehousePositions storehousePositions = this.getById(Id);
@@ -385,27 +476,46 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
 
     @Override
-    public List<PositionLoop> treeView(List<Long> skuIds) {
+    public List<PositionLoop> treeViewBySku(List<Long> skuIds) {
+        if (ToolUtil.isEmpty(skuIds)) {
+            return null;
+        }
         List<StorehousePositionsBind> positionsBindList = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
         List<Long> positionIds = new ArrayList<>();  //最下级库位id
         for (StorehousePositionsBind positionsBind : positionsBindList) {
             positionIds.add(positionsBind.getPositionId());
         }
-
         //所有库位
         List<StorehousePositions> positions = this.query().eq("display", 1).list();
-        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        return treeView(positionIds, positions);
+
+    }
+
+    @Override
+    public List<PositionLoop> treeViewByName(String name) {
+        List<StorehousePositions> positions = this.query().eq("display", 1).list();
+        List<Long> positionIds = new ArrayList<>();
+        for (StorehousePositions position : positions) {
+            if (ToolUtil.isEmpty(name)) {
+                positionIds.add(position.getStorehousePositionsId());
+            } else if (position.getName().contains(name)) {
+                positionIds.add(position.getStorehousePositionsId());
+            }
+        }
+
+        return treeView(positionIds, positions);
+    }
+
+    private List<PositionLoop> treeView(List<Long> positionIds, List<StorehousePositions> positionsResults) {
 
         List<PositionLoop> allPositionLoop = new ArrayList<>();
-        for (StorehousePositionsResult positionsResult : positionsResults) {
+        for (StorehousePositions positionsResult : positionsResults) {
             PositionLoop loop = new PositionLoop();
             loop.setTitle(positionsResult.getName());
             loop.setKey(positionsResult.getStorehousePositionsId());
             loop.setPid(positionsResult.getPid());
             allPositionLoop.add(loop);
         }
-
-
         //需要的下级库位
         List<PositionLoop> childs = new ArrayList<>();
         for (Long positionId : positionIds) {
@@ -421,7 +531,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             loop(child, allPositionLoop);
         }
         childs.clear();
-
         for (PositionLoop loop : allPositionLoop) {
             if (loop.getPid() == 0 && ToolUtil.isNotEmpty(loop.getLoops())) {
                 childs.add(loop);
@@ -429,6 +538,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         return childs;
     }
+
 
     private void loop(PositionLoop child, List<PositionLoop> positions) {
         for (PositionLoop position : positions) {

@@ -73,6 +73,8 @@ public interface InstockListService extends IService<InstockList> {
      */
     void batchInstock(InstockListParam param);
 
+    List<InstockListResult> getListByOrderIds(List<Long> orderIds);
+
     InstockList getEntity(InstockListParam param);
 
     void format(List<InstockListResult> data);

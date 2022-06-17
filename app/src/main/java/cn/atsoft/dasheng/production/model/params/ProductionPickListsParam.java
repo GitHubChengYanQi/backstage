@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.production.model.params;
 
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -29,11 +30,30 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
     private List<ProductionPickListsDetailParam> pickListsDetailParams;
     private List<ProductionPickListsCartParam> cartsParams;
     private List<Long> pickListsIds;
-    private List<Long> userIds;
 
 
 
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
+    /**
+     * 附件
+     */
+    @ApiModelProperty("关联人（多）")
+    private String userIds;
+    /**
+     * remarks
+     */
+    @ApiModelProperty("注意事项")
+    private String remarks;
 
+    /**
+     * note
+     */
+    @ApiModelProperty("备注")
+    private String note;
 
     /**
      * 领料单
@@ -102,7 +122,7 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
      * 状态
      */
     @ApiModelProperty("状态")
-    private Integer status;
+    private Long status;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

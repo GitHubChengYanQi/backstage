@@ -5,9 +5,11 @@ import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -72,4 +74,10 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
     List<CartGroupByUserListRequest> groupByUser(ProductionPickListsCartParam param);
 
     List<ProductionPickListsCartResult> getSelfCarts(ProductionPickListsCartParam param);
+
+    List<ProductionPickListsResult> getSelfCartsByLists(ProductionPickListsCartParam param);
+
+    List<Map<String, Object>> getSelfCartsBySku(ProductionPickListsCartParam productionPickListsCartParam);
+
+    void deleteBatchByIds(List<ProductionPickListsCartParam> param);
 }

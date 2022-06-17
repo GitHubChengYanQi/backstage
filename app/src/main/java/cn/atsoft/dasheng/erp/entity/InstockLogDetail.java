@@ -2,15 +2,18 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Captain_Jazz
@@ -21,12 +24,17 @@ public class InstockLogDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "instock_log_detail_id", type = IdType.ID_WORKER)
+    @TableId(value = "instock_log_detail_id", type = IdType.ID_WORKER)
     private Long instockLogDetailId;
 
     @TableField("instock_log_id")
     private Long instockLogId;
 
+    @TableField("type")
+    private String type;
+
+    @TableField("customer_id")
+    private Long customerId;
     /**
      * 实物id
      */
@@ -123,20 +131,29 @@ public class InstockLogDetail implements Serializable {
     @TableField("storehouse_positions_id")
     private Long storehousePositionsId;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     @TableField("display")
     private Integer display;
+
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     /**
      * 部门编号
@@ -337,33 +354,41 @@ public class InstockLogDetail implements Serializable {
         this.deptId = deptId;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     @Override
     public String toString() {
         return "InstockLogDetail{" +
-        "instockLogDetailId=" + instockLogDetailId +
-        ", instockLogId=" + instockLogId +
-        ", inkindId=" + inkindId +
-        ", skuId=" + skuId +
-        ", brandId=" + brandId +
-        ", itemId=" + itemId +
-        ", number=" + number +
-        ", instockNumber=" + instockNumber +
-        ", instockOrderId=" + instockOrderId +
-        ", lotNumber=" + lotNumber +
-        ", effectiveDate=" + effectiveDate +
-        ", manufactureDate=" + manufactureDate +
-        ", serialNumber=" + serialNumber +
-        ", receivedDate=" + receivedDate +
-        ", storehouseId=" + storehouseId +
-        ", sellingPrice=" + sellingPrice +
-        ", costPrice=" + costPrice +
-        ", storehousePositionsId=" + storehousePositionsId +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "instockLogDetailId=" + instockLogDetailId +
+                ", instockLogId=" + instockLogId +
+                ", inkindId=" + inkindId +
+                ", skuId=" + skuId +
+                ", brandId=" + brandId +
+                ", itemId=" + itemId +
+                ", number=" + number +
+                ", instockNumber=" + instockNumber +
+                ", instockOrderId=" + instockOrderId +
+                ", lotNumber=" + lotNumber +
+                ", effectiveDate=" + effectiveDate +
+                ", manufactureDate=" + manufactureDate +
+                ", serialNumber=" + serialNumber +
+                ", receivedDate=" + receivedDate +
+                ", storehouseId=" + storehouseId +
+                ", sellingPrice=" + sellingPrice +
+                ", costPrice=" + costPrice +
+                ", storehousePositionsId=" + storehousePositionsId +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

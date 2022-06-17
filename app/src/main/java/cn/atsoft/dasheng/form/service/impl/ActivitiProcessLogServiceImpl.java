@@ -24,6 +24,9 @@ import cn.atsoft.dasheng.form.model.result.*;
 import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.production.service.impl.ProductionPickListsServiceImpl;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
@@ -69,6 +72,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private CheckQualityTask checkQualityTask;
+
+    @Autowired
+    private ProductionPickListsService pickListsService;
     @Autowired
     private GetOrigin getOrigin;
 
@@ -281,6 +287,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             }
 
                             break;
+                        case "OUTSTOCK":   //出库
+                            updateStatus(activitiProcessLog.getLogId(), status);
+                            setStatus(logs, activitiProcessLog.getLogId());
+                            //拒绝走拒绝方法
+                            if (status.equals(0)) {
+                                this.refuseTask(task);
+                                auditCheck = false;
+                            }
+
+                            break;
 
 
                         default:
@@ -345,7 +361,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                 ActivitiProcessTask endProcessTask = new ActivitiProcessTask();
                 ToolUtil.copyProperties(task, endProcessTask);
-                endProcessTask.setStatus(0);
+                endProcessTask.setStatus(99);
                 //更新任务状态
                 activitiProcessTaskService.updateById(endProcessTask);
                 //更新任务关联单据状态
@@ -406,6 +422,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     AnomalyOrder anomalyOrder = anomalyOrderService.getById(formId);
                     anomalyOrder.setStatus(documentsStatusId);
                     anomalyOrderService.updateById(anomalyOrder);
+                    break;
+                case "OUTSTOCK":
+                    ProductionPickLists productionPickLists = pickListsService.getById(formId);
+                    productionPickLists.setStatus(documentsStatusId);
+                    pickListsService.updateById(productionPickLists);
                     break;
             }
 

@@ -2,18 +2,13 @@ package cn.atsoft.dasheng.action.Enum;
 
 public enum ReceiptsEnum {
 
-    PURCHASE("采购申请单")
-    ,
-    PURCHASEORDER("采购单")
-    ,
-    INSTOCK("入库单")
-    ,
-    INSTOCKERROR("入库异常")
-    ,
-    OUTSTOCK("出库单")
-    ,
-    QUALITY("质检")
-    ;
+    PURCHASE("采购申请单"),
+    PURCHASEORDER("采购单"),
+    INSTOCK("入库单"),
+    INSTOCKERROR("入库异常"),
+    OUTSTOCK("出库单"),
+    QUALITY("质检"),
+    Stocktaking("盘点");
 
     private String value;
 

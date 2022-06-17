@@ -8,6 +8,10 @@
         <result column="user_id" property="userId" />
         <result column="source" property="source" />
         <result column="source_id" property="sourceId" />
+        <result column="enclosure" property="enclosure" />
+        <result column="remarks" property="remarks" />
+        <result column="note" property="note" />
+        <result column="user_ids" property="userIds" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -20,7 +24,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_id AS "pickListsId", coding AS "coding" ,user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
+        pick_lists_id AS "pickListsId",enclosure AS "enclosure",user_ids AS "userIds" ,remarks AS "remarks",note AS "note" , coding AS "coding" ,user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
     </sql>
 
 
@@ -60,6 +64,12 @@
             </if>
             <if test="paramCondition.status != null">
                 and status like CONCAT('%',#{paramCondition.status},'%')
+            </if>
+            <if test="paramCondition.pickListsIds != null  and paramCondition.pickListsIds.size > 0 ">
+                and pick_lists_id in
+                <foreach collection="paramCondition.pickListsIds" index="index" item="state" separator="," close=")" open="(">
+                    #{state}
+                </foreach>
             </if>
     </select>
 

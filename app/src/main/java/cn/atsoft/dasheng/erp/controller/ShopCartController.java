@@ -55,6 +55,13 @@ public class ShopCartController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/sendBack", method = RequestMethod.POST)
+    @ApiOperation("退回")
+    public ResponseData sendBack(@RequestBody ShopCartParam shopCartParam) {
+        this.shopCartService.sendBack(shopCartParam.getIds());
+        return ResponseData.success();
+    }
+
 
     /**
      * 编辑接口

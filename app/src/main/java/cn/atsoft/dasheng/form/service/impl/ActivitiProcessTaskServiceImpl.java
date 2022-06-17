@@ -29,6 +29,9 @@ import cn.atsoft.dasheng.form.pojo.DataType;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
@@ -71,6 +74,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private DocumentStatusService statusService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -274,6 +279,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> userIds = new ArrayList<>();
         List<Long> instockOrderIds = new ArrayList<>();
         List<Long> anomalyIds = new ArrayList<>();
+        List<Long> pickListsIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
@@ -282,6 +288,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     break;
                 case "INSTOCKERROR":
                     anomalyIds.add(datum.getFormId());
+                    break;
+                case "OUTSTOCK":
+                    pickListsIds.add(datum.getFormId());
                     break;
             }
         }
@@ -296,10 +305,15 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<InstockOrder> instockOrders = instockOrderIds.size() == 0 ? new ArrayList<>() : instockOrderService.listByIds(instockOrderIds);
         List<InstockOrderResult> orderResults = BeanUtil.copyToList(instockOrders, InstockOrderResult.class, new CopyOptions());
+        instockOrderService.format(orderResults);
         instockOrderService.setList(orderResults);
 
-        List<AnomalyOrder> anomalyOrders =anomalyIds.size()==0? new ArrayList<>(): anomalyOrderService.listByIds(anomalyIds);
+        List<AnomalyOrder> anomalyOrders = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyOrderService.listByIds(anomalyIds);
         List<AnomalyOrderResult> orderResultList = BeanUtil.copyToList(anomalyOrders, AnomalyOrderResult.class, new CopyOptions());
+
+        List<ProductionPickLists> productionPickLists = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsIds);
+        List<ProductionPickListsResult> productionPickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
+
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
@@ -328,9 +342,17 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     break;
                 }
             }
+            for (ProductionPickListsResult productionPickListsResult : productionPickListsResults) {
+                if (datum.getType().equals("OUTSTOCK") && datum.getFormId().equals(productionPickListsResult.getPickListsId())) {
+                    String statusName = statusMap.get(productionPickListsResult.getStatus());
+                    productionPickListsResult.setStatusName(statusName);
+                    datum.setReceipts(productionPickListsResult);
+                    break;
+                }
             }
         }
     }
+}
 
 
 

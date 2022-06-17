@@ -30,6 +30,8 @@ public class ProductionPickListsDetail implements Serializable {
 
     @TableField("status")
     private Integer status;
+    @TableField("received_number")
+    private Integer receivedNumber;
 
     /**
      * 主表id
@@ -46,7 +48,8 @@ public class ProductionPickListsDetail implements Serializable {
     @TableField("storehouse_id")
     private Long storehouseId;
 
-
+    @TableField("brand_id")
+    private Long brandId;
 
     /**
      * 物料id
@@ -93,6 +96,13 @@ public class ProductionPickListsDetail implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Integer getReceivedNumber() {
+        return receivedNumber;
+    }
+
+    public void setReceivedNumber(Integer receivedNumber) {
+        this.receivedNumber = receivedNumber;
+    }
 
     public Long getStorehousePositionsId() {
         return storehousePositionsId;
@@ -100,6 +110,14 @@ public class ProductionPickListsDetail implements Serializable {
 
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
     public Integer getStatus() {

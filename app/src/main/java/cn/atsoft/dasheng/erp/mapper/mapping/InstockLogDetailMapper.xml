@@ -4,348 +4,356 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.InstockLogDetail">
-        <id column="instock_log_detail_id" property="instockLogDetailId" />
-        <result column="instock_log_id" property="instockLogId" />
-        <result column="inkind_id" property="inkindId" />
-        <result column="sku_id" property="skuId" />
-        <result column="brand_id" property="brandId" />
-        <result column="item_id" property="itemId" />
-        <result column="number" property="number" />
-        <result column="instock_number" property="instockNumber" />
-        <result column="instock_order_id" property="instockOrderId" />
-        <result column="lot_number" property="lotNumber" />
-        <result column="effective_date" property="effectiveDate" />
-        <result column="manufacture_date" property="manufactureDate" />
-        <result column="serial_number" property="serialNumber" />
-        <result column="received_date" property="receivedDate" />
-        <result column="storehouse_id" property="storehouseId" />
-        <result column="selling_price" property="sellingPrice" />
-        <result column="cost_price" property="costPrice" />
-        <result column="storehouse_positions_id" property="storehousePositionsId" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
-        <result column="deptId" property="deptId" />
+        <id column="instock_log_detail_id" property="instockLogDetailId"/>
+        <result column="instock_log_id" property="instockLogId"/>
+        <result column="inkind_id" property="inkindId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="item_id" property="itemId"/>
+        <result column="number" property="number"/>
+        <result column="instock_number" property="instockNumber"/>
+        <result column="instock_order_id" property="instockOrderId"/>
+        <result column="lot_number" property="lotNumber"/>
+        <result column="effective_date" property="effectiveDate"/>
+        <result column="manufacture_date" property="manufactureDate"/>
+        <result column="serial_number" property="serialNumber"/>
+        <result column="received_date" property="receivedDate"/>
+        <result column="storehouse_id" property="storehouseId"/>
+        <result column="selling_price" property="sellingPrice"/>
+        <result column="cost_price" property="costPrice"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="type" property="type"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        instock_log_detail_id AS "instockLogDetailId", instock_log_id AS "instockLogId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", item_id AS "itemId", number AS "number", instock_number AS "instockNumber", instock_order_id AS "instockOrderId", lot_number AS "lotNumber", effective_date AS "effectiveDate", manufacture_date AS "manufactureDate", serial_number AS "serialNumber", received_date AS "receivedDate", storehouse_id AS "storehouseId", selling_price AS "sellingPrice", cost_price AS "costPrice", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+    <sql id="Base_Column_List">type
+    AS "type", customer_id AS "customerId",
+        instock_log_detail_id
+        AS "instockLogDetailId", instock_log_id AS "instockLogId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", item_id AS "itemId", number AS "number", instock_number AS "instockNumber", instock_order_id AS "instockOrderId", lot_number AS "lotNumber", effective_date AS "effectiveDate", manufacture_date AS "manufactureDate", serial_number AS "serialNumber", received_date AS "receivedDate", storehouse_id AS "storehouseId", selling_price AS "sellingPrice", cost_price AS "costPrice", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult" parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_instock_log_detail where 1 = 1
-            <if test="paramCondition.instockLogDetailId != null">
-                and instock_log_detail_id like CONCAT('%',#{paramCondition.instockLogDetailId},'%')
-            </if>
-            <if test="paramCondition.instockLogId != null">
-                and instock_log_id like CONCAT('%',#{paramCondition.instockLogId},'%')
-            </if>
-            <if test="paramCondition.inkindId != null">
-                and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
-            </if>
-            <if test="paramCondition.skuId != null">
-                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-            </if>
-            <if test="paramCondition.itemId != null">
-                and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-            </if>
-            <if test="paramCondition.number != null">
-                and number like CONCAT('%',#{paramCondition.number},'%')
-            </if>
-            <if test="paramCondition.instockNumber != null">
-                and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
-            </if>
-            <if test="paramCondition.instockOrderId != null">
-                and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
-            </if>
-            <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
-                and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
-            </if>
-            <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
-                and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
-            </if>
-            <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
-                and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
-            </if>
-            <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
-                and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
-            </if>
-            <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
-                and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
-            </if>
-            <if test="paramCondition.storehouseId != null">
-                and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
-            </if>
-            <if test="paramCondition.sellingPrice != null">
-                and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
-            </if>
-            <if test="paramCondition.costPrice != null">
-                and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
-            </if>
-            <if test="paramCondition.storehousePositionsId != null">
-                and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
-            <if test="paramCondition.deptId != null">
-                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-            </if>
+        <if test="paramCondition.instockLogDetailId != null">
+            and instock_log_detail_id like CONCAT('%',#{paramCondition.instockLogDetailId},'%')
+        </if>
+        <if test="paramCondition.instockLogId != null">
+            and instock_log_id like CONCAT('%',#{paramCondition.instockLogId},'%')
+        </if>
+        <if test="paramCondition.inkindId != null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.instockNumber != null">
+            and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
+        </if>
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
+        </if>
+        <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
+            and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
+        </if>
+        <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
+            and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
+        </if>
+        <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
+            and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
+        </if>
+        <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
+            and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
+        </if>
+        <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
+            and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+        </if>
+        <if test="paramCondition.sellingPrice != null">
+            and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
+        </if>
+        <if test="paramCondition.costPrice != null">
+            and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null">
+            and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_instock_log_detail where 1 = 1
-                <if test="paramCondition.instockLogDetailId != null">
-                        and instock_log_detail_id like CONCAT('%',#{paramCondition.instockLogDetailId},'%')
-                </if>
-                <if test="paramCondition.instockLogId != null">
-                        and instock_log_id like CONCAT('%',#{paramCondition.instockLogId},'%')
-                </if>
-                <if test="paramCondition.inkindId != null">
-                        and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.instockNumber != null">
-                        and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
-                </if>
-                <if test="paramCondition.instockOrderId != null">
-                        and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
-                </if>
-                <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
-                        and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
-                </if>
-                <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
-                        and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
-                </if>
-                <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
-                        and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
-                </if>
-                <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
-                        and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
-                </if>
-                <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
-                        and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
-                </if>
-                <if test="paramCondition.storehouseId != null">
-                        and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
-                </if>
-                <if test="paramCondition.sellingPrice != null">
-                        and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
-                </if>
-                <if test="paramCondition.costPrice != null">
-                        and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
-                </if>
-                <if test="paramCondition.storehousePositionsId != null">
-                        and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.instockLogDetailId != null">
+            and instock_log_detail_id like CONCAT('%',#{paramCondition.instockLogDetailId},'%')
+        </if>
+        <if test="paramCondition.instockLogId != null">
+            and instock_log_id like CONCAT('%',#{paramCondition.instockLogId},'%')
+        </if>
+        <if test="paramCondition.inkindId != null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.instockNumber != null">
+            and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
+        </if>
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
+        </if>
+        <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
+            and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
+        </if>
+        <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
+            and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
+        </if>
+        <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
+            and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
+        </if>
+        <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
+            and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
+        </if>
+        <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
+            and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+        </if>
+        <if test="paramCondition.sellingPrice != null">
+            and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
+        </if>
+        <if test="paramCondition.costPrice != null">
+            and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null">
+            and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult" parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_instock_log_detail where 1 = 1
-                <if test="paramCondition.instockLogDetailId != null">
-                        and instock_log_detail_id like CONCAT('%',#{paramCondition.instockLogDetailId},'%')
-                </if>
-                <if test="paramCondition.instockLogId != null">
-                        and instock_log_id like CONCAT('%',#{paramCondition.instockLogId},'%')
-                </if>
-                <if test="paramCondition.inkindId != null">
-                        and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.instockNumber != null">
-                        and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
-                </if>
-                <if test="paramCondition.instockOrderId != null">
-                        and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
-                </if>
-                <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
-                        and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
-                </if>
-                <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
-                        and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
-                </if>
-                <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
-                        and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
-                </if>
-                <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
-                        and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
-                </if>
-                <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
-                        and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
-                </if>
-                <if test="paramCondition.storehouseId != null">
-                        and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
-                </if>
-                <if test="paramCondition.sellingPrice != null">
-                        and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
-                </if>
-                <if test="paramCondition.costPrice != null">
-                        and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
-                </if>
-                <if test="paramCondition.storehousePositionsId != null">
-                        and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.instockLogDetailId != null">
+            and instock_log_detail_id like CONCAT('%',#{paramCondition.instockLogDetailId},'%')
+        </if>
+        <if test="paramCondition.instockLogId != null">
+            and instock_log_id like CONCAT('%',#{paramCondition.instockLogId},'%')
+        </if>
+        <if test="paramCondition.inkindId != null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.instockNumber != null">
+            and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
+        </if>
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
+        </if>
+        <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
+            and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
+        </if>
+        <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
+            and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
+        </if>
+        <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
+            and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
+        </if>
+        <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
+            and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
+        </if>
+        <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
+            and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+        </if>
+        <if test="paramCondition.sellingPrice != null">
+            and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
+        </if>
+        <if test="paramCondition.costPrice != null">
+            and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null">
+            and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_instock_log_detail where 1 = 1
-                <if test="paramCondition.instockLogDetailId != null">
-                        and instock_log_detail_id like CONCAT('%',#{paramCondition.instockLogDetailId},'%')
-                </if>
-                <if test="paramCondition.instockLogId != null">
-                        and instock_log_id like CONCAT('%',#{paramCondition.instockLogId},'%')
-                </if>
-                <if test="paramCondition.inkindId != null">
-                        and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.instockNumber != null">
-                        and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
-                </if>
-                <if test="paramCondition.instockOrderId != null">
-                        and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
-                </if>
-                <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
-                        and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
-                </if>
-                <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
-                        and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
-                </if>
-                <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
-                        and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
-                </if>
-                <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
-                        and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
-                </if>
-                <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
-                        and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
-                </if>
-                <if test="paramCondition.storehouseId != null">
-                        and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
-                </if>
-                <if test="paramCondition.sellingPrice != null">
-                        and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
-                </if>
-                <if test="paramCondition.costPrice != null">
-                        and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
-                </if>
-                <if test="paramCondition.storehousePositionsId != null">
-                        and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.instockLogDetailId != null">
+            and instock_log_detail_id like CONCAT('%',#{paramCondition.instockLogDetailId},'%')
+        </if>
+        <if test="paramCondition.instockLogId != null">
+            and instock_log_id like CONCAT('%',#{paramCondition.instockLogId},'%')
+        </if>
+        <if test="paramCondition.inkindId != null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.instockNumber != null">
+            and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
+        </if>
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
+        </if>
+        <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
+            and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
+        </if>
+        <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
+            and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
+        </if>
+        <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
+            and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
+        </if>
+        <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
+            and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
+        </if>
+        <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
+            and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+        </if>
+        <if test="paramCondition.sellingPrice != null">
+            and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
+        </if>
+        <if test="paramCondition.costPrice != null">
+            and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null">
+            and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
 </mapper>

@@ -140,6 +140,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             switch (inkind.getSource()) {
                 case "inErrorBatch":
                     inkind.setNumber(detail.getNumber());
+                    inkind.setSource(AnomalyType.InstockError.name());
+                    inkind.setSourceId(detail.getDetailId());
                     inkindService.updateById(inkind);
                     bind(inkind.getInkindId(), detail.getDetailId());
                     break;

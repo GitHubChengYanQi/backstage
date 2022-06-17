@@ -1120,7 +1120,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
      */
     private SearchObject positionSearch(List<Long> skuIds) {
         SearchObject searchObject = new SearchObject();
-        List<PositionLoop> positionLoops = positionsService.treeView(skuIds);
+        List<PositionLoop> positionLoops = positionsService.treeViewBySku(skuIds);
         searchObject.setKey("position");
         searchObject.setTitle("库位");
         searchObject.setObjects(positionLoops);

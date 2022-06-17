@@ -21,6 +21,23 @@ public class InventoryResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    private String enclosure;
+
+    private String participants;
+
+    private String notice;
+
+
+    private Date endTime;
+
+
+    private Date beginTime;
+
+
+    private String mode;
+
+
+    private String method;
     /**
      * 盘点任务id
      */
