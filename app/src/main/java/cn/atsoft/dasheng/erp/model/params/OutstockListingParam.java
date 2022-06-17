@@ -35,6 +35,7 @@ public class OutstockListingParam extends AbstractDictMap implements Serializabl
     private Long deliveryId;
 
     private String inkindIds;
+    private Long inkindId;
     /**
      * skuId
      */

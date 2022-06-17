@@ -7,6 +7,7 @@
         <id column="pick_lists_cart" property="pickListsCart" />
         <result column="pick_lists_id" property="pickListsId" />
         <result column="sku_id" property="skuId" />
+        <result column="inkind_id" property="inkindId" />
         <result column="brand_id" property="brandId" />
         <result column="customer_id" property="customerId" />
         <result column="pick_lists_detail_id" property="pickListsDetailId" />
@@ -24,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_cart AS "pickListsCart",status AS "status", pick_lists_detail_id AS "pickListsDetailId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        pick_lists_cart AS "pickListsCart",inkind_id AS "inkindId",status AS "status", pick_lists_detail_id AS "pickListsDetailId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 

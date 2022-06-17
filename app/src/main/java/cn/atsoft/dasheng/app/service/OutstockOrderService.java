@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -44,7 +45,7 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
 
     OutstockOrderResult getOrder(Long id);
 
-    List<OutstockListingParam> outBoundByLists(List<OutstockListingParam> listings);
+    Map<Long, Long> outBoundByLists(List<OutstockListingParam> listings);
     void outBound(List<OutstockListingParam> listings);
 
     /**

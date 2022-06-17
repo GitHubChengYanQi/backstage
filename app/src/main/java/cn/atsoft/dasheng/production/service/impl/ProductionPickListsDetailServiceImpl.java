@@ -94,7 +94,6 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
     public void format(List<ProductionPickListsDetailResult> results) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
-        List<Long> customerIds = new ArrayList<>();
         for (ProductionPickListsDetailResult result : results) {
             skuIds.add(result.getSkuId());
             if (ToolUtil.isNotEmpty(result.getBrandId())) {
@@ -103,30 +102,52 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
         }
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
         List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list();
-
-        List<StockSkuTotal> stockDetails = new ArrayList<>();
         for (StockDetails skus : stockSkus) {
-            StockSkuTotal stockSkuTotal = new StockSkuTotal();
-            stockSkuTotal.setSkuId(skus.getSkuId());
-            stockSkuTotal.setNumber(skus.getNumber());
-            stockDetails.add(stockSkuTotal);
+            if (ToolUtil.isEmpty(skus.getBrandId())) {
+                skus.setBrandId(0L);
+            }
         }
-        List<StockSkuTotal> totalList = new ArrayList<>();
-        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId(), Collectors.toList())).forEach(
+        List<StockDetails> totalList = new ArrayList<>();
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L :item.getBrandId())+ '_' + item.getStorehousePositionsId(),Collectors.toList())).forEach(
                 (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new StockSkuTotal(a.getSkuId(), a.getNumber() + b.getNumber())).ifPresent(totalList::add);
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId())? 0L:a.getBrandId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                    }}).ifPresent(totalList::add);
                 }
         );
-        List<CustomerResult> customerResults = customerIds.size() == 0 ? new ArrayList<>() : customerService.getResults(customerIds);
+        List<StockDetails> noBrand = new ArrayList<>();
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + item.getStorehousePositionsId(),Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                    }}).ifPresent(noBrand::add);
+                }
+        );
+
         List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         for (ProductionPickListsDetailResult result : results) {
-            for (StockSkuTotal stockSkuTotal : totalList) {
-                if (result.getSkuId().equals(stockSkuTotal.getSkuId())) {
-                    result.setStockNumber(Math.toIntExact(stockSkuTotal.getNumber()));
-                    if (result.getNumber() > stockSkuTotal.getNumber()) {
-                        result.setIsMeet(false);
-                    } else {
-                        result.setIsMeet(true);
+            result.setIsMeet(false);
+            if (!result.getBrandId().equals(0L)){
+                for (StockDetails stockSkuTotal : totalList) {
+                    if (result.getSkuId().equals(stockSkuTotal.getSkuId()) && result.getBrandId().equals(stockSkuTotal.getBrandId())) {
+                        result.setStockNumber(Math.toIntExact(stockSkuTotal.getNumber()));
+                        if (result.getNumber() <= stockSkuTotal.getNumber()) {
+                            result.setIsMeet(true);
+                        }
+                    }
+                }
+            }else {
+                for (StockDetails stockDetails : noBrand) {
+                    if (result.getSkuId().equals(stockDetails.getSkuId())) {
+                        result.setStockNumber(Math.toIntExact(stockDetails.getNumber()));
+                        if (result.getNumber() <= stockDetails.getNumber()) {
+                            result.setIsMeet(true);
+                        }
                     }
                 }
             }

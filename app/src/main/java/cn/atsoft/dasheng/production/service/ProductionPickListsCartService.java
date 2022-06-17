@@ -77,7 +77,7 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
 
     List<ProductionPickListsResult> getSelfCartsByLists(ProductionPickListsCartParam param);
 
-    List<Map<String,Object>> getSelfCartsBySku(ProductionPickListsCartParam productionPickListsCartParam);
+    List<Map<String, Object>> getSelfCartsBySku(ProductionPickListsCartParam productionPickListsCartParam);
 
-    void deleteBatchByIds(List<Long> ids);
+    void deleteBatchByIds(List<ProductionPickListsCartParam> param);
 }

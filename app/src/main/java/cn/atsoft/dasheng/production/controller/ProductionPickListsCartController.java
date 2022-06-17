@@ -78,13 +78,11 @@ public class ProductionPickListsCartController extends BaseController {
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData deleteBatch(@RequestBody ProductionPickListsCartParam productionPickListsCartParam)  {
-        List<Long> cartIds = new ArrayList<>();
-        List<ProductionPickListsCartParam> productionPickListsCartParams = productionPickListsCartParam.getProductionPickListsCartParams();
-        for (ProductionPickListsCartParam pickListsCartParam : productionPickListsCartParams) {
-            cartIds.add(pickListsCartParam.getPickListsCart());
+        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
+            productionPickListsCartParam = new ProductionPickListsCartParam();
         }
-        if (cartIds.size()!= 0){
-            this.productionPickListsCartService.deleteBatchByIds(cartIds);
+        if (productionPickListsCartParam.getProductionPickListsCartParams().size()!= 0){
+            this.productionPickListsCartService.deleteBatchByIds(productionPickListsCartParam.getProductionPickListsCartParams());
         }
         return ResponseData.success();
     }
