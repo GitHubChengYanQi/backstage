@@ -621,7 +621,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     handle(listParam, inKind);
                     inkindIds.add(inKind);
                 } else {
-                    for (long i = 0; i < listParam.getNumber(); i++) {
+                    Long i = listParam.getNumber();
+                    for (long aLong = 0; aLong < i; aLong++) {
                         listParam.setNumber(1L);
                         Long inKind = createInKind(listParam);
                         handle(listParam, inKind);
