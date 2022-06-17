@@ -294,6 +294,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         stockDetailsQueryWrapper.eq("sku_id", param.getSkuId());
         stockDetailsQueryWrapper.gt("number", 0);
+        stockDetailsQueryWrapper.eq("display", 1);
 
         List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);
 

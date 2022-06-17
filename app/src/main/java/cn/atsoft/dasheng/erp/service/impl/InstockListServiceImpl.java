@@ -281,6 +281,17 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         updateOrderState(param.getInstockOrderId());
     }
 
+    @Override
+    public List<InstockListResult> getListByOrderIds(List<Long> orderIds) {
+        if (ToolUtil.isEmpty(orderIds)) {
+            return new ArrayList<>();
+        }
+        List<InstockList> instockListList = this.query().in("instock_order_id", orderIds).eq("display", 1).list();
+        List<InstockListResult> results = BeanUtil.copyToList(instockListList, InstockListResult.class, new CopyOptions());
+        format(results);
+        return results;
+    }
+
     private Serializable getKey(InstockListParam param) {
         return param.getInstockListId();
     }

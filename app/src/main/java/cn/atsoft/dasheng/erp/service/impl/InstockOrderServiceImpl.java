@@ -612,6 +612,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (InstockListParam listParam : param.getListParams()) {
 
+            listParam.setInstockOrderId(param.getInstockOrderId());
+
             if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
                 handle(listParam, listParam.getInkindIds());
 
@@ -1238,11 +1240,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     results.add(instockListResult);
                 }
             }
-
             datum.setInstockListResults(results);
-
         }
     }
+
 
     @Override
     public void format(List<InstockOrderResult> data) {
@@ -1279,18 +1280,23 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<DocumentsStatusResult> documentsStatusResults = documentStatusService.resultsByIds(statusIds);
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
-        List<InstockList> instockListList = orderIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", orderIds).list();
+        List<InstockListResult> instockListList = instockListService.getListByOrderIds(orderIds);
 
         for (InstockOrderResult datum : data) {
 
             long enoughNumber = 0L;
             long realNumber = 0L;
-            for (InstockList instockList : instockListList) {
+            List<InstockListResult> instockListResults = new ArrayList<>();
+
+            for (InstockListResult instockList : instockListList) {
                 if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
+                    instockListResults.add(instockList);
+
                     enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
                     realNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
                 }
             }
+            datum.setInstockListResults(instockListResults);
             datum.setEnoughNumber(enoughNumber);
             datum.setRealNumber(realNumber);
             datum.setNotNumber(enoughNumber - realNumber);
