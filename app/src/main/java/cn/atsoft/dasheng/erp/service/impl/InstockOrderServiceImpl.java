@@ -630,6 +630,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         handle(listParam, inKind);
                         inkindIds.add(inKind);
                     }
+                    listParam.setNumber(i);
                 }
             }
 
