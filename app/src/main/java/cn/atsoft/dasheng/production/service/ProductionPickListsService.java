@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -80,4 +81,6 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     void outStock(ProductionPickListsParam param);
 
     ProductionPickListsResult detail(Long id);
+
+    List<Map<String,Object>> listByUser(ProductionPickListsParam pickListsParam);
 }

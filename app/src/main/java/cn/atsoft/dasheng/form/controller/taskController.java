@@ -115,7 +115,10 @@ public class taskController extends BaseController {
         }
         ActivitiProcessTask processTask = taskService.getById(taskId);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
+
         ToolUtil.copyProperties(processTask, taskResult);
+
+
         switch (taskResult.getType()) {
             case "quality_task":
                 QualityTaskResult task = qualityTaskService.getTask(taskResult.getFormId());
@@ -162,6 +165,9 @@ public class taskController extends BaseController {
                     ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
 
                     taskResult.setReceipts(pickListsRestult);
+//                    taskService.format(new ArrayList<ActivitiProcessTaskResult>(){{
+//                        add(taskResult);
+//                    }});
                 break;
         }
         //树形结构

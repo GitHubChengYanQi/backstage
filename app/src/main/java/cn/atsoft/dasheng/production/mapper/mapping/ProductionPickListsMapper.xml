@@ -65,6 +65,12 @@
             <if test="paramCondition.status != null">
                 and status like CONCAT('%',#{paramCondition.status},'%')
             </if>
+            <if test="paramCondition.pickListsIds != null  and paramCondition.pickListsIds.size > 0 ">
+                and pick_lists_id in
+                <foreach collection="paramCondition.pickListsIds" index="index" item="state" separator="," close=")" open="(">
+                    #{state}
+                </foreach>
+            </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsParam">

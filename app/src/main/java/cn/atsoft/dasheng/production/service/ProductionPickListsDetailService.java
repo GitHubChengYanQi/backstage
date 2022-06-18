@@ -58,6 +58,8 @@ public interface ProductionPickListsDetailService extends IService<ProductionPic
      */
     List<ProductionPickListsDetailResult> findListBySpec(ProductionPickListsDetailParam param);
 
+    void format(List<ProductionPickListsDetailResult> results);
+
     List<ProductionPickListsDetailResult> getByTask(ProductionPickListsDetailParam param);
 
     /**

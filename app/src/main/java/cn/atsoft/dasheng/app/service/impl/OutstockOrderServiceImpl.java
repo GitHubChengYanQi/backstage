@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -45,6 +46,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -162,6 +164,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
 
+
+
     /**
      * 出库单添加出库记录
      *
@@ -245,21 +249,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
 
-        String url = mobileService.getMobileConfig().getUrl() + "/#/Work/OrCode?id=" + aLong;
-        User createUser = userService.getById(entity.getCreateUser());
-        //新微信推送
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("新的出库提醒");
-        wxCpTemplate.setDescription(createUser.getName() + "创建了新的出库库任务" + entity.getCoding());
-        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-            add(entity.getUserId());
-        }});
-        wxCpSendTemplate.setSource("outstockOrder");
-        wxCpSendTemplate.setSourceId(aLong);
-        wxCpTemplate.setType(0);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
     }
 
     /**
@@ -350,7 +339,63 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //        }});
         addOutStockRecord(listings, "自由出库记录");  //添加记录
     }
+    @Override
+    public Map<Long, Long>  outBoundByLists(List<OutstockListingParam> listings) {
 
+        Map<Long, Long> longLongMap = this.outStockByLists(listings);
+
+
+        addOutStockRecord(listings, "自由出库记录");
+        return longLongMap;
+    }
+    public Map<Long,Long>  outStockByLists(List<OutstockListingParam> listings){
+        List<Long> inkindIds = new ArrayList<>();
+        for (OutstockListingParam listing : listings) {
+            inkindIds.add(listing.getInkindId());
+        }
+        List<StockDetails> stockDetails =inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().eq("display", 1).eq("stage", 1).in("inkind_id", inkindIds).orderByAsc("create_time").list();
+        Map<Long,Long> updateInkind = new HashMap<>();
+        List<Inkind> newInkinds = new ArrayList<>();
+        List<Inkind> oldInkinds = new ArrayList<>();
+        for (StockDetails stockDetail : stockDetails) {
+            for (OutstockListingParam listing : listings) {
+                if (stockDetail.getInkindId().equals(listing.getInkindId())){
+                    long number = stockDetail.getNumber() - listing.getNumber();
+                    if (number > 0){
+                        Inkind newInkind = new Inkind();
+                        newInkind.setSkuId(stockDetail.getSkuId());
+                        newInkind.setSource("inkind");
+                        newInkind.setSourceId(stockDetail.getInkindId());
+                        if (ToolUtil.isNotEmpty(stockDetail.getBrandId())){
+                            newInkind.setBrandId(stockDetail.getBrandId());
+                        }if (ToolUtil.isNotEmpty(stockDetail.getCustomerId())){
+                            newInkind.setCustomerId(stockDetail.getCustomerId());
+                        }
+                        newInkind.setSkuId(stockDetail.getSkuId());
+                        newInkind.setNumber(listing.getNumber());
+                        newInkinds.add(newInkind);
+                        Inkind oldInkind = new Inkind();
+                        oldInkind.setInkindId(stockDetail.getInkindId());
+                        stockDetail.setNumber(number);
+                        oldInkind.setNumber(number);
+                        oldInkinds.add(oldInkind);
+                        inkindService.save(newInkind);
+                        updateInkind.put(oldInkind.getInkindId(),newInkind.getInkindId());
+                    }else if (number == 0){
+                        stockDetail.setNumber(0L);
+                        stockDetail.setStage(2);
+                        stockDetail.setDisplay(0);
+                        updateInkind.put(stockDetail.getInkindId(),stockDetail.getInkindId());
+                    }
+                }
+            }
+        }
+
+        stockDetailsService.updateBatchById(stockDetails);
+        inkindService.updateBatchById(oldInkinds);
+
+        return updateInkind;
+    }
     /**
      * 任意品牌出库
      *
@@ -375,10 +420,38 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                     number = detail.getNumber() - listingParam.getNumber();
                     if (number > 0) {
                         detail.setNumber(number);
+                        Long newInkindId = inkindService.add(new InkindParam() {{
+                            setSkuId(listingParam.getSkuId());
+                            setNumber(listingParam.getNumber());
+                            setSource("pick_lists");
+                        }});
+                        if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                                add(newInkindId);
+                            }}));
+                        }else {
+                            List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
+                            longs.add(newInkindId);
+                            listingParam.setInkindIds(JSON.toJSONString(longs));
+
+                        }
+
+
                         break;
                     } else {
                         listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                        detail.setNumber(0L);
                         detail.setStage(2);
+                        if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                                add(detail.getInkindId());
+                            }}));
+                        }else {
+                            List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
+                            longs.add(detail.getInkindId());
+                            listingParam.setInkindIds(JSON.toJSONString(longs));
+
+                        }
                     }
                 }
             }
@@ -388,7 +461,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private void SkuBrandOutBound(OutstockListingParam listingParam, List<StockDetails> details) {
         long number = 0;
         for (StockDetails detail : details) {
-            if (listingParam.getSkuId().equals(detail.getSkuId())
+            if (ToolUtil.isNotEmpty(detail.getBrandId()) && listingParam.getSkuId().equals(detail.getSkuId())
                     && listingParam.getBrandId().equals(detail.getBrandId())
                     && listingParam.getPositionsId().equals(detail.getStorehousePositionsId())) {
                 number = number + detail.getNumber();
@@ -400,15 +473,42 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         for (StockDetails detail : details) {
             if (detail.getStage() == 1) {
-                if (detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
+                if (ToolUtil.isNotEmpty(detail.getBrandId()) && detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
                         && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
                     number = detail.getNumber() - listingParam.getNumber();
                     if (number > 0) {
+
                         detail.setNumber(number);
+                        Long newInkindId = inkindService.add(new InkindParam() {{
+                            setSkuId(listingParam.getSkuId());
+                            setNumber(listingParam.getNumber());
+                            setSource("pick_lists");
+                        }});
+                        if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                                add(newInkindId);
+                            }}));
+                        }else {
+                            List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
+                            longs.add(newInkindId);
+                            listingParam.setInkindIds(JSON.toJSONString(longs));
+
+                        }
                         break;
                     } else {
                         listingParam.setNumber(listingParam.getNumber() - detail.getNumber());
+                        detail.setNumber(0L);
                         detail.setStage(2);
+                        if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                                add(detail.getInkindId());
+                            }}));
+                        }else {
+                            List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
+                            longs.add(detail.getInkindId());
+                            listingParam.setInkindIds(JSON.toJSONString(longs));
+
+                        }
                     }
                 }
             }
