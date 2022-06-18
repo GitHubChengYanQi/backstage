@@ -325,16 +325,18 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
             }
             result.setDetailResults(detailResultList);
-            List<AnnouncementsResult> announcementsResultList = new ArrayList<>();
-            List<Long> collect = Arrays.asList(result.getRemarks().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            for (Long aLong : collect) {
-                for (AnnouncementsResult announcementsResult : announcementsResults) {
-                    if (announcementsResult.getNoticeId().equals(aLong)) {
-                        announcementsResultList.add(announcementsResult);
+            if (ToolUtil.isNotEmpty(result.getRemarks())) {
+                List<AnnouncementsResult> announcementsResultList = new ArrayList<>();
+                List<Long> collect = Arrays.asList(result.getRemarks().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                for (Long aLong : collect) {
+                    for (AnnouncementsResult announcementsResult : announcementsResults) {
+                        if (announcementsResult.getNoticeId().equals(aLong)) {
+                            announcementsResultList.add(announcementsResult);
+                        }
                     }
                 }
+                result.setAnnouncementsResults(announcementsResultList);
             }
-            result.setAnnouncementsResults(announcementsResultList);
         }
 
     }
@@ -631,7 +633,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 出库数据处理会更新此状态
          * 如子表全部数据 更新状态为完成  主表在最后更新数据
          */
-        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display",1).eq("status", 0).list();
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).list();
         for (ProductionPickListsCartParam pickListsCartParam : param.getCartsParams()) {
             int num = pickListsCartParam.getNumber();
             for (Long brandId : pickListsCartParam.getBrandIds()) {
@@ -914,7 +916,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 如果有任务则更新任务单据动作状态
          */
         ActivitiProcessTask task = activitiProcessTaskService.query().eq("type", "OUTSTOCK").eq("form_id", id).one();
-        if (ToolUtil.isNotEmpty(task)){
+        if (ToolUtil.isNotEmpty(task)) {
             DocumentsAction action = actionService.query().eq("action", OutStockActionEnum.stockPreparation.name()).eq("display", 1).one();
             activitiProcessLogService.checkAction(task.getFormId(), task.getType(), action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
         }
