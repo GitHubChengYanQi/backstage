@@ -59,6 +59,13 @@ public class InstockOrderController extends BaseController {
         return ResponseData.success();
     }
 
+
+    @RequestMapping(value = "/judgeLoginUser", method = RequestMethod.GET)
+    @ApiOperation("新增")
+    public ResponseData judgeLoginUser() {
+        boolean b = this.instockOrderService.judgeLoginUser();
+        return ResponseData.success(b);
+    }
     /**
      * 新增接口
      *

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -8,8 +9,8 @@ import cn.atsoft.dasheng.form.mapper.ActivitiProcessMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 
-import cn.atsoft.dasheng.form.pojo.ProcessEnum;
-import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
@@ -133,6 +134,51 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
     }
 
     @Override
+    public boolean judgePerson(String type, String module) {
+        boolean t = true;
+        ActivitiProcess process = this.query().eq("type", type).eq("module", module).eq("status", 99).one();
+        ActivitiStepsResult stepResult = activitiStepsService.getStepResult(process.getProcessId());
+        return loop(stepResult, t);
+    }
+
+    public boolean loop(ActivitiStepsResult stepsResult, boolean t) {
+        if (ToolUtil.isEmpty(stepsResult)) {
+            return t;
+        }
+
+        if (t && !stepsResult.getAuditType().equals("route")
+                && !stepsResult.getAuditType().equals("branch")
+                && !stepsResult.getAuditType().equals("start")) {
+
+            for (AuditRule.Rule rule : stepsResult.getAuditRule().getRules()) {
+                if (rule.getType().equals(DataType.AppointUsers) && !rule.getType().equals(DataType.DeptPositions) && !rule.getType().equals(DataType.AllPeople)) {
+                    for (AppointUser appointUser : rule.getAppointUsers()) {
+                        if (!appointUser.getKey().equals(LoginContextHolder.getContext().getUserId().toString())) {
+                            t = false;
+                            return t;
+                        }
+                    }
+                } else {
+                    t = false;
+                    return t;
+                }
+            }
+        }
+        if (t) {
+            if (ToolUtil.isNotEmpty(stepsResult.getChildNode())) {
+                t = loop(stepsResult.getChildNode(), t);
+            }
+            if (ToolUtil.isNotEmpty(stepsResult.getConditionNodeList())) {
+                for (ActivitiStepsResult activitiStepsResult : stepsResult.getConditionNodeList()) {
+                    t = loop(activitiStepsResult, t);
+                }
+            }
+        }
+        return t;
+    }
+
+
+    @Override
     public ActivitiProcessResult findBySpec(ActivitiProcessParam param) {
         return null;
     }
@@ -175,8 +221,6 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
-
 
 
     @Override
