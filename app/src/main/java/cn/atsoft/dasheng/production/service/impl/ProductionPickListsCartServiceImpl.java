@@ -192,6 +192,33 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     }
 
+    /**
+     * 检查库存中实物是否可以被重复使用
+     * @param param
+     */
+    private void checkInkintNumber(ProductionPickListsCartParam param){
+        //查询出所有的购物车  获取实物  下面会检查库存实物是否满足再次被使用
+
+        List<ProductionPickListsCart> cartList = this.query().eq("display", 1).list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (ProductionPickListsCart pickListsCart : cartList) {
+            if (ToolUtil.isNotEmpty(pickListsCart.getInkindId())) {
+                inkindIds.add(pickListsCart.getInkindId());
+            }
+        }
+
+        List<StockDetails> beUseStockDetail = stockDetailsService.query().eq("stage", 1).in("inkind_id", inkindIds).eq("display", 1).list();
+        for (StockDetails stockDetails : beUseStockDetail) {
+//            cartList
+        }
+
+
+
+
+
+
+
+    }
 
     @Override
     public void delete(ProductionPickListsCartParam param) {
