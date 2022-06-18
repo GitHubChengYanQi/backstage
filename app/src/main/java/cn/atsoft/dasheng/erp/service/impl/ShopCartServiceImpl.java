@@ -68,7 +68,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
-
         }
 
         return entity.getCartId();
@@ -97,9 +96,10 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     break;
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
-                    if (!instockList.getRealNumber().equals(instockList.getNumber())) {
-                        throw new ServiceException(500, "当前数据已被操作，不可退回");
-                    }
+                    instockList.setNumber(shopCart.getNumber());
+//                    if (!instockList.getRealNumber().equals(instockList.getNumber())) {
+//                        throw new ServiceException(500, "当前数据已被操作，不可退回");
+//                    }
                     break;
                 case "instockByAnomaly":
                     AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
