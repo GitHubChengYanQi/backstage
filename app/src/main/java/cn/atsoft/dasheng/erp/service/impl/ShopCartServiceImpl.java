@@ -96,7 +96,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     break;
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
-                    instockList.setNumber(shopCart.getNumber());
+                    instockList.setRealNumber(shopCart.getNumber());
 //                    if (!instockList.getRealNumber().equals(instockList.getNumber())) {
 //                        throw new ServiceException(500, "当前数据已被操作，不可退回");
 //                    }
