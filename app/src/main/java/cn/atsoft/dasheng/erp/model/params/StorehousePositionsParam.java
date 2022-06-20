@@ -29,6 +29,8 @@ public class StorehousePositionsParam extends AbstractDictMap implements Seriali
     private Long brandId;
 
     private List<Long> skuIds;
+
+
     /**
      * 仓库库位id
      */

@@ -179,13 +179,12 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-        ,daoxin_erp_stock_details.storehouse_id as storehouseId
-        , sum(daoxin_erp_stock_details.number ) as stockNumber
+         ,daoxin_erp_stock_details.number as stockNumber
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
         LEFT JOIN
-        (select * from daoxin_erp_stock_details where display = 1 ) as
+        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group  by sku_id) as
         daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
         WHERE 1=1 and goods_sku.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
@@ -322,11 +321,10 @@
             </foreach>
             )
         </if>
-        group by goods_sku.sku_id
-        <if test="paramCondition.mixNum != null
-                and paramCondition.mixNum !=''
-                and paramCondition.maxNum != null">
-            having stockNumber BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}
+
+       <if test="paramCondition.mixNum != null
+and paramCondition.maxNum != null">
+            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}
         </if>
 
 
@@ -354,13 +352,12 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-        , sum(daoxin_erp_stock_details.number ) as stockNumber
-        ,daoxin_erp_stock_details.storehouse_id as storehouseId
-        from goods_sku
+        ,daoxin_erp_stock_details.number as stockNumber
+         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
         LEFT JOIN
-        (select * from daoxin_erp_stock_details where display = 1 ) as
+        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group  by sku_id) as
         daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
         WHERE 1=1 and goods_sku.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
@@ -494,11 +491,9 @@
             </foreach>
             )
         </if>
-        group by goods_sku.sku_id
         <if test="paramCondition.mixNum != null
-                and paramCondition.mixNum !=''
-                and paramCondition.maxNum != null">
-            having stockNumber BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}
+           and paramCondition.maxNum != null">
+            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}
         </if>
 
 

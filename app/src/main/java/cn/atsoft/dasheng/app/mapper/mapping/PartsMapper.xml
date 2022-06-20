@@ -32,6 +32,21 @@
         AS "partsId", spu_id AS "spuId",skus AS "skus",type AS "type", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
     </sql>
 
+    <sql id="sku_join_column">
+        daoxin_erp_parts
+        .
+        sku_id
+        AS "skuId", daoxin_erp_parts.children AS "children",daoxin_erp_parts.childrens AS
+        "childrens",daoxin_erp_parts.status AS "status",
+        daoxin_erp_parts.parts_id
+        AS "partsId", daoxin_erp_parts.spu_id AS "spuId",daoxin_erp_parts.skus AS "skus",daoxin_erp_parts.type AS
+        "type", daoxin_erp_parts.attribute AS
+        "attribute", daoxin_erp_parts.pid AS "pid", daoxin_erp_parts.number AS
+        "number", daoxin_erp_parts.create_time AS "createTime", daoxin_erp_parts.update_time AS "updateTime",
+        daoxin_erp_parts.create_user AS "createUser", daoxin_erp_parts.update_user AS
+        "updateUser", daoxin_erp_parts.display AS "display", daoxin_erp_parts.deptId AS "deptId",
+        daoxin_erp_parts.part_name AS "partName", daoxin_erp_parts.note AS "note"
+    </sql>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
@@ -81,58 +96,55 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
             parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_erp_parts where 1 = 1
+        <include refid="sku_join_column"/>from
+        daoxin_erp_parts right join (SELECT sku_id FROM goods_sku where display = 1 ) as goods_sku on daoxin_erp_parts.sku_id = goods_sku.sku_id
+        where 1 = 1
         <if test="paramCondition.partsId != null">
-            and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
+            and daoxin_erp_parts.parts_id like CONCAT('%',#{paramCondition.partsId},'%')
         </if>
         <if test="paramCondition.spuId != null">
-            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+            and daoxin_erp_parts.spu_id like CONCAT('%',#{paramCondition.spuId},'%')
         </if>
         <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+            and daoxin_erp_parts.sku_id like CONCAT('%',#{paramCondition.skuId},'%')
         </if>
         <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
-            and attribute like CONCAT('%',#{paramCondition.attribute},'%')
+            and daoxin_erp_parts.attribute like CONCAT('%',#{paramCondition.attribute},'%')
         </if>
         <if test="paramCondition.pid != null">
-            and pid = #{paramCondition.pid}
+            and daoxin_erp_parts.pid = #{paramCondition.pid}
         </if>
         <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
+            and daoxin_erp_parts.status = #{paramCondition.status}
         </if>
         <if test="paramCondition.number != null">
-            and number like CONCAT('%',#{paramCondition.number},'%')
+            and daoxin_erp_parts.number like CONCAT('%',#{paramCondition.number},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            and daoxin_erp_parts.create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
-        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-        </if>
+
         <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            and daoxin_erp_parts.create_user like CONCAT('%',#{paramCondition.createUser},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
+
         <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
+            and daoxin_erp_parts.display like CONCAT('%',#{paramCondition.display},'%')
         </if>
         <if test="paramCondition.deptId != null">
-            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+            and daoxin_erp_parts.deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
         <if test="paramCondition.partName != null and paramCondition.partName != ''">
-            and part_name like CONCAT('%',#{paramCondition.partName},'%')
+            and daoxin_erp_parts.part_name like CONCAT('%',#{paramCondition.partName},'%')
         </if>
         <if test="paramCondition.note != null and paramCondition.note != ''">
-            and note like CONCAT('%',#{paramCondition.note},'%')
+            and daoxin_erp_parts.note like CONCAT('%',#{paramCondition.note},'%')
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
+            and daoxin_erp_parts.type like CONCAT('%',#{paramCondition.type},'%')
         </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
-            and sku_id in (
+            and daoxin_erp_parts.sku_id in (
             select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
             union
             select sku_id from goods_sku where standard like CONCAT('%',#{paramCondition.skuName},'%')
@@ -190,9 +202,9 @@
         <if test="paramCondition.partName != null and paramCondition.partName != ''">
             and part_name like CONCAT('%',#{paramCondition.partName},'%')
         </if>
-<!--        <if test="paramCondition.type != null and paramCondition.type != ''">-->
-<!--            and type like CONCAT('%',#{paramCondition.type},'%')-->
-<!--        </if>-->
+        <!--        <if test="paramCondition.type != null and paramCondition.type != ''">-->
+        <!--            and type like CONCAT('%',#{paramCondition.type},'%')-->
+        <!--        </if>-->
         <if test="paramCondition.note != null and paramCondition.note != ''">
             and note like CONCAT('%',#{paramCondition.note},'%')
         </if>

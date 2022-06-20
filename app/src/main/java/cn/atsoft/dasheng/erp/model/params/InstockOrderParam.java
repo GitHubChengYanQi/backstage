@@ -33,6 +33,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private static final long serialVersionUID = 1L;
     //跳转路径
 
+    private Boolean directInStock = false;   //是否直接入库
 
     private String url;
 
