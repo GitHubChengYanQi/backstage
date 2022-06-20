@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -28,11 +30,14 @@ public class InstockLogDetailResult implements Serializable {
     private SkuSimpleResult skuResult;
     private Integer listNumber;
     private Customer customer;
+    private User user;
 
     @ApiModelProperty("")
     private Long instockLogDetailId;
 
     private BrandResult brandResult;
+
+    private StorehousePositionsResult storehousePositionsResult;
 
     @ApiModelProperty("")
     private Long instockLogId;
