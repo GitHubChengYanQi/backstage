@@ -1672,6 +1672,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             add("createTime");
             add("skuName");
             add("spuName");
+            add("stockNumber");
         }};
         return PageFactory.defaultPage(fields);
     }
