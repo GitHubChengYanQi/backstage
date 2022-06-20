@@ -29,9 +29,13 @@ public class RemarksResult implements Serializable {
 
     private List<RemarksResult> childrens;
 
+    private User user;
+
     private Long sourceId;
 
     private String source;
+
+    private User user;
 
     private Long pid;
     /**

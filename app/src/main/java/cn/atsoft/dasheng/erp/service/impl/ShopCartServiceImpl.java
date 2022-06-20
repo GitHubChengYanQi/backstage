@@ -19,6 +19,12 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -61,6 +67,10 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private AnomalyDetailService anomalyDetailService;
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
     @Transactional
@@ -70,8 +80,17 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
-
+            InstockList instockList = instockListService.getById(param.getInstockListId());
+            Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
+            RemarksParam remarksParam = new RemarksParam();
+            remarksParam.setTaskId(taskId);
+            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
+            messageProducer.remarksServiceDo(new RemarksEntity() {{
+                setOperationType(OperationType.ADD);
+                setRemarksParam(remarksParam);
+            }});
         }
+
 
         return entity.getCartId();
     }

@@ -18,14 +18,16 @@ public class RemarksMessageService {
     private RemarksService remarksService;
 
 
-    public void remarksServiceDo(RemarksEntity remarksEntity){
+    public void remarksServiceDo(RemarksEntity remarksEntity) {
         /**
          * switch动作 可在case中调用其本身service中方法
          */
         RemarksParam remarksParam = remarksEntity.getRemarksParam();
         switch (remarksEntity.getOperationType()) {
             case ADD:
-
+                Remarks remarks = new Remarks();
+                ToolUtil.copyProperties(remarksParam, remarks);
+                remarksService.save(remarks);
                 break;
             case SAVE:
                 Remarks entity = new Remarks();

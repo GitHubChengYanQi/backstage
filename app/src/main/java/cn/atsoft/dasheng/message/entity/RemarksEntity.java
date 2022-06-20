@@ -34,11 +34,11 @@ public class RemarksEntity {
     /**
      * 最大推送次数
      */
-    private Integer maxTimes;
+    private Integer maxTimes = 2;
 
     /**
      * 当前推送次数
      */
-    private Integer times;
+    private Integer times =0;
 
 }

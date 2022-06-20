@@ -129,12 +129,21 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
 
     void format(List<RemarksResult> data) {
         List<Long> taskIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
         for (RemarksResult datum : data) {
+            userIds.add(datum.getCreateUser());
             taskIds.add(datum.getTaskId());
         }
         List<ActivitiProcessTask> tasks = taskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(taskIds);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
         for (RemarksResult datum : data) {
+            for (User user : userList) {
+                if (ToolUtil.isNotEmpty(datum.getCreateUser()) && user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
             for (ActivitiProcessTask task : tasks) {
                 if (ToolUtil.isNotEmpty(datum.getTaskId()) && datum.getTaskId().equals(task.getProcessTaskId())) {
                     ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
