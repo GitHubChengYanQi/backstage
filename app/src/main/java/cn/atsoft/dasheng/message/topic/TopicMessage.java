@@ -1,20 +1,15 @@
 package cn.atsoft.dasheng.message.topic;
 
-import cn.atsoft.dasheng.app.entity.BusinessTrack;
-import cn.atsoft.dasheng.app.model.params.MessageParam;
-import cn.atsoft.dasheng.app.service.BusinessTrackService;
-import cn.atsoft.dasheng.app.service.ContractService;
-import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.service.AuditMessageService;
-import cn.atsoft.dasheng.message.service.MicroService;
-import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
-import cn.atsoft.dasheng.production.service.ProductionPlanService;
+import cn.atsoft.dasheng.message.service.MicroMessageService;
+import cn.atsoft.dasheng.message.service.RemarksMessageService;
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -39,13 +34,22 @@ public class TopicMessage {
     private MessageService messageService;
 
     @Autowired
-    private MicroService microService;
+    private MicroMessageService microMessageService;
 
     @Autowired
     private AuditMessageService auditMessageService;
 
+    @Autowired
+    private RemarksMessageService remarksMessageService;
+
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
+    /**
+     * 微信消息推送
+     * @param message
+     * @param channel
+     * @throws IOException
+     */
     @RabbitListener(queues = "${spring.rabbitmq.prefix}" + MESSAGE_REAL_QUEUE)
     public void readMessage(Message message, Channel channel) throws IOException {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -76,18 +80,46 @@ public class TopicMessage {
             default:
         }
     }
+
+    /**
+     * 内部调用创建单据等
+     * @param message
+     * @param channel
+     * @throws IOException
+     */
     @RabbitListener(queues = "${spring.rabbitmq.prefix}" + MICROSERVICE_REAL_QUEUE)
     public void readMicroService(Message message, Channel channel) throws IOException {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         MicroServiceEntity microServiceEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
-        microService.microServiceDo(microServiceEntity);
+        microMessageService.microServiceDo(microServiceEntity);
         logger.info("内部调用创建单据:"+microServiceEntity.getType()+"/"+microServiceEntity.getOperationType());
     }
+
+    /**
+     * 审批流程
+     * @param message
+     * @param channel
+     * @throws IOException
+     */
     @RabbitListener(queues = "${spring.rabbitmq.prefix}" + AUDIT_REAL_QUEUE)
     public void readAudit(Message message, Channel channel) throws IOException {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         AuditEntity auditEntity = JSON.parseObject(message.getBody(), MicroServiceEntity.class);
         auditMessageService.auditDo(auditEntity);
         logger.info("审批队列:"+auditEntity.getAuditType()+"/"+auditEntity.getAuditType());
+    }
+
+    /**
+     * 单据动态  评论等
+     * @param message
+     * @param channel
+     * @throws IOException
+     */
+    @RabbitListener(queues = "${spring.rabbitmq.prefix}" + REMARKS_REAL_QUEUE)
+    public void readRemarks(Message message, Channel channel) throws IOException {
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        RemarksEntity remarksEntity = JSON.parseObject(message.getBody(), RemarksEntity.class);
+        remarksMessageService.remarksServiceDo(remarksEntity);
+        logger.info("单据动态:"+remarksEntity.getOperationType()+"/"+remarksEntity.getRemarksParam());
     }
 }

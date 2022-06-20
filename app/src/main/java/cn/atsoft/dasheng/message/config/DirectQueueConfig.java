@@ -62,6 +62,20 @@ public class DirectQueueConfig {
     public final static String AUDIT_DELAY_QUEUE = ".auditService.delay.queue";
 
 
+    /**
+     * 审批流消息队列
+     */
+
+    public final static String REMARKS_REAL_EXCHANGE = ".remarkService.real.topicExchange";
+    public final static String REMARKS_REAL_ROUTE = ".remarkService.real.route";
+    public final static String REMARKS_REAL_QUEUE = ".remarkService.real.queue";
+
+
+    public final static String REMARKS_DELAY_EXCHANGE = ".remarkService.delay.topicExchange";
+    public final static String REMARKS_DELAY_ROUTE = ".remarkService.delay.route";
+    public final static String REMARKS_DELAY_QUEUE = ".remarkService.delay.queue";
+
+
 
 
 
@@ -305,4 +319,87 @@ public class DirectQueueConfig {
         return mqPrefix + AUDIT_DELAY_QUEUE;
     }
 
+
+
+
+    //=========================单据动态===========================
+
+    @Bean
+    public Queue remarksQueue() {
+        logger.info(mqPrefix);
+        logger.info(getRemarksRealQueue());
+        return new Queue(getRemarksRealQueue());
+    }
+
+
+    @Bean
+    public Queue remarksDelayQueue() {
+
+        Map<String, Object> argsMap = Maps.newHashMap();
+        argsMap.put("x-dead-letter-exchange", getRemarksRealExchange()); //真正的交换机
+        argsMap.put("x-dead-letter-routing-key", getRemarksRealRoute()); //真正的路由键
+        return new Queue(getRemarksDelayExchange() , true, false, false, argsMap);
+    }
+
+
+    /**
+     * 声明交换机
+     *
+     * @return TopicExchange
+     */
+    @Bean
+    public TopicExchange remarksExchange() {
+        return new TopicExchange(getRemarksRealExchange());
+    }
+
+    @Bean
+    public TopicExchange remarksDelayExchange() {
+        return new TopicExchange(getRemarksDelayExchange());
+    }
+
+    /**
+     * 绑定交换机
+     */
+    @Bean
+    Binding remarksServiceTopicExchange() {
+        logger.info("绑定队列");
+        return BindingBuilder.bind(remarksQueue()).to(remarksExchange()).with(getRemarksRealRoute());
+    }
+
+    @Bean
+    Binding remarksServiceTopicDelayExchange() {
+        logger.info("绑定延迟队列");
+        return BindingBuilder.bind(remarksDelayQueue()).to(remarksDelayExchange()).with(getRemarksRealRoute());
+    }
+
+
+
+
+
+
+
+
+    public static String getRemarksRealExchange() {
+        return mqPrefix + REMARKS_REAL_EXCHANGE;
+    }
+
+    public static String getRemarksRealRoute() {
+        return mqPrefix + REMARKS_REAL_ROUTE;
+    }
+
+    public static String getRemarksRealQueue() {
+        return mqPrefix + REMARKS_REAL_QUEUE;
+    }
+
+    public static String getRemarksDelayRoute() {
+        return mqPrefix + REMARKS_DELAY_ROUTE;
+    }
+
+    public static String getRemarksDelayExchange() {
+        return mqPrefix + REMARKS_DELAY_EXCHANGE;
+    }
+
+    public static String getRemarksDelayQueue() {
+        return mqPrefix + REMARKS_DELAY_QUEUE;
+    }
 }
