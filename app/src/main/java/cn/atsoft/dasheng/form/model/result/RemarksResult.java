@@ -35,7 +35,7 @@ public class RemarksResult implements Serializable {
 
     private String source;
 
-    private User user;
+
 
     private Long pid;
     /**
@@ -46,8 +46,6 @@ public class RemarksResult implements Serializable {
 
     @ApiModelProperty("")
     private Long logId;
-
-    private User user;
 
     private String photoId;
 
