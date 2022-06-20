@@ -106,6 +106,28 @@ public class QualityTask implements Serializable {
     private String remark;
 
     /**
+     * 来源
+     */
+    @TableField("source")
+    private Long source;
+
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private String sourceId;
+    /**
+     * 主题
+     */
+    @TableField("theme")
+    private String theme;
+    /**
+     * 来源Json
+     */
+    @TableField("origin")
+    private String origin;
+
+    /**
      * 创建者
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
@@ -147,6 +169,39 @@ public class QualityTask implements Serializable {
 
     public Long getStatus() {
         return status;
+    }
+
+
+    public Long getSource() {
+        return source;
+    }
+
+    public void setSource(Long source) {
+        this.source = source;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     public void setStatus(Long status) {

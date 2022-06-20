@@ -19,11 +19,12 @@
         <result column="photo_id" property="photoId"/>
         <result column="source" property="source"/>
         <result column="source_id" property="sourceId"/>
+        <result column="pid" property="pid"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">user_id
-    AS "userIds",task_id AS "taskId",type AS "type",photo_id AS "photoId" ,status AS "status",source AS "source",source_id AS "sourceId",
+    AS "userIds",task_id AS "taskId",type AS "type",photo_id AS "photoId" ,status AS "status",source AS "source",source_id AS "sourceId",pid AS "pid",
         remarks_id
         AS "remarksId", log_id AS "logId", content AS "content", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>

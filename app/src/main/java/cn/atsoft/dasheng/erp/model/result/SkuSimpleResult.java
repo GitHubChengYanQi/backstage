@@ -38,5 +38,7 @@ public class SkuSimpleResult {
 
     private Long qualityPlanId;
 
+  private  List<String> imgUrls;
+
 
 }

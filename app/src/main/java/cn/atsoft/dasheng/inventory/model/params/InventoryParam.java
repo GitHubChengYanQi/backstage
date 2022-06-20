@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.inventory.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -24,7 +26,25 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String enclosure;
 
+    private String participants;
+
+    private List<InventoryDetailParam> detailParams;
+
+    private String notice;
+
+
+    private Date endTime;
+
+
+    private Date beginTime;
+
+
+    private String mode;
+
+
+    private String method;
     /**
      * 盘点任务id
      */

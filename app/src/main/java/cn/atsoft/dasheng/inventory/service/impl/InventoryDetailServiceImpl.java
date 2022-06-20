@@ -49,6 +49,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     @Autowired
     private StorehousePositionsService positionsService;
 
+
     @Autowired
     private StockService stockService;
 
@@ -149,6 +150,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         }
 
     }
+
 
     @Override
     public void update(InventoryDetailParam param) {

@@ -19,10 +19,12 @@ public enum ProcessModuleEnum {
     procurementOrder("采购单"),
     inQuiry(""),
     instockError(""),
-    createInstock(""),
+    createInstock("直接入库"),
     INSTOCK(""),
     quality_task(""),
-    verifyError("核实异常");
+    verifyError("核实异常"),
+    productionOutStock("生产出库"),
+    pickLists("出库单申请");
 
 
     @EnumValue

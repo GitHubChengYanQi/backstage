@@ -107,6 +107,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private OutstockOrderService outstockOrderService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private CustomerService customerService;
 
 
     @Override
@@ -153,7 +155,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Object obj = orcodeBackObj(datum.getOrCodeId());
             datum.setObject(obj);
         }
-
     }
 
 
@@ -670,10 +671,17 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     }
 
     @Override
-    public Map<String, Object> inkindDetail(Long qrcodeId) {
+    public Map<String, Object> inkindDetail(Long inkindId) {
+        if (ToolUtil.isEmpty(inkindId)) {
+            return new HashMap<>();
+        }
         StockDetails stockDetails = stockDetailsService.getOne(new QueryWrapper<StockDetails>() {{
-            eq("qr_code_id", qrcodeId);
+            eq("inkind_id", inkindId);
         }});
+
+        Brand brand = ToolUtil.isEmpty(stockDetails.getBrandId()) ? new Brand() : brandService.getById(stockDetails.getBrandId());
+        Customer customer = ToolUtil.isEmpty(stockDetails.getCustomerId()) ? new Customer() : customerService.getById(stockDetails.getCustomerId());
+
 
         /**
          * 格式化sku 返回数据
@@ -688,7 +696,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
             Stock stock = stockService.getById(stockDetails.getStockId());
             StockResult stockResult = new StockResult();
-            ToolUtil.copyProperties(stock, stockResult);
+            if (ToolUtil.isNotEmpty(stock)) {
+                ToolUtil.copyProperties(stock, stockResult);
+            }
 
 
             Storehouse storehouse = storehouseService.getById(stockDetails.getStorehouseId());
@@ -701,11 +711,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
             Map<String, Object> result = new HashMap<>();
             result.put("stock", stockResult);
-            result.put("stockDetails", stockDetails);
             result.put("storehouse", storehouseResult);
             result.put("stockDetails", stockDetails);
             result.put("storehousePositions", storehousePositionsResult);
             result.put("inKindResult", inkindResult);
+            result.put("brand", brand);
+            result.put("customer", customer);
             return result;
         }
         return null;
@@ -728,6 +739,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     try {
                         storehouseFormat(storehouseResult);
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     StoreHouseRequest storeHouseRequest = new StoreHouseRequest();
                     storeHouseRequest.setType("storehouse");
@@ -744,6 +756,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     try {
                         storehousePositionsFormat(storehousePositionsResult);
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     StoreHousePositionsRequest storeHousePositionsRequest = new StoreHousePositionsRequest();
                     storeHousePositionsRequest.setType("storehousePositions");
@@ -760,6 +773,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     try {
                         stockFormat(stockResult);
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     StockRequest stockRequest = new StockRequest();
                     stockRequest.setType("storehouse");
@@ -1041,7 +1055,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         for (BackCodeRequest codeRequest : batchAutomatic.getCodeRequests()) {
             OrCode orCode = new OrCode();
-            orCode.setType(codeRequest.getSource());
+            orCode.setType(codeRequest.getInkindType());
             orCode.setState(1);
             this.save(orCode);
             //新建绑定实物
@@ -1050,7 +1064,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             inkindParam.setType("0");
             inkindParam.setNumber(codeRequest.getNumber());
             inkindParam.setBrandId(codeRequest.getBrandId());
-            inkindParam.setSource(codeRequest.getInkindType());
+            inkindParam.setSource(codeRequest.getSource());
             inkindParam.setSourceId(codeRequest.getSourceId());
             inkindParam.setCustomerId(codeRequest.getCustomerId());
             Long formId = inkindService.add(inkindParam);
@@ -1066,6 +1080,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             automaticBindResult.setInkindId(formId);
             automaticBindResult.setSkuId(codeRequest.getId());
             automaticBindResult.setNumber(codeRequest.getNumber());
+            automaticBindResult.setSource(inkindParam.getSource());
             bindResults.add(automaticBindResult);
         }
         return bindResults;

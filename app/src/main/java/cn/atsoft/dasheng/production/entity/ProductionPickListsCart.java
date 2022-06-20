@@ -21,6 +21,16 @@ public class ProductionPickListsCart implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public Long getInkindId() {
+        return inkindId;
+    }
+
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
+    }
+
+    @TableField("inkind_id")
+    private Long inkindId;
     /**
      * 子表id
      */
@@ -39,10 +49,19 @@ public class ProductionPickListsCart implements Serializable {
     @TableField("status")
     private Integer status;
 
+    @TableField("pick_lists_detail_id")
+    private Long pickListsDetailId;
+
+
 
 
     @TableField("storehouse_id")
     private Long storehouseId;
+
+    @TableField("brand_id")
+    private Long brandId;
+    @TableField("customer_id")
+    private Long customerId;
 
 
     /**
@@ -105,8 +124,32 @@ public class ProductionPickListsCart implements Serializable {
         this.storehousePositionsId = storehousePositionsId;
     }
 
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     public Long getStorehouseId() {
         return storehouseId;
+    }
+
+    public Long getPickListsDetailId() {
+        return pickListsDetailId;
+    }
+
+    public void setPickListsDetailId(Long pickListsDetailId) {
+        this.pickListsDetailId = pickListsDetailId;
     }
 
     public void setStorehouseId(Long storehouseId) {

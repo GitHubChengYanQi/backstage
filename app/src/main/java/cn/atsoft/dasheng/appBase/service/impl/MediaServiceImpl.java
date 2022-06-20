@@ -7,33 +7,33 @@ import cn.atsoft.dasheng.appBase.mapper.MediaMapper;
 import cn.atsoft.dasheng.appBase.model.params.MediaParam;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.appBase.config.AliyunService;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.utils.BinaryUtil;
-import com.aliyun.oss.model.CannedAccessControlList;
-import com.aliyun.oss.model.GeneratePresignedUrlRequest;
-import com.aliyun.oss.model.MatchMode;
-import com.aliyun.oss.model.PolicyConditions;
+import com.aliyun.oss.internal.OSSHeaders;
+import com.aliyun.oss.model.*;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.io.FilenameUtils;
+import me.chanjar.weixin.cp.api.WxCpMediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -48,6 +48,8 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Autowired
     private AliyunService aliyunService;
+    @Autowired
+    private WxCpService wxCpService;
 
     @Override
     public void add(MediaParam param) {
@@ -92,7 +94,8 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         this.formatUrl(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-    private void formatUrl(List<MediaResult> param){
+
+    private void formatUrl(List<MediaResult> param) {
         for (MediaResult mediaResult : param) {
             Long mediaId = mediaResult.getMediaId();
             String mediaUrl = this.getMediaUrl(mediaId, 1L);
@@ -110,7 +113,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
         List<String> collect = Arrays.stream(type.split("\\.(?=[^\\.]+$)")).collect(Collectors.toList());
         String fileName = type;
-       String sname = collect.get(1);
+        String sname = collect.get(1);
 
         if (!userId.equals(0L) && ToolUtil.isNotEmpty(sname)) {
             List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
@@ -202,9 +205,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public String getMediaUrl(Long mediaId, Long userId) {
-
-
-        return getMediaUrlAddUseData(mediaId, userId,null);
+        return getMediaUrlAddUseData(mediaId, userId, null);
     }
 
     @Override
@@ -225,9 +226,9 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
         Date expiration = new Date(expireEndTime);
         generatePresignedUrlRequest.setExpiration(expiration);
-        if (ToolUtil.isNotEmpty(useData)){
-            generatePresignedUrlRequest.setQueryParameter(new HashMap<String,String>(){{
-                put("x-oss-process",useData);
+        if (ToolUtil.isNotEmpty(useData)) {
+            generatePresignedUrlRequest.setQueryParameter(new HashMap<String, String>() {{
+                put("x-oss-process", useData);
             }});
         }
 
@@ -262,10 +263,8 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 //        }
 
 //        URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
-        return "https://"+result.getBucket()+"."+result.getEndpoint()+"/"+result.getPath();
+        return "https://" + result.getBucket() + "." + result.getEndpoint() + "/" + result.getPath();
     }
-
-
 
 
     private Serializable getKey(MediaParam param) {
@@ -285,5 +284,39 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+    /**
+     * 获取临时文件  上传阿里云
+     *
+     * @param
+     * @param mediaId
+     * @return
+     */
+    @Override
+    public Long getTemporaryFile(String mediaId) {
+        if (ToolUtil.isEmpty(mediaId)) {
+            return  null;
+        }
+        try {
+            WxCpMediaService mediaService = wxCpService.getWxCpClient().getMediaService();
+            File download = mediaService.download(mediaId);
+            String bucket = aliyunService.getConfig().getOss().getBucket();
+            OSS ossClient = aliyunService.getOssClient();
+
+            Media media = getMediaId(download.getName());
+            ossClient.putObject(bucket, media.getPath(), download);
+
+            String mediaUrlAddUseData = getMediaUrlAddUseData(media.getMediaId(), 0L, null);
+            return media.getMediaId();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
 
 }

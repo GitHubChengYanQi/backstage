@@ -8,13 +8,14 @@ import cn.atsoft.dasheng.form.pojo.ProcessParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.List;
 
+import java.util.List;
 
 
 /**
@@ -40,6 +41,9 @@ public class ActivitiProcessController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ActivitiProcessParam activitiProcessParam) {
+        if (ToolUtil.isEmpty(activitiProcessParam.getType()) || ToolUtil.isEmpty(activitiProcessParam.getModule())) {
+            throw new ServiceException(500, "请确定单据或类型");
+        }
         this.activitiProcessService.add(activitiProcessParam);
         return ResponseData.success();
     }

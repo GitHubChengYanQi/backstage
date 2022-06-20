@@ -210,14 +210,16 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
         List<Unit> unitList = unitIds.size() == 0 ? new ArrayList<>() : unitService.listByIds(unitIds);
         List<TaxRate> taxRates = taxIds.size() == 0 ? new ArrayList<>() : rateService.listByIds(taxIds);
-        List<OrderResult> orderResults = orderService.findListBySpec(new OrderParam());
+
+//        List<OrderResult> orderResults = orderService.findListBySpec(new OrderParam());
+
         for (OrderDetailResult orderDetailResult : param) {
-            for (OrderResult orderResult : orderResults) {
-                if (orderResult.getOrderId().equals(orderDetailResult.getOrderId())){
-                    orderDetailResult.setOrderResult(orderResult);
-                    break;
-                }
-            }
+//            for (OrderResult orderResult : orderResults) {
+//                if (orderResult.getOrderId().equals(orderDetailResult.getOrderId())){
+//                    orderDetailResult.setOrderResult(orderResult);
+//                    break;
+//                }
+//            }
             for (SkuResult skuResult : skuResults) {
                 if (orderDetailResult.getSkuId().equals(skuResult.getSkuId())) {
                     orderDetailResult.setSkuResult(skuResult);
@@ -256,8 +258,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         if (ToolUtil.isEmpty(paramCondition)) {
             return new ArrayList<>();
         }
-        List<OrderDetailResult> detailResults = this.baseMapper.pendingProductionPlanByOrder(paramCondition);
-        return detailResults;
+        return this.baseMapper.pendingProductionPlanByOrder(paramCondition);
     }
 
 }

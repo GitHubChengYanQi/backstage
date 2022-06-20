@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.message.producer;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.config.DirectQueueConfig;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
@@ -109,6 +110,8 @@ public class MessageProducer {
             /**
              * 打印日志
              */
+            Long userId = LoginContextHolder.getContext().getUserId();
+            auditEntity.setLoginUserId(userId);
             String randomString = ToolUtil.getRandomString(5);
             StringBuffer sb = new StringBuffer();
             sb.append("发出审批队列").append(auditEntity).append("/").append(randomString);

@@ -1,12 +1,20 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
+import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
 import cn.atsoft.dasheng.form.entity.*;
@@ -15,15 +23,23 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.AppointUser;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.DataType;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -32,9 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -50,6 +64,18 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private ActivitiProcessLogService processLogService;
+    @Autowired
+    private ActivitiAuditService auditService;
+    @Autowired
+    private InstockOrderService instockOrderService;
+    @Autowired
+    private DocumentStatusService statusService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -99,6 +125,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<String> userList = ToolUtil.isEmpty(byId.getUserIds()) ? new ArrayList<>() : Arrays.asList(byId.getUserIds().split(","));
         boolean flag1 = deptList.contains(deptId.toString());
         boolean flag2 = userList.contains(deptId.toString());
+        LoginContextHolder.getContext().isAdmin();
         int flag = 0;
         if (LoginContextHolder.getContext().isAdmin()) {
             flag = 1;
@@ -122,10 +149,40 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param) {
+
+
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public ActivitiProcessTaskResult detail(Long id) {
+        ActivitiProcessTask processTask = this.getById(id);
+        ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
+        ToolUtil.copyProperties(processTask, taskResult);
+
+        format(new ArrayList<ActivitiProcessTaskResult>() {{
+            add(taskResult);
+        }});
+        return taskResult;
+    }
+
+    @Override
+    public PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param) {
+        if (ToolUtil.isNotEmpty(param.getAuditType())) {
+            Long userId = LoginContextHolder.getContext().getUserId();
+            List<Long> taskId = getTaskId(param.getAuditType(), userId);
+            param.setTaskIds(taskId);
+        }
+        param.getTaskIds().add(0L);
+
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+
     }
 
     private Serializable getKey(ActivitiProcessTaskParam param) {
@@ -146,28 +203,119 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return entity;
     }
 
-    void format(List<ActivitiProcessTaskResult> data) {
 
-//        List<Long> qualityIds = new ArrayList<>();
-//        List<Long> purchaseIds = new ArrayList<>();
+    private List<Long> getTaskId(String type, Long userId) {
+        List<Long> taskIds = new ArrayList<>();
+        List<Long> stepIds = getStepIdsByType(type, userId);
+        List<ActivitiProcessLog> processLogList = stepIds.size() == 0 ? new ArrayList<>() : processLogService.query().in("setps_id", stepIds).groupBy("task_id").list();
+        for (ActivitiProcessLog activitiProcessLog : processLogList) {
+            taskIds.add(activitiProcessLog.getTaskId());
+        }
+        return taskIds;
+    }
+
+    /**
+     * 查出当前下关于用户所有步骤
+     *
+     * @param type
+     * @return
+     */
+    List<Long> getStepIdsByType(String type, Long userId) {
+        LoginContext context = LoginContextHolder.getContext();
+
+        List<ActivitiAudit> audits = auditService.list();
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiAudit audit : audits) {
+            AuditRule rule = audit.getRule();
+            if (ToolUtil.isNotEmpty(rule)) {
+                if (ToolUtil.isNotEmpty(rule.getType())) {
+                    if (haveME(rule, context)) {
+                        stepIds.add(audit.getSetpsId());
+                    }
+                }
+            }
+        }
+        return stepIds;
+    }
+
+
+    /**
+     * 当前规则指定人
+     *
+     * @param rule
+     * @return
+     */
+    private boolean haveME(AuditRule rule, LoginContext loginContext) {
+        LoginUser user = loginContext.getUser();
+        List<Long> depts = loginContext.getDeptDataScope();
+        if (ToolUtil.isEmpty(user.getId())) {
+            return false;
+        }
+        for (AuditRule.Rule ruleRule : rule.getRules()) {
+            if (ToolUtil.isNotEmpty(ruleRule.getDeptPositions())) {
+                for (Long dept : depts) {
+                    if (ruleRule.getDeptPositions().stream().anyMatch(i -> i.getKey().equals(dept.toString()))) {
+                        return true;
+                    }
+                }
+            }
+
+            if (ruleRule.getType().equals(DataType.AllPeople)) {
+                return true;
+            }
+            for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+                if (appointUser.getKey().equals(user.getId().toString())) {
+                    return true;
+                }
+            }
+
+        }
+
+        return false;
+    }
+
+    @Override
+    public void format(List<ActivitiProcessTaskResult> data) {
         List<Long> userIds = new ArrayList<>();
+        List<Long> instockOrderIds = new ArrayList<>();
+        List<Long> anomalyIds = new ArrayList<>();
+        List<Long> pickListsIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
-//            switch (datum.getType()) {
-//                case "quality_task":
-//                    qualityIds.add(datum.getFormId());
-//                    break;
-//                case "purchase":
-//                    purchaseIds.add(datum.getFormId());
-//                    break;
-//            }
+            switch (datum.getType()) {
+                case "INSTOCK":
+                    instockOrderIds.add(datum.getFormId());
+                    break;
+                case "INSTOCKERROR":
+                    anomalyIds.add(datum.getFormId());
+                    break;
+                case "OUTSTOCK":
+                    pickListsIds.add(datum.getFormId());
+                    break;
+            }
         }
-//        List<QualityTask> qualityTasks = qualityIds.size() == 0 ? new ArrayList<>() : qualityTaskService.listByIds(qualityIds);
-//
-//        List<PurchaseAsk> purchaseAsks = purchaseIds.size() == 0 ? new ArrayList<>() : askService.listByIds(purchaseIds);
+        Map<Long, String> statusMap = new HashMap<>();
+        List<DocumentsStatus> statuses = statusService.list();
+        statusMap.put(0L, "开始");
+        statusMap.put(99L, "完成");
+        statusMap.put(50L, "拒绝");
+        for (DocumentsStatus status : statuses) {
+            statusMap.put(status.getDocumentsStatusId(), status.getName());
+        }
+
+        List<InstockOrder> instockOrders = instockOrderIds.size() == 0 ? new ArrayList<>() : instockOrderService.listByIds(instockOrderIds);
+        List<InstockOrderResult> orderResults = BeanUtil.copyToList(instockOrders, InstockOrderResult.class, new CopyOptions());
+        instockOrderService.format(orderResults);
+        instockOrderService.setList(orderResults);
+
+        List<AnomalyOrder> anomalyOrders = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyOrderService.listByIds(anomalyIds);
+        List<AnomalyOrderResult> orderResultList = BeanUtil.copyToList(anomalyOrders, AnomalyOrderResult.class, new CopyOptions());
+
+        List<ProductionPickLists> productionPickLists = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsIds);
+        List<ProductionPickListsResult> productionPickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
+
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-
         for (ActivitiProcessTaskResult datum : data) {
 
             for (User user : users) {
@@ -177,29 +325,35 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 }
             }
 
-//
-//            for (QualityTask qualityTask : qualityTasks) {
-//                if (datum.getFormId().equals(qualityTask.getQualityTaskId())) {
-//                    QualityTaskResult qualityTaskResult = new QualityTaskResult();
-//                    ToolUtil.copyProperties(qualityTask, qualityTaskResult);
-//                    datum.setObject(qualityTaskResult);
-//                    break;
-//                }
-//            }
-//
-//            for (PurchaseAsk purchaseAsk : purchaseAsks) {
-//                if (purchaseAsk.getPurchaseAskId().equals(datum.getFormId())) {
-//                    PurchaseAskResult askResult = new PurchaseAskResult();
-//                    ToolUtil.copyProperties(purchaseAsk, askResult);
-//                    datum.setObject(askResult);
-//                    break;
-//                }
-//            }
+            for (InstockOrderResult orderResult : orderResults) {
+                if (datum.getType().equals("INSTOCK") && datum.getFormId().equals(orderResult.getInstockOrderId())) {
+                    String statusName = statusMap.get(orderResult.getStatus());
+                    orderResult.setStatusName(statusName);
+                    datum.setReceipts(orderResult);
+                    break;
+                }
+            }
 
+            for (AnomalyOrderResult anomalyOrderResult : orderResultList) {
+                if (datum.getType().equals("INSTOCKERROR") && datum.getFormId().equals(anomalyOrderResult.getOrderId())) {
+                    String statusName = statusMap.get(anomalyOrderResult.getStatus());
+                    anomalyOrderResult.setStatusName(statusName);
+                    datum.setReceipts(anomalyOrderResult);
+                    break;
+                }
+            }
+            for (ProductionPickListsResult productionPickListsResult : productionPickListsResults) {
+                if (datum.getType().equals("OUTSTOCK") && datum.getFormId().equals(productionPickListsResult.getPickListsId())) {
+                    String statusName = statusMap.get(productionPickListsResult.getStatus());
+                    productionPickListsResult.setStatusName(statusName);
+                    datum.setReceipts(productionPickListsResult);
+                    break;
+                }
+            }
         }
-
     }
 }
+
 
 
 

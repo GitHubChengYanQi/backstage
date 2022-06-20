@@ -27,6 +27,9 @@ public class Remarks implements Serializable {
     @TableField("source_id")
     private Long sourceId;
 
+    @TableField("pid")
+    private Long pid;
+
     @TableField("source")
     private String source;
 
@@ -199,6 +202,14 @@ public class Remarks implements Serializable {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     @Override

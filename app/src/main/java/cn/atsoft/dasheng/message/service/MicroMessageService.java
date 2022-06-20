@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.service.AnnouncementsService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
@@ -46,6 +47,9 @@ public class MicroMessageService {
 
     @Autowired
     private QualityTaskService qualityTaskService;
+
+    @Autowired
+    private AnnouncementsService announcementsService;
 
 
     public void microServiceDo(MicroServiceEntity microServiceEntity) {
@@ -105,20 +109,26 @@ public class MicroMessageService {
                         qualityTaskService.microAdd(qualityTaskParam);
                 }
                 break;
-                case INSTOCKORDER:
+            case INSTOCKORDER:
                 switch (microServiceEntity.getOperationType()) {
                     case SAVE:
                         InstockOrderParam instockOrderParam = JSON.parseObject(microServiceEntity.getObject().toString(), InstockOrderParam.class);
                         instockOrderService.addRecord(instockOrderParam);
                 }
                 break;
-                case OUTSTOCKORDER:
+            case OUTSTOCKORDER:
                 switch (microServiceEntity.getOperationType()) {
                     case SAVE:
                         OutstockOrderParam outstockOrderParam = JSON.parseObject(microServiceEntity.getObject().toString(), OutstockOrderParam.class);
                         outstockOrderService.addRecord(outstockOrderParam);
                 }
                 break;
+            case Announcements:
+                switch (microServiceEntity.getOperationType()) {
+                    case ORDER:
+                        List<Long> longs = JSON.parseArray(microServiceEntity.getObject().toString(), Long.class);
+                        announcementsService.toJson(longs);
+                }
             default:
         }
     }

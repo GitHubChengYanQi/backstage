@@ -314,7 +314,7 @@ public class GetOrigin {
                 break;
             default:
         }
-        if (ToolUtil.isNotEmpty(json) && json != ""){
+        if (ToolUtil.isNotEmpty(json) && !json.equals("")){
             parent =  JSON.parseObject(json, ThemeAndOrigin.class);
         }
         List<ThemeAndOrigin> parents = new ArrayList<>();

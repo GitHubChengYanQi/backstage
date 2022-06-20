@@ -47,6 +47,8 @@ public interface ActivitiProcessService extends IService<ActivitiProcess> {
      */
     void update(ActivitiProcessParam param);
 
+    boolean judgePerson(String type, String module);
+
     /**
      * 查询单条数据，Specification模式
      *

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.inventory.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.entity.StockDetails;
@@ -10,6 +11,7 @@ import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
@@ -24,6 +26,12 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.inventory.entity.Inventory;
 import cn.atsoft.dasheng.inventory.entity.InventoryDetail;
 import cn.atsoft.dasheng.inventory.mapper.InventoryMapper;
@@ -33,13 +41,19 @@ import cn.atsoft.dasheng.inventory.pojo.InventoryRequest;
 import cn.atsoft.dasheng.inventory.service.InventoryDetailService;
 import cn.atsoft.dasheng.inventory.service.InventoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -69,14 +83,12 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
     @Autowired
     private InkindService inkindService;
-
     @Autowired
     private StockDetailsService detailsService;
     @Autowired
     private StorehousePositionsService positionsService;
     @Autowired
     private StockService stockService;
-
     @Autowired
     private OrCodeBindService codeBindService;
     @Autowired
@@ -85,13 +97,77 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private InstockOrderService instockOrderService;
     @Autowired
     private OutstockOrderService outstockOrderService;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private MessageProducer messageProducer;
+    @Autowired
+    private RemarksService remarksService;
 
     @Override
+    @Transactional
     public void add(InventoryParam param) {
         Inventory entity = getEntity(param);
         this.save(entity);
 
+        if (ToolUtil.isEmpty(param.getDetailParams())) {
+            throw new ServiceException(500, "缺少参数");
+        }
+        List<InventoryDetail> inventoryDetails = BeanUtil.copyToList(param.getDetailParams(), InventoryDetail.class, new CopyOptions());
+        for (InventoryDetail inventoryDetail : inventoryDetails) {
+            inventoryDetail.setInventoryId(entity.getInventoryTaskId());
+        }
+        inventoryDetailService.saveBatch(inventoryDetails);
+
+        param.setInventoryTaskId(entity.getInventoryTaskId());
+        param.setCreateUser(entity.getCreateUser());
+        submit(param);
     }
+
+    /**
+     * 创建任务
+     *
+     * @param param
+     */
+    private void submit(InventoryParam param) {
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.Stocktaking.name()).eq("status", 99).eq("module", "").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "的盘点任务");
+            activitiProcessTaskParam.setQTaskId(param.getInventoryTaskId());
+            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setFormId(param.getInventoryTaskId());
+            activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("processTask");
+            wxCpSendTemplate.setSourceId(taskId);
+            //添加log
+            messageProducer.auditMessageDo(new AuditEntity() {{
+                setMessageType(AuditMessageType.CREATE_TASK);
+                setActivitiProcess(activitiProcess);
+                setTaskId(taskId);
+                setTimes(0);
+                setMaxTimes(1);
+            }});
+
+            List<Long> userIds = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(param.getParticipants())) {
+                userIds.addAll(JSON.parseArray(param.getParticipants(), Long.class));
+            }
+            String name = LoginContextHolder.getContext().getUser().getName();
+            remarksService.pushPeople(userIds, taskId, name + "创建的盘点任务 需要你处理");
+        }
+    }
+
 
     @Override
     public void delete(InventoryParam param) {
@@ -164,7 +240,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         Inventory invent = new Inventory();
         invent.setInventoryTaskName(new Date() + "盘点任务");
         this.save(invent);
-        
+
         InventoryDetail inventory = null;
 
         //添加盘点数据----------------------------------------------------------------------------------------------------
@@ -193,7 +269,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         inventory.setStatus(2);
                         inventories.add(inventory);
 
-                    } else if (detail.getNumber() < param.getNumber()) { //修正入库
+                    } else if (detail.getNumber() < param.getNumber()) {  //修正入库
 
                         InstockListParam instockListParam = new InstockListParam();//添加记录
                         instockListParam.setSkuId(detail.getSkuId());
@@ -411,4 +487,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         return entity;
     }
 
+    private void format(List<InventoryResult> data) {
+
+        List<Long> inventoryIds = new ArrayList<>();
+
+        for (InventoryResult datum : data) {
+            inventoryIds.add(datum.getInventoryTaskId());
+        }
+
+
+    }
 }

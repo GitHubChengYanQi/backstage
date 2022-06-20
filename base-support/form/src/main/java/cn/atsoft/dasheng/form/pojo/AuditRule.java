@@ -32,6 +32,7 @@ public class AuditRule {
 
         private PurchaseAsk purchaseAsk;
 
+
     }
 
     @Data
