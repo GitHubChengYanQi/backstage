@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import lombok.Data;
 
 import java.util.Date;
@@ -29,6 +30,10 @@ public class ShopCartResult implements Serializable {
     private SkuResult skuResult;
 
     private BrandResult brandResult;
+
+    private Long storehousePositionsId;
+
+    private StorehousePositionsResult storehousePositions;
 
     private Customer customer;
 

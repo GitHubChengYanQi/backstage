@@ -18,11 +18,12 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="form_id" property="formId"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">form_id
-    AS "formId",
+    AS "formId",storehouse_positions_id AS "storehousePositionsId",
         cart_id
         AS "cartId", type AS "type", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", status AS "status", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
@@ -44,7 +45,7 @@
             )
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type  = #{paramCondition.type}
+            and type = #{paramCondition.type}
         </if>
         <if test="paramCondition.skuId != null">
             and sku_id like CONCAT('%',#{paramCondition.skuId},'%')

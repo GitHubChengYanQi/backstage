@@ -9,10 +9,7 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Anomaly;
-import cn.atsoft.dasheng.erp.entity.AnomalyDetail;
-import cn.atsoft.dasheng.erp.entity.InstockList;
-import cn.atsoft.dasheng.erp.entity.ShopCart;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.ShopCartMapper;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
@@ -23,10 +20,13 @@ import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -59,6 +59,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private StorehousePositionsService positionsService;
     @Autowired
     private AnomalyDetailService anomalyDetailService;
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
 
     @Override
     @Transactional
@@ -234,12 +236,13 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
         List<Long> anomalyIds = new ArrayList<>();
-
+        List<Long> positionIds = new ArrayList<>();
 
         for (ShopCartResult datum : data) {
             customerIds.add(datum.getCustomerId());
             brandIds.add(datum.getBrandId());
             skuIds.add(datum.getSkuId());
+            positionIds.add(datum.getStorehousePositionsId());
             if (ToolUtil.isNotEmpty(datum.getType()) && datum.getType().equals(AnomalyType.InstockError.name())) {
                 anomalyIds.add(datum.getFormId());
             }
@@ -251,14 +254,22 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         Map<Long, AnomalyResult> map = anomalyService.getMap(anomalyIds);
-
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
 
         for (ShopCartResult datum : data) {
+
+
             if (ToolUtil.isNotEmpty(datum.getFormId())) {
                 AnomalyResult result = map.get(datum.getFormId());
                 datum.setAnomalyResult(result);
             }
-
+            for (StorehousePositionsResult position : positionsResults) {
+                if (ToolUtil.isNotEmpty(datum.getStorehousePositionsId()) && datum.getStorehousePositionsId().equals(position.getStorehousePositionsId())) {
+                    datum.setStorehousePositions(position);
+                    break;
+                }
+            }
             for (SkuResult skuResult : skuResults) {
                 List<StorehousePositionsResult> results = positionMap.get(skuResult.getSkuId());
                 skuResult.setPositionsResult(results);
