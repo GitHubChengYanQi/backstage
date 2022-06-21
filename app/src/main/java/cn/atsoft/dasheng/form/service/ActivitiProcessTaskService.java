@@ -81,4 +81,6 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
     PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param);
 
     void format(List<ActivitiProcessTaskResult> data);
+
+    void checkStartUser(Long processId);
 }

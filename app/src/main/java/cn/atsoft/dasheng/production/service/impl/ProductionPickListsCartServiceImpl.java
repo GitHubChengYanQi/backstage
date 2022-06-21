@@ -72,23 +72,23 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Override
     public void add(ProductionPickListsCartParam param) {
-//        List<StockDetails> stockDetailList = foundCanBeUseStockDetail(param);
+        List<StockDetails> stockDetailList = foundCanBeUseStockDetail(param);
 //        List<StockDetails> stockDetailsList =  inkindIds.size() == 0 ? stockDetailsService.query().eq("stage", 1).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id", inkindIds).eq("display", 1).list();
-        List<Long> skuIds = new ArrayList<>();
-        for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
-            skuIds.add(productionPickListsCartParam.getSkuId());
-        }
-        List<ProductionPickListsCart> cartList = this.query().eq("display", 1).list();
-        List<Long> inkindIds = new ArrayList<>();
-        for (ProductionPickListsCart pickListsCart : cartList) {
-            if (ToolUtil.isNotEmpty(pickListsCart.getInkindId())) {
-                inkindIds.add(pickListsCart.getInkindId());
-            }
-        }
+//        List<Long> skuIds = new ArrayList<>();
+//        for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
+//            skuIds.add(productionPickListsCartParam.getSkuId());
+//        }
+//        List<ProductionPickListsCart> cartList = this.query().eq("display", 1).list();
+//        List<Long> inkindIds = new ArrayList<>();
+//        for (ProductionPickListsCart pickListsCart : cartList) {
+//            if (ToolUtil.isNotEmpty(pickListsCart.getInkindId())) {
+//                inkindIds.add(pickListsCart.getInkindId());
+//            }
+//        }
         /**
          * 查询库存所有  排除已在购物车实物
          */
-        List<StockDetails> stockDetailList = inkindIds.size() == 0 ? stockDetailsService.query().eq("stage", 1).in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().eq("stage", 1).in("sku_id", skuIds).notIn("inkind_id", inkindIds).eq("display", 1).list();
+//        List<StockDetails> stockDetailList = inkindIds.size() == 0 ? stockDetailsService.query().eq("stage", 1).in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().eq("stage", 1).in("sku_id", skuIds).notIn("inkind_id", inkindIds).eq("display", 1).list();
 
 
 
@@ -210,14 +210,16 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
         List<StockDetails> beUseStockDetail = stockDetailsService.query().eq("stage", 1).in("sku_id", skuIds).eq("display", 1).list();
         for (int i = 0; i < beUseStockDetail.size(); ) {
+            i++;
             for (ProductionPickListsCart pickListsCart : cartList) {
                 if (beUseStockDetail.get(i).getInkindId().equals(pickListsCart.getInkindId())) {
                     Long num = beUseStockDetail.get(i).getNumber() - pickListsCart.getNumber();
                     if (num > 0) {
                         beUseStockDetail.get(i).setNumber(num);
-                        i++;
+
                     } else {
                         beUseStockDetail.remove(i);
+                        i-=1;
                     }
                 }
             }

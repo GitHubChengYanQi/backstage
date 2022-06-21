@@ -9,33 +9,22 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
-import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
-import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
-import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AppointUser;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.DataType;
-import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
-import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
-import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
-import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
-import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -76,6 +65,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private ProductionPickListsService pickListsService;
+
+    @Autowired
+    private ActivitiStepsService activitiStepsService;
+
+    @Autowired
+    private ActivitiAuditService activitiAuditService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -348,6 +343,21 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     productionPickListsResult.setStatusName(statusName);
                     datum.setReceipts(productionPickListsResult);
                     break;
+                }
+            }
+        }
+    }
+    @Override
+    public void checkStartUser(Long processId) {
+
+        List<ActivitiSteps> steps = activitiStepsService.query().eq("process_id", processId).eq("display", 1).list();
+
+        List<ActivitiAudit> audits = activitiAuditService.getListBySteps(steps);
+        Boolean throwFlag = false;
+        for (ActivitiAudit audit : audits) {
+            if (audit.getType().equals("start")) {
+                if (!haveME(audit.getRule(), LoginContextHolder.getContext())) {
+                    throw new ServiceException(500,"您没有创建流程发起权限");
                 }
             }
         }

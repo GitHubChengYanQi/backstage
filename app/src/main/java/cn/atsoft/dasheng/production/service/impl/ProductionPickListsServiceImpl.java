@@ -61,6 +61,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
@@ -157,13 +158,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private DocumentStatusService statusService;
+    @Autowired
+    private ActivitiAuditService auditService;
 
     @Override
+    @Transactional
     public void add(ProductionPickListsParam param) {
         ProductionPickLists entity = getEntity(param);
         entity.setCoding(codingRulesService.defaultEncoding());
         entity.setStatus(0L);
-
 //        entity.setUserId(LoginContextHolder.getContext().getUserId());
         this.save(entity);
 
@@ -179,8 +182,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "OUTSTOCK").eq("status", 99).eq("module", "pickLists").one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
-//                this.power(activitiProcess);//检查创建权限
-//                LoginUser user = LoginContextHolder.getContext().getUser();
+            activitiProcessTaskService.checkStartUser(activitiProcess.getProcessId());
+            auditService.power(activitiProcess);//检查创建权限
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             String name = LoginContextHolder.getContext().getUser().getName();
             activitiProcessTaskParam.setTaskName(name + "出库申请 (" + entity.getCoding() + ")");
@@ -197,8 +200,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
-
-
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
