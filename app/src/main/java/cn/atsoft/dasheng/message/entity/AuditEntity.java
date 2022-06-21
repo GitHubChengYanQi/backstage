@@ -11,12 +11,14 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class AuditEntity {
+
+
     /**
      * 审批任务id
      */
     private Long taskId;
 
-    private Long  loginUserId;
+    private Long loginUserId;
 
     /**
      * 审批动作
