@@ -293,7 +293,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     param.setModule("");
                 }
                 ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).one();
-                if (ToolUtil.isNotEmpty(activitiProcess)) {
+                if (ToolUtil.isEmpty(activitiProcess)) {
+                    throw new ServiceException(500, "请先设置入库的审批流程");
+                }
+
                     LoginUser user = LoginContextHolder.getContext().getUser();
                     ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
                     activitiProcessTaskParam.setTaskName(user.getName() + "的入库申请");
@@ -307,7 +310,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     wxCpSendTemplate.setSource("processTask");
                     wxCpSendTemplate.setSourceId(taskId);
                     //添加log
-
                     messageProducer.auditMessageDo(new AuditEntity() {{
                         setMessageType(AuditMessageType.CREATE_TASK);
                         setActivitiProcess(activitiProcess);
@@ -315,18 +317,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         setTimes(0);
                         setMaxTimes(1);
                     }});
-//                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-//                activitiProcessLogService.autoAudit(taskId, 1);
+
                     /**
                      * 指定人推送
                      */
                     if (ToolUtil.isNotEmpty(param.getUserIds())) {
                         remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
                     }
-                } else {
-                    entity.setState(1);
-                    this.updateById(entity);
-                }
             } else {
                 inStock(param);
             }

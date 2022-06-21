@@ -370,6 +370,26 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return num;
     }
 
+    /**
+     * 物料设计库位的数量
+     * @param skuIds
+     * @return
+     */
+    public Integer getPositionNum(List<Long> skuIds) {
+
+        Set<Long> positionIds = new HashSet<>();
+        List<StorehousePositionsBind> positionsBinds = storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+
+        for (StorehousePositionsBind positionsBind : positionsBinds) {
+            positionIds.add(positionsBind.getPositionId());
+        }
+        List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list();
+        for (StockDetails stockDetail : stockDetails) {
+            positionIds.add(stockDetail.getStorehousePositionsId());
+        }
+        return positionIds.size();
+    }
+
     @Override
     public StorehousePositionsResult positionsResultById(Long Id) {
 

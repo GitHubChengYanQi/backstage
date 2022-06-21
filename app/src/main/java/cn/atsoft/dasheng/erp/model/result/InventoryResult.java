@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.inventory.model.result;
+package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
 import java.util.Date;

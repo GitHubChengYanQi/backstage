@@ -1,6 +1,5 @@
-package cn.atsoft.dasheng.inventory.model.params;
+package cn.atsoft.dasheng.erp.model.params;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
