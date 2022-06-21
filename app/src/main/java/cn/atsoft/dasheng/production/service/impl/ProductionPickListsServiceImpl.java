@@ -648,7 +648,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(brandId) && listsCart.getStatus() == 0) {
                             int lastNum = num;
                             num -= listsCart.getNumber();
-                            if (num > 0) {
+                            if (num >= 0) {
                                 listsCart.setDisplay(0);
                                 listsCart.setStatus(99);
                                 for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
