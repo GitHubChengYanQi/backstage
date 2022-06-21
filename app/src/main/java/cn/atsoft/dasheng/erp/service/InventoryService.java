@@ -1,13 +1,12 @@
-package cn.atsoft.dasheng.inventory.service;
+package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.inventory.entity.Inventory;
-import cn.atsoft.dasheng.inventory.model.params.InventoryParam;
-import cn.atsoft.dasheng.inventory.model.result.InventoryResult;
-import cn.atsoft.dasheng.inventory.pojo.InventoryRequest;
+import cn.atsoft.dasheng.erp.entity.Inventory;
+import cn.atsoft.dasheng.erp.model.params.InventoryParam;
+import cn.atsoft.dasheng.erp.model.result.InventoryResult;
+import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

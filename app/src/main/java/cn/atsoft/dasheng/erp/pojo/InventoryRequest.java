@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.inventory.pojo;
+package cn.atsoft.dasheng.erp.pojo;
 
 import lombok.Data;
 

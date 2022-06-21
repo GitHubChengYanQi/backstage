@@ -68,9 +68,10 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         ShopCart entity = getEntity(param);
         this.save(entity);
 
-        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
-            updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
-
+        switch (param.getType()){
+            case "waitInStock":
+                updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
+                break;
         }
 
         return entity.getCartId();
