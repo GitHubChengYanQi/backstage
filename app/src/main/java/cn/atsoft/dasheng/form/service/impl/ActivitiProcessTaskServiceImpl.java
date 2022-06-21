@@ -270,6 +270,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     }
 
     @Override
+    public Long getTaskIdByFormId(Long formId) {
+        ActivitiProcessTask task = ToolUtil.isEmpty(formId) ? new ActivitiProcessTask() : this.query().eq("form_id", formId).one();
+        return task.getProcessTaskId();
+    }
+
+    @Override
     public void format(List<ActivitiProcessTaskResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> instockOrderIds = new ArrayList<>();

@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.message.config.DirectQueueConfig;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,4 +152,28 @@ public class MessageProducer {
             });
         }
     }
+
+    public void remarksServiceDo(RemarksEntity remarksEntity) {
+        remarksEntity.setTimes(1 + remarksEntity.getTimes());
+        if (ToolUtil.isNotEmpty(remarksEntity.getMaxTimes()) && remarksEntity.getTimes() <= remarksEntity.getMaxTimes()) {
+            /**
+             * 打印日志
+             */
+            String randomString = ToolUtil.getRandomString(5);
+            StringBuffer sb = new StringBuffer();
+            sb.append("发出审批队列").append(remarksEntity).append("/").append(randomString);
+            logger.info(sb.toString());
+            /**
+             * 发送
+             */
+            rabbitTemplate.convertAndSend(DirectQueueConfig.getRemarksRealExchange(), DirectQueueConfig.getRemarksRealRoute(), JSON.toJSONString(remarksEntity));
+
+        }
+    }
+
+
+
+
+
+
 }

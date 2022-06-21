@@ -74,6 +74,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     }
 
     @Override
+    public Long getTaskIdByFormId(Long formId) {
+        ActivitiProcessTask task = ToolUtil.isEmpty(formId) ? new ActivitiProcessTask() : this.query().eq("form_id", formId).one();
+        return task.getProcessTaskId();
+    }
+
+    @Override
     public int isAdmin(Long taskId) {
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
         LoginContextHolder.getContext().getUserId();

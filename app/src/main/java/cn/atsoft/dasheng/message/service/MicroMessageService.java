@@ -1,13 +1,9 @@
 package cn.atsoft.dasheng.message.service;
 
-import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
-import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
-import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.AnnouncementsService;
@@ -15,10 +11,8 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
-import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
-import cn.atsoft.dasheng.production.model.params.ProductionWorkOrderParam;
 import cn.atsoft.dasheng.production.service.ProductionCardService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
@@ -30,7 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MicroService {
+public class MicroMessageService {
 
 
     @Autowired

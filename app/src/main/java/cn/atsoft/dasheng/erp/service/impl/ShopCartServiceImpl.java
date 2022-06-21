@@ -19,6 +19,12 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -61,6 +67,10 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private AnomalyDetailService anomalyDetailService;
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
     @Transactional
@@ -73,6 +83,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
                 break;
         }
+
 
         return entity.getCartId();
     }
@@ -100,9 +111,10 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     break;
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
-                    if (!instockList.getRealNumber().equals(instockList.getNumber())) {
-                        throw new ServiceException(500, "当前数据已被操作，不可退回");
-                    }
+                    instockList.setRealNumber(shopCart.getNumber());
+//                    if (!instockList.getRealNumber().equals(instockList.getNumber())) {
+//                        throw new ServiceException(500, "当前数据已被操作，不可退回");
+//                    }
                     break;
                 case "instockByAnomaly":
                     AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());

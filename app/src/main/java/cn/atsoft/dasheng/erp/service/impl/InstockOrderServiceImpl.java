@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.*;
@@ -37,6 +38,7 @@ import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.message.service.AuditMessageService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -238,15 +240,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     if (ToolUtil.isNotEmpty(instockRequest.getSellingPrice())) {
                         instockList.setSellingPrice(instockRequest.getSellingPrice());
                     }
-                    instockLists.add(instockList);
+                    instockListService.save(instockList);
+                    instockRequest.setInstockListId(instockList.getInstockListId());
 
 //                        }
 //                    }
                 }
             }
-            if (ToolUtil.isNotEmpty(instockLists)) {
-                instockListService.saveBatch(instockLists);
-            }
+
 
             //更新主题与来源
             List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
@@ -319,12 +320,28 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     }});
 
                     /**
+                     * 添加动态记录
+                     */
+                    RemarksParam remarksParam = new RemarksParam();
+                    remarksParam.setTaskId(taskId);
+                    remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "发起了入库申请");
+                    messageProducer.remarksServiceDo(new RemarksEntity() {{
+                        setOperationType(OperationType.ADD);
+                        setRemarksParam(remarksParam);
+                    }});
+//                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+//                activitiProcessLogService.autoAudit(taskId, 1);
+                    /**
                      * 指定人推送
                      */
                     if (ToolUtil.isNotEmpty(param.getUserIds())) {
                         remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
                     }
-            } else {
+                } else {
+                    entity.setState(1);
+                    this.updateById(entity);
+                }
+            } else {      //直接入库
                 inStock(param);
             }
 
@@ -335,7 +352,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //            this.createQualityTask(param, skus);
 
 
-        }
 
     }
 
@@ -635,12 +651,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> inkindIds = new ArrayList<>();
 
         for (InstockListParam listParam : param.getListParams()) {
-
             listParam.setInstockOrderId(param.getInstockOrderId());
-
             if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
                 handle(listParam, listParam.getInkindIds());
-
             } else {   //创建实物入库
                 if (listParam.getBatch()) {   //批量
                     Long inKind = createInKind(listParam);
@@ -661,6 +674,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             updateStatus(listParam);
         }
         /**
+         * 添加动态
+         */
+        Long taskId = activitiProcessTaskService.getTaskIdByFormId(param.getInstockOrderId());
+        RemarksParam remarksParam = new RemarksParam();
+        remarksParam.setTaskId(taskId);
+        remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "操作了入库");
+        messageProducer.remarksServiceDo(new RemarksEntity() {{
+            setOperationType(OperationType.ADD);
+            setRemarksParam(remarksParam);
+        }});
+        /**
          * 更新单据状态
          */
         boolean b = instockOrderComplete(param.getInstockOrderId());
@@ -680,7 +704,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setActionId(param.getActionId());
 //            }});
 
+            remarksParam.setContent("入库完成");
+            messageProducer.remarksServiceDo(new RemarksEntity() {{
+                setOperationType(OperationType.ADD);
+                setRemarksParam(remarksParam);
+            }});
+
         }
+
         return inkindIds;
     }
 
@@ -773,6 +804,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockDetails.setStorehousePositionsId(param.getStorehousePositionsId());
         stockDetails.setNumber(param.getNumber());
 
+        if (ToolUtil.isEmpty(param.getStorehousePositionsId())) {
+            throw new ServiceException(500, "缺少库位");
+        }
         StorehousePositions storehousePositions = positionsService.getById(param.getStorehousePositionsId());
         stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
         stockDetailsService.save(stockDetails);

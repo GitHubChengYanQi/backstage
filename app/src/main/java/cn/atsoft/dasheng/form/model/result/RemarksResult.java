@@ -29,9 +29,13 @@ public class RemarksResult implements Serializable {
 
     private List<RemarksResult> childrens;
 
+    private User user;
+
     private Long sourceId;
 
     private String source;
+
+
 
     private Long pid;
     /**
@@ -42,8 +46,6 @@ public class RemarksResult implements Serializable {
 
     @ApiModelProperty("")
     private Long logId;
-
-    private User user;
 
     private String photoId;
 
