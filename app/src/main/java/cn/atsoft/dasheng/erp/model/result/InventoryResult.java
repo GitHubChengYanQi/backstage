@@ -1,17 +1,11 @@
-package cn.atsoft.dasheng.inventory.model.params;
+package cn.atsoft.dasheng.erp.model.result;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
  * 盘点任务主表
@@ -22,15 +16,14 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InventoryParam implements Serializable, BaseValidatingParam {
+public class InventoryResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
 
     private String enclosure;
 
     private String participants;
-
-    private List<InventoryDetailParam> detailParams;
 
     private String notice;
 
@@ -86,13 +79,6 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

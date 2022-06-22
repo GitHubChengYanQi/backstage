@@ -46,6 +46,15 @@ public class AuditMessageSendImpl implements AuditMessageSend {
 
     }
 
-
+    public void statusSend(Long taskId, RuleType type, List<Long> users, String url, String createName) {
+        ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setTitle("您有新的单据需要操作");
+        wxCpTemplate.setDescription(processTask.getTaskName());
+        wxCpTemplate.setUserIds(users);
+        wxCpTemplate.setUrl(url);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
 
 }

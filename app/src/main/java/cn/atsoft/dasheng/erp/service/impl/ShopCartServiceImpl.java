@@ -19,8 +19,11 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
@@ -71,6 +74,11 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private MessageProducer messageProducer;
+    @Autowired
+    private ActivitiAuditService auditService;
+    @Autowired
+    private InstockOrderService instockOrderService;
+
 
     @Override
     @Transactional
@@ -200,8 +208,26 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
     @Override
     public List<ShopCartResult> allList(ShopCartParam param) {
-        param.setCreateUser(LoginContextHolder.getContext().getUserId());
-        List<ShopCartResult> shopCartResults = this.baseMapper.customList(param);
+
+        List<ShopCartResult> shopCartResults = new ArrayList<>();
+        /**
+         * 查看权限
+         */
+        if (ToolUtil.isNotEmpty(param.getSourceId())) {
+            InstockOrder instockOrder = instockOrderService.getById(param.getSourceId());
+            ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(instockOrder.getInstockOrderId());
+            List<Long> userIds = auditService.getUserIds(processTask.getProcessTaskId());
+            Long id = LoginContextHolder.getContext().getUserId();
+            for (Long userId : userIds) {
+                if (userId.equals(id)) {
+                    shopCartResults = this.baseMapper.customList(param);
+                    format(shopCartResults);
+                }
+            }
+        } else if (ToolUtil.isNotEmpty(param.getType())) {
+            shopCartResults = this.baseMapper.customList(param);
+        }
+
         format(shopCartResults);
         return shopCartResults;
     }

@@ -1,7 +1,6 @@
-package cn.atsoft.dasheng.inventory.service.impl;
+package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.pojo.AddStockParam;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
@@ -9,15 +8,14 @@ import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
-import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
-import cn.atsoft.dasheng.inventory.entity.InventoryDetail;
-import cn.atsoft.dasheng.inventory.mapper.InventoryDetailMapper;
-import cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam;
-import cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult;
-import cn.atsoft.dasheng.inventory.pojo.InventoryRequest;
-import cn.atsoft.dasheng.inventory.service.InventoryDetailService;
+import cn.atsoft.dasheng.erp.entity.InventoryDetail;
+import cn.atsoft.dasheng.erp.mapper.InventoryDetailMapper;
+import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
+import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
+import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
+import cn.atsoft.dasheng.erp.service.InventoryDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

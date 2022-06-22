@@ -1,22 +1,17 @@
-package cn.atsoft.dasheng.inventory.controller;
+package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.inventory.entity.InventoryDetail;
-import cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam;
-import cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult;
-import cn.atsoft.dasheng.inventory.service.InventoryDetailService;
+import cn.atsoft.dasheng.erp.entity.InventoryDetail;
+import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
+import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
+import cn.atsoft.dasheng.erp.service.InventoryDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**

@@ -78,5 +78,5 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
     List<ActivitiAuditResult> backAudits(List<Long> ids);
 
 
-
+    List<Long> getUserIds(Long taskId);
 }

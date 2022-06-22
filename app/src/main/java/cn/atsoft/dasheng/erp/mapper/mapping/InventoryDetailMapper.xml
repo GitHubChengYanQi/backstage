@@ -3,7 +3,7 @@
 <mapper namespace="cn.atsoft.dasheng.inventory.mapper.InventoryDetailMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.inventory.entity.InventoryDetail">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.InventoryDetail">
         <id column="detail_id" property="detailId"/>
         <result column="inkind_id" property="inkindId"/>
         <result column="inventory_id" property="inventoryId"/>
@@ -24,8 +24,8 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult"
-            parameterType="cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryDetailResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_inventory_detail where 1 = 1
@@ -53,7 +53,7 @@
     </select>
 
     <select id="customMapList" resultType="map"
-            parameterType="cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam">
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_inventory_detail where 1 = 1
@@ -80,8 +80,8 @@
         </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult"
-            parameterType="cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryDetailResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_inventory_detail where 1 = 1
@@ -109,7 +109,7 @@
     </select>
 
     <select id="customPageMapList" resultType="map"
-            parameterType="cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam">
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryDetailParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_inventory_detail where 1 = 1
