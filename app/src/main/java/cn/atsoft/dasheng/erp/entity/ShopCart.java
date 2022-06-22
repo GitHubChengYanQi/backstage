@@ -29,7 +29,7 @@ public class ShopCart implements Serializable {
 
 
     @TableField("storehouse_positions_id")
-    private Long storehousePositionsId;
+    private String storehousePositionsId;
 
     @TableField("form_id")
     private Long formId;
@@ -210,11 +210,11 @@ public class ShopCart implements Serializable {
         this.formId = formId;
     }
 
-    public Long getStorehousePositionsId() {
+    public String getStorehousePositionsId() {
         return storehousePositionsId;
     }
 
-    public void setStorehousePositionsId(Long storehousePositionsId) {
+    public void setStorehousePositionsId(String storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
     }
 

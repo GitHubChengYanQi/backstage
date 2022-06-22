@@ -53,6 +53,7 @@ public class StorehousePositionsResult implements Serializable {
     private List<StorehousePositionsResult> storehousePositionsResults;
 
     private List<BrandResult> brandResults;
+    private Boolean LowestLevel;  //最下级
     /**
      * 仓库库位id
      */

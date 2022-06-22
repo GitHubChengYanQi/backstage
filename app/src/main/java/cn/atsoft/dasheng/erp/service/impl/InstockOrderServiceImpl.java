@@ -63,6 +63,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -153,6 +154,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private AnomalyService anomalyService;
     @Autowired
     private ShopCartService shopCartService;
+
 
     @Override
     @Transactional
@@ -334,7 +336,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              */
             if (param.getDirectInStock()) {
                 param.setInstockOrderId(entity.getInstockOrderId());
-                inStock(param);    //直接入库
+                inStock(param);//直接入库
+                entity.setState(99);
+                this.updateById(entity);
             }
 
 
@@ -664,8 +668,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> inkindIds = new ArrayList<>();
 
         for (InstockListParam listParam : param.getListParams()) {
-            listParam.setInstockOrderId(param.getInstockOrderId());
 
+            listParam.setInstockOrderId(param.getInstockOrderId());
             if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
                 handle(listParam, listParam.getInkindIds());
             } else {   //创建实物入库
@@ -837,25 +841,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockDetails.setNumber(param.getNumber());
 
         if (ToolUtil.isEmpty(param.getStorehousePositionsId())) {
-            throw new ServiceException(500, "缺少库位");
+            throw new ServiceException(500, "存在物料缺少库位信息");
         }
         StorehousePositions storehousePositions = positionsService.getById(param.getStorehousePositionsId());
         stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
         stockDetailsService.save(stockDetails);
 
-//        /**
-//         * 添加入库记录
-//         */
-//        InstockLogDetail instockLogDetail = new InstockLogDetail();
-//        instockLogDetail.setInstockOrderId(param.getInstockOrderId());
-//        instockLogDetail.setSkuId(param.getSkuId());
-//        instockLogDetail.setType("normal");
-//        instockLogDetail.setBrandId(param.getBrandId());
-//        instockLogDetail.setCustomerId(param.getCustomerId());
-//        instockLogDetail.setStorehousePositionsId(param.getStorehousePositionsId());
-//        instockLogDetail.setNumber(param.getNumber());
-//        instockLogDetail.setInkindId(inkindId);
-//        instockLogDetailService.save(instockLogDetail);
     }
 
     private void handle(InstockListParam param, List<Long> inkindIds) {
@@ -1320,7 +1311,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<InstockList> instockListList = orderIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", orderIds).list();
         List<InstockListResult> instockListResults = BeanUtil.copyToList(instockListList, InstockListResult.class, new CopyOptions());
         format(data);
-
 
         instockListService.format(instockListResults);
 

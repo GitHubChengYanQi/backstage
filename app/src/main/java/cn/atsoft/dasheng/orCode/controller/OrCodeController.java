@@ -299,7 +299,7 @@ public class OrCodeController extends BaseController {
                     return ResponseData.success(storeHouseRequest);
 
                 case "storehousePositions":
-                    StorehousePositions storehousePositions = storehousePositionsService.query().in("storehouse_positions_id", codeBind.getFormId()).one();
+                    StorehousePositions storehousePositions = storehousePositionsService.query().eq("storehouse_positions_id", codeBind.getFormId()).one();
                     if (ToolUtil.isEmpty(storehousePositions)) {
                         throw new ServiceException(500, "当前库位不存在");
                     }
