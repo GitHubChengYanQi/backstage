@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.inventory.model.params;
+package cn.atsoft.dasheng.erp.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * <p>
- * 盘点任务详情
+ * 盘点任务主表
  * </p>
  *
  * @author Captain_Jazz
@@ -21,38 +21,52 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InventoryDetailParam implements Serializable, BaseValidatingParam {
+public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private Long skuId;
+    private String enclosure;
 
-    private Long storeHouseId;
+    private String participants;
 
-    private Long positionId;
+    private List<InventoryDetailParam> detailParams;
 
-    private Long qrcodeId;
+    private String notice;
 
-    private Long number;
+
+    private Date endTime;
+
+
+    private Date beginTime;
+
+
+    private String mode;
+
+
+    private String method;
     /**
-     * 盘点任务详情id
+     * 盘点任务id
      */
-    @ApiModelProperty("盘点任务详情id")
-    private Long detailId;
+    @ApiModelProperty("盘点任务id")
+    private Long inventoryTaskId;
 
-
-    private Integer status;
     /**
-     * 对应实物id
+     * 盘点任务名称
      */
-    @ApiModelProperty("对应实物id")
-    private Long inkindId;
-    /**
-     * 主表 Id
-     */
-    @ApiModelProperty("主表盘点任务id")
-    private Long inventoryId;
+    @ApiModelProperty("盘点任务名称")
+    private String inventoryTaskName;
 
+    /**
+     * 盘点任务备注
+     */
+    @ApiModelProperty("盘点任务备注")
+    private String remark;
+
+    /**
+     * 删除状态
+     */
+    @ApiModelProperty("删除状态")
+    private Integer display;
 
     @ApiModelProperty(hidden = true)
     private Long createUser;

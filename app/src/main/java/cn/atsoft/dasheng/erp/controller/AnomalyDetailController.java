@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class AnomalyDetailController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody AnomalyDetailParam anomalyDetailParam) {
+    public ResponseData update(@RequestBody @Valid AnomalyDetailParam anomalyDetailParam) {
 
         this.anomalyDetailService.update(anomalyDetailParam);
         return ResponseData.success();
@@ -67,7 +69,7 @@ public class AnomalyDetailController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AnomalyDetailParam anomalyDetailParam)  {
+    public ResponseData delete(@RequestBody AnomalyDetailParam anomalyDetailParam) {
         this.anomalyDetailService.delete(anomalyDetailParam);
         return ResponseData.success();
     }
@@ -98,13 +100,11 @@ public class AnomalyDetailController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AnomalyDetailResult> list(@RequestBody(required = false) AnomalyDetailParam anomalyDetailParam) {
-        if(ToolUtil.isEmpty(anomalyDetailParam)){
+        if (ToolUtil.isEmpty(anomalyDetailParam)) {
             anomalyDetailParam = new AnomalyDetailParam();
         }
         return this.anomalyDetailService.findPageBySpec(anomalyDetailParam);
     }
-
-
 
 
 }

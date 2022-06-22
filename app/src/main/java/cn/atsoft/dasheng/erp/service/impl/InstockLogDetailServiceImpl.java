@@ -79,32 +79,32 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
 
         List<InstockLogDetailResult> results = new ArrayList<>();
         List<InstockLogDetailResult> allList = this.baseMapper.customList(param);
-        Map<String, List<InstockLogDetailResult>> map = new HashMap<>();
-
-        for (InstockLogDetailResult result : allList) {
-            if (ToolUtil.isEmpty(result.getBrandId())) {
-                result.setBrandId(0L);
-            }
-            List<InstockLogDetailResult> detailResults = map.get(result.getSkuId() + result.getBrandId() + result.getCustomerId()+result.getType());
-            if (ToolUtil.isEmpty(detailResults)) {
-                detailResults = new ArrayList<>();
-            }
-            detailResults.add(result);
-            map.put(result.getSkuId() + result.getBrandId() + result.getCustomerId()+result.getType(), detailResults);
-        }
-
-        for (String key : map.keySet()) {
-            List<InstockLogDetailResult> logDetailResults = map.get(key);
-            long number = 0L;
-            for (InstockLogDetailResult logDetailResult : logDetailResults) {
-                number = number + logDetailResult.getNumber();
-            }
-            InstockLogDetailResult instockLogDetailResult = logDetailResults.get(0);
-            instockLogDetailResult.setNumber(number);
-            results.add(instockLogDetailResult);
-        }
-        format(results);
-        return results;
+//        Map<String, List<InstockLogDetailResult>> map = new HashMap<>();
+//
+//        for (InstockLogDetailResult result : allList) {
+//            if (ToolUtil.isEmpty(result.getBrandId())) {
+//                result.setBrandId(0L);
+//            }
+//            List<InstockLogDetailResult> detailResults = map.get(result.getSkuId() + result.getBrandId() + result.getCustomerId()+result.getType());
+//            if (ToolUtil.isEmpty(detailResults)) {
+//                detailResults = new ArrayList<>();
+//            }
+//            detailResults.add(result);
+//            map.put(result.getSkuId() + result.getBrandId() + result.getCustomerId()+result.getType(), detailResults);
+//        }
+//
+//        for (String key : map.keySet()) {
+//            List<InstockLogDetailResult> logDetailResults = map.get(key);
+//            long number = 0L;
+//            for (InstockLogDetailResult logDetailResult : logDetailResults) {
+//                number = number + logDetailResult.getNumber();
+//            }
+//            InstockLogDetailResult instockLogDetailResult = logDetailResults.get(0);
+//            instockLogDetailResult.setNumber(number);
+//            results.add(instockLogDetailResult);
+//        }
+        format(allList);
+        return allList;
     }
 
 

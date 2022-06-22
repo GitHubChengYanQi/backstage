@@ -1,9 +1,7 @@
-package cn.atsoft.dasheng.inventory.wrapper;
+package cn.atsoft.dasheng.erp.wrapper;
 
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
-import cn.hutool.core.convert.Convert;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

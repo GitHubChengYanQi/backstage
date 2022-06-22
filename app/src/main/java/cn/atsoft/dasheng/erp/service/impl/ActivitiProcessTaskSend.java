@@ -170,6 +170,9 @@ public class ActivitiProcessTaskSend {
                 purchaseAskService.complateAsk(taskId, loginUserId);
                 this.completeSend(type, aboutSend);
                 break;
+            case status:
+                auditMessageSend.statusSend(taskId,type ,users,url, createName);
+                break;
         }
 
     }
@@ -242,7 +245,8 @@ public class ActivitiProcessTaskSend {
         User byId = userService.getById(task.getCreateUser());
         Map<String, String> map = new HashMap<>();
         map.put("taskId", taskId.toString());
-//        map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
+        map.put("type",task.getType());
+        map.put("formId",task.getFormId().toString());
 //        map.put("coding", qualityTask.getCoding());
         map.put("byIdName", byId.getName());
         String url = this.changeUrl(type, map, task);//组装url
@@ -256,6 +260,9 @@ public class ActivitiProcessTaskSend {
             case audit:
             case send:
                 url = url + "/#/Receipts/ReceiptsDetail?" + "id=" + map.get("taskId");
+                break;
+            case status:
+                url = url + "/#/Receipts/ReceiptsDetail?" +"type="+map.get("type")+"&formId="+ map.get("formId");
                 break;
 //                case quality_perform:
 //                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");

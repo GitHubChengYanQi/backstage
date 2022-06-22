@@ -1,31 +1,25 @@
-package cn.atsoft.dasheng.inventory.controller;
+package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.inventory.entity.Inventory;
-import cn.atsoft.dasheng.inventory.entity.InventoryDetail;
-import cn.atsoft.dasheng.inventory.model.params.InventoryParam;
-import cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult;
-import cn.atsoft.dasheng.inventory.model.result.InventoryResult;
-import cn.atsoft.dasheng.inventory.pojo.InventoryRequest;
-import cn.atsoft.dasheng.inventory.service.InventoryService;
+import cn.atsoft.dasheng.erp.entity.Inventory;
+import cn.atsoft.dasheng.erp.model.params.InventoryParam;
+import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
+import cn.atsoft.dasheng.erp.model.result.InventoryResult;
+import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
+import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
-import cn.hutool.core.convert.Convert;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -39,7 +33,7 @@ import java.util.Map;
 @Api(tags = "盘点任务主表")
 public class InventoryController extends BaseController {
     @Autowired
-    private OrCodeBindService bindService;
+    private OrCodeBindService bindService; 
 
     @Autowired
     private InventoryService inventoryService;

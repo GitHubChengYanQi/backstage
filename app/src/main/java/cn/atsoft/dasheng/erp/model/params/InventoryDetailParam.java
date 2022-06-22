@@ -1,15 +1,14 @@
-package cn.atsoft.dasheng.inventory.model.result;
+package cn.atsoft.dasheng.erp.model.params;
 
-import cn.atsoft.dasheng.erp.model.result.InkindResult;
-import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
-import java.util.Date;
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,62 +21,63 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InventoryDetailResult implements Serializable {
+public class InventoryDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
     private Long skuId;
 
-    private String type;
+    private Long storeHouseId;
 
-    private Object object;
+    private Long positionId;
+
+    private Long qrcodeId;
+
+    private Long number;
     /**
      * 盘点任务详情id
      */
-    @JSONField(serialize = false)
     @ApiModelProperty("盘点任务详情id")
     private Long detailId;
 
-    /**
-     * 主表 Id
-     */
-    @JSONField(serialize = false)
-    @ApiModelProperty("主表盘点任务id")
-    private Long inventoryId;
 
-    @JSONField(serialize = false)
     private Integer status;
     /**
      * 对应实物id
      */
-    @JSONField(serialize = false)
     @ApiModelProperty("对应实物id")
     private Long inkindId;
+    /**
+     * 主表 Id
+     */
+    @ApiModelProperty("主表盘点任务id")
+    private Long inventoryId;
 
-    @JSONField(serialize = false)
+
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
-    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
-    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
-    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 部门id
      */
-    @JSONField(serialize = false)
     @ApiModelProperty("部门id")
     private Long deptId;
 
-    @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

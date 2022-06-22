@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
@@ -11,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -24,6 +26,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,35 +75,17 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     }
 
     @Override
+    @Transactional
     public void update(AnomalyDetailParam param) {
-
-
-        AnomalyDetail oldEntity = getOldEntity(param);
+         AnomalyDetail oldEntity = getOldEntity(param);
         AnomalyDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
             pushPeople(param.getUserId(), oldEntity.getAnomalyId());
         }
-
         this.updateById(newEntity);
-        /**
-         * 添加异常记录
-         */
-        if (newEntity.getStauts() == -1) {
-            Inkind inkind = inkindService.getById(newEntity.getInkindId());
-            Anomaly anomaly = anomalyService.getById(newEntity.getAnomalyId());
-
-            InstockLogDetail instockLogDetail = new InstockLogDetail();
-            instockLogDetail.setInstockOrderId(anomaly.getFormId());
-            instockLogDetail.setSkuId(inkind.getSkuId());
-            instockLogDetail.setBrandId(inkind.getBrandId());
-            instockLogDetail.setCustomerId(inkind.getCustomerId());
-            instockLogDetail.setNumber(newEntity.getNumber());
-            instockLogDetail.setType("Error");
-            instockLogDetail.setInkindId(inkind.getInkindId());
-            instockLogDetailService.save(instockLogDetail);
-        }
     }
+
 
     /**
      * 转交人处理
@@ -108,6 +93,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
      * @param userId
      * @param id
      */
+    @Override
     public void pushPeople(Long userId, Long id) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setDescription("入库异常 转交处理");

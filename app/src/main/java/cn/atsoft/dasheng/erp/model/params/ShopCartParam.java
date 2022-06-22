@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class ShopCartParam implements Serializable, BaseValidatingParam {
      * 类型
      */
     @ApiModelProperty("类型")
+    @NotNull(message = "请输入类型")
     private String type;
 
     @ApiModelProperty("")

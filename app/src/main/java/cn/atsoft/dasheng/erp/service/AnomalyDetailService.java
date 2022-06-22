@@ -42,6 +42,8 @@ public interface AnomalyDetailService extends IService<AnomalyDetail> {
      */
     void update(AnomalyDetailParam param);
 
+    void pushPeople(Long userId, Long id);
+
     /**
      * 查询单条数据，Specification模式
      *
