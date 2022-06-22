@@ -173,8 +173,8 @@ public class WxCpSendTemplate {
                 message.setType(markDownTemplate.getType());
                 message.setUserId(userId);
                 message.setSort(0L);
-                message.setSourceId(getSourceId());
-                message.setSource(getSource());
+                message.setSourceId(markDownTemplate.getSourceId());
+                message.setSource(markDownTemplate.getSource());
                 message.setUrl(markDownTemplate.getUrl());
                 messageEntity.setMessage(message);
                 logger.info("铃铛发送"+messageEntity.getCpData().getDescription());

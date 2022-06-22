@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -47,30 +48,36 @@ public class BrandResult implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false )
     private Date createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false )
     private Date updateTime;
 
     /**
      * 创建用户
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false )
     private Long createUser;
 
     /**
      * 修改用户
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false )
     private Long updateUser;
+    @JSONField(serialize = false )
     private Long deptId;
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false )
     private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

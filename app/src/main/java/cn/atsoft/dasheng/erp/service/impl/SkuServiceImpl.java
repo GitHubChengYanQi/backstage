@@ -32,6 +32,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.query.service.QueryLogService;
@@ -125,6 +126,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private CustomerService customerService;
     @Autowired
     private QueryLogService queryLogService;
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
 
 
     @Transactional
@@ -933,6 +936,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<Long> loopPositionIds = positionsService.getLoopPositionIds(param.getStorehousePositionsId());
             param.setStorehousePositionsIds(loopPositionIds);
         }
+
         /**
          * 查询这个物料的bom
          */
@@ -1393,6 +1397,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 库存数
          */
         List<StockDetails> stockDetailsList = stockDetailsService.query().select("sku_id, sum(number) as num").eq("display", 1).groupBy("sku_id").list();
+        /**
+         * 查询已占用库存数
+         */
+        List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
+        List<StockDetails> totalLockDetail = new ArrayList<>();
+
+
+        lockStockDetail.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                    }}).ifPresent(totalLockDetail::add);
+                }
+        );
 
         for (SkuResult skuResult : param) {
 
@@ -1419,14 +1438,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             //图片
 
-//            List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",").stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
             List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<String> imageUrls = new ArrayList<>();
             for (Long imageid : imageids) {
                 imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
             }
             skuResult.setImgUrls(imageUrls);
-
+            for (StockDetails stockDetails : totalLockDetail) {
+                if (stockDetails.getSkuId().equals(skuResult.getSkuId())){
+                    skuResult.setLockStockDetailNumber(Math.toIntExact(stockDetails.getNumber()));
+                }
+            }
 
             /**
              * 预购数量

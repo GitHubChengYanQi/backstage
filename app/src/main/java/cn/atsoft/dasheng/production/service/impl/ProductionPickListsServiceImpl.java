@@ -275,39 +275,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.findListBySpec(new ProductionPickListsDetailParam() {{
             setStatus(0);
         }});
-        List<Long> skuIds = new ArrayList<>();
-        for (ProductionPickListsDetailResult detailResult : detailResults) {
-            skuIds.add(detailResult.getSkuId());
-        }
-//        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
-        List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
-        for (ProductionPickListsDetailResult detailResult : detailResults) {
-            for (SkuSimpleResult skuResult : skuSimpleResults) {
-                if (skuResult.getSkuId().equals(detailResult.getSkuId())) {
-                    detailResult.setSkuResult(skuResult);
-                    break;
-                }
-            }
-        }
+
+
         List<Long> shipSetpIds = new ArrayList<>();
-        List<ProductionTaskResult> productionTaskResults = productionTaskIds.size() == 0 ? new ArrayList<>() : productionTaskService.resultsByIds(productionTaskIds);
-        for (ProductionTaskResult productionTaskResult : productionTaskResults) {
-            shipSetpIds.add(productionTaskResult.getShipSetpId());
-        }
+
         List<ShipSetpResult> shipSetpResults = shipSetpIds.size() == 0 ? new ArrayList<>() : shipSetpService.getResultsByids(shipSetpIds);
 
 
         for (ProductionPickListsResult result : results) {
-            for (ProductionTaskResult productionTaskResult : productionTaskResults) {
-                if (ToolUtil.isNotEmpty(result.getSource()) && result.getSource().equals("productionTask") && result.getSourceId().equals(productionTaskResult.getProductionTaskId())) {
-                    for (ShipSetpResult shipSetpResult : shipSetpResults) {
-                        if (productionTaskResult.getShipSetpId().equals(shipSetpResult.getShipSetpId())) {
-                            productionTaskResult.setShipSetpResult(shipSetpResult);
-                        }
-                    }
-                    result.setProductionTaskResult(productionTaskResult);
-                }
-            }
+
 
             for (UserResult userResultsById : userResultsByIds) {
                 if (result.getUserId().equals(userResultsById.getUserId())) {
