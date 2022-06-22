@@ -193,6 +193,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     public void storehousePositionsFormat(StorehousePositionsResult storehousePositionsResult) {
         Storehouse storehouse = storehouseService.query().eq("storehouse_id", storehousePositionsResult.getStorehouseId()).one();
+        Integer count = storehousePositionsService.query().eq("pid", storehousePositionsResult.getStorehousePositionsId()).count();
+        if (ToolUtil.isNotEmpty(count) && count > 0) {
+            storehousePositionsResult.setLowestLevel(false);
+        } else {
+            storehousePositionsResult.setLowestLevel(true);
+        }
         Sku sku = skuService.query().in("sku_id", storehousePositionsResult.getSkuId()).one();
 
         if (ToolUtil.isNotEmpty(storehouse)) {
@@ -675,24 +681,24 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isEmpty(inkindId)) {
             return new HashMap<>();
         }
-        StockDetails stockDetails = stockDetailsService.getOne(new QueryWrapper<StockDetails>() {{
+        StockDetails stockDetails = ToolUtil.isEmpty(inkindId) ? new StockDetails() : stockDetailsService.getOne(new QueryWrapper<StockDetails>() {{
             eq("inkind_id", inkindId);
         }});
 
-        Brand brand = ToolUtil.isEmpty(stockDetails.getBrandId()) ? new Brand() : brandService.getById(stockDetails.getBrandId());
-        Customer customer = ToolUtil.isEmpty(stockDetails.getCustomerId()) ? new Customer() : customerService.getById(stockDetails.getCustomerId());
+
+        Inkind inkind = inkindService.getById(inkindId);
+        InkindResult inkindResult = new InkindResult();
+        ToolUtil.copyProperties(inkind, inkindResult);
+
+        Brand brand = ToolUtil.isEmpty(inkindResult.getBrandId()) ? new Brand() : brandService.getById(inkindResult.getBrandId());
+        Customer customer = ToolUtil.isEmpty(inkindResult.getCustomerId()) ? new Customer() : customerService.getById(inkindResult.getCustomerId());
 
 
+        Map<String, Object> result = new HashMap<>();
         /**
          * 格式化sku 返回数据
          */
         if (ToolUtil.isNotEmpty(stockDetails)) {
-
-
-            Inkind inkind = inkindService.getById(stockDetails.getInkindId());
-            InkindResult inkindResult = new InkindResult();
-            ToolUtil.copyProperties(inkind, inkindResult);
-
 
             Stock stock = stockService.getById(stockDetails.getStockId());
             StockResult stockResult = new StockResult();
@@ -709,17 +715,17 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
             ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
 
-            Map<String, Object> result = new HashMap<>();
+
             result.put("stock", stockResult);
             result.put("storehouse", storehouseResult);
             result.put("stockDetails", stockDetails);
             result.put("storehousePositions", storehousePositionsResult);
-            result.put("inKindResult", inkindResult);
-            result.put("brand", brand);
-            result.put("customer", customer);
-            return result;
+
         }
-        return null;
+        result.put("inKindResult", inkindResult);
+        result.put("brand", brand);
+        result.put("customer", customer);
+        return result;
     }
 
     public Object orcodeBackObj(Long id) {

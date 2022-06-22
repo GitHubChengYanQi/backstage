@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -28,7 +29,9 @@ public class ShopCartParam implements Serializable, BaseValidatingParam {
 
     private List<ShopCartParam> shopCartParams;
 
-    private Long storehousePositionsId;
+    private List<PositionNum> positionNums;
+
+    private String storehousePositionsId;
 
     private Long sourceId;
 

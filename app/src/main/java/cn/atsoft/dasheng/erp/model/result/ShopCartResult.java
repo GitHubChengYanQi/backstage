@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,15 +32,17 @@ public class ShopCartResult implements Serializable {
 
     private BrandResult brandResult;
 
-    private Long storehousePositionsId;
+    private String storehousePositionsId;
 
-    private StorehousePositionsResult storehousePositions;
+    private List<StorehousePositionsResult> storehousePositions;
 
     private Customer customer;
 
     private Long formId;
 
     private Long errorNumber;
+
+    private List<PositionNum> positionNums;
 
 
     private Long otherNumber;
