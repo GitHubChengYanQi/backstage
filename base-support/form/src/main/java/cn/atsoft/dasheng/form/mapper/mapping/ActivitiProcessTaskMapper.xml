@@ -92,6 +92,9 @@
         <if test="paramCondition.status != null and paramCondition.status != ''">
             and status like CONCAT('%',#{paramCondition.status},'%')
         </if>
+        <if test="paramCondition.createUser != null ">
+            and create_user = #{paramCondition.createUser}
+        </if>
         <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
             and process_task_id in
             <foreach collection="paramCondition.taskIds" index="index" item="state" separator="," close=")" open="(">

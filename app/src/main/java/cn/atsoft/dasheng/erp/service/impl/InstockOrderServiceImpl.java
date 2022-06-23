@@ -668,7 +668,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> inkindIds = new ArrayList<>();
 
         for (InstockListParam listParam : param.getListParams()) {
-
             listParam.setInstockOrderId(param.getInstockOrderId());
             if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
                 handle(listParam, listParam.getInkindIds());
@@ -699,10 +698,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             instockLogDetail.setType("normal");
             instockLogDetail.setBrandId(listParam.getBrandId());
             instockLogDetail.setCustomerId(listParam.getCustomerId());
-            instockLogDetail.setStorehousePositionsId(param.getStorehousePositionsId());
+            instockLogDetail.setStorehousePositionsId(listParam.getStorehousePositionsId());
             instockLogDetail.setNumber(listParam.getNumber());
             instockLogDetailService.save(instockLogDetail);
-
         }
         /**
          * 添加动态
@@ -731,7 +729,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);
 //                setFormId(param.getInstockOrderId());
-//                setForm("instock");
+//                setForm("INSTOCK");
 //                setMaxTimes(2);
 //                setTimes(1);
 //                setActionId(param.getActionId());
@@ -909,7 +907,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          * 入库操作
          */
         List<StockDetails> stockDetailsList = new ArrayList<>();
-
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
 
         for (InStockByOrderParam.SkuParam skuParam : skuParams) {
