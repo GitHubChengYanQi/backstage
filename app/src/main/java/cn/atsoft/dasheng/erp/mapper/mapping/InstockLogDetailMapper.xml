@@ -9,18 +9,9 @@
         <result column="inkind_id" property="inkindId"/>
         <result column="sku_id" property="skuId"/>
         <result column="brand_id" property="brandId"/>
-        <result column="item_id" property="itemId"/>
         <result column="number" property="number"/>
-        <result column="instock_number" property="instockNumber"/>
         <result column="instock_order_id" property="instockOrderId"/>
-        <result column="lot_number" property="lotNumber"/>
-        <result column="effective_date" property="effectiveDate"/>
-        <result column="manufacture_date" property="manufactureDate"/>
-        <result column="serial_number" property="serialNumber"/>
-        <result column="received_date" property="receivedDate"/>
         <result column="storehouse_id" property="storehouseId"/>
-        <result column="selling_price" property="sellingPrice"/>
-        <result column="cost_price" property="costPrice"/>
         <result column="storehouse_positions_id" property="storehousePositionsId"/>
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
@@ -30,13 +21,16 @@
         <result column="deptId" property="deptId"/>
         <result column="customer_id" property="customerId"/>
         <result column="type" property="type"/>
+        <result column="source" property="type"/>
+        <result column="source_id" property="type"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">type
     AS "type", customer_id AS "customerId",
         instock_log_detail_id
-        AS "instockLogDetailId", instock_log_id AS "instockLogId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", item_id AS "itemId", number AS "number", instock_number AS "instockNumber", instock_order_id AS "instockOrderId", lot_number AS "lotNumber", effective_date AS "effectiveDate", manufacture_date AS "manufactureDate", serial_number AS "serialNumber", received_date AS "receivedDate", storehouse_id AS "storehouseId", selling_price AS "sellingPrice", cost_price AS "costPrice", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "instockLogDetailId", instock_log_id AS "instockLogId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number",  instock_order_id AS "instockOrderId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 

@@ -71,6 +71,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Autowired
     private ActivitiAuditService activitiAuditService;
+    @Autowired
+    private ProductionPickListsService productionPickListsService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -347,6 +349,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 if (datum.getType().equals("OUTSTOCK") && datum.getFormId().equals(productionPickListsResult.getPickListsId())) {
                     String statusName = statusMap.get(productionPickListsResult.getStatus());
                     productionPickListsResult.setStatusName(statusName);
+                    productionPickListsService.format(new ArrayList<ProductionPickListsResult>(){{
+                        add(productionPickListsResult);
+                    }});
                     datum.setReceipts(productionPickListsResult);
                     break;
                 }

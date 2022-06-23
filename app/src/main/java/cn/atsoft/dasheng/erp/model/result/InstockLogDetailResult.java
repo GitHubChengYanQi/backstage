@@ -64,22 +64,11 @@ public class InstockLogDetailResult implements Serializable {
     private Long brandId;
 
     /**
-     * 产品id
-     */
-    @ApiModelProperty("产品id")
-    private Long itemId;
-
-    /**
      * 数量
      */
     @ApiModelProperty("数量")
     private Long number;
 
-    /**
-     * 入库数量
-     */
-    @ApiModelProperty("入库数量")
-    private Long instockNumber;
 
     /**
      * 入库单id
@@ -88,52 +77,11 @@ public class InstockLogDetailResult implements Serializable {
     private Long instockOrderId;
 
     /**
-     * 批号
-     */
-    @ApiModelProperty("批号")
-    private String lotNumber;
-
-    /**
-     * 有效日期
-     */
-    @ApiModelProperty("有效日期")
-    private Date effectiveDate;
-
-    /**
-     * 生产日期
-     */
-    @ApiModelProperty("生产日期")
-    private Date manufactureDate;
-
-    /**
-     * 序列号
-     */
-    @ApiModelProperty("序列号")
-    private String serialNumber;
-
-    /**
-     * 到货日期
-     */
-    @ApiModelProperty("到货日期")
-    private Date receivedDate;
-
-    /**
      * 地点id
      */
     @ApiModelProperty("地点id")
     private Long storehouseId;
 
-    /**
-     * 出售价格
-     */
-    @ApiModelProperty("出售价格")
-    private Integer sellingPrice;
-
-    /**
-     * 成本价格
-     */
-    @ApiModelProperty("成本价格")
-    private Integer costPrice;
 
     /**
      * 仓库库位id
