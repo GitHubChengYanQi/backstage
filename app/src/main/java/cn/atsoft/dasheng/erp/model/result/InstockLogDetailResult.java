@@ -37,6 +37,8 @@ public class InstockLogDetailResult implements Serializable {
 
     private BrandResult brandResult;
 
+    private List<StorehousePositionsResult> positionsResults;
+
     private StorehousePositionsResult storehousePositionsResult;
 
     @ApiModelProperty("")

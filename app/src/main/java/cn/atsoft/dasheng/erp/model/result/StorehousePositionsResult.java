@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
@@ -30,6 +31,8 @@ import java.util.List;
 public class StorehousePositionsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private User user;
 
     private Long brandId;
 

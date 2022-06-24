@@ -77,7 +77,7 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
     @Override
     public List<InstockLogDetailResult> history(InstockLogDetailParam param) {
 
-        List<InstockLogDetailResult> results = new ArrayList<>();
+//        List<InstockLogDetailResult> results = new ArrayList<>();
         List<InstockLogDetailResult> allList = this.baseMapper.customList(param);
 //        Map<String, List<InstockLogDetailResult>> map = new HashMap<>();
 //
@@ -104,7 +104,46 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
 //            results.add(instockLogDetailResult);
 //        }
         format(allList);
-        return allList;
+
+        Map<String, InstockLogDetailResult> map = new HashMap<>();
+
+        for (InstockLogDetailResult instockLogDetailResult : allList) {
+            if (ToolUtil.isEmpty(instockLogDetailResult.getBrandId())) {
+                instockLogDetailResult.setBrandId(0L);
+            }
+        }
+
+        for (InstockLogDetailResult instockLogDetailResult : allList) {
+                    map.put(instockLogDetailResult.getSkuId()
+                    + instockLogDetailResult.getBrandId()
+                    + instockLogDetailResult.getCustomerId()
+                    + instockLogDetailResult.getType(), instockLogDetailResult);
+        }
+
+        List<InstockLogDetailResult> results = new ArrayList<>();
+        for (String key : map.keySet()) {
+            InstockLogDetailResult instockLogDetailResult = map.get(key);
+            List<StorehousePositionsResult> positionsResults = new ArrayList<>();
+            for (InstockLogDetailResult logDetailResult : allList) {
+                if (logDetailResult.getSkuId().equals(instockLogDetailResult.getSkuId()) &&
+                        logDetailResult.getBrandId().equals(instockLogDetailResult.getBrandId()) &&
+                        logDetailResult.getCustomerId().equals(instockLogDetailResult.getCustomerId()) &&
+                        logDetailResult.getType().equals(instockLogDetailResult.getType())) {
+                    StorehousePositionsResult storehousePositionsResult = logDetailResult.getStorehousePositionsResult();
+                    if (ToolUtil.isEmpty(storehousePositionsResult)) {
+                        storehousePositionsResult = new StorehousePositionsResult();
+                    }
+                    storehousePositionsResult.setCreateTime(logDetailResult.getCreateTime());
+                    storehousePositionsResult.setUser(logDetailResult.getUser());
+                    storehousePositionsResult.setNum(Math.toIntExact(logDetailResult.getNumber()));
+                    positionsResults.add(logDetailResult.getStorehousePositionsResult());
+                }
+            }
+            instockLogDetailResult.setPositionsResults(positionsResults);
+            results.add(instockLogDetailResult);
+        }
+
+        return results;
     }
 
 

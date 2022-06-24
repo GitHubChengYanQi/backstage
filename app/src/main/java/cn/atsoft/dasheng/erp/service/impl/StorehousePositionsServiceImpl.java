@@ -461,10 +461,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
 
 
-
+        for (StockDetails stockDetail : stockDetails) {
             for (StorehousePositionsResult positionsResult : positionsResults) {
-                for (StockDetails stockDetail : stockDetails) {
-                    if (positionsResult.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())) {
+                if (positionsResult.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())) {
                         //数量
                         int positionNumber = getPositionNumber(stockDetails, stockDetail.getStorehousePositionsId(), stockDetail.getBrandId());
                         positionsResult.setNum(positionNumber);
@@ -472,12 +471,11 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                         List<StorehousePositionsResult> positionsResultList = positionMap.get(stockDetail.getBrandId());
                         if (ToolUtil.isEmpty(positionsResultList)) {
                             positionsResultList = new ArrayList<>();
-                            positionsResultList.add(positionsResult);
                         }
                         if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
                             positionsResultList.add(positionsResult);
                         }
-                        positionMap.put(stockDetail.getBrandId(), positionsResultList);
+                    positionMap.put(stockDetail.getBrandId(), positionsResultList);
                     }
                 }
             }

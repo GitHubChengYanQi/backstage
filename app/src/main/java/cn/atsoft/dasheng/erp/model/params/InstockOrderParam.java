@@ -54,6 +54,8 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private List<Long> userIds;
 
     private String module;
+
+    private String shopCardType;
     /**
      * 库位id
      */
