@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
@@ -50,6 +51,10 @@ public interface StorehousePositionsService extends IService<StorehousePositions
     void update(StorehousePositionsParam param);
 
     List<StorehousePositionsResult> selectBySku(StorehousePositionsParam param);
+
+    Object selectBySku(Long skuId);
+
+    List<BrandResult> selectByBrand(Long skuId);
 
     StorehousePositionsResult positionsResultById(Long codeId);
 

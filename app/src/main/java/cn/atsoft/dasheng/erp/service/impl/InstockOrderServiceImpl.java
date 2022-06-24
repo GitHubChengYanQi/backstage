@@ -347,6 +347,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              */
             RemarksParam remarksParam = new RemarksParam();
             remarksParam.setTaskId(taskId);
+            remarksParam.setType("dynamic");
             remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "发起了入库申请");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
                 setOperationType(OperationType.ADD);
@@ -708,6 +709,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         Long taskId = activitiProcessTaskService.getTaskIdByFormId(param.getInstockOrderId());
         RemarksParam remarksParam = new RemarksParam();
         remarksParam.setTaskId(taskId);
+        remarksParam.setType("dynamic");
         remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
         remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "操作了入库");
         messageProducer.remarksServiceDo(new RemarksEntity() {{
@@ -736,6 +738,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //            }});
 
             remarksParam.setContent("入库完成");
+            remarksParam.setType("dynamic");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
                 setOperationType(OperationType.ADD);
                 setRemarksParam(remarksParam);

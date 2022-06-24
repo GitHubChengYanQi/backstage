@@ -31,13 +31,18 @@ public class StorehousePositionsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long brandId;
+
     private StorehouseResult storehouseResult;
+
     @JSONField(serialize = false)
     private StorehousePositionsResult storehousePositionsResult;
 
     private StorehousePositionsResult supper;
+
     @JSONField(serialize = false)
     private SkuResult skuResult;
+
     @JSONField(serialize = false)
     private Integer skuNumber;
 
