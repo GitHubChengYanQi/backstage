@@ -193,7 +193,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             auditService.power(activitiProcess);//检查创建权限
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             String name = LoginContextHolder.getContext().getUser().getName();
-            activitiProcessTaskParam.setTaskName(name + "出库申请 (" + entity.getCoding() + ")");
+            activitiProcessTaskParam.setTaskName(name + "的出库申请 ");
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getPickListsId());
             activitiProcessTaskParam.setType("OUTSTOCK");
@@ -639,10 +639,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          */
         List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).list();
         for (ProductionPickListsCartParam pickListsCartParam : param.getCartsParams()) {
-            int num = pickListsCartParam.getNumber();
+
             for (Long brandId : pickListsCartParam.getBrandIds()) {
+                /**
+                 * 判读申请中没有指定品牌的数据
+                 * 将申请单详情中不包含的品牌拿出来
+                 */
                 for (ProductionPickListsCart listsCart : listsCarts) {
-                    if (num > 0) {
+                    if (pickListsCartParam.getNumber() > 0) {
                         /**
                          * 处理出库数量对应购物车
                          * 如部分出库 数量与购物车不符 会拆分购物车
@@ -650,11 +654,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                          * 创建新购物车记录  存放出库数量
                          */
                         if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(brandId) && listsCart.getStatus() == 0) {
-                            int lastNum = num;
-                            num -= listsCart.getNumber();
-                            if (num >= 0) {
+                            int lastNum = pickListsCartParam.getNumber();
+//                            int lastNum = num;
+//                            num -= listsCart.getNumber();
+                            if (pickListsCartParam.getNumber() >= 0) {
                                 listsCart.setDisplay(0);
                                 listsCart.setStatus(99);
+                                pickListsCartParam.setNumber(pickListsCartParam.getNumber() - listsCart.getNumber());
                                 for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
                                     if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
                                         if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
@@ -667,28 +673,29 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                                         }
                                     }
                                 }
-                            } else if (num < 0) {
-                                listsCart.setNumber(listsCart.getNumber() - lastNum);
-                                ProductionPickListsCart newCart = new ProductionPickListsCart();
-                                ToolUtil.copyProperties(listsCart, newCart);
-                                newCart.setPickListsCart(null);
-                                newCart.setStatus(99);
-                                newCart.setDisplay(0);
-                                newCart.setNumber(lastNum);
-                                newCarts.add(newCart);
-                                for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
-                                    if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
-                                        if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
-                                            pickListsDetail.setReceivedNumber(pickListsDetail.getReceivedNumber() + lastNum);
-                                        } else {
-                                            pickListsDetail.setReceivedNumber(lastNum);
-                                        }
-                                        if (Objects.equals(pickListsDetail.getNumber(), pickListsDetail.getReceivedNumber())) {
-                                            pickListsDetail.setStatus(99);
-                                        }
-                                    }
-                                }
                             }
+//                            else if (num < 0) {
+//                                listsCart.setNumber(listsCart.getNumber() - lastNum);
+//                                ProductionPickListsCart newCart = new ProductionPickListsCart();
+//                                ToolUtil.copyProperties(listsCart, newCart);
+//                                newCart.setPickListsCart(null);
+//                                newCart.setStatus(99);
+//                                newCart.setDisplay(0);
+//                                newCart.setNumber(lastNum);
+//                                newCarts.add(newCart);
+//                                for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+//                                    if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
+//                                        if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
+//                                            pickListsDetail.setReceivedNumber(pickListsDetail.getReceivedNumber() + lastNum);
+//                                        } else {
+//                                            pickListsDetail.setReceivedNumber(lastNum);
+//                                        }
+//                                        if (Objects.equals(pickListsDetail.getNumber(), pickListsDetail.getReceivedNumber())) {
+//                                            pickListsDetail.setStatus(99);
+//                                        }
+//                                    }
+//                                }
+//                            }
                         }
                     }
 
@@ -712,6 +719,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             /**
              * 如果部分领取涉及到拆分购物车 老购物车保留 出库出新购物车
              */
+            List<InstockLogDetail> logDetails = new ArrayList<>();
             for (ProductionPickListsCart listsCart : listsCarts) {
                 if (listsCart.getStatus() == 99 && listsCart.getStorehouseId().equals(stockId)) {
                     OutstockListingParam listingParam = new OutstockListingParam();
@@ -722,10 +730,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     if (ToolUtil.isNotEmpty(listsCart.getBrandId()) || listsCart.getBrandId().equals(0L)) {
                         listingParam.setBrandId(listsCart.getBrandId());
                     }
+                    InstockLogDetail log = new InstockLogDetail();
+                    ToolUtil.copyProperties(listsCarts,log);
+                    log.setSource("pick_lists");
+                    log.setSourceId(listsCart.getPickListsId());
+                    logDetails.add(log);
                     listings.add(listingParam);
                 }
             }
-            List<InstockLogDetail> logDetails = new ArrayList<>();
+
             for (ProductionPickListsCart listsCart : newCarts) {
                 if (listsCart.getStatus() == 99 && listsCart.getStorehouseId().equals(stockId)) {
                     OutstockListingParam listingParam = new OutstockListingParam();
@@ -883,7 +896,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          */
         ActivitiProcessTask task = activitiProcessTaskService.query().eq("type", "OUTSTOCK").eq("form_id", id).one();
         if (ToolUtil.isNotEmpty(task)) {
-            DocumentsAction action = actionService.query().eq("action", OutStockActionEnum.stockPreparation.name()).eq("display", 1).one();
+            DocumentsAction action = actionService.query().eq("action", OutStockActionEnum.o.name()).eq("display", 1).one();
             activitiProcessLogService.checkAction(task.getFormId(), task.getType(), action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
         }
 
