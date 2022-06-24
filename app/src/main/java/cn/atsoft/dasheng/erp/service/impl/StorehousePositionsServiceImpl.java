@@ -446,7 +446,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
 
         Map<Long, Long> brandNumber = new HashMap<>();
-        Map<Long, List<StorehousePositionsResult>> positionMap = new HashMap<>();
+
 
         for (StockDetails stockDetail : stockDetails) {
             if (ToolUtil.isEmpty(stockDetail.getBrandId())) {
@@ -461,25 +461,31 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
 
 
+        Map<Long, List<StorehousePositionsResult>> positionMap = new HashMap<>();
         for (StockDetails stockDetail : stockDetails) {
             for (StorehousePositionsResult positionsResult : positionsResults) {
                 if (positionsResult.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())) {
-                        //数量
-                        int positionNumber = getPositionNumber(stockDetails, stockDetail.getStorehousePositionsId(), stockDetail.getBrandId());
-                        positionsResult.setNum(positionNumber);
 
-                        List<StorehousePositionsResult> positionsResultList = positionMap.get(stockDetail.getBrandId());
-                        if (ToolUtil.isEmpty(positionsResultList)) {
-                            positionsResultList = new ArrayList<>();
-                        }
-                        if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
-                            positionsResultList.add(positionsResult);
-                        }
-                    positionMap.put(stockDetail.getBrandId(), positionsResultList);
+                    List<StorehousePositionsResult> positionsResultList = positionMap.get(stockDetail.getBrandId());
+                    if (ToolUtil.isEmpty(positionsResultList)) {
+                        positionsResultList = new ArrayList<>();
                     }
+                    if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
+                        positionsResultList.add(positionsResult);
+                    }
+                    positionMap.put(stockDetail.getBrandId(), positionsResultList);
                 }
             }
+        }
 
+        for (Long key : positionMap.keySet()) {
+            List<StorehousePositionsResult> positionsResultList = positionMap.get(key);
+            for (StorehousePositionsResult positionsResult : positionsResultList) {
+                int positionNumber = getPositionNumber(stockDetails, positionsResult.getStorehousePositionsId(), key);
+                positionsResult.setNum(positionNumber);
+            }
+
+        }
 
         for (BrandResult brandResult : brandResults) {
             Long num = brandNumber.get(brandResult.getBrandId());
