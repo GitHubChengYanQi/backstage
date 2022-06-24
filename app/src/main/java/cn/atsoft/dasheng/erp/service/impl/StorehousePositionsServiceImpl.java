@@ -439,6 +439,12 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
 
+        Map<Long, StorehousePositionsResult> positionsResultMap = new HashMap<>();
+        for (StorehousePositionsResult positionsResult : positionsResults) {
+            positionsResultMap.put(positionsResult.getStorehousePositionsId(), positionsResult);
+        }
+
+
         brandResults.add(new BrandResult() {{
             setBrandId(0L);
             setBrandName("其他品牌");
@@ -478,24 +484,30 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
         }
 
-        for (Long key : positionMap.keySet()) {
-            List<StorehousePositionsResult> positionsResultList = positionMap.get(key);
-            for (StorehousePositionsResult positionsResult : positionsResultList) {
-                int positionNumber = getPositionNumber(stockDetails, positionsResult.getStorehousePositionsId(), key);
-                positionsResult.setNum(positionNumber);
-            }
-
-        }
 
         for (BrandResult brandResult : brandResults) {
             Long num = brandNumber.get(brandResult.getBrandId());
             if (ToolUtil.isNotEmpty(num)) {
                 brandResult.setNum(Math.toIntExact(num));
             }
-            brandResult.setPositionsResults(positionMap.get(brandResult.getBrandId()));
+//            List<StorehousePositionsResult> positionsResultList = positionMap.get(brandResult.getBrandId());
+//            brandResult.setPositionsResults(positionsResultList);
+            List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
+            for (StockDetails stockDetail : stockDetails) {
+                if (stockDetail.getBrandId().equals(brandResult.getBrandId())) {
+                    StorehousePositionsResult positionsResult = positionsResultMap.get(stockDetail.getStorehousePositionsId());
+                    positionsResult.setNum(getPositionNumber(stockDetails, stockDetail.getStorehousePositionsId(), stockDetail.getBrandId()));
+                    if (positionsResultList.stream().noneMatch(i->i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
+                        positionsResultList.add(positionsResult);
+                    }
+                }
+            }
+            brandResult.setPositionsResults(positionsResultList);
         }
+
         return brandResults;
     }
+
 
     /**
      * 品牌数量
