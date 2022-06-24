@@ -607,7 +607,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
      *
      * @param
      * @param
-     * @param
+     * @param-
      */
     @Override
     public void checkAction(Long id, String formType, Long actionId, Long loginUserId) {
@@ -1022,6 +1022,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
+    public ActivitiStepsResult addLog(Long processId, Long taskId, Integer status) {
+        ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
+        loopAdd(activitiStepsResult, taskId, status);
+
+        viewService.addView(taskId);
+        return activitiStepsResult;
+    }
+
+    @Override
     public ActivitiStepsResult microAddLog(Long processId, Long taskId, Long userId) {
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
         loopAdd(activitiStepsResult, taskId);
@@ -1040,6 +1049,41 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 viewService.addView(taskId);
                 break;
 
+        }
+
+    }
+
+    private void loopAdd(ActivitiStepsResult activitiStepsResult, Long taskId, Integer status) {
+        Long processId = activitiStepsResult.getProcessId();
+
+        /**
+         * insert
+         */
+        ActivitiProcessLog processLog = new ActivitiProcessLog();
+        processLog.setPeocessId(processId);
+        processLog.setTaskId(taskId);
+        processLog.setSetpsId(activitiStepsResult.getSetpsId());
+        processLog.setStatus(status);
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule()) && ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule().getActionStatuses())) {
+            List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
+            if (ToolUtil.isNotEmpty(actionStatuses)) {
+                for (ActionStatus actionStatus : actionStatuses) {
+                    actionStatus.setStatus(0);
+                }
+                processLog.setActionStatus(JSON.toJSONString(actionStatuses));
+            }
+        }
+
+
+        this.save(processLog);
+
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
+            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
+                loopAdd(stepsResult, taskId, status);
+            }
+        }
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
+            loopAdd(activitiStepsResult.getChildNode(), taskId, status);
         }
 
     }

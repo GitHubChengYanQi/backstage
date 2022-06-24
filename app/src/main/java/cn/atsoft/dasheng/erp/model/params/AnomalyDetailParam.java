@@ -9,6 +9,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class AnomalyDetailParam implements Serializable, BaseValidatingParam {
 
 
     @ApiModelProperty("")
+
     private Long anomalyId;
 
     private List<Long> noticeIds;

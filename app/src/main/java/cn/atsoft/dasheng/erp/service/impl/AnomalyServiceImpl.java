@@ -87,6 +87,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private CustomerService customerService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ActivitiAuditService auditService;
+    @Autowired
+    private ActivitiProcessTaskService taskService;
+    @Autowired
+    private RemarksService remarksService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
 
     @Transactional
@@ -250,8 +258,20 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     @Override
     public void dealWithError(AnomalyParam param) {
+
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
+
+        ActivitiProcessTask task = taskService.getByFormId(oldEntity.getOrderId());
+        List<Long> userIds = new ArrayList<>(auditService.getUserIds(task.getProcessTaskId()));
+        userIds.add(param.getCreateUser());
+        boolean power = this.power(userIds);
+
+        if (power) {
+            throw new ServiceException(500, "你没有操作权限");
+        }
+
+
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
@@ -262,8 +282,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             instockListService.updateById(instockList);
         }
 
-
         updateStatus(param.getAnomalyId()); //更新异常状态
+        if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {
+            detailService.pushPeople(oldEntity.getCreateUser(), oldEntity.getAnomalyId());
+        }
     }
 
     /**
@@ -278,6 +300,16 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
     }
 
+
+    private boolean power(List<Long> userIds) {
+        Long userId = LoginContextHolder.getContext().getUserId();
+        for (Long id : userIds) {
+            if (id.equals(userId)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public List<Long> createInkind(AnomalyParam param, AnomalyDetailParam detailParam) {

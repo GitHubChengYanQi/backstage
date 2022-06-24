@@ -428,9 +428,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 stepIds.add(step.getSetpsId());
             }
 
-
             List<ActivitiAuditResult> resultList = auditService.backAudits(stepIds);
-
             for (ActivitiSteps step : steps) {
                 for (ActivitiAuditResult activitiAuditResult : resultList) {
                     if (step.getSetpsId().equals(activitiAuditResult.getSetpsId())) {
@@ -445,7 +443,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                         stepsResults.add(activitiStepsResult);
                     }
                 }
-
             }
         }
         return stepsResults;

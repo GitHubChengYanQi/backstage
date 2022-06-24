@@ -161,10 +161,10 @@ public class taskController extends BaseController {
                 AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
                 taskResult.setReceipts(orderResult);
                 break;
-                case "OUTSTOCK":
-                    ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
+            case "OUTSTOCK":
+                ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
 
-                    taskResult.setReceipts(pickListsRestult);
+                taskResult.setReceipts(pickListsRestult);
 //                    taskService.format(new ArrayList<ActivitiProcessTaskResult>(){{
 //                        add(taskResult);
 //                    }});
@@ -201,7 +201,7 @@ public class taskController extends BaseController {
                  * 取节点规则
                  */
                 ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
-                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) &&  activitiProcessLogService.checkUser(activitiAudit.getRule(),taskId)) {
+                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) && activitiProcessLogService.checkUser(activitiAudit.getRule(), taskId)) {
                     taskResult.setPermissions(true);
                     break;
                 }

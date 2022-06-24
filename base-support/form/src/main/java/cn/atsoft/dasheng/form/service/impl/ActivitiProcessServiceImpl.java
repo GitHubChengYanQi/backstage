@@ -151,23 +151,22 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
             return t;
         }
 
+
         if (t && !stepsResult.getAuditType().equals("route")
                 && !stepsResult.getAuditType().equals("branch")
-                && !stepsResult.getAuditType().equals("start")) {
-
-            for (AuditRule.Rule rule : stepsResult.getAuditRule().getRules()) {
-                if (rule.getType().equals(DataType.AppointUsers) && !rule.getType().equals(DataType.DeptPositions) && !rule.getType().equals(DataType.AllPeople)) {
-                    for (AppointUser appointUser : rule.getAppointUsers()) {
-                        if (!appointUser.getKey().equals(LoginContextHolder.getContext().getUserId().toString())) {
-                            t = false;
-                            return t;
-                        }
+                && !stepsResult.getAuditType().equals("start")
+        ) {
+            if (!stepsResult.getType().getType().equals("2")) {    //跳过推送
+                for (AuditRule.Rule rule : stepsResult.getAuditRule().getRules()) {
+                    if (rule.getType().equals(DataType.AppointUsers) && !rule.getType().equals(DataType.DeptPositions) && !rule.getType().equals(DataType.AllPeople)) {
+                        t = judgePerson(rule.getAppointUsers());
+                    } else {
+                        t = false;
+                        return t;
                     }
-                } else {
-                    t = false;
-                    return t;
                 }
             }
+
         }
         if (t) {
             if (ToolUtil.isNotEmpty(stepsResult.getChildNode())) {
@@ -182,6 +181,23 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         return t;
     }
 
+    /**
+     * 规则是否含有当前人
+     *
+     * @param appointUsers
+     * @return
+     */
+    private boolean judgePerson(List<AppointUser> appointUsers) {
+        boolean t = false;
+
+        Long userId = LoginContextHolder.getContext().getUserId();
+        for (AppointUser appointUser : appointUsers) {
+            if (appointUser.getKey().equals(userId.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public ActivitiProcessResult findBySpec(ActivitiProcessParam param) {

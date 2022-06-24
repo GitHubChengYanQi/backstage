@@ -63,6 +63,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -153,6 +154,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private AnomalyService anomalyService;
     @Autowired
     private ShopCartService shopCartService;
+
 
     @Override
     @Transactional
@@ -271,78 +273,93 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder", entity.getInstockOrderId(), entity.getSource(), entity.getSourceId()));
             this.updateById(entity);
 
+            //发起审批流程
+            if (ToolUtil.isEmpty(param.getModule())) {
+                param.setModule("");
+            }
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).one();
+
+            if (ToolUtil.isEmpty(activitiProcess)) {
+                throw new ServiceException(500, "请先设置入库审批流程");
+            }
+
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "的入库申请");
+            activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
+            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
+            activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
+            if (param.getDirectInStock()) {
+                activitiProcessTaskParam.setStatus(99);
+            }
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("processTask");
+            wxCpSendTemplate.setSourceId(taskId);
+            //添加log
+            if (param.getDirectInStock()) {
+                messageProducer.auditMessageDo(new AuditEntity() {{
+                    setMessageType(AuditMessageType.COMPLETE);
+                    setActivitiProcess(activitiProcess);
+                    setTaskId(taskId);
+                    setTimes(0);
+                    setMaxTimes(1);
+                }});
+            } else {   // 直接成功
+                messageProducer.auditMessageDo(new AuditEntity() {{
+                    setMessageType(AuditMessageType.CREATE_TASK);
+                    setActivitiProcess(activitiProcess);
+                    setTaskId(taskId);
+                    setTimes(0);
+                    setMaxTimes(1);
+                }});
+            }
+
+
+            /**
+             * 清空购物车
+             */
+            ShopCart shopCart = new ShopCart();
+            shopCart.setDisplay(0);
+            shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+                eq("type", "inStock");
+                eq("create_user", LoginContextHolder.getContext().getUserId());
+            }});
+
 
             /**
              * 判断是否直接入库
              * 不直接走审批
              *
              */
-            if (!param.getDirectInStock()) {
+            if (param.getDirectInStock()) {
+                param.setInstockOrderId(entity.getInstockOrderId());
+                inStock(param);//直接入库
+                entity.setState(99);
+                this.updateById(entity);
+            }
 
-                /**
-                 * 清空购物车
-                 */
-                ShopCart shopCart = new ShopCart();
-                shopCart.setDisplay(0);
-                shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
-                    eq("type", "inStock");
-                    eq("create_user", LoginContextHolder.getContext().getUserId());
-                }});
 
-                //发起审批流程
-                if (ToolUtil.isEmpty(param.getModule())) {
-                    param.setModule("");
-                }
-                ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).one();
-                if (ToolUtil.isEmpty(activitiProcess)) {
-                    throw new ServiceException(500, "请先设置入库的审批流程");
-                }
-
-                    LoginUser user = LoginContextHolder.getContext().getUser();
-                    ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-                    activitiProcessTaskParam.setTaskName(user.getName() + "的入库申请");
-                    activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
-                    activitiProcessTaskParam.setUserId(param.getCreateUser());
-                    activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
-                    activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
-                    activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-                    Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-                    //添加小铃铛
-                    wxCpSendTemplate.setSource("processTask");
-                    wxCpSendTemplate.setSourceId(taskId);
-                    //添加log
-                    messageProducer.auditMessageDo(new AuditEntity() {{
-                        setMessageType(AuditMessageType.CREATE_TASK);
-                        setActivitiProcess(activitiProcess);
-                        setTaskId(taskId);
-                        setTimes(0);
-                        setMaxTimes(1);
-                    }});
-
-                    /**
-                     * 添加动态记录
-                     */
-                    RemarksParam remarksParam = new RemarksParam();
-                    remarksParam.setTaskId(taskId);
-                    remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "发起了入库申请");
-                    messageProducer.remarksServiceDo(new RemarksEntity() {{
-                        setOperationType(OperationType.ADD);
-                        setRemarksParam(remarksParam);
-                    }});
+            /**
+             * 添加动态记录
+             */
+            RemarksParam remarksParam = new RemarksParam();
+            remarksParam.setTaskId(taskId);
+            remarksParam.setType("dynamic");
+            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "发起了入库申请");
+            messageProducer.remarksServiceDo(new RemarksEntity() {{
+                setOperationType(OperationType.ADD);
+                setRemarksParam(remarksParam);
+            }});
 //                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
 //                activitiProcessLogService.autoAudit(taskId, 1);
-                    /**
-                     * 指定人推送
-                     */
-                    if (ToolUtil.isNotEmpty(param.getUserIds())) {
-                        remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
-                    }
-                } else {
-                    entity.setState(1);
-                    this.updateById(entity);
-                }
-            } else {      //直接入库
-                inStock(param);
+            /**
+             * 指定人推送
+             */
+            if (ToolUtil.isNotEmpty(param.getUserIds())) {
+                remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
             }
 
 
@@ -670,8 +687,20 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     listParam.setNumber(i);
                 }
             }
-
             updateStatus(listParam);
+
+            /**
+             * 添加入库记录
+             */
+            InstockLogDetail instockLogDetail = new InstockLogDetail();
+            instockLogDetail.setInstockOrderId(param.getInstockOrderId());
+            instockLogDetail.setSkuId(listParam.getSkuId());
+            instockLogDetail.setType("normal");
+            instockLogDetail.setBrandId(listParam.getBrandId());
+            instockLogDetail.setCustomerId(listParam.getCustomerId());
+            instockLogDetail.setStorehousePositionsId(listParam.getStorehousePositionsId());
+            instockLogDetail.setNumber(listParam.getNumber());
+            instockLogDetailService.save(instockLogDetail);
         }
         /**
          * 添加动态
@@ -679,11 +708,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         Long taskId = activitiProcessTaskService.getTaskIdByFormId(param.getInstockOrderId());
         RemarksParam remarksParam = new RemarksParam();
         remarksParam.setTaskId(taskId);
+        remarksParam.setType("dynamic");
+        remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
         remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "操作了入库");
         messageProducer.remarksServiceDo(new RemarksEntity() {{
             setOperationType(OperationType.ADD);
             setRemarksParam(remarksParam);
         }});
+
         /**
          * 更新单据状态
          */
@@ -698,13 +730,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);
 //                setFormId(param.getInstockOrderId());
-//                setForm("instock");
+//                setForm("INSTOCK");
 //                setMaxTimes(2);
 //                setTimes(1);
 //                setActionId(param.getActionId());
 //            }});
 
             remarksParam.setContent("入库完成");
+            remarksParam.setType("dynamic");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
                 setOperationType(OperationType.ADD);
                 setRemarksParam(remarksParam);
@@ -746,14 +779,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         instockListService.updateById(instockList);
 
-        ShopCart shopCart = cartService.getById(listParam.getShopCartId());
-        shopCart.setNumber(shopCart.getNumber() - listParam.getNumber());
-        if (shopCart.getNumber() < 0) {
-            throw new ServiceException(500, "购物车数量不正确");
-        } else if (shopCart.getNumber() == 0) {
-            shopCart.setStatus(99);
+        if (ToolUtil.isNotEmpty(listParam.getShopCartId())) {
+            ShopCart shopCart = cartService.getById(listParam.getShopCartId());
+            shopCart.setNumber(shopCart.getNumber() - listParam.getNumber());
+            if (shopCart.getNumber() < 0) {
+                throw new ServiceException(500, "购物车数量不正确");
+            } else if (shopCart.getNumber() == 0) {
+                shopCart.setStatus(99);
+            }
+            cartService.updateById(shopCart);
         }
-        cartService.updateById(shopCart);
+
     }
 
     /**
@@ -805,25 +841,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockDetails.setNumber(param.getNumber());
 
         if (ToolUtil.isEmpty(param.getStorehousePositionsId())) {
-            throw new ServiceException(500, "缺少库位");
+            throw new ServiceException(500, "存在物料缺少库位信息");
         }
         StorehousePositions storehousePositions = positionsService.getById(param.getStorehousePositionsId());
         stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
         stockDetailsService.save(stockDetails);
 
-        /**
-         * 添加入库记录
-         */
-        InstockLogDetail instockLogDetail = new InstockLogDetail();
-        instockLogDetail.setInstockOrderId(param.getInstockOrderId());
-        instockLogDetail.setSkuId(param.getSkuId());
-        instockLogDetail.setType("normal");
-        instockLogDetail.setBrandId(param.getBrandId());
-        instockLogDetail.setCustomerId(param.getCustomerId());
-        instockLogDetail.setStorehousePositionsId(param.getStorehousePositionsId());
-        instockLogDetail.setNumber(param.getNumber());
-        instockLogDetail.setInkindId(inkindId);
-        instockLogDetailService.save(instockLogDetail);
     }
 
     private void handle(InstockListParam param, List<Long> inkindIds) {
@@ -886,7 +909,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          * 入库操作
          */
         List<StockDetails> stockDetailsList = new ArrayList<>();
-
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
 
         for (InStockByOrderParam.SkuParam skuParam : skuParams) {
@@ -1288,7 +1310,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<InstockList> instockListList = orderIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", orderIds).list();
         List<InstockListResult> instockListResults = BeanUtil.copyToList(instockListList, InstockListResult.class, new CopyOptions());
         format(data);
-
 
         instockListService.format(instockListResults);
 

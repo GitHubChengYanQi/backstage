@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import com.alibaba.fastjson.annotation.JSONField;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -29,6 +29,8 @@ public class BrandResult implements Serializable {
     //     private PartsResult partsResult;
     private List<Long> skuIds;
     private List<SkuResult> skuResults;
+    private List<StorehousePositionsResult> positionsResults;
+    private Long positionId;
     /**
      * 品牌id
      */

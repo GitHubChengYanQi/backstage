@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -79,11 +80,17 @@ public class StorehousePositionsController extends BaseController {
 
 
     @RequestMapping(value = "/selectBySku", method = RequestMethod.POST)
-    @ApiOperation("新增")
     public ResponseData selectBySku(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        List<StorehousePositionsResult> results = this.storehousePositionsService.selectBySku(storehousePositionsParam);
-        return ResponseData.success(results);
+        Object select = this.storehousePositionsService.selectBySku(storehousePositionsParam);
+        return ResponseData.success(select);
     }
+
+    @RequestMapping(value = "/selectByBrand", method = RequestMethod.POST)
+    public ResponseData selectByBrand(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+        List<BrandResult> resultList = this.storehousePositionsService.selectByBrand(storehousePositionsParam.getSkuId());
+        return ResponseData.success(resultList);
+    }
+
 
     @RequestMapping(value = "/treeViewBySku", method = RequestMethod.POST)
     public ResponseData treeViewBySku(@RequestBody StorehousePositionsParam storehousePositionsParam) {

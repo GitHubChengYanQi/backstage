@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
@@ -15,6 +16,9 @@ import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.pojo.AppointUser;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.json.JSONUtil;
 import cn.atsoft.dasheng.form.pojo.DeptPosition;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -51,6 +55,12 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
 
     @Autowired
     private DocumentStatusService documentStatusService;
+    @Autowired
+    private ActivitiStepsService stepsService;
+    @Autowired
+    private ActivitiProcessLogService processLogService;
+    @Autowired
+    private ActivitiAuditService auditService;
 
     @Autowired
     private UserService userService;
@@ -148,8 +158,36 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
                 auditResults.add(auditResult);
             }
         }
-
         return auditResults;
+    }
+
+    /**
+     * 审批流程可执行人
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public List<Long> getUserIds(Long taskId) {
+        List<Long> userIds = new ArrayList<>();
+
+        List<ActivitiProcessLog> processLogs = ToolUtil.isEmpty(taskId) ? new ArrayList<>() : processLogService.query().eq("task_id", taskId).list();
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiProcessLog processLog : processLogs) {
+            stepIds.add(processLog.getSetpsId());
+        }
+        List<ActivitiAudit> audits = stepIds.size() == 0 ? new ArrayList<>() : auditService.query().in("setps_id", stepIds).list();
+        for (ActivitiAudit activitiAudit : audits) {
+            AuditRule rule = activitiAudit.getRule();
+
+            for (AuditRule.Rule ruleRule : rule.getRules()) {
+                for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+                    userIds.add(Long.valueOf(appointUser.getKey()));
+                }
+            }
+
+        }
+        return userIds;
     }
 
     private Serializable getKey(ActivitiAuditParam param) {

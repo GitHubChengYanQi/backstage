@@ -79,6 +79,7 @@ public class DocumentsActionServiceImpl extends ServiceImpl<DocumentsActionMappe
                 if (actionStatus.getActionId().equals(documentsAction.getDocumentsActionId())) {
                     actionStatus.setAction(documentsAction.getAction());
                     actionStatus.setFormType(documentsAction.getFormType());
+                    actionStatus.setActionName(documentsAction.getActionName());
                     break;
                 }
             }

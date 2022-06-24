@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
@@ -312,6 +313,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         Map<Long, List<BrandResult>> map = new HashMap<>();
         Map<Long, Long> positionNum = new HashMap<>();
 
+
         for (StockDetails stockDetail : stockDetails) {
             Long num = positionNum.get(stockDetail.getStorehousePositionsId());   //当前库位下的库存数
             if (ToolUtil.isEmpty(num)) {
@@ -353,6 +355,145 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     /**
+     * 返回品牌集合，库位集合
+     *
+     * @param skuId
+     * @return
+     */
+    @Override
+    public Object selectBySku(Long skuId) {
+        QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
+        stockDetailsQueryWrapper.eq("sku_id", skuId);
+        stockDetailsQueryWrapper.gt("number", 0);
+        stockDetailsQueryWrapper.eq("display", 1);
+
+        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);
+        List<StockDetailsResult> stockDetailsResults = BeanUtil.copyToList(stockDetails, StockDetailsResult.class, new CopyOptions());
+
+        List<Long> positionIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+
+        for (StockDetails stockDetail : stockDetails) {
+            positionIds.add(stockDetail.getStorehousePositionsId());
+            brandIds.add(stockDetail.getBrandId());
+        }
+
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+        for (StockDetailsResult stockDetail : stockDetailsResults) {
+            if (ToolUtil.isEmpty(stockDetail.getBrandId())) {
+                stockDetail.setBrandId(0L);
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (stockDetail.getBrandId().equals(brandResult.getBrandId())) {
+                    brandResult.setPositionId(stockDetail.getStorehousePositionsId());
+                    brandResult.setNum(Math.toIntExact(stockDetail.getNumber()));
+                    stockDetail.setBrandResult(brandResult);
+                    break;
+                }
+            }
+
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                if (positionsResult.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())) {
+                    positionsResult.setBrandId(stockDetail.getBrandId());
+                    positionsResult.setNum(Math.toIntExact(stockDetail.getNumber()));
+                    stockDetail.setStorehousePositionsResult(positionsResult);
+                    break;
+                }
+            }
+        }
+        List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
+        List<BrandResult> brandResultList = new ArrayList<>();
+        for (StockDetailsResult stockDetail : stockDetailsResults) {
+            brandResultList.add(stockDetail.getBrandResult());
+            positionsResultList.add(stockDetail.getStorehousePositionsResult());
+        }
+        return new HashMap<String, Object>() {{
+            put("brand", brandResultList);
+            put("position", positionsResultList);
+        }};
+    }
+
+
+    @Override
+    public List<BrandResult> selectByBrand(Long skuId) {
+
+        QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
+        stockDetailsQueryWrapper.eq("sku_id", skuId);
+        stockDetailsQueryWrapper.gt("number", 0);
+        stockDetailsQueryWrapper.eq("display", 1);
+
+        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);
+
+        List<Long> positionIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+
+        for (StockDetails stockDetail : stockDetails) {
+            positionIds.add(stockDetail.getStorehousePositionsId());
+            brandIds.add(stockDetail.getBrandId());
+
+        }
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+        brandResults.add(new BrandResult() {{
+            setBrandId(0L);
+            setBrandName("其他品牌");
+        }});//其他品牌
+
+
+        Map<Long, Long> brandNumber = new HashMap<>();
+        Map<Long, List<StorehousePositionsResult>> positionMap = new HashMap<>();
+
+        for (StockDetails stockDetail : stockDetails) {
+            if (ToolUtil.isEmpty(stockDetail.getBrandId())) {
+                stockDetail.setBrandId(0L);
+            }
+            Long num = brandNumber.get(stockDetail.getBrandId());   //当前库位下的库存数
+            if (ToolUtil.isEmpty(num)) {
+                num = 0L;
+            }
+            num = num + stockDetail.getNumber();
+            brandNumber.put(stockDetail.getBrandId(), num);
+        }
+
+
+
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                for (StockDetails stockDetail : stockDetails) {
+                    if (positionsResult.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())) {
+                        //数量
+                        int positionNumber = getPositionNumber(stockDetails, stockDetail.getStorehousePositionsId(), stockDetail.getBrandId());
+                        positionsResult.setNum(positionNumber);
+
+                        List<StorehousePositionsResult> positionsResultList = positionMap.get(stockDetail.getBrandId());
+                        if (ToolUtil.isEmpty(positionsResultList)) {
+                            positionsResultList = new ArrayList<>();
+                            positionsResultList.add(positionsResult);
+                        }
+                        if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
+                            positionsResultList.add(positionsResult);
+                        }
+                        positionMap.put(stockDetail.getBrandId(), positionsResultList);
+                    }
+                }
+            }
+
+
+        for (BrandResult brandResult : brandResults) {
+            Long num = brandNumber.get(brandResult.getBrandId());
+            if (ToolUtil.isNotEmpty(num)) {
+                brandResult.setNum(Math.toIntExact(num));
+            }
+            brandResult.setPositionsResults(positionMap.get(brandResult.getBrandId()));
+        }
+        return brandResults;
+    }
+
+    /**
      * 品牌数量
      *
      * @param stockDetails
@@ -370,8 +511,21 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return num;
     }
 
+    private int getPositionNumber(List<StockDetails> stockDetails, Long positionId, Long brandId) {
+        int num = 0;
+
+        for (StockDetails stockDetail : stockDetails) {
+            if (stockDetail.getStorehousePositionsId().equals(positionId) && stockDetail.getBrandId().equals(brandId)) {
+                num = (int) (num + stockDetail.getNumber());
+            }
+        }
+
+        return num;
+    }
+
     /**
      * 物料设计库位的数量
+     *
      * @param skuIds
      * @return
      */

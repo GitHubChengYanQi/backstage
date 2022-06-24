@@ -94,6 +94,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private MessageProducer messageProducer;
     @Autowired
     private ActivitiProcessLogService processLogService;
+    @Autowired
+    private InstockLogDetailService instockLogDetailService;
 
     @Override
     @Transactional
@@ -160,7 +162,11 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     }
                     break;
             }
+
+
         }
+
+
         submit(entity);
     }
 
@@ -232,9 +238,40 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
         anomalyService.format(anomalyResults);
 
+        List<Long> anomalyIds = new ArrayList<>();
         for (AnomalyResult anomalyResult : anomalyResults) {
             handle(anomalyResult);
+            anomalyIds.add(anomalyResult.getAnomalyId());
         }
+
+        List<AnomalyDetail> details = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
+
+
+        for (AnomalyResult anomaly : anomalyResults) {
+            long errorNum = 0;
+
+            boolean t = false;
+            for (AnomalyDetail detail : details) {
+                if (anomaly.getAnomalyId().equals(detail.getAnomalyId()) && detail.getStauts() == -1) {
+                    errorNum = errorNum + detail.getNumber();
+                    t = true;
+                }
+            }
+            if (t) {
+                /**
+                 * 添加异常记录
+                 */
+                InstockLogDetail instockLogDetail = new InstockLogDetail();
+                instockLogDetail.setInstockOrderId(anomaly.getFormId());
+                instockLogDetail.setSkuId(anomaly.getSkuId());
+                instockLogDetail.setType("error");
+                instockLogDetail.setBrandId(anomaly.getBrandId());
+                instockLogDetail.setCustomerId(anomaly.getCustomerId());
+                instockLogDetail.setNumber(errorNum);
+                instockLogDetailService.save(instockLogDetail);
+            }
+        }
+
 
         /**
          * 更新状态

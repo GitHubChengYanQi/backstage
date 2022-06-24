@@ -17,10 +17,14 @@ import cn.atsoft.dasheng.erp.model.result.ShopCartResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
@@ -28,6 +32,7 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -71,17 +76,42 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private MessageProducer messageProducer;
+    @Autowired
+    private ActivitiAuditService auditService;
+    @Autowired
+    private InstockOrderService instockOrderService;
+
 
     @Override
     @Transactional
     public Long add(ShopCartParam param) {
+
+        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
+            Integer count = this.query().eq("form_id", param.getInstockListId()).eq("display", 1).count();
+            if (ToolUtil.isNotEmpty(count) && count > 0) {
+                throw new ServiceException(500, "当前已操作");
+            }
+        }
+
+        if (ToolUtil.isNotEmpty(param.getPositionNums())) {
+            String json = JSON.toJSONString(param.getPositionNums());
+            param.setStorehousePositionsId(json);
+        }
         ShopCart entity = getEntity(param);
         this.save(entity);
 
-        switch (param.getType()){
-            case "waitInStock":
-                updateInStockListStatus(param.getInstockListId(), param.getFormStatus());
-                break;
+        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
+            updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
+            InstockList instockList = instockListService.getById(param.getInstockListId());
+            Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
+            RemarksParam remarksParam = new RemarksParam();
+            remarksParam.setTaskId(taskId);
+            remarksParam.setType("dynamic");
+            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
+            messageProducer.remarksServiceDo(new RemarksEntity() {{
+                setOperationType(OperationType.ADD);
+                setRemarksParam(remarksParam);
+            }});
         }
 
 
@@ -112,9 +142,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
-//                    if (!instockList.getRealNumber().equals(instockList.getNumber())) {
-//                        throw new ServiceException(500, "当前数据已被操作，不可退回");
-//                    }
                     break;
                 case "instockByAnomaly":
                     AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
@@ -140,16 +167,21 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
      * @param id
      * @param status
      */
-    private void updateInStockListStatus(Long id, Long status) {
+    private void updateInStockListStatus(Long id, Long status, Long number) {
         if (ToolUtil.isEmpty(id)) {
             return;
         }
         InstockList instockList = instockListService.getById(id);
+
+
         if (instockList.getStatus() != 0) {
             throw new ServiceException(500, "当前已操作");
         }
-        instockList.setStatus(status);
-        this.instockListService.updateById(instockList);
+        if (instockList.getRealNumber().equals(number)) {
+            instockList.setStatus(status);
+            this.instockListService.updateById(instockList);
+        }
+
     }
 
 
@@ -193,8 +225,26 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
     @Override
     public List<ShopCartResult> allList(ShopCartParam param) {
-        param.setCreateUser(LoginContextHolder.getContext().getUserId());
-        List<ShopCartResult> shopCartResults = this.baseMapper.customList(param);
+
+        List<ShopCartResult> shopCartResults = new ArrayList<>();
+        /**
+         * 查看权限
+         */
+        if (ToolUtil.isNotEmpty(param.getSourceId())) {
+            InstockOrder instockOrder = instockOrderService.getById(param.getSourceId());
+            ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(instockOrder.getInstockOrderId());
+            List<Long> userIds = auditService.getUserIds(processTask.getProcessTaskId());
+            Long id = LoginContextHolder.getContext().getUserId();
+            for (Long userId : userIds) {
+                if (userId.equals(id)) {
+                    shopCartResults = this.baseMapper.customList(param);
+                    format(shopCartResults);
+                }
+            }
+        } else if (ToolUtil.isNotEmpty(param.getType())) {
+            shopCartResults = this.baseMapper.customList(param);
+        }
+
         format(shopCartResults);
         return shopCartResults;
     }
@@ -255,7 +305,17 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             customerIds.add(datum.getCustomerId());
             brandIds.add(datum.getBrandId());
             skuIds.add(datum.getSkuId());
-            positionIds.add(datum.getStorehousePositionsId());
+
+            if (ToolUtil.isNotEmpty(datum.getStorehousePositionsId())) {   //库位
+                List<PositionNum> positionNums = JSON.parseArray(datum.getStorehousePositionsId(), PositionNum.class);
+                List<Long> ids = new ArrayList<>();
+                for (PositionNum positionNum : positionNums) {
+                    ids.add(positionNum.getPositionId());
+                }
+                datum.setPositionNums(positionNums);
+                positionIds.addAll(ids);
+            }
+
             if (ToolUtil.isNotEmpty(datum.getType()) && datum.getType().equals(AnomalyType.InstockError.name())) {
                 anomalyIds.add(datum.getFormId());
             }
@@ -271,18 +331,27 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
 
         for (ShopCartResult datum : data) {
-
-
             if (ToolUtil.isNotEmpty(datum.getFormId())) {
                 AnomalyResult result = map.get(datum.getFormId());
                 datum.setAnomalyResult(result);
             }
-            for (StorehousePositionsResult position : positionsResults) {
-                if (ToolUtil.isNotEmpty(datum.getStorehousePositionsId()) && datum.getStorehousePositionsId().equals(position.getStorehousePositionsId())) {
-                    datum.setStorehousePositions(position);
-                    break;
+
+            if (ToolUtil.isNotEmpty(datum.getPositionNums())) {
+
+                List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
+                for (PositionNum positionNum : datum.getPositionNums()) {
+                    for (StorehousePositionsResult position : positionsResults) {
+                        if (positionNum.getPositionId().equals(position.getStorehousePositionsId())) {
+                            position.setNumber(positionNum.getNum());
+                            positionsResultList.add(position);
+                        }
+
+                    }
                 }
+                datum.setStorehousePositions(positionsResultList);
             }
+
+
             for (SkuResult skuResult : skuResults) {
                 List<StorehousePositionsResult> results = positionMap.get(skuResult.getSkuId());
                 skuResult.setPositionsResult(results);
