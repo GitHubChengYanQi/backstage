@@ -12,6 +12,12 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -60,6 +66,11 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     private AnomalyService anomalyService;
     @Autowired
     private InstockLogDetailService instockLogDetailService;
+    @Autowired
+    private ActivitiProcessTaskService taskService;
+    @Autowired
+    private MessageProducer messageProducer;
+
 
     @Override
     public void add(AnomalyDetailParam param) {
@@ -77,13 +88,38 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     @Override
     @Transactional
     public void update(AnomalyDetailParam param) {
-         AnomalyDetail oldEntity = getOldEntity(param);
+        AnomalyDetail oldEntity = getOldEntity(param);
         AnomalyDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
             pushPeople(param.getUserId(), oldEntity.getAnomalyId());
         }
         this.updateById(newEntity);
+
+        if (ToolUtil.isNotEmpty(param.getAnomalyOrderId())) {
+            ActivitiProcessTask task = taskService.getById(param.getAnomalyOrderId());
+            String content = "";
+            if (param.getStauts() == 1) {
+                content = "允许入库";
+            } else if (param.getStauts() == -1) {
+                content = "终止入库";
+            } else if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
+                User user = userService.getById(param.getUserId());
+                content = "转交给" + user.getName() + "进行处理";
+            }
+            /**
+             * 添加动态记录
+             */
+            RemarksParam remarksParam = new RemarksParam();
+            remarksParam.setTaskId(task.getProcessTaskId());
+            remarksParam.setType("dynamic");
+            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() +"处理异常："+content);
+            messageProducer.remarksServiceDo(new RemarksEntity() {{
+                setOperationType(OperationType.ADD);
+                setRemarksParam(remarksParam);
+            }});
+        }
+
     }
 
 

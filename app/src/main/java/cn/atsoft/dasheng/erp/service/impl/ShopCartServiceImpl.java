@@ -106,6 +106,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
             RemarksParam remarksParam = new RemarksParam();
             remarksParam.setTaskId(taskId);
+            remarksParam.setType("dynamic");
             remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
                 setOperationType(OperationType.ADD);

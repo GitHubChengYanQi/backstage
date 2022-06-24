@@ -172,11 +172,17 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Override
     public PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param) {
         if (ToolUtil.isNotEmpty(param.getAuditType())) {
-            Long userId = LoginContextHolder.getContext().getUserId();
-            List<Long> taskId = getTaskId(param.getAuditType(), userId);
+
+            List<Long> taskId = getTaskId(param.getAuditType());
+            if (ToolUtil.isEmpty(taskId)) {
+                taskId = new ArrayList<>();
+                taskId.add(0L);
+            }
             param.setTaskIds(taskId);
+        } else if (ToolUtil.isEmpty(param.getCreateUser())) {
+            param.getTaskIds().add(0L);
         }
-        param.getTaskIds().add(0L);
+
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
@@ -204,9 +210,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     }
 
 
-    private List<Long> getTaskId(String type, Long userId) {
+    private List<Long> getTaskId(String type) {
         List<Long> taskIds = new ArrayList<>();
-        List<Long> stepIds = getStepIdsByType(type, userId);
+        List<Long> stepIds = getStepIdsByType(type);
         List<ActivitiProcessLog> processLogList = stepIds.size() == 0 ? new ArrayList<>() : processLogService.query().in("setps_id", stepIds).groupBy("task_id").list();
         for (ActivitiProcessLog activitiProcessLog : processLogList) {
             taskIds.add(activitiProcessLog.getTaskId());
@@ -220,10 +226,10 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
      * @param type
      * @return
      */
-    List<Long> getStepIdsByType(String type, Long userId) {
+    List<Long> getStepIdsByType(String type) {
         LoginContext context = LoginContextHolder.getContext();
 
-        List<ActivitiAudit> audits = auditService.list();
+        List<ActivitiAudit> audits = auditService.query().eq("display", 1).list();
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
@@ -261,7 +267,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
 
             if (ruleRule.getType().equals(DataType.AllPeople)) {
-                return true;
+                return false;
             }
             for (AppointUser appointUser : ruleRule.getAppointUsers()) {
                 if (appointUser.getKey().equals(user.getId().toString())) {

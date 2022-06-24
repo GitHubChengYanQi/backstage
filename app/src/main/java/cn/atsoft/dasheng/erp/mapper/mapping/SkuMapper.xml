@@ -322,12 +322,16 @@
             )
         </if>
 
-       <if test="paramCondition.mixNum != null
-and paramCondition.maxNum != null">
-            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}
+<!--       <if test="paramCondition.mixNum != null-->
+<!--and paramCondition.maxNum != null">-->
+<!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
+<!--        </if>-->
+        <if test="paramCondition.mixNum != null">
+            and  daoxin_erp_stock_details.number &gt;= #{paramCondition.mixNum}
         </if>
-
-
+        <if test="paramCondition.maxNum != null">
+            and  daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
@@ -491,11 +495,16 @@ and paramCondition.maxNum != null">
             </foreach>
             )
         </if>
-        <if test="paramCondition.mixNum != null
-           and paramCondition.maxNum != null">
-            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}
+<!--        <if test="paramCondition.mixNum != null-->
+<!--           and paramCondition.maxNum != null">-->
+<!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
+<!--        </if>-->
+        <if test="paramCondition.mixNum != null">
+            and  daoxin_erp_stock_details.number &gt;=  #{paramCondition.mixNum}
         </if>
-
+        <if test="paramCondition.maxNum != null">
+            and  daoxin_erp_stock_details.number &lt;=  #{paramCondition.maxNum}
+        </if>
 
     </select>
 </mapper>

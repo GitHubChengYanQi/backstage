@@ -8,5 +8,6 @@ public class ActionStatus {
     private Integer status;
     private String formType;
     private String action;
+    private String actionName;
     private boolean checked = false;
 }
