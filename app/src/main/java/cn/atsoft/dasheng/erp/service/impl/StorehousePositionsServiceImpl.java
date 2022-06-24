@@ -467,37 +467,18 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
 
 
-        Map<Long, List<StorehousePositionsResult>> positionMap = new HashMap<>();
-        for (StockDetails stockDetail : stockDetails) {
-            for (StorehousePositionsResult positionsResult : positionsResults) {
-                if (positionsResult.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())) {
-
-                    List<StorehousePositionsResult> positionsResultList = positionMap.get(stockDetail.getBrandId());
-                    if (ToolUtil.isEmpty(positionsResultList)) {
-                        positionsResultList = new ArrayList<>();
-                    }
-                    if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
-                        positionsResultList.add(positionsResult);
-                    }
-                    positionMap.put(stockDetail.getBrandId(), positionsResultList);
-                }
-            }
-        }
-
-
         for (BrandResult brandResult : brandResults) {
             Long num = brandNumber.get(brandResult.getBrandId());
             if (ToolUtil.isNotEmpty(num)) {
                 brandResult.setNum(Math.toIntExact(num));
             }
-//            List<StorehousePositionsResult> positionsResultList = positionMap.get(brandResult.getBrandId());
-//            brandResult.setPositionsResults(positionsResultList);
+            //库位数量
             List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
             for (StockDetails stockDetail : stockDetails) {
                 if (stockDetail.getBrandId().equals(brandResult.getBrandId())) {
                     StorehousePositionsResult positionsResult = positionsResultMap.get(stockDetail.getStorehousePositionsId());
                     positionsResult.setNum(getPositionNumber(stockDetails, stockDetail.getStorehousePositionsId(), stockDetail.getBrandId()));
-                    if (positionsResultList.stream().noneMatch(i->i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
+                    if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
                         positionsResultList.add(positionsResult);
                     }
                 }
