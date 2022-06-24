@@ -11,6 +11,8 @@ import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.message.topic.TopicMessage;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
@@ -35,7 +37,9 @@ public class WxCpSendTemplate {
     @Autowired
     private UcOpenUserInfoService ucOpenUserInfoService;
     @Autowired
-    MessageProducer messageProducer;
+    private MessageProducer messageProducer;
+    @Autowired
+    private UserService userService;
 
 //    //添加系统小铃铛信息
 //    private Message message;
@@ -69,7 +73,7 @@ public class WxCpSendTemplate {
         return uuIds;
     }
 
-    private List<String> userIds2UuIds(List<Long> userIds){
+    private List<String> userIds2UuIds(List<Long> userIds) {
         List<String> uuIds = new ArrayList<>();
         List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).eq("source", "wxCp").list();
 
@@ -89,6 +93,7 @@ public class WxCpSendTemplate {
 
         return uuIds;
     }
+
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
     //发送模板消息
@@ -112,7 +117,7 @@ public class WxCpSendTemplate {
                     String randomString = ToolUtil.getRandomString(5);
                     String s = messageEntity.getCpData().getDescription() + randomString;
                     messageEntity.getCpData().setDescription(s);
-                    logger.info("微信消息"+messageEntity.getCpData().getDescription());
+                    logger.info("微信消息" + messageEntity.getCpData().getDescription());
                     messageProducer.sendMessage(messageEntity);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -131,7 +136,7 @@ public class WxCpSendTemplate {
                 message.setSource(getSource());
                 message.setUrl(wxCpTemplate.getUrl());
                 messageEntity.setMessage(message);
-                logger.info("铃铛发送"+messageEntity.getCpData().getDescription());
+                logger.info("铃铛发送" + messageEntity.getCpData().getDescription());
                 messageProducer.sendMessage(messageEntity);
             }
         }
@@ -139,13 +144,12 @@ public class WxCpSendTemplate {
     }
 
 
-
     public void sendMarkDownTemplate(MarkDownTemplate markDownTemplate) {
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setType(MessageType.CP);
         WxCpMessage wxCpMessage = new WxCpMessage();
         wxCpMessage.setMsgType("markdown");
-        wxCpMessage.setContent(markDownTemplate.getContent());
+        wxCpMessage.setContent(this.getContent(markDownTemplate));
         List<String> userIds = userIds2UuIds(markDownTemplate.getUserIds());
         if (ToolUtil.isNotEmpty(userIds)) {
             for (String userId : userIds) {
@@ -157,9 +161,8 @@ public class WxCpSendTemplate {
                     String randomString = ToolUtil.getRandomString(5);
                     String s = messageEntity.getCpData().getDescription() + randomString;
                     messageEntity.getCpData().setDescription(s);
-                    logger.info("微信MarkDown消息"+messageEntity.getCpData().getDescription());
+                    logger.info("微信MarkDown消息" + messageEntity.getCpData().getDescription());
                     messageProducer.sendMessage(messageEntity);
-                    System.out.println(markDownTemplate.getContent());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -177,8 +180,59 @@ public class WxCpSendTemplate {
                 message.setSource(markDownTemplate.getSource());
                 message.setUrl(markDownTemplate.getUrl());
                 messageEntity.setMessage(message);
-                logger.info("铃铛发送"+messageEntity.getCpData().getDescription());
+                logger.info("铃铛发送" + messageEntity.getCpData().getDescription());
                 messageProducer.sendMessage(messageEntity);
+            }
+        }
+    }
+
+    public String getContent(MarkDownTemplate markDownTemplate) {
+        if (ToolUtil.isNotEmpty(markDownTemplate.getCreateUser())) {
+            User user = userService.getById(markDownTemplate.getCreateUser());
+            markDownTemplate.setCreateUserName(user.getName());
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+
+        if (ToolUtil.isNotEmpty(markDownTemplate.getType())) {
+            this.selectTitle(markDownTemplate);
+            stringBuffer.append("您有新的").append(markDownTemplate.getTitle()).append("\n \n");
+        } else {
+            stringBuffer.append("您有新的消息").append("\n \n");
+        }
+        stringBuffer.append(">**").append("任务详情").append("**").append("\n \n");
+        if (ToolUtil.isNotEmpty(markDownTemplate.getItems())) {
+            stringBuffer.append(">**事　项**：").append("<font color=\"info\">").append(markDownTemplate.getItems()).append("</font>").append("\n \n ");
+        }
+        if (ToolUtil.isNotEmpty(markDownTemplate.getCreateUserName())) {
+            stringBuffer.append(">**发起人**：").append(markDownTemplate.getCreateUserName()).append("\n \n");
+            stringBuffer.append(">").append("\n > \n");
+        }
+        if (ToolUtil.isNotEmpty(markDownTemplate.getDescription())) {
+            stringBuffer.append(">**详　情**：").append("<font color=\"warning\">").append(markDownTemplate.getDescription()).append("</font>").append("\n\n");
+        }
+        if (ToolUtil.isNotEmpty(markDownTemplate.getRemark())) {
+            stringBuffer.append(">**备　注**：").append("<font color=\"comment\">").append(markDownTemplate.getRemark()).append("</font>").append("\n\n");
+        }
+        if (ToolUtil.isNotEmpty(markDownTemplate.getUrl())) {
+            stringBuffer.append(">").append("\n\n");
+            stringBuffer.append(">[点击查看详情](").append(markDownTemplate.getUrl()).append(")");
+        }
+        return stringBuffer.toString();
+    }
+
+    void selectTitle(MarkDownTemplate markDownTemplate) {
+        ToolUtil.isNotEmpty(markDownTemplate.getType());
+        {
+            switch (markDownTemplate.getType()) {
+                case 1:
+                    markDownTemplate.setTitle("消息");
+                    break;
+                case 2:
+                    markDownTemplate.setTitle("通知");
+                    break;
+                case 3:
+                    markDownTemplate.setTitle("待办");
+                    break;
             }
         }
     }

@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.MessageType;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -76,18 +77,13 @@ public class InstockSendTemplate {
     public void send(String url){
         List<Long> users = new ArrayList();
         users.add(businessTrack.getUserId());
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setTitle("入库提醒");
-        wxCpTemplate.setDescription("有新的物料需要入库");
-        wxCpTemplate.setUserIds(users);
-        wxCpTemplate.setUrl(url);
-        //获取url
-//        wxCpSendTemplate.setMessage(new Message(){{
-//            setSource("outStockOrder");
-//            setSourceId(sourceId);
-//        }});
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+;
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setItems("入库提醒");
+            setUrl(url);
+            setDescription("有新的物料需要入库");
+            setUserIds(users);
+        }});
 
     }
     public String getTitle() {
@@ -119,7 +115,6 @@ public class InstockSendTemplate {
                 messageEntity.setTimes(0);
                 messageEntity.setMaxTimes(2);
                 try {
-
                     //添加代办信息
                     messageEntity.setType(MessageType.CP);
                     messageProducer.sendMessage(messageEntity, 100);
