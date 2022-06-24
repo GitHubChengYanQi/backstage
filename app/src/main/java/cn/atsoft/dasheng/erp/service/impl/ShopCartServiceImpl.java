@@ -36,6 +36,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -84,6 +85,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
     @Override
     @Transactional
+    @Synchronized
     public Long add(ShopCartParam param) {
 
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
@@ -112,6 +114,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 setOperationType(OperationType.ADD);
                 setRemarksParam(remarksParam);
             }});
+        } else {
+            throw new ServiceException(500, "缺少参数");
         }
 
 
@@ -169,10 +173,12 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
      */
     private void updateInStockListStatus(Long id, Long status, Long number) {
         if (ToolUtil.isEmpty(id)) {
-            return;
+            throw new ServiceException(500, "入库清单 不存在");
+        }
+        if (ToolUtil.isEmpty(number)) {
+            throw new ServiceException(500, "缺少 数量");
         }
         InstockList instockList = instockListService.getById(id);
-
 
         if (instockList.getStatus() != 0) {
             throw new ServiceException(500, "当前已操作");
@@ -238,7 +244,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             for (Long userId : userIds) {
                 if (userId.equals(id)) {
                     shopCartResults = this.baseMapper.customList(param);
-                    format(shopCartResults);
+                    break;
                 }
             }
         } else if (ToolUtil.isNotEmpty(param.getType())) {

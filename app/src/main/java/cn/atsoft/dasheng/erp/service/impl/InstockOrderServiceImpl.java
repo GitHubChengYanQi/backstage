@@ -324,7 +324,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             ShopCart shopCart = new ShopCart();
             shopCart.setDisplay(0);
             shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
-                eq("type", "inStock");
+                eq("type", param.getShopCardType());
                 eq("create_user", LoginContextHolder.getContext().getUserId());
             }});
 
