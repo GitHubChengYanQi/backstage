@@ -736,8 +736,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setTimes(1);
 //                setActionId(param.getActionId());
 //            }});
-
-            remarksParam.setContent("入库完成");
+            InstockOrder order = this.getById(param.getInstockOrderId());
+            remarksParam.setContent("单据:" + order.getCoding() + "完成了入库");
             remarksParam.setType("dynamic");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
                 setOperationType(OperationType.ADD);

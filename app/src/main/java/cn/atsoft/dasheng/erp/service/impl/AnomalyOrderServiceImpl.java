@@ -96,6 +96,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private ActivitiProcessLogService processLogService;
     @Autowired
     private InstockLogDetailService instockLogDetailService;
+    @Autowired
+    private InstockOrderService instockOrderService;
 
     @Override
     @Transactional
@@ -367,12 +369,16 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
     @Override
     public AnomalyOrderResult detail(Long id) {
+
         AnomalyOrder anomalyOrder = this.getById(id);
         AnomalyOrderResult result = new AnomalyOrderResult();
         ToolUtil.copyProperties(anomalyOrder, result);
         List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, result.getOrderId()).eq(Anomaly::getDisplay, 1).list();
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
         anomalyService.format(anomalyResults);
+
+        InstockOrder instockOrder = instockOrderService.getById(result.getInstockOrderId());
+        result.setInstockOrder(instockOrder);
 
         List<DocumentsStatusResult> results = statusService.resultsByIds(new ArrayList<Long>() {{
             add(result.getStatus());

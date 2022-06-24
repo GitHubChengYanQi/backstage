@@ -25,6 +25,8 @@ import java.util.List;
 @ApiModel
 public class AnomalyDetailParam implements Serializable, BaseValidatingParam {
 
+    private Long anomalyOrderId;
+
     private static final long serialVersionUID = 1L;
 
     private Long pidInKind;
