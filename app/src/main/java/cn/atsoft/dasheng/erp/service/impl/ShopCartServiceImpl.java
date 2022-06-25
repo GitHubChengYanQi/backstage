@@ -114,10 +114,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 setOperationType(OperationType.ADD);
                 setRemarksParam(remarksParam);
             }});
-        } else {
-            throw new ServiceException(500, "缺少参数");
         }
-
 
         return entity.getCartId();
     }
@@ -172,18 +169,13 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
      * @param status
      */
     private void updateInStockListStatus(Long id, Long status, Long number) {
-        if (ToolUtil.isEmpty(id)) {
-            throw new ServiceException(500, "入库清单 不存在");
-        }
-        if (ToolUtil.isEmpty(number)) {
-            throw new ServiceException(500, "缺少 数量");
-        }
+
         InstockList instockList = instockListService.getById(id);
 
         if (instockList.getStatus() != 0) {
             throw new ServiceException(500, "当前已操作");
         }
-        if (instockList.getRealNumber().equals(number)) {
+        if (instockList.getRealNumber()-number==0) {
             instockList.setStatus(status);
             this.instockListService.updateById(instockList);
         }
