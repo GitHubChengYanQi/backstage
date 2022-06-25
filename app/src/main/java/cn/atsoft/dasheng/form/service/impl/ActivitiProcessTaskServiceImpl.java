@@ -276,6 +276,42 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return false;
     }
 
+
+    /**
+     * 当前规则指定人
+     *
+     * @param rule
+     * @return
+     */
+    private boolean startHaveME(AuditRule rule, LoginContext loginContext) {
+        LoginUser user = loginContext.getUser();
+        List<Long> depts = loginContext.getDeptDataScope();
+        if (ToolUtil.isEmpty(user.getId())) {
+            return false;
+        }
+        for (AuditRule.Rule ruleRule : rule.getRules()) {
+            if (ToolUtil.isNotEmpty(ruleRule.getDeptPositions())) {
+                for (Long dept : depts) {
+                    if (ruleRule.getDeptPositions().stream().anyMatch(i -> i.getKey().equals(dept.toString()))) {
+                        return true;
+                    }
+                }
+            }
+
+            if (ruleRule.getType().equals(DataType.AllPeople)) {
+                return true;
+            }
+            for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+                if (appointUser.getKey().equals(user.getId().toString())) {
+                    return true;
+                }
+            }
+
+        }
+
+        return false;
+    }
+
     @Override
     public Long getTaskIdByFormId(Long formId) {
         ActivitiProcessTask task = ToolUtil.isEmpty(formId) ? new ActivitiProcessTask() : this.query().eq("form_id", formId).one();
@@ -373,7 +409,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         Boolean throwFlag = false;
         for (ActivitiAudit audit : audits) {
             if (audit.getType().equals("start")) {
-                if (!haveME(audit.getRule(), LoginContextHolder.getContext())) {
+                if (!startHaveME(audit.getRule(), LoginContextHolder.getContext())) {
                     throw new ServiceException(500, "您没有创建流程发起权限");
                 }
             }
