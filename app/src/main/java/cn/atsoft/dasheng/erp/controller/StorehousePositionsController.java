@@ -85,6 +85,12 @@ public class StorehousePositionsController extends BaseController {
         return ResponseData.success(select);
     }
 
+    @RequestMapping(value = "/selectAll", method = RequestMethod.POST)
+    public ResponseData selectAll(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+        Object select = this.storehousePositionsService.selectBySku(storehousePositionsParam.getSkuId());
+        return ResponseData.success(select);
+    }
+
     @RequestMapping(value = "/selectByBrand", method = RequestMethod.POST)
     public ResponseData selectByBrand(@RequestBody StorehousePositionsParam storehousePositionsParam) {
         List<BrandResult> resultList = this.storehousePositionsService.selectByBrand(storehousePositionsParam.getSkuId());
