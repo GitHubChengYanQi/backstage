@@ -58,36 +58,17 @@
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
-        <if test="paramCondition.instockNumber != null">
-            and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
-        </if>
+
         <if test="paramCondition.instockOrderId != null">
             and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
         </if>
-        <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
-            and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
-        </if>
-        <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
-            and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
-        </if>
-        <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
-            and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
-        </if>
-        <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
-            and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
-        </if>
-        <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
-            and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
-        </if>
+
+
         <if test="paramCondition.storehouseId != null">
             and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
         </if>
-        <if test="paramCondition.sellingPrice != null">
-            and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
-        </if>
-        <if test="paramCondition.costPrice != null">
-            and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
-        </if>
+
+
         <if test="paramCondition.storehousePositionsId != null">
             and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
         </if>
@@ -135,36 +116,16 @@
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
-        <if test="paramCondition.instockNumber != null">
-            and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
-        </if>
+
         <if test="paramCondition.instockOrderId != null">
             and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
         </if>
-        <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
-            and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
-        </if>
-        <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
-            and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
-        </if>
-        <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
-            and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
-        </if>
-        <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
-            and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
-        </if>
-        <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
-            and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
-        </if>
+
+
         <if test="paramCondition.storehouseId != null">
             and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
         </if>
-        <if test="paramCondition.sellingPrice != null">
-            and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
-        </if>
-        <if test="paramCondition.costPrice != null">
-            and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
-        </if>
+
         <if test="paramCondition.storehousePositionsId != null">
             and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
         </if>
@@ -212,35 +173,12 @@
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
-        <if test="paramCondition.instockNumber != null">
-            and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
-        </if>
+
         <if test="paramCondition.instockOrderId != null">
             and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
         </if>
-        <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
-            and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
-        </if>
-        <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
-            and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
-        </if>
-        <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
-            and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
-        </if>
-        <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
-            and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
-        </if>
-        <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
-            and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
-        </if>
         <if test="paramCondition.storehouseId != null">
             and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
-        </if>
-        <if test="paramCondition.sellingPrice != null">
-            and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
-        </if>
-        <if test="paramCondition.costPrice != null">
-            and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
         </if>
         <if test="paramCondition.storehousePositionsId != null">
             and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
@@ -289,36 +227,15 @@
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
-        <if test="paramCondition.instockNumber != null">
-            and instock_number like CONCAT('%',#{paramCondition.instockNumber},'%')
-        </if>
+
         <if test="paramCondition.instockOrderId != null">
             and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
         </if>
-        <if test="paramCondition.lotNumber != null and paramCondition.lotNumber != ''">
-            and lot_number like CONCAT('%',#{paramCondition.lotNumber},'%')
-        </if>
-        <if test="paramCondition.effectiveDate != null and paramCondition.effectiveDate != ''">
-            and effective_date like CONCAT('%',#{paramCondition.effectiveDate},'%')
-        </if>
-        <if test="paramCondition.manufactureDate != null and paramCondition.manufactureDate != ''">
-            and manufacture_date like CONCAT('%',#{paramCondition.manufactureDate},'%')
-        </if>
-        <if test="paramCondition.serialNumber != null and paramCondition.serialNumber != ''">
-            and serial_number like CONCAT('%',#{paramCondition.serialNumber},'%')
-        </if>
-        <if test="paramCondition.receivedDate != null and paramCondition.receivedDate != ''">
-            and received_date like CONCAT('%',#{paramCondition.receivedDate},'%')
-        </if>
+
         <if test="paramCondition.storehouseId != null">
             and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
         </if>
-        <if test="paramCondition.sellingPrice != null">
-            and selling_price like CONCAT('%',#{paramCondition.sellingPrice},'%')
-        </if>
-        <if test="paramCondition.costPrice != null">
-            and cost_price like CONCAT('%',#{paramCondition.costPrice},'%')
-        </if>
+
         <if test="paramCondition.storehousePositionsId != null">
             and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
         </if>
