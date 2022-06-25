@@ -104,7 +104,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             }
         }
 
-        if (ToolUtil.isNotEmpty(param.getPositionNums())) {
+        if (ToolUtil.isNotEmpty(param.getPositionNums())) {     //多个库位
             String json = JSON.toJSONString(param.getPositionNums());
             param.setStorehousePositionsId(json);
         }
