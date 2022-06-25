@@ -26,17 +26,22 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.message.config.DirectQueueConfig;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.Data;
 import lombok.Synchronized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -44,6 +49,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -82,10 +88,14 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     @Autowired
     private InstockOrderService instockOrderService;
 
+    protected static final Logger logger = LoggerFactory.getLogger(ShopCartServiceImpl.class);
 
     @Override
     @Transactional
     public Long add(ShopCartParam param) {
+
+        Date date = new DateTime();
+        logger.info(date + ": 添加带入购物车--->" + param.getInstockListId());
 
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
             Integer count = this.query().eq("form_id", param.getInstockListId()).eq("display", 1).count();
@@ -94,7 +104,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             }
         }
 
-        if (ToolUtil.isNotEmpty(param.getPositionNums())) {
+        if (ToolUtil.isNotEmpty(param.getPositionNums())) {     //多个库位
             String json = JSON.toJSONString(param.getPositionNums());
             param.setStorehousePositionsId(json);
         }
@@ -106,15 +116,15 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             InstockList instockList = instockListService.getById(param.getInstockListId());
 
 
-//            Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
-//            RemarksParam remarksParam = new RemarksParam();
-//            remarksParam.setTaskId(taskId);
-//            remarksParam.setType("dynamic");
-//            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
-//            messageProducer.remarksServiceDo(new RemarksEntity() {{
-//                setOperationType(OperationType.ADD);
-//                setRemarksParam(remarksParam);
-//            }});
+            Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
+            RemarksParam remarksParam = new RemarksParam();
+            remarksParam.setTaskId(taskId);
+            remarksParam.setType("dynamic");
+            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
+            messageProducer.remarksServiceDo(new RemarksEntity() {{
+                setOperationType(OperationType.ADD);
+                setRemarksParam(remarksParam);
+            }});
         }
 
         return entity.getCartId();

@@ -43,7 +43,7 @@ public class ShopCartController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem( @Valid @RequestBody ShopCartParam shopCartParam) {
+    public ResponseData addItem( @RequestBody ShopCartParam shopCartParam) {
         Long id = this.shopCartService.add(shopCartParam);
         return ResponseData.success(id);
     }

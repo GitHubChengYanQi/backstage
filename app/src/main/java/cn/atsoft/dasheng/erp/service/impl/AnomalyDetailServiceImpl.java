@@ -98,28 +98,29 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
 
         if (ToolUtil.isNotEmpty(param.getAnomalyOrderId())) {
             ActivitiProcessTask task = taskService.getById(param.getAnomalyOrderId());
-            String content = "";
-            if (param.getStauts() == 1) {
-                content = "允许入库";
-            } else if (param.getStauts() == -1) {
-                content = "终止入库";
-            } else if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
-                User user = userService.getById(param.getUserId());
-                content = "转交给" + user.getName() + "进行处理";
+            if (ToolUtil.isNotEmpty(task)) {
+                String content = "";
+                if (param.getStauts() == 1) {
+                    content = "允许入库";
+                } else if (param.getStauts() == -1) {
+                    content = "终止入库";
+                } else if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
+                    User user = userService.getById(param.getUserId());
+                    content = "转交给" + user.getName() + "进行处理";
+                }
+                /**
+                 * 添加动态记录
+                 */
+                RemarksParam remarksParam = new RemarksParam();
+                remarksParam.setTaskId(task.getProcessTaskId());
+                remarksParam.setType("dynamic");
+                remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() +"处理异常："+content);
+                messageProducer.remarksServiceDo(new RemarksEntity() {{
+                    setOperationType(OperationType.ADD);
+                    setRemarksParam(remarksParam);
+                }});
             }
-            /**
-             * 添加动态记录
-             */
-            RemarksParam remarksParam = new RemarksParam();
-            remarksParam.setTaskId(task.getProcessTaskId());
-            remarksParam.setType("dynamic");
-            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() +"处理异常："+content);
-            messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.ADD);
-                setRemarksParam(remarksParam);
-            }});
         }
-
     }
 
 
