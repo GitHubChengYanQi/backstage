@@ -179,14 +179,15 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-         ,daoxin_erp_stock_details.number as stockNumber
+        ,daoxin_erp_stock_details.number as stockNumber
+        ,goods_spu.display
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
         LEFT JOIN
-        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group  by sku_id) as
+        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group by sku_id) as
         daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
-        WHERE 1=1 and goods_sku.display = 1
+        WHERE 1=1 and goods_sku.display = 1 and goods_spu.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
             or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
@@ -252,12 +253,14 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;= str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;= str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         <if test="spuIds != null  and spuIds.size > 0 ">
             and goods_sku.spu_id in
@@ -322,15 +325,15 @@
             )
         </if>
 
-<!--       <if test="paramCondition.mixNum != null-->
-<!--and paramCondition.maxNum != null">-->
-<!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
-<!--        </if>-->
+        <!--       <if test="paramCondition.mixNum != null-->
+        <!--and paramCondition.maxNum != null">-->
+        <!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
+        <!--        </if>-->
         <if test="paramCondition.mixNum != null">
-            and  daoxin_erp_stock_details.number &gt;= #{paramCondition.mixNum}
+            and daoxin_erp_stock_details.number &gt;= #{paramCondition.mixNum}
         </if>
         <if test="paramCondition.maxNum != null">
-            and  daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
+            and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
         </if>
     </select>
 
@@ -357,13 +360,14 @@
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
         ,daoxin_erp_stock_details.number as stockNumber
-         from goods_sku
+        ,goods_spu.display
+        from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
         LEFT JOIN
-        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group  by sku_id) as
+        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group by sku_id) as
         daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
-        WHERE 1=1 and goods_sku.display = 1
+        WHERE 1=1 and goods_sku.display = 1 and goods_spu.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
             or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
@@ -435,14 +439,16 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;= str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;= str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
-      <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
+        <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
             and goods_sku.sku_id in
             <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
                 #{state}
@@ -495,15 +501,15 @@
             </foreach>
             )
         </if>
-<!--        <if test="paramCondition.mixNum != null-->
-<!--           and paramCondition.maxNum != null">-->
-<!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
-<!--        </if>-->
+        <!--        <if test="paramCondition.mixNum != null-->
+        <!--           and paramCondition.maxNum != null">-->
+        <!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
+        <!--        </if>-->
         <if test="paramCondition.mixNum != null">
-            and  daoxin_erp_stock_details.number &gt;=  #{paramCondition.mixNum}
+            and daoxin_erp_stock_details.number &gt;= #{paramCondition.mixNum}
         </if>
         <if test="paramCondition.maxNum != null">
-            and  daoxin_erp_stock_details.number &lt;=  #{paramCondition.maxNum}
+            and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
         </if>
 
     </select>

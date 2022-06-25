@@ -95,6 +95,17 @@
         <if test="paramCondition.createUser != null ">
             and create_user = #{paramCondition.createUser}
         </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.skuName != null">
+            and form_id in (
+            select instock_order_id from daoxin_erp_instock_order where coding like
+            CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select order_id from daoxin_anomaly_order where coding like CONCAT('%',#{paramCondition.skuName},'%')
+            )
+        </if>
         <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
             and process_task_id in
             <foreach collection="paramCondition.taskIds" index="index" item="state" separator="," close=")" open="(">

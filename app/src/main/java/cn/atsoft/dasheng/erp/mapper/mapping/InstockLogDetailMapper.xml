@@ -54,9 +54,7 @@
         <if test="paramCondition.brandId != null">
             and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
         </if>
-        <if test="paramCondition.itemId != null">
-            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-        </if>
+
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
@@ -133,9 +131,7 @@
         <if test="paramCondition.brandId != null">
             and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
         </if>
-        <if test="paramCondition.itemId != null">
-            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-        </if>
+
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
@@ -212,9 +208,7 @@
         <if test="paramCondition.brandId != null">
             and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
         </if>
-        <if test="paramCondition.itemId != null">
-            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-        </if>
+
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
@@ -291,9 +285,7 @@
         <if test="paramCondition.brandId != null">
             and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
         </if>
-        <if test="paramCondition.itemId != null">
-            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-        </if>
+
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>

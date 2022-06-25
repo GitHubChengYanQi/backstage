@@ -168,15 +168,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param) {
-        if (ToolUtil.isNotEmpty(param.getAuditType())) {
 
-            List<Long> taskId = getTaskId(param.getAuditType());
-            if (ToolUtil.isEmpty(taskId)) {
-                taskId = new ArrayList<>();
-                taskId.add(0L);
-            }
-            param.setTaskIds(taskId);
-        } else if (ToolUtil.isEmpty(param.getCreateUser())) {
+        List<Long> taskId = getTaskId();    //查看权限
+        if (ToolUtil.isEmpty(taskId)) {
+            taskId = new ArrayList<>();
+            taskId.add(0L);
+        }
+        param.setTaskIds(taskId);
+        if (ToolUtil.isEmpty(param.getCreateUser())) {
             param.getTaskIds().add(0L);
         }
 
@@ -207,9 +206,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     }
 
 
-    private List<Long> getTaskId(String type) {
+    private List<Long> getTaskId() {
         List<Long> taskIds = new ArrayList<>();
-        List<Long> stepIds = getStepIdsByType(type);
+        List<Long> stepIds = getStepIdsByType();
         List<ActivitiProcessLog> processLogList = stepIds.size() == 0 ? new ArrayList<>() : processLogService.query().in("setps_id", stepIds).groupBy("task_id").list();
         for (ActivitiProcessLog activitiProcessLog : processLogList) {
             taskIds.add(activitiProcessLog.getTaskId());
@@ -220,10 +219,10 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     /**
      * 查出当前下关于用户所有步骤
      *
-     * @param type
+     * @param
      * @return
      */
-    List<Long> getStepIdsByType(String type) {
+    List<Long> getStepIdsByType() {
         LoginContext context = LoginContextHolder.getContext();
 
         List<ActivitiAudit> audits = auditService.query().eq("display", 1).list();
@@ -355,7 +354,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 if (datum.getType().equals("OUTSTOCK") && datum.getFormId().equals(productionPickListsResult.getPickListsId())) {
                     String statusName = statusMap.get(productionPickListsResult.getStatus());
                     productionPickListsResult.setStatusName(statusName);
-                    productionPickListsService.format(new ArrayList<ProductionPickListsResult>(){{
+                    productionPickListsService.format(new ArrayList<ProductionPickListsResult>() {{
                         add(productionPickListsResult);
                     }});
                     datum.setReceipts(productionPickListsResult);
@@ -364,6 +363,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
         }
     }
+
     @Override
     public void checkStartUser(Long processId) {
 
@@ -374,7 +374,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         for (ActivitiAudit audit : audits) {
             if (audit.getType().equals("start")) {
                 if (!haveME(audit.getRule(), LoginContextHolder.getContext())) {
-                    throw new ServiceException(500,"您没有创建流程发起权限");
+                    throw new ServiceException(500, "您没有创建流程发起权限");
                 }
             }
         }

@@ -29,7 +29,7 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private String auditType;
 
-    private List<Long> taskIds  =new ArrayList<>();
+    private List<Long> taskIds = new ArrayList<>();
 
     private Long setpsId;
 
@@ -45,6 +45,8 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     private String deptIds;
 
     private String userIds;
+
+    private String skuName;
 
     private Long userId;
 
