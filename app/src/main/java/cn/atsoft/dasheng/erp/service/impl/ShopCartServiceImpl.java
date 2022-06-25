@@ -104,15 +104,17 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
             InstockList instockList = instockListService.getById(param.getInstockListId());
-            Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
-            RemarksParam remarksParam = new RemarksParam();
-            remarksParam.setTaskId(taskId);
-            remarksParam.setType("dynamic");
-            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
-            messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.ADD);
-                setRemarksParam(remarksParam);
-            }});
+
+
+//            Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
+//            RemarksParam remarksParam = new RemarksParam();
+//            remarksParam.setTaskId(taskId);
+//            remarksParam.setType("dynamic");
+//            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
+//            messageProducer.remarksServiceDo(new RemarksEntity() {{
+//                setOperationType(OperationType.ADD);
+//                setRemarksParam(remarksParam);
+//            }});
         }
 
         return entity.getCartId();
@@ -167,14 +169,15 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
      * @param id
      * @param status
      */
-    private void updateInStockListStatus(Long id, Long status, Long number) {
+    @Transactional
+    public void updateInStockListStatus(Long id, Long status, Long number) {
 
         InstockList instockList = instockListService.getById(id);
 
         if (instockList.getStatus() != 0) {
             throw new ServiceException(500, "当前已操作");
         }
-        if (instockList.getRealNumber()-number==0) {
+        if (instockList.getRealNumber() - number == 0) {
             instockList.setStatus(status);
             this.instockListService.updateById(instockList);
         }
