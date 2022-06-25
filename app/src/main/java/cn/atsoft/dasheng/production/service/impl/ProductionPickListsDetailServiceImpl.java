@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsDetailMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
@@ -94,14 +95,17 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
     public void format(List<ProductionPickListsDetailResult> results) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
+        List<Long> detailIds = new ArrayList<>();
         for (ProductionPickListsDetailResult result : results) {
             skuIds.add(result.getSkuId());
             if (ToolUtil.isNotEmpty(result.getBrandId())) {
                 brandIds.add(result.getBrandId());
             }
+            detailIds.add(result.getPickListsDetailId());
         }
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
         List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<ProductionPickListsCartResult> cartResults = pickListsCartService.listByListsDetailIds(detailIds);
         for (StockDetails skus : stockSkus) {
             if (ToolUtil.isEmpty(skus.getBrandId())) {
                 skus.setBrandId(0L);
@@ -165,6 +169,13 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     result.setBrandResult(brandMap);
                 }
             }
+            List<ProductionPickListsCartResult> cartResultList = new ArrayList<>();
+            for (ProductionPickListsCartResult cartResult : cartResults) {
+                if (result.getPickListsDetailId().equals(cartResult.getPickListsDetailId())){
+                    cartResultList.add(cartResult);
+                }
+            }
+            result.setCartResults(cartResultList);
         }
 
     }

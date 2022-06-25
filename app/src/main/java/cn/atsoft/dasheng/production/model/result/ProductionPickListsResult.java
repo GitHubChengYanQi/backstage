@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.LongJsonSerializer.LongJsonDeserializer;
 import cn.atsoft.dasheng.LongJsonSerializer.LongJsonSerializer;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -44,6 +45,7 @@ public class ProductionPickListsResult implements Serializable {
     private String statusName;
     private List<AnnouncementsResult> announcementsResults;
     private List<String> enclosureUrl;
+    private List<SkuSimpleResult> skuResults;
     /**
      * 附件
      */

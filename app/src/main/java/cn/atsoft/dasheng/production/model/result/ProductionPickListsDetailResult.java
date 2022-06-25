@@ -43,6 +43,7 @@ public class ProductionPickListsDetailResult implements Serializable {
     private String pickListsCoding;
     private Integer stockNumber;
     private Boolean isMeet;
+    private List<ProductionPickListsCartResult> cartResults;
     private Map<String,String> brandResult;
     /**
      * 子表id

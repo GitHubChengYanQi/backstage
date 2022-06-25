@@ -85,7 +85,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
     @Override
     @Transactional
-    @Synchronized
     public Long add(ShopCartParam param) {
 
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {

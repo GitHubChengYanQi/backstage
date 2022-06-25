@@ -28,6 +28,7 @@ public class ProductionPickListsDetailParam implements Serializable, BaseValidat
 
     private Long storehousePositionsId;
     private Long storehouseId;
+    private Long cartId;
     private Long pickListsCart;
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Integer receivedNumber;

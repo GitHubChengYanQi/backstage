@@ -369,9 +369,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //            this.createQualityTask(param, skus);
 
 
-        }
 
     }
+    }
+
 
     /**
      * 直接入库 不走审批

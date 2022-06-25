@@ -84,4 +84,6 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
     Long getTaskIdByFormId(Long formId);
 
     void format(List<ActivitiProcessTaskResult> data);
+
+    void checkStartUser(Long processId);
 }
