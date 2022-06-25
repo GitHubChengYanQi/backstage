@@ -150,7 +150,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
             for (StockDetails stockDetails : needStockDetail) {
                 if (number > 0) {
-                    if ((ToolUtil.isNotEmpty(stockDetails.getBrandId()) && stockDetails.getBrandId().equals(productionPickListsCartParam.getBrandId()) && stockDetails.getSkuId().equals(productionPickListsCartParam.getSkuId()) && stockDetails.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId())) || (ToolUtil.isEmpty(stockDetails.getBrandId()) && productionPickListsCartParam.getBrandId() == 0 && stockDetails.getSkuId().equals(productionPickListsCartParam.getSkuId()) && stockDetails.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId()))) {
+                    if ((ToolUtil.isNotEmpty(stockDetails.getBrandId()) && stockDetails.getBrandId().equals(productionPickListsCartParam.getBrandId()) && stockDetails.getSkuId().equals(productionPickListsCartParam.getSkuId()) && stockDetails.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId())) || ((ToolUtil.isEmpty(stockDetails.getBrandId())|| stockDetails.getBrandId().equals(0L))  && stockDetails.getSkuId().equals(productionPickListsCartParam.getSkuId()) && stockDetails.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId()))) {
                         int lastNumber = number;
                         number -= stockDetails.getNumber();
                         if (number > 0) {
@@ -276,7 +276,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         /**
          * ids去重
          */
-        skuIds = stockIds.stream().distinct().collect(Collectors.toList());
+        skuIds = skuIds.stream().distinct().collect(Collectors.toList());
         brandIds = brandIds.stream().distinct().collect(Collectors.toList());
         stockIds = stockIds.stream().distinct().collect(Collectors.toList());
 
