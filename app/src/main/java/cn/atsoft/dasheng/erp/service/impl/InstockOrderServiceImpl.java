@@ -369,7 +369,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //            this.createQualityTask(param, skus);
 
 
-        }
 
     }
 

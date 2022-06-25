@@ -78,52 +78,22 @@ public class InstockLogDetail implements Serializable {
     private Long instockOrderId;
 
     /**
-     * 批号
-     */
-    @TableField("lot_number")
-    private String lotNumber;
-
-    /**
-     * 有效日期
-     */
-    @TableField("effective_date")
-    private Date effectiveDate;
-
-    /**
-     * 生产日期
-     */
-    @TableField("manufacture_date")
-    private Date manufactureDate;
-
-    /**
-     * 序列号
-     */
-    @TableField("serial_number")
-    private String serialNumber;
-
-    /**
-     * 到货日期
-     */
-    @TableField("received_date")
-    private Date receivedDate;
-
-    /**
      * 地点id
      */
     @TableField("storehouse_id")
     private Long storehouseId;
 
-    /**
+  /**
      * 出售价格
      */
-    @TableField("selling_price")
-    private Integer sellingPrice;
+    @TableField("source")
+    private String source;
 
     /**
      * 成本价格
      */
-    @TableField("cost_price")
-    private Integer costPrice;
+    @TableField("source_id")
+    private Long sourceId;
 
     /**
      * 仓库库位id
@@ -234,45 +204,6 @@ public class InstockLogDetail implements Serializable {
         this.instockOrderId = instockOrderId;
     }
 
-    public String getLotNumber() {
-        return lotNumber;
-    }
-
-    public void setLotNumber(String lotNumber) {
-        this.lotNumber = lotNumber;
-    }
-
-    public Date getEffectiveDate() {
-        return effectiveDate;
-    }
-
-    public void setEffectiveDate(Date effectiveDate) {
-        this.effectiveDate = effectiveDate;
-    }
-
-    public Date getManufactureDate() {
-        return manufactureDate;
-    }
-
-    public void setManufactureDate(Date manufactureDate) {
-        this.manufactureDate = manufactureDate;
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public Date getReceivedDate() {
-        return receivedDate;
-    }
-
-    public void setReceivedDate(Date receivedDate) {
-        this.receivedDate = receivedDate;
-    }
 
     public Long getStorehouseId() {
         return storehouseId;
@@ -280,22 +211,6 @@ public class InstockLogDetail implements Serializable {
 
     public void setStorehouseId(Long storehouseId) {
         this.storehouseId = storehouseId;
-    }
-
-    public Integer getSellingPrice() {
-        return sellingPrice;
-    }
-
-    public void setSellingPrice(Integer sellingPrice) {
-        this.sellingPrice = sellingPrice;
-    }
-
-    public Integer getCostPrice() {
-        return costPrice;
-    }
-
-    public void setCostPrice(Integer costPrice) {
-        this.costPrice = costPrice;
     }
 
     public Long getStorehousePositionsId() {
@@ -374,14 +289,6 @@ public class InstockLogDetail implements Serializable {
                 ", number=" + number +
                 ", instockNumber=" + instockNumber +
                 ", instockOrderId=" + instockOrderId +
-                ", lotNumber=" + lotNumber +
-                ", effectiveDate=" + effectiveDate +
-                ", manufactureDate=" + manufactureDate +
-                ", serialNumber=" + serialNumber +
-                ", receivedDate=" + receivedDate +
-                ", storehouseId=" + storehouseId +
-                ", sellingPrice=" + sellingPrice +
-                ", costPrice=" + costPrice +
                 ", storehousePositionsId=" + storehousePositionsId +
                 ", createTime=" + createTime +
                 ", createUser=" + createUser +
@@ -390,5 +297,21 @@ public class InstockLogDetail implements Serializable {
                 ", display=" + display +
                 ", deptId=" + deptId +
                 "}";
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 }

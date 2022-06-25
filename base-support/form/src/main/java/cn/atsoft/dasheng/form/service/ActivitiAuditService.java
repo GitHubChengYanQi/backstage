@@ -2,9 +2,11 @@ package cn.atsoft.dasheng.form.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -79,4 +81,5 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
 
 
     List<Long> getUserIds(Long taskId);
+    void power(ActivitiProcess activitiProcess);
 }

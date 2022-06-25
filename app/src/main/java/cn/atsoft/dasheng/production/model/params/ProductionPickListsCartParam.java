@@ -32,7 +32,6 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
 
     private List<ProductionPickListsCartParam> productionPickListsCartParams;
 
-
     private Long inkindId;
     private Long storehousePositionsId;
     private Long storehouseId;
