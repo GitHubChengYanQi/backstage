@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.MessageType;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -80,19 +81,15 @@ public class OutstockSendTemplate {
     public void send(String url){
         List<Long> users = new ArrayList();
         users.add(getUserId());
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setTitle("出库有提醒");
-        wxCpTemplate.setDescription("有新的物料需要出库");
-        wxCpTemplate.setUserIds(users);
 
-        wxCpTemplate.setUrl(url);
-        //获取url
-//        wxCpSendTemplate.setMessage(new Message(){{
-//            setSource("outStockOrder");
-//            setSourceId(sourceId);
-//        }});
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setItems("审批被否决");
+            setDescription("有新的物料需要出库");
+            setUrl(url);
+            setUserIds(users);
+        }});
+
 
     }
     public void sendTemplate() {

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -29,14 +30,13 @@ public class ProcessTaskEndSend {
         List<Long> users = new ArrayList<>();
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
         users.add(processTask.getCreateUser());
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setTitle("流程已结束");
-        wxCpTemplate.setDescription(processTask.getTaskName());
-        wxCpTemplate.setUserIds(users);
         String url = mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + processTask.getProcessTaskId();
-        wxCpTemplate.setUrl(url);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setItems("流程已结束");
+            setUrl(url);
+            setDescription(processTask.getTaskName());
+            setUserIds(users);
+        }});
         activitiProcessTaskService.updateById(processTask);
     }
 }

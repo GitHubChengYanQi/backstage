@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.InquiryTask;
 import cn.atsoft.dasheng.purchase.entity.InquiryTaskDetail;
@@ -145,16 +146,23 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         } else {
             entity.setStatus(98);
             this.updateById(entity);
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setTitle("新的采购单");
-            wxCpTemplate.setDescription(user.getName() + "发起的采购申请");
-            wxCpTemplate.setUserIds(new ArrayList<Long>(){{
-                add(param.getUserId());
-            }});
+
             String url = mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" ;
-            wxCpTemplate.setUrl(url);
-           wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-           wxCpSendTemplate.sendTemplate();
+
+
+
+
+            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+                setTitle("新的采购单");
+                setUrl(url);
+                setDescription(user.getName() + "发起的采购申请");
+                setCreateUser(entity.getCreateUser());
+                setType(0);
+                setUserIds(new ArrayList<Long>() {{
+                    add(entity.getUserId());
+                }});
+            }});
+
         }
     }
 

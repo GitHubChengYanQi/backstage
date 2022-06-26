@@ -24,6 +24,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -216,13 +217,12 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
      */
     @Override
     public void pushPeople(List<Long> userIds, Long taskId, String content) {
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setDescription(content);
-        wxCpTemplate.setTitle("新消息");
-        wxCpTemplate.setUserIds(userIds);
-        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setItems("新消息");
+            setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
+            setUserIds(userIds);
+        }});
+
     }
 
 
