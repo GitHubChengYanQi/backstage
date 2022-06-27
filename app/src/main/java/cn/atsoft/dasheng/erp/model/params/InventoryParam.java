@@ -25,6 +25,10 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private Boolean allSku;
+
+    private Boolean AllBom;
+
     private String enclosure;
 
     private String participants;
@@ -32,6 +36,11 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
     private List<InventoryDetailParam> detailParams;
 
     private String notice;
+
+
+    private Long brandId;
+
+    private Long positionId;
 
 
     private Date endTime;

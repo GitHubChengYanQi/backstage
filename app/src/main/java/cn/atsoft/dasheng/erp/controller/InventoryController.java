@@ -33,23 +33,33 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "盘点任务主表")
 public class InventoryController extends BaseController {
     @Autowired
-    private OrCodeBindService bindService; 
+    private OrCodeBindService bindService;
 
     @Autowired
     private InventoryService inventoryService;
 
-//    /**
-//     * 新增接口
-//     *
-//     * @author Captain_Jazz
-//     * @Date 2021-12-27
-//     */
-//    @RequestMapping(value = "/add", method = RequestMethod.POST)
-//    @ApiOperation("新增")
-//    public ResponseData addItem(@RequestBody InventoryParam inventoryParam) {
-//        this.inventoryService.add(inventoryParam);
-//        return ResponseData.success();
-//    }
+    /**
+     * 新增接口
+     *
+     * @author Captain_Jazz
+     * @Date 2021-12-27
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addItem(@RequestBody InventoryParam inventoryParam) {
+        this.inventoryService.add(inventoryParam);
+        return ResponseData.success();
+    }
+
+
+
+    @RequestMapping(value = "/selectCondition", method = RequestMethod.POST)
+    @ApiOperation("条件盘点")
+    public ResponseData selectCondition(@RequestBody InventoryParam inventoryParam) {
+        this.inventoryService.selectCondition(inventoryParam);
+        return ResponseData.success();
+    }
+
 //
 //    /**
 //     * 编辑接口

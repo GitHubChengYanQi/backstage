@@ -358,6 +358,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
 
+
     @Override
     public List<SkuResult> getSkuByMd5(SkuParam param) {
         if (ToolUtil.isEmpty(param.getSpuId())) {
@@ -964,6 +965,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
 
+
         Page<SkuResult> pageContext = getPageContext();
         IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
         PageInfo<SkuResult> pageInfo = PageFactory.createPageInfo(page);
@@ -972,6 +974,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (param.getStockView()) {  //是否开启查询
 
             List<SkuResult> skuResultList = this.baseMapper.allList(new ArrayList<>(), param);  //查询所有结果集
+
+
             List<Long> skuIds = new ArrayList<>();
             skuIds.add(0L);
             int countNumber = 0;

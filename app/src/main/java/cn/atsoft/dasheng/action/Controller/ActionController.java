@@ -34,8 +34,9 @@ public class ActionController {
     @RequestMapping(value = "/selectDict", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData selectDict() {
-        return  ResponseData.success(PurchaseAskDictEnum.enumList());
+        return ResponseData.success(PurchaseAskDictEnum.enumList());
     }
+
     /**
      * 新增采购申请动作
      *
@@ -99,6 +100,16 @@ public class ActionController {
                     }
                 }
                 break;
+            case Stocktaking:
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (StocktakinEnum stocktakinEnum : action.getStocktakinEnums()) {
+                        String value = stocktakinEnum.getValue();
+                        stocktakinEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
+                        i++;
+                    }
+                }
+                break;
         }
 
 
@@ -115,7 +126,7 @@ public class ActionController {
     public ResponseData addState(@RequestBody @Valid StatusParam statusParam) {
         Long id;
         if (ToolUtil.isEmpty(statusParam.getReceiptsEnum())) {
-            throw  new ServiceException(500,"请传入单据类型枚举");
+            throw new ServiceException(500, "请传入单据类型枚举");
         }
         switch (statusParam.getReceiptsEnum()) {
             case PURCHASE:
@@ -123,6 +134,7 @@ public class ActionController {
             case OUTSTOCK:
             case INSTOCKERROR:
             case PURCHASEORDER:
+            case Stocktaking:
                 DocumentsStatusParam status = statusParam.getParam();
                 status.setFormType(statusParam.getReceiptsEnum().name());
                 id = documentStatusService.add(status);

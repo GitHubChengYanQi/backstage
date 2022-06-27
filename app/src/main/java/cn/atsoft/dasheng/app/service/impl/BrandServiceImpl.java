@@ -126,6 +126,13 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     @Override
+    public PageInfo<BrandResult> pureList(BrandParam param, DataScope dataScope) {
+        Page<BrandResult> pageContext = getPageContext();
+        IPage<BrandResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
+        return PageFactory.createPageInfo(page);
+    }
+
+    @Override
     public List<BrandResult> getBrandResults(List<Long> brandIds) {
         List<BrandResult> brandResults = new ArrayList<>();
         if (ToolUtil.isEmpty(brandIds)) {
@@ -187,21 +194,6 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
             skuIds.add(skuBrandBind.getSkuId());
         }
         List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
-//        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-//        partsQueryWrapper.in("brand_id", brandIs);
-//        List<Parts> list = partsService.list(partsQueryWrapper);
-//        partsService.getByIds(brandIs);
-//
-//        for (BrandResult datum : data) {
-//            for (Parts parts : list) {
-//                if (datum.getBrandId().equals(parts.getBrandId())) {
-//                    PartsResult partsResult =new PartsResult();
-//                    ToolUtil.copyProperties(parts,partsResult);
-//                     datum.setPartsResult(partsResult);
-//                     break;
-//                }
-//            }
-//        }
         for (BrandResult datum : data) {
             skuIds = new ArrayList<>();
             List<SkuResult> results = new ArrayList<>();

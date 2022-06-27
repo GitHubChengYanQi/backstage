@@ -22,6 +22,8 @@ import cn.atsoft.dasheng.query.service.QueryLogService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -70,7 +72,6 @@ public class SkuController extends BaseController {
         skuParam.setAddMethod(1);
         skuParam.setSkuId(null);
 
-
         Map<String, Sku> skuMap = this.skuService.add(skuParam);
         if (ToolUtil.isNotEmpty(skuMap.get("success"))) {
             return ResponseData.success(skuMap.get("success").getSkuId());
@@ -83,8 +84,6 @@ public class SkuController extends BaseController {
             }});
             return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), skuResult);
         }
-
-
     }
 
     /**

@@ -29,6 +29,8 @@ public interface InventoryService extends IService<Inventory> {
      */
     void add(InventoryParam param);
 
+    void selectCondition(InventoryParam param);
+
     /**
      * 删除
      *

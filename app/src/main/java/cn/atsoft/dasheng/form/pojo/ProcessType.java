@@ -71,10 +71,17 @@ public enum ProcessType {
         add(ProcessModuleEnum.verifyError);
     }}),
 
-    OUTSTOCK("出库单", "OUTSTOCK", new ArrayList<ProcessModuleEnum>() {{
-        add(ProcessModuleEnum.productionOutStock);
-        add(ProcessModuleEnum.pickLists);
-    }});
+    Stocktaking("盘点", "Stocktaking", new ArrayList<ProcessModuleEnum>() {{
+        add(ProcessModuleEnum.Stocktaking);
+    }}),
+
+    OUTSTOCK("出库单", "OUTSTOCK", new ArrayList<ProcessModuleEnum>() {
+        {
+            add(ProcessModuleEnum.productionOutStock);
+            add(ProcessModuleEnum.pickLists);
+        }
+    });
+
 
     //
 //    @EnumValue

@@ -2,37 +2,32 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
-import cn.atsoft.dasheng.app.service.OutstockOrderService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.app.service.StockService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Inkind;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
+import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.erp.service.InkindService;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
-import cn.atsoft.dasheng.erp.entity.Inventory;
-import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.mapper.InventoryMapper;
 import cn.atsoft.dasheng.erp.model.params.InventoryParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
-import cn.atsoft.dasheng.erp.service.InventoryDetailService;
-import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
@@ -96,6 +91,16 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private MessageProducer messageProducer;
     @Autowired
     private RemarksService remarksService;
+    @Autowired
+    private SkuBrandBindService brandBindService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private PartsService partsService;
+    @Autowired
+    private ErpPartsDetailService partsDetailService;
 
     @Override
     @Transactional
@@ -116,6 +121,59 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         param.setCreateUser(entity.getCreateUser());
         submit(param);
     }
+
+    /**
+     * 条件盘点
+     *
+     * @param param
+     */
+    @Override
+    public void selectCondition(InventoryParam param) {
+        Set<Long> skuIds = new HashSet<>();
+
+        if (param.getAllSku()) {       //全局盘点
+            List<Sku> skus = skuService.query().eq("display", 1).list();
+            for (Sku sku : skus) {
+                skuIds.add(sku.getSkuId());
+            }
+        }
+
+        if (ToolUtil.isNotEmpty(param.getBrandId())) {  //品牌盘点
+            List<SkuBrandBind> brandBinds = brandBindService.query().eq("brand_id", param.getBrandId()).eq("display", 1).list();
+            for (SkuBrandBind brandBind : brandBinds) {
+                skuIds.add(brandBind.getSkuId());
+            }
+        }
+        if (ToolUtil.isNotEmpty(param.getPositionId())) {   //库位盘点
+            List<StockDetails> stock = stockDetailsService.getStock();
+            for (StockDetails stockDetails : stock) {
+                if (ToolUtil.isNotEmpty(stockDetails.getStorehousePositionsId()) && stockDetails.getStorehousePositionsId().equals(param.getPositionId())) {
+                    skuIds.add(stockDetails.getSkuId());
+                }
+            }
+        }
+
+        if (param.getAllBom()) {   //全局Bom
+            List<Parts> parts = partsService.query().eq("display", 1).eq("status", 99).list();
+            List<Long> partIds = new ArrayList<>();
+            for (Parts part : parts) {
+                partIds.add(part.getPartsId());
+            }
+            List<ErpPartsDetail> partsDetails = partIds.size() == 0 ? new ArrayList<>() : partsDetailService.query().in("parts_id", partIds).eq("display", 1).list();
+            for (ErpPartsDetail partsDetail : partsDetails) {
+                skuIds.add(partsDetail.getSkuId());
+            }
+        }
+
+        List<InventoryDetailParam> detailParams = new ArrayList<>();
+        for (Long skuId : skuIds) {
+            InventoryDetailParam detailParam = new InventoryDetailParam();
+            detailParam.setSkuId(skuId);
+        }
+        param.setDetailParams(detailParams);
+        this.add(param);
+    }
+
 
     /**
      * 创建任务
@@ -474,7 +532,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         return entity;
     }
 
-    private void format(List<InventoryResult> data)  {
+    private void format(List<InventoryResult> data) {
 
         List<Long> inventoryIds = new ArrayList<>();
 

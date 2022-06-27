@@ -62,6 +62,8 @@ public interface StockDetailsService extends IService<StockDetails> {
      */
     List<StockDetailsResult> findListBySpec(StockDetailsParam param);
 
+    List<StockDetails> getStock();
+
     List<StockDetailsResult> getDetailsBySkuId(Long id);
 
     /**
