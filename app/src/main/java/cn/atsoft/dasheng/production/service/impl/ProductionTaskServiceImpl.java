@@ -23,6 +23,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -228,18 +229,22 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
              */
             entity.setStatus(98);
             this.updateById(entity);
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
-            wxCpTemplate.setTitle("新的生产任务");
-            wxCpTemplate.setDescription("您被分派了新的生产任务" + entity.getCoding());
-            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-                add(entity.getUserId());
+            /**
+             * 发送消息
+             */
+            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+                setType(0);
+                setTitle("新的生产任务");
+                setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
+                setDescription("您被分派了新的生产任务" + entity.getCoding());
+                setCreateUser(entity.getCreateUser());
+                setSource("productionTask");
+                setSourceId(entity.getProductionTaskId());
+                setType(0);
+                setUserIds(new ArrayList<Long>() {{
+                    add(entity.getUserId());
+                }});
             }});
-            wxCpSendTemplate.setSource("productionTask");
-            wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
-            wxCpTemplate.setType(0);
-            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-            wxCpSendTemplate.sendTemplate();
 
             /**
              * 生成领料单
@@ -262,18 +267,22 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
              */
             entity.setStatus(0);
             this.updateById(entity);
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
-            wxCpTemplate.setTitle("新的生产任务");
-            wxCpTemplate.setDescription("您被分派了新的生产任务" + entity.getCoding());
-            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-                add(entity.getUserId());
+
+            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+                setTitle("新的生产任务");
+                setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
+                setDescription("您被分派了新的生产任务" + entity.getCoding());
+                setCreateUser(entity.getCreateUser());
+                setSource("productionTask");
+                setSourceId(entity.getProductionTaskId());
+                setType(0);
+                setUserIds(new ArrayList<Long>() {{
+                    add(entity.getUserId());
+                }});
             }});
-            wxCpSendTemplate.setSource("productionTask");
-            wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
-            wxCpTemplate.setType(0);
-            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-            wxCpSendTemplate.sendTemplate();
+
+
+
         }
 
     }
@@ -427,18 +436,21 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         productionTaskDetailService.saveBatch(detailEntitys);
 
 
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
-        wxCpTemplate.setTitle("新的生产任务");
-        wxCpTemplate.setDescription("您领取了新的生产任务" + entity.getCoding());
-        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-            add(entity.getUserId());
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setItems("新的生产任务");
+            setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
+            setDescription("您领取了新的生产任务" + entity.getCoding());
+            setCreateUser(entity.getCreateUser());
+            setSource("productionTask");
+            setSourceId(entity.getProductionTaskId());
+            setType(0);
+            setUserIds(new ArrayList<Long>() {{
+                add(entity.getUserId());
+            }});
         }});
-        wxCpSendTemplate.setSource("productionTask");
-        wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
-        wxCpTemplate.setType(0);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+
+
+
 
         MicroServiceEntity serviceEntity = new MicroServiceEntity();
         serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
@@ -476,18 +488,21 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         pickListsService.updateById(productionPickLists);
 
 
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(entity.getProductionTaskId().toString());
-        wxCpTemplate.setTitle("新的生产任务");
-        wxCpTemplate.setDescription("您被转派了新的生产任务" + entity.getCoding());
-        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-            add(entity.getUserId());
+
+
+
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setItems("新的生产任务");
+            setUrl(entity.getProductionTaskId().toString());
+            setDescription("您被转派了新的生产任务" + entity.getCoding());
+            setCreateUser(entity.getCreateUser());
+            setSource("productionTask");
+            setSourceId(entity.getProductionTaskId());
+            setType(0);
+            setUserIds(new ArrayList<Long>() {{
+                add(entity.getUserId());
+            }});
         }});
-        wxCpSendTemplate.setSource("productionTask");
-        wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
-        wxCpTemplate.setType(0);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
 
         return entity;
 

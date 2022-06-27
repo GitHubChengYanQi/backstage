@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
@@ -132,15 +133,17 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
      */
     @Override
     public void pushPeople(Long userId, Long id) {
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setDescription("入库异常 转交处理");
-        wxCpTemplate.setTitle("新消息");
-        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
-            add(userId);
+        Anomaly anomalyServiceById = this.anomalyService.getById(id);
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setType(1);
+            setItems("入库异常 转交您处理");
+            setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Error/Detail/Handle?id=" + id);
+            setDescription("入库异常 转交处理");
+            setRemark(anomalyServiceById.getRemark());
+            setUserIds(new ArrayList<Long>() {{
+                add(userId);
+            }});
         }});
-        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Error/Detail/Handle?id=" + id);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
     }
 
     @Override

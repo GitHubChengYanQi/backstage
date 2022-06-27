@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.StepsService;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -102,7 +103,6 @@ public class ActivitiProcessTaskSend {
                     users.addAll(allUsersId);
                     break;
                 case DeptPositions:
-                    Map<String, List> map = new HashMap<>();
                     for (DeptPosition deptPosition : rule.getDeptPositions()) {
                         List<Long> positionIds = new ArrayList<>();
                         for (DeptPosition.Position position : deptPosition.getPositions()) {
@@ -222,16 +222,16 @@ public class ActivitiProcessTaskSend {
         List<Long> users = new ArrayList<>();
         users.add(createUser.getUserId());
 
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setTitle("审批被否决");
-        wxCpTemplate.setDescription(processTask.getTaskName());
-        wxCpTemplate.setUserIds(users);
-        //获取url
         Map<String, String> aboutSend = this.getAboutSend(taskId, send);
-        wxCpTemplate.setUrl(aboutSend.get("url"));
 
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setType(1);
+            setItems("审批被否决");
+            setCreateUserName(createUser.getName());
+            setUrl(aboutSend.get("url"));
+            setDescription(processTask.getTaskName());
+            setUserIds(users);
+        }});
     }
 
     /**
