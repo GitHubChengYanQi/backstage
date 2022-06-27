@@ -203,15 +203,17 @@ public class WxCpSendTemplate {
         if (ToolUtil.isNotEmpty(markDownTemplate.getItems())) {
             stringBuffer.append(">**事　项**：").append("<font color=\"info\">").append(markDownTemplate.getItems()).append("</font>").append("\n \n ");
         }
-        if (ToolUtil.isNotEmpty(markDownTemplate.getCreateUserName())) {
-            stringBuffer.append(">**发起人**：").append(markDownTemplate.getCreateUserName()).append("\n \n");
-            stringBuffer.append(">").append("\n > \n");
-        }
+
         if (ToolUtil.isNotEmpty(markDownTemplate.getDescription())) {
             stringBuffer.append(">**详　情**：").append("<font color=\"warning\">").append(markDownTemplate.getDescription()).append("</font>").append("\n\n");
         }
-        if (ToolUtil.isNotEmpty(markDownTemplate.getRemark())) {
+        if (ToolUtil.isEmpty(markDownTemplate.getRemark())) {
+            stringBuffer.append(">**备　注**：").append("<font color=\"comment\">").append(" ").append("</font>").append("\n\n");
+        }else {
             stringBuffer.append(">**备　注**：").append("<font color=\"comment\">").append(markDownTemplate.getRemark()).append("</font>").append("\n\n");
+        }
+        if (ToolUtil.isNotEmpty(markDownTemplate.getCreateUserName())) {
+            stringBuffer.append(">**发起人**：").append(markDownTemplate.getCreateUserName()).append("\n \n");
         }
         if (ToolUtil.isNotEmpty(markDownTemplate.getUrl())) {
             stringBuffer.append(">").append("\n\n");
