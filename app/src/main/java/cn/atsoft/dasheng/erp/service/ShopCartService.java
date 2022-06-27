@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.ShopCartResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -27,6 +28,8 @@ public interface ShopCartService extends IService<ShopCart> {
     Long add(ShopCartParam param);
 
     void sendBack(List<Long> ids);
+
+    Set<String> backType(List<String> types);
 
     void addList(List<ShopCartParam> params);
 

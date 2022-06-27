@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -64,6 +65,12 @@ public class ShopCartController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/backType", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData backType(@RequestBody ShopCartParam shopCartParam) {
+        Set<String> set = this.shopCartService.backType(shopCartParam.getTypes());
+        return ResponseData.success(set);
+    }
 
     /**
      * 编辑接口

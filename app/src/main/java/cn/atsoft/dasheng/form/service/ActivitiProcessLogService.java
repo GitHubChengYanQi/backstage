@@ -65,7 +65,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
 
     ActivitiStepsResult addLog(Long processId, Long taskId);
 
-    ActivitiStepsResult addLog(Long processId, Long taskId, Integer status);
+    ActivitiStepsResult addLog(Long processId, Long taskId, Integer status, Long loginUserId);
 
     ActivitiStepsResult microAddLog(Long processId, Long taskId, Long userId);
 

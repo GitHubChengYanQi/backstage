@@ -974,10 +974,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<SkuResult> skuResultList = this.baseMapper.allList(new ArrayList<>(), param);  //查询所有结果集
             List<Long> skuIds = new ArrayList<>();
             skuIds.add(0L);
+            int countNumber = 0;
             for (SkuResult skuResult : skuResultList) {
                 skuIds.add(skuResult.getSkuId());
+                countNumber = countNumber + skuResult.getStockNumber();
             }
-
+            Map<String, Integer> countMap = new HashMap<>();
+            countMap.put("stockCount", countNumber);
             List<Object> searchObjects = new ArrayList<>();
 
             /**
@@ -985,7 +988,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              */
             SearchObject bomSearch = null;
             if (param.getOpenBom()) {
-                if ( ToolUtil.isNotEmpty(param.getPartsSkuId())) {
+                if (ToolUtil.isNotEmpty(param.getPartsSkuId())) {
                     List<Parts> parts = partsService.query().eq("status", 99).eq("display", 1).list();
                     bomSearch = bomSearch(new ArrayList<Long>() {{
                         for (Parts part : parts) {
@@ -996,7 +999,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     bomSearch = bomSearch(skuIds);
                 }
             }
-
 
 
             /**
@@ -1069,7 +1071,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              */
             SearchObject positionSearch = null;
             if (param.getOpenPosition()) {
-                if (  ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
+                if (ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
                     List<SkuPositionView> skuPositionViews = skuPositionViewService.list();
                     positionSearch = positionSearch(new ArrayList<Long>() {{
                         for (SkuPositionView skuPositionView : skuPositionViews) {
@@ -1086,7 +1088,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             searchObjects.add(brandSearch);
             searchObjects.add(classSearch);
             searchObjects.add(bomSearch);
+            searchObjects.add(countNumber);
             searchObjects.add(statusSearch());
+            searchObjects.add(countMap);
             pageInfo.setSearch(searchObjects);
         }
 
@@ -1445,7 +1449,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
             skuResult.setImgUrls(imageUrls);
             for (StockDetails stockDetails : totalLockDetail) {
-                if (stockDetails.getSkuId().equals(skuResult.getSkuId())){
+                if (stockDetails.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setLockStockDetailNumber(Math.toIntExact(stockDetails.getNumber()));
                 }
             }

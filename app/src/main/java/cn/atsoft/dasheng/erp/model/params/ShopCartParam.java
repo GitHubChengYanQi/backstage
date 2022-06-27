@@ -31,6 +31,8 @@ public class ShopCartParam implements Serializable, BaseValidatingParam {
 
     private List<PositionNum> positionNums;
 
+    private List<String> types;
+
     private String storehousePositionsId;
 
     private Long sourceId;
@@ -46,7 +48,6 @@ public class ShopCartParam implements Serializable, BaseValidatingParam {
 
     private Long instockListId;
 
-    private List<String> types;
 
     /**
      * 类型

@@ -312,6 +312,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     setMessageType(AuditMessageType.CREATE_TASK);
                     setActivitiProcess(activitiProcess);
                     setTaskId(taskId);
+                    setLoginUserId(LoginContextHolder.getContext().getUserId());
                     setTimes(0);
                     setMaxTimes(1);
                 }});

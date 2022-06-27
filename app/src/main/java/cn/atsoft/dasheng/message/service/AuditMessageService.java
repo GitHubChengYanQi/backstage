@@ -68,6 +68,6 @@ public class AuditMessageService {
      * @param loginUserId
      */
     public void complete(ActivitiProcess activitiProcess, Long taskId, Long loginUserId) {
-        activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId, 1);
+        activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId, 1,loginUserId);
     }
 }

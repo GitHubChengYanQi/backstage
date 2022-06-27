@@ -48,10 +48,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -192,6 +189,23 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             this.instockListService.updateById(instockList);
         }
 
+    }
+
+    @Override
+    public Set<String> backType(List<String> types) {
+        Long userId = LoginContextHolder.getContext().getUserId();
+        List<ShopCart> shopCartList = this.query().eq("display", 1).eq("create_user", userId).list();
+
+        Set<String> set = new HashSet<>();
+        for (ShopCart shopCart : shopCartList) {
+            for (String type : types) {
+                if (type.equals(shopCart.getType())) {
+                    set.add(type);
+                }
+            }
+        }
+
+        return set;
     }
 
 

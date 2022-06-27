@@ -44,6 +44,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -1022,9 +1023,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public ActivitiStepsResult addLog(Long processId, Long taskId, Integer status) {
+    public ActivitiStepsResult addLog(Long processId, Long taskId, Integer status, Long loginUserId) {
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
-        loopAdd(activitiStepsResult, taskId, status);
+        loopAdd(activitiStepsResult, taskId, status, loginUserId);
 
         viewService.addView(taskId);
         return activitiStepsResult;
@@ -1053,7 +1054,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     }
 
-    private void loopAdd(ActivitiStepsResult activitiStepsResult, Long taskId, Integer status) {
+    private void loopAdd(ActivitiStepsResult activitiStepsResult, Long taskId, Integer status, Long loginUserId) {
         Long processId = activitiStepsResult.getProcessId();
 
         /**
@@ -1064,6 +1065,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
         processLog.setStatus(status);
+        processLog.setUpdateUser(loginUserId);
+        processLog.setCreateUser(loginUserId);
+        processLog.setUpdateTime(new Date());
         if (ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule()) && ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule().getActionStatuses())) {
             List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
             if (ToolUtil.isNotEmpty(actionStatuses)) {
@@ -1079,11 +1083,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
             for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                loopAdd(stepsResult, taskId, status);
+                loopAdd(stepsResult, taskId, status,loginUserId);
             }
         }
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-            loopAdd(activitiStepsResult.getChildNode(), taskId, status);
+            loopAdd(activitiStepsResult.getChildNode(), taskId, status,loginUserId);
         }
 
     }
@@ -1472,7 +1476,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 }
             }
         }
-
 
         return stepIds;
     }
