@@ -31,6 +31,8 @@ public class InstockLogDetailParam implements Serializable, BaseValidatingParam 
     @ApiModelProperty("")
     private Long instockLogId;
 
+    private String source;
+    private Long sourceId;
     /**
      * 实物id
      */

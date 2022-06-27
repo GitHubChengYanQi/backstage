@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
@@ -211,7 +210,6 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
         this.format(results);
         return results;
     }
-
     private void format(List<InstockLogDetailResult> results) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> instockOrderId = new ArrayList<>();
@@ -223,19 +221,23 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
 
         for (InstockLogDetailResult result : results) {
             skuIds.add(result.getSkuId());
-            instockOrderId.add(result.getInstockOrderId());
+            if (ToolUtil.isNotEmpty(result.getInstockOrderId())){
+                instockOrderId.add(result.getInstockOrderId());
+            }
             brandIds.add(result.getBrandId());
-            customerIds.add(result.getCustomerId());
+            if (ToolUtil.isNotEmpty(result.getCustomerId())){
+                customerIds.add(result.getCustomerId());
+            }
             userIds.add(result.getCreateUser());
             positionIds.add(result.getStorehousePositionsId());
         }
 
         instockOrderId = instockOrderId.stream().distinct().collect(Collectors.toList());
         List<InstockList> instockLists = instockOrderId.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", instockOrderId).list();
-        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<BrandResult> brandResults =brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
+        List<SkuSimpleResult> skuSimpleResults =skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
 
@@ -262,7 +264,7 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
                 }
             }
             for (InstockList instockList : instockLists) {
-                if (instockList.getInstockOrderId().equals(result.getInstockOrderId()) && instockList.getSkuId().equals(result.getSkuId())) {
+                if (ToolUtil.isNotEmpty(result.getInstockOrderId()) && instockList.getInstockOrderId().equals(result.getInstockOrderId()) && instockList.getSkuId().equals(result.getSkuId())) {
                     result.setListNumber(Math.toIntExact(instockList.getNumber()));
                 }
             }
@@ -281,6 +283,12 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
             }
         }
 
+    }
+    @Override
+    public List<InstockLogDetailResult> getOutStockLogs(InstockLogDetailParam param){
+        List<InstockLogDetailResult> instockLogDetailResults = this.baseMapper.customList(param);
+        this.format(instockLogDetailResults);
+        return instockLogDetailResults;
     }
 
 }

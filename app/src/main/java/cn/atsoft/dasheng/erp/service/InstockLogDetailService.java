@@ -69,4 +69,6 @@ public interface InstockLogDetailService extends IService<InstockLogDetail> {
      PageInfo<InstockLogDetailResult> findPageBySpec(InstockLogDetailParam param);
 
     List<InstockLogDetailResult> resultsByLogIds(List<Long> logIds);
+
+    List<InstockLogDetailResult> getOutStockLogs(InstockLogDetailParam param);
 }

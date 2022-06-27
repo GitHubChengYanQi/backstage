@@ -731,7 +731,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         listingParam.setBrandId(listsCart.getBrandId());
                     }
                     InstockLogDetail log = new InstockLogDetail();
-                    ToolUtil.copyProperties(listsCarts,log);
+                    ToolUtil.copyProperties(listingParam,log);
                     log.setSource("pick_lists");
                     log.setSourceId(listsCart.getPickListsId());
                     logDetails.add(log);

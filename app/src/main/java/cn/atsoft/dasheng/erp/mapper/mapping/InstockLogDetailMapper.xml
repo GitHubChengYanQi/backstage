@@ -21,8 +21,8 @@
         <result column="deptId" property="deptId"/>
         <result column="customer_id" property="customerId"/>
         <result column="type" property="type"/>
-        <result column="source" property="type"/>
-        <result column="source_id" property="type"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
 
     </resultMap>
 
@@ -30,7 +30,7 @@
     <sql id="Base_Column_List">type
     AS "type", customer_id AS "customerId",
         instock_log_detail_id
-        AS "instockLogDetailId", instock_log_id AS "instockLogId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number",  instock_order_id AS "instockOrderId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "instockLogDetailId", instock_log_id AS "instockLogId",source AS "source",source_id AS "sourceId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number",  instock_order_id AS "instockOrderId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -90,6 +90,12 @@
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''" >
+            and source = #{paramCondition.source}
+        </if>
+        <if test="paramCondition.sourceId != null" >
+            and sourceId = #{paramCondition.sourceId}
+        </if>
     </select>
 
     <select id="customMapList" resultType="map"
@@ -147,6 +153,12 @@
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''" >
+            and source = #{paramCondition.source}
+        </if>
+        <if test="paramCondition.sourceId != null" >
+            and sourceId = #{paramCondition.sourceId}
+        </if>
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult"
@@ -200,6 +212,12 @@
         </if>
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''" >
+            and source = #{paramCondition.source}
+        </if>
+        <if test="paramCondition.sourceId != null" >
+            and sourceId = #{paramCondition.sourceId}
         </if>
     </select>
 
@@ -256,6 +274,12 @@
         </if>
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''" >
+            and source = #{paramCondition.source}
+        </if>
+        <if test="paramCondition.sourceId != null" >
+            and sourceId = #{paramCondition.sourceId}
         </if>
     </select>
 

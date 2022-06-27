@@ -117,6 +117,21 @@ public class InstockLogDetailController extends BaseController {
         }
         return this.instockLogDetailService.findPageBySpec(instockLogDetailParam);
     }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-04-14
+     */
+    @RequestMapping(value = "/getOutStockLogs", method = RequestMethod.POST)
+    @ApiOperation("出库记录列表")
+    public ResponseData getOutStockLogs(@RequestBody(required = false) InstockLogDetailParam instockLogDetailParam) {
+        if (ToolUtil.isEmpty(instockLogDetailParam)) {
+            return ResponseData.success();
+        }
+        instockLogDetailParam.setSource("pick_lists");
+        return ResponseData.success(this.instockLogDetailService.getOutStockLogs(instockLogDetailParam));
+    }
 
 
 }
