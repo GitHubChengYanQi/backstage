@@ -27,30 +27,30 @@ public class DocumentFieldAopService {
     String formType = null;
 
     //        @Pointcut(value = "@annotation(cn.atsoft.dasheng.appBase.aop.DocumentFieldAop)")
-    @Pointcut("execution(* cn.atsoft.dasheng..*.*Controller.*(..))")
+    @Pointcut("execution(* cn.atsoft.dasheng..*.*Controller.*(..)),!execution(* cn.atsoft.dasheng.sys.*.*Controller.*(..))")
     public void field() {
     }
 
     @Before("field()")
     public void doBefore(JoinPoint joinPoint) throws IllegalAccessException {
-//        details = documentsPermissionsService.getAllPermissions();
-//        formType = joinPoint.getTarget().getClass().getSimpleName();
-//
-//
-//        Integer type = 0;
-//        switch (joinPoint.getSignature().getName()) {
-//            case "edit":
-//            case "add":
-//            case "delete":
-//                type = 1;
-//                break;
-//        }
-//        if (type == 1) {
-//            Object[] args = joinPoint.getArgs();
-//            for (Object obj : args) {
-//                filterField(obj, type);
-//            }
-//        }
+        details = documentsPermissionsService.getAllPermissions();
+        formType = joinPoint.getTarget().getClass().getSimpleName();
+
+
+        Integer type = 0;
+        switch (joinPoint.getSignature().getName()) {
+            case "edit":
+            case "add":
+            case "delete":
+                type = 1;
+                break;
+        }
+        if (type == 1) {
+            Object[] args = joinPoint.getArgs();
+            for (Object obj : args) {
+                filterField(obj, type);
+            }
+        }
 
 
     }
@@ -58,8 +58,8 @@ public class DocumentFieldAopService {
     @AfterReturning(returning = "obj", pointcut = "field()")
 //    @After("field()")
     public void doAfterReturning(Object obj) throws Throwable {
-//        details = documentsPermissionsService.getAllPermissions();
-//        filterField(obj, 2);
+        details = documentsPermissionsService.getAllPermissions();
+        filterField(obj, 2);
 
     }
 
@@ -94,7 +94,7 @@ public class DocumentFieldAopService {
                     f.setAccessible(true);
                     Object o = f.get(obj);
 
-                    if (type(f.getType().getSimpleName())) {
+                    if (type(f)) {
                         if (ToolUtil.isNotEmpty(o)) {
                             this.filterField(o, type);
                         }
@@ -105,31 +105,33 @@ public class DocumentFieldAopService {
         }
     }
 
-    private Boolean type(String type) {
-        switch (type) {
-            case "long":
-            case "Long":
-            case "String":
-            case "Boolean":
-            case "boolean":
-            case "int":
-            case "Integer":
-            case "array":
-            case "byte":
-            case "Byte":
-            case "Date":
-            case "DateTime":
-                return false;
-            default:
-                return true;
-
-        }
+    private Boolean type(Field field) {
+        Class<?>[] interfaces = field.getClass().getInterfaces();
+        return Arrays.stream(interfaces).anyMatch(i->i.getSimpleName().equals("Serializable"));
+        //        switch (type) {
+//            case "long":
+//            case "Long":
+//            case "String":
+//            case "Boolean":
+//            case "boolean":
+//            case "int":
+//            case "Integer":
+//            case "array":
+//            case "byte":
+//            case "Byte":
+//            case "Date":
+//            case "DateTime":
+//                return false;
+//            default:
+//                return true;
+//
+//        }
 
     }
 
     private void setNull(Object obj, Integer type) throws IllegalAccessException {
         String formTypeStr = this.formatFormType(formType);
-        if (ToolUtil.isNotEmpty(formTypeStr) || formTypeStr != null) {
+        if (ToolUtil.isNotEmpty(formTypeStr)) {
             Field[] fields = obj.getClass().getDeclaredFields();
             String simpleName = obj.getClass().getSimpleName();
             for (Field field : fields) {
@@ -151,9 +153,9 @@ public class DocumentFieldAopService {
                                                 case 1:
                                                     //增删改接传入返回参数校验
                                                     for (CanDo canDo : operationResult.getCanDos()) {
-                                                        if (canDo.getDoName().equals("edit") &&  canDo.getIsCan()) {
-                                                                hidden = false;
-                                                                break;
+                                                        if (canDo.getDoName().equals("edit") && canDo.getIsCan()) {
+                                                            hidden = false;
+                                                            break;
                                                         }
                                                     }
 
@@ -161,13 +163,14 @@ public class DocumentFieldAopService {
                                                 case 2:
                                                     //其他接口传入返回校验
                                                     for (CanDo canDo : operationResult.getCanDos()) {
-                                                        if (canDo.getDoName().equals("see") &&  canDo.getIsCan()) {
+                                                        if (canDo.getDoName().equals("see") && canDo.getIsCan()) {
                                                             hidden = false;
                                                             break;
                                                         }
                                                     }
                                                     break;
-                                                default: hidden = true;
+                                                default:
+                                                    hidden = true;
                                             }
                                         }
                                     }
@@ -220,6 +223,14 @@ public class DocumentFieldAopService {
             switch (this.formType) {
                 case "PurchaseAskController":
                     return "PURCHASE";
+                case "ProductionPickListsController":
+                    return "PICKLISTS";
+                case "ProductionPickListsCartController":
+                    return "PICKLISTSCART";
+                case "ProductionPickListsDetailController":
+                    return "PICKLISTSDETAIL";
+                case "SkuController":
+                    return "SKU";
                 default:
                     return null;
             }
