@@ -474,7 +474,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         return entity;
     }
 
-    private void format(List<InventoryResult> data) {
+    private void format(List<InventoryResult> data)  {
 
         List<Long> inventoryIds = new ArrayList<>();
 

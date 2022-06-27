@@ -1088,7 +1088,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             searchObjects.add(brandSearch);
             searchObjects.add(classSearch);
             searchObjects.add(bomSearch);
-            searchObjects.add(countNumber);
             searchObjects.add(statusSearch());
             searchObjects.add(countMap);
             pageInfo.setSearch(searchObjects);
@@ -1408,7 +1407,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<StockDetails> totalLockDetail = new ArrayList<>();
 
 
-        lockStockDetail.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId(), Collectors.toList())).forEach(
+        lockStockDetail.parallelStream().collect(Collectors.groupingBy(StockDetails::getSkuId, Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setSkuId(a.getSkuId());

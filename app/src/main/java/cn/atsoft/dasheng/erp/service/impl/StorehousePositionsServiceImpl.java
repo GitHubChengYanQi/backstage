@@ -431,17 +431,27 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<Long> brandIds = new ArrayList<>();
 
         for (StockDetails stockDetail : stockDetails) {
+            if (ToolUtil.isEmpty(stockDetail.getBrandId())) {
+                stockDetail.setBrandId(0L);
+            }
             positionIds.add(stockDetail.getStorehousePositionsId());
             brandIds.add(stockDetail.getBrandId());
-
         }
+        List<StockDetailsResult> stockDetailsResults = BeanUtil.copyToList(stockDetails, StockDetailsResult.class, new CopyOptions());
+
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : this.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
 
-        Map<Long, StorehousePositionsResult> positionsResultMap = new HashMap<>();
-        for (StorehousePositionsResult positionsResult : positionsResults) {
-            positionsResultMap.put(positionsResult.getStorehousePositionsId(), positionsResult);
+
+        for (StockDetailsResult stockDetail : stockDetailsResults) {
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                if (stockDetail.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
+                    stockDetail.setStorehousePositionsResult(positionsResult);
+                    break;
+                }
+            }
+
         }
 
 
@@ -474,19 +484,40 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
             //库位数量
             List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
-            for (StockDetails stockDetail : stockDetails) {
-                if (stockDetail.getBrandId().equals(brandResult.getBrandId())) {
-                    StorehousePositionsResult positionsResult = positionsResultMap.get(stockDetail.getStorehousePositionsId());
-                    positionsResult.setNum(getPositionNumber(stockDetails, stockDetail.getStorehousePositionsId(), stockDetail.getBrandId()));
-                    if (positionsResultList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId()))) {
-                        positionsResultList.add(positionsResult);
+            for (StockDetailsResult stockDetailsResult : stockDetailsResults) {
+                if (stockDetailsResult.getBrandId().equals(brandResult.getBrandId())) {
+
+                    StorehousePositionsResult positionsResult = stockDetailsResult.getStorehousePositionsResult();
+
+                    if (ToolUtil.isNotEmpty(positionsResult)) {
+
+                        StorehousePositionsResult newPosition = new StorehousePositionsResult();
+                        ToolUtil.copyProperties(positionsResult, newPosition);
+                        newPosition.setNumber(stockDetailsResult.getNumber());
+
+                        boolean b = positionSet(positionsResultList, newPosition);
+                        if (b) {
+                            positionsResultList.add(newPosition);
+                        }
                     }
                 }
             }
+
             brandResult.setPositionsResults(positionsResultList);
         }
 
         return brandResults;
+    }
+
+    private boolean positionSet(List<StorehousePositionsResult> positionsResultList, StorehousePositionsResult newPosition) {
+        for (StorehousePositionsResult positionsResult : positionsResultList) {
+            if (newPosition.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
+                positionsResult.setNumber(newPosition.getNumber() + positionsResult.getNumber());
+                return false;
+            }
+
+        }
+        return true;
     }
 
 
