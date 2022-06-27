@@ -44,6 +44,7 @@ public class AuditMessageSendImpl implements AuditMessageSend {
             setItems(finalTitle);
             setCreateUserName(createName);
             setUrl(url);
+            setType(0);
             setDescription(processTask.getTaskName());
             setUserIds(users);
         }});
@@ -59,6 +60,7 @@ public class AuditMessageSendImpl implements AuditMessageSend {
             setItems("您有新的单据需要操作");
             setCreateUser(processTask.getCreateUser());
             setUrl(url);
+            setType(0);
             setDescription(processTask.getTaskName());
             setUserIds(users);
         }});

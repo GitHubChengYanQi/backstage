@@ -57,6 +57,7 @@ public class QualityMessageSend implements AuditMessageSend {
 
         String finalTitle = title;
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setType(0);
             setItems(finalTitle);
             setUrl(url);
             setDescription("发出"+createName+"创建的任务"+qualityTask.getCoding());

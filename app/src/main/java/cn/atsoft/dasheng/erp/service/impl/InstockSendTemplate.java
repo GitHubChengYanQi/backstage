@@ -80,6 +80,7 @@ public class InstockSendTemplate {
 ;
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("入库提醒");
+            setType(0);
             setUrl(url);
             setDescription("有新的物料需要入库");
             setUserIds(users);

@@ -25,6 +25,7 @@ public class PurchaseMessageSend implements AuditMessageSend {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setType(1);
             setItems("采购审批完成");
             setDescription(processTask.getTaskName());
             setUrl(url);

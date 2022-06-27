@@ -36,6 +36,7 @@ public class AuditRefuseMessageSend implements AuditMessageSend {
         User user = userService.getById(processTask.getCreateUser());
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("审批被否决");
+            setType(1);
             setCreateUserName(user.getName());
             setUrl(url);
             setDescription(createName + "创建的任务" + qualityTask.getCoding());

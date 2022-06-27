@@ -225,7 +225,7 @@ public class ActivitiProcessTaskSend {
         Map<String, String> aboutSend = this.getAboutSend(taskId, send);
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
-            setType(0);
+            setType(1);
             setItems("审批被否决");
             setCreateUserName(createUser.getName());
             setUrl(aboutSend.get("url"));

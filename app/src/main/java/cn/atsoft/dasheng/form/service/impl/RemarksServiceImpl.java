@@ -218,6 +218,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     @Override
     public void pushPeople(List<Long> userIds, Long taskId, String content) {
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setType(2);
             setItems("新消息");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
             setUserIds(userIds);

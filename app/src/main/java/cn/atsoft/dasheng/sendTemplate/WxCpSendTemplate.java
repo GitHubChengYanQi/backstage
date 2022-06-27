@@ -224,13 +224,13 @@ public class WxCpSendTemplate {
         ToolUtil.isNotEmpty(markDownTemplate.getType());
         {
             switch (markDownTemplate.getType()) {
-                case 1:
+                case 2:
                     markDownTemplate.setTitle("消息");
                     break;
-                case 2:
+                case 1:
                     markDownTemplate.setTitle("通知");
                     break;
-                case 3:
+                case 0:
                     markDownTemplate.setTitle("待办");
                     break;
             }

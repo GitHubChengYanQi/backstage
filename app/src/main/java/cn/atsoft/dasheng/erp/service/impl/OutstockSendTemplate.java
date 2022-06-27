@@ -84,7 +84,8 @@ public class OutstockSendTemplate {
 
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
-            setItems("审批被否决");
+            setItems(getTitle());
+            setType(0);
             setDescription("有新的物料需要出库");
             setUrl(url);
             setUserIds(users);

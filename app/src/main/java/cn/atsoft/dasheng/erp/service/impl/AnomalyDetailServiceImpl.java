@@ -135,6 +135,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     public void pushPeople(Long userId, Long id) {
         Anomaly anomalyServiceById = this.anomalyService.getById(id);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setType(1);
             setItems("入库异常 转交您处理");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Error/Detail/Handle?id=" + id);
             setDescription("入库异常 转交处理");

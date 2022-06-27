@@ -233,6 +233,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
              * 发送消息
              */
             wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+                setType(0);
                 setTitle("新的生产任务");
                 setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
                 setDescription("您被分派了新的生产任务" + entity.getCoding());
