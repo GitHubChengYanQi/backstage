@@ -494,7 +494,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                         StorehousePositionsResult newPosition = new StorehousePositionsResult();
                         ToolUtil.copyProperties(positionsResult, newPosition);
                         newPosition.setNumber(stockDetailsResult.getNumber());
-
+                        newPosition.setNum(Math.toIntExact(stockDetailsResult.getNumber()));
                         boolean b = positionSet(positionsResultList, newPosition);
                         if (b) {
                             positionsResultList.add(newPosition);
@@ -512,6 +512,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private boolean positionSet(List<StorehousePositionsResult> positionsResultList, StorehousePositionsResult newPosition) {
         for (StorehousePositionsResult positionsResult : positionsResultList) {
             if (newPosition.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
+                positionsResult.setNum(newPosition.getNum()+positionsResult.getNum());
                 positionsResult.setNumber(newPosition.getNumber() + positionsResult.getNumber());
                 return false;
             }
