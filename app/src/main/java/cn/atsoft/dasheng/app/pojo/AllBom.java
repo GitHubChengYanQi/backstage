@@ -195,9 +195,9 @@ public class AllBom {
             /**
              * 循环bom 作为 0 下标元素
              */
-            Map<Long, Object> tmp2 = new HashMap<>();
+            Map<Long, Object> detailTmp = new HashMap<>();
             for (ErpPartsDetail detail : details) {
-                tmp2.put(detail.getSkuId(), detail);
+                detailTmp.put(detail.getSkuId(), detail);
             }
             /**
              * 递归 取下级 作 1下表元素
@@ -225,7 +225,7 @@ public class AllBom {
             }
             this.Bom.put(skuId, new HashMap<String, Map<Long, Object>>() {{
                 put("lastChild", map);
-                put("child", tmp2);
+                put("child", detailTmp);
             }});
 
             // 循环相乘，之后相加，放到tmp里

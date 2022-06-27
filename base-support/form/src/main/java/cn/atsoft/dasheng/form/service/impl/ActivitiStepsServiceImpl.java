@@ -506,8 +506,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      */
     @Override
     public ActivitiStepsResult getStepResult(Long processId) {
-
-
         List<ActivitiStepsResult> steps = getStepsByProcessId(processId);
         if (ToolUtil.isEmpty(steps)) {
             return null;

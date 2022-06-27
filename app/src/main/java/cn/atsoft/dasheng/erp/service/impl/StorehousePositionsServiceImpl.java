@@ -320,7 +320,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 num = 0L;
             }
             num = num + stockDetail.getNumber();
-
             positionNum.put(stockDetail.getStorehousePositionsId(), num);
 
             for (BrandResult brandResult : brandResults) {
@@ -416,7 +415,12 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }};
     }
 
-
+    /**
+     * 品牌库位联动结构
+     *
+     * @param skuId
+     * @return
+     */
     @Override
     public List<BrandResult> selectByBrand(Long skuId) {
 
@@ -425,13 +429,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);
 
-        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);
+        List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);  //物料查询库存
 
         List<Long> positionIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
 
         for (StockDetails stockDetail : stockDetails) {
-            if (ToolUtil.isEmpty(stockDetail.getBrandId())) {
+            if (ToolUtil.isEmpty(stockDetail.getBrandId())) {    //其他品牌
                 stockDetail.setBrandId(0L);
             }
             positionIds.add(stockDetail.getStorehousePositionsId());
@@ -455,7 +459,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
 
 
-        brandResults.add(new BrandResult() {{
+        brandResults.add(new BrandResult() {{    //添加个其他品牌对象
             setBrandId(0L);
             setBrandName("其他品牌");
         }});//其他品牌
@@ -463,7 +467,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         Map<Long, Long> brandNumber = new HashMap<>();
 
-
+        /**
+         * 计算当品牌 在库存的数量
+         */
         for (StockDetails stockDetail : stockDetails) {
             if (ToolUtil.isEmpty(stockDetail.getBrandId())) {
                 stockDetail.setBrandId(0L);
@@ -484,13 +490,12 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
             //库位数量
             List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
+
+
             for (StockDetailsResult stockDetailsResult : stockDetailsResults) {
                 if (stockDetailsResult.getBrandId().equals(brandResult.getBrandId())) {
-
                     StorehousePositionsResult positionsResult = stockDetailsResult.getStorehousePositionsResult();
-
                     if (ToolUtil.isNotEmpty(positionsResult)) {
-
                         StorehousePositionsResult newPosition = new StorehousePositionsResult();
                         ToolUtil.copyProperties(positionsResult, newPosition);
                         newPosition.setNumber(stockDetailsResult.getNumber());
@@ -509,10 +514,19 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return brandResults;
     }
 
+    /**
+     * 库位去重  数量叠加
+     *
+     * @param positionsResultList
+     * @param newPosition
+     * @return
+     */
     private boolean positionSet(List<StorehousePositionsResult> positionsResultList, StorehousePositionsResult newPosition) {
+
         for (StorehousePositionsResult positionsResult : positionsResultList) {
+
             if (newPosition.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
-                positionsResult.setNum(newPosition.getNum()+positionsResult.getNum());
+                positionsResult.setNum(newPosition.getNum() + positionsResult.getNum());
                 positionsResult.setNumber(newPosition.getNumber() + positionsResult.getNumber());
                 return false;
             }
@@ -553,7 +567,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     /**
-     * 物料设计库位的数量
+     * 物料涉及库位的数量
      *
      * @param skuIds
      * @return
@@ -672,8 +686,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<StorehousePositions> storehousePositionsList = this.query().eq("storehouse_id", positions.getStorehouseId()).eq("display", 1).list();
         StringBuffer stringBuffer = this.formatParentStringBuffer(positions, storehousePositionsList, new StringBuffer());
         stringBuffer = new StringBuffer().append(storehouse.getName()).append("/").append(stringBuffer);
-
-
         return stringBuffer.toString();
     }
 
