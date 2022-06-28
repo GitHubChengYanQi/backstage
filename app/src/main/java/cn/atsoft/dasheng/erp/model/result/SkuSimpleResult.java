@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
@@ -7,12 +9,14 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class SkuSimpleResult {
     /**
      * sku名字
      */
+    List<BrandResult> brandResults;
     @ApiModelProperty("sku名字")
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long skuId;

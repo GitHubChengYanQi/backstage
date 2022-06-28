@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
@@ -12,6 +13,7 @@ import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam;
+import cn.atsoft.dasheng.erp.model.request.MaintenanceMirageRequest;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -95,72 +97,64 @@ public class MaintenanceDetailServiceImpl extends ServiceImpl<MaintenanceDetailM
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         stockDetails = stockDetails.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(StockDetails::getStockItemId))), ArrayList::new));
-        List<StockDetailsResult> stockDetailsResults = BeanUtil.copyToList(stockDetails, StockDetailsResult.class, new CopyOptions());
-        List<Long> storeHousePositionsIds = new ArrayList<>();
-        for (StockDetails stockDetail : stockDetails) {
-            storeHousePositionsIds.add(stockDetail.getStorehousePositionsId());
-        }
-        for (StockDetails stockDetail : stockDetails) {
-            skuIds.add(stockDetail.getSkuId());
-            if (ToolUtil.isNotEmpty(stockDetail.getBrandId())) {
-                brandIds.add(stockDetail.getBrandId());
-            }
-        }
-        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
-        List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
 
-        storeHousePositionsIds = storeHousePositionsIds.stream().distinct().collect(Collectors.toList());
-        List<StorehousePositionsResult> positionsResults = storehousePositionsService.getDetails(storeHousePositionsIds);
-
-
-
-
-
-       //拼装返回格式u
-        List<Map<String, Object>> results = new ArrayList<>();
-        for (StorehousePositionsResult positionsResult : positionsResults) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("positionsResult", positionsResult);
-            List<StockDetailsResult> stockDetailsResultList = new ArrayList<>();
-            List<Long> skus = new ArrayList<>();
-            for (StockDetailsResult stockDetailsResult : stockDetailsResults) {
-                if (stockDetailsResult.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
-                    stockDetailsResultList.add(stockDetailsResult);
-                    skus.add(stockDetailsResult.getSkuId());
+        List<StockDetails> totalList = new ArrayList<>();
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId() + '_' + item.getStorehousePositionsId()), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                    }}).ifPresent(totalList::add);
                 }
-            }
-            skuIds = skuIds.stream().distinct().collect(Collectors.toList());
-            List<SkuSimpleResult> skuSimpleResultList = new ArrayList<>();
-            for (Long skuId : skus) {
-                for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                    if (skuId.equals(skuSimpleResult.getSkuId())) {
-                        skuSimpleResultList.add(skuSimpleResult);
+        );
+        List<Long> positionsIds = new ArrayList<>();
+        for (StockDetails details : totalList) {
+            positionsIds.add(details.getStorehousePositionsId());
+            skuIds.add(details.getSkuId());
+            brandIds.add(details.getBrandId());
+        }
+        List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+
+        positionsIds = positionsIds.stream().distinct().collect(Collectors.toList());
+        List<StorehousePositionsResult> positionDetail = storehousePositionsService.getDetails(positionsIds);
+        for (StorehousePositionsResult storehousePositionsResult : positionDetail) {
+            MaintenanceMirageRequest mirageRequest = new MaintenanceMirageRequest();
+            mirageRequest.setStorehousePositionsResult(storehousePositionsResult);
+
+            for (StockDetails details : totalList) {
+                if (details.getStorehousePositionsId().equals(storehousePositionsResult.getStorehousePositionsId())){
+                    for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
+                        if (skuSimpleResult.getSkuId().equals(details.getSkuId()));
                     }
                 }
             }
-            List<Map<String, Object>> skuResults = new ArrayList<>();
-            for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
-                Map<String, Object> skuResult = BeanUtil.beanToMap(skuSimpleResult);
-                List<Map<String,Object>> brandResults = new ArrayList<>();
-                for (StockDetailsResult stockDetailsResult : stockDetailsResultList) {
-                    if (skuSimpleResult.getSkuId().equals(stockDetailsResult.getSkuId())){
-                        for (Brand brand : brands) {
-                            if (stockDetailsResult.getBrandId().equals(brand.getBrandId())){
-                                Map<String,Object> brandResult = new HashMap<>();
-                                brandResult.put("brandId",brand.getBrandId());
-                                brandResult.put("brandName",brand.getBrandName());
-                                brandResults.add(brandResult);
-                            }
-                        }
-                    }
-                }
-                skuResult.put("brandResults",brandResults);
-                skuResults.add(skuResult);
-            }
-            result.put("skuResults",skuResults);
-            results.add(result);
+
         }
-        return results;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return "wo qu ni ma de ";
+
     }
 
 

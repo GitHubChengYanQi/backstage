@@ -28,6 +28,7 @@ public class BrandResult implements Serializable {
 //     private PartsResult partsResult;
     private List<Long> skuIds;
     private List<SkuResult> skuResults;
+    private Integer number;
     /**
      * 品牌id
      */
