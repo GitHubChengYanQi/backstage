@@ -56,4 +56,6 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") StockDetailsParam paramCondition);
 
+    List<StockDetails> maintenanceQuerry(@Param("paramCondition") StockDetailsParam paramCondition);
+
 }

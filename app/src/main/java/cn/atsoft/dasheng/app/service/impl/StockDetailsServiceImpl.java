@@ -20,7 +20,6 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -33,9 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -363,5 +360,10 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
         }
         return stockDetailExcels;
+    }
+
+    @Override
+    public List<StockDetails> maintenanceQuerry(StockDetailsParam param) {
+        return this.baseMapper.maintenanceQuerry(param);
     }
 }

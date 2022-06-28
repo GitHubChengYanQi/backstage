@@ -162,4 +162,35 @@ stage
         GROUP BY sku_id,storehouse_positions_id
     </select>
 
+
+<!--    需要养护实物查询-->
+    <select id="maintenanceQuerry" resultType="cn.atsoft.dasheng.app.model.result.StockDetailsResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_stock_details where display = 1 and number != 0 and state = 1
+
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.storehousePositionsId != null">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
+        </if>
+        <if test="paramCondition.skuIds.size>0">
+            and sku_id in
+            <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.notNeedMaintenanceInkindIds.size>0">
+            and inkind_id not in
+            <foreach collection="paramCondition.notNeedMaintenanceInkindIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
+    </select>
 </mapper>

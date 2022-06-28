@@ -166,6 +166,11 @@ public class Sku implements Serializable {
      */
     @TableField("spu_id")
     private Long spuId;
+    /**
+     * 养护周期(天)
+     */
+    @TableField("maintenance_period")
+    private Integer maintenancePeriod;
 
     /**
      * 创建时间
@@ -299,6 +304,14 @@ public class Sku implements Serializable {
 
     public void setFileId(String fileId) {
         this.fileId = fileId;
+    }
+
+    public Integer getMaintenancePeriod() {
+        return maintenancePeriod;
+    }
+
+    public void setMaintenancePeriod(Integer maintenancePeriod) {
+        this.maintenancePeriod = maintenancePeriod;
     }
 
     @Override

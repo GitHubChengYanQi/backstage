@@ -97,4 +97,6 @@ public interface StockDetailsService extends IService<StockDetails> {
 
 
     List<StockDetailExcel> getStockDetail();
+
+    List<StockDetails> maintenanceQuerry(StockDetailsParam param);
 }

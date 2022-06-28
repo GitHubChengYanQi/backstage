@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.MaintenanceDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.MaintenanceDetail">
+        <id column="maintenance_detail_id" property="maintenanceDetailId" />
+        <result column="maintenance_id" property="maintenanceId" />
+        <result column="inkind_id" property="inkindId" />
+        <result column="sku_id" property="skuId" />
+        <result column="number" property="number" />
+        <result column="brand_id" property="brandId" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", number AS "number", brand_id AS "brandId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_maintenance_detail where 1 = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_maintenance_detail where 1 = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_maintenance_detail where 1 = 1
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_maintenance_detail where 1 = 1
+    </select>
+
+</mapper>
