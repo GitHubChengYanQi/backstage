@@ -73,39 +73,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     }
 
 
-    public void needMaintenance(List<Long> ids){
-//        List<MaintenanceDetail> maintenanceDetails = maintenanceDetailService.query().in("maintenance_id", ids).eq("display", 1).eq("status", 0).list();
-        List<Maintenance> maintenances = maintenanceService.listByIds(ids);
-        List<StockDetails> stockDetails = new ArrayList<>();
-        for (Maintenance maintenance : maintenances) {
-            stockDetails.addAll(maintenanceService.needMaintenanceByRequirement(maintenance));
-        }
-        List<Long> skuIds = new ArrayList<>();
-        List<Long> brandIds = new ArrayList<>();
-        stockDetails = stockDetails.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(StockDetails::getStockItemId))), ArrayList::new));
-        List<Long> storeHousePositionsIds = new ArrayList<>();
-        for (StockDetails stockDetail : stockDetails) {
-            storeHousePositionsIds.add(stockDetail.getStorehousePositionsId());
-        }
-        for (StockDetails stockDetail : stockDetails) {
-            skuIds.add(stockDetail.getSkuId());
-            if (ToolUtil.isNotEmpty(stockDetail.getBrandId())) {
-                brandIds.add(stockDetail.getBrandId());
-            }
-        }
-        List<Brand> brands =brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
-        List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
 
-        storeHousePositionsIds = storeHousePositionsIds.stream().distinct().collect(Collectors.toList());
-        List<StorehousePositionsResult> positionsResults = storehousePositionsService.getDetails(storeHousePositionsIds);
-        
-
-
-
-
-
-
-    }
 
     @Override
     public void delete(MaintenanceLogParam param){

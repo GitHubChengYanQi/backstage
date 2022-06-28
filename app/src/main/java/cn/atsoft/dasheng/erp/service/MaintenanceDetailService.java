@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -41,6 +42,8 @@ public interface MaintenanceDetailService extends IService<MaintenanceDetail> {
      * @Date 2022-06-28
      */
     void update(MaintenanceDetailParam param);
+
+    List<Map<String, Object>> needMaintenance(List<Long> ids);
 
     /**
      * 查询单条数据，Specification模式
