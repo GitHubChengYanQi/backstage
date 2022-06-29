@@ -279,15 +279,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             break;
                         case "createInstock":   //入库创建
                         case "INSTOCK":   //入库创建
-                            updateStatus(activitiProcessLog.getLogId(), status);
-                            setStatus(logs, activitiProcessLog.getLogId());
-                            //拒绝走拒绝方法
-                            if (status.equals(0)) {
-                                this.refuseTask(task);
-                                auditCheck = false;
-                            }
-
-                            break;
                         case "OUTSTOCK":   //出库
                             updateStatus(activitiProcessLog.getLogId(), status);
                             setStatus(logs, activitiProcessLog.getLogId());
@@ -299,8 +290,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                             break;
 
-
-                        default:
+                            default:
 
                     }
                 } else {

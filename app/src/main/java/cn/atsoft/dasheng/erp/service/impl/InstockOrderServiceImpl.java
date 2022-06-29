@@ -214,10 +214,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 skuIds.add(instockRequest.getSkuId());
             }
 //            List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
-            List<InstockList> instockLists = new ArrayList<>();
+
             for (InstockListParam instockRequest : param.getListParams()) {
                 if (ToolUtil.isNotEmpty(instockRequest)) {
                     ShopCart shopCart = shopCartService.getById(instockRequest.getShopCartId());
+                    if (ToolUtil.isEmpty(shopCart)) {
+                        throw new ServiceException(500, "购物车不存在");
+                    }
                     if (shopCart.getStatus() == 99) {
                         throw new ServiceException(500, "购物车已被操作");
                     }
