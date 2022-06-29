@@ -217,7 +217,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             List<InstockList> instockLists = new ArrayList<>();
             for (InstockListParam instockRequest : param.getListParams()) {
                 if (ToolUtil.isNotEmpty(instockRequest)) {
-//                    for (Sku sku : skus) {
+                    ShopCart shopCart = shopCartService.getById(instockRequest.getShopCartId());
+                    if (shopCart.getStatus() == 99) {
+                        throw new ServiceException(500, "购物车已被操作");
+                    }
+//                        for (Sku sku : skus) {
 //                        if (ToolUtil.isEmpty(sku.getQualityPlanId()) && sku.getSkuId().equals(instockRequest.getSkuId())) {
                     InstockList instockList = new InstockList();
                     instockList.setSkuId(instockRequest.getSkuId());
@@ -324,6 +328,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              */
             ShopCart shopCart = new ShopCart();
             shopCart.setDisplay(0);
+            shopCart.setStatus(99);
             shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
                 eq("type", param.getShopCardType());
                 eq("create_user", LoginContextHolder.getContext().getUserId());
@@ -370,8 +375,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //            this.createQualityTask(param, skus);
 
 
-
-    }
+        }
     }
 
 
