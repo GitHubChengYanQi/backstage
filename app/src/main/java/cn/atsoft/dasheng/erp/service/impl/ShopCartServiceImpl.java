@@ -265,13 +265,13 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     break;
                 }
             }
-        } else if (ToolUtil.isNotEmpty(param.getType())) {
-            shopCartResults = this.baseMapper.customList(param);
         }
 
         format(shopCartResults);
         return shopCartResults;
     }
+
+
 
     /**
      * 申请购物车
