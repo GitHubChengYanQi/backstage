@@ -29,6 +29,8 @@ public class AnomalyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long positionId;
+
     private String checkNumber;
 
     private User user;

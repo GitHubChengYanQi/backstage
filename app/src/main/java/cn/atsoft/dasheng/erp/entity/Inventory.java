@@ -22,6 +22,11 @@ import java.io.Serializable;
 @TableName("daoxin_erp_inventory")
 public class Inventory implements Serializable {
 
+    @TableField("status")
+    private Long status;
+
+    @TableField("coding")
+    private String coding;
     /**
      * 附件
      */
@@ -230,6 +235,23 @@ public class Inventory implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
+
+    public Long getStatus() {
+        return status;
+    }
+
+    public void setStatus(Long status) {
+        this.status = status;
     }
 
     @Override

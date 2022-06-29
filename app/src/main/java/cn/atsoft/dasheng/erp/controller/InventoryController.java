@@ -47,10 +47,10 @@ public class InventoryController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody InventoryParam inventoryParam) {
+        this.inventoryService.bySku(inventoryParam);  //通过物料筛选出 品牌 库位
         this.inventoryService.add(inventoryParam);
         return ResponseData.success();
     }
-
 
 
     @RequestMapping(value = "/selectCondition", method = RequestMethod.POST)

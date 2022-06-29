@@ -29,6 +29,7 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+    private Long inventoryId;
 
     private Long orderId;
 
@@ -49,6 +50,7 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("")
     private Long formId;
 
+    private Long positionId;
 
     @NotNull
     private AnomalyType anomalyType;

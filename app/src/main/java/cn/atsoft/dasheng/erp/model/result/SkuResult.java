@@ -67,8 +67,10 @@ public class SkuResult implements Serializable {
     private Integer stockNumber = 0;
     private List<StorehousePositionsResult> positionsResult;
     private Integer lockStockDetailNumber;
-
     private StorehouseResult storehouseResult;
+    private List<String> inventoryUrls;
+    private List<Long> mediaIds;
+    private Integer lockStatus;
     /**
      * 预购数量
      */

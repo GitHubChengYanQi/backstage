@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.inventory.mapper.InventoryDetailMapper">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.InventoryDetailMapper">
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.InventoryDetail">
@@ -14,11 +14,20 @@
         <result column="deptId" property="deptId"/>
         <result column="status" property="status"/>
         <result column="sku_id" property="skuId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="position_id" property="positionId"/>
+        <result column="number" property="number"/>
+        <result column="anomaly_id" property="anomalyId"/>
+        <result column="enclosure" property="enclosure"/>
+        <result column="lock_status" property="lockStatus"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List"> status
-    AS "status",sku_id AS "skuId",
+    <sql id="Base_Column_List">lock_status
+    AS "lockStatus",
+ status
+    AS "status",sku_id AS "skuId",customer_id AS customerId ,brand_id AS "brandId",position_id AS "positionId",number AS "number",anomaly_id AS "anomalyId",enclosure AS "enclosure",
         detail_id
         AS "detailId",inventory_id AS "inventoryId" ,inkind_id AS "inkindId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
     </sql>

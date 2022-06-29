@@ -25,6 +25,9 @@ public enum ProcessModuleEnum {
     verifyError("核实异常"),
     productionOutStock("生产出库"),
     Stocktaking("普通盘点"),
+    INSTOCKERROR("入库异常"),
+    StocktakingError("盘点异常"),
+
     pickLists("出库单申请");
 
 

@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.action.Enum;
 
 import cn.atsoft.dasheng.action.service.FormActionInterface;
 
-public enum StocktakinEnum  implements FormActionInterface {
+public enum StocktakingEnum implements FormActionInterface {
     start("开始") {
         public Long getStatus() {
             return 0L;
@@ -13,13 +13,17 @@ public enum StocktakinEnum  implements FormActionInterface {
             return 99L;
         }
     },
+    check("盘点") {
+
+    },
+
     refuse("拒绝") {
         public Long getStatus() {
             return 50L;
         }
     };
 
-    StocktakinEnum(String value) {
+    StocktakingEnum(String value) {
         this.value = value;
     }
 

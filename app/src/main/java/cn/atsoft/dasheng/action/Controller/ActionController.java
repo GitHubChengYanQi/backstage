@@ -80,7 +80,7 @@ public class ActionController {
                     }
                 }
                 break;
-            case INSTOCKERROR:
+            case ERROR:
                 for (AddAction.Action action : actions) {
                     int i = 0;
                     for (InstockErrorActionEnum instockErrorActionEnum : action.instockErrorActionEnums) {
@@ -103,9 +103,9 @@ public class ActionController {
             case Stocktaking:
                 for (AddAction.Action action : actions) {
                     int i = 0;
-                    for (StocktakinEnum stocktakinEnum : action.getStocktakinEnums()) {
-                        String value = stocktakinEnum.getValue();
-                        stocktakinEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
+                    for (StocktakingEnum stocktakingEnum : action.getStocktakingEnums()) {
+                        String value = stocktakingEnum.getValue();
+                        stocktakingEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
                         i++;
                     }
                 }
@@ -132,7 +132,7 @@ public class ActionController {
             case PURCHASE:
             case INSTOCK:
             case OUTSTOCK:
-            case INSTOCKERROR:
+            case ERROR:
             case PURCHASEORDER:
             case Stocktaking:
                 DocumentsStatusParam status = statusParam.getParam();

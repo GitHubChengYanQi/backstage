@@ -31,6 +31,10 @@ public interface InventoryService extends IService<Inventory> {
 
     void selectCondition(InventoryParam param);
 
+    void bySku(InventoryParam param);
+
+    InventoryResult detail(Long id);
+
     /**
      * 删除
      *
@@ -82,4 +86,6 @@ public interface InventoryService extends IService<Inventory> {
     InkindResult inkindInventory(Long id);
 
     StorehousePositionsResult positionInventory(Long id);
+
+    void format(List<InventoryResult> data);
 }

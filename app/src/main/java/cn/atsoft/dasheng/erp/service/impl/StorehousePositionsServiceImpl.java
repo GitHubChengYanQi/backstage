@@ -572,14 +572,17 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * @param skuIds
      * @return
      */
+    @Override
     public Integer getPositionNum(List<Long> skuIds) {
-
-        Set<Long> positionIds = new HashSet<>();
-        List<StorehousePositionsBind> positionsBinds = storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
-
-        for (StorehousePositionsBind positionsBind : positionsBinds) {
-            positionIds.add(positionsBind.getPositionId());
+        if (ToolUtil.isEmpty(skuIds)) {
+            return 0;
         }
+        Set<Long> positionIds = new HashSet<>();
+//        List<StorehousePositionsBind> positionsBinds = storehousePositionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+
+//        for (StorehousePositionsBind positionsBind : positionsBinds) {
+//            positionIds.add(positionsBind.getPositionId());
+//        }
         List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list();
         for (StockDetails stockDetail : stockDetails) {
             positionIds.add(stockDetail.getStorehousePositionsId());
@@ -1176,6 +1179,33 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     }
 
+    @Override
+    /**
+     * 查询自己 和自己所有下级
+     */
+    public List<Long> getEndChild(Long positionId) {
+        List<StorehousePositions> positions = this.query().eq("display", 1).list();
+        List<Long> positionIds = new ArrayList<>();
+        positionIds.add(positionId);
+        for (StorehousePositions position : positions) {
+            if (position.getStorehousePositionsId().equals(positionId)) {
+                positionIds.addAll(loop(positionId, positions));
+            }
+        }
+        return positionIds;
+    }
+
+    private List<Long> loop(Long positionId, List<StorehousePositions> positions) {
+        List<Long> positionIds = new ArrayList<>();
+        for (StorehousePositions position : positions) {
+            if (position.getPid().equals(positionId)) {
+                positionIds.add(position.getStorehousePositionsId());
+                positionIds.addAll(loop(position.getStorehousePositionsId(), positions));
+            }
+        }
+        return positionIds;
+    }
+
     /**
      * 递归取下级
      *
@@ -1243,6 +1273,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return map;
     }
 
+    @Override
     public void format(List<StorehousePositionsResult> data) {
         List<Long> storeIds = new ArrayList<>();
 
@@ -1251,11 +1282,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         }
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.query().in("storehouse_id", storeIds).list();
-
-
         for (StorehousePositionsResult datum : data) {
-            if (ToolUtil.isNotEmpty(storehouses)) {
-                for (Storehouse storehouse : storehouses) {
+            for (Storehouse storehouse : storehouses) {
                     if (datum.getStorehouseId() != null && storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
                         StorehouseResult storehouseResult = new StorehouseResult();
                         ToolUtil.copyProperties(storehouse, storehouseResult);
@@ -1264,7 +1292,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 }
             }
 
-        }
+
     }
 
     /**

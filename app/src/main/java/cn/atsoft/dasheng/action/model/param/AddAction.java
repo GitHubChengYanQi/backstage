@@ -32,7 +32,7 @@ public class AddAction {
 
         public List<QualityActionEnum> qualityActionEnums;
 
-        public List<StocktakinEnum> stocktakinEnums;
+        public List<StocktakingEnum> stocktakingEnums;
 
     }
 }

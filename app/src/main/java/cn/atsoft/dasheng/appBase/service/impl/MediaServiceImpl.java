@@ -204,6 +204,17 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     }
 
     @Override
+    public List<String> getMediaUrls(List<Long> mediaIds, Long userId) {
+        List<String> urls = new ArrayList<>();
+        for (Long mediaId : mediaIds) {
+            String url = getMediaUrlAddUseData(mediaId, userId, null);
+            urls.add(url);
+        }
+        return urls;
+    }
+
+
+    @Override
     public String getMediaUrl(Long mediaId, Long userId) {
         return getMediaUrlAddUseData(mediaId, userId, null);
     }
@@ -295,7 +306,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     @Override
     public Long getTemporaryFile(String mediaId) {
         if (ToolUtil.isEmpty(mediaId)) {
-            return  null;
+            return null;
         }
         try {
             WxCpMediaService mediaService = wxCpService.getWxCpClient().getMediaService();
@@ -315,8 +326,6 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
         return null;
     }
-
-
 
 
 }

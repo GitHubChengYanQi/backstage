@@ -164,11 +164,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     }
                     break;
             }
-
-
         }
-
-
         submit(entity);
     }
 
@@ -180,7 +176,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     }
 
     private void submit(AnomalyOrder entity) {
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.INSTOCKERROR.getType()).eq("status", 99).eq("module", "verifyError").one();
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.ERROR.getType()).eq("status", 99).eq("module", "INSTOCKERROR").one();
         //    发起审批流程
         if (ToolUtil.isNotEmpty(activitiProcess)) {
 
@@ -191,7 +187,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             activitiProcessTaskParam.setQTaskId(entity.getOrderId());
             activitiProcessTaskParam.setUserId(entity.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getOrderId());
-            activitiProcessTaskParam.setType(ProcessType.INSTOCKERROR.getType());
+            activitiProcessTaskParam.setType("INSTOCKERROR");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加小铃铛
@@ -214,6 +210,74 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 throw new ServiceException(500, "您没有权限创建任务");
             }
         }
+    }
+
+    /**
+     * 盘点异常打单据添加
+     *
+     * @param param
+     */
+    @Override
+    public void addByInventory(AnomalyOrderParam param) {
+
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "15").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置异常单据自动生成编码规则");
+            }
+        }
+
+        AnomalyOrder entity = getEntity(param);
+        this.save(entity);
+        List<Anomaly> anomalies = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
+            ids.add(anomalyParam.getAnomalyId());
+            Anomaly anomaly = new Anomaly();
+            anomaly.setStatus(98);
+            ToolUtil.copyProperties(anomalyParam, anomaly);
+            anomaly.setOrderId(entity.getOrderId());
+            anomalies.add(anomaly);
+        }
+        anomalyService.updateBatchById(anomalies);    //更新异常单据状态
+        /**
+         * 更新购物车状态
+         */
+        ShopCart shopCart = new ShopCart();
+        shopCart.setStatus(99);
+        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+            in("form_id", ids);
+        }});
+
+
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.ERROR.getType()).eq("status", 99).eq("module", "StocktakingError").one();
+        //    发起审批流程
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+
+            this.power(activitiProcess);//检查创建权限
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的盘点异常 ");
+            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
+            activitiProcessTaskParam.setUserId(entity.getCreateUser());
+            activitiProcessTaskParam.setFormId(entity.getOrderId());
+            activitiProcessTaskParam.setType(ProcessType.ERROR.getType());
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("processTask");
+            wxCpSendTemplate.setSourceId(taskId);
+            //添加log
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+
+        } else {
+            throw new ServiceException(500, "请先设置流程");
+        }
+
     }
 
     /**

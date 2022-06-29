@@ -27,11 +27,14 @@ public class BrandResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long anomalyId;
     //     private PartsResult partsResult;
     private List<Long> skuIds;
     private List<SkuResult> skuResults;
     private List<StorehousePositionsResult> positionsResults;
     private Long positionId;
+    private Long number = 0L;
+    private Integer inventoryStatus;
     /**
      * 品牌id
      */
@@ -51,36 +54,36 @@ public class BrandResult implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false )
+    @JSONField(serialize = false)
     private Date createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false )
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
      * 创建用户
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false )
+    @JSONField(serialize = false)
     private Long createUser;
 
     /**
      * 修改用户
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false )
+    @JSONField(serialize = false)
     private Long updateUser;
-    @JSONField(serialize = false )
+    @JSONField(serialize = false)
     private Long deptId;
     /**
      * 状态
      */
     @ApiModelProperty("状态")
-    @JSONField(serialize = false )
+    @JSONField(serialize = false)
     private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

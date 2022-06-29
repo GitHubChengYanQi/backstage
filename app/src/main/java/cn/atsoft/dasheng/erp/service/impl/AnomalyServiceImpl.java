@@ -95,6 +95,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private RemarksService remarksService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private InventoryDetailService inventoryDetailService;
 
 
     @Transactional
@@ -110,6 +112,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 param.setType(param.getAnomalyType().toString());
                 break;
         }
+        param.setType(param.getAnomalyType().name());
         Anomaly entity = getEntity(param);
         this.save(entity);
         /**
@@ -121,30 +124,32 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             this.updateById(entity);
         }
 
-        if (ToolUtil.isEmpty(param.getInstockListId())) {
-            throw new ServiceException(500, "缺少入库清单参数");
+        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
+            InstockList instockList = instockListService.getById(param.getInstockListId());
+            instockList.setStatus(-1L);
+            instockListService.updateById(instockList);
         }
-        InstockList instockList = instockListService.getById(param.getInstockListId());
-        instockList.setStatus(-1L);
-        instockListService.updateById(instockList);
+
 
         /**
          * 添加异常明细
          */
         param.setAnomalyId(entity.getAnomalyId());
-        addDetails(param);
+        boolean b = addDetails(param);
 
         /**
          * 添加异常购物车
          */
-        ShopCartParam shopCartParam = new ShopCartParam();
-        shopCartParam.setSkuId(param.getSkuId());
-        shopCartParam.setBrandId(param.getBrandId());
-        shopCartParam.setCustomerId(param.getCustomerId());
-        shopCartParam.setType(param.getAnomalyType().name());
-        shopCartParam.setFormId(entity.getAnomalyId());
-        shopCartParam.setNumber(param.getNeedNumber());
-        shopCartService.add(shopCartParam);
+        if (b) {
+            ShopCartParam shopCartParam = new ShopCartParam();
+            shopCartParam.setSkuId(param.getSkuId());
+            shopCartParam.setBrandId(param.getBrandId());
+            shopCartParam.setCustomerId(param.getCustomerId());
+            shopCartParam.setType(param.getAnomalyType().name());
+            shopCartParam.setFormId(entity.getAnomalyId());
+            shopCartParam.setNumber(param.getNeedNumber());
+            shopCartService.add(shopCartParam);
+        }
     }
 
     @Override
@@ -154,6 +159,40 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(anomaly, anomalyResult);
         detailFormat(anomalyResult);
         return anomalyResult;
+    }
+
+    /**
+     * 暂存
+     */
+    @Override
+    @Transactional
+    public void temporary(AnomalyParam param) {
+        if (ToolUtil.isNotEmpty(param.getAnomalyId())) {
+            detailService.remove(new QueryWrapper<AnomalyDetail>() {{
+                eq("anomaly_id", param.getAnomalyId());
+            }});
+        } else {
+            param.setType(param.getAnomalyType().name());
+            Anomaly entity = getEntity(param);
+            this.save(entity);
+            param.setAnomalyId(entity.getAnomalyId());
+        }
+
+        /**
+         * 添加异常明细
+         */
+        for (AnomalyDetailParam detailParam : param.getDetailParams()) {
+            AnomalyDetail detail = new AnomalyDetail();
+            ToolUtil.copyProperties(detailParam, detail);
+            detail.setAnomalyId(param.getAnomalyId());
+            if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
+                String json = JSON.toJSONString(detailParam.getNoticeIds());
+                detail.setRemark(json);
+            }
+            detailService.save(detail);
+        }
+        param.setAnomalyId(param.getAnomalyId());
+        updateInventoryStatus(param, 2);
     }
 
     /**
@@ -188,29 +227,95 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         return map;
     }
 
+    /**
+     * 修改盘点明细状态
+     *
+     * @param param
+     */
+    private void updateInventoryStatus(AnomalyParam param, int status) {
+        QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("sku_id", param.getSkuId());
+        queryWrapper.eq("brand_id", param.getBrandId());
+        queryWrapper.eq("position_id", param.getPositionId());
+        queryWrapper.eq("inventory_id", param.getFormId());
+        List<InventoryDetail> inventoryDetails = inventoryDetailService.list(queryWrapper);
+        for (InventoryDetail inventoryDetail : inventoryDetails) {
+            if (inventoryDetail.getLockStatus() == 99) {
+                throw new ServiceException(500, "当前状态不可更改");
+            }
+            inventoryDetail.setStatus(status);
+            inventoryDetail.setAnomalyId(param.getAnomalyId());
+            inventoryDetail.setLockStatus(0);
+        }
+        param.setType(param.getAnomalyType().toString());
+        inventoryDetailService.updateBatchById(inventoryDetails);
+    }
 
     /**
      * 添加详情(区分批量)
      *
      * @param param
      */
-    public void addDetails(AnomalyParam param) {
+    public boolean addDetails(AnomalyParam param) {
+        boolean t = true;
+
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
-            throw new ServiceException(500, "缺少异常信息");
-        }
-        for (AnomalyDetailParam detailParam : param.getDetailParams()) {
-            AnomalyDetail detail = new AnomalyDetail();
-            ToolUtil.copyProperties(detailParam, detail);
-            detail.setAnomalyId(param.getAnomalyId());
-            detail.setInkindId(detailParam.getPidInKind());
-            if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
-                String json = JSON.toJSONString(detailParam.getNoticeIds());
-                detail.setRemark(json);
+            switch (param.getAnomalyType()) {
+                case StocktakingError:
+                    updateInventory(param);
+                    t = false;
+                    break;
+                case InstockError:
+                    throw new ServiceException(500, "缺少异常信息");
             }
-            detailService.save(detail);
-
+        } else {
+            updateInventoryStatus(param, -1);
         }
 
+        if (t) {   //添加异常信息
+            for (AnomalyDetailParam detailParam : param.getDetailParams()) {
+                AnomalyDetail detail = new AnomalyDetail();
+                ToolUtil.copyProperties(detailParam, detail);
+                detail.setAnomalyId(param.getAnomalyId());
+                detail.setInkindId(detailParam.getPidInKind());
+                if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
+                    String json = JSON.toJSONString(detailParam.getNoticeIds());
+                    detail.setRemark(json);
+                }
+                detailService.save(detail);
+            }
+        }
+        return t;
+    }
+
+    /**
+     * 盘点  异常 数据 改成正常数据
+     *
+     * @param param
+     */
+    private void updateInventory(AnomalyParam param) {
+
+        updateInventoryStatus(param, 1);    //数据正常  不添加异常数据
+
+        AnomalyDetail anomalyDetail = new AnomalyDetail();//异常修改为正常
+        anomalyDetail.setDisplay(0);
+        List<AnomalyDetail> anomalyDetails = detailService.list(new QueryWrapper<AnomalyDetail>() {{
+            eq("anomaly_id", param.getAnomalyId());
+        }});
+
+
+        ShopCart shopCart = new ShopCart();
+        shopCart.setDisplay(0);
+        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+            eq("form_id", param.getAnomalyId());
+        }});
+
+        //改为正常
+        InventoryDetail inventoryDetail = new InventoryDetail();
+        inventoryDetail.setAnomalyId(0L);
+        inventoryDetailService.update(inventoryDetail, new QueryWrapper<InventoryDetail>() {{
+            eq("anomaly_id", param.getAnomalyId());
+        }});
     }
 
 
@@ -232,15 +337,26 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             eq("form_id", anomaly.getAnomalyId());
         }});
 
+
         if (ToolUtil.isNotEmpty(anomaly.getSourceId())) {
             InstockList instockList = instockListService.getById(anomaly.getSourceId());
             instockList.setStatus(0L);
             instockListService.updateById(instockList);
         }
+        //盘点
+        if (anomaly.getType().equals(AnomalyType.StocktakingError.name())) {
+            InventoryDetail inventoryDetail = new InventoryDetail();
+            inventoryDetail.setStatus(0);
+            inventoryDetail.setAnomalyId(0L);
+            inventoryDetailService.update(inventoryDetail, new QueryWrapper<InventoryDetail>() {{
+                eq("anomaly_id", anomaly.getAnomalyId());
+            }});
+        }
 
     }
 
     @Override
+    @Transactional
     public void update(AnomalyParam param) {
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
@@ -249,7 +365,24 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         detailService.remove(new QueryWrapper<AnomalyDetail>() {{
             eq("anomaly_id", param.getAnomalyId());
         }});
-        addDetails(param);
+        boolean b = addDetails(param);
+
+        /**
+         * 暂存添加购物车
+         */
+        if (b) {
+            Integer count = shopCartService.query().eq("form_id", param.getAnomalyId()).eq("display", 1).count();
+            if (count == 0) {
+                ShopCartParam shopCartParam = new ShopCartParam();
+                shopCartParam.setSkuId(oldEntity.getSkuId());
+                shopCartParam.setBrandId(oldEntity.getBrandId());
+                shopCartParam.setCustomerId(oldEntity.getCustomerId());
+                shopCartParam.setType(param.getAnomalyType().name());
+                shopCartParam.setFormId(oldEntity.getAnomalyId());
+                shopCartParam.setNumber(oldEntity.getNeedNumber());
+                shopCartService.add(shopCartParam);
+            }
+        }
 
     }
 

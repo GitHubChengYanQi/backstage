@@ -27,6 +27,8 @@ public class Anomaly implements Serializable {
     @TableField("check_number")
     private String checkNumber;
 
+    @TableField("position_id")
+    private Long positionId;
 
     /**
      * 可入库数量
@@ -142,6 +144,14 @@ public class Anomaly implements Serializable {
      */
     @TableField("deptId")
     private Long deptId;
+
+    public Long getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
+    }
 
     public String getCheckNumber() {
         return checkNumber;

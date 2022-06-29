@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -34,7 +35,18 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
      */
     void delete(InventoryDetailParam param);
 
+    Object mergeList();
+
+    Object taskList(Long inventoryTaskId);
+
+    void addPhoto(InventoryDetailParam inventoryDetailParam);
+
+    void temporaryLock(InventoryDetailParam param);
+
     void inventoryInstock(InventoryDetailParam inventoryDetailParam);
+
+    @Transactional
+    void complete(List<Long> inventoryIds);
 
     /**
      * 更新
@@ -66,6 +78,7 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
      * @author Captain_Jazz
      * @Date 2021-12-27
      */
-     PageInfo<InventoryDetailResult> findPageBySpec(InventoryDetailParam param);
+    PageInfo<InventoryDetailResult> findPageBySpec(InventoryDetailParam param);
 
+    List<InventoryDetailResult> getDetails(List<Long> inventoryIds);
 }

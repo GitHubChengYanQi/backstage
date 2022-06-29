@@ -25,6 +25,20 @@ public class InventoryDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer lockStatus;
+
+    private Long anomalyId;
+
+    private String enclosure;
+
+    private Long number;
+
+    private Long positionId;
+
+    private Long customerId;
+
+    private Long brandId;
+
     private Long skuId;
 
     private String type;
