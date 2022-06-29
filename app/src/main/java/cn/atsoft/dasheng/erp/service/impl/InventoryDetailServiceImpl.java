@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
@@ -26,6 +27,9 @@ import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
 import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -74,6 +78,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     private StockService stockService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private ActivitiProcessTaskService taskService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
 
     @Override
     public void add(InventoryDetailParam param) {
@@ -372,6 +380,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         anomalyOrderParam.setMessage("盘点");
         anomalyOrderService.addByInventory(anomalyOrderParam);
 
+        for (Inventory inventory : inventories) {
+            ActivitiProcessTask processTask = taskService.getByFormId(inventory.getInventoryTaskId());
+            activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1, LoginContextHolder.getContext().getUserId());
+        }
     }
 
 
