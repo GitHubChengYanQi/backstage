@@ -24,7 +24,7 @@ public enum ProcessModuleEnum {
     quality_task(""),
     verifyError("核实异常"),
     productionOutStock("生产出库"),
-    pickLists("出库单申请");
+    pickLists("出库单申请"),
 
     reMaintenance("复检复调");
 
