@@ -249,6 +249,60 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
             }
 
             return lists;
+
+        }
+
+    }
+
+
+//    private ArrayList<Map<String, Object>> userMenuNodes(List<MenuNode> menus) {
+//
+//    }
+
+    /**
+     * 获取用户菜单列表
+     */
+    public List<Map<String, Object>> getUserMobielMenuNodes(List<Long> roleList) {
+        if (roleList == null || roleList.size() == 0) {
+            return new ArrayList<>();
+        } else {
+            List<MenuNode> menus = restMenuService.getMobileMenusByRoleIds(roleList);
+
+            //定义不同系统分类的菜单集合
+            ArrayList<Map<String, Object>> lists = new ArrayList<>();
+
+            //根据当前用户包含的系统类型，分类出不同的菜单
+            List<Map<String, Object>> systemTypes = LoginContextHolder.getContext().getUser().getSystemTypes();
+            for (Map<String, Object> systemType : systemTypes) {
+
+                //当前遍历系统分类code
+                String systemCode = (String) systemType.get("code");
+
+                //获取当前系统分类下菜单集合
+                ArrayList<MenuNode> originSystemTypeMenus = new ArrayList<>();
+                for (MenuNode menu : menus) {
+                    if (menu.getSystemType().equals(systemCode)) {
+                        originSystemTypeMenus.add(menu);
+                    }
+                }
+
+                //拼接存放key为系统分类编码，value为该分类下菜单集合的map
+                HashMap<String, Object> map = new HashMap<>();
+                List<MenuNode> treeSystemTypeMenus = MenuNode.buildMobileTitle(originSystemTypeMenus);
+
+                //渲染系统类型id
+                map.put("id", systemCode);
+
+                //系统类型的名称
+                map.put("name", ConstantFactory.me().getDictNameByCode(systemCode));
+
+                //各个系统地子菜单
+                map.put("subMenus", treeSystemTypeMenus);
+
+                lists.add(map);
+            }
+
+            return lists;
         }
 
     }
@@ -309,9 +363,11 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         }
 
         List<Map<String, Object>> menus = this.getUserMenuNodes(roleList);
+        List<Map<String, Object>> mobielMenus = this.getUserMobielMenuNodes(roleList);
 
         HashMap<String, Object> result = new HashMap<>();
         result.put("menus", menus);
+        result.put("mobielMenus", mobielMenus);
         result.put("avatar", DefaultImages.defaultAvatarUrl());
         result.put("name", user.getName());
         result.put("id", user.getId());

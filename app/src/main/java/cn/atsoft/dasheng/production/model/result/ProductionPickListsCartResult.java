@@ -1,5 +1,9 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -25,20 +29,30 @@ public class ProductionPickListsCartResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private SkuSimpleResult skuResult;
     private ProductionPickListsResult productionPickListsResult;
-
+    private ProductionPickListsResult pickListsResult;
+    private ProductionPickListsDetailResult productionPickListsDetailResult;
+    private StorehouseSimpleResult storehouseResult;
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long brandId;
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long customerId;
 
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehousePositionsId;
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehouseId;
 
+    private BrandResult brandResult;
 
     /**
-     * 子表id
+     * 购物车id
      */
-    @ApiModelProperty("子表id")
+    @ApiModelProperty("购物车id")
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long pickListsCart;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long inkindId;
 
     /**
      * 主表id
@@ -46,6 +60,13 @@ public class ProductionPickListsCartResult implements Serializable {
     @ApiModelProperty("主表id")
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long pickListsId;
+
+    /**
+     * 子表id
+     */
+    @ApiModelProperty("子表id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long pickListsDetailId;
 
     /**
      * 物料id
@@ -58,40 +79,42 @@ public class ProductionPickListsCartResult implements Serializable {
     private Integer number;
 
     @ApiModelProperty("")
+    @JSONField(serialize = false )
     private Integer status;
 
     /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serialize = false )
     private Long createUser;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serialize = false )
     private Long updateUser;
 
     /**
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serialize = false )
     private Date createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serialize = false )
     private Date updateTime;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false )
     private Integer display;
 
     /**

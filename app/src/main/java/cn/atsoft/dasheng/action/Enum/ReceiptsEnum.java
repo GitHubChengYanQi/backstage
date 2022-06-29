@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.action.Enum;
 
 public enum ReceiptsEnum {
 
+
     PURCHASE("采购申请单")
     ,
     PURCHASEORDER("采购单")
@@ -15,7 +16,9 @@ public enum ReceiptsEnum {
     QUALITY("质检")
     ,
     MAINTENANCE("养护")
-    ;
+,
+    Stocktaking("盘点");
+
 
     private String value;
 

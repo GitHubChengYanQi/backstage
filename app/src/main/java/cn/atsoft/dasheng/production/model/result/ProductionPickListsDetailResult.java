@@ -1,8 +1,11 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.production.model.request.StoreHouseNameAndSkuNumber;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
@@ -13,6 +16,8 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 领料单详情表
@@ -27,6 +32,8 @@ public class ProductionPickListsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private SkuSimpleResult skuResult;
+    private List<BrandResult> brandResults;
+    private List<StoreHouseNameAndSkuNumber> positionAndStockDetail;
     private Integer status;
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehousePositionsId;
@@ -34,6 +41,10 @@ public class ProductionPickListsDetailResult implements Serializable {
     private Long storehouseId;
     private UserResult userResult;
     private String pickListsCoding;
+    private Integer stockNumber;
+    private Boolean isMeet;
+    private List<ProductionPickListsCartResult> cartResults;
+    private Map<String,String> brandResult;
     /**
      * 子表id
      */
@@ -41,6 +52,9 @@ public class ProductionPickListsDetailResult implements Serializable {
     @JSONField(serializeUsing= ToStringSerializer.class)
 
     private Long pickListsDetailId;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Integer receivedNumber;
 
     /**
      * 主表id
@@ -74,6 +88,16 @@ public class ProductionPickListsDetailResult implements Serializable {
     @ApiModelProperty(hidden = true)
     @JSONField(serialize = false,serializeUsing= ToStringSerializer.class)
     private Long updateUser;
+
+
+    /**
+     * 品牌
+     */
+    @ApiModelProperty("品牌")
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private Long brandId;
+
+
 
     /**
      * 创建时间

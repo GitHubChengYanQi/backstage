@@ -5,6 +5,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -24,7 +25,12 @@ import java.util.List;
 public class StorehousePositionsParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<Long>skuIds;
+
+    private Long brandId;
+
+    private List<Long> skuIds;
+
+
     /**
      * 仓库库位id
      */

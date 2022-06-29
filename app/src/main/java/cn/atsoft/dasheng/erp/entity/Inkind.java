@@ -24,6 +24,8 @@ public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("pid")
+    private Long pid;
 
     @TableField("batch_number")
     private String batchNumber;
@@ -42,7 +44,6 @@ public class Inkind implements Serializable {
 
     @TableField("source")
     private String source;
-
 
 
     @TableField("source_id")
@@ -283,6 +284,14 @@ public class Inkind implements Serializable {
 
     public void setProductionTime(Date productionTime) {
         this.productionTime = productionTime;
+    }
+
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     @Override

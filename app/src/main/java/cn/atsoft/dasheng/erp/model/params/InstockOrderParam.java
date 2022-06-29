@@ -32,17 +32,30 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
 
     private static final long serialVersionUID = 1L;
     //跳转路径
+
+    private Boolean directInStock = false;   //是否直接入库
+
     private String url;
 
     private String customerName;
 
-
     private Long actionId;
 
+    private List<Long> mediaIds;
+
+    private List<Long> noticeIds;
+
+    private String pushPeople;
 
     private String type;
 
     private Long status;
+
+    private List<Long> userIds;
+
+    private String module;
+
+    private String shopCardType;
     /**
      * 库位id
      */
@@ -65,6 +78,11 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
 
     private Date time;
     private String coding;
+
+    /**
+     * 注意事项
+     */
+    private String noticeId;
 
     @ApiModelProperty("仓库id")
     private Long storeHouseId;

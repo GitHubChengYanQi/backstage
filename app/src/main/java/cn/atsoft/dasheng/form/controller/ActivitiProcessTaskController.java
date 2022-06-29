@@ -56,7 +56,7 @@ public class ActivitiProcessTaskController extends BaseController {
     @ApiOperation("")
     public ResponseData getUsers(@RequestBody ActivitiAuditParam activitiAuditParam) {
         ActivitiAudit audit = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
-        List<Long> longs = taskSend.selectUsers(audit.getRule());
+        List<Long> longs = taskSend.selectUsers(audit.getRule(),null);
         return ResponseData.success(longs);
     }
 
@@ -76,9 +76,9 @@ public class ActivitiProcessTaskController extends BaseController {
 
 
     @RequestMapping(value = "/getTaskIdByFromId", method = RequestMethod.GET)
-    public ResponseData getTaskIdByFromId( Long formId, String type) {
-        if (ToolUtil.isEmpty(formId)||ToolUtil.isEmpty(type)) {
-            throw new ServiceException(500,"缺少参数");
+    public ResponseData getTaskIdByFromId(Long formId, String type) {
+        if (ToolUtil.isEmpty(formId) || ToolUtil.isEmpty(type)) {
+            throw new ServiceException(500, "缺少参数");
         }
         ActivitiProcessTask task = this.activitiProcessTaskService.query().eq("form_id", formId)
                 .eq("type", type)
@@ -111,9 +111,7 @@ public class ActivitiProcessTaskController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ActivitiProcessTaskResult> detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
-        ActivitiProcessTask detail = this.activitiProcessTaskService.getById(activitiProcessTaskParam.getProcessTaskId());
-        ActivitiProcessTaskResult result = new ActivitiProcessTaskResult();
-        ToolUtil.copyProperties(detail, result);
+        ActivitiProcessTaskResult result= this.activitiProcessTaskService.detail(activitiProcessTaskParam.getProcessTaskId());
         return ResponseData.success(result);
     }
 
@@ -142,6 +140,16 @@ public class ActivitiProcessTaskController extends BaseController {
         }
     }
 
+
+    @RequestMapping(value = "/auditList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<ActivitiProcessTaskResult> auditList(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+
+        if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
+            activitiProcessTaskParam = new ActivitiProcessTaskParam();
+        }
+        return this.activitiProcessTaskService.auditList(activitiProcessTaskParam);
+    }
 }
 
 

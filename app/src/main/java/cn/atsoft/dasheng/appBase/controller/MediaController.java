@@ -177,6 +177,8 @@ public class MediaController extends BaseController {
 
     }
 
+
+
     /**
      * 查询列表
      *
@@ -192,6 +194,16 @@ public class MediaController extends BaseController {
         return this.mediaService.getMediaPathPublic(mediaId,0L);
     }
 
+    /**
+     * 阿里云上传
+     * @param mediaId
+     * @return
+     */
+    @RequestMapping("/getTemporaryFile")
+    public ResponseData getTemporaryFile(@RequestParam String mediaId) {
+        Long id = mediaService.getTemporaryFile(mediaId);
+        return ResponseData.success(id);
+    }
 
 }
 

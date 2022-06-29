@@ -59,7 +59,11 @@ public class InstockListController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody InstockListParam instockListParam) {
 
-        this.instockListService.update(instockListParam);
+        InstockList entity = new InstockList();
+        entity.setStatus(instockListParam.getStatus());
+        entity.setInstockListId(instockListParam.getInstockListId());
+        this.instockListService.updateById(entity);
+
         return ResponseData.success();
     }
 

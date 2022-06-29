@@ -27,9 +27,17 @@ public class RemarksResult implements Serializable {
 
     private ActivitiProcessTaskResult taskResult;
 
+    private List<RemarksResult> childrens;
+
+    private User user;
+
     private Long sourceId;
 
     private String source;
+
+
+
+    private Long pid;
     /**
      * 备注id
      */
@@ -38,8 +46,6 @@ public class RemarksResult implements Serializable {
 
     @ApiModelProperty("")
     private Long logId;
-
-    private User user;
 
     private String photoId;
 

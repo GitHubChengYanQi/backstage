@@ -59,6 +59,12 @@
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type = #{paramCondition.type}
         </if>
+        <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
+            and process_task_id in
+            <foreach collection="paramCondition.taskIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
         <choose>
             <when test="paramCondition.deptId != null  and paramCondition.deptId != 0">
                 and deptIds like CONCAT('%',#{paramCondition.deptId},'%')
@@ -77,4 +83,34 @@
         from activiti_process_task where 1 = 1 and display = 1
     </select>
 
+
+    <select id="auditList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+        select
+        <include refid="Base_Column_List"/>
+        from activiti_process_task where 1 = 1 and display = 1
+        <if test="paramCondition.status != null and paramCondition.status != ''">
+            and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.createUser != null ">
+            and create_user = #{paramCondition.createUser}
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.skuName != null">
+            and form_id in (
+            select instock_order_id from daoxin_erp_instock_order where coding like
+            CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select order_id from daoxin_anomaly_order where coding like CONCAT('%',#{paramCondition.skuName},'%')
+            )
+        </if>
+        <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
+            and process_task_id in
+            <foreach collection="paramCondition.taskIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+    </select>
 </mapper>

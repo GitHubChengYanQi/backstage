@@ -103,7 +103,7 @@ public class AuditViewServiceImpl extends ServiceImpl<AuditViewMapper, AuditView
 
         List<AuditView> auditViews = new ArrayList<>();
 
-        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+//        LoginUser loginUser = LoginContextHolder.getContext().getUser();
 
         for (ActivitiProcessLogResult logResult : logAudit) {
             AuditRule rule = logResult.getActivitiAudit().getRule();
@@ -111,7 +111,7 @@ public class AuditViewServiceImpl extends ServiceImpl<AuditViewMapper, AuditView
                 if (rule.getType().toString().equals("audit")) {
                     AuditView auditView = new AuditView();
                     auditView.setTaskType(task.getType());
-                    auditView.setUserId(loginUser.getId());
+//                    auditView.setUserId(loginUser.getId());
                     auditView.setProcessId(logResult.getPeocessId());
                     auditView.setAuditLogId(logResult.getLogId());
                     auditView.setProcessId(logResult.getPeocessId());

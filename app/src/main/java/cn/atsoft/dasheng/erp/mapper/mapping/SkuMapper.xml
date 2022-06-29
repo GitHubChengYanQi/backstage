@@ -180,15 +180,15 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-        ,daoxin_erp_stock_details.storehouse_id as storehouseId
-        , sum(daoxin_erp_stock_details.number ) as stockNumber
+        ,daoxin_erp_stock_details.number as stockNumber
+        ,goods_spu.display
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
         LEFT JOIN
-        (select * from daoxin_erp_stock_details where display = 1 ) as
+        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group by sku_id) as
         daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
-        WHERE 1=1 and goods_sku.display = 1
+        WHERE 1=1 and goods_sku.display = 1 and goods_spu.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
             or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
@@ -225,6 +225,9 @@
         <if test="paramCondition.standard != null">
             and goods_sku.standard like CONCAT('%',#{paramCondition.standard},'%')
         </if>
+        <if test="paramCondition.createUser != null">
+            and goods_sku.create_user = #{paramCondition.createUser}
+        </if>
         <if test="paramCondition.type != null">
             and goods_sku.type = #{paramCondition.type}
         </if>
@@ -241,6 +244,25 @@
             and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
         </if>
 
+        <!--查询时间内-->
+        <if test="paramCondition.timeWithin != null and paramCondition.timeWithin!= '' ">
+            and DATE_SUB(CURDATE(), INTERVAL #{paramCondition.timeWithin} DAY) <![CDATA[<=date(goods_sku.create_time)]]>
+        </if>
+        <!--本月内-->
+        <if test="paramCondition.thisMonth != null">
+            and DATE_FORMAT(goods_sku.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
         <if test="spuIds != null  and spuIds.size > 0 ">
             and goods_sku.spu_id in
             <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
@@ -295,7 +317,7 @@
         </if>
         <if test="paramCondition.storehousePositionsIds !=null and paramCondition.storehousePositionsIds.size>0">
             and goods_sku.sku_id in
-            (select sku_id from sku_position_view where storehouse_positions_id in
+            (select sku_id from daoxin_erp_storehouse_positions_bind where position_id in
             <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
                      close=")"
                      open="(">
@@ -303,14 +325,17 @@
             </foreach>
             )
         </if>
-        group by goods_sku.sku_id
-        <if test="paramCondition.mixNum != null
-                and paramCondition.mixNum !=''
-                and paramCondition.maxNum != null">
-            having stockNumber BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}
+
+        <!--       <if test="paramCondition.mixNum != null-->
+        <!--and paramCondition.maxNum != null">-->
+        <!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
+        <!--        </if>-->
+        <if test="paramCondition.mixNum != null">
+            and daoxin_erp_stock_details.number &gt;= #{paramCondition.mixNum}
         </if>
-
-
+        <if test="paramCondition.maxNum != null">
+            and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
@@ -335,15 +360,15 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-        , sum(daoxin_erp_stock_details.number ) as stockNumber
-        ,daoxin_erp_stock_details.storehouse_id as storehouseId
+        ,daoxin_erp_stock_details.number as stockNumber
+        ,goods_spu.display
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
         LEFT JOIN
-        (select * from daoxin_erp_stock_details where display = 1 ) as
+        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group by sku_id) as
         daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
-        WHERE 1=1 and goods_sku.display = 1
+        WHERE 1=1 and goods_sku.display = 1 and goods_spu.display = 1
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
             or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
@@ -367,7 +392,9 @@
         <if test="paramCondition.storehouseId">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
-
+        <if test="paramCondition.createUser != null">
+            and goods_sku.create_user = #{paramCondition.createUser}
+        </if>
         <if test="paramCondition.skuId != null">
             AND goods_sku.sku_id = #{paramCondition.skuId}
         </if>
@@ -402,6 +429,25 @@
                 #{state}
             </foreach>
 
+        </if>
+        <!--查询时间内-->
+        <if test="paramCondition.timeWithin != null and paramCondition.timeWithin!= '' ">
+            and DATE_SUB(CURDATE(), INTERVAL #{paramCondition.timeWithin} DAY) <![CDATA[<=date(goods_sku.create_time)]]>
+        </if>
+        <!--本月内-->
+        <if test="paramCondition.thisMonth != null">
+            and DATE_FORMAT(goods_sku.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
             and goods_sku.sku_id in
@@ -448,7 +494,7 @@
         </if>
         <if test="paramCondition.storehousePositionsIds !=null and paramCondition.storehousePositionsIds.size>0">
             and goods_sku.sku_id in
-            (select sku_id from sku_position_view where storehouse_positions_id in
+            (select sku_id from daoxin_erp_storehouse_positions_bind where position_id in
             <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
                      close=")"
                      open="(">
@@ -456,13 +502,16 @@
             </foreach>
             )
         </if>
-        group by goods_sku.sku_id
-        <if test="paramCondition.mixNum != null
-                and paramCondition.mixNum !=''
-                and paramCondition.maxNum != null">
-            having stockNumber BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}
+        <!--        <if test="paramCondition.mixNum != null-->
+        <!--           and paramCondition.maxNum != null">-->
+        <!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
+        <!--        </if>-->
+        <if test="paramCondition.mixNum != null">
+            and daoxin_erp_stock_details.number &gt;= #{paramCondition.mixNum}
         </if>
-
+        <if test="paramCondition.maxNum != null">
+            and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
+        </if>
 
     </select>
 </mapper>

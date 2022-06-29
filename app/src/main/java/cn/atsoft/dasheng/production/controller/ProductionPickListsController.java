@@ -286,6 +286,14 @@ public class ProductionPickListsController extends BaseController {
         }
         return ResponseData.success(result);
     }
+    @RequestMapping(value = "/listByUser", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData listByUser(@RequestBody ProductionPickListsParam productionPickListsParam) {
+        List<Map<String, Object>> maps = productionPickListsService.listByUser(productionPickListsParam);
+        return ResponseData.success(maps);
+
+
+    }
 
 
 }

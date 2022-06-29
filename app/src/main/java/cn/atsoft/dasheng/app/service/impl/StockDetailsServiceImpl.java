@@ -227,6 +227,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         return entity;
     }
 
+    @Override
     public void format(List<StockDetailsResult> data) {
         List<Long> pIds = new ArrayList<>();
         List<Long> stoIds = new ArrayList<>();

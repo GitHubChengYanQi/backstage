@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.message.service;
 
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,25 +12,27 @@ import org.springframework.stereotype.Service;
 public class AuditMessageService {
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private ActivitiProcessTaskService processTaskService;
 
     public void auditDo(AuditEntity auditEntity) {
-        switch (auditEntity.getMessageType()){
+        switch (auditEntity.getMessageType()) {
             case AUDIT:
-                switch (auditEntity.getAuditType()){
+                switch (auditEntity.getAuditType()) {
                     case AUDIT:
-                        activitiProcessLogService.audit(auditEntity.getTaskId(),1);
+                        activitiProcessLogService.autoAudit(auditEntity.getTaskId(), 1, auditEntity.getLoginUserId());
                         break;
                     case AUTO_AUDIT:
-                        activitiProcessLogService.autoAudit(auditEntity.getTaskId(),1);
+                        activitiProcessLogService.autoAudit(auditEntity.getTaskId(), 1, auditEntity.getLoginUserId());
                         break;
                     case REFUSE:
-                        activitiProcessLogService.audit(auditEntity.getTaskId(),2);
+                        activitiProcessLogService.autoAudit(auditEntity.getTaskId(), 2, auditEntity.getLoginUserId());
                         break;
                     case CHECK_ACTION:
-                        activitiProcessLogService.checkAction(auditEntity.getFormId(),auditEntity.getForm(), auditEntity.getActionId());
+                        activitiProcessLogService.checkAction(auditEntity.getFormId(), auditEntity.getForm(), auditEntity.getActionId(), auditEntity.getLoginUserId());
                         break;
                     case AUDIT_START:
-                        activitiProcessLogService.autoAudit(auditEntity.getTaskId(),null);
+                        activitiProcessLogService.autoAudit(auditEntity.getTaskId(), null, auditEntity.getLoginUserId());
                         break;
                 }
                 break;
@@ -36,21 +40,34 @@ public class AuditMessageService {
                 /**
                  * 执行自动审批
                  */
-                this.createTask(auditEntity.getActivitiProcess(), auditEntity.getTaskId());
+                this.createTask(auditEntity.getActivitiProcess(), auditEntity.getTaskId(), auditEntity.getLoginUserId());
                 break;
-
+            case COMPLETE:
+                this.complete(auditEntity.getActivitiProcess(), auditEntity.getTaskId(), auditEntity.getLoginUserId());
+                break;
             default:
                 break;
         }
     }
 
-    public void createTask(ActivitiProcess activitiProcess,Long taskId){
+    public void createTask(ActivitiProcess activitiProcess, Long taskId, Long loginUserId) {
+
         //添加log
         activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-
         /**
          * TODO 是否需要自动审批使用消息队列
          */
-        activitiProcessLogService.autoAudit(taskId, 1);
+        activitiProcessLogService.autoAudit(taskId, 1, loginUserId);
+    }
+
+    /**
+     * 直接通过
+     *
+     * @param activitiProcess
+     * @param taskId
+     * @param loginUserId
+     */
+    public void complete(ActivitiProcess activitiProcess, Long taskId, Long loginUserId) {
+        activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId, 1,loginUserId);
     }
 }

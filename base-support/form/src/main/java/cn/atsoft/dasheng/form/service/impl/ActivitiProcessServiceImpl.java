@@ -1,15 +1,19 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 
-import cn.atsoft.dasheng.form.pojo.ProcessEnum;
-import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.*;
+import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
@@ -38,6 +42,8 @@ import java.util.List;
 public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMapper, ActivitiProcess> implements ActivitiProcessService {
     @Autowired
     private ActivitiStepsService activitiStepsService;
+    @Autowired
+    private ActivitiAuditService activitiAuditService;
 
     @Override
     public void add(ActivitiProcessParam param) {
@@ -107,9 +113,9 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
                 ActivitiProcess process = this.query().eq("module", param.getModule()).eq("status", 99)
                         .ne("process_id", param.getProcessId())
                         .one();
-                if (ToolUtil.isEmpty(process)) {
-                    throw new ServiceException(500, "必须有一个启用的流程");
-                }
+//                if (ToolUtil.isEmpty(process)) {
+//                    throw new ServiceException(500, "必须有一个启用的流程");
+//                }
             }
         }
         //当前流程设为启用 其他流程设为停用
@@ -130,6 +136,67 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         this.updateById(newEntity);
 
 
+    }
+
+    @Override
+    public boolean judgePerson(String type, String module) {
+        boolean t = true;
+        ActivitiProcess process = this.query().eq("type", type).eq("module", module).eq("status", 99).one();
+        ActivitiStepsResult stepResult = activitiStepsService.getStepResult(process.getProcessId());
+        return loop(stepResult, t);
+    }
+
+    public boolean loop(ActivitiStepsResult stepsResult, boolean t) {
+        if (ToolUtil.isEmpty(stepsResult)) {
+            return t;
+        }
+
+
+        if (t && !stepsResult.getAuditType().equals("route")
+                && !stepsResult.getAuditType().equals("branch")
+                && !stepsResult.getAuditType().equals("start")
+        ) {
+            if (!stepsResult.getType().getType().equals("2")) {    //跳过推送
+                for (AuditRule.Rule rule : stepsResult.getAuditRule().getRules()) {
+                    if (rule.getType().equals(DataType.AppointUsers) && !rule.getType().equals(DataType.DeptPositions) && !rule.getType().equals(DataType.AllPeople)) {
+                        t = judgePerson(rule.getAppointUsers());
+                    } else {
+                        t = false;
+                        return t;
+                    }
+                }
+            }
+
+        }
+        if (t) {
+            if (ToolUtil.isNotEmpty(stepsResult.getChildNode())) {
+                t = loop(stepsResult.getChildNode(), t);
+            }
+            if (ToolUtil.isNotEmpty(stepsResult.getConditionNodeList())) {
+                for (ActivitiStepsResult activitiStepsResult : stepsResult.getConditionNodeList()) {
+                    t = loop(activitiStepsResult, t);
+                }
+            }
+        }
+        return t;
+    }
+
+    /**
+     * 规则是否含有当前人
+     *
+     * @param appointUsers
+     * @return
+     */
+    private boolean judgePerson(List<AppointUser> appointUsers) {
+        boolean t = false;
+
+        Long userId = LoginContextHolder.getContext().getUserId();
+        for (AppointUser appointUser : appointUsers) {
+            if (appointUser.getKey().equals(userId.toString())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -177,8 +244,6 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
     }
 
 
-
-
     @Override
     public List<String> getModule(ProcessEnum processEnum) {
         if (ToolUtil.isEmpty(processEnum)) {
@@ -198,4 +263,6 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         }
         return module;
     }
+
+
 }

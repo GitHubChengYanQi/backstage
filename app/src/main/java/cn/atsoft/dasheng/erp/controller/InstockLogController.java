@@ -65,12 +65,12 @@ public class InstockLogController extends BaseController {
      * @author Captain_Jazz
      * @Date 2022-04-14
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InstockLogParam instockLogParam)  {
-        this.instockLogService.delete(instockLogParam);
-        return ResponseData.success();
-    }
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody InstockLogParam instockLogParam)  {
+//        this.instockLogService.delete(instockLogParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口

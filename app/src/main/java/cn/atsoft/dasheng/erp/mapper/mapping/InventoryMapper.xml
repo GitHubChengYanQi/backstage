@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.inventory.mapper.InventoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.Inventory">
+        <id column="inventory_task_id" property="inventoryTaskId"/>
+        <result column="inventory_task_name" property="inventoryTaskName"/>
+        <result column="remark" property="remark"/>
+        <result column="display" property="display"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deptId" property="deptId"/>
+        <result column="notice" property="notice"/>
+        <result column="end_time" property="endTime"/>
+        <result column="begin_time" property="beginTime"/>
+        <result column="mode" property="mode"/>
+        <result column="method" property="method"/>
+        <result column="enclosure" property="enclosure"/>
+        <result column="participants" property="participants"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">participants
+    AS "participants",user_id AS "userId",
+        notice
+        AS "notice",end_time AS "endTime", begin_time AS "beginTime",mode AS "mode",method as "method",
+        inventory_task_id
+        AS "inventoryTaskId", inventory_task_name AS "inventoryTaskName", remark AS "remark", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_inventory where 1 = 1
+        <if test="paramCondition.inventoryTaskId != null">
+            and inventory_task_id like CONCAT('%',#{paramCondition.inventoryTaskId},'%')
+        </if>
+        <if test="paramCondition.inventoryTaskName != null and paramCondition.inventoryTaskName != ''">
+            and inventory_task_name like CONCAT('%',#{paramCondition.inventoryTaskName},'%')
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.InventoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_inventory where 1 = 1
+        <if test="paramCondition.inventoryTaskId != null">
+            and inventory_task_id like CONCAT('%',#{paramCondition.inventoryTaskId},'%')
+        </if>
+        <if test="paramCondition.inventoryTaskName != null and paramCondition.inventoryTaskName != ''">
+            and inventory_task_name like CONCAT('%',#{paramCondition.inventoryTaskName},'%')
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_inventory where 1 = 1
+        <if test="paramCondition.inventoryTaskId != null">
+            and inventory_task_id like CONCAT('%',#{paramCondition.inventoryTaskId},'%')
+        </if>
+        <if test="paramCondition.inventoryTaskName != null and paramCondition.inventoryTaskName != ''">
+            and inventory_task_name like CONCAT('%',#{paramCondition.inventoryTaskName},'%')
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_inventory where 1 = 1
+        <if test="paramCondition.inventoryTaskId != null">
+            and inventory_task_id like CONCAT('%',#{paramCondition.inventoryTaskId},'%')
+        </if>
+        <if test="paramCondition.inventoryTaskName != null and paramCondition.inventoryTaskName != ''">
+            and inventory_task_name like CONCAT('%',#{paramCondition.inventoryTaskName},'%')
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+</mapper>

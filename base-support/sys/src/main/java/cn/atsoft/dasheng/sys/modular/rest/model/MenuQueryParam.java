@@ -17,4 +17,6 @@ public class MenuQueryParam {
 
     Long menuId;
 
+    Integer type;
+
 }

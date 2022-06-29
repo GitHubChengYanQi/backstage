@@ -257,14 +257,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
                     List<SkuSimpleResult> results = skuMap.get(details.getPositionId());
                     if (ToolUtil.isEmpty(results)) {
                         results = new ArrayList<>();
-                        results.add(skuResult);
-                        skuMap.put(details.getPositionId(), results);
-                        break;
-                    } else {
-                        results.add(skuResult);
-                        skuMap.put(details.getPositionId(), results);
-                        break;
                     }
+                    results.add(skuResult);
+                    skuMap.put(details.getPositionId(), results);
                 }
             }
         }
@@ -337,7 +332,6 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
     }
 
 
-
     /**
      * 返回上级
      *
@@ -397,7 +391,6 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
     }
 
 
-
     /**
      * 比对库位
      */
@@ -451,6 +444,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         }
         return null;
     }
+
     public void format(List<StorehousePositionsBindResult> param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();

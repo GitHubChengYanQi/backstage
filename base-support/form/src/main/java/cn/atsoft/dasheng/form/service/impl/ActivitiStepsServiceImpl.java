@@ -428,9 +428,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 stepIds.add(step.getSetpsId());
             }
 
-
             List<ActivitiAuditResult> resultList = auditService.backAudits(stepIds);
-
             for (ActivitiSteps step : steps) {
                 for (ActivitiAuditResult activitiAuditResult : resultList) {
                     if (step.getSetpsId().equals(activitiAuditResult.getSetpsId())) {
@@ -445,7 +443,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                         stepsResults.add(activitiStepsResult);
                     }
                 }
-
             }
         }
         return stepsResults;
@@ -509,8 +506,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      */
     @Override
     public ActivitiStepsResult getStepResult(Long processId) {
-
-
         List<ActivitiStepsResult> steps = getStepsByProcessId(processId);
         if (ToolUtil.isEmpty(steps)) {
             return null;
@@ -558,6 +553,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return stepsResult;
     }
+
 
     /**
      * 取出下一级
@@ -651,6 +647,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return stepsResults;
     }
+
+
+
 
     /**
      * 比对log

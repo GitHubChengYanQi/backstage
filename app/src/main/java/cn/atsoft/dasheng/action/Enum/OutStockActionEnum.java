@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.action.Enum;
 
 import cn.atsoft.dasheng.action.service.FormActionInterface;
 
-public enum OutStockActionEnum  implements FormActionInterface {
+public enum OutStockActionEnum implements FormActionInterface {
 
     start("开始") {
         public Long getStatus() {
@@ -18,8 +18,11 @@ public enum OutStockActionEnum  implements FormActionInterface {
         public Long getStatus() {
             return 50L;
         }
-    }
-    ;
+    },
+    outStock("出库") {
+
+    };
+
     public String getValue() {
         return value;
     }

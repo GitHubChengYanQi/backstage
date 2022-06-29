@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.controller;
 
 
 import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -14,10 +15,15 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.bean.WxCpUser;
+import me.chanjar.weixin.cp.bean.external.contact.WxCpExternalContactInfo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +41,8 @@ public class AdressController extends BaseController {
 
     @Autowired
     private AdressService adressService;
+    @Autowired
+    private WxCpService wxCpService;
 
 
     /**
@@ -47,6 +55,7 @@ public class AdressController extends BaseController {
     @ApiOperation("新增")
     @Permission
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
+
         Adress adress = this.adressService.add(adressParam);
         return ResponseData.success(adress);
     }
@@ -137,7 +146,7 @@ public class AdressController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) AdressParam adressParam) {
         QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
         adressQueryWrapper.eq("display", 1);
-        if (ToolUtil.isNotEmpty(adressParam) && ToolUtil.isNotEmpty(adressParam.getCustomerId())){
+        if (ToolUtil.isNotEmpty(adressParam) && ToolUtil.isNotEmpty(adressParam.getCustomerId())) {
             adressQueryWrapper.eq("customer_id", adressParam.getCustomerId());
         }
         List<Map<String, Object>> list = this.adressService.listMaps(adressQueryWrapper);

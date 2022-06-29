@@ -29,6 +29,8 @@ public class InkindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long pid;
+
     private String batchNumber;
 
     private Integer serialNumber;

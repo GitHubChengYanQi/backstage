@@ -381,7 +381,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             return ids;
         } else {
             ids.add(parts.getSkuId());
-             ids.addAll(getSkuIdsByPart(parts.getPartsId()));
+            ids.addAll(getSkuIdsByPart(parts.getPartsId()));
         }
         return ids;
     }
@@ -687,7 +687,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<ErpPartsDetailResult> details = erpPartsDetailService.getDetails(pids);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
 
 
         for (PartsResult datum : data) {

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +68,22 @@ public class InstockLogDetailController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InstockLogDetailParam instockLogDetailParam)  {
+    public ResponseData delete(@RequestBody InstockLogDetailParam instockLogDetailParam) {
         this.instockLogDetailService.delete(instockLogDetailParam);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 历史记录
+     *
+     * @param instockLogDetailParam
+     * @return
+     */
+    @RequestMapping(value = "/history", method = RequestMethod.POST)
+    public ResponseData history(@RequestBody InstockLogDetailParam instockLogDetailParam) {
+        List<InstockLogDetailResult> history = this.instockLogDetailService.history(instockLogDetailParam);
+        return ResponseData.success(history);
     }
 
     /**
@@ -98,13 +112,26 @@ public class InstockLogDetailController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InstockLogDetailResult> list(@RequestBody(required = false) InstockLogDetailParam instockLogDetailParam) {
-        if(ToolUtil.isEmpty(instockLogDetailParam)){
+        if (ToolUtil.isEmpty(instockLogDetailParam)) {
             instockLogDetailParam = new InstockLogDetailParam();
         }
         return this.instockLogDetailService.findPageBySpec(instockLogDetailParam);
     }
-
-
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-04-14
+     */
+    @RequestMapping(value = "/getOutStockLogs", method = RequestMethod.POST)
+    @ApiOperation("出库记录列表")
+    public ResponseData getOutStockLogs(@RequestBody(required = false) InstockLogDetailParam instockLogDetailParam) {
+        if (ToolUtil.isEmpty(instockLogDetailParam)) {
+            return ResponseData.success();
+        }
+        instockLogDetailParam.setSource("pick_lists");
+        return ResponseData.success(this.instockLogDetailService.getOutStockLogs(instockLogDetailParam));
+    }
 
 
 }

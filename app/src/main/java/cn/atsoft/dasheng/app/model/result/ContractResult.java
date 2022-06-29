@@ -72,7 +72,10 @@ public class ContractResult implements Serializable {
     @TableField(typeHandler = FastjsonTypeHandler.class)
     private Payment payment;
 
-
+    /**
+     * 合同编号
+     */
+    private String coding;
     /**
      * 合同分类
      */

@@ -26,6 +26,8 @@ public interface InstockLogDetailService extends IService<InstockLogDetail> {
      */
     void add(InstockLogDetailParam param);
 
+    List<InstockLogDetailResult> history(InstockLogDetailParam param);
+
     /**
      * 删除
      *
@@ -67,4 +69,6 @@ public interface InstockLogDetailService extends IService<InstockLogDetail> {
      PageInfo<InstockLogDetailResult> findPageBySpec(InstockLogDetailParam param);
 
     List<InstockLogDetailResult> resultsByLogIds(List<Long> logIds);
+
+    List<InstockLogDetailResult> getOutStockLogs(InstockLogDetailParam param);
 }

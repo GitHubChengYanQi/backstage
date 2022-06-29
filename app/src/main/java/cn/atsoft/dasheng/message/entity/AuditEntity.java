@@ -11,17 +11,21 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class AuditEntity {
+
+
     /**
      * 审批任务id
      */
     private Long taskId;
+
+    private Long loginUserId;
 
     /**
      * 审批动作
      */
     private Integer auditStatus;
 
-
+    private String token;
     /**
      * 单据状态
      */
@@ -64,10 +68,10 @@ public class AuditEntity {
     /**
      * 最大推送次数
      */
-    private Integer maxTimes;
+    private Integer maxTimes = 2;
 
     /**
      * 当前推送次数
      */
-    private Integer times;
+    private Integer times = 1;
 }

@@ -13,20 +13,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 
 /**
- * 异常详情控制器
+ * 控制器
  *
  * @author song
- * @Date 2022-04-12 09:42:31
+ * @Date 2022-05-27 15:30:57
  */
 @RestController
 @RequestMapping("/anomalyDetail")
-@Api(tags = "异常详情")
+@Api(tags = "")
 public class AnomalyDetailController extends BaseController {
 
     @Autowired
@@ -36,7 +38,7 @@ public class AnomalyDetailController extends BaseController {
      * 新增接口
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -49,11 +51,11 @@ public class AnomalyDetailController extends BaseController {
      * 编辑接口
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody AnomalyDetailParam anomalyDetailParam) {
+    public ResponseData update(@RequestBody @Valid AnomalyDetailParam anomalyDetailParam) {
 
         this.anomalyDetailService.update(anomalyDetailParam);
         return ResponseData.success();
@@ -63,11 +65,11 @@ public class AnomalyDetailController extends BaseController {
      * 删除接口
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AnomalyDetailParam anomalyDetailParam)  {
+    public ResponseData delete(@RequestBody AnomalyDetailParam anomalyDetailParam) {
         this.anomalyDetailService.delete(anomalyDetailParam);
         return ResponseData.success();
     }
@@ -76,7 +78,7 @@ public class AnomalyDetailController extends BaseController {
      * 查看详情接口
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
@@ -85,6 +87,7 @@ public class AnomalyDetailController extends BaseController {
         AnomalyDetailResult result = new AnomalyDetailResult();
         ToolUtil.copyProperties(detail, result);
 
+
         return ResponseData.success(result);
     }
 
@@ -92,18 +95,16 @@ public class AnomalyDetailController extends BaseController {
      * 查询列表
      *
      * @author song
-     * @Date 2022-04-12
+     * @Date 2022-05-27
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AnomalyDetailResult> list(@RequestBody(required = false) AnomalyDetailParam anomalyDetailParam) {
-        if(ToolUtil.isEmpty(anomalyDetailParam)){
+        if (ToolUtil.isEmpty(anomalyDetailParam)) {
             anomalyDetailParam = new AnomalyDetailParam();
         }
         return this.anomalyDetailService.findPageBySpec(anomalyDetailParam);
     }
-
-
 
 
 }

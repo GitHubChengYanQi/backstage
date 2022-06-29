@@ -3,10 +3,13 @@ package cn.atsoft.dasheng.production.model.result;
 import cn.atsoft.dasheng.LongJsonSerializer.LongJsonDeserializer;
 import cn.atsoft.dasheng.LongJsonSerializer.LongJsonSerializer;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -39,6 +42,31 @@ public class ProductionPickListsResult implements Serializable {
     private List<ProductionPickListsCartResult> cartResults;
     private List<StorehouseResult> storehouseResults;
     private List<StorehousePositionsResult> storehousePositionsResults;
+    private String statusName;
+    private List<AnnouncementsResult> announcementsResults;
+    private List<String> enclosureUrl;
+    private List<SkuSimpleResult> skuResults;
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
+    /**
+     * 附件
+     */
+    @ApiModelProperty("关联人（多）")
+    private String userIds;
+    /**
+     * remarks
+     */
+    @ApiModelProperty("注意事项")
+    private String remarks;
+
+    /**
+     * note
+     */
+    @ApiModelProperty("备注")
+    private String note;
 
     /**
      * 领料单
@@ -118,7 +146,7 @@ public class ProductionPickListsResult implements Serializable {
      * 状态
      */
     @ApiModelProperty("状态")
-    private Integer status;
+    private Long status;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
