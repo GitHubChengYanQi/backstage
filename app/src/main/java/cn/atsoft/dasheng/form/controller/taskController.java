@@ -165,7 +165,7 @@ public class taskController extends BaseController {
                     add(taskResult);
                 }});
                 break;
-            case "INSTOCKERROR":
+            case "ERROR":
                 AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
                 taskResult.setReceipts(orderResult);
                 break;
