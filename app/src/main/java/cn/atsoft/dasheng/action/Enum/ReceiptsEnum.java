@@ -13,6 +13,8 @@ public enum ReceiptsEnum {
     OUTSTOCK("出库单")
     ,
     QUALITY("质检")
+    ,
+    MAINTENANCE("养护")
     ;
 
     private String value;

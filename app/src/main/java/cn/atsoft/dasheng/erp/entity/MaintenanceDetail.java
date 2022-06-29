@@ -27,11 +27,17 @@ public class MaintenanceDetail implements Serializable {
     @TableField("maintenance_id")
     private Long maintenanceId;
 
+    @TableField("done_number")
+    private Integer doneNumber;
+
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
+
     @TableField("inkind_id")
     private Long inkindId;
 
     @TableField("sku_id")
-    private Integer skuId;
+    private Long skuId;
 
     @TableField("number")
     private Integer number;
@@ -109,11 +115,11 @@ public class MaintenanceDetail implements Serializable {
         this.inkindId = inkindId;
     }
 
-    public Integer getSkuId() {
+    public Long getSkuId() {
         return skuId;
     }
 
-    public void setSkuId(Integer skuId) {
+    public void setSkuId(Long skuId) {
         this.skuId = skuId;
     }
 
@@ -187,6 +193,22 @@ public class MaintenanceDetail implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getDoneNumber() {
+        return doneNumber;
+    }
+
+    public void setDoneNumber(Integer doneNumber) {
+        this.doneNumber = doneNumber;
+    }
+
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
     }
 
     @Override

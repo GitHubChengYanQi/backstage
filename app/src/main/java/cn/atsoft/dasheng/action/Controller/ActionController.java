@@ -79,6 +79,17 @@ public class ActionController {
                     }
                 }
                 break;
+            case MAINTENANCE:
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (MaintenanceActionEnum maintenanceActionEnum : action.maintenanceActionEnums) {
+
+                        String value = maintenanceActionEnum.getValue();
+                        maintenanceActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
+                        i++;
+                    }
+                }
+                break;
         }
 
 
@@ -103,6 +114,7 @@ public class ActionController {
             case OUTSTOCK:
             case INSTOCKERROR:
             case PURCHASEORDER:
+            case MAINTENANCE:
                 DocumentsStatusParam status = statusParam.getParam();
                 status.setFormType(statusParam.getReceiptsEnum().name());
                 id = documentStatusService.add(status);

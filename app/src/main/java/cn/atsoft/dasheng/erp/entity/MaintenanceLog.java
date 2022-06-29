@@ -41,6 +41,12 @@ public class MaintenanceLog implements Serializable {
     private Long brandId;
 
     /**
+     * 附件
+     */
+    @TableField("enclosure")
+    private String enclosure;
+
+    /**
      * 数量
      */
     @TableField("number")
@@ -185,6 +191,14 @@ public class MaintenanceLog implements Serializable {
 
     public void setMaintenanceId(Long maintenanceId) {
         this.maintenanceId = maintenanceId;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
     }
 
     @Override

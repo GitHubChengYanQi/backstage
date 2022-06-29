@@ -22,8 +22,8 @@ public enum ProcessModuleEnum {
     createInstock(""),
     INSTOCK(""),
     quality_task(""),
-    verifyError("核实异常");
-
+    verifyError("核实异常"),
+    reMaintenance("复检复调");
 
     @EnumValue
     private String moduleName;

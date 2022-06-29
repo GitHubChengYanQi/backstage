@@ -102,6 +102,22 @@ public class MaintenanceDetailController extends BaseController {
         }
         return this.maintenanceDetailService.findPageBySpec(maintenanceDetailParam);
     }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-06-28
+     */
+    @RequestMapping(value = "/getNeed", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<MaintenanceDetailResult> getNeed(@RequestBody(required = false) MaintenanceDetailParam maintenanceDetailParam) {
+        if(ToolUtil.isEmpty(maintenanceDetailParam)){
+            maintenanceDetailParam = new MaintenanceDetailParam();
+        }
+//        return this.maintenanceDetailService.needMaintenance(maintenanceDetailParam);
+        return null;
+    }
+
 
 
 

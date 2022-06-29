@@ -23,6 +23,11 @@ public class MaintenanceResult implements Serializable {
     private Long brandId;
     private Long storehousePositionsId;
 
+
+    private Integer skuCount;
+    private Integer numberCount;
+    private Integer positionCount;
+
     /**
      * 养护
      */

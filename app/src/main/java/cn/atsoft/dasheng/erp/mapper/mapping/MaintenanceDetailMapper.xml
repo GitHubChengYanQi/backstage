@@ -9,6 +9,8 @@
         <result column="inkind_id" property="inkindId" />
         <result column="sku_id" property="skuId" />
         <result column="number" property="number" />
+        <result column="storehouse_positions_id" property="storehousePositionsId" />
+        <result column="done_number" property="doneNumber" />
         <result column="brand_id" property="brandId" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
@@ -21,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", number AS "number", brand_id AS "brandId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
+        maintenance_detail_id AS "maintenanceDetailId",storehouse_positions_id AS "storehousePositionsId", done_number AS "doneNumber",maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", number AS "number", brand_id AS "brandId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
     </sql>
 
 

@@ -28,6 +28,7 @@ public interface MaintenanceMapper extends BaseMapper<Maintenance> {
      * @Date 2022-06-28
      */
     List<MaintenanceResult> customList(@Param("paramCondition") MaintenanceParam paramCondition);
+    List<MaintenanceResult> findTaskByTime();
 
     /**
      * 获取map列表

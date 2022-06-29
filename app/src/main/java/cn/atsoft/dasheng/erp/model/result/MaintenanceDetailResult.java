@@ -31,10 +31,13 @@ public class MaintenanceDetailResult implements Serializable {
     private Long inkindId;
 
     @ApiModelProperty("")
-    private Integer skuId;
+    private Long skuId;
 
     @ApiModelProperty("")
     private Integer number;
+    private Integer doneNumber;
+
+    private Long storehousePositionsId;
 
     /**
      * 品牌id

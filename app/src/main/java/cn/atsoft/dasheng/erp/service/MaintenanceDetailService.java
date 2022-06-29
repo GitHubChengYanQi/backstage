@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public interface MaintenanceDetailService extends IService<MaintenanceDetail> {
      */
     void update(MaintenanceDetailParam param);
 
-    List<Map<String, Object>> needMaintenance(List<Long> ids);
+    List<StorehousePositionsResult> needMaintenance(List<Long> ids);
 
     /**
      * 查询单条数据，Specification模式

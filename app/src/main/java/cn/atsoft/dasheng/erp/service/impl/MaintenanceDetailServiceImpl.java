@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam;
 import cn.atsoft.dasheng.erp.model.request.MaintenanceMirageRequest;
+import cn.atsoft.dasheng.erp.model.request.SkuBrandPositionNumber;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -87,8 +88,7 @@ public class MaintenanceDetailServiceImpl extends ServiceImpl<MaintenanceDetailM
     }
 
     @Override
-    public List<Map<String, Object>> needMaintenance(List<Long> ids) {
-//        List<MaintenanceDetail> maintenanceDetails = maintenanceDetailService.query().in("maintenance_id", ids).eq("display", 1).eq("status", 0).list();
+    public List<StorehousePositionsResult> needMaintenance(List<Long> ids) {
         List<Maintenance> maintenances = maintenanceService.listByIds(ids);
         List<StockDetails> stockDetails = new ArrayList<>();
         for (Maintenance maintenance : maintenances) {
@@ -122,38 +122,45 @@ public class MaintenanceDetailServiceImpl extends ServiceImpl<MaintenanceDetailM
         positionsIds = positionsIds.stream().distinct().collect(Collectors.toList());
         List<StorehousePositionsResult> positionDetail = storehousePositionsService.getDetails(positionsIds);
         for (StorehousePositionsResult storehousePositionsResult : positionDetail) {
-            MaintenanceMirageRequest mirageRequest = new MaintenanceMirageRequest();
-            mirageRequest.setStorehousePositionsResult(storehousePositionsResult);
-
-            for (StockDetails details : totalList) {
-                if (details.getStorehousePositionsId().equals(storehousePositionsResult.getStorehousePositionsId())){
-                    for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
-                        if (skuSimpleResult.getSkuId().equals(details.getSkuId()));
-                    }
+            List<SkuBrandPositionNumber> skuBrandPositionNumbers = new ArrayList<>();
+            for (StockDetails stockDetail : stockDetails) {
+                if(storehousePositionsResult.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())){
+                    skuBrandPositionNumbers.add(new SkuBrandPositionNumber(){{
+                        setSkuId(stockDetail.getSkuId());
+                        setBrandId(stockDetail.getBrandId());
+                        setNumber(Math.toIntExact(stockDetail.getNumber()));
+                        setPositoinId(stockDetail.getStorehousePositionsId());
+                    }});
                 }
             }
+            List<Long> skuIds1 = new ArrayList<>();
+            for (SkuBrandPositionNumber skuBrandPositionNumber : skuBrandPositionNumbers) {
+                skuIds1.add(skuBrandPositionNumber.getSkuId());
+            }
+            skuIds1 = skuIds1.stream().distinct().collect(Collectors.toList());
+            List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
 
+            for (Long skuId : skuIds1) {
+                List<BrandResult> brandResultsList = new ArrayList<>();
+                for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
+                    if (skuId.equals(skuSimpleResult.getSkuId())){
+                        for (SkuBrandPositionNumber skuBrandPositionNumber : skuBrandPositionNumbers) {
+                            if (skuBrandPositionNumber.getSkuId().equals(skuId));
+                            for (BrandResult brandResult : brandResults) {
+                                brandResult.setNumber(skuBrandPositionNumber.getNumber());
+                                brandResultsList.add(brandResult);
+                            }
+                        }
+                        skuSimpleResult.setBrandResults(brandResultsList);
+                    }
+                    skuSimpleResults.add(skuSimpleResult);
+                }
+            }
+            storehousePositionsResult.setSkuResults(skuSimpleResults);
         }
 
+        return  positionDetail;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        return "wo qu ni ma de ";
 
     }
 

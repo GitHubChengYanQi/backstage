@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -101,6 +102,20 @@ public class MaintenanceController extends BaseController {
             maintenanceParam = new MaintenanceParam();
         }
         return this.maintenanceService.findPageBySpec(maintenanceParam);
+    }
+/**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-06-28
+     */
+    @RequestMapping(value = "/findTaskByTime", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public ResponseData findTaskByTime() {
+        List<Maintenance> taskByTime = this.maintenanceService.findTaskByTime();
+        List<MaintenanceResult> maintenanceResults = BeanUtil.copyToList(taskByTime, MaintenanceResult.class);
+        maintenanceService.format(maintenanceResults);
+        return ResponseData.success(maintenanceResults) ;
     }
 
 

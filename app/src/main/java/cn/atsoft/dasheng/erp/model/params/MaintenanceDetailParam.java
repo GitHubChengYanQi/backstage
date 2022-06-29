@@ -35,10 +35,16 @@ public class MaintenanceDetailParam implements Serializable, BaseValidatingParam
     private Long inkindId;
 
     @ApiModelProperty("")
-    private Integer skuId;
+    private Long skuId;
 
     @ApiModelProperty("")
     private Integer number;
+    private Integer doneNumber;
+
+
+    private Long storehousePositionsId;
+
+    private String enclosure;
 
     /**
      * 品牌id

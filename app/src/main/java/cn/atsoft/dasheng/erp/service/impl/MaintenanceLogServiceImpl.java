@@ -68,12 +68,36 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
 
     @Override
     public void add(MaintenanceLogParam param){
-        MaintenanceLog entity = getEntity(param);
-        this.save(entity);
+        Long maintenanceId = param.getMaintenanceId();
+        Long brandId = param.getBrandId();
+        Long storehousePositionsId = param.getStorehousePositionsId();
+        Long skuId = param.getSkuId();
+        Integer number = param.getNumber();
+        List<MaintenanceDetail> details = maintenanceDetailService.query().eq("maintenance_id", maintenanceId).eq("display", 1).eq("status", 0).list();
+        for (MaintenanceDetail detail : details) {
+            if (number>0 && detail.getSkuId().equals(skuId) && detail.getBrandId().equals(brandId) && detail.getStorehousePositionsId().equals(storehousePositionsId)){
+                if (ToolUtil.isEmpty(detail.getDoneNumber())){
+                    detail.setDoneNumber(0);
+                }
+                if (number - (detail.getNumber()-detail.getDoneNumber()) >=0) {
+                    detail.setStatus(99);
+                    detail.setDoneNumber(detail.getNumber());
+                    number -=(detail.getNumber()-detail.getDoneNumber());
+                }else {
+                    detail.setDoneNumber(detail.getDoneNumber()+(detail.getNumber() - (number*-1)));
+                }
+                number -=(detail.getNumber()-detail.getDoneNumber());
+            }
+        }
+        if (details.stream().noneMatch(i->i.getStatus() == 99 ) || ToolUtil.isEmpty(details)){
+            maintenanceService.updateById(new Maintenance(){{
+                setMaintenanceId(param.getMaintenanceId());
+                setStatus(99);
+            }});
+        }
+        this.save(this.getEntity(param));
+        maintenanceDetailService.updateBatchById(details);
     }
-
-
-
 
     @Override
     public void delete(MaintenanceLogParam param){

@@ -8,6 +8,7 @@
         <result column ="maintenance_detail_id" property="maintenanceDetailId" />
         <result column="maintenance_id" property="maintenanceId" />
         <result column="inkind_id" property="inkindId" />
+        <result column="enclosure" property="enclosure" />
         <result column="sku_id" property="skuId" />
         <result column="brand_id" property="brandId" />
         <result column="number" property="number" />
@@ -21,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        maintenance_log_id AS "maintenanceLogId",maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        maintenance_log_id AS "maintenanceLogId",enclosure AS "enclosure",maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -62,7 +63,7 @@
             <if test="paramCondition.deptId != null">
                 and deptId like CONCAT('%',#{paramCondition.deptId},'%')
             </if>
-            <if test="paramCondition.skuIds.size>0">
+            <if test="paramCondition.skuIds != null and paramCondition.skuIds.size > 0">
                 and sku_id in
                 <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
                     #{state}

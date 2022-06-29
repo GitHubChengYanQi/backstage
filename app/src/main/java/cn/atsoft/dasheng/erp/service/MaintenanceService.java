@@ -29,6 +29,8 @@ public interface MaintenanceService extends IService<Maintenance> {
 
     List<StockDetails> needMaintenanceByRequirement(Maintenance param);
 
+    List<Maintenance> findTaskByTime();
+
     /**
      * 删除
      *
@@ -69,4 +71,5 @@ public interface MaintenanceService extends IService<Maintenance> {
      */
      PageInfo<MaintenanceResult> findPageBySpec(MaintenanceParam param);
 
+    void format(List<MaintenanceResult> param);
 }
