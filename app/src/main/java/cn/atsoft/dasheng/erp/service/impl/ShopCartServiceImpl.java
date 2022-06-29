@@ -273,6 +273,22 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         return shopCartResults;
     }
 
+    /**
+     * 申请购物车
+     *
+     * @param param
+     * @return
+     */
+    @Override
+    public List<ShopCartResult> applyList(ShopCartParam param) {
+        Long userId = LoginContextHolder.getContext().getUserId();
+        param.setCreateUser(userId);
+        List<ShopCartResult> shopCartResults = this.baseMapper.customList(param);
+        format(shopCartResults);
+        return shopCartResults;
+    }
+
+
     @Override
     public ShopCartResult findBySpec(ShopCartParam param) {
         return null;
