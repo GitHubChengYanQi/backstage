@@ -220,7 +220,7 @@ public class taskController extends BaseController {
             User user = userService.getById(taskResult.getCreateUser());
             String imgUrl = appStepService.imgUrl(user.getUserId().toString());
             user.setAvatar(imgUrl);
-            taskResult.setCreateName(user.getName());
+            taskResult.setUser(user);
         }
 
 
