@@ -2,8 +2,6 @@ package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.appBase.service.MediaService;
-import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
@@ -14,7 +12,6 @@ import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.enums.RemarkEnum;
 import cn.atsoft.dasheng.form.mapper.RemarksMapper;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
@@ -25,9 +22,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -205,7 +200,21 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
-            pushPeople(userIds, auditParam.getTaskId(), "你有一条被@的消息");
+            pushPeople(userIds, auditParam.getTaskId(), "你有一条被@的消息",remarks);
+        }
+    }
+    @Override
+    public void addByMQ(RemarksParam remarksParam) {
+        Remarks entity = this.getEntity(remarksParam);
+        this.save(entity);
+
+        if (ToolUtil.isNotEmpty(remarksParam.getUserIds())) {
+            String[] split = remarksParam.getUserIds().split(",");
+            List<Long> userIds = new ArrayList<>();
+            for (String s : split) {
+                userIds.add(Long.valueOf(s));
+            }
+            pushPeople(userIds, remarksParam.getTaskId(), "你有一条被@的消息",entity);
         }
     }
 
@@ -216,10 +225,14 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
      * @param taskId
      */
     @Override
-    public void pushPeople(List<Long> userIds, Long taskId, String content) {
+    public void pushPeople(List<Long> userIds, Long taskId, String content,Remarks remarks) {
+        ActivitiProcessTask task = taskService.getById(taskId);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setType(2);
-            setItems("新消息");
+            setItems("收到评论");
+            setDescription("有人在 "+task.getTaskName()+" 中@了你");
+            setCreateUser(task.getCreateUser());
+            setRemark(remarks.getContent());
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
             setUserIds(userIds);
         }});

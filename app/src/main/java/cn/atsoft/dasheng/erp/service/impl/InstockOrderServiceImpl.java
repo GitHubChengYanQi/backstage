@@ -354,6 +354,28 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
 
 
+            if(ToolUtil.isNotEmpty(param.getUserIds())){
+                /**
+                 * 评论
+                 */
+                RemarksParam remarksParam = new RemarksParam();
+                remarksParam.setTaskId(taskId);
+                remarksParam.setType("remark");
+                StringBuffer userIdStr = new StringBuffer();
+                for (Long userId : param.getUserIds()) {
+                    userIdStr.append(userId).append(",");
+                }
+                String userStrtoString = userIdStr.toString();
+                if (userIdStr.length()>1){
+                    userStrtoString = userStrtoString.substring(0,userStrtoString.length() -1);
+                }
+                remarksParam.setUserIds(userStrtoString);
+                remarksParam.setContent(param.getRemark());
+                messageProducer.remarksServiceDo(new RemarksEntity() {{
+                    setOperationType(OperationType.ADD);
+                    setRemarksParam(remarksParam);
+                }});
+            }
             /**
              * 添加动态记录
              */
@@ -362,17 +384,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             remarksParam.setType("dynamic");
             remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "发起了入库申请");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.ADD);
+                setOperationType(OperationType.SAVE);
                 setRemarksParam(remarksParam);
             }});
 //                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
 //                activitiProcessLogService.autoAudit(taskId, 1);
-            /**
-             * 指定人推送
-             */
-            if (ToolUtil.isNotEmpty(param.getUserIds())) {
-                remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
-            }
+
 
 
             /**
@@ -725,7 +742,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
         remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "操作了入库");
         messageProducer.remarksServiceDo(new RemarksEntity() {{
-            setOperationType(OperationType.ADD);
+            setOperationType(OperationType.SAVE);
             setRemarksParam(remarksParam);
         }});
 
@@ -752,7 +769,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             remarksParam.setContent("单据:" + order.getCoding() + "完成了入库");
             remarksParam.setType("dynamic");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.ADD);
+                setOperationType(OperationType.SAVE);
                 setRemarksParam(remarksParam);
             }});
 
@@ -799,7 +816,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 if (shopCart.getNumber() < 0) {
                     throw new ServiceException(500, "购物车数量不正确");
                 }
-            }else {
+            } else {
                 shopCart.setStatus(99);
             }
             cartService.updateById(shopCart);
@@ -1350,6 +1367,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> statusIds = new ArrayList<>();
         List<Long> noticeIds = new ArrayList<>();
         List<Long> mediaIds = new ArrayList<>();
+        List<Long> instockListIds = new ArrayList<>();
 
         for (InstockOrderResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getNoticeId())) {
@@ -1378,21 +1396,40 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
         List<InstockListResult> instockListList = instockListService.getListByOrderIds(orderIds);
+        for (InstockListResult instockListResult : instockListList) {
+            instockListIds.add(instockListResult.getInstockListId());
+        }
+        List<ShopCart> shopCarts = instockListList.size() == 0 ? new ArrayList<>() : shopCartService.query().in("form_id", instockListIds).eq("display", 1).eq("status", 0).list();
+
 
         for (InstockOrderResult datum : data) {
 
             long enoughNumber = 0L;
             long realNumber = 0L;
+            int waitInStockNum = 0;
+            int instockErrorNum = 0;
             List<InstockListResult> instockListResults = new ArrayList<>();
-
             for (InstockListResult instockList : instockListList) {
                 if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
                     instockListResults.add(instockList);
-
                     enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
                     realNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
+
+
+                    for (ShopCart shopCart : shopCarts) {
+                        switch (shopCart.getType()) {
+                            case "waitInStock":
+                                waitInStockNum = waitInStockNum + 1;
+                                break;
+                            case "InstockError":
+                                instockErrorNum = instockErrorNum + 1;
+                                break;
+                        }
+                    }
                 }
             }
+            datum.setInstockErrorNum(instockErrorNum);
+            datum.setWaitInStockNum(waitInStockNum);
             datum.setInstockListResults(instockListResults);
             datum.setEnoughNumber(enoughNumber);
             datum.setRealNumber(realNumber);

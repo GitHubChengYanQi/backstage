@@ -43,17 +43,16 @@ public class InstockOrderResult implements Serializable {
     private UserResult updateUserResult;
     private ThemeAndOrigin themeAndOrigin;
     private DocumentsStatusResult statusResult;
-
     private String pushPeople;
     private String type;
-
     private Long status;
-
     private Long enoughNumber;
     private Long realNumber;
     private Long notNumber;
     private List<Announcements> announcementsList;
     private List<String> url;
+    private Integer waitInStockNum;
+    private Integer instockErrorNum;
 
     /**
      * 来源
