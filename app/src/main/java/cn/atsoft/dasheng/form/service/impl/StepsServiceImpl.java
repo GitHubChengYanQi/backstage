@@ -658,7 +658,8 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         }
     }
 
-    private String imgUrl(String userId) {
+    @Override
+    public String imgUrl(String userId) {
         List<WxuserInfo> infoList = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").list();
         if (ToolUtil.isNotEmpty(infoList)) {
             WxuserInfo wxuserInfo = infoList.get(0);

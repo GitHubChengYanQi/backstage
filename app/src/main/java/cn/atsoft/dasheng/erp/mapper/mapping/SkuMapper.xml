@@ -335,7 +335,7 @@
         <if test="paramCondition.maxNum != null">
             and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
         </if>
-    </select>
+     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select

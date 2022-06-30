@@ -269,7 +269,6 @@ public class RestUserMgrController extends BaseController {
     public ResponseData getMyInfo(){
         Map<String, Object> userIndexInfo = restUserService.getUserIndexInfo();
         if (userIndexInfo == null) {
-
             return new ErrorResponseData("用户信息不存在");
         }
         return new SuccessResponseData(userIndexInfo);

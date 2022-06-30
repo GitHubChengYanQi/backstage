@@ -1547,7 +1547,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private void judgeStatus(Long logId, List<ActivitiProcessLog> logs) {
         for (ActivitiProcessLog activitiProcessLog : logs) {
             if (activitiProcessLog.getLogId().equals(logId) && activitiProcessLog.getStatus() != -1) {
-                throw new ServiceException(500, "当前审核状态不正确,请刷新页面");
+                throw new ServiceException(500, "当前节点已被操作,请刷新页面");
             }
         }
     }

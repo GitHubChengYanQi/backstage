@@ -681,7 +681,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                                 appointUsers.add(new AppointUser() {{
                                     setKey(user.getUserId().toString());
                                     setTitle(user.getName());
-                                    setAuditStatus(99);
+                                    if (logResult.getStatus()==1) {
+                                        setAuditStatus(99);
+                                    }else if (logResult.getStatus()==0){
+                                        setAuditStatus(50);
+                                    }
+
                                 }});
                                 rule.setAppointUsers(appointUsers);
                                 break;

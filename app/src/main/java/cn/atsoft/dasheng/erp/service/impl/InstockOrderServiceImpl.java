@@ -811,10 +811,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         if (ToolUtil.isNotEmpty(listParam.getCartId())) {
             ShopCart shopCart = cartService.getById(listParam.getCartId());
-            shopCart.setNumber(shopCart.getNumber() - listParam.getNumber());
-            if (shopCart.getNumber() < 0) {
-                throw new ServiceException(500, "购物车数量不正确");
-            } else if (shopCart.getNumber() == 0) {
+            if (shopCart.getNumber() != 0) {
+                shopCart.setNumber(shopCart.getNumber() - listParam.getNumber());
+                if (shopCart.getNumber() < 0) {
+                    throw new ServiceException(500, "购物车数量不正确");
+                }
+            }else {
                 shopCart.setStatus(99);
             }
             cartService.updateById(shopCart);
