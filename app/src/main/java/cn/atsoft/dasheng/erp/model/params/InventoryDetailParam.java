@@ -36,7 +36,7 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
 
     private List<Long> mediaIds;
 
-
+    private Long realNumber;
 
     private Long anomalyId;
 

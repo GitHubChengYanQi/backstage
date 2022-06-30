@@ -148,7 +148,6 @@ public class ActivitiProcessTaskController extends BaseController {
         if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
             activitiProcessTaskParam = new ActivitiProcessTaskParam();
         }
-        activitiProcessTaskParam.setCreateUser(LoginContextHolder.getContext().getUserId());
         return this.activitiProcessTaskService.auditList(activitiProcessTaskParam);
     }
 

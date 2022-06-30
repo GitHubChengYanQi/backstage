@@ -24,6 +24,8 @@ public class InventoryDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("real_number")
+    private Long realNumber;
 
     @TableField("lock_status")
     private Integer lockStatus;
@@ -245,6 +247,14 @@ public class InventoryDetail implements Serializable {
 
     public void setLockStatus(Integer lockStatus) {
         this.lockStatus = lockStatus;
+    }
+
+    public Long getRealNumber() {
+        return realNumber;
+    }
+
+    public void setRealNumber(Long realNumber) {
+        this.realNumber = realNumber;
     }
 
     @Override

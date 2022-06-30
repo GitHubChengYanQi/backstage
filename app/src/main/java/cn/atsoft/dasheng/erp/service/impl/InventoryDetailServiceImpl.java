@@ -219,6 +219,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                         BrandResult brandResult = new BrandResult();
                         brandResult.setBrandId(inventoryDetailResult.getBrandId());
                         brandResult.setNumber(inventoryDetailResult.getNumber());
+                        brandResult.setInkind(inventoryDetailResult.getInkindId());
                         brandResult.setAnomalyId(inventoryDetailResult.getAnomalyId());
                         brandResult.setInventoryStatus(inventoryDetailResult.getStatus());
                         if (mergeBrand(brandResults, brandResult)) {
@@ -364,6 +365,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             if (inventoryDetail.getLockStatus() != 98) {
                 throw new ServiceException(500, "请全部确定");
             }
+            inventoryDetail.setLockStatus(99);  //锁数据
             anomalyIds.add(inventoryDetail.getAnomalyId());
         }
 

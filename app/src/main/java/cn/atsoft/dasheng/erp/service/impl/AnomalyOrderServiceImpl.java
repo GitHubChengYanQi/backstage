@@ -98,6 +98,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InstockLogDetailService instockLogDetailService;
     @Autowired
     private InstockOrderService instockOrderService;
+    @Autowired
+    private InventoryDetailService inventoryDetailService;
 
     @Override
     @Transactional
@@ -321,6 +323,26 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     }
 
     /**
+     * 盘点异常
+     */
+    private void stocktaking(List<AnomalyResult> anomalyResults) {
+        for (AnomalyResult anomalyResult : anomalyResults) {
+
+            for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
+                if (detail.getStauts() == 2) {  //报损
+
+                    InventoryDetail inventoryDetail = inventoryDetailService.query()  //找到盘点异常物料 进行出库
+                            .eq("inventory_id", anomalyResult.getFormId())
+                            .eq("inkind_id", detail.getInkindId()).one();
+
+//                    inventoryDetail.getRealNumber()
+
+                }
+            }
+        }
+    }
+
+    /**
      * 入库异常
      *
      * @param anomalyResults
@@ -393,7 +415,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             /**
              * 消息队列完成动作
              */
-            processLogService.checkAction(param.getOrderId(), "INSTOCKERROR", param.getActionId(), LoginContextHolder.getContext().getUserId());
+            processLogService.checkAction(param.getOrderId(), "ERROR", param.getActionId(), LoginContextHolder.getContext().getUserId());
 //            messageProducer.auditMessageDo(new AuditEntity() {{
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);

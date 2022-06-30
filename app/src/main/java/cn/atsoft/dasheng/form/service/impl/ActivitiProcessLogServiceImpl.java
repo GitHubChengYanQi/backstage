@@ -283,7 +283,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         case "INSTOCK":   //入库创建
                         case "OUTSTOCK":   //出库
                         case "Stocktaking":
-                            updateStatus(activitiProcessLog.getLogId(), status,loginUserId);
+                            updateStatus(activitiProcessLog.getLogId(), status, loginUserId);
                             setStatus(logs, activitiProcessLog.getLogId());
                             //拒绝走拒绝方法
                             if (status.equals(0)) {
@@ -613,6 +613,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     public void checkAction(Long id, String formType, Long actionId, Long loginUserId) {
 
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", formType).eq("form_id", id).eq("display", 1).one();
+        if (ToolUtil.isEmpty(processTask)) {
+            throw new ServiceException(500, "当前任务不存在");
+        }
         List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : logs) {

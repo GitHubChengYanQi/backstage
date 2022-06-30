@@ -35,6 +35,7 @@ public class BrandResult implements Serializable {
     private Long positionId;
     private Long number = 0L;
     private Integer inventoryStatus;
+    private Long inkind;
     /**
      * 品牌id
      */

@@ -134,6 +134,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<InventoryDetail> inventoryDetails = BeanUtil.copyToList(param.getDetailParams(), InventoryDetail.class, new CopyOptions());
         for (InventoryDetail inventoryDetail : inventoryDetails) {
             inventoryDetail.setInventoryId(entity.getInventoryTaskId());
+            inventoryDetail.setRealNumber(inventoryDetail.getNumber());
         }
         inventoryDetailService.saveBatch(inventoryDetails);
 
