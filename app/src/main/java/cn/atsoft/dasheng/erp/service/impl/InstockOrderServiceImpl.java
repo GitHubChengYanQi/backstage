@@ -1281,7 +1281,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Override
     public void updateCreateInstockRefuseStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
-        order.setState(-1);
+        order.setState(Math.toIntExact(InStockActionEnum.refuse.getStatus()));
         this.updateById(order);
     }
 
@@ -1415,15 +1415,16 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
                     realNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
 
-
                     for (ShopCart shopCart : shopCarts) {
-                        switch (shopCart.getType()) {
-                            case "waitInStock":
-                                waitInStockNum = waitInStockNum + 1;
-                                break;
-                            case "InstockError":
-                                instockErrorNum = instockErrorNum + 1;
-                                break;
+                        if (shopCart.getFormId().equals(instockList.getInstockListId())) {
+                            switch (shopCart.getType()) {
+                                case "waitInStock":
+                                    waitInStockNum = waitInStockNum + 1;
+                                    break;
+                                case "InstockError":
+                                    instockErrorNum = instockErrorNum + 1;
+                                    break;
+                            }
                         }
                     }
                 }

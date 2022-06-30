@@ -41,6 +41,8 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     private List<AnomalyDetailParam> detailParams;
 
+    private Long inkind;
+
     @ApiModelProperty("")
     private Long anomalyId;
 
