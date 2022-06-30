@@ -217,7 +217,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
             for (InstockListParam instockRequest : param.getListParams()) {
                 if (ToolUtil.isNotEmpty(instockRequest)) {
-                    ShopCart shopCart = shopCartService.getById(instockRequest.getShopCartId());
+                    if (ToolUtil.isEmpty(instockRequest.getCartId())) {
+                        throw new ServiceException(500, "缺少购物车id");
+                    }
+                    ShopCart shopCart = shopCartService.getById(instockRequest.getCartId());
                     if (ToolUtil.isEmpty(shopCart)) {
                         throw new ServiceException(500, "购物车不存在");
                     }
@@ -789,8 +792,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         instockListService.updateById(instockList);
 
-        if (ToolUtil.isNotEmpty(listParam.getShopCartId())) {
-            ShopCart shopCart = cartService.getById(listParam.getShopCartId());
+        if (ToolUtil.isNotEmpty(listParam.getCartId())) {
+            ShopCart shopCart = cartService.getById(listParam.getCartId());
             shopCart.setNumber(shopCart.getNumber() - listParam.getNumber());
             if (shopCart.getNumber() < 0) {
                 throw new ServiceException(500, "购物车数量不正确");
