@@ -176,7 +176,7 @@ public class taskController extends BaseController {
         //获取当前processTask 下的所有log
         List<ActivitiProcessLogResult> process = logService.getLogByTaskProcess(processTask.getProcessId(), taskId);
         //比对log
-        ActivitiStepsResult stepLog = stepsService.getStepLog(stepResult, process);
+        stepsService.getStepLog(stepResult, process);
 
         //取出所有未审核节点
         List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
@@ -209,7 +209,8 @@ public class taskController extends BaseController {
             }
         }
 
-        taskResult.setStepsResult(stepLog);
+        taskResult.setStepsResult(stepResult);
+
         if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
             User user = userService.getById(taskResult.getCreateUser());
             taskResult.setCreateName(user.getName());
