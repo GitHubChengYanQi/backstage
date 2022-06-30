@@ -5,8 +5,11 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
+import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
+import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
@@ -85,6 +88,8 @@ public class taskController extends BaseController {
     private ProcurementPlanService procurementPlanService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private MaintenanceService maintenanceService;
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -168,6 +173,10 @@ public class taskController extends BaseController {
 //                    taskService.format(new ArrayList<ActivitiProcessTaskResult>(){{
 //                        add(taskResult);
 //                    }});
+                break;
+                case "MAINTENANCE":
+                    MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());
+                    taskResult.setReceipts(maintenanceResult);
                 break;
         }
         //树形结构

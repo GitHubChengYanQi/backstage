@@ -77,6 +77,22 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     public void add(ProductionPickListsCartParam param) {
 //        List<StockDetails> stockDetailList = foundCanBeUseStockDetail(param);
 //        List<StockDetails> stockDetailsList =  inkindIds.size() == 0 ? stockDetailsService.query().eq("stage", 1).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id", inkindIds).eq("display", 1).list();
+
+        //验证备料数量
+        List<ProductionPickListsCart> listsCarts = this.query().eq("pick_lists_detail_id", param.getPickListsDetailId()).eq("display", 1).or().eq("status",99).list();
+        ProductionPickListsDetail pickListsDetail = pickListsDetailService.getById(param.getPickListsDetailId());
+        int num = 0;
+        for (ProductionPickListsCart listsCart : listsCarts) {
+            num+=listsCart.getNumber();
+        }
+        if (num+param.getNumber()>(pickListsDetail.getNumber() - pickListsDetail.getReceivedNumber())){
+            throw new ServiceException(500,"备料数量已经超过任务需求数量,请刷新页面获取最新数据");
+        }
+
+
+        /**
+         * 备料要排除 已经占用的实物
+         */
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             skuIds.add(productionPickListsCartParam.getSkuId());
@@ -92,11 +108,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
          * 查询库存所有  排除已在购物车实物
          */
         List<StockDetails> stockDetailList = inkindIds.size() == 0 ? stockDetailsService.query().eq("stage", 1).in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().eq("stage", 1).in("sku_id", skuIds).notIn("inkind_id", inkindIds).eq("display", 1).list();
-
-
-
-
-
 
         for (StockDetails stockDetails : stockDetailList) {
             if (ToolUtil.isEmpty(stockDetails.getBrandId())) {
@@ -120,13 +131,13 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
         for (ProductionPickListsCartParam pickListsCartParam : param.getProductionPickListsCartParams()) {
             if (totalList.size() == 0) {
-                throw new ServiceException(500, "此物料数量已经被其他备料占用,无法满足目前单据数量出库");
+                throw new ServiceException(500, "此物 料部分或全 部剩余数量已经被其他备料占用,无法满足目前单据数量出库");
             }
             for (StockDetails stockDetail : totalList) {
                 if (pickListsCartParam.getSkuId().equals(stockDetail.getSkuId()) && pickListsCartParam.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId()) && pickListsCartParam.getBrandId().equals(stockDetail.getBrandId()) && pickListsCartParam.getSkuId().equals(stockDetail.getSkuId()) && pickListsCartParam.getNumber() > stockDetail.getNumber()) {
-                    throw new ServiceException(500, "此物料数量已经被其他备料占用,无法满足目前单据数量出库");
+                    throw new ServiceException(500, "此物 料部分或全 部剩余数量已经被其他备料占用,无法满足目前单据数量出库");
                 } else if (totalList.stream().noneMatch(i -> i.getSkuId().equals(pickListsCartParam.getSkuId())) || totalList.stream().noneMatch(i -> i.getBrandId().equals(pickListsCartParam.getBrandId())) || totalList.stream().noneMatch(i -> i.getStorehousePositionsId().equals(pickListsCartParam.getStorehousePositionsId()))) {
-                    throw new ServiceException(500, "此物料数量已经被其他备料占用,无法满足目前单据数量出库");
+                    throw new ServiceException(500, "此物 料部分或全 部剩余数量已经被其他备料占用,无法满足目前单据数量出库");
                 }
 
             }

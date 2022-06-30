@@ -9,10 +9,13 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
+import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -73,6 +76,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private ActivitiAuditService activitiAuditService;
     @Autowired
     private ProductionPickListsService productionPickListsService;
+    @Autowired
+    private MaintenanceService maintenanceService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -324,6 +329,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> instockOrderIds = new ArrayList<>();
         List<Long> anomalyIds = new ArrayList<>();
         List<Long> pickListsIds = new ArrayList<>();
+        List<Long> maintenanceIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
@@ -336,6 +342,10 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 case "OUTSTOCK":
                     pickListsIds.add(datum.getFormId());
                     break;
+                case "MAINTENANCE":
+                    maintenanceIds.add(datum.getFormId());
+                    break;
+
             }
         }
         Map<Long, String> statusMap = new HashMap<>();
@@ -357,7 +367,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<ProductionPickLists> productionPickLists = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsIds);
         List<ProductionPickListsResult> productionPickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
-
+        List<MaintenanceResult> maintenanceResults = maintenanceService.resultsByIds(maintenanceIds);
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
@@ -395,6 +405,13 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     }});
                     datum.setReceipts(productionPickListsResult);
                     break;
+                }
+            }
+            for (MaintenanceResult maintenanceResult : maintenanceResults) {
+                if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
+                    String statusName = statusMap.get(maintenanceResult.getStatus());
+                    maintenanceResult.setStatusName(statusName);
+                    datum.setReceipts(maintenanceResult);
                 }
             }
         }

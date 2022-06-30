@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceParam;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -72,4 +73,10 @@ public interface MaintenanceService extends IService<Maintenance> {
      PageInfo<MaintenanceResult> findPageBySpec(MaintenanceParam param);
 
     void format(List<MaintenanceResult> param);
+
+    List<MaintenanceResult> resultsByIds(List<Long> ids);
+
+    List<StorehousePositionsResult> getDetails(Long id);
+
+    MaintenanceResult detail(Long id);
 }

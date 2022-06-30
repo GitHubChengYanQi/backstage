@@ -38,6 +38,8 @@ public class MaintenanceLogParam implements Serializable, BaseValidatingParam {
 
     private Long storehousePositionsId;
 
+    private String enclosure;
+
 
     @ApiModelProperty("")
     private Long inkindId;

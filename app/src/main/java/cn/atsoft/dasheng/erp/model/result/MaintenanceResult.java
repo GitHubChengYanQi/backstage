@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 养护申请主表
@@ -22,11 +25,14 @@ public class MaintenanceResult implements Serializable {
     private Long materialId;
     private Long brandId;
     private Long storehousePositionsId;
-
-
+    private String coding;
+    private String statusName;
     private Integer skuCount;
     private Integer numberCount;
     private Integer positionCount;
+    private List<MaintenanceDetailResult> maintenanceDetailResults;
+    private List<StorehousePositionsResult> detailResultsByPositions;
+
 
     /**
      * 养护

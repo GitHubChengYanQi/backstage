@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.entity;
 
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -32,6 +34,12 @@ public class Maintenance implements Serializable {
      */
     @TableField("maintenance_name")
     private String maintenanceName;
+    /**
+    /**
+     * coding
+     */
+    @TableField("coding")
+    private String coding;
     /**
      * 材质id
      */
@@ -286,6 +294,14 @@ public class Maintenance implements Serializable {
 
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
     }
 
     @Override

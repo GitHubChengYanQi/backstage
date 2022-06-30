@@ -28,6 +28,7 @@ public class MaintenanceParam implements Serializable, BaseValidatingParam {
     private Long materialId;
     private Long brandId;
     private Long storehousePositionsId;
+    private String coding;
     /**
      * 养护
      */
