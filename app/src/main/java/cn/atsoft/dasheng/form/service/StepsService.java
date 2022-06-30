@@ -34,4 +34,6 @@ public interface StepsService extends IService<ActivitiSteps> {
     ViewUpdate getProcessTime(Long fromId);
 
     void headPortrait(ActivitiStepsResult stepResult);
+
+    String imgUrl(String userId);
 }

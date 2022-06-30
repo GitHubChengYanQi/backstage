@@ -218,6 +218,8 @@ public class taskController extends BaseController {
 
         if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
             User user = userService.getById(taskResult.getCreateUser());
+            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+            user.setAvatar(imgUrl);
             taskResult.setCreateName(user.getName());
         }
 
