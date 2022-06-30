@@ -94,7 +94,7 @@ public class taskController extends BaseController {
     public ResponseData audit(@RequestBody AuditParam auditParam) {
         //添加备注
         remarksService.addNote(auditParam);
-        this.activitiProcessLogService.judgeLog(auditParam.getTaskId(), auditParam.getLogId());  //判断当前log权限
+        this.activitiProcessLogService.judgeLog(auditParam.getTaskId(), auditParam.getLogIds());  //判断当前log状态
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
 
         return ResponseData.success();

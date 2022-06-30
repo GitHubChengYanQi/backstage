@@ -1530,23 +1530,27 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public void judgeLog(Long taskId, Long logId) {
-        if (ToolUtil.isEmpty(taskId) || ToolUtil.isEmpty(logId)) {
+    public void judgeLog(Long taskId, List<Long> logIds) {
+
+        if (ToolUtil.isEmpty(taskId) || ToolUtil.isEmpty(logIds)) {
             throw new ServiceException(500, "缺少 taskId或logId");
         }
-        boolean t = true;
-        List<ActivitiProcessLog> logs = this.getAudit(taskId);
-        for (ActivitiProcessLog activitiProcessLog : logs) {
-            if (activitiProcessLog.getLogId().equals(logId) && activitiProcessLog.getStatus() == -1) {
-                t = false;
-                break;
-            }
+
+        List<ActivitiProcessLog> processLogs = this.query().eq("task_id", taskId).list();
+        for (Long logId : logIds) {
+            judgeStatus(logId, processLogs);
         }
-        if (t) {
-            throw new ServiceException(500, "审核状态不正确");
-        }
+
+
     }
 
+    private void judgeStatus(Long logId, List<ActivitiProcessLog> logs) {
+        for (ActivitiProcessLog activitiProcessLog : logs) {
+            if (activitiProcessLog.getLogId().equals(logId) && activitiProcessLog.getStatus() != -1) {
+                throw new ServiceException(500, "当前审核状态不正确,请刷新页面");
+            }
+        }
+    }
 
     @Override
     public List<ActivitiProcessLog> getAuditByForm(Long formId, String type) {
