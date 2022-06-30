@@ -91,6 +91,7 @@ public class taskController extends BaseController {
     public ResponseData audit(@RequestBody AuditParam auditParam) {
         //添加备注
         remarksService.addNote(auditParam);
+        this.activitiProcessLogService.judgeLog(auditParam.getTaskId(), auditParam.getLogId());  //判断当前log权限
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
 
         return ResponseData.success();
@@ -220,7 +221,6 @@ public class taskController extends BaseController {
         return ResponseData.success(taskResult);
 
     }
-
 
 
     private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {

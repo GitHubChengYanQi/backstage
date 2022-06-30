@@ -290,7 +290,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                             break;
 
-                            default:
+                        default:
 
                     }
                 } else {
@@ -1073,11 +1073,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
             for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                loopAdd(stepsResult, taskId, status,loginUserId);
+                loopAdd(stepsResult, taskId, status, loginUserId);
             }
         }
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-            loopAdd(activitiStepsResult.getChildNode(), taskId, status,loginUserId);
+            loopAdd(activitiStepsResult.getChildNode(), taskId, status, loginUserId);
         }
 
     }
@@ -1527,6 +1527,25 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
         }
     }
+
+    @Override
+    public void judgeLog(Long taskId, Long logId) {
+        if (ToolUtil.isEmpty(taskId) || ToolUtil.isEmpty(logId)) {
+            throw new ServiceException(500, "缺少 taskId,logId");
+        }
+        boolean t = true;
+        List<ActivitiProcessLog> logs = this.getAudit(taskId);
+        for (ActivitiProcessLog activitiProcessLog : logs) {
+            if (activitiProcessLog.getLogId().equals(logId)) {
+                t = false;
+                break;
+            }
+        }
+        if (t) {
+            throw new ServiceException(500, "审核状态不正确");
+        }
+    }
+
 
     @Override
     public List<ActivitiProcessLog> getAuditByForm(Long formId, String type) {
