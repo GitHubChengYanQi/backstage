@@ -229,10 +229,10 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         ActivitiProcessTask task = taskService.getById(taskId);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setType(2);
-            setItems("新的评论消息");
+            setItems("收到评论");
             setDescription("有人在 "+task.getTaskName()+" 中@了你");
-            setCreateUser(remarks.getCreateUser());
-            setRemark(content);
+            setCreateUser(task.getCreateUser());
+            setRemark(remarks.getContent());
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
             setUserIds(userIds);
         }});

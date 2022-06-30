@@ -22,6 +22,7 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
@@ -36,8 +37,10 @@ import cn.atsoft.dasheng.erp.service.InventoryDetailService;
 import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.AuditMessageType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -155,15 +158,28 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 userIds.addAll(JSON.parseArray(param.getParticipants(), Long.class));
             }
             String name = LoginContextHolder.getContext().getUser().getName();
-            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate(){{
-                setCreateUserName(name);
-                setUserIds(userIds);
-                setType(0);
-                setItems("新的盘点任务");
-                setDescription(name + "创建的盘点任务");
-                setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
-
-            }});
+            if(ToolUtil.isNotEmpty(userIds)){
+                /**
+                 * 评论
+                 */
+                RemarksParam remarksParam = new RemarksParam();
+                remarksParam.setTaskId(taskId);
+                remarksParam.setType("remark");
+                StringBuffer userIdStr = new StringBuffer();
+                for (Long userId : userIds) {
+                    userIdStr.append(userId).append(",");
+                }
+                String userStrtoString = userIdStr.toString();
+                if (userIdStr.length()>1){
+                    userStrtoString = userStrtoString.substring(0,userStrtoString.length() -1);
+                }
+                remarksParam.setUserIds(userStrtoString);
+                remarksParam.setContent(param.getRemark());
+                messageProducer.remarksServiceDo(new RemarksEntity() {{
+                    setOperationType(OperationType.ADD);
+                    setRemarksParam(remarksParam);
+                }});
+            }
         }
     }
 

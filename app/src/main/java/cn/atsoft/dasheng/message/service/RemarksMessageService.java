@@ -29,6 +29,7 @@ public class RemarksMessageService {
                 break;
             case SAVE:
                 Remarks entity = new Remarks();
+                ToolUtil.copyProperties(remarksParam,entity);
                 remarksService.save(entity);
                 break;
             case DELETE:

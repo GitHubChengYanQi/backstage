@@ -119,7 +119,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             remarksParam.setType("dynamic");
             remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.ADD);
+                setOperationType(OperationType.SAVE);
                 setRemarksParam(remarksParam);
             }});
         }

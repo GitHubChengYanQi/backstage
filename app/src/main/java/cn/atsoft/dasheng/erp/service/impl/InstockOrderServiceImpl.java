@@ -354,6 +354,28 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
 
 
+            if(ToolUtil.isNotEmpty(param.getUserIds())){
+                /**
+                 * 评论
+                 */
+                RemarksParam remarksParam = new RemarksParam();
+                remarksParam.setTaskId(taskId);
+                remarksParam.setType("remark");
+                StringBuffer userIdStr = new StringBuffer();
+                for (Long userId : param.getUserIds()) {
+                    userIdStr.append(userId).append(",");
+                }
+                String userStrtoString = userIdStr.toString();
+                if (userIdStr.length()>1){
+                    userStrtoString = userStrtoString.substring(0,userStrtoString.length() -1);
+                }
+                remarksParam.setUserIds(userStrtoString);
+                remarksParam.setContent(param.getRemark());
+                messageProducer.remarksServiceDo(new RemarksEntity() {{
+                    setOperationType(OperationType.ADD);
+                    setRemarksParam(remarksParam);
+                }});
+            }
             /**
              * 添加动态记录
              */
@@ -362,17 +384,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             remarksParam.setType("dynamic");
             remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "发起了入库申请");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.ADD);
+                setOperationType(OperationType.SAVE);
                 setRemarksParam(remarksParam);
             }});
 //                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
 //                activitiProcessLogService.autoAudit(taskId, 1);
-            /**
-             * 指定人推送
-             */
-//            if (ToolUtil.isNotEmpty(param.getUserIds())) {
-//                remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
-//            }
+
 
 
             /**
@@ -725,7 +742,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
         remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "操作了入库");
         messageProducer.remarksServiceDo(new RemarksEntity() {{
-            setOperationType(OperationType.ADD);
+            setOperationType(OperationType.SAVE);
             setRemarksParam(remarksParam);
         }});
 
@@ -752,7 +769,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             remarksParam.setContent("单据:" + order.getCoding() + "完成了入库");
             remarksParam.setType("dynamic");
             messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.ADD);
+                setOperationType(OperationType.SAVE);
                 setRemarksParam(remarksParam);
             }});
 
