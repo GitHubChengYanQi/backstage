@@ -799,7 +799,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 if (shopCart.getNumber() < 0) {
                     throw new ServiceException(500, "购物车数量不正确");
                 }
-            }else {
+            } else {
                 shopCart.setStatus(99);
             }
             cartService.updateById(shopCart);
@@ -1348,6 +1348,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> statusIds = new ArrayList<>();
         List<Long> noticeIds = new ArrayList<>();
         List<Long> mediaIds = new ArrayList<>();
+        List<Long> instockListIds = new ArrayList<>();
 
         for (InstockOrderResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getNoticeId())) {
@@ -1376,21 +1377,40 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
         List<InstockListResult> instockListList = instockListService.getListByOrderIds(orderIds);
+        for (InstockListResult instockListResult : instockListList) {
+            instockListIds.add(instockListResult.getInstockListId());
+        }
+        List<ShopCart> shopCarts = instockListList.size() == 0 ? new ArrayList<>() : shopCartService.query().in("form_id", instockListIds).eq("display", 1).eq("status", 0).list();
+
 
         for (InstockOrderResult datum : data) {
 
             long enoughNumber = 0L;
             long realNumber = 0L;
+            int waitInStockNum = 0;
+            int instockErrorNum = 0;
             List<InstockListResult> instockListResults = new ArrayList<>();
-
             for (InstockListResult instockList : instockListList) {
                 if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
                     instockListResults.add(instockList);
-
                     enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
                     realNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
+
+
+                    for (ShopCart shopCart : shopCarts) {
+                        switch (shopCart.getType()) {
+                            case "waitInStock":
+                                waitInStockNum = waitInStockNum + 1;
+                                break;
+                            case "InstockError":
+                                instockErrorNum = instockErrorNum + 1;
+                                break;
+                        }
+                    }
                 }
             }
+            datum.setInstockErrorNum(instockErrorNum);
+            datum.setWaitInStockNum(waitInStockNum);
             datum.setInstockListResults(instockListResults);
             datum.setEnoughNumber(enoughNumber);
             datum.setRealNumber(realNumber);
