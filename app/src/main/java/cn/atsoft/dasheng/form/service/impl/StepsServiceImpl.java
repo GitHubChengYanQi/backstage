@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -16,6 +18,8 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.AppointUser;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.ProcessParam;
 import cn.atsoft.dasheng.form.pojo.ViewUpdate;
 import cn.atsoft.dasheng.form.service.*;
@@ -29,6 +33,8 @@ import cn.atsoft.dasheng.production.service.ProcessRouteService;
 import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
+import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
@@ -73,6 +79,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     private ActivitiProcessService processService;
     @Autowired
     private PartsService partsService;
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
+    @Autowired
+    private UcOpenUserInfoService openUserInfoService;
 
 
     @Override
@@ -612,6 +622,50 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
             }
         }
         return skuIds;
+    }
+
+    /**
+     * 返回头像
+     *
+     * @param stepResult
+     */
+    @Override
+    public void headPortrait(ActivitiStepsResult stepResult) {
+        if (ToolUtil.isEmpty(stepResult)) {
+            return;
+        }
+        if (ToolUtil.isEmpty(stepResult.getAuditRule())) {
+            return;
+        }
+        List<AuditRule.Rule> rules = stepResult.getAuditRule().getRules();
+        if (ToolUtil.isNotEmpty(rules)) {
+            for (AuditRule.Rule rule : rules) {
+                for (AppointUser appointUser : rule.getAppointUsers()) {
+                    String imgUrl = imgUrl(appointUser.getKey());
+                    appointUser.setAvatar(imgUrl);
+                }
+            }
+        }
+
+        if (ToolUtil.isNotEmpty(stepResult.getChildNode())) {
+            headPortrait(stepResult.getChildNode());
+        }
+
+        if (ToolUtil.isNotEmpty(stepResult.getConditionNodeList())) {
+            for (ActivitiStepsResult activitiStepsResult : stepResult.getConditionNodeList()) {
+                headPortrait(activitiStepsResult);
+            }
+        }
+    }
+
+    private String imgUrl(String userId) {
+        List<WxuserInfo> infoList = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").list();
+        if (ToolUtil.isNotEmpty(infoList)) {
+            WxuserInfo wxuserInfo = infoList.get(0);
+            UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", wxuserInfo.getMemberId()).eq("source", "wxCp").one();
+            return userInfo.getAvatar();
+        }
+        return null;
     }
 }
 

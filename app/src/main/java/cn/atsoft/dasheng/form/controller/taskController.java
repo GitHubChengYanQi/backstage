@@ -85,6 +85,9 @@ public class taskController extends BaseController {
     private ProcurementPlanService procurementPlanService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private StepsService appStepService;
+
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -177,6 +180,8 @@ public class taskController extends BaseController {
         List<ActivitiProcessLogResult> process = logService.getLogByTaskProcess(processTask.getProcessId(), taskId);
         //比对log
         stepsService.getStepLog(stepResult, process);
+        //返回头像
+        appStepService.headPortrait(stepResult);
 
         //取出所有未审核节点
         List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
