@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.MaintenanceActionEnum;
+import cn.atsoft.dasheng.action.Enum.OutStockActionEnum;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
@@ -19,9 +21,11 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -338,7 +342,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         if (ToolUtil.isNotEmpty(maintenanceId)) {
             List<MaintenanceDetail> details = maintenanceDetailService.query().eq("display", 1).eq("status", 0).eq("maintenance_id", maintenanceId).list();
             for (MaintenanceDetail detail : details) {
-                detail.setNumber(detail.getNumber()-detail.getDoneNumber());
+                detail.setNumber(detail.getNumber() - detail.getDoneNumber());
             }
             List<MaintenanceDetail> totalList = new ArrayList<>();
             details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()) + '_' + item.getStorehousePositionsId() + "_" + item.getMaintenanceId(), Collectors.toList())).forEach(
@@ -380,7 +384,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 List<SkuSimpleResult> positionSkuResult = new ArrayList<>();
                 for (MaintenanceDetail detail : positionTotalList) {
                     for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                        if (detail.getSkuId().equals(skuSimpleResult.getSkuId()) && positionSkuResult.stream().noneMatch(i->i.getSkuId().equals(skuSimpleResult.getSkuId()))) {
+                        if (detail.getSkuId().equals(skuSimpleResult.getSkuId()) && positionSkuResult.stream().noneMatch(i -> i.getSkuId().equals(skuSimpleResult.getSkuId()))) {
                             positionSkuResult.add(skuSimpleResult);
                         }
                     }
@@ -390,7 +394,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                     Map<String, Object> skuMap = BeanUtil.beanToMap(skuSimpleResult);
                     List<Map<String, Object>> brands = new ArrayList<>();
                     for (MaintenanceDetail detail : positionTotalList) {
-                        if (ToolUtil.isEmpty(detail.getBrandId())){
+                        if (ToolUtil.isEmpty(detail.getBrandId())) {
                             detail.setBrandId(0L);
                         }
                         if (detail.getStorehousePositionsId().equals(storehousePosition.getStorehousePositionsId()) && detail.getSkuId().equals(skuSimpleResult.getSkuId())) {
@@ -416,6 +420,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         }
         return null;
     }
+
     //自动判断是否满足  时间条件   自动开始任务
     @Override
     public MaintenanceResult detail(Long id) {
@@ -430,6 +435,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     /**
      * 刷新更正需要保养的子表信息  以库存为准
+     *
      * @param maintenance
      */
     public void updateDetail(Maintenance maintenance) {
@@ -439,23 +445,46 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
             for (StockDetails stockDetail : stockDetails) {
                 //对批量实物 库存更正
-                if (stockDetail.getInkindId().equals(maintenanceDetail.getInkindId()) && Math.toIntExact(stockDetail.getNumber())  != maintenanceDetail.getNumber()) {
+                if (stockDetail.getInkindId().equals(maintenanceDetail.getInkindId()) && Math.toIntExact(stockDetail.getNumber()) != maintenanceDetail.getNumber()) {
                     maintenanceDetail.setNumber(Math.toIntExact(stockDetail.getNumber()));
                 }
             }
             //如果物料在期间被出库  则 删除掉这条数据
-            if (stockDetails.stream().noneMatch(i -> i.getInkindId().equals(maintenanceDetail.getInkindId())) && maintenanceLogs.stream().noneMatch(i->i.getInkindId().equals(maintenanceDetail.getInkindId()))){
+            if (stockDetails.stream().noneMatch(i -> i.getInkindId().equals(maintenanceDetail.getInkindId())) && maintenanceLogs.stream().noneMatch(i -> i.getInkindId().equals(maintenanceDetail.getInkindId()))) {
                 maintenanceDetail.setDisplay(0);
             }
         }
         for (StockDetails stockDetail : stockDetails) {
-            if(maintenanceDetails.stream().noneMatch(i->i.getInkindId().equals(stockDetail.getInkindId()))){
+            if (maintenanceDetails.stream().noneMatch(i -> i.getInkindId().equals(stockDetail.getInkindId()))) {
                 MaintenanceDetail maintenanceDetail = new MaintenanceDetail();
-                ToolUtil.copyProperties(stockDetail,maintenanceDetail);
+                ToolUtil.copyProperties(stockDetail, maintenanceDetail);
                 maintenanceDetail.setMaintenanceId(maintenance.getMaintenanceId());
                 maintenanceDetails.add(maintenanceDetail);
             }
         }
         maintenanceDetailService.saveOrUpdateBatch(maintenanceDetails);
     }
+
+
+    @Override
+    public void updateStatus(Long id) {
+        /**
+         *    更新表单状态
+         */
+        Maintenance entity = new Maintenance();
+        entity.setMaintenanceId(id);
+
+        this.updateById(entity);
+
+        /**
+         * 如果有任务则更新任务单据动作状态
+         */
+        ActivitiProcessTask task = activitiProcessTaskService.query().eq("type", "MAINTENANCE").eq("form_id", id).one();
+        if (ToolUtil.isNotEmpty(task)) {
+            DocumentsAction action = actionService.query().eq("action", MaintenanceActionEnum.maintenanceing.name()).eq("display", 1).one();
+            activitiProcessLogService.checkAction(task.getFormId(), task.getType(), action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
+        }
+
+    }
+
 }

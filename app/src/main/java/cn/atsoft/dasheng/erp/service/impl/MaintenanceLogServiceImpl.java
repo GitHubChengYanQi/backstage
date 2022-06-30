@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
@@ -68,6 +69,21 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
 
     @Override
     public void add(MaintenanceLogParam param){
+
+
+        List<MaintenanceDetail> details = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(param.getMaintenanceId())){
+            details = maintenanceDetailService.query().eq("maintenances_id", param.getMaintenanceId()).eq("status", 0).list();
+
+        }else {
+            List<Maintenance> maintenances = maintenanceService.query().eq("user_id", LoginContextHolder.getContext().getUserId()).ne("status", 99).eq("display", 1).list();
+            List<Long> maintenancesIds = new ArrayList<>();
+            for (Maintenance maintenance : maintenances) {
+                maintenancesIds.add(maintenance.getMaintenanceId());
+            }
+            details = maintenancesIds.size() == 0 ? new ArrayList<>() : maintenanceDetailService.query().in("maintenances_id", maintenancesIds).eq("status", 0).list();
+
+        }
         List<MaintenanceLog> logs = new ArrayList<>();
         for (MaintenanceLogParam maintenanceLogParam : param.getMaintenanceLogParams()) {
             Long maintenanceId = maintenanceLogParam.getMaintenanceId();
@@ -76,44 +92,46 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
             Long skuId = maintenanceLogParam.getSkuId();
             Integer number = maintenanceLogParam.getNumber();
             List<Long> maintenanceIds = new ArrayList<>();
-            List<MaintenanceDetail> details = maintenanceDetailService.query().eq("brand_id ", maintenanceLogParam.getBrandId()).eq("storehouse_positions_id", maintenanceLogParam.getStorehousePositionsId()).eq("sku_id", maintenanceLogParam.getSkuId()).eq("display",1).list();
+//            List<MaintenanceDetail> details = maintenanceDetailService.query().eq("brand_id ", maintenanceLogParam.getBrandId()).eq("storehouse_positions_id", maintenanceLogParam.getStorehousePositionsId()).eq("sku_id", maintenanceLogParam.getSkuId()).eq("display",1).eq("status",0).list();
             for (MaintenanceDetail detail : details) {
-                if (number>0 && detail.getSkuId().equals(skuId) && detail.getBrandId().equals(brandId) && detail.getStorehousePositionsId().equals(storehousePositionsId)){
-                    if (number - (detail.getNumber()-detail.getDoneNumber()) >=0) {
-                        detail.setStatus(99);
-                        detail.setDoneNumber(detail.getNumber());
-                        MaintenanceLog entity = new MaintenanceLog();
-                        ToolUtil.copyProperties(detail,entity);
-                        entity.setMaintenanceId(maintenanceId);
-                        logs.add(entity);
-                        maintenanceIds.add(detail.getMaintenanceId());
-                        number -=(detail.getNumber()-detail.getDoneNumber());
-                    }else {
-                        detail.setDoneNumber(detail.getDoneNumber()+(detail.getNumber() - (number*-1)));
-                        MaintenanceLog entity = new MaintenanceLog();
-                        ToolUtil.copyProperties(detail,entity);
-                        entity.setNumber(detail.getNumber() - (number*-1));
-                        entity.setMaintenanceId(maintenanceId);
-                        logs.add(entity);
-                    }
-                    number -=(detail.getNumber()-detail.getDoneNumber());
+                //防止错误数据产生
+                if (detail.getNumber()<=detail.getDoneNumber()){
+                    detail.setStatus(99);
                 }
+                if (number>0){
+                    if (detail.getSkuId().equals(skuId) && detail.getBrandId().equals(brandId) && detail.getStorehousePositionsId().equals(storehousePositionsId) && !detail.getStatus().equals(99)){
+
+                        if (number - (detail.getNumber()-detail.getDoneNumber()) >=0) {
+                            detail.setStatus(99);
+                            detail.setDoneNumber(detail.getNumber());
+                            MaintenanceLog entity = new MaintenanceLog();
+                            ToolUtil.copyProperties(detail,entity);
+                            entity.setMaintenanceId(maintenanceId);
+                            logs.add(entity);
+                            maintenanceIds.add(detail.getMaintenanceId());
+                        }else {
+                            detail.setDoneNumber(number + detail.getDoneNumber());
+                            MaintenanceLog entity = new MaintenanceLog();
+                            ToolUtil.copyProperties(detail,entity);
+                            entity.setNumber(detail.getNumber() - (number*-1));
+                            entity.setMaintenanceId(maintenanceId);
+                            logs.add(entity);
+                        }
+                        number -=(detail.getNumber()-detail.getDoneNumber());
+
+                    }
+                }
+
             }
             /**
              * 判断任务是否完成
              */
-            if (details.stream().noneMatch(i->i.getStatus() == 99 ) || ToolUtil.isEmpty(details)){
-                List<Maintenance> maintenances = new ArrayList<>();
+            if (details.stream().allMatch(i->i.getStatus() == 99 ) || ToolUtil.isEmpty(details)){
                 for (Long id : maintenanceIds) {
-                    Maintenance maintenance = new Maintenance();
-                    maintenance.setMaintenanceId(id);
-                    maintenance.setStatus(99);
-                    maintenances.add(maintenance);
+                    maintenanceService. updateStatus(id);
                 }
-                maintenanceService.updateBatchById(maintenances);
             }else {
                 Boolean statusFlag = true;
-                List<Maintenance> maintenances = new ArrayList<>();
                 for (Long id : maintenanceIds) {
                     for (MaintenanceDetail detail : details) {
                         if (id.equals(detail.getMaintenanceDetailId()) && !detail.getStatus().equals(99)){
@@ -121,13 +139,9 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
                         }
                     }
                     if (statusFlag){
-                        Maintenance maintenance = new Maintenance();
-                        maintenance.setMaintenanceId(id);
-                        maintenance.setStatus(99);
-                        maintenances.add(maintenance);
+                        maintenanceService. updateStatus(id);
                     }
                 }
-                this.maintenanceService.updateBatchById(maintenances);
             }
 
 
@@ -136,6 +150,10 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         }
         this.saveBatch(logs);
     }
+
+
+
+
 
     @Override
     public void delete(MaintenanceLogParam param){

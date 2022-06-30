@@ -79,4 +79,6 @@ public interface MaintenanceService extends IService<Maintenance> {
     List<StorehousePositionsResult> getDetails(Long id);
 
     MaintenanceResult detail(Long id);
+
+    void updateStatus(Long id);
 }
