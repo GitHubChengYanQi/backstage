@@ -1413,15 +1413,16 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
                     realNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
 
-
                     for (ShopCart shopCart : shopCarts) {
-                        switch (shopCart.getType()) {
-                            case "waitInStock":
-                                waitInStockNum = waitInStockNum + 1;
-                                break;
-                            case "InstockError":
-                                instockErrorNum = instockErrorNum + 1;
-                                break;
+                        if (shopCart.getFormId().equals(instockList.getInstockListId())) {
+                            switch (shopCart.getType()) {
+                                case "waitInStock":
+                                    waitInStockNum = waitInStockNum + 1;
+                                    break;
+                                case "InstockError":
+                                    instockErrorNum = instockErrorNum + 1;
+                                    break;
+                            }
                         }
                     }
                 }
