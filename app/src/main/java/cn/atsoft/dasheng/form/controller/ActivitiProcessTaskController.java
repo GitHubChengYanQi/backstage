@@ -151,6 +151,16 @@ public class ActivitiProcessTaskController extends BaseController {
         activitiProcessTaskParam.setCreateUser(LoginContextHolder.getContext().getUserId());
         return this.activitiProcessTaskService.auditList(activitiProcessTaskParam);
     }
+
+
+    @RequestMapping(value = "/LoginStart", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<ActivitiProcessTaskResult> LoginStart(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+        if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
+            activitiProcessTaskParam = new ActivitiProcessTaskParam();
+        }
+        return this.activitiProcessTaskService.LoginStart(activitiProcessTaskParam);
+    }
 }
 
 

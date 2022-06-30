@@ -192,6 +192,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     }
 
+    @Override
+    public PageInfo<ActivitiProcessTaskResult> LoginStart(ActivitiProcessTaskParam param) {
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
     private Serializable getKey(ActivitiProcessTaskParam param) {
         return param.getProcessTaskId();
     }

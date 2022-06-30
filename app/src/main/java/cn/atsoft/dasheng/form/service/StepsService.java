@@ -32,4 +32,8 @@ public interface StepsService extends IService<ActivitiSteps> {
     List<ActivitiStepsResult> getStepsResultByFormId(Long formId);
 
     ViewUpdate getProcessTime(Long fromId);
+
+    void headPortrait(ActivitiStepsResult stepResult);
+
+    String imgUrl(String userId);
 }

@@ -81,6 +81,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
     PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param);
 
 
+    PageInfo<ActivitiProcessTaskResult> LoginStart(ActivitiProcessTaskParam param);
+
     Long getTaskIdByFormId(Long formId);
 
     void format(List<ActivitiProcessTaskResult> data);

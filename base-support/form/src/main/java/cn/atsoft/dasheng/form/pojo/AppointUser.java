@@ -14,4 +14,6 @@ public class AppointUser {
 
     private Integer auditStatus;   //审核状态
 
+    private String avatar;
+
 }

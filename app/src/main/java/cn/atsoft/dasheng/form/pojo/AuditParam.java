@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.form.pojo;
 
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 public class AuditParam {
@@ -17,5 +19,5 @@ public class AuditParam {
 
     private Long pid;
 
-    private Long logId;
+    private List<Long> logIds;
 }

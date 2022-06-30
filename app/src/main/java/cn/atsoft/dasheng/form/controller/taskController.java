@@ -91,6 +91,7 @@ public class taskController extends BaseController {
     @Autowired
     private AnomalyOrderService anomalyOrderService;
     @Autowired
+    private StepsService appStepService;
     private InventoryService inventoryService;
 
 
@@ -99,7 +100,7 @@ public class taskController extends BaseController {
     public ResponseData audit(@RequestBody AuditParam auditParam) {
         //添加备注
         remarksService.addNote(auditParam);
-        this.activitiProcessLogService.judgeLog(auditParam.getTaskId(), auditParam.getLogId());  //判断当前log权限
+        this.activitiProcessLogService.judgeLog(auditParam.getTaskId(), auditParam.getLogIds());  //判断当前log状态
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
 
         return ResponseData.success();
@@ -190,6 +191,8 @@ public class taskController extends BaseController {
         List<ActivitiProcessLogResult> process = logService.getLogByTaskProcess(processTask.getProcessId(), taskId);
         //比对log
         stepsService.getStepLog(stepResult, process);
+        //返回头像
+        appStepService.headPortrait(stepResult);
 
         //取出所有未审核节点
         List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
@@ -223,15 +226,15 @@ public class taskController extends BaseController {
         }
 
         taskResult.setStepsResult(stepResult);
+        List comments = remarksService.getComments(taskId);
+        taskResult.setRemarks(comments);
 
         if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
             User user = userService.getById(taskResult.getCreateUser());
-            taskResult.setCreateName(user.getName());
+            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+            user.setAvatar(imgUrl);
+            taskResult.setUser(user);
         }
-
-
-        List comments = remarksService.getComments(taskId);
-        taskResult.setRemarks(comments);
         return ResponseData.success(taskResult);
 
     }
