@@ -193,16 +193,12 @@ public class WxCpSendTemplate {
         }
         StringBuffer stringBuffer = new StringBuffer();
 
-        if (ToolUtil.isNotEmpty(markDownTemplate.getType())) {
-            this.selectTitle(markDownTemplate);
-            stringBuffer.append("您有新的").append(markDownTemplate.getTitle()).append("\n \n");
-        } else {
-            stringBuffer.append("您有新的消息").append("\n \n");
-        }
-        stringBuffer.append(">**").append("任务详情").append("**").append("\n \n");
         if (ToolUtil.isNotEmpty(markDownTemplate.getItems())) {
-            stringBuffer.append(">**事　项**：").append("<font color=\"info\">").append(markDownTemplate.getItems()).append("</font>").append("\n \n ");
+            stringBuffer.append("<font color=\"info\">").append(markDownTemplate.getItems()).append("</font>").append("\n \n ");
         }
+//        stringBuffer.append(">**").append("任务详情").append("**").append("\n \n");
+//        stringBuffer.append(">").append("\n \n");
+
 
         if (ToolUtil.isNotEmpty(markDownTemplate.getDescription())) {
             stringBuffer.append(">**详　情**：").append("<font color=\"warning\">").append(markDownTemplate.getDescription()).append("</font>").append("\n\n");

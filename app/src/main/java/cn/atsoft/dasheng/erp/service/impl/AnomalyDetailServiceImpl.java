@@ -117,7 +117,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                 remarksParam.setType("dynamic");
                 remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() +"处理异常："+content);
                 messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.ADD);
+                    setOperationType(OperationType.SAVE);
                     setRemarksParam(remarksParam);
                 }});
             }

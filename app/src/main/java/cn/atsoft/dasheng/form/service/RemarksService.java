@@ -77,7 +77,9 @@ public interface RemarksService extends IService<Remarks> {
      */
     void addComments(AuditParam auditParam);
 
-    void pushPeople(List<Long> userIds, Long taskId,String content);
+    void addByMQ(RemarksParam remarksParam);
+
+    void pushPeople(List<Long> userIds, Long taskId, String content, Remarks remarks);
 
     /**
      * 查询评论

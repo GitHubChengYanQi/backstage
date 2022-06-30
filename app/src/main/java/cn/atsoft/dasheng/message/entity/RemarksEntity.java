@@ -9,12 +9,15 @@ import cn.atsoft.dasheng.message.enmu.OperationType;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
+
 @Data
 public class RemarksEntity {
     /**
      * 参数对象
      */
     private RemarksParam remarksParam;
+
 //    /**
 //     * 类型
 //     */
