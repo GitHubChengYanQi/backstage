@@ -241,7 +241,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         case "quality_task":
                             if (checkQualityTask.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 //更新状态
-                                updateStatus(activitiProcessLog.getLogId(), status);
+                                updateStatus(activitiProcessLog.getLogId(), status,loginUserId);
                                 setStatus(logs, activitiProcessLog.getLogId());
                                 //拒绝走拒绝方法
                                 if (status.equals(0)) {
@@ -255,7 +255,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                         case "purchaseAsk":
                             if (checkPurchaseAsk.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
-                                updateStatus(activitiProcessLog.getLogId(), status);
+                                updateStatus(activitiProcessLog.getLogId(), status,loginUserId);
                                 setStatus(logs, activitiProcessLog.getLogId());
                                 //拒绝走拒绝方法
                                 if (status.equals(0)) {
@@ -268,7 +268,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             break;
                         case "ERROR":   //入库异常
                             if (checkInstock.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
-                                updateStatus(activitiProcessLog.getLogId(), status);
+                                updateStatus(activitiProcessLog.getLogId(), status,loginUserId);
                                 setStatus(logs, activitiProcessLog.getLogId());
                                 //拒绝走拒绝方法
                                 if (status.equals(0)) {
@@ -283,7 +283,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         case "INSTOCK":   //入库创建
                         case "OUTSTOCK":   //出库
                         case "Stocktaking":
-                            updateStatus(activitiProcessLog.getLogId(), status);
+                            updateStatus(activitiProcessLog.getLogId(), status,loginUserId);
                             setStatus(logs, activitiProcessLog.getLogId());
                             //拒绝走拒绝方法
                             if (status.equals(0)) {
@@ -292,17 +292,18 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             }
 
                             break;
+
                         default:
 
                     }
                 } else {
-                    updateStatus(activitiProcessLog.getLogId(), status);
+                    updateStatus(activitiProcessLog.getLogId(), status,loginUserId);
                     setStatus(logs, activitiProcessLog.getLogId());
                 }
             } else {
                 //判断权限  筛选对应log
                 if (this.checkUser(activitiAudit.getRule(), loginUserId, taskId)) {
-                    updateStatus(activitiProcessLog.getLogId(), status);
+                    updateStatus(activitiProcessLog.getLogId(), status,loginUserId);
                     setStatus(logs, activitiProcessLog.getLogId());
                     //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
                     if (status.equals(0)) {
@@ -512,7 +513,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
                     if (b) {
                         ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
-                        audit(task.getProcessTaskId(), 1);
+                        autoAudit(task.getProcessTaskId(), 1,loginUserId);
                     }
                 }
 
@@ -575,7 +576,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             ActivitiAudit activitiAudit = getRule(activitiAuditList, activitiProcessLog.getSetpsId());
 
             if (ToolUtil.isNotEmpty(activitiAudit) && activitiAudit.getType().equals("send")) {
-                updateStatus(activitiProcessLog.getLogId(), 1);
+                updateStatus(activitiProcessLog.getLogId(), 1,loginUserId);
 
                 ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
                 List<ActivitiProcessLog> processLogs = updateSupper(allSteps, logs, activitiSteps);
@@ -592,10 +593,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         }
     }
 
-    private void updateStatus(Long logId, Integer status) {
+    private void updateStatus(Long logId, Integer status, Long loginUserId) {
         ActivitiProcessLog entity = new ActivitiProcessLog();
         entity.setStatus(status);
         entity.setLogId(logId);
+        entity.setUpdateUser(loginUserId);
         this.updateById(entity);
     }
 
@@ -1534,6 +1536,25 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
         }
     }
+
+    @Override
+    public void judgeLog(Long taskId, Long logId) {
+        if (ToolUtil.isEmpty(taskId) || ToolUtil.isEmpty(logId)) {
+            throw new ServiceException(500, "缺少 taskId,logId");
+        }
+        boolean t = true;
+        List<ActivitiProcessLog> logs = this.getAudit(taskId);
+        for (ActivitiProcessLog activitiProcessLog : logs) {
+            if (activitiProcessLog.getLogId().equals(logId)) {
+                t = false;
+                break;
+            }
+        }
+        if (t) {
+            throw new ServiceException(500, "审核状态不正确");
+        }
+    }
+
 
     @Override
     public List<ActivitiProcessLog> getAuditByForm(Long formId, String type) {

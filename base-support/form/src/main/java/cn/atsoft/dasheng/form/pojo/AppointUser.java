@@ -12,4 +12,6 @@ public class AppointUser {
 
     private String key;
 
+    private Integer auditStatus;   //审核状态
+
 }

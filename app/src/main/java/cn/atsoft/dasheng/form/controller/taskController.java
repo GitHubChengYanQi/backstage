@@ -99,6 +99,7 @@ public class taskController extends BaseController {
     public ResponseData audit(@RequestBody AuditParam auditParam) {
         //添加备注
         remarksService.addNote(auditParam);
+        this.activitiProcessLogService.judgeLog(auditParam.getTaskId(), auditParam.getLogId());  //判断当前log权限
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
 
         return ResponseData.success();
@@ -188,7 +189,7 @@ public class taskController extends BaseController {
         //获取当前processTask 下的所有log
         List<ActivitiProcessLogResult> process = logService.getLogByTaskProcess(processTask.getProcessId(), taskId);
         //比对log
-        ActivitiStepsResult stepLog = stepsService.getStepLog(stepResult, process);
+        stepsService.getStepLog(stepResult, process);
 
         //取出所有未审核节点
         List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
@@ -221,7 +222,8 @@ public class taskController extends BaseController {
             }
         }
 
-        taskResult.setStepsResult(stepLog);
+        taskResult.setStepsResult(stepResult);
+
         if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
             User user = userService.getById(taskResult.getCreateUser());
             taskResult.setCreateName(user.getName());
@@ -233,6 +235,7 @@ public class taskController extends BaseController {
         return ResponseData.success(taskResult);
 
     }
+
 
     private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
         for (ActivitiAudit activitiAudit : activitiAudits) {

@@ -125,5 +125,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
 
     List<ActivitiProcessLogResult> sendList(ActivitiProcessLogParam param);
 
+    void judgeLog(Long taskId, Long logId);
+
     List<ActivitiProcessLog> getAuditByForm(Long formId, String type);
 }

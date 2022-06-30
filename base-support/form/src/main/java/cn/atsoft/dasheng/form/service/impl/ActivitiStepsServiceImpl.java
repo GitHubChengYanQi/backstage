@@ -649,8 +649,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     }
 
 
-
-
     /**
      * 比对log
      *
@@ -659,15 +657,58 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @return
      */
     @Override
-    public ActivitiStepsResult getStepLog(ActivitiStepsResult stepResult, List<ActivitiProcessLogResult> logs) {
+    public void getStepLog(ActivitiStepsResult stepResult, List<ActivitiProcessLogResult> logs) {
+        if (ToolUtil.isEmpty(stepResult)) {
+            return;
+        }
         for (ActivitiProcessLogResult logResult : logs) {
             if (logResult.getSetpsId().equals(stepResult.getSetpsId())) {
+
+                if (ToolUtil.isNotEmpty(logResult.getUpdateUser()) && logResult.getUpdateUser() != -100) {     //判断节点审核人
+                    List<AuditRule.Rule> rules = stepResult.getAuditRule().getRules();
+                    for (AuditRule.Rule rule : rules) {
+
+                        switch (rule.getType()) {
+                            case AllPeople:
+                            case DeptPositions:
+                            case MasterDocumentPromoter:
+                                Long updateUser = logResult.getUpdateUser();
+                                User user = userService.getById(updateUser);
+                                List<AppointUser> appointUsers = rule.getAppointUsers();
+                                if (ToolUtil.isEmpty(appointUsers)) {
+                                    appointUsers = new ArrayList<>();
+                                }
+                                appointUsers.add(new AppointUser() {{
+                                    setKey(user.getUserId().toString());
+                                    setTitle(user.getName());
+                                    setAuditStatus(99);
+                                }});
+                                rule.setAppointUsers(appointUsers);
+                                break;
+                        }
+
+
+                        for (AppointUser appointUser : rule.getAppointUsers()) {
+                            if (appointUser.getKey().equals(logResult.getUpdateUser().toString())) {
+                                appointUser.setAuditStatus(99);
+                            }
+                        }
+                    }
+                }
                 stepResult.setLogResult(logResult);
             }
         }
-        ActivitiStepsResult stepLog = getChildStepLog(stepResult.getChildNode(), logs);
-        stepResult.setChildNode(stepLog);
-        return stepResult;
+
+        if (ToolUtil.isNotEmpty(stepResult.getChildNode())) {
+            getStepLog(stepResult.getChildNode(), logs);
+        }
+        if (ToolUtil.isNotEmpty(stepResult.getConditionNodeList())) {
+            for (ActivitiStepsResult activitiStepsResult : stepResult.getConditionNodeList()) {
+                getStepLog(activitiStepsResult, logs);
+            }
+        }
+
+
     }
 
     @Override
@@ -679,56 +720,5 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return null;
     }
 
-    /**
-     * 子节点比对log
-     *
-     * @param stepsResult
-     * @param logs
-     * @return
-     */
-    private ActivitiStepsResult getChildStepLog(ActivitiStepsResult stepsResult, List<ActivitiProcessLogResult> logs) {
 
-        for (ActivitiProcessLogResult logResult : logs) {
-            if (stepsResult.getSetpsId().equals(logResult.getSetpsId())) {
-                stepsResult.setLogResult(logResult);
-
-                if (ToolUtil.isNotEmpty(stepsResult.getChildNode())) {
-                    ActivitiStepsResult childStepLog = getChildStepLog(stepsResult.getChildNode(), logs);
-                    stepsResult.setChildNode(childStepLog);
-                }
-
-                if (ToolUtil.isNotEmpty(stepsResult.getConditionNodeList())) {
-                    List<ActivitiStepsResult> branchLog = getBranchLog(stepsResult.getConditionNodeList(), logs);
-                    stepsResult.setConditionNodeList(branchLog);
-                }
-            }
-        }
-
-        return stepsResult;
-    }
-
-    /**
-     * 分支比对log
-     *
-     * @param stepsResults
-     * @param logs
-     * @return
-     */
-    List<ActivitiStepsResult> getBranchLog(List<ActivitiStepsResult> stepsResults, List<ActivitiProcessLogResult> logs) {
-
-        for (ActivitiStepsResult stepsResult : stepsResults) {
-            for (ActivitiProcessLogResult logResult : logs) {
-
-                if (stepsResult.getSetpsId().equals(logResult.getSetpsId())) {
-                    stepsResult.setLogResult(logResult);
-
-                    if (ToolUtil.isNotEmpty(stepsResult.getChildNode())) {
-                        ActivitiStepsResult childStepLog = getChildStepLog(stepsResult.getChildNode(), logs);
-                        stepsResult.setChildNode(childStepLog);
-                    }
-                }
-            }
-        }
-        return stepsResults;
-    }
 }

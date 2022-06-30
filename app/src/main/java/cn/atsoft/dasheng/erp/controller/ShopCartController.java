@@ -102,7 +102,6 @@ public class ShopCartController extends BaseController {
         return ResponseData.success(shopCartResults);
     }
 
-
     @RequestMapping(value = "/applyList", method = RequestMethod.POST)
     public ResponseData applyList(@RequestBody(required = false) ShopCartParam shopCartParam) {
         if (ToolUtil.isEmpty(shopCartParam)) {
@@ -111,6 +110,7 @@ public class ShopCartController extends BaseController {
         List<ShopCartResult> shopCartResults = this.shopCartService.applyList(shopCartParam);
         return ResponseData.success(shopCartResults);
     }
+
     /**
      * 删除接口
      *
