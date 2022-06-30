@@ -100,6 +100,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private RemarksService remarksService;
     @Autowired
     private MobileService mobileService;
+    @Autowired
+    private CodingRulesService codingRulesService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private ShopCartService shopCartService;
+    @Autowired
+    private PartsService partsService;
+    @Autowired
+    private ErpPartsDetailService partsDetailService;
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
 
     @Override
     @Transactional
@@ -255,7 +267,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 userIds.addAll(JSON.parseArray(param.getParticipants(), Long.class));
             }
             String name = LoginContextHolder.getContext().getUser().getName();
-            if(ToolUtil.isNotEmpty(userIds)){
+            if (ToolUtil.isNotEmpty(userIds)) {
                 /**
                  * 评论
                  */
@@ -267,8 +279,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     userIdStr.append(userId).append(",");
                 }
                 String userStrtoString = userIdStr.toString();
-                if (userIdStr.length()>1){
-                    userStrtoString = userStrtoString.substring(0,userStrtoString.length() -1);
+                if (userIdStr.length() > 1) {
+                    userStrtoString = userStrtoString.substring(0, userStrtoString.length() - 1);
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());

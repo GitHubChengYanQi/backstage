@@ -304,18 +304,37 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
         anomalyService.format(anomalyResults);
 
+        switch (anomalyOrder.getType()) {
+            case "instock":
+                inStock(anomalyResults);
+                break;
+            case "Stocktaking":
+
+                break;
+        }
+        /**
+         * 更新状态
+         */
+        anomalyOrder.setComplete(99);
+        this.updateById(anomalyOrder);
+        updateStatus(orderParam);
+    }
+
+    /**
+     * 入库异常
+     *
+     * @param anomalyResults
+     */
+    private void inStock(List<AnomalyResult> anomalyResults) {
+
         List<Long> anomalyIds = new ArrayList<>();
         for (AnomalyResult anomalyResult : anomalyResults) {
             handle(anomalyResult);
             anomalyIds.add(anomalyResult.getAnomalyId());
         }
-
         List<AnomalyDetail> details = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
-
-
         for (AnomalyResult anomaly : anomalyResults) {
             long errorNum = 0;
-
             boolean t = false;
             for (AnomalyDetail detail : details) {
                 if (anomaly.getAnomalyId().equals(detail.getAnomalyId()) && detail.getStauts() == -1) {
@@ -337,14 +356,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 instockLogDetailService.save(instockLogDetail);
             }
         }
-
-
-        /**
-         * 更新状态
-         */
-        anomalyOrder.setComplete(99);
-        this.updateById(anomalyOrder);
-        updateStatus(orderParam);
     }
 
     /**
