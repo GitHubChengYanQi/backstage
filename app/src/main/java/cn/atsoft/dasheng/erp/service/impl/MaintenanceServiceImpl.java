@@ -337,6 +337,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     public List<StorehousePositionsResult> getDetails(Long maintenanceId) {
         if (ToolUtil.isNotEmpty(maintenanceId)) {
             List<MaintenanceDetail> details = maintenanceDetailService.query().eq("display", 1).eq("status", 0).eq("maintenance_id", maintenanceId).list();
+            for (MaintenanceDetail detail : details) {
+                detail.setNumber(detail.getNumber()-detail.getDoneNumber());
+            }
             List<MaintenanceDetail> totalList = new ArrayList<>();
             details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()) + '_' + item.getStorehousePositionsId() + "_" + item.getMaintenanceId(), Collectors.toList())).forEach(
                     (id, transfer) -> {
@@ -365,7 +368,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
 
             List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-
+            positionIds = positionIds.stream().distinct().collect(Collectors.toList());
             List<StorehousePositionsResult> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.getDetails(positionIds);
             for (StorehousePositionsResult storehousePosition : storehousePositions) {
                 List<MaintenanceDetail> positionTotalList = new ArrayList<>();
@@ -377,7 +380,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 List<SkuSimpleResult> positionSkuResult = new ArrayList<>();
                 for (MaintenanceDetail detail : positionTotalList) {
                     for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                        if (detail.getSkuId().equals(skuSimpleResult.getSkuId())) {
+                        if (detail.getSkuId().equals(skuSimpleResult.getSkuId()) && positionSkuResult.stream().noneMatch(i->i.getSkuId().equals(skuSimpleResult.getSkuId()))) {
                             positionSkuResult.add(skuSimpleResult);
                         }
                     }
@@ -387,6 +390,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                     Map<String, Object> skuMap = BeanUtil.beanToMap(skuSimpleResult);
                     List<Map<String, Object>> brands = new ArrayList<>();
                     for (MaintenanceDetail detail : positionTotalList) {
+                        if (ToolUtil.isEmpty(detail.getBrandId())){
+                            detail.setBrandId(0L);
+                        }
                         if (detail.getStorehousePositionsId().equals(storehousePosition.getStorehousePositionsId()) && detail.getSkuId().equals(skuSimpleResult.getSkuId())) {
                             skuMap.put("maintenanceId", detail.getMaintenanceId());
                             for (BrandResult brandResult : brandResults) {
