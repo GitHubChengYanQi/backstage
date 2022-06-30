@@ -215,6 +215,8 @@ public class taskController extends BaseController {
         }
 
         taskResult.setStepsResult(stepResult);
+        List comments = remarksService.getComments(taskId);
+        taskResult.setRemarks(comments);
 
         if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
             User user = userService.getById(taskResult.getCreateUser());
@@ -222,10 +224,6 @@ public class taskController extends BaseController {
             user.setAvatar(imgUrl);
             taskResult.setUser(user);
         }
-
-
-        List comments = remarksService.getComments(taskId);
-        taskResult.setRemarks(comments);
         return ResponseData.success(taskResult);
 
     }
