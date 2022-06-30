@@ -92,6 +92,7 @@ public class taskController extends BaseController {
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private StepsService appStepService;
+    @Autowired
     private InventoryService inventoryService;
 
 
