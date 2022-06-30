@@ -25,9 +25,7 @@ public class RemarksMessageService {
         RemarksParam remarksParam = remarksEntity.getRemarksParam();
         switch (remarksEntity.getOperationType()) {
             case ADD:
-                Remarks remarks = new Remarks();
-                ToolUtil.copyProperties(remarksParam, remarks);
-                remarksService.save(remarks);
+                remarksService.addByMQ(remarksParam);
                 break;
             case SAVE:
                 Remarks entity = new Remarks();

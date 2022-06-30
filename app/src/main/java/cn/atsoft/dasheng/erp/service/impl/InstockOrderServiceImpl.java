@@ -370,9 +370,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 指定人推送
              */
-            if (ToolUtil.isNotEmpty(param.getUserIds())) {
-                remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
-            }
+//            if (ToolUtil.isNotEmpty(param.getUserIds())) {
+//                remarksService.pushPeople(param.getUserIds(), taskId, "你有一条被@的消息");
+//            }
 
 
             /**

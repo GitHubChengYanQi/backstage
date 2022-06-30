@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
@@ -36,6 +37,7 @@ import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -96,6 +98,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private MessageProducer messageProducer;
     @Autowired
     private RemarksService remarksService;
+    @Autowired
+    private MobileService mobileService;
 
     @Override
     @Transactional
@@ -151,7 +155,15 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 userIds.addAll(JSON.parseArray(param.getParticipants(), Long.class));
             }
             String name = LoginContextHolder.getContext().getUser().getName();
-            remarksService.pushPeople(userIds, taskId, name + "创建的盘点任务 需要你处理");
+            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate(){{
+                setCreateUserName(name);
+                setUserIds(userIds);
+                setType(0);
+                setItems("新的盘点任务");
+                setDescription(name + "创建的盘点任务");
+                setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
+
+            }});
         }
     }
 
