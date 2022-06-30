@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.binding.cpUser.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.binding.cpUser.entity.CpuserInfo;
 import cn.atsoft.dasheng.binding.cpUser.model.params.CpuserInfoParam;
@@ -7,7 +8,9 @@ import cn.atsoft.dasheng.binding.cpUser.model.result.CpuserInfoResult;
 import cn.atsoft.dasheng.binding.cpUser.service.CpuserInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.rest.service.RestUserService;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +34,8 @@ public class CpuserInfoController extends BaseController {
 
     @Autowired
     private CpuserInfoService cpuserInfoService;
+    @Autowired
+    private StepsService appStepService;
 
     /**
      * 新增接口
@@ -57,6 +62,14 @@ public class CpuserInfoController extends BaseController {
 
         this.cpuserInfoService.update(cpuserInfoParam);
         return ResponseData.success();
+    }
+
+
+    @RequestMapping(value = "/backHeadPortrait", method = RequestMethod.GET)
+    public ResponseData backHeadPortrait() {
+        Long userId = LoginContextHolder.getContext().getUserId();
+        String imgUrl = appStepService.imgUrl(userId.toString());
+        return ResponseData.success(imgUrl);
     }
 
     /**

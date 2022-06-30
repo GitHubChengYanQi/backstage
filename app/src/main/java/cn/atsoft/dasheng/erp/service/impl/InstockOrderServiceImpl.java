@@ -794,7 +794,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         if (ToolUtil.isNotEmpty(listParam.getCartId())) {
             ShopCart shopCart = cartService.getById(listParam.getCartId());
-
             if (shopCart.getNumber() != 0) {
                 shopCart.setNumber(shopCart.getNumber() - listParam.getNumber());
                 if (shopCart.getNumber() < 0) {
