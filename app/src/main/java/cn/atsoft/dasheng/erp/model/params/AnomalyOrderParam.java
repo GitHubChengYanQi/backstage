@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class AnomalyOrderParam implements Serializable, BaseValidatingParam {
 
     private Long instockOrderId;
 
+    @NotNull
     private List<AnomalyParam> anomalyParams;
 
     @ApiModelProperty("")

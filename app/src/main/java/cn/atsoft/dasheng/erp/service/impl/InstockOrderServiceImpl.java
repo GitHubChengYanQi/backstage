@@ -287,7 +287,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             if (ToolUtil.isEmpty(param.getModule())) {
                 param.setModule("");
             }
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).one();
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).eq("display",1).one();
 
             if (ToolUtil.isEmpty(activitiProcess)) {
                 throw new ServiceException(500, "请先设置入库审批流程");

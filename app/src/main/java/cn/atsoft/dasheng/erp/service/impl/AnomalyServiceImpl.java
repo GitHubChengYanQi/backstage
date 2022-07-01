@@ -208,9 +208,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 detail.setRemark(json);
             }
             detailService.save(detail);
-
         }
-
     }
 
 

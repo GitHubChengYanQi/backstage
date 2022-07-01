@@ -98,7 +98,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         this.updateById(newEntity);
 
         if (ToolUtil.isNotEmpty(param.getAnomalyOrderId())) {
-            ActivitiProcessTask task = taskService.getById(param.getAnomalyOrderId());
+            ActivitiProcessTask task = taskService.getByFormId(param.getAnomalyOrderId());
             if (ToolUtil.isNotEmpty(task)) {
                 String content = "";
                 if (param.getStauts() == 1) {
@@ -115,7 +115,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                 RemarksParam remarksParam = new RemarksParam();
                 remarksParam.setTaskId(task.getProcessTaskId());
                 remarksParam.setType("dynamic");
-                remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() +"处理异常："+content);
+                remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "处理异常：" + content);
                 messageProducer.remarksServiceDo(new RemarksEntity() {{
                     setOperationType(OperationType.SAVE);
                     setRemarksParam(remarksParam);

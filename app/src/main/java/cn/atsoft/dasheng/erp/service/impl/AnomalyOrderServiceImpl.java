@@ -32,6 +32,8 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -98,6 +100,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InstockLogDetailService instockLogDetailService;
     @Autowired
     private InstockOrderService instockOrderService;
+    @Autowired
+    private UserService userService;
 
     @Override
     @Transactional
@@ -118,12 +122,22 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<Anomaly> anomalies = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
+            if (ToolUtil.isEmpty(anomalyParam.getAnomalyId())) {
+                throw new ServiceException(500, "缺少 异常id");
+            }
             ids.add(anomalyParam.getAnomalyId());
             Anomaly anomaly = new Anomaly();
             anomaly.setStatus(98);
             ToolUtil.copyProperties(anomalyParam, anomaly);
             anomaly.setOrderId(entity.getOrderId());
             anomalies.add(anomaly);
+        }
+        //判断是否提交过
+        List<Anomaly> anomalyList = anomalyService.listByIds(ids);
+        for (Anomaly anomaly : anomalyList) {
+            if (anomaly.getStatus() == 98) {
+                throw new ServiceException(500, "请勿重新提交异常");
+            }
         }
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
         /**
@@ -180,7 +194,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     }
 
     private void submit(AnomalyOrder entity) {
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.INSTOCKERROR.getType()).eq("status", 99).eq("module", "verifyError").one();
+        ActivitiProcess activitiProcess = activitiProcessService.query()
+                .eq("display", 1)
+                .eq("type", ProcessType.INSTOCKERROR.getType())
+                .eq("status", 99).eq("module", "verifyError").one();
         //    发起审批流程
         if (ToolUtil.isNotEmpty(activitiProcess)) {
 
@@ -378,6 +395,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         anomalyService.format(anomalyResults);
 
         InstockOrder instockOrder = instockOrderService.getById(result.getInstockOrderId());
+        Long createUser = instockOrder.getCreateUser();
+        User user = userService.getById(createUser);
+        result.setMasterUser(user);
+
         result.setInstockOrder(instockOrder);
 
         List<DocumentsStatusResult> results = statusService.resultsByIds(new ArrayList<Long>() {{
