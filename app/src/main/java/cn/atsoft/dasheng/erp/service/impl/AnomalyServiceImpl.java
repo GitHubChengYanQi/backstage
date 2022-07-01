@@ -28,7 +28,11 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -95,6 +99,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private RemarksService remarksService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private MessageProducer messageProducer;
 
 
     @Transactional
@@ -145,7 +151,27 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         shopCartParam.setFormId(entity.getAnomalyId());
         shopCartParam.setNumber(param.getNeedNumber());
         shopCartService.add(shopCartParam);
+
+
+        //添加动态
+        switch (param.getAnomalyType()) {
+            case InstockError:
+                Long taskId = taskService.getTaskIdByFormId(param.getFormId());
+                RemarksParam remarksParam = new RemarksParam();
+                remarksParam.setTaskId(taskId);
+                remarksParam.setType("dynamic");
+                remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
+                remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了异常购物车");
+                messageProducer.remarksServiceDo(new RemarksEntity() {{
+                    setOperationType(OperationType.SAVE);
+                    setRemarksParam(remarksParam);
+                }});
+                break;
+        }
     }
+
+
+
 
     @Override
     public AnomalyResult detail(Long id) {
