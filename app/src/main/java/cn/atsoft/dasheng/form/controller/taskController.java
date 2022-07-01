@@ -5,8 +5,10 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
+import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
+import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
@@ -87,6 +89,8 @@ public class taskController extends BaseController {
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private StepsService appStepService;
+    @Autowired
+    private AnomalyService anomalyService;
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -165,6 +169,10 @@ public class taskController extends BaseController {
                 AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
                 taskResult.setReceipts(orderResult);
                 break;
+            case "ErrorForWard":
+                AnomalyResult anomalyResult = anomalyService.detail(taskResult.getFormId());
+                taskResult.setReceipts(anomalyResult);
+                break;
             case "OUTSTOCK":
                 ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
 
@@ -196,25 +204,28 @@ public class taskController extends BaseController {
         /**
          * 取出所有步骤配置
          */
-        List<ActivitiAudit> activitiAudits = auditService.list(new QueryWrapper<ActivitiAudit>() {{
-            in("setps_id", stepsIds);
-        }});
+        if (ToolUtil.isNotEmpty(stepsIds)) {
+            List<ActivitiAudit> activitiAudits = auditService.list(new QueryWrapper<ActivitiAudit>() {{
+                in("setps_id", stepsIds);
+            }});
 
-        taskResult.setPermissions(false);
-        for (ActivitiProcessLog activitiProcessLog : audit) {
-            if (activitiProcessLog.getStatus() == -1) {
-                /**
-                 * 取节点规则
-                 */
-                ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
-                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) && activitiProcessLogService.checkUser(activitiAudit.getRule(), taskId)) {
-                    taskResult.setPermissions(true);
-                    break;
+            taskResult.setPermissions(false);
+            for (ActivitiProcessLog activitiProcessLog : audit) {
+                if (activitiProcessLog.getStatus() == -1) {
+                    /**
+                     * 取节点规则
+                     */
+                    ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
+                    if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) && activitiProcessLogService.checkUser(activitiAudit.getRule(), taskId)) {
+                        taskResult.setPermissions(true);
+                        break;
+                    }
                 }
             }
+
+            taskResult.setStepsResult(stepResult);
         }
 
-        taskResult.setStepsResult(stepResult);
         List comments = remarksService.getComments(taskId);
         taskResult.setRemarks(comments);
 

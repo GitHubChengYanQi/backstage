@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
@@ -12,6 +13,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
@@ -71,6 +73,8 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     private ActivitiProcessTaskService taskService;
     @Autowired
     private MessageProducer messageProducer;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
 
 
     @Override
@@ -101,13 +105,21 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
             ActivitiProcessTask task = taskService.getByFormId(param.getAnomalyOrderId());
             if (ToolUtil.isNotEmpty(task)) {
                 String content = "";
-                if (ToolUtil.isNotEmpty(param.getStauts())&&param.getStauts() == 1) {
-                    content = "允许入库";
-                } else if (ToolUtil.isNotEmpty(param.getStauts())&&param.getStauts() == -1) {
-                    content = "终止入库";
-                } else if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
+                if (ToolUtil.isNotEmpty(param.getStauts())) {
+                    switch (param.getStauts().toString()) {
+                        case "-1":
+                            content = "终止入库";
+                            break;
+                        case "1":
+                            content = "允许入库";
+                            break;
+                    }
+                }
+
+             if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
                     User user = userService.getById(param.getUserId());
                     content = "转交给" + user.getName() + "进行处理";
+                    forWard(oldEntity);   //异常明细转交处理
                 }
                 /**
                  * 添加动态记录
@@ -124,6 +136,18 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         }
     }
 
+    /**
+     * 转交处理
+     */
+    private void forWard(AnomalyDetail detail) {
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+        activitiProcessTaskParam.setTaskName(user.getName() + "转交的异常处理");
+        activitiProcessTaskParam.setUserIds(detail.getUserId().toString());
+        activitiProcessTaskParam.setFormId(detail.getAnomalyId());
+        activitiProcessTaskParam.setType("ErrorForWard");
+        activitiProcessTaskService.add(activitiProcessTaskParam);
+    }
 
     /**
      * 转交人处理

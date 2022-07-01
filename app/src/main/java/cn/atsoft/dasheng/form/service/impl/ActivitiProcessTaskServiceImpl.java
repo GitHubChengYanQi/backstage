@@ -175,9 +175,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             taskId.add(0L);
         }
         param.setTaskIds(taskId);
-        if (ToolUtil.isEmpty(param.getCreateUser())) {
-            param.getTaskIds().add(0L);
-        }
+
+        Long userId = LoginContextHolder.getContext().getUserId();
+        param.setUserIds(userId.toString());
 
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
@@ -338,6 +338,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 case "INSTOCK":
                     instockOrderIds.add(datum.getFormId());
                     break;
+                case "ErrorForWard":   //异常转交处理
                 case "INSTOCKERROR":
                     anomalyIds.add(datum.getFormId());
                     break;

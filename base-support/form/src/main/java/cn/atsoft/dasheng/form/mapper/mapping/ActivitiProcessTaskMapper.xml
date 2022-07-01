@@ -106,6 +106,9 @@
             select order_id from daoxin_anomaly_order where coding like CONCAT('%',#{paramCondition.skuName},'%')
             )
         </if>
+        <if test="paramCondition.userIds">
+            or user_ids =  #{paramCondition.userIds}
+        </if>
         <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
             and process_task_id in
             <foreach collection="paramCondition.taskIds" index="index" item="state" separator="," close=")" open="(">

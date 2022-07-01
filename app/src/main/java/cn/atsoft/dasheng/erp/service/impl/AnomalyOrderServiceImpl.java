@@ -259,7 +259,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
         anomalyService.format(anomalyResults);
 
-        List<Long> anomalyIds = new ArrayList<>();
+
         for (AnomalyResult anomalyResult : anomalyResults) {
             handle(anomalyResult);
 
@@ -274,9 +274,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     errorNum = errorNum + detail.getNumber();
                     t = true;
                 }
-                if (ToolUtil.isNotEmpty(detail.getUserId())) {
-                    
-                }
+
             }
             if (t) {
                 /**
@@ -301,6 +299,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         this.updateById(anomalyOrder);
         updateStatus(orderParam);
     }
+
 
     /**
      * 处理
