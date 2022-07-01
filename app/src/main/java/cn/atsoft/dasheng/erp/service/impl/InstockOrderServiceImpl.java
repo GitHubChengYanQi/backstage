@@ -287,7 +287,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             if (ToolUtil.isEmpty(param.getModule())) {
                 param.setModule("");
             }
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).eq("display",1).one();
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).eq("display", 1).one();
 
             if (ToolUtil.isEmpty(activitiProcess)) {
                 throw new ServiceException(500, "请先设置入库审批流程");
@@ -354,7 +354,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
 
 
-            if(ToolUtil.isNotEmpty(param.getUserIds())){
+            if (ToolUtil.isNotEmpty(param.getUserIds())) {
                 /**
                  * 评论
                  */
@@ -366,8 +366,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     userIdStr.append(userId).append(",");
                 }
                 String userStrtoString = userIdStr.toString();
-                if (userIdStr.length()>1){
-                    userStrtoString = userStrtoString.substring(0,userStrtoString.length() -1);
+                if (userIdStr.length() > 1) {
+                    userStrtoString = userStrtoString.substring(0, userStrtoString.length() - 1);
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());
@@ -379,17 +379,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 添加动态记录
              */
-            RemarksParam remarksParam = new RemarksParam();
-            remarksParam.setTaskId(taskId);
-            remarksParam.setType("dynamic");
-            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "发起了入库申请");
-            messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.SAVE);
-                setRemarksParam(remarksParam);
-            }});
-//                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-//                activitiProcessLogService.autoAudit(taskId, 1);
+            shopCartService.addDynamic(entity.getInstockOrderId(), "发起了入库申请");
 
+//           activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+//                activitiProcessLogService.autoAudit(taskId, 1);
 
 
             /**
@@ -401,14 +394,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
     }
 
-
-    /**
-     * 直接入库 不走审批
-     */
-    public void directInStock(InstockOrderParam param) {
-
-
-    }
 
     /**
      * 判断入库流程发起人
@@ -735,17 +720,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         /**
          * 添加动态
          */
-        Long taskId = activitiProcessTaskService.getTaskIdByFormId(param.getInstockOrderId());
-        RemarksParam remarksParam = new RemarksParam();
-        remarksParam.setTaskId(taskId);
-        remarksParam.setType("dynamic");
-        remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
-        remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "操作了入库");
-        messageProducer.remarksServiceDo(new RemarksEntity() {{
-            setOperationType(OperationType.SAVE);
-            setRemarksParam(remarksParam);
-        }});
 
+        shopCartService.addDynamic(param.getInstockOrderId(), "操作了入库");
         /**
          * 更新单据状态
          */
@@ -766,12 +742,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setActionId(param.getActionId());
 //            }});
             InstockOrder order = this.getById(param.getInstockOrderId());
-            remarksParam.setContent("单据:" + order.getCoding() + "完成了入库");
-            remarksParam.setType("dynamic");
-            messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.SAVE);
-                setRemarksParam(remarksParam);
-            }});
+            shopCartService.addDynamic(param.getInstockOrderId(), "单据:" + order.getCoding() + "完成了入库");
 
         }
 
@@ -811,11 +782,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         if (ToolUtil.isNotEmpty(listParam.getCartId())) {
             ShopCart shopCart = cartService.getById(listParam.getCartId());
+
             if (shopCart.getNumber() != 0) {
-                shopCart.setNumber(shopCart.getNumber() - listParam.getNumber());
-                if (shopCart.getNumber() < 0) {
-                    throw new ServiceException(500, "购物车数量不正确");
+                long number = shopCart.getNumber() - listParam.getNumber();
+                if (number < 0) {
+                    throw new ServiceException(500, "购物车数量不足");
+                } else if (number == 0) {
+                    shopCart.setStatus(99);
                 }
+                shopCart.setNumber(number);   //购物车数量 不足出库
             } else {
                 shopCart.setStatus(99);
             }
@@ -1365,7 +1340,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> statusIds = new ArrayList<>();
         List<Long> noticeIds = new ArrayList<>();
         List<Long> mediaIds = new ArrayList<>();
-        List<Long> instockListIds = new ArrayList<>();
+        List<Long> formIds = new ArrayList<>();
 
         for (InstockOrderResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getNoticeId())) {
@@ -1394,10 +1369,18 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
         List<InstockListResult> instockListList = instockListService.getListByOrderIds(orderIds);
+
         for (InstockListResult instockListResult : instockListList) {
-            instockListIds.add(instockListResult.getInstockListId());
+            formIds.add(instockListResult.getInstockListId());
         }
-        List<ShopCart> shopCarts = instockListList.size() == 0 ? new ArrayList<>() : shopCartService.query().in("form_id", instockListIds).eq("display", 1).eq("status", 0).list();
+
+
+        List<Anomaly> anomalyList = instockListList.size() == 0 ? new ArrayList<>() : anomalyService.query().in("source_id", formIds).eq("display", 1).list();
+        for (Anomaly anomaly : anomalyList) {
+            formIds.add(anomaly.getAnomalyId());
+        }
+
+        List<ShopCart> shopCarts = formIds.size() == 0 ? new ArrayList<>() : shopCartService.query().in("form_id", formIds).eq("display", 1).eq("status", 0).list();
 
 
         for (InstockOrderResult datum : data) {
@@ -1408,13 +1391,21 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             int instockErrorNum = 0;
             List<InstockListResult> instockListResults = new ArrayList<>();
             for (InstockListResult instockList : instockListList) {
+
+                for (Anomaly anomaly : anomalyList) {
+                    if (ToolUtil.isNotEmpty(anomaly.getSourceId()) && anomaly.getSourceId().equals(instockList.getInstockListId())) {
+                        instockList.setAnomalyId(anomaly.getAnomalyId());
+                    }
+                }
+
                 if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
                     instockListResults.add(instockList);
                     enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
                     realNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : realNumber + instockList.getRealNumber();
 
                     for (ShopCart shopCart : shopCarts) {
-                        if (shopCart.getFormId().equals(instockList.getInstockListId())) {
+                        if (shopCart.getFormId().equals(instockList.getInstockListId()) ||
+                                (ToolUtil.isNotEmpty(instockList.getAnomalyId()) && shopCart.getFormId().equals(instockList.getAnomalyId()))) {
                             switch (shopCart.getType()) {
                                 case "waitInStock":
                                     waitInStockNum = waitInStockNum + 1;

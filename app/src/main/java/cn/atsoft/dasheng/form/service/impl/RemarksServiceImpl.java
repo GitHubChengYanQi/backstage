@@ -273,7 +273,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         formatUrl(remarksResults);
 
         for (RemarksResult remarksResult : remarksResults) {
-            
+
             for (User user : userList) {
                 if (remarksResult.getCreateUser().equals(user.getUserId())) {
                     remarksResult.setUser(user);

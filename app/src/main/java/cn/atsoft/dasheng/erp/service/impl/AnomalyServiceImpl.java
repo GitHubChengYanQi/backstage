@@ -153,17 +153,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         //添加动态
         switch (param.getAnomalyType()) {
             case InstockError:
-                Long taskId = taskService.getTaskIdByFormId(param.getFormId());
-                RemarksParam remarksParam = new RemarksParam();
-                remarksParam.setTaskId(taskId);
-                remarksParam.setType("dynamic");
-                remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
-                remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了异常购物车");
-                messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.SAVE);
-                    setRemarksParam(remarksParam);
-                }});
-                break;
+                shopCartService.addDynamic(param.getFormId(),"添加了异常购物车");
         }
     }
 

@@ -23,9 +23,11 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.message.config.DirectQueueConfig;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
@@ -86,6 +88,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private InstockOrderService instockOrderService;
     @Autowired
     private ActivitiProcessTaskService taskService;
+    @Autowired
+    private RemarksService remarksService;
 
     protected static final Logger logger = LoggerFactory.getLogger(ShopCartServiceImpl.class);
 
@@ -114,16 +118,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
             InstockList instockList = instockListService.getById(param.getInstockListId());
 
-
-            Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
-            RemarksParam remarksParam = new RemarksParam();
-            remarksParam.setTaskId(taskId);
-            remarksParam.setType("dynamic");
-            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
-            messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.SAVE);
-                setRemarksParam(remarksParam);
-            }});
+            addDynamic(instockList.getInstockOrderId(), "添加了待入购物车");
         }
 
         return entity.getCartId();
@@ -188,10 +183,18 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         remarksParam.setType("dynamic");
         remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
         remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + content);
-        messageProducer.remarksServiceDo(new RemarksEntity() {{
-            setOperationType(OperationType.SAVE);
-            setRemarksParam(remarksParam);
-        }});
+
+        Remarks entity = new Remarks();
+        ToolUtil.copyProperties(remarksParam, entity);
+        remarksService.save(entity);
+
+        /**
+         * 消息队列获取不到当前人  不用这个了
+         */
+//        messageProducer.remarksServiceDo(new RemarksEntity() {{
+//            setOperationType(OperationType.SAVE);
+//            setRemarksParam(remarksParam);
+//        }});
     }
 
     /**
