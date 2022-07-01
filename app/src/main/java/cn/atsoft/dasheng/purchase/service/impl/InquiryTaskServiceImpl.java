@@ -130,7 +130,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             qualityTaskService.power(activitiProcess);//检查创建权限
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的询价任务"+param.getInquiryTaskCode());
+            activitiProcessTaskParam.setTaskName(user.getName() + "提交的询价任务"+param.getInquiryTaskCode());
             activitiProcessTaskParam.setQTaskId(entity.getInquiryTaskId());
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getInquiryTaskId());
@@ -155,7 +155,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
             wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
                 setTitle("新的采购单");
                 setUrl(url);
-                setDescription(user.getName() + "发起的采购申请");
+                setDescription(user.getName() + "提交的采购申请");
                 setCreateUser(entity.getCreateUser());
                 setType(0);
                 setUserIds(new ArrayList<Long>() {{

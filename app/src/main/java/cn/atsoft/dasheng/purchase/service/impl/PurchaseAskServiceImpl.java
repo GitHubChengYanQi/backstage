@@ -120,7 +120,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             this.power(activitiProcess);//检查创建权限
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的采购申请 (" + param.getCoding() + ")");
+            activitiProcessTaskParam.setTaskName(user.getName() + "提交的采购申请 (" + param.getCoding() + ")");
             activitiProcessTaskParam.setQTaskId(entity.getPurchaseAskId());
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getPurchaseAskId());

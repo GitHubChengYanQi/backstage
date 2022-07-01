@@ -208,7 +208,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         if (ToolUtil.isNotEmpty(activitiProcess) && ToolUtil.isNotEmpty(param.getUserId())) {
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的生产任务 (" + param.getCoding() + ")");
+            activitiProcessTaskParam.setTaskName(user.getName() + "提交的生产任务 (" + param.getCoding() + ")");
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getProductionTaskId());
             activitiProcessTaskParam.setType("productionTask");
