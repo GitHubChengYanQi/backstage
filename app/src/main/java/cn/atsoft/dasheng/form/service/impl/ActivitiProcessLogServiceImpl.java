@@ -510,11 +510,14 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();
                 if (ToolUtil.isNotEmpty(anomalies)) {
                     Anomaly anomaly = anomalies.get(0);
-                    boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
-                    if (b) {
-                        ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
-                        autoAudit(task.getProcessTaskId(), 1, loginUserId);
+                    if (anomaly.getType().equals("InstockError")) {
+                        boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
+                        if (b) {
+                            ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
+                            autoAudit(task.getProcessTaskId(), 1, loginUserId);
+                        }
                     }
+
                 }
 
                 break;

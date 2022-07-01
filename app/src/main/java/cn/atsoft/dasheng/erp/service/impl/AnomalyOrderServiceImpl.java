@@ -327,13 +327,13 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
      */
     private void stocktaking(List<AnomalyResult> anomalyResults) {
         for (AnomalyResult anomalyResult : anomalyResults) {
-
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 if (detail.getStauts() == 2) {  //报损
 
                     InventoryDetail inventoryDetail = inventoryDetailService.query()  //找到盘点异常物料 进行出库
                             .eq("inventory_id", anomalyResult.getFormId())
                             .eq("inkind_id", detail.getInkindId()).one();
+
 
 //                    inventoryDetail.getRealNumber()
 
