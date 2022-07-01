@@ -17,10 +17,7 @@ import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
-import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
-import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
@@ -169,8 +166,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 break;
         }
     }
-
-
 
 
     @Override
@@ -401,6 +396,29 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+    @Override
+    public void getOrder(List<AnomalyResult> data) {
+
+        List<Long> orderIds = new ArrayList<>();
+
+        for (AnomalyResult datum : data) {
+            orderIds.add(datum.getOrderId());
+        }
+
+        List<AnomalyOrder> anomalyOrders = orderIds.size() == 0 ? new ArrayList<>() : anomalyOrderService.listByIds(orderIds);
+        List<AnomalyOrderResult> orderResults = BeanUtil.copyToList(anomalyOrders, AnomalyOrderResult.class, new CopyOptions());
+
+        for (AnomalyResult datum : data) {
+            for (AnomalyOrderResult orderResult : orderResults) {
+                if (ToolUtil.isNotEmpty(datum.getOrderId()) && datum.getOrderId().equals(orderResult.getOrderId())) {
+                    datum.setOrderResult(orderResult);
+                    break;
+                }
+            }
+        }
+    }
+
 
     @Override
     public void detailFormat(AnomalyResult result) {

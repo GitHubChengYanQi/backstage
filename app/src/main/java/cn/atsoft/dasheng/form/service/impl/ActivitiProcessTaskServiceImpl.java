@@ -7,11 +7,14 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
+import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
+import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
@@ -65,14 +68,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private ProductionPickListsService pickListsService;
-
     @Autowired
     private ActivitiStepsService activitiStepsService;
-
     @Autowired
     private ActivitiAuditService activitiAuditService;
     @Autowired
     private ProductionPickListsService productionPickListsService;
+    @Autowired
+    private AnomalyService anomalyService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -175,9 +178,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             taskId.add(0L);
         }
         param.setTaskIds(taskId);
-        if (ToolUtil.isEmpty(param.getCreateUser())) {
-            param.getTaskIds().add(0L);
-        }
+
+        Long userId = LoginContextHolder.getContext().getUserId();
+        param.setUserIds(userId.toString());
 
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
@@ -330,8 +333,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     public void format(List<ActivitiProcessTaskResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> instockOrderIds = new ArrayList<>();
-        List<Long> anomalyIds = new ArrayList<>();
+        List<Long> anomalyOrderIds = new ArrayList<>();
         List<Long> pickListsIds = new ArrayList<>();
+        List<Long> anomalyIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
@@ -339,10 +343,13 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     instockOrderIds.add(datum.getFormId());
                     break;
                 case "INSTOCKERROR":
-                    anomalyIds.add(datum.getFormId());
+                    anomalyOrderIds.add(datum.getFormId());
                     break;
                 case "OUTSTOCK":
                     pickListsIds.add(datum.getFormId());
+                    break;
+                case "ErrorForWard":   //异常转交处理
+                    anomalyIds.add(datum.getFormId());
                     break;
             }
         }
@@ -360,12 +367,15 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         instockOrderService.format(orderResults);
         instockOrderService.setList(orderResults);
 
-        List<AnomalyOrder> anomalyOrders = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyOrderService.listByIds(anomalyIds);
+        List<AnomalyOrder> anomalyOrders = anomalyOrderIds.size() == 0 ? new ArrayList<>() : anomalyOrderService.listByIds(anomalyOrderIds);
         List<AnomalyOrderResult> orderResultList = BeanUtil.copyToList(anomalyOrders, AnomalyOrderResult.class, new CopyOptions());
 
         List<ProductionPickLists> productionPickLists = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsIds);
         List<ProductionPickListsResult> productionPickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
 
+        List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
+        List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
+        anomalyService.getOrder(anomalyResults);
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
@@ -402,6 +412,13 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                         add(productionPickListsResult);
                     }});
                     datum.setReceipts(productionPickListsResult);
+                    break;
+                }
+            }
+
+            for (AnomalyResult anomalyResult : anomalyResults) {
+                if (datum.getType().equals("ErrorForWard") && datum.getFormId().equals(anomalyResult.getAnomalyId())) {
+                    datum.setReceipts(anomalyResult);
                     break;
                 }
             }

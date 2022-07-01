@@ -16,16 +16,15 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.form.service.RemarksService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -62,6 +61,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private ActivitiProcessTaskService taskService;
+    @Autowired
+    private StepsService appStepService;
 
     @Override
     public void add(Long logId, String note) {
@@ -200,9 +201,10 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
-            pushPeople(userIds, auditParam.getTaskId(), "你有一条被@的消息",remarks);
+            pushPeople(userIds, auditParam.getTaskId(), "你有一条被@的消息", remarks);
         }
     }
+
     @Override
     public void addByMQ(RemarksParam remarksParam) {
         Remarks entity = this.getEntity(remarksParam);
@@ -214,7 +216,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
-            pushPeople(userIds, remarksParam.getTaskId(), "你有一条被@的消息",entity);
+            pushPeople(userIds, remarksParam.getTaskId(), "你有一条被@的消息", entity);
         }
     }
 
@@ -225,12 +227,12 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
      * @param taskId
      */
     @Override
-    public void pushPeople(List<Long> userIds, Long taskId, String content,Remarks remarks) {
+    public void pushPeople(List<Long> userIds, Long taskId, String content, Remarks remarks) {
         ActivitiProcessTask task = taskService.getById(taskId);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setType(2);
             setItems("收到评论");
-            setDescription("有人在 "+task.getTaskName()+" 中@了你");
+            setDescription("有人在 " + task.getTaskName() + " 中@了你");
             setCreateUser(task.getCreateUser());
             setRemark(remarks.getContent());
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
@@ -245,22 +247,39 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         List<Remarks> remarks = this.query().eq("task_id", taskId).orderByDesc("create_time").isNull("pid").eq("display", 1).list();
         List<RemarksResult> remarksResults = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
         for (Remarks remark : remarks) {
             ids.add(remark.getRemarksId());
             RemarksResult result = new RemarksResult();
             ToolUtil.copyProperties(remark, result);
+            userIds.add(remark.getCreateUser());
             remarksResults.add(result);
-
         }
+
         List<Remarks> childs = ids.size() == 0 ? new ArrayList<>() : this.query().in("pid", ids).eq("display", 1).list();
         List<RemarksResult> results = BeanUtil.copyToList(childs, RemarksResult.class);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
+
+        for (User user : userList) {    //动态人头像
+            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+            user.setAvatar(imgUrl);
+        }
         /**
          * 回复
          */
         formatUrl(results);
         formatUrl(remarksResults);
+
         for (RemarksResult remarksResult : remarksResults) {
+            
+            for (User user : userList) {
+                if (remarksResult.getCreateUser().equals(user.getUserId())) {
+                    remarksResult.setUser(user);
+                }
+            }
+
             List<RemarksResult> children = new ArrayList<>();
             for (RemarksResult result : results) {
                 if (remarksResult.getRemarksId().equals(result.getPid())) {
