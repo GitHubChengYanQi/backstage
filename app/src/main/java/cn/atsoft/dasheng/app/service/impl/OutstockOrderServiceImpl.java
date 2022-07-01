@@ -135,7 +135,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的出库 (" + param.getCoding() + ")");
+            activitiProcessTaskParam.setTaskName(user.getName() + "提交的出库 (" + param.getCoding() + ")");
             activitiProcessTaskParam.setQTaskId(entity.getOutstockOrderId());
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getOutstockOrderId());

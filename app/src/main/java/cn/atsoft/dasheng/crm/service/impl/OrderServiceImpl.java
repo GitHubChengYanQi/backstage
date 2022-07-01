@@ -114,7 +114,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //            qualityTaskSers);//检查创建权限
 ////            LoginUser user = LoginContextHolder.getCvice.power(activitiProcesontext().getUser();
 //            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-//            activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + source + "申请");
+//            activitiProcessTaskParam.setTaskName(user.getName() + "提交的" + source + "申请");
 ////            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
 //            activitiProcessTaskParam.setUserId(param.getCreateUser());
 //            activitiProcessTaskParam.setFormId(entity.getOrderId());

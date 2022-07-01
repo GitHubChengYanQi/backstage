@@ -32,6 +32,11 @@ public class ProductionPickLists implements Serializable {
     /**
      * 领取物料码
      */
+    @TableField("pick_lists_name")
+    private String pickListsName;
+    /**
+     * 领取物料码
+     */
     @TableField("coding")
     private String coding;
 
@@ -237,6 +242,14 @@ public class ProductionPickLists implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getPickListsName() {
+        return pickListsName;
+    }
+
+    public void setPickListsName(String pickListsName) {
+        this.pickListsName = pickListsName;
     }
 
     @Override

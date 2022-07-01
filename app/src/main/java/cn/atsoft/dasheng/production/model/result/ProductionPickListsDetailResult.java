@@ -35,6 +35,7 @@ public class ProductionPickListsDetailResult implements Serializable {
     private List<BrandResult> brandResults;
     private List<StoreHouseNameAndSkuNumber> positionAndStockDetail;
     private Integer status;
+    private String pickListsName;
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehousePositionsId;
     @JSONField(serializeUsing= ToStringSerializer.class)
@@ -45,6 +46,7 @@ public class ProductionPickListsDetailResult implements Serializable {
     private Boolean isMeet;
     private List<ProductionPickListsCartResult> cartResults;
     private Map<String,String> brandResult;
+    private ProductionPickListsResult pickListsResult;
     /**
      * 子表id
      */
