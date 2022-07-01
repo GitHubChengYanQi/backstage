@@ -455,7 +455,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Override
     public List<Map<String, Object>> getSelfCartsBySku(ProductionPickListsCartParam productionPickListsCartParam) {
-
+        List<Long> skuIds = new ArrayList<>();
         List<ProductionPickLists> productionPickLists = pickListsService.query().eq("user_id", LoginContextHolder.getContext().getUserId()).list();
         List<ProductionPickListsResult> pickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
         List<Long> pickListsIds = new ArrayList<>();
@@ -466,7 +466,12 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
         List<ProductionPickListsCart> pickListsCarts = this.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
         List<ProductionPickListsCartResult> productionPickListsCartResults = BeanUtil.copyToList(pickListsCarts, ProductionPickListsCartResult.class, new CopyOptions());
+        List<Long> storehouseIds = new ArrayList<>();
 
+        for (ProductionPickListsCart pickListsCart : pickListsCarts) {
+            storehouseIds.add(pickListsCart.getStorehouseId());
+            skuIds.add(pickListsCart.getSkuId());
+        }
 
         List<ProductionPickListsCartResult> cartTotalResults = new ArrayList<>();
 
@@ -478,12 +483,12 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                         setBrandId(a.getBrandId());
                         setPickListsId(a.getPickListsId());
                         setPickListsDetailId(a.getPickListsDetailId());
+                        setStorehouseId(a.getStorehouseId());
                     }}).ifPresent(cartTotalResults::add);
                 }
         );
 
 
-        List<Long> storehouseIds = new ArrayList<>();
 
         List<ProductionPickListsDetail> details = pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("status", 0).eq("display", 1).list();
         List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(details, ProductionPickListsDetailResult.class);
@@ -495,7 +500,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 }
             }
         }
-        detailResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + item.getStorehouseId() + "_" + item.getPickListsId(), Collectors.toList())).forEach(
+        detailResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() +  "_" + item.getPickListsId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new ProductionPickListsDetailResult() {{
                         setPickListsId(a.getPickListsId());
@@ -505,7 +510,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                     }}).ifPresent(detailTotalList::add);
                 }
         );
-        List<Long> skuIds = new ArrayList<>();
+
 
 
         List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);

@@ -80,6 +80,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     void outStock(ProductionPickListsParam param);
 
+    void outStockBySku(ProductionPickListsParam param);
+
     ProductionPickListsResult detail(Long id);
 
     List<Map<String,Object>> listByUser(ProductionPickListsParam pickListsParam);

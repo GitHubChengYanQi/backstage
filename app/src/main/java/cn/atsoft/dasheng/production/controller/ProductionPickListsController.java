@@ -269,6 +269,17 @@ public class ProductionPickListsController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/createOutStockOrderBySku", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData outStockBySku(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+        if (ToolUtil.isEmpty(productionPickListsParam)) {
+            productionPickListsParam = new ProductionPickListsParam();
+        }
+
+        this.productionPickListsService.outStockBySku(productionPickListsParam);
+        return ResponseData.success();
+    }
+
     @RequestMapping(value = "/getByTask", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ProductionPickListsResult> getByTask(@RequestBody ProductionPickListsParam productionPickListsParam) {
