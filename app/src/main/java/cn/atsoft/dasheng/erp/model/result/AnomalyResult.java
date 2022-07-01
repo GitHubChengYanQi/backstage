@@ -31,6 +31,10 @@ public class AnomalyResult implements Serializable {
 
     private String checkNumber;
 
+    private AnomalyOrderResult orderResult;
+
+    private Long orderId;
+
     private User user;
 
     private Long otherNumber;
