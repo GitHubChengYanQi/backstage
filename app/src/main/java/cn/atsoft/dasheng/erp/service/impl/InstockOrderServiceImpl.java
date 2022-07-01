@@ -1408,6 +1408,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                                 (ToolUtil.isNotEmpty(instockList.getAnomalyId()) && shopCart.getFormId().equals(instockList.getAnomalyId()))) {
                             switch (shopCart.getType()) {
                                 case "waitInStock":
+                                case "instockByAnomaly":
                                     waitInStockNum = waitInStockNum + 1;
                                     break;
                                 case "InstockError":
