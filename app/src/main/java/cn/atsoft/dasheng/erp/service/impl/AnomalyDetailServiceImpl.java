@@ -146,7 +146,16 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         activitiProcessTaskParam.setUserIds(detail.getUserId().toString());
         activitiProcessTaskParam.setFormId(detail.getAnomalyId());
         activitiProcessTaskParam.setType("ErrorForWard");
-        activitiProcessTaskService.add(activitiProcessTaskParam);
+        Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setType(1);
+            setItems("入库异常 转交您处理");
+            setUrl(mobileService.getMobileConfig().getUrl() + "/Receipts/ReceiptsDetail?id=" + taskId);
+            setDescription("入库异常 转交处理");
+            setUserIds(new ArrayList<Long>() {{
+                add(detail.getUserId());
+            }});
+        }});
     }
 
     /**
