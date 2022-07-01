@@ -29,6 +29,8 @@ public interface ShopCartService extends IService<ShopCart> {
 
     void sendBack(List<Long> ids);
 
+    void addDynamic(Long fromId, String content);
+
     Set<String> backType(List<String> types);
 
     void addList(List<ShopCartParam> params);

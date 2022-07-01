@@ -182,7 +182,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         }
 
-
+        shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常");
         submit(entity);
     }
 
@@ -221,6 +221,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         } else {
             throw new ServiceException(500, "请先设置流程");
         }
+
+
     }
 
     private void power(ActivitiProcess activitiProcess) {
@@ -260,20 +262,20 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<Long> anomalyIds = new ArrayList<>();
         for (AnomalyResult anomalyResult : anomalyResults) {
             handle(anomalyResult);
-            anomalyIds.add(anomalyResult.getAnomalyId());
+
         }
-
-        List<AnomalyDetail> details = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
-
 
         for (AnomalyResult anomaly : anomalyResults) {
             long errorNum = 0;
 
             boolean t = false;
-            for (AnomalyDetail detail : details) {
-                if (anomaly.getAnomalyId().equals(detail.getAnomalyId()) && detail.getStauts() == -1) {
+            for (AnomalyDetailResult detail : anomaly.getDetails()) {
+                if (detail.getStauts() == -1) {
                     errorNum = errorNum + detail.getNumber();
                     t = true;
+                }
+                if (ToolUtil.isNotEmpty(detail.getUserId())) {
+                    
                 }
             }
             if (t) {

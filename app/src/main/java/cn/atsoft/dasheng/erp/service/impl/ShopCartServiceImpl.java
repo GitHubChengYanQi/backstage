@@ -84,6 +84,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private ActivitiAuditService auditService;
     @Autowired
     private InstockOrderService instockOrderService;
+    @Autowired
+    private ActivitiProcessTaskService taskService;
 
     protected static final Logger logger = LoggerFactory.getLogger(ShopCartServiceImpl.class);
 
@@ -147,10 +149,12 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     anomaly.setDisplay(0);
                     anomalyService.updateById(anomaly);
                     instockList = instockListService.getById(anomaly.getSourceId());
+                    addDynamic(instockList.getInstockOrderId(), "退回了异常购物车");
                     break;
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
+                    addDynamic(instockList.getInstockOrderId(), "退回了待入购物车");
                     break;
                 case "instockByAnomaly":
                     AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
@@ -168,6 +172,26 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         }
 
 
+    }
+
+    /**
+     * 动态
+     */
+    @Override
+    public void addDynamic(Long fromId, String content) {
+        if (ToolUtil.isEmpty(fromId)) {
+            return;
+        }
+        Long taskId = taskService.getTaskIdByFormId(fromId);
+        RemarksParam remarksParam = new RemarksParam();
+        remarksParam.setTaskId(taskId);
+        remarksParam.setType("dynamic");
+        remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
+        remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + content);
+        messageProducer.remarksServiceDo(new RemarksEntity() {{
+            setOperationType(OperationType.SAVE);
+            setRemarksParam(remarksParam);
+        }});
     }
 
     /**
@@ -270,7 +294,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         format(shopCartResults);
         return shopCartResults;
     }
-
 
 
     /**
