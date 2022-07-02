@@ -57,8 +57,8 @@ public class DocumentStatusController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody DocumentsStatusParam documentsStatusParam) {
 
-        this.documentStatusService.update(documentsStatusParam);
-        return ResponseData.success();
+        DocumentsStatus documentsStatus = this.documentStatusService.update(documentsStatusParam);
+        return ResponseData.success(documentsStatus);
     }
 
     /**

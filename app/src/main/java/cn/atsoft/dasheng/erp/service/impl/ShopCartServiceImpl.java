@@ -268,14 +268,17 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     @Override
     public Long update(ShopCartParam param) {
 
-        if (ToolUtil.isNotEmpty(param.getPositionNums())) {     //多个库位
-            String json = JSON.toJSONString(param.getPositionNums());
-            param.setStorehousePositionsId(json);
-        }
+
 
         ShopCart oldEntity = getOldEntity(param);
         ShopCart newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+
+        if (ToolUtil.isNotEmpty(param.getPositionNums())) {     //多个库位
+            String json = JSON.toJSONString(param.getPositionNums());
+            newEntity.setStorehousePositionsId(json);
+        }
+
         this.updateById(newEntity);
         return param.getCartId();
     }
