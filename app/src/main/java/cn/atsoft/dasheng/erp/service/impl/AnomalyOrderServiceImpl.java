@@ -30,6 +30,9 @@ import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.hutool.core.bean.BeanUtil;
@@ -326,6 +329,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
      * 盘点异常
      */
     private void stocktaking(List<AnomalyResult> anomalyResults) {
+
+        ProductionPickListsParam param = new ProductionPickListsParam();
+        List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+
         for (AnomalyResult anomalyResult : anomalyResults) {
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 if (detail.getStauts() == 2) {  //报损

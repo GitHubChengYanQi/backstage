@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
+import cn.atsoft.dasheng.action.Enum.StocktakingEnum;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
@@ -22,6 +23,7 @@ import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
@@ -293,6 +295,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }
     }
 
+
+    @Override
+    public void updateStatus(ActivitiProcessTask processTask) {
+        Inventory inventory = this.getById(processTask.getFormId());
+        inventory.setStatus(StocktakingEnum.done.getStatus());
+        this.updateById(inventory);
+    }
 
     @Override
     public InventoryResult detail(Long id) {

@@ -458,6 +458,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "INSTOCK":
                 instockOrderService.updateCreateInstockStatus(processTask);
                 break;
+            case "Stocktaking":
+                inventoryService.updateStatus(processTask);
+                break;
         }
     }
 
