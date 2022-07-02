@@ -179,7 +179,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 ToolUtil.copyProperties(pickListsDetailParam, detail);
                 detail.setPickListsId(entity.getPickListsId());
                 details.add(detail);
-                carts.add(new ShopCart(){{
+                carts.add(new ShopCart() {{
                     setCartId(pickListsDetailParam.getCartId());
                     setDisplay(0);
                 }});
@@ -294,7 +294,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
 
             for (UserResult userResultsById : userResultsByIds) {
-                if (result.getUserId().equals(userResultsById.getUserId())) {
+                if (ToolUtil.isNotEmpty(result.getUserId()) && result.getUserId().equals(userResultsById.getUserId())) {
                     result.setUserResult(userResultsById);
                 }
                 if (result.getCreateUser().equals(userResultsById.getUserId())) {
@@ -309,7 +309,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     detailResult.setPickListsCoding(result.getCoding());
                     detailResultList.add(detailResult);
                     for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                        if(detailResult.getSkuId().equals(skuSimpleResult.getSkuId())){
+                        if (detailResult.getSkuId().equals(skuSimpleResult.getSkuId())) {
                             skuResult.add(skuSimpleResult);
                         }
                     }
@@ -513,7 +513,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 //        wxCpSendTemplate.setSource("selfPick");
 //        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
 //        wxCpSendTemplate.sendTemplate();
-
 
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
@@ -731,7 +730,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         listingParam.setBrandId(listsCart.getBrandId());
                     }
                     InstockLogDetail log = new InstockLogDetail();
-                    ToolUtil.copyProperties(listingParam,log);
+                    ToolUtil.copyProperties(listingParam, log);
                     log.setSource("pick_lists");
                     log.setSourceId(listsCart.getPickListsId());
                     logDetails.add(log);
@@ -750,7 +749,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         listingParam.setBrandId(listsCart.getBrandId());
                     }
                     InstockLogDetail log = new InstockLogDetail();
-                    ToolUtil.copyProperties(listsCarts,log);
+                    ToolUtil.copyProperties(listsCarts, log);
                     log.setSource("pick_lists");
                     log.setSourceId(listsCart.getPickListsId());
                     logDetails.add(log);
@@ -869,7 +868,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             storeHousePositionIds.add(details.getStorehousePositionsId());
         }
         List<StorehousePositions> storehousePositions = storeHousePositionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(storeHousePositionIds);
-
 
 
         this.pickListsDetailService.format(detailResults);

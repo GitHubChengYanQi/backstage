@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.List;
+
 
 /**
  * 盘点任务主表控制器
@@ -52,6 +54,19 @@ public class InventoryController extends BaseController {
         return ResponseData.success();
     }
 
+    /**
+     * 即时盘点添加
+     *
+     * @author Captain_Jazz
+     * @Date 2021-12-27
+     */
+    @RequestMapping(value = "/timelyAdd", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData timelyAddItem(@RequestBody InventoryParam inventoryParam) {
+        this.inventoryService.timelyAdd(inventoryParam);
+        return ResponseData.success();
+    }
+
 
     @RequestMapping(value = "/selectCondition", method = RequestMethod.POST)
     @ApiOperation("条件盘点")
@@ -59,6 +74,15 @@ public class InventoryController extends BaseController {
         this.inventoryService.selectCondition(inventoryParam);
         return ResponseData.success();
     }
+
+
+    @RequestMapping(value = "/timely", method = RequestMethod.POST)
+    @ApiOperation("及时盘点")
+    public ResponseData timely(@RequestBody InventoryParam inventoryParam) {
+        List<StorehousePositionsResult> timely = this.inventoryService.timely(inventoryParam.getPositionId());
+        return ResponseData.success(timely);
+    }
+
 
 //
 //    /**
@@ -143,12 +167,8 @@ public class InventoryController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<InventoryResult> detail(@RequestBody InventoryParam inventoryParam) {
-        Inventory detail = this.inventoryService.getById(inventoryParam.getInventoryTaskId());
-        InventoryResult result = new InventoryResult();
-        ToolUtil.copyProperties(detail, result);
-
-
-        return ResponseData.success(result);
+        InventoryResult detail = this.inventoryService.detail(inventoryParam.getInventoryTaskId());
+        return ResponseData.success(detail);
     }
 
     /**

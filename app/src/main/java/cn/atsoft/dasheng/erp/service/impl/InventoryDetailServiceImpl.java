@@ -257,7 +257,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return positionsResultList;
     }
 
-    private boolean mergeBrand(List<BrandResult> brandResults, BrandResult brandResult) {
+    @Override
+    public boolean mergeBrand(List<BrandResult> brandResults, BrandResult brandResult) {
         for (BrandResult result : brandResults) {
             if (brandResult.getBrandId().equals(result.getBrandId())) {
                 result.setNumber(result.getNumber() + brandResult.getNumber());
@@ -432,7 +433,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return entity;
     }
 
-    private void brandFormat(List<BrandResult> brandResults) {
+    @Override
+    public void brandFormat(List<BrandResult> brandResults) {
         List<Long> brandIds = new ArrayList<>();
         for (BrandResult brandResult : brandResults) {
             if (ToolUtil.isEmpty(brandResult.getBrandId())) {
@@ -451,7 +453,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         }
     }
 
-    private void positionFormat(List<StorehousePositionsResult> positionsResults) {
+    @Override
+    public void positionFormat(List<StorehousePositionsResult> positionsResults) {
         List<Long> ids = new ArrayList<>();
         for (StorehousePositionsResult positionsResult : positionsResults) {
             ids.add(positionsResult.getStorehousePositionsId());

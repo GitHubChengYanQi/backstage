@@ -33,6 +33,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.hutool.core.bean.BeanUtil;
@@ -103,6 +104,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InstockOrderService instockOrderService;
     @Autowired
     private InventoryDetailService inventoryDetailService;
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
     @Override
     @Transactional
@@ -181,18 +184,31 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     }
 
     private void submit(AnomalyOrder entity) {
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.ERROR.getType()).eq("status", 99).eq("module", "INSTOCKERROR").one();
+
+        String module = "";
+        String message = "";
+        switch (entity.getType()) {
+            case "instock":
+                module = "INSTOCKERROR";
+                message = "入库";
+                break;
+            case "Stocktaking":
+                module = "StocktakingError";
+                message = "盘点";
+                break;
+        }
+
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.ERROR.getType()).eq("status", 99).eq("module", module).eq("display", 1).one();
         //    发起审批流程
         if (ToolUtil.isNotEmpty(activitiProcess)) {
-
             this.power(activitiProcess);//检查创建权限
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库异常 ");
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + message + "异常 ");
             activitiProcessTaskParam.setQTaskId(entity.getOrderId());
             activitiProcessTaskParam.setUserId(entity.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getOrderId());
-            activitiProcessTaskParam.setType("INSTOCKERROR");
+            activitiProcessTaskParam.setType(ProcessType.ERROR.getType());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加小铃铛
@@ -314,7 +330,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 inStock(anomalyResults);
                 break;
             case "Stocktaking":
-
+                stocktaking(anomalyResults, orderParam.getOrderId());
                 break;
         }
         /**
@@ -328,25 +344,36 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     /**
      * 盘点异常
      */
-    private void stocktaking(List<AnomalyResult> anomalyResults) {
+    private void stocktaking(List<AnomalyResult> anomalyResults, Long orderId) {
 
         ProductionPickListsParam param = new ProductionPickListsParam();
-        List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+        param.setSource("StocktakingErrorOutStock");
+        param.setSourceId(orderId);
+        param.setUserId(LoginContextHolder.getContext().getUserId());
 
+        List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
         for (AnomalyResult anomalyResult : anomalyResults) {
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
-                if (detail.getStauts() == 2) {  //报损
+                if (detail.getStauts() == 2) {  //报损 创建出库单
 
                     InventoryDetail inventoryDetail = inventoryDetailService.query()  //找到盘点异常物料 进行出库
                             .eq("inventory_id", anomalyResult.getFormId())
                             .eq("inkind_id", detail.getInkindId()).one();
 
-
-//                    inventoryDetail.getRealNumber()
-
+                    ProductionPickListsDetailParam detailParam = new ProductionPickListsDetailParam();
+                    detailParam.setBrandId(inventoryDetail.getBrandId());
+                    detailParam.setSkuId(inventoryDetail.getSkuId());
+                    detailParam.setNumber(Math.toIntExact(inventoryDetail.getRealNumber()));
+                    detailParam.setStorehousePositionsId(inventoryDetail.getPositionId());
+                    detailParam.setReceivedNumber(Math.toIntExact(inventoryDetail.getRealNumber()));
+                    pickListsDetailParams.add(detailParam);
                 }
             }
+
+            param.setPickListsDetailParams(pickListsDetailParams);
         }
+
+        pickListsService.add(param);
     }
 
     /**
