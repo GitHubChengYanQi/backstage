@@ -157,7 +157,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Override
     @Transactional
-    public void add(ProductionPickListsParam param) {
+    public ProductionPickLists add(ProductionPickListsParam param) {
         ProductionPickLists entity = getEntity(param);
         entity.setCoding(codingRulesService.defaultEncoding());
         entity.setStatus(0L);
@@ -203,6 +203,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
+        return entity;
     }
 
     @Override
@@ -775,10 +776,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          */
         checkListsStatus(pickLists);
     }
+
     @Override
     public void outStockBySku(ProductionPickListsParam param) {
         if (ToolUtil.isEmpty(param.getCartsParams())) {
-            throw new ServiceException(500,"请选择您所需要领取的物品");
+            throw new ServiceException(500, "请选择您所需要领取的物品");
         }
         List<Long> storehouseIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
@@ -814,19 +816,19 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         pickListsDetailService.updateBatchById(listsDetails);
         pickListsCartService.updateBatchById(pickListsCarts);
-        if (listsDetails.stream().allMatch(i->i.getStatus().equals(99))){
+        if (listsDetails.stream().allMatch(i -> i.getStatus().equals(99))) {
             for (Long pickListsId : pickListsIds) {
                 this.updateStatus(pickListsId);
             }
-        }else {
+        } else {
             for (Long pickListsId : pickListsIds) {
                 Boolean statusFlag = true;
                 for (ProductionPickListsDetail listsDetail : listsDetails) {
-                    if (pickListsId.equals(listsDetail.getPickListsId()) && !listsDetail.getStatus().equals(99)){
+                    if (pickListsId.equals(listsDetail.getPickListsId()) && !listsDetail.getStatus().equals(99)) {
                         statusFlag = false;
                     }
                 }
-                if (statusFlag){
+                if (statusFlag) {
                     updateStatus(pickListsId);
                 }
             }

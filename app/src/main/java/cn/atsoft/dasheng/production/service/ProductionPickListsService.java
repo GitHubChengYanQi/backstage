@@ -26,7 +26,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    void add(ProductionPickListsParam param);
+    ProductionPickLists add(ProductionPickListsParam param);
 
     /**
      * 删除

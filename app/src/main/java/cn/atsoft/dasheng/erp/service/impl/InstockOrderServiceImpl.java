@@ -158,7 +158,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     @Transactional
-    public void add(InstockOrderParam param) {
+    public InstockOrder add(InstockOrderParam param) {
 
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "1").eq("state", 1).one();
@@ -392,6 +392,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
 
         }
+        return  entity;
     }
 
 

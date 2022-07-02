@@ -55,8 +55,8 @@ public class InstockOrderController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody InstockOrderParam instockOrderParam) {
-        this.instockOrderService.add(instockOrderParam);
-        return ResponseData.success();
+        InstockOrder instockOrder = this.instockOrderService.add(instockOrderParam);
+        return ResponseData.success(instockOrder);
     }
 
 

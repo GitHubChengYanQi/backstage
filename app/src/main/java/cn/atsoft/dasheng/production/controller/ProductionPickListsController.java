@@ -79,8 +79,8 @@ public class ProductionPickListsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ProductionPickListsParam productionPickListsParam) {
-        this.productionPickListsService.add(productionPickListsParam);
-        return ResponseData.success();
+        ProductionPickLists pickLists = this.productionPickListsService.add(productionPickListsParam);
+        return ResponseData.success(pickLists);
     }
 
     /**

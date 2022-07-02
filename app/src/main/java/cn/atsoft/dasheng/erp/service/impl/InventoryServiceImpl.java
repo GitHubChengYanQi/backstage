@@ -106,7 +106,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
     @Override
     @Transactional
-    public void add(InventoryParam param) {
+    public Inventory add(InventoryParam param) {
         Inventory entity = getEntity(param);
         this.save(entity);
 
@@ -122,6 +122,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         param.setInventoryTaskId(entity.getInventoryTaskId());
         param.setCreateUser(entity.getCreateUser());
         submit(param);
+        return entity;
     }
 
     /**
@@ -158,7 +159,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 userIds.addAll(JSON.parseArray(param.getParticipants(), Long.class));
             }
             String name = LoginContextHolder.getContext().getUser().getName();
-            if(ToolUtil.isNotEmpty(userIds)){
+            if (ToolUtil.isNotEmpty(userIds)) {
                 /**
                  * 评论
                  */
@@ -170,8 +171,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     userIdStr.append(userId).append(",");
                 }
                 String userStrtoString = userIdStr.toString();
-                if (userIdStr.length()>1){
-                    userStrtoString = userStrtoString.substring(0,userStrtoString.length() -1);
+                if (userIdStr.length() > 1) {
+                    userStrtoString = userStrtoString.substring(0, userStrtoString.length() - 1);
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());
@@ -502,7 +503,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         return entity;
     }
 
-    private void format(List<InventoryResult> data)  {
+    private void format(List<InventoryResult> data) {
 
         List<Long> inventoryIds = new ArrayList<>();
 
