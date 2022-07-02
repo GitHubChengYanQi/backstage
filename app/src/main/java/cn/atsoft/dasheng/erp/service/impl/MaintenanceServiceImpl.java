@@ -372,6 +372,10 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
 
             List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+            brandResults.add(new BrandResult(){{
+                setBrandId(0L);
+                setBrandName("无品牌");
+            }});
             positionIds = positionIds.stream().distinct().collect(Collectors.toList());
             List<StorehousePositionsResult> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.getDetails(positionIds);
             for (StorehousePositionsResult storehousePosition : storehousePositions) {
