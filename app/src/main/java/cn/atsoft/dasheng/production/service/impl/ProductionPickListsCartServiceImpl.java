@@ -459,10 +459,20 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         List<ProductionPickLists> productionPickLists = pickListsService.query().eq("user_id", LoginContextHolder.getContext().getUserId()).list();
         List<ProductionPickListsResult> pickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
         List<Long> pickListsIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
         for (ProductionPickListsResult pickListsResult : pickListsResults) {
             pickListsIds.add(pickListsResult.getPickListsId());
+            userIds.add(pickListsResult.getCreateUser());
         }
+        List<UserResult> userResults = userService.getUserResultsByIds(userIds);
+        for (ProductionPickListsResult pickListsResult : pickListsResults) {
+            for (UserResult userResult : userResults) {
+                if (pickListsResult.getCreateUser().equals(userResult.getUserId())){
+                    pickListsResult.setCreateUserResult(userResult);
+                }
 
+            }
+        }
 
         List<ProductionPickListsCart> pickListsCarts = this.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
         List<ProductionPickListsCartResult> productionPickListsCartResults = BeanUtil.copyToList(pickListsCarts, ProductionPickListsCartResult.class, new CopyOptions());
@@ -492,6 +502,13 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
         List<ProductionPickListsDetail> details = pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("status", 0).eq("display", 1).list();
         List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(details, ProductionPickListsDetailResult.class);
+        for (ProductionPickListsDetailResult detailResult : detailResults) {
+            for (ProductionPickListsResult pickListsResult : pickListsResults) {
+                if (detailResult.getPickListsId().equals(pickListsResult.getPickListsId())){
+                    detailResult.setPickListsResult(pickListsResult);
+                }
+            }
+        }
         List<ProductionPickListsDetailResult> detailTotalList = new ArrayList<>();
         for (ProductionPickListsDetailResult pickListsDetailResult : detailTotalList) {
             for (ProductionPickListsResult pickListsResult : pickListsResults) {

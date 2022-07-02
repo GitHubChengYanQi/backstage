@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
@@ -287,8 +288,21 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
     @Override
     public List<InstockLogDetailResult> getOutStockLogs(InstockLogDetailParam param){
         List<InstockLogDetailResult> instockLogDetailResults = this.baseMapper.customList(param);
-        this.format(instockLogDetailResults);
-        return instockLogDetailResults;
+        List<InstockLogDetailResult> totalList = new ArrayList<>();
+        instockLogDetailResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId() )+"_"+item.getCreateTime(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockLogDetailResult() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                        setCreateUser(a.getCreateUser());
+                        setCreateTime(a.getCreateTime());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+        this.format(totalList);
+        return totalList;
     }
 
 }
