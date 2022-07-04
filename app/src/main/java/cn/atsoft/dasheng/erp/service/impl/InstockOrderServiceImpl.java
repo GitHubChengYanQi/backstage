@@ -699,7 +699,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          * 添加动态
          */
 
-        shopCartService.addDynamic(param.getInstockOrderId(), "操作了入库");
+        shopCartService.addDynamic(param.getInstockOrderId(), "将物料入库");
         /**
          * 更新单据状态
          */

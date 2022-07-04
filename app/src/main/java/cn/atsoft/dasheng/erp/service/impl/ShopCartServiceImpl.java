@@ -119,7 +119,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
             InstockList instockList = instockListService.getById(param.getInstockListId());
-            addDynamic(instockList.getInstockOrderId(), "添加了待入购物车");
+            String skuMessage = skuService.skuMessage(instockList.getSkuId());
+            addDynamic(instockList.getInstockOrderId(), skuMessage + "核实完成准备入库");
         }
 
         return entity.getCartId();
@@ -150,19 +151,21 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             shopCart.setDisplay(0);
 
             InstockList instockList = null;
-
+            String skuMessage;
             switch (shopCart.getType()) {
                 case "InstockError":
                     Anomaly anomaly = anomalyService.getById(shopCart.getFormId());
                     anomaly.setDisplay(0);
                     anomalyService.updateById(anomaly);
                     instockList = instockListService.getById(anomaly.getSourceId());
-                    addDynamic(instockList.getInstockOrderId(), "退回了异常购物车");
+                     skuMessage = skuService.skuMessage(instockList.getSkuId());
+                    addDynamic(instockList.getInstockOrderId(), skuMessage + "删除了异常描述");
                     break;
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
-                    addDynamic(instockList.getInstockOrderId(), "退回了待入购物车");
+                     skuMessage = skuService.skuMessage(instockList.getSkuId());
+                    addDynamic(instockList.getInstockOrderId(), skuMessage + "取消入库重新核验");
                     break;
                 case "instockByAnomaly":
                     AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
@@ -195,7 +198,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         remarksParam.setTaskId(taskId);
         remarksParam.setType("dynamic");
         remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
-        remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + content);
+        remarksParam.setContent(content);
 
         Remarks entity = new Remarks();
         ToolUtil.copyProperties(remarksParam, entity);

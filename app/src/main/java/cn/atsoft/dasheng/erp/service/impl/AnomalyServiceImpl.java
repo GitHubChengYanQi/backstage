@@ -153,7 +153,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         //添加动态
         switch (param.getAnomalyType()) {
             case InstockError:
-                shopCartService.addDynamic(param.getFormId(),"添加了异常购物车");
+                String skuMessage = skuService.skuMessage(param.getSkuId());
+                shopCartService.addDynamic(param.getFormId(), skuMessage + "添加了异常描述");
         }
     }
 
@@ -259,7 +260,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             eq("anomaly_id", param.getAnomalyId());
         }});
         addDetails(param);
-
+        String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
+        shopCartService.addDynamic(oldEntity.getFormId(), skuMessage + "修改了异常描述");
     }
 
     /**
@@ -278,6 +280,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         if (power) {
             throw new ServiceException(500, "你没有操作权限");
+        }
+
+        if (ToolUtil.isNotEmpty(param.getCheckNumber())) {
+            String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
+            shopCartService.addDynamic(oldEntity.getOrderId(),"对"+skuMessage+"数量进行复核");
         }
 
 

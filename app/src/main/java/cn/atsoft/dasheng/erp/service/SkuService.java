@@ -111,6 +111,8 @@ public interface SkuService extends IService<Sku> {
 
     SkuResult getSku(Long id);
 
+    String skuMessage(Long skuId);
+
     List<SkuResult> formatSkuResult (List<Long> skuIds);
 
     SkuResult getDetail(Long skuId);

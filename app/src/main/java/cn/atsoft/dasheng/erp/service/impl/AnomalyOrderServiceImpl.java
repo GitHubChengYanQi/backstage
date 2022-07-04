@@ -102,6 +102,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InstockOrderService instockOrderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private SkuService skuService;
 
     @Override
     @Transactional
@@ -182,7 +184,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         }
 
-        shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常");
+        shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常描述");
+        shopCartService.addDynamic(entity.getOrderId(), "提交了异常");
         submit(entity);
     }
 
@@ -310,6 +313,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         if (ToolUtil.isNotEmpty(result.getInstockNumber()) && result.getInstockNumber() > 0) {   //允许入库 并添加 入库购物车
             addShopCart(result);
+
+            String skuMessage = skuService.skuMessage(result.getSkuId());
+            shopCartService.addDynamic(result.getFormId(), "异常物料" + skuMessage + "允许入库");
         }
         for (AnomalyDetailResult detail : result.getDetails()) {
             //终止入库

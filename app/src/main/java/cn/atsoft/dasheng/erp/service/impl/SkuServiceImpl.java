@@ -1646,6 +1646,44 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return skuResult;
     }
 
+    /**
+     * 物料信息接口
+     *
+     * @param skuId
+     * @return
+     */
+    @Override
+    public String skuMessage(Long skuId) {
+        /**
+         * 拼接物料信息
+         */
+        String message = "";
+        try {
+            if (ToolUtil.isNotEmpty(skuId)) {
+                List<SkuResult> skuResults = this.formatSkuResult(new ArrayList<Long>() {{
+                    add(skuId);
+                }});
+                if (ToolUtil.isNotEmpty(skuResults)) {
+                    SkuResult skuResult = skuResults.get(0);
+                    String skuName = skuResult.getSkuName();
+                    String spuName = skuResult.getSpuResult().getName();
+                    if (ToolUtil.isEmpty(spuName)) {
+                        spuName = "";
+                    }
+                    String spe = skuResult.getSpecifications();
+                    if (ToolUtil.isNotEmpty(spe)) {
+                        spe = "/" + spe;
+                    } else {
+                        spe = "";
+                    }
+                    message = spuName + "/" + skuName + spe;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
 
     @Override
     public List<SkuResult> formatSkuResult(List<Long> skuIds) {
