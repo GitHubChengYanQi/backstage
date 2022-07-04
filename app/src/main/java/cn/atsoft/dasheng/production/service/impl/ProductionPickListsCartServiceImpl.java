@@ -198,16 +198,31 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
 
     private void addCheck(ProductionPickListsCartParam param){
-        ProductionPickListsDetail listsDetail = pickListsDetailService.getById(param.getPickListsDetailId());
-        if (!listsDetail.getBrandId().equals(param.getBrandId()) && !listsDetail.getBrandId().equals(0L)){
-            throw new ServiceException(500,"请选择对应品牌");
+        List<Long> detailIds = new ArrayList<>();
+        for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
+            detailIds.add(productionPickListsCartParam.getPickListsDetailId());
         }
-        if (!listsDetail.getSkuId().equals(param.getSkuId())){
-            throw new ServiceException(500,"请选择这对应物料");
+        if (ToolUtil.isEmpty(detailIds) || detailIds.size() == 0){
+            throw new ServiceException(500,"请选中备料信息");
         }
-        if (listsDetail.getNumber()-listsDetail.getReceivedNumber()<param.getNumber()){
-            throw new ServiceException(500,"备料数量溢出,备料失败");
+        List<ProductionPickListsDetail> details = pickListsDetailService.listByIds(detailIds);
+        for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
+            for (ProductionPickListsDetail listsDetail : details) {
+                if (productionPickListsCartParam.getPickListsDetailId().equals(listsDetail.getPickListsDetailId())) {
+                    if (!listsDetail.getBrandId().equals(productionPickListsCartParam.getBrandId()) && !listsDetail.getBrandId().equals(0L)){
+                        throw new ServiceException(500,"请选择对应品牌");
+                    }
+                    if (!listsDetail.getSkuId().equals(productionPickListsCartParam.getSkuId())){
+                        throw new ServiceException(500,"请选择这对应物料");
+                    }
+                    if (listsDetail.getNumber()-listsDetail.getReceivedNumber()<productionPickListsCartParam.getNumber()){
+                        throw new ServiceException(500,"备料数量溢出,备料失败");
+                    }
+
+                }
+            }
         }
+
     }
 
 
