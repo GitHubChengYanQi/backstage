@@ -788,7 +788,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsCartParam cartsParam : param.getCartsParams()) {
             skuIds.add(cartsParam.getSkuId());
             storehouseIds.add(cartsParam.getStorehouseId());
-            pickListsIds.add(param.getPickListsId());
+            pickListsIds.add(cartsParam.getPickListsId());
         }
         List<ProductionPickListsCart> pickListsCarts = new ArrayList<>();
         if ((storehouseIds.size() > 0 && skuIds.size() > 0 && pickListsIds.size() > 0)) {
@@ -798,15 +798,16 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsCart pickListsCart : pickListsCarts) {
             detailIds.add(pickListsCart.getPickListsDetailId());
         }
-        List<ProductionPickListsDetail> listsDetails = pickListsDetailService.listByIds(detailIds.stream().distinct().collect(Collectors.toList()));
+        List<ProductionPickListsDetail> listsDetails =detailIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.listByIds(detailIds.stream().distinct().collect(Collectors.toList()));
         for (ProductionPickListsCartParam cartsParam : param.getCartsParams()) {
             for (ProductionPickListsCart pickListsCart : pickListsCarts) {
                 if (pickListsCart.getStorehouseId().equals(cartsParam.getStorehouseId()) && pickListsCart.getSkuId().equals(cartsParam.getSkuId()) && pickListsCart.getPickListsId().equals(cartsParam.getPickListsId())) {
                     pickListsCart.setDisplay(0);
+                    pickListsCart.setStatus(99);
                     for (ProductionPickListsDetail listsDetail : listsDetails) {
                         if (pickListsCart.getPickListsDetailId().equals(listsDetail.getPickListsDetailId())) {
                             listsDetail.setReceivedNumber(listsDetail.getReceivedNumber() + pickListsCart.getNumber());
-                            if (listsDetail.getReceivedNumber() + pickListsCart.getNumber() == listsDetail.getNumber()) {
+                            if (listsDetail.getReceivedNumber() == listsDetail.getNumber()) {
                                 listsDetail.setStatus(99);
                             }
                         }
@@ -938,7 +939,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          */
         ProductionPickLists entity = new ProductionPickLists();
         entity.setPickListsId(id);
-
+        entity.setStatus(99L);
         this.updateById(entity);
 
         /**

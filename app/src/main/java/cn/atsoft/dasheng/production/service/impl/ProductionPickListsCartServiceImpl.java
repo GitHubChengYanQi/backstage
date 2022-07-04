@@ -500,15 +500,9 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
 
 
-        List<ProductionPickListsDetail> details = pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("status", 0).eq("display", 1).list();
+        List<ProductionPickListsDetail> details = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("status", 0).eq("display", 1).list();
         List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(details, ProductionPickListsDetailResult.class);
-        for (ProductionPickListsDetailResult detailResult : detailResults) {
-            for (ProductionPickListsResult pickListsResult : pickListsResults) {
-                if (detailResult.getPickListsId().equals(pickListsResult.getPickListsId())){
-                    detailResult.setPickListsResult(pickListsResult);
-                }
-            }
-        }
+
         List<ProductionPickListsDetailResult> detailTotalList = new ArrayList<>();
         for (ProductionPickListsDetailResult pickListsDetailResult : detailTotalList) {
             for (ProductionPickListsResult pickListsResult : pickListsResults) {
@@ -528,7 +522,13 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 }
         );
 
-
+        for (ProductionPickListsDetailResult detailResult : detailTotalList) {
+            for (ProductionPickListsResult pickListsResult : pickListsResults) {
+                if (detailResult.getPickListsId().equals(pickListsResult.getPickListsId())){
+                    detailResult.setPickListsResult(pickListsResult);
+                }
+            }
+        }
 
         List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
         List<Storehouse> storehouses = storehouseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(storehouseIds.stream().distinct().collect(Collectors.toList()));

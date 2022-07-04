@@ -650,8 +650,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiProcessLog processLog = this.query().eq("task_id", taskId).eq("setps_id", stepId).one();
         ActivitiAuditResult audit = auditService.getAudit(stepId);
 
-
-        if (this.checkUser(audit.getRule(), taskId)) {
+            //TODO 等待动作节点更换逻辑后 增加人员判断
+//        if (this.checkUser(audit.getRule(), taskId)) {
             if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
                 List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
                 for (ActionStatus actionStatus : actionStatuses) {
@@ -681,7 +681,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 }
             }
 
-        }
+//        }
     }
 
     /**
