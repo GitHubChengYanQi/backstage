@@ -437,9 +437,11 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<Long> positionIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
 
+        boolean otherBrand = false;
         for (StockDetails stockDetail : stockDetails) {
             if (ToolUtil.isEmpty(stockDetail.getBrandId())) {    //其他品牌
                 stockDetail.setBrandId(0L);
+                otherBrand =true;
             }
             positionIds.add(stockDetail.getStorehousePositionsId());
             brandIds.add(stockDetail.getBrandId());
@@ -461,11 +463,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         }
 
+        if (otherBrand) {
+            brandResults.add(new BrandResult() {{    //添加个其他品牌对象
+                setBrandId(0L);
+                setBrandName("其他品牌");
+            }});//其他品牌
+        }
 
-        brandResults.add(new BrandResult() {{    //添加个其他品牌对象
-            setBrandId(0L);
-            setBrandName("其他品牌");
-        }});//其他品牌
 
 
         Map<Long, Long> brandNumber = new HashMap<>();
