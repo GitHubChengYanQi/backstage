@@ -122,14 +122,14 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     }}).ifPresent(totalList::add);
                 }
         );
-        List<StockDetails> noBrand = new ArrayList<>();
-        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + item.getStorehousePositionsId(),Collectors.toList())).forEach(
+        List<StockDetails> anyBrand = new ArrayList<>();
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() ,Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setSkuId(a.getSkuId());
                         setNumber(a.getNumber() + b.getNumber());
                         setStorehousePositionsId(a.getStorehousePositionsId());
-                    }}).ifPresent(noBrand::add);
+                    }}).ifPresent(anyBrand::add);
                 }
         );
 
@@ -146,7 +146,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     }
                 }
             }else {
-                for (StockDetails stockDetails : noBrand) {
+                for (StockDetails stockDetails : anyBrand) {
                     if (result.getSkuId().equals(stockDetails.getSkuId())) {
                         result.setStockNumber(Math.toIntExact(stockDetails.getNumber()));
 //                        if (result.getNumber() <= stockDetails.getNumber()) {
