@@ -690,11 +690,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
             updateStatus(listParam);
 
-            /**
-             * 添加入库记录
-             */
-            instockLogDetailService.saveBatch(instockLogDetails);
         }
+        /**
+         * 添加入库记录
+         */
+        instockLogDetailService.saveBatch(instockLogDetails);
         /**
          * 添加动态
          */
