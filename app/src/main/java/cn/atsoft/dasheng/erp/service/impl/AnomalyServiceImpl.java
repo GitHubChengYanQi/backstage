@@ -282,10 +282,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             throw new ServiceException(500, "你没有操作权限");
         }
 
-        if (ToolUtil.isNotEmpty(param.getCheckNumber())) {
-            String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
-            shopCartService.addDynamic(oldEntity.getOrderId(),"对"+skuMessage+"数量进行复核");
-        }
 
 
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -302,6 +298,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {
             detailService.pushPeople(oldEntity.getCreateUser(), oldEntity.getAnomalyId());
         }
+
+        String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
+        if (ToolUtil.isNotEmpty(param.getCheckNumber())) {
+            shopCartService.addDynamic(oldEntity.getOrderId(), "对" + skuMessage + "数量进行复核");
+        }
+        shopCartService.addDynamic(oldEntity.getOrderId(), "对" + skuMessage + "确认了处理意见");
     }
 
     /**

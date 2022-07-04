@@ -75,7 +75,10 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     private MessageProducer messageProducer;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
-
+    @Autowired
+    private ShopCartService shopCartService;
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public void add(AnomalyDetailParam param) {
@@ -101,37 +104,40 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         }
         this.updateById(newEntity);
 
+        String skuMessage = "";
+        Anomaly anomaly = anomalyService.getById(oldEntity.getAnomalyId());
+        if (ToolUtil.isNotEmpty(anomaly)) {
+            skuMessage = skuService.skuMessage(anomaly.getSkuId());
+        }
         if (ToolUtil.isNotEmpty(param.getAnomalyOrderId())) {
             ActivitiProcessTask task = taskService.getByFormId(param.getAnomalyOrderId());
             if (ToolUtil.isNotEmpty(task)) {
-                String content = "";
                 if (ToolUtil.isNotEmpty(param.getStauts())) {
                     switch (param.getStauts().toString()) {
                         case "-1":
-                            content = "终止入库";
+                            skuMessage = "对" + skuMessage + "给出了终止入库处理意见";
                             break;
                         case "1":
-                            content = "允许入库";
+                            skuMessage = "对" + skuMessage + "给出了允许入库处理意见";
+                            break;
+                        case "0":
+                            skuMessage = skuMessage + "修改了处理意见";
                             break;
                     }
                 }
 
-             if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
-                    User user = userService.getById(param.getUserId());
-                    content = "转交给" + user.getName() + "进行处理";
-                    forWard(oldEntity);   //异常明细转交处理
-                }
                 /**
                  * 添加动态记录
                  */
-                RemarksParam remarksParam = new RemarksParam();
-                remarksParam.setTaskId(task.getProcessTaskId());
-                remarksParam.setType("dynamic");
-                remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "处理异常：" + content);
-                messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.SAVE);
-                    setRemarksParam(remarksParam);
-                }});
+                shopCartService.addDynamic(param.getAnomalyOrderId(), skuMessage);
+
+                if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
+                    User user = userService.getById(param.getUserId());
+                    skuMessage = skuService.skuMessage(anomaly.getSkuId());
+                    shopCartService.addDynamic(param.getAnomalyOrderId(), "将" + skuMessage + "转交给" + user.getName() + "进行处理");
+                    forWard(oldEntity);   //异常明细转交处理
+                }
+
             }
         }
     }

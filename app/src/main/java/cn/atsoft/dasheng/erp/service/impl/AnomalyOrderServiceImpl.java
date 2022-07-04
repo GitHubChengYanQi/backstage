@@ -184,9 +184,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         }
 
+
+        submit(entity);
         shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常描述");
         shopCartService.addDynamic(entity.getOrderId(), "提交了异常");
-        submit(entity);
     }
 
     private void bind(Long inkindId, Long detailId) {
