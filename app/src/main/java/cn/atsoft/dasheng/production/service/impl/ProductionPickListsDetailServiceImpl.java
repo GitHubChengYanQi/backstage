@@ -112,7 +112,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
             }
         }
         List<StockDetails> totalList = new ArrayList<>();
-        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L :item.getBrandId())+ '_' + item.getStorehousePositionsId(),Collectors.toList())).forEach(
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L :item.getBrandId()),Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setSkuId(a.getSkuId());
@@ -135,23 +135,23 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
 
         List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         for (ProductionPickListsDetailResult result : results) {
-            result.setIsMeet(false);
+//            result.setIsMeet(false);
             if (!result.getBrandId().equals(0L)){
                 for (StockDetails stockSkuTotal : totalList) {
                     if (result.getSkuId().equals(stockSkuTotal.getSkuId()) && result.getBrandId().equals(stockSkuTotal.getBrandId())) {
                         result.setStockNumber(Math.toIntExact(stockSkuTotal.getNumber()));
-                        if (result.getNumber() <= stockSkuTotal.getNumber()) {
-                            result.setIsMeet(true);
-                        }
+//                        if (result.getNumber() <= stockSkuTotal.getNumber()) {
+//                            result.setIsMeet(true);
+//                        }
                     }
                 }
             }else {
                 for (StockDetails stockDetails : noBrand) {
                     if (result.getSkuId().equals(stockDetails.getSkuId())) {
                         result.setStockNumber(Math.toIntExact(stockDetails.getNumber()));
-                        if (result.getNumber() <= stockDetails.getNumber()) {
-                            result.setIsMeet(true);
-                        }
+//                        if (result.getNumber() <= stockDetails.getNumber()) {
+//                            result.setIsMeet(true);
+//                        }
                     }
                 }
             }
