@@ -135,7 +135,9 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
             InstockLogDetailResult detailResult = map.get(instockLogDetailResult.getCreateTime().toString()
                     + instockLogDetailResult.getSkuId()
                     + instockLogDetailResult.getBrandId()
-                    + instockLogDetailResult.getStorehousePositionsId());
+                    + instockLogDetailResult.getStorehousePositionsId()
+                    + instockLogDetailResult.getType()
+            );
 
             if (ToolUtil.isNotEmpty(detailResult)) {
                 List<Long> inkindIds = detailResult.getInkindIds();
@@ -144,12 +146,14 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
                 map.put(instockLogDetailResult.getCreateTime().toString()
                         + instockLogDetailResult.getSkuId()
                         + instockLogDetailResult.getBrandId()
-                        + instockLogDetailResult.getStorehousePositionsId(), detailResult);
+                        + instockLogDetailResult.getStorehousePositionsId()
+                        + instockLogDetailResult.getType(), detailResult);
             } else {
                 map.put(instockLogDetailResult.getCreateTime().toString()
                         + instockLogDetailResult.getSkuId()
                         + instockLogDetailResult.getBrandId()
-                        + instockLogDetailResult.getStorehousePositionsId(), instockLogDetailResult);
+                        + instockLogDetailResult.getStorehousePositionsId()
+                        + instockLogDetailResult.getType(), instockLogDetailResult);
             }
         }
 
