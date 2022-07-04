@@ -82,6 +82,9 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     public void add(ProductionPickListsCartParam param) {
 //        List<StockDetails> stockDetailList = foundCanBeUseStockDetail(param);
 //        List<StockDetails> stockDetailsList =  inkindIds.size() == 0 ? stockDetailsService.query().eq("stage", 1).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id", inkindIds).eq("display", 1).list();
+        //判断添加条件
+        this.addCheck(param);
+
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             skuIds.add(productionPickListsCartParam.getSkuId());
@@ -192,6 +195,21 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
 
     }
+
+
+    private void addCheck(ProductionPickListsCartParam param){
+        ProductionPickListsDetail listsDetail = pickListsDetailService.getById(param.getPickListsDetailId());
+        if (!listsDetail.getBrandId().equals(param.getBrandId()) && !listsDetail.getBrandId().equals(0L)){
+            throw new ServiceException(500,"请选择对应品牌");
+        }
+        if (!listsDetail.getSkuId().equals(param.getSkuId())){
+            throw new ServiceException(500,"请选择这对应物料");
+        }
+        if (listsDetail.getNumber()-listsDetail.getReceivedNumber()<param.getNumber()){
+            throw new ServiceException(500,"备料数量溢出,备料失败");
+        }
+    }
+
 
     /**
      * 检查库存中实物是否可以被重复使用
