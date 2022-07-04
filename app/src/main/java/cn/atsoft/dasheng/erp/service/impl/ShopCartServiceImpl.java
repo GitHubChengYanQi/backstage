@@ -90,13 +90,15 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private ActivitiProcessTaskService taskService;
     @Autowired
     private RemarksService remarksService;
+    @Autowired
+    private SkuBrandBindService brandBindService;
 
     protected static final Logger logger = LoggerFactory.getLogger(ShopCartServiceImpl.class);
 
     @Override
     @Transactional
     public Long add(ShopCartParam param) {
-
+        judgeBrand(param.getSkuId(), param.getBrandId());  //判断物料品牌绑定
         Date date = new DateTime();
         logger.info(date + ": 添加带入购物车--->" + param.getInstockListId());
 
@@ -117,11 +119,22 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
             InstockList instockList = instockListService.getById(param.getInstockListId());
-
             addDynamic(instockList.getInstockOrderId(), "添加了待入购物车");
         }
 
         return entity.getCartId();
+    }
+
+    /**
+     * 判断物料品牌绑定关系
+     */
+    private void judgeBrand(Long skuId, Long brandId) {
+        if (ToolUtil.isNotEmpty(brandId) && brandId != 0) {
+            Integer count = brandBindService.query().eq("sku_id", skuId).eq("brand_id", brandId).eq("display", 1).count();
+            if (count < 0) {
+                throw new ServiceException(500, "当前物料 未与 品牌绑定");
+            }
+        }
     }
 
     /**
@@ -267,7 +280,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
     @Override
     public Long update(ShopCartParam param) {
-
 
 
         ShopCart oldEntity = getOldEntity(param);

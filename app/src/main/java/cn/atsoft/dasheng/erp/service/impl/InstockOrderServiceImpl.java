@@ -170,17 +170,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
 
-
-        //防止添加重复数据
-//        List<Long> judge = new ArrayList<>();
-//        for (InstockRequest instockRequest : param.getInstockRequest()) {
-//            Long skuId = instockRequest.getSkuId();
-//            judge.add(skuId);
-//        }
-//        long count = judge.stream().distinct().count();
-//        if (param.getInstockRequest().size() > count) {
-//            throw new ServiceException(500, "请勿重复添加");
-//        }
         /**
          * 附件
          */
@@ -213,8 +202,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             for (InstockListParam instockRequest : param.getListParams()) {
                 skuIds.add(instockRequest.getSkuId());
             }
-//            List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
-
             for (InstockListParam instockRequest : param.getListParams()) {
                 if (ToolUtil.isNotEmpty(instockRequest)) {
                     if (ToolUtil.isEmpty(instockRequest.getCartId())) {
@@ -227,8 +214,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     if (shopCart.getStatus() == 99) {
                         throw new ServiceException(500, "购物车已被操作");
                     }
-//                        for (Sku sku : skus) {
-//                        if (ToolUtil.isEmpty(sku.getQualityPlanId()) && sku.getSkuId().equals(instockRequest.getSkuId())) {
                     InstockList instockList = new InstockList();
                     instockList.setSkuId(instockRequest.getSkuId());
                     if (instockRequest.getNumber() < 0) {
@@ -255,8 +240,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     instockListService.save(instockList);
                     instockRequest.setInstockListId(instockList.getInstockListId());
 
-//                        }
-//                    }
                 }
             }
 
@@ -392,7 +375,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
 
         }
-        return  entity;
+        return entity;
     }
 
 
@@ -681,8 +664,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Override
     @Transactional
     public List<Long> inStock(InstockOrderParam param) {
-        List<Long> inkindIds = new ArrayList<>();
 
+        List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         for (InstockListParam listParam : param.getListParams()) {
             listParam.setInstockOrderId(param.getInstockOrderId());
             if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
@@ -691,14 +674,16 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 if (listParam.getBatch()) {   //批量
                     Long inKind = createInKind(listParam);
                     handle(listParam, inKind);
-                    inkindIds.add(inKind);
+                    InstockLogDetail instockLogDetail = addLog(param, listParam);
+                    instockLogDetails.add(instockLogDetail);
                 } else {
                     Long i = listParam.getNumber();
                     for (long aLong = 0; aLong < i; aLong++) {    //单个入库
                         listParam.setNumber(1L);
                         Long inKind = createInKind(listParam);
                         handle(listParam, inKind);
-                        inkindIds.add(inKind);
+                        InstockLogDetail instockLogDetail = addLog(param, listParam);
+                        instockLogDetails.add(instockLogDetail);
                     }
                     listParam.setNumber(i);
                 }
@@ -708,15 +693,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 添加入库记录
              */
-            InstockLogDetail instockLogDetail = new InstockLogDetail();
-            instockLogDetail.setInstockOrderId(param.getInstockOrderId());
-            instockLogDetail.setSkuId(listParam.getSkuId());
-            instockLogDetail.setType("normal");
-            instockLogDetail.setBrandId(listParam.getBrandId());
-            instockLogDetail.setCustomerId(listParam.getCustomerId());
-            instockLogDetail.setStorehousePositionsId(listParam.getStorehousePositionsId());
-            instockLogDetail.setNumber(listParam.getNumber());
-            instockLogDetailService.save(instockLogDetail);
+            instockLogDetailService.saveBatch(instockLogDetails);
         }
         /**
          * 添加动态
@@ -747,7 +724,22 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         }
 
-        return inkindIds;
+        return null;
+    }
+
+    /**
+     * 添加入库记录
+     */
+    private InstockLogDetail addLog(InstockOrderParam param, InstockListParam listParam) {
+        InstockLogDetail instockLogDetail = new InstockLogDetail();
+        instockLogDetail.setInstockOrderId(param.getInstockOrderId());
+        instockLogDetail.setSkuId(listParam.getSkuId());
+        instockLogDetail.setType("normal");
+        instockLogDetail.setBrandId(listParam.getBrandId());
+        instockLogDetail.setCustomerId(listParam.getCustomerId());
+        instockLogDetail.setStorehousePositionsId(listParam.getStorehousePositionsId());
+        instockLogDetail.setNumber(listParam.getNumber());
+        return instockLogDetail;
     }
 
     /**
