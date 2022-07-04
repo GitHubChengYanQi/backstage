@@ -86,6 +86,13 @@ public class InstockLogDetailController extends BaseController {
         return ResponseData.success(history);
     }
 
+
+    @RequestMapping(value = "/timeHistory", method = RequestMethod.POST)
+    public ResponseData timeHistory(@RequestBody InstockLogDetailParam instockLogDetailParam) {
+        List<InstockLogDetailResult> timeHistory = this.instockLogDetailService.timeHistory(instockLogDetailParam);
+        return ResponseData.success(timeHistory);
+    }
+
     /**
      * 查看详情接口
      *
@@ -117,6 +124,7 @@ public class InstockLogDetailController extends BaseController {
         }
         return this.instockLogDetailService.findPageBySpec(instockLogDetailParam);
     }
+
     /**
      * 查询列表
      *

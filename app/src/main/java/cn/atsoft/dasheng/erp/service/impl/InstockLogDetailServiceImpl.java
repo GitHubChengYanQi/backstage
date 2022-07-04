@@ -32,10 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -76,35 +73,8 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
      */
     @Override
     public List<InstockLogDetailResult> history(InstockLogDetailParam param) {
-
-//        List<InstockLogDetailResult> results = new ArrayList<>();
         List<InstockLogDetailResult> allList = this.baseMapper.customList(param);
-//        Map<String, List<InstockLogDetailResult>> map = new HashMap<>();
-//
-//        for (InstockLogDetailResult result : allList) {
-//            if (ToolUtil.isEmpty(result.getBrandId())) {
-//                result.setBrandId(0L);
-//            }
-//            List<InstockLogDetailResult> detailResults = map.get(result.getSkuId() + result.getBrandId() + result.getCustomerId()+result.getType());
-//            if (ToolUtil.isEmpty(detailResults)) {
-//                detailResults = new ArrayList<>();
-//            }
-//            detailResults.add(result);
-//            map.put(result.getSkuId() + result.getBrandId() + result.getCustomerId()+result.getType(), detailResults);
-//        }
-//
-//        for (String key : map.keySet()) {
-//            List<InstockLogDetailResult> logDetailResults = map.get(key);
-//            long number = 0L;
-//            for (InstockLogDetailResult logDetailResult : logDetailResults) {
-//                number = number + logDetailResult.getNumber();
-//            }
-//            InstockLogDetailResult instockLogDetailResult = logDetailResults.get(0);
-//            instockLogDetailResult.setNumber(number);
-//            results.add(instockLogDetailResult);
-//        }
         format(allList);
-
         Map<String, InstockLogDetailResult> map = new HashMap<>();
 
         for (InstockLogDetailResult instockLogDetailResult : allList) {
@@ -112,9 +82,8 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
                 instockLogDetailResult.setBrandId(0L);
             }
         }
-
         for (InstockLogDetailResult instockLogDetailResult : allList) {
-                    map.put(instockLogDetailResult.getSkuId()
+            map.put(instockLogDetailResult.getSkuId()
                     + instockLogDetailResult.getBrandId()
                     + instockLogDetailResult.getCustomerId()
                     + instockLogDetailResult.getType(), instockLogDetailResult);
@@ -146,6 +115,54 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
         return results;
     }
 
+    @Override
+    public List<InstockLogDetailResult> timeHistory(InstockLogDetailParam param) {
+
+        List<InstockLogDetailResult> allList = this.baseMapper.customList(param);
+        List<InstockLogDetailResult> detailResults = new ArrayList<>();
+
+        for (InstockLogDetailResult instockLogDetailResult : allList) {
+            instockLogDetailResult.setInkindIds(new ArrayList<Long>() {{
+                add(instockLogDetailResult.getInkindId());
+            }});
+        }
+        format(allList);
+        /**
+         * 通过时间组合
+         */
+        Map<String, InstockLogDetailResult> map = new HashMap<>();
+        for (InstockLogDetailResult instockLogDetailResult : allList) {
+            InstockLogDetailResult detailResult = map.get(instockLogDetailResult.getCreateTime().toString()
+                    + instockLogDetailResult.getSkuId()
+                    + instockLogDetailResult.getBrandId()
+                    + instockLogDetailResult.getStorehousePositionsId()
+                    + instockLogDetailResult.getType()
+            );
+
+            if (ToolUtil.isNotEmpty(detailResult)) {
+                List<Long> inkindIds = detailResult.getInkindIds();
+                inkindIds.addAll(instockLogDetailResult.getInkindIds());
+                detailResult.setInkindIds(inkindIds);
+                map.put(instockLogDetailResult.getCreateTime().toString()
+                        + instockLogDetailResult.getSkuId()
+                        + instockLogDetailResult.getBrandId()
+                        + instockLogDetailResult.getStorehousePositionsId()
+                        + instockLogDetailResult.getType(), detailResult);
+            } else {
+                map.put(instockLogDetailResult.getCreateTime().toString()
+                        + instockLogDetailResult.getSkuId()
+                        + instockLogDetailResult.getBrandId()
+                        + instockLogDetailResult.getStorehousePositionsId()
+                        + instockLogDetailResult.getType(), instockLogDetailResult);
+            }
+        }
+
+        for (String key : map.keySet()) {
+            InstockLogDetailResult instockLogDetailResult = map.get(key);
+            detailResults.add(instockLogDetailResult);
+        }
+        return detailResults;
+    }
 
     @Override
     public void delete(InstockLogDetailParam param) {
@@ -211,6 +228,7 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
         this.format(results);
         return results;
     }
+
     private void format(List<InstockLogDetailResult> results) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> instockOrderId = new ArrayList<>();
@@ -222,11 +240,11 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
 
         for (InstockLogDetailResult result : results) {
             skuIds.add(result.getSkuId());
-            if (ToolUtil.isNotEmpty(result.getInstockOrderId())){
+            if (ToolUtil.isNotEmpty(result.getInstockOrderId())) {
                 instockOrderId.add(result.getInstockOrderId());
             }
             brandIds.add(result.getBrandId());
-            if (ToolUtil.isNotEmpty(result.getCustomerId())){
+            if (ToolUtil.isNotEmpty(result.getCustomerId())) {
                 customerIds.add(result.getCustomerId());
             }
             userIds.add(result.getCreateUser());
@@ -235,10 +253,10 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
 
         instockOrderId = instockOrderId.stream().distinct().collect(Collectors.toList());
         List<InstockList> instockLists = instockOrderId.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", instockOrderId).list();
-        List<BrandResult> brandResults =brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
+        List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-        List<SkuSimpleResult> skuSimpleResults =skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+        List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
 
@@ -285,11 +303,12 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
         }
 
     }
+
     @Override
-    public List<InstockLogDetailResult> getOutStockLogs(InstockLogDetailParam param){
+    public List<InstockLogDetailResult> getOutStockLogs(InstockLogDetailParam param) {
         List<InstockLogDetailResult> instockLogDetailResults = this.baseMapper.customList(param);
         List<InstockLogDetailResult> totalList = new ArrayList<>();
-        instockLogDetailResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId() )+"_"+item.getCreateTime(), Collectors.toList())).forEach(
+        instockLogDetailResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()) + "_" + item.getCreateTime(), Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new InstockLogDetailResult() {{
                         setSkuId(a.getSkuId());

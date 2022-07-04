@@ -674,7 +674,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 if (listParam.getBatch()) {   //批量
                     Long inKind = createInKind(listParam);
                     handle(listParam, inKind);
-                    InstockLogDetail instockLogDetail = addLog(param, listParam);
+                    InstockLogDetail instockLogDetail = addLog(param, listParam, inKind);
                     instockLogDetails.add(instockLogDetail);
                 } else {
                     Long i = listParam.getNumber();
@@ -682,19 +682,19 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         listParam.setNumber(1L);
                         Long inKind = createInKind(listParam);
                         handle(listParam, inKind);
-                        InstockLogDetail instockLogDetail = addLog(param, listParam);
+                        InstockLogDetail instockLogDetail = addLog(param, listParam, inKind);
                         instockLogDetails.add(instockLogDetail);
                     }
                     listParam.setNumber(i);
                 }
             }
             updateStatus(listParam);
-
         }
         /**
          * 添加入库记录
          */
         instockLogDetailService.saveBatch(instockLogDetails);
+
         /**
          * 添加动态
          */
@@ -730,11 +730,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     /**
      * 添加入库记录
      */
-    private InstockLogDetail addLog(InstockOrderParam param, InstockListParam listParam) {
+    private InstockLogDetail addLog(InstockOrderParam param, InstockListParam listParam, Long inkindId) {
         InstockLogDetail instockLogDetail = new InstockLogDetail();
         instockLogDetail.setInstockOrderId(param.getInstockOrderId());
         instockLogDetail.setSkuId(listParam.getSkuId());
         instockLogDetail.setType("normal");
+        instockLogDetail.setInkindId(inkindId);
         instockLogDetail.setBrandId(listParam.getBrandId());
         instockLogDetail.setCustomerId(listParam.getCustomerId());
         instockLogDetail.setStorehousePositionsId(listParam.getStorehousePositionsId());
