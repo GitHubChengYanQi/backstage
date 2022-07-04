@@ -817,15 +817,17 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         pickListsDetailService.updateBatchById(listsDetails);
         pickListsCartService.updateBatchById(pickListsCarts);
-        if (listsDetails.stream().allMatch(i -> i.getStatus().equals(99))) {
+
+        List<ProductionPickListsDetail> pickListsDetails = pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).list();
+        if (listsDetails.size() == 0) {
             for (Long pickListsId : pickListsIds) {
                 this.updateStatus(pickListsId);
             }
         } else {
             for (Long pickListsId : pickListsIds) {
                 Boolean statusFlag = true;
-                for (ProductionPickListsDetail listsDetail : listsDetails) {
-                    if (pickListsId.equals(listsDetail.getPickListsId()) && !listsDetail.getStatus().equals(99)) {
+                for (ProductionPickListsDetail listsDetail : pickListsDetails) {
+                    if (pickListsId.equals(listsDetail.getPickListsId())) {
                         statusFlag = false;
                     }
                 }
@@ -835,7 +837,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             }
         }
     }
+    public void queryDetailStatusByIds(List<Long>ids){
 
+    }
     /**
      * 查询判断单据状态是否完成
      *
