@@ -422,10 +422,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * @return
      */
     @Override
-    public List<BrandResult> selectByBrand(Long skuId) {
+    public List<BrandResult> selectByBrand(Long skuId, Long brandId) {
 
         QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
         stockDetailsQueryWrapper.eq("sku_id", skuId);
+        if (ToolUtil.isNotEmpty(brandId)) {
+            stockDetailsQueryWrapper.eq("brand_id", brandId);
+        }
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);
 

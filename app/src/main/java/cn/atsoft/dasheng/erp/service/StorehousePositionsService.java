@@ -54,7 +54,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
     Object selectBySku(Long skuId);
 
-    List<BrandResult> selectByBrand(Long skuId);
+    List<BrandResult> selectByBrand(Long skuId, Long brandId);
 
     StorehousePositionsResult positionsResultById(Long codeId);
 

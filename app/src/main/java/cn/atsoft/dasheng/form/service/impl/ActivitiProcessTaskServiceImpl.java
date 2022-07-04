@@ -181,7 +181,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         Long userId = LoginContextHolder.getContext().getUserId();
         param.setUserIds(userId.toString());
-
+        param.setStatus(0);
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
@@ -220,7 +220,10 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private List<Long> getTaskId() {
         List<Long> taskIds = new ArrayList<>();
         List<Long> stepIds = getStepIdsByType();
-        List<ActivitiProcessLog> processLogList = stepIds.size() == 0 ? new ArrayList<>() : processLogService.query().in("setps_id", stepIds).groupBy("task_id").list();
+        List<ActivitiProcessLog> processLogList = stepIds.size() == 0 ? new ArrayList<>() : processLogService.query()
+                .in("setps_id", stepIds)
+                .ne("update_user", LoginContextHolder.getContext().getUserId())
+                .groupBy("task_id").list();
         for (ActivitiProcessLog activitiProcessLog : processLogList) {
             taskIds.add(activitiProcessLog.getTaskId());
         }

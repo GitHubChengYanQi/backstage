@@ -396,12 +396,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         anomalyService.format(anomalyResults);
 
         InstockOrder instockOrder = instockOrderService.getById(result.getInstockOrderId());
-        Long createUser = instockOrder.getCreateUser();
-        User user = userService.getById(createUser);
-        result.setMasterUser(user);
+        if (ToolUtil.isNotEmpty(instockOrder)) {
+            Long createUser = instockOrder.getCreateUser();
+            User user = userService.getById(createUser);
+            result.setMasterUser(user);
+        }
+
 
         result.setInstockOrder(instockOrder);
-
         List<DocumentsStatusResult> results = statusService.resultsByIds(new ArrayList<Long>() {{
             add(result.getStatus());
         }});
