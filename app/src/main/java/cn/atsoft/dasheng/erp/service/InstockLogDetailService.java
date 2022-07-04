@@ -28,6 +28,8 @@ public interface InstockLogDetailService extends IService<InstockLogDetail> {
 
     List<InstockLogDetailResult> history(InstockLogDetailParam param);
 
+    List<InstockLogDetailResult> timeHistory(InstockLogDetailParam param);
+
     /**
      * 删除
      *
