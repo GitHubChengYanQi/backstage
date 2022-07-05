@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseSimpleResult;
+import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
@@ -14,12 +15,16 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsCartMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
@@ -28,6 +33,7 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -192,31 +198,89 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
 
         this.saveBatch(entitys);
+    }
 
+    /**
+     * 库存预警
+     */
+    @Override
+    public boolean warning(ProductionPickListsCartParam param) {
+        List<StockSkuBrand> stockSkuBrands = stockDetailsService.stockSkuBrands();
+        if (stockSkuBrands.size() == 0) {
+            throw new ServiceException(500, "库存数不足");
+        }
+
+        //申请的物料跟库存数比较  并更新库存
+        for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
+            updateStock(productionPickListsCartParam, stockSkuBrands);
+        }
+
+
+        Map<Integer, List<ActivitiProcessTask>> map = pickListsService.unExecuted();
+        List<ActivitiProcessTask> executed = map.get(99);  // 到执行节点的
+
+        List<Long> pickListsIds = new ArrayList<>();
+        for (ActivitiProcessTask processTask : executed) {
+            pickListsIds.add(processTask.getFormId());
+        }
+
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).list();
+        List<ProductionPickListsDetailParam> pickListsDetailParams = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailParam.class, new CopyOptions());
+
+        for (ProductionPickListsDetailParam listsParam : pickListsDetailParams) {
+            if (pickListsService.updateStock(listsParam, stockSkuBrands)) {
+                return true;
+
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 更新库存
+     *
+     * @param detailParam
+     * @param stockSkuBrands
+     */
+    private void updateStock(ProductionPickListsCartParam detailParam, List<StockSkuBrand> stockSkuBrands) {
+
+        for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
+            if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId() == 0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
+                long number = stockSkuBrand.getNumber() - detailParam.getNumber();
+
+                stockSkuBrand.setNumber(number);
+
+            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
+                long number = stockSkuBrand.getNumber() - detailParam.getNumber();
+
+                stockSkuBrand.setNumber(number);
+                break;
+            }
+        }
 
     }
 
 
-    private void addCheck(ProductionPickListsCartParam param){
+    private void addCheck(ProductionPickListsCartParam param) {
         List<Long> detailIds = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             detailIds.add(productionPickListsCartParam.getPickListsDetailId());
         }
-        if (ToolUtil.isEmpty(detailIds) || detailIds.size() == 0){
-            throw new ServiceException(500,"请选中备料信息");
+        if (ToolUtil.isEmpty(detailIds) || detailIds.size() == 0) {
+            throw new ServiceException(500, "请选中备料信息");
         }
         List<ProductionPickListsDetail> details = pickListsDetailService.listByIds(detailIds);
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             for (ProductionPickListsDetail listsDetail : details) {
                 if (productionPickListsCartParam.getPickListsDetailId().equals(listsDetail.getPickListsDetailId())) {
-                    if (!listsDetail.getBrandId().equals(productionPickListsCartParam.getBrandId()) && !listsDetail.getBrandId().equals(0L)){
-                        throw new ServiceException(500,"请选择对应品牌");
+                    if (!listsDetail.getBrandId().equals(productionPickListsCartParam.getBrandId()) && !listsDetail.getBrandId().equals(0L)) {
+                        throw new ServiceException(500, "请选择对应品牌");
                     }
-                    if (!listsDetail.getSkuId().equals(productionPickListsCartParam.getSkuId())){
-                        throw new ServiceException(500,"请选择这对应物料");
+                    if (!listsDetail.getSkuId().equals(productionPickListsCartParam.getSkuId())) {
+                        throw new ServiceException(500, "请选择这对应物料");
                     }
-                    if (listsDetail.getNumber()-listsDetail.getReceivedNumber()<productionPickListsCartParam.getNumber()){
-                        throw new ServiceException(500,"备料数量溢出,备料失败");
+                    if (listsDetail.getNumber() - listsDetail.getReceivedNumber() < productionPickListsCartParam.getNumber()) {
+                        throw new ServiceException(500, "备料数量溢出,备料失败");
                     }
 
                 }
@@ -500,7 +564,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         List<UserResult> userResults = userService.getUserResultsByIds(userIds);
         for (ProductionPickListsResult pickListsResult : pickListsResults) {
             for (UserResult userResult : userResults) {
-                if (pickListsResult.getCreateUser().equals(userResult.getUserId())){
+                if (pickListsResult.getCreateUser().equals(userResult.getUserId())) {
                     pickListsResult.setCreateUserResult(userResult);
                 }
 
@@ -532,7 +596,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         );
 
 
-
         List<ProductionPickListsDetail> details = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("status", 0).eq("display", 1).list();
         List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(details, ProductionPickListsDetailResult.class);
 
@@ -544,7 +607,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 }
             }
         }
-        detailResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() +  "_" + item.getPickListsId(), Collectors.toList())).forEach(
+        detailResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getPickListsId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new ProductionPickListsDetailResult() {{
                         setPickListsId(a.getPickListsId());
@@ -557,7 +620,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
         for (ProductionPickListsDetailResult detailResult : detailTotalList) {
             for (ProductionPickListsResult pickListsResult : pickListsResults) {
-                if (detailResult.getPickListsId().equals(pickListsResult.getPickListsId())){
+                if (detailResult.getPickListsId().equals(pickListsResult.getPickListsId())) {
                     detailResult.setPickListsResult(pickListsResult);
                 }
             }
@@ -604,8 +667,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             results.add(result);
 
         }
-
-
 
 
         return results;

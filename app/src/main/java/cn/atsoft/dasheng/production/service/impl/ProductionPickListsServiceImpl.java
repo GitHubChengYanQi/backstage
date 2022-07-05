@@ -580,6 +580,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsDetailParam listsParam : pickListsDetailParams) {
             if (updateStock(listsParam, stockSkuBrands)) {
                 //TODO  此处调用库存预警
+
             }
         }
     }
@@ -590,23 +591,24 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
      * @param detailParam
      * @param stockSkuBrands
      */
-    private boolean updateStock(ProductionPickListsDetailParam detailParam, List<StockSkuBrand> stockSkuBrands) {
-        if (ToolUtil.isEmpty(stockSkuBrands)) {
+    @Override
+    public boolean updateStock(ProductionPickListsDetailParam detailParam, List<StockSkuBrand> stockSkuBrands) {
+          if (ToolUtil.isEmpty(stockSkuBrands)) {
             return true;
         }
         boolean f = false;
 
         for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
-            if (ToolUtil.isEmpty(detailParam.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
+            if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId()==0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
-                if (number < 0) {
+                if (number <= 0) {
                     f = true;
                 }
                 stockSkuBrand.setNumber(number);
 
-            } else if (detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
+            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
-                if (number < 0) {
+                if (number <= 0) {
                     f = true;
                 }
                 stockSkuBrand.setNumber(number);

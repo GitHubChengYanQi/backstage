@@ -9,11 +9,13 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +28,7 @@ import java.util.Map;
  * @Date 2022-03-25 16:18:02
  */
 @RestController
-    @RequestMapping("/productionPickListsCart")
+@RequestMapping("/productionPickListsCart")
 @Api(tags = "领料单详情表")
 public class ProductionPickListsCartController extends BaseController {
 
@@ -42,6 +44,13 @@ public class ProductionPickListsCartController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
+        if (productionPickListsCartParam.getWarning()) {
+            boolean warning = productionPickListsCartService.warning(productionPickListsCartParam);
+            if (warning) {
+                return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), "");   //需要人员确定
+            }
+        }
+
         this.productionPickListsCartService.add(productionPickListsCartParam);
         return ResponseData.success();
     }
@@ -68,20 +77,19 @@ public class ProductionPickListsCartController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProductionPickListsCartParam productionPickListsCartParam)  {
+    public ResponseData delete(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
         this.productionPickListsCartService.delete(productionPickListsCartParam);
         return ResponseData.success();
     }
 
 
-
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData deleteBatch(@RequestBody ProductionPickListsCartParam productionPickListsCartParam)  {
+    public ResponseData deleteBatch(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
         if (ToolUtil.isEmpty(productionPickListsCartParam)) {
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
-        if (productionPickListsCartParam.getProductionPickListsCartParams().size()!= 0){
+        if (productionPickListsCartParam.getProductionPickListsCartParams().size() != 0) {
             this.productionPickListsCartService.deleteBatchByIds(productionPickListsCartParam.getProductionPickListsCartParams());
         }
         return ResponseData.success();
@@ -113,11 +121,12 @@ public class ProductionPickListsCartController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public List<ProductionPickListsCartResult> list(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
-        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
         return this.productionPickListsCartService.findListBySpec(productionPickListsCartParam);
     }
+
     /**
      * 查询列表
      *
@@ -127,11 +136,12 @@ public class ProductionPickListsCartController extends BaseController {
     @RequestMapping(value = "/groupByUserList", method = RequestMethod.POST)
     @ApiOperation("列表")
     public List<CartGroupByUserListRequest> groupByUserList(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
-        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
         return this.productionPickListsCartService.groupByUser(productionPickListsCartParam);
     }
+
     /**
      * 查询列表
      *
@@ -141,11 +151,12 @@ public class ProductionPickListsCartController extends BaseController {
     @RequestMapping(value = "/getSelfCarts", method = RequestMethod.POST)
     @ApiOperation("列表")
     public ResponseData getSelfList(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
-        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
         return ResponseData.success(this.productionPickListsCartService.getSelfCarts(productionPickListsCartParam));
     }
+
     /**
      * 查询列表
      *
@@ -155,11 +166,12 @@ public class ProductionPickListsCartController extends BaseController {
     @RequestMapping(value = "/getSelfCartsByLists", method = RequestMethod.POST)
     @ApiOperation("列表")
     public ResponseData getSelfCartsByLists(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
-        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
         return ResponseData.success(this.productionPickListsCartService.getSelfCartsByLists(productionPickListsCartParam));
     }
+
     /**
      * 查询列表
      *
@@ -169,12 +181,11 @@ public class ProductionPickListsCartController extends BaseController {
     @RequestMapping(value = "/getSelfCartsBySku", method = RequestMethod.POST)
     @ApiOperation("列表")
     public ResponseData getSelfCartsBySku(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
-        if(ToolUtil.isEmpty(productionPickListsCartParam)){
+        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
         return ResponseData.success(this.productionPickListsCartService.getSelfCartsBySku(productionPickListsCartParam));
     }
-
 
 
 }
