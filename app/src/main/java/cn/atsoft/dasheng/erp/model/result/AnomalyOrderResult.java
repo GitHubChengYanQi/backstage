@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -22,6 +23,8 @@ import java.util.List;
 @Data
 @ApiModel
 public class AnomalyOrderResult implements Serializable {
+
+    private User masterUser;
 
     private static final long serialVersionUID = 1L;
 

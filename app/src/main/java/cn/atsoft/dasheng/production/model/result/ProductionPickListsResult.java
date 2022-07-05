@@ -46,6 +46,8 @@ public class ProductionPickListsResult implements Serializable {
     private List<AnnouncementsResult> announcementsResults;
     private List<String> enclosureUrl;
     private List<SkuSimpleResult> skuResults;
+    private String pickListsName;
+
     /**
      * 附件
      */

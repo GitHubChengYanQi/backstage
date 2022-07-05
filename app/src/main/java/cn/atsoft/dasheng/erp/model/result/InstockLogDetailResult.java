@@ -31,6 +31,7 @@ public class InstockLogDetailResult implements Serializable {
     private Integer listNumber;
     private Customer customer;
     private User user;
+    private List<Long> inkindIds;
 
     @ApiModelProperty("")
     private Long instockLogDetailId;

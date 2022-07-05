@@ -49,11 +49,12 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
     }
 
     @Override
-    public void update(DocumentsStatusParam param) {
+    public DocumentsStatus update(DocumentsStatusParam param) {
         DocumentsStatus oldEntity = getOldEntity(param);
         DocumentsStatus newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override

@@ -2,17 +2,12 @@ package cn.atsoft.dasheng.production.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.OutStockActionEnum;
-import cn.atsoft.dasheng.action.Enum.QualityActionEnum;
-import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
-import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
-import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.pojo.Listing;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -39,12 +34,10 @@ import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
-import cn.atsoft.dasheng.production.model.request.StoreHouseNameAndSkuNumber;
 import cn.atsoft.dasheng.production.model.result.*;
 import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -164,7 +157,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Override
     @Transactional
-    public void add(ProductionPickListsParam param) {
+    public ProductionPickLists add(ProductionPickListsParam param) {
         ProductionPickLists entity = getEntity(param);
         entity.setCoding(codingRulesService.defaultEncoding());
         entity.setStatus(0L);
@@ -210,6 +203,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
+        return entity;
     }
 
     @Override
@@ -783,6 +777,65 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         checkListsStatus(pickLists);
     }
 
+    @Override
+    public void outStockBySku(ProductionPickListsParam param) {
+        if (ToolUtil.isEmpty(param.getCartsParams())) {
+            throw new ServiceException(500, "请选择您所需要领取的物品");
+        }
+        List<Long> storehouseIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> pickListsIds = new ArrayList<>();
+        for (ProductionPickListsCartParam cartsParam : param.getCartsParams()) {
+            skuIds.add(cartsParam.getSkuId());
+            storehouseIds.add(cartsParam.getStorehouseId());
+            pickListsIds.add(cartsParam.getPickListsId());
+        }
+        List<ProductionPickListsCart> pickListsCarts = new ArrayList<>();
+        if ((storehouseIds.size() > 0 && skuIds.size() > 0 && pickListsIds.size() > 0)) {
+            pickListsCarts = pickListsCartService.query().in("storehouse_id", storehouseIds.stream().distinct().collect(Collectors.toList())).in("sku_id", skuIds.stream().distinct().collect(Collectors.toList())).in("pick_lists_id", pickListsIds.stream().distinct().collect(Collectors.toList())).eq("display", 1).list();
+        }
+        List<Long> detailIds = new ArrayList<>();
+        for (ProductionPickListsCart pickListsCart : pickListsCarts) {
+            detailIds.add(pickListsCart.getPickListsDetailId());
+        }
+        List<ProductionPickListsDetail> listsDetails =detailIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.listByIds(detailIds.stream().distinct().collect(Collectors.toList()));
+        for (ProductionPickListsCartParam cartsParam : param.getCartsParams()) {
+            for (ProductionPickListsCart pickListsCart : pickListsCarts) {
+                if (pickListsCart.getStorehouseId().equals(cartsParam.getStorehouseId()) && pickListsCart.getSkuId().equals(cartsParam.getSkuId()) && pickListsCart.getPickListsId().equals(cartsParam.getPickListsId())) {
+                    pickListsCart.setDisplay(0);
+                    pickListsCart.setStatus(99);
+                    for (ProductionPickListsDetail listsDetail : listsDetails) {
+                        if (pickListsCart.getPickListsDetailId().equals(listsDetail.getPickListsDetailId())) {
+                            listsDetail.setReceivedNumber(listsDetail.getReceivedNumber() + pickListsCart.getNumber());
+                            if (listsDetail.getReceivedNumber() == listsDetail.getNumber()) {
+                                listsDetail.setStatus(99);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        pickListsDetailService.updateBatchById(listsDetails);
+        pickListsCartService.updateBatchById(pickListsCarts);
+        if (listsDetails.stream().allMatch(i -> i.getStatus().equals(99))) {
+            for (Long pickListsId : pickListsIds) {
+                this.updateStatus(pickListsId);
+            }
+        } else {
+            for (Long pickListsId : pickListsIds) {
+                Boolean statusFlag = true;
+                for (ProductionPickListsDetail listsDetail : listsDetails) {
+                    if (pickListsId.equals(listsDetail.getPickListsId()) && !listsDetail.getStatus().equals(99)) {
+                        statusFlag = false;
+                    }
+                }
+                if (statusFlag) {
+                    updateStatus(pickListsId);
+                }
+            }
+        }
+    }
+
     /**
      * 查询判断单据状态是否完成
      *
@@ -886,7 +939,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          */
         ProductionPickLists entity = new ProductionPickLists();
         entity.setPickListsId(id);
-
+        entity.setStatus(99L);
         this.updateById(entity);
 
         /**

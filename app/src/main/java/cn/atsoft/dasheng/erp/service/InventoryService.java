@@ -28,7 +28,7 @@ public interface InventoryService extends IService<Inventory> {
      * @author Captain_Jazz
      * @Date 2021-12-27
      */
-    void add(InventoryParam param);
+    Inventory add(InventoryParam param);
 
     void timelyAdd(InventoryParam param);
 

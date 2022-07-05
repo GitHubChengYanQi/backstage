@@ -182,6 +182,12 @@ public class SkuController extends BaseController {
         return ResponseData.success();
     }
 
+
+    @RequestMapping(value = "/skuMessage", method = RequestMethod.POST)
+    public ResponseData skuMessage(@RequestBody SkuParam skuParam) {
+        String skuMessage = this.skuService.skuMessage(skuParam.getSkuId());
+        return ResponseData.success(skuMessage);
+    }
     /**
      * 查看详情接口
      *

@@ -40,7 +40,7 @@ public interface DocumentStatusService extends IService<DocumentsStatus> {
      * @author song
      * @Date 2022-04-28
      */
-    void update(DocumentsStatusParam param);
+    DocumentsStatus update(DocumentsStatusParam param);
 
     DocumentsStatusResult detail(Long statusId);
 

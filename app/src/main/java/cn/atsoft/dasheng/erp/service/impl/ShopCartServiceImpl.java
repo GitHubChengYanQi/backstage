@@ -19,9 +19,12 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.form.service.RemarksService;
+import cn.atsoft.dasheng.message.config.DirectQueueConfig;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
@@ -77,6 +80,11 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     @Autowired
     private InstockOrderService instockOrderService;
     @Autowired
+    private ActivitiProcessTaskService taskService;
+    @Autowired
+    private RemarksService remarksService;
+    @Autowired
+    private SkuBrandBindService brandBindService;
     private InventoryService inventoryService;
     @Autowired
     private InventoryDetailService inventoryDetailService;
@@ -86,7 +94,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     @Override
     @Transactional
     public Long add(ShopCartParam param) {
-
+        judgeBrand(param.getSkuId(), param.getBrandId());  //判断物料品牌绑定
         Date date = new DateTime();
         logger.info(date + ": 添加带入购物车--->" + param.getInstockListId());
 
@@ -107,20 +115,23 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
             InstockList instockList = instockListService.getById(param.getInstockListId());
-
-
-            Long taskId = activitiProcessTaskService.getTaskIdByFormId(instockList.getInstockOrderId());
-            RemarksParam remarksParam = new RemarksParam();
-            remarksParam.setTaskId(taskId);
-            remarksParam.setType("dynamic");
-            remarksParam.setContent(LoginContextHolder.getContext().getUser().getName() + "添加了待入购物车");
-            messageProducer.remarksServiceDo(new RemarksEntity() {{
-                setOperationType(OperationType.SAVE);
-                setRemarksParam(remarksParam);
-            }});
+            String skuMessage = skuService.skuMessage(instockList.getSkuId());
+            addDynamic(instockList.getInstockOrderId(), skuMessage + "核实完成准备入库");
         }
 
         return entity.getCartId();
+    }
+
+    /**
+     * 判断物料品牌绑定关系
+     */
+    private void judgeBrand(Long skuId, Long brandId) {
+        if (ToolUtil.isNotEmpty(brandId) && brandId != 0) {
+            Integer count = brandBindService.query().eq("sku_id", skuId).eq("brand_id", brandId).eq("display", 1).count();
+            if (count < 0) {
+                throw new ServiceException(500, "当前物料 未与 品牌绑定");
+            }
+        }
     }
 
     /**
@@ -136,13 +147,16 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             shopCart.setDisplay(0);
 
             InstockList instockList = null;
-
+            String skuMessage;
             switch (shopCart.getType()) {
                 case "InstockError":
                 case "StocktakingError":
                     Anomaly anomaly = anomalyService.getById(shopCart.getFormId());
                     anomaly.setDisplay(0);
                     anomalyService.updateById(anomaly);
+                    instockList = instockListService.getById(anomaly.getSourceId());
+                     skuMessage = skuService.skuMessage(instockList.getSkuId());
+                    addDynamic(instockList.getInstockOrderId(), skuMessage + "删除了异常描述");
                     if (anomaly.getType().equals("InstockError")) {
                         instockList = instockListService.getById(anomaly.getSourceId());
                     }
@@ -159,6 +173,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
+                     skuMessage = skuService.skuMessage(instockList.getSkuId());
+                    addDynamic(instockList.getInstockOrderId(), skuMessage + "取消入库重新核验");
                     break;
                 case "instockByAnomaly":
                     AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
@@ -177,6 +193,34 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         }
 
 
+    }
+
+    /**
+     * 动态
+     */
+    @Override
+    public void addDynamic(Long fromId, String content) {
+        if (ToolUtil.isEmpty(fromId)) {
+            return;
+        }
+        Long taskId = taskService.getTaskIdByFormId(fromId);
+        RemarksParam remarksParam = new RemarksParam();
+        remarksParam.setTaskId(taskId);
+        remarksParam.setType("dynamic");
+        remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
+        remarksParam.setContent(content);
+
+        Remarks entity = new Remarks();
+        ToolUtil.copyProperties(remarksParam, entity);
+        remarksService.save(entity);
+
+        /**
+         * 消息队列获取不到当前人  不用这个了
+         */
+//        messageProducer.remarksServiceDo(new RemarksEntity() {{
+//            setOperationType(OperationType.SAVE);
+//            setRemarksParam(remarksParam);
+//        }});
     }
 
     /**
@@ -249,9 +293,17 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
     @Override
     public Long update(ShopCartParam param) {
+
+
         ShopCart oldEntity = getOldEntity(param);
         ShopCart newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+
+        if (ToolUtil.isNotEmpty(param.getPositionNums())) {     //多个库位
+            String json = JSON.toJSONString(param.getPositionNums());
+            newEntity.setStorehousePositionsId(json);
+        }
+
         this.updateById(newEntity);
         return param.getCartId();
     }

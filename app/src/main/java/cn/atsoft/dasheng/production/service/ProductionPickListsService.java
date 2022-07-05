@@ -26,7 +26,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    void add(ProductionPickListsParam param);
+    ProductionPickLists add(ProductionPickListsParam param);
 
     /**
      * 删除
@@ -79,6 +79,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     List<StorehouseResult> getStockSkus(List<Long> skuIds);
 
     void outStock(ProductionPickListsParam param);
+
+    void outStockBySku(ProductionPickListsParam param);
 
     ProductionPickListsResult detail(Long id);
 

@@ -132,7 +132,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "purchase").eq("status", 99).eq("module", "purchasePlan").one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的采购计划申请 (" + param.getProcurementPlanName() + ")");
+            activitiProcessTaskParam.setTaskName(user.getName() + "提交的采购计划申请 (" + param.getProcurementPlanName() + ")");
             activitiProcessTaskParam.setFormId(entity.getProcurementPlanId());
             activitiProcessTaskParam.setType("purchasePlan");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());

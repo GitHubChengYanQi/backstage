@@ -36,7 +36,7 @@ public interface InstockOrderService extends IService<InstockOrder> {
      * @author song
      * @Date 2021-10-06
      */
-    void add(InstockOrderParam param);
+    InstockOrder add(InstockOrderParam param);
 
     boolean judgeLoginUser();
 

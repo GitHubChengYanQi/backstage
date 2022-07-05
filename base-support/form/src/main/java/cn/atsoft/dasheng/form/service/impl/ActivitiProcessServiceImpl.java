@@ -110,9 +110,10 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
             //确保有流程启用
             Integer count = this.query().eq("module", param.getModule()).count();
             if (count > 1) {
-                ActivitiProcess process = this.query().eq("module", param.getModule()).eq("status", 99)
-                        .ne("process_id", param.getProcessId())
-                        .one();
+//                ActivitiProcess process = this.query().eq("module", param.getModule()).eq("status", 99)
+//                        .eq("display", 1)
+//                        .ne("process_id", param.getProcessId())
+//                        .one();
 //                if (ToolUtil.isEmpty(process)) {
 //                    throw new ServiceException(500, "必须有一个启用的流程");
 //                }

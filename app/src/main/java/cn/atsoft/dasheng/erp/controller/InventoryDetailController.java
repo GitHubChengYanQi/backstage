@@ -129,10 +129,9 @@ public class InventoryDetailController extends BaseController {
         InventoryDetail detail = this.inventoryDetailService.getById(inventoryDetailParam.getDetailId());
         InventoryDetailResult result = new InventoryDetailResult();
         ToolUtil.copyProperties(detail, result);
-
-
         return ResponseData.success(result);
     }
+
 
     /**
      * 查询列表

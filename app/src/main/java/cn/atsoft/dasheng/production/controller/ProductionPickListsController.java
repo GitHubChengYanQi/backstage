@@ -79,8 +79,8 @@ public class ProductionPickListsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ProductionPickListsParam productionPickListsParam) {
-        this.productionPickListsService.add(productionPickListsParam);
-        return ResponseData.success();
+        ProductionPickLists pickLists = this.productionPickListsService.add(productionPickListsParam);
+        return ResponseData.success(pickLists);
     }
 
     /**
@@ -266,6 +266,17 @@ public class ProductionPickListsController extends BaseController {
         }
 
         this.productionPickListsService.outStock(productionPickListsParam);
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/createOutStockOrderBySku", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData outStockBySku(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+        if (ToolUtil.isEmpty(productionPickListsParam)) {
+            productionPickListsParam = new ProductionPickListsParam();
+        }
+
+        this.productionPickListsService.outStockBySku(productionPickListsParam);
         return ResponseData.success();
     }
 

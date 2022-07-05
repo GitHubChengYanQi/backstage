@@ -36,6 +36,8 @@ import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -103,6 +105,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     @Autowired
     private InstockOrderService instockOrderService;
     @Autowired
+    private UserService userService;
+    @Autowired
+    private SkuService skuService;
     private InventoryDetailService inventoryDetailService;
     @Autowired
     private ProductionPickListsService pickListsService;
@@ -126,12 +131,22 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<Anomaly> anomalies = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
+            if (ToolUtil.isEmpty(anomalyParam.getAnomalyId())) {
+                throw new ServiceException(500, "缺少 异常id");
+            }
             ids.add(anomalyParam.getAnomalyId());
             Anomaly anomaly = new Anomaly();
             anomaly.setStatus(98);
             ToolUtil.copyProperties(anomalyParam, anomaly);
             anomaly.setOrderId(entity.getOrderId());
             anomalies.add(anomaly);
+        }
+        //判断是否提交过
+        List<Anomaly> anomalyList = anomalyService.listByIds(ids);
+        for (Anomaly anomaly : anomalyList) {
+            if (anomaly.getStatus() == 98) {
+                throw new ServiceException(500, "请勿重新提交异常");
+            }
         }
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
         /**
@@ -174,6 +189,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
         }
         submit(entity);
+        shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常描述");
+        shopCartService.addDynamic(entity.getOrderId(), "提交了异常");
     }
 
     private void bind(Long inkindId, Long detailId) {
@@ -221,6 +238,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         } else {
             throw new ServiceException(500, "请先设置流程");
         }
+
+
     }
 
     private void power(ActivitiProcess activitiProcess) {
@@ -386,17 +405,18 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<Long> anomalyIds = new ArrayList<>();
         for (AnomalyResult anomalyResult : anomalyResults) {
             handle(anomalyResult);
-            anomalyIds.add(anomalyResult.getAnomalyId());
+
         }
         List<AnomalyDetail> details = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
         for (AnomalyResult anomaly : anomalyResults) {
             long errorNum = 0;
             boolean t = false;
-            for (AnomalyDetail detail : details) {
-                if (anomaly.getAnomalyId().equals(detail.getAnomalyId()) && detail.getStauts() == -1) {
+            for (AnomalyDetailResult detail : anomaly.getDetails()) {
+                if (detail.getStauts() == -1) {
                     errorNum = errorNum + detail.getNumber();
                     t = true;
                 }
+
             }
             if (t) {
                 /**
@@ -414,6 +434,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
     }
 
+
     /**
      * 处理
      *
@@ -423,6 +444,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         if (ToolUtil.isNotEmpty(result.getInstockNumber()) && result.getInstockNumber() > 0) {   //允许入库 并添加 入库购物车
             addShopCart(result);
+
+            String skuMessage = skuService.skuMessage(result.getSkuId());
+            shopCartService.addDynamic(result.getFormId(), "异常物料" + skuMessage + "允许入库");
         }
         for (AnomalyDetailResult detail : result.getDetails()) {
             //终止入库
@@ -509,8 +533,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         anomalyService.format(anomalyResults);
 
         InstockOrder instockOrder = instockOrderService.getById(result.getInstockOrderId());
-        result.setInstockOrder(instockOrder);
+        if (ToolUtil.isNotEmpty(instockOrder)) {
+            Long createUser = instockOrder.getCreateUser();
+            User user = userService.getById(createUser);
+            result.setMasterUser(user);
+        }
 
+
+        result.setInstockOrder(instockOrder);
         List<DocumentsStatusResult> results = statusService.resultsByIds(new ArrayList<Long>() {{
             add(result.getStatus());
         }});

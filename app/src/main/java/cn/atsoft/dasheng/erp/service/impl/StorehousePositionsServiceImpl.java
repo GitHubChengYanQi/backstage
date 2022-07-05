@@ -422,10 +422,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * @return
      */
     @Override
-    public List<BrandResult> selectByBrand(Long skuId) {
+    public List<BrandResult> selectByBrand(Long skuId, Long brandId) {
 
         QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
         stockDetailsQueryWrapper.eq("sku_id", skuId);
+        if (ToolUtil.isNotEmpty(brandId)) {
+            stockDetailsQueryWrapper.eq("brand_id", brandId);
+        }
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);
 
@@ -434,9 +437,11 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<Long> positionIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
 
+        boolean otherBrand = false;
         for (StockDetails stockDetail : stockDetails) {
             if (ToolUtil.isEmpty(stockDetail.getBrandId())) {    //其他品牌
                 stockDetail.setBrandId(0L);
+                otherBrand =true;
             }
             positionIds.add(stockDetail.getStorehousePositionsId());
             brandIds.add(stockDetail.getBrandId());
@@ -458,11 +463,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         }
 
+        if (otherBrand) {
+            brandResults.add(new BrandResult() {{    //添加个其他品牌对象
+                setBrandId(0L);
+                setBrandName("其他品牌");
+            }});//其他品牌
+        }
 
-        brandResults.add(new BrandResult() {{    //添加个其他品牌对象
-            setBrandId(0L);
-            setBrandName("其他品牌");
-        }});//其他品牌
 
 
         Map<Long, Long> brandNumber = new HashMap<>();

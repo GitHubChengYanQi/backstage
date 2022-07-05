@@ -17,10 +17,7 @@ import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
-import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
-import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
@@ -28,7 +25,11 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -96,6 +97,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Autowired
     private AnomalyOrderService anomalyOrderService;
     @Autowired
+    private MessageProducer messageProducer;
     private InventoryDetailService inventoryDetailService;
 
 
@@ -151,6 +153,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             shopCartService.add(shopCartParam);
         }
     }
+
 
     @Override
     public AnomalyResult detail(Long id) {
@@ -271,6 +274,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         } else {
             updateInventoryStatus(param, -1);
         }
+        for (AnomalyDetailParam detailParam : param.getDetailParams()) {
+            AnomalyDetail detail = new AnomalyDetail();
+            ToolUtil.copyProperties(detailParam, detail);
+            detail.setAnomalyId(param.getAnomalyId());
+            detail.setInkindId(detailParam.getPidInKind());
+            if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
+                String json = JSON.toJSONString(detailParam.getNoticeIds());
+                detail.setRemark(json);
 
         if (t) {   //添加异常信息
             for (AnomalyDetailParam detailParam : param.getDetailParams()) {
@@ -366,25 +377,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         detailService.remove(new QueryWrapper<AnomalyDetail>() {{
             eq("anomaly_id", param.getAnomalyId());
         }});
-        boolean b = addDetails(param);
-
-        /**
-         * 暂存添加购物车
-         */
-        if (b) {
-            Integer count = shopCartService.query().eq("form_id", param.getAnomalyId()).eq("display", 1).count();
-            if (count == 0) {
-                ShopCartParam shopCartParam = new ShopCartParam();
-                shopCartParam.setSkuId(oldEntity.getSkuId());
-                shopCartParam.setBrandId(oldEntity.getBrandId());
-                shopCartParam.setCustomerId(oldEntity.getCustomerId());
-                shopCartParam.setType(param.getAnomalyType().name());
-                shopCartParam.setFormId(oldEntity.getAnomalyId());
-                shopCartParam.setNumber(oldEntity.getNeedNumber());
-                shopCartService.add(shopCartParam);
-            }
-        }
-
+        addDetails(param);
+        String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
+        shopCartService.addDynamic(oldEntity.getFormId(), skuMessage + "修改了异常描述");
     }
 
     /**
@@ -406,6 +401,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
 
 
+
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
@@ -420,6 +416,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {
             detailService.pushPeople(oldEntity.getCreateUser(), oldEntity.getAnomalyId());
         }
+
+        String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
+        if (ToolUtil.isNotEmpty(param.getCheckNumber())) {
+            shopCartService.addDynamic(oldEntity.getOrderId(), "对" + skuMessage + "数量进行复核");
+        }
+        shopCartService.addDynamic(oldEntity.getOrderId(), "对" + skuMessage + "确认了处理意见");
     }
 
     /**
@@ -511,6 +513,29 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+    @Override
+    public void getOrder(List<AnomalyResult> data) {
+
+        List<Long> orderIds = new ArrayList<>();
+
+        for (AnomalyResult datum : data) {
+            orderIds.add(datum.getOrderId());
+        }
+
+        List<AnomalyOrder> anomalyOrders = orderIds.size() == 0 ? new ArrayList<>() : anomalyOrderService.listByIds(orderIds);
+        List<AnomalyOrderResult> orderResults = BeanUtil.copyToList(anomalyOrders, AnomalyOrderResult.class, new CopyOptions());
+
+        for (AnomalyResult datum : data) {
+            for (AnomalyOrderResult orderResult : orderResults) {
+                if (ToolUtil.isNotEmpty(datum.getOrderId()) && datum.getOrderId().equals(orderResult.getOrderId())) {
+                    datum.setOrderResult(orderResult);
+                    break;
+                }
+            }
+        }
+    }
+
 
     @Override
     public void detailFormat(AnomalyResult result) {

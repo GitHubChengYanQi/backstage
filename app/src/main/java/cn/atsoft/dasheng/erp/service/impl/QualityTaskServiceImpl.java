@@ -208,7 +208,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 //                this.power(activitiProcess);//检查创建权限
 //                LoginUser user = LoginContextHolder.getContext().getUser();
                 ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-//                activitiProcessTaskParam.setTaskName(user.getName() + "发起的质检任务 (" + param.getCoding() + ")");
+//                activitiProcessTaskParam.setTaskName(user.getName() + "提交的质检任务 (" + param.getCoding() + ")");
                 activitiProcessTaskParam.setTaskName("新的质检任务 (" + param.getCoding() + ")");
                 activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
                 activitiProcessTaskParam.setUserId(param.getUserId());

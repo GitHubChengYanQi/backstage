@@ -30,6 +30,8 @@ import java.util.Map;
 public class InstockListResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private Long anomalyId;
     /**
      * 库位id
      */
