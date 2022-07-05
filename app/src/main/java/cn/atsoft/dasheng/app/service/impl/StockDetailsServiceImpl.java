@@ -352,7 +352,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 }
             }
             for (CustomerResult customerResult : customerResults) {
-                if (ToolUtil.isNotEmpty(stockDetailExcel.getCustomerId()) && stockDetailExcel.getBrandId().equals(customerResult.getCustomerId())) {
+                if (ToolUtil.isNotEmpty(stockDetailExcel.getCustomerId()) && stockDetailExcel.getCustomerId().equals(customerResult.getCustomerId())) {
                     stockDetailExcel.setCustomerResult(customerResult);
                 }
             }
