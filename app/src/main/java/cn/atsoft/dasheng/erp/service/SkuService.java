@@ -104,6 +104,8 @@ public interface SkuService extends IService<Sku> {
 
     PageInfo<SkuResult> changePageBySpec(SkuParam param);
 
+
+
     List<SkuResult> AllSku();
 
     void format(List<SkuResult> param);

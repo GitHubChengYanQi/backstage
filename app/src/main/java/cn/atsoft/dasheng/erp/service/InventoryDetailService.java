@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -34,7 +37,20 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
      */
     void delete(InventoryDetailParam param);
 
+    Object mergeList();
+
+    Object taskList(Long inventoryTaskId);
+
+    boolean mergeBrand(List<BrandResult> brandResults, BrandResult brandResult);
+
+    void addPhoto(InventoryDetailParam inventoryDetailParam);
+
+    void temporaryLock(InventoryDetailParam param);
+
     void inventoryInstock(InventoryDetailParam inventoryDetailParam);
+
+    @Transactional
+    void complete(List<Long> inventoryIds);
 
     /**
      * 更新
@@ -66,6 +82,11 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
      * @author Captain_Jazz
      * @Date 2021-12-27
      */
-     PageInfo<InventoryDetailResult> findPageBySpec(InventoryDetailParam param);
+    PageInfo<InventoryDetailResult> findPageBySpec(InventoryDetailParam param);
 
+    void brandFormat(List<BrandResult> brandResults);
+
+    void positionFormat(List<StorehousePositionsResult> positionsResults);
+
+    List<InventoryDetailResult> getDetails(List<Long> inventoryIds);
 }

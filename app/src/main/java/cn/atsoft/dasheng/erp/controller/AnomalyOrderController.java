@@ -81,6 +81,7 @@ public class AnomalyOrderController extends BaseController {
 //        return ResponseData.success();
 //    }
 //
+
     /**
      * 查看详情接口
      *
@@ -107,7 +108,7 @@ public class AnomalyOrderController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AnomalyOrderResult> list(@RequestBody(required = false) AnomalyOrderParam anomalyOrderParam) {
-        if(ToolUtil.isEmpty(anomalyOrderParam)){
+        if (ToolUtil.isEmpty(anomalyOrderParam)) {
             anomalyOrderParam = new AnomalyOrderParam();
         }
         return this.anomalyOrderService.findPageBySpec(anomalyOrderParam);

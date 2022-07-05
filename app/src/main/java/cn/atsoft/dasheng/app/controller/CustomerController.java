@@ -157,6 +157,17 @@ public class CustomerController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/pureList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    @Permission
+    public PageInfo<CustomerResult> pureList(@RequestBody(required = false) CustomerParam customerParam) {
+        if (ToolUtil.isEmpty(customerParam)) {
+            customerParam = new CustomerParam();
+        }
+        return this.customerService.pureList(customerParam);
+    }
+
+
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission

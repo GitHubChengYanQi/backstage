@@ -96,6 +96,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
     @Override
+    public List<StockDetails> getStock() {
+        return this.query().eq("display", 1).gt("number", 0).list();
+    }
+
+    @Override
     public List<StockDetailsResult> getDetailsBySkuId(Long id) {
         if (ToolUtil.isEmpty(id)) {
             throw new ServiceException(500, "缺少id");

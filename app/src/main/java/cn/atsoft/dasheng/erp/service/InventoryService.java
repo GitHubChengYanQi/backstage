@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.model.params.InventoryParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -28,6 +29,18 @@ public interface InventoryService extends IService<Inventory> {
      * @Date 2021-12-27
      */
     Inventory add(InventoryParam param);
+
+    void timelyAdd(InventoryParam param);
+
+    void selectCondition(InventoryParam param);
+
+    List<StorehousePositionsResult> timely(Long positionId);
+
+    void bySku(InventoryParam param);
+
+    void updateStatus(ActivitiProcessTask processTask);
+
+    InventoryResult detail(Long id);
 
     /**
      * 删除
@@ -80,4 +93,6 @@ public interface InventoryService extends IService<Inventory> {
     InkindResult inkindInventory(Long id);
 
     StorehousePositionsResult positionInventory(Long id);
+
+    void format(List<InventoryResult> data);
 }

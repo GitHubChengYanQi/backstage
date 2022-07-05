@@ -54,7 +54,42 @@ public class InventoryDetailController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/taskList", method = RequestMethod.POST)
+    public ResponseData taskList(@RequestBody InventoryDetailParam inventoryDetailParam) {
+        Object taskList = this.inventoryDetailService.taskList(inventoryDetailParam.getInventoryId());
+        return ResponseData.success(taskList);
+    }
 
+    @RequestMapping(value = "/mergeList", method = RequestMethod.POST)
+    public ResponseData mergeList() {
+        Object mergeList = this.inventoryDetailService.mergeList();
+        return ResponseData.success(mergeList);
+    }
+
+
+    @RequestMapping(value = "/addPhoto", method = RequestMethod.POST)
+    public ResponseData addPhoto(@RequestBody InventoryDetailParam inventoryDetailParam) {
+        this.inventoryDetailService.addPhoto(inventoryDetailParam);
+        return ResponseData.success();
+    }
+
+
+    @RequestMapping(value = "/temporaryLock", method = RequestMethod.POST)
+    public ResponseData temporaryLock(@RequestBody InventoryDetailParam inventoryDetailParam) {
+        this.inventoryDetailService.temporaryLock(inventoryDetailParam);
+        return ResponseData.success();
+    }
+
+    /**
+     * 盘点完成
+     * @param inventoryDetailParam
+     * @return
+     */
+    @RequestMapping(value = "/complete", method = RequestMethod.POST)
+    public ResponseData complete(@RequestBody InventoryDetailParam inventoryDetailParam) {
+        this.inventoryDetailService.complete(inventoryDetailParam.getInventoryIds());
+        return ResponseData.success();
+    }
 //    /**
 //     * 编辑接口
 //     *

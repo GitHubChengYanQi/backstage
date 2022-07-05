@@ -24,6 +24,10 @@ public enum ProcessModuleEnum {
     quality_task(""),
     verifyError("核实异常"),
     productionOutStock("生产出库"),
+    Stocktaking("普通盘点"),
+    INSTOCKERROR("入库异常"),
+    StocktakingError("盘点异常"),
+
     pickLists("出库单申请");
 
 
@@ -48,8 +52,8 @@ public enum ProcessModuleEnum {
     public static List<Map<String, String>> enumList() {
         List<Map<String, String>> enumList = new ArrayList<>();
         for (ProcessModuleEnum value : ProcessModuleEnum.values()) {
-            Map<String,String> detail = new HashMap<>();
-            detail.put("module",value.getModuleName());
+            Map<String, String> detail = new HashMap<>();
+            detail.put("module", value.getModuleName());
             detail.put("moduleName", value.name());
             enumList.add(detail);
         }

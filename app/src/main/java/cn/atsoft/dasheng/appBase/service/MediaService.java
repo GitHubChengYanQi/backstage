@@ -74,7 +74,9 @@ public interface MediaService extends IService<Media> {
 
     Media getMediaId(String type ,Long userId);
 
-    String getMediaUrl(Long mediaId,Long userId);
+    List<String> getMediaUrls(List<Long> mediaIds, Long userId);
+
+    String getMediaUrl(Long mediaId, Long userId);
 
     String getMediaUrlAddUseData(Long mediaId, Long userId, String useData);
 

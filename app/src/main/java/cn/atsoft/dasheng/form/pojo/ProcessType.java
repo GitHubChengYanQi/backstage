@@ -67,14 +67,22 @@ public enum ProcessType {
     PROCUREMENTORDER("采购单", "PROCUREMENTORDER", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.procurementOrder);
     }}),
-    INSTOCKERROR("入库异常", "INSTOCKERROR", new ArrayList<ProcessModuleEnum>() {{
-        add(ProcessModuleEnum.verifyError);
+    ERROR("异常", "ERROR", new ArrayList<ProcessModuleEnum>() {{
+        add(ProcessModuleEnum.INSTOCKERROR);
+        add(ProcessModuleEnum.StocktakingError);
     }}),
 
-    OUTSTOCK("出库单", "OUTSTOCK", new ArrayList<ProcessModuleEnum>() {{
-        add(ProcessModuleEnum.productionOutStock);
-        add(ProcessModuleEnum.pickLists);
-    }});
+    Stocktaking("盘点", "Stocktaking", new ArrayList<ProcessModuleEnum>() {{
+        add(ProcessModuleEnum.Stocktaking);
+    }}),
+
+    OUTSTOCK("出库单", "OUTSTOCK", new ArrayList<ProcessModuleEnum>() {
+        {
+            add(ProcessModuleEnum.productionOutStock);
+            add(ProcessModuleEnum.pickLists);
+        }
+    });
+
 
     //
 //    @EnumValue

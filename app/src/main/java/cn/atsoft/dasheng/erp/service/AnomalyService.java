@@ -30,6 +30,8 @@ public interface AnomalyService extends IService<Anomaly> {
 
     AnomalyResult detail(Long id);
 
+    void temporary(AnomalyParam param);
+
     Map<Long, AnomalyResult> getMap(List<Long> ids);
 
     /**

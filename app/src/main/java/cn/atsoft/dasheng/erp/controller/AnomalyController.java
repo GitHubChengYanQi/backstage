@@ -35,6 +35,14 @@ public class AnomalyController extends BaseController {
     @Autowired
     private AnomalyService anomalyService;
 
+
+    @RequestMapping(value = "/temporary", method = RequestMethod.POST)
+    @ApiOperation("暂存")
+    public ResponseData temporary(@RequestBody @Valid AnomalyParam anomalyParam) {
+        this.anomalyService.temporary(anomalyParam);
+        return ResponseData.success();
+    }
+
     /**
      * 新增接口
      *

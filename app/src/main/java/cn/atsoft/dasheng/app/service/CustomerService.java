@@ -28,6 +28,8 @@ public interface CustomerService extends IService<Customer> {
      */
     Customer add(CustomerParam param);
 
+    PageInfo<CustomerResult> pureList(CustomerParam param);
+
     Long addCustomer(CustomerParam param);
 
     /**

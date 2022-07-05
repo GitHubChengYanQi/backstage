@@ -34,8 +34,9 @@ public class ActionController {
     @RequestMapping(value = "/selectDict", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData selectDict() {
-        return  ResponseData.success(PurchaseAskDictEnum.enumList());
+        return ResponseData.success(PurchaseAskDictEnum.enumList());
     }
+
     /**
      * 新增采购申请动作
      *
@@ -79,7 +80,7 @@ public class ActionController {
                     }
                 }
                 break;
-            case INSTOCKERROR:
+            case ERROR:
                 for (AddAction.Action action : actions) {
                     int i = 0;
                     for (InstockErrorActionEnum instockErrorActionEnum : action.instockErrorActionEnums) {
@@ -95,6 +96,16 @@ public class ActionController {
                     for (OutStockActionEnum outStockActionEnum : action.outStockActionEnums) {
                         String value = outStockActionEnum.getValue();
                         outStockActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
+                        i++;
+                    }
+                }
+                break;
+            case Stocktaking:
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (StocktakingEnum stocktakingEnum : action.getStocktakingEnums()) {
+                        String value = stocktakingEnum.getValue();
+                        stocktakingEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
                         i++;
                     }
                 }
@@ -115,14 +126,15 @@ public class ActionController {
     public ResponseData addState(@RequestBody @Valid StatusParam statusParam) {
         Long id;
         if (ToolUtil.isEmpty(statusParam.getReceiptsEnum())) {
-            throw  new ServiceException(500,"请传入单据类型枚举");
+            throw new ServiceException(500, "请传入单据类型枚举");
         }
         switch (statusParam.getReceiptsEnum()) {
             case PURCHASE:
             case INSTOCK:
             case OUTSTOCK:
-            case INSTOCKERROR:
+            case ERROR:
             case PURCHASEORDER:
+            case Stocktaking:
                 DocumentsStatusParam status = statusParam.getParam();
                 status.setFormType(statusParam.getReceiptsEnum().name());
                 id = documentStatusService.add(status);

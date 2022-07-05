@@ -107,6 +107,7 @@ public class BrandController extends BaseController {
         if (ToolUtil.isEmpty(brandParam)) {
             brandParam = new BrandParam();
         }
+
 //        if (LoginContextHolder.getContext().isAdmin()) {
             return this.brandService.findPageBySpec(brandParam, null);
 //        } else {
@@ -115,6 +116,17 @@ public class BrandController extends BaseController {
 //            return this.brandService.findPageBySpec(brandParam, dataScope);
 //        }
     }
+
+
+    @RequestMapping(value = "/pureList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<BrandResult> pureList(@RequestBody(required = false) BrandParam brandParam) {
+        if (ToolUtil.isEmpty(brandParam)) {
+            brandParam = new BrandParam();
+        }
+        return this.brandService.pureList(brandParam, null);
+    }
+
 
     /**
      * 选择列表
