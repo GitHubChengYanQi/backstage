@@ -19,12 +19,10 @@ import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.entity.DocumentsAction;
-import cn.atsoft.dasheng.form.entity.DocumentsStatus;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
+import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -47,6 +45,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -151,8 +150,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private InstockLogDetailService instockLogDetailService;
+
     @Autowired
     private ShopCartService shopCartService;
+
+    @Autowired
+    private ActivitiProcessLogService processLogService;
+    @Autowired
+    private ActivitiStepsService stepsService;
 
 
     @Override
@@ -571,7 +576,90 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return null;
     }
 
+    /**
+     * 所有未执行的出库单
+     */
+    private void unExecuted() {
+        /**
+         * 先取出领料未完成的任务
+         */
+        List<ActivitiProcessTask> processTasks = activitiProcessTaskService.query().eq("type", "OUTSTOCK").eq("display", 1).ne("status", 99).list();
+        for (ActivitiProcessTask processTask : processTasks) {
+
+        }
+
+    }
+
+    /**
+     * 通过任务判断节点
+     */
+    private Map<Integer, List<ActivitiProcessTask>> judgeNode(ActivitiProcessTask task) {
+
+        Map<Integer,  List<ActivitiProcessTask>> map = new HashMap<>();
+        /**
+         * 取出当前执行节点
+         */
+        List<ActivitiProcessLog> processLogs = processLogService.query().eq("task_id", task.getProcessTaskId()).list();
+        for (ActivitiProcessLog processLog : processLogs) {
+
+            if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {     //找出配置动作的节点
+                List<ActionStatus> statuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+                for (ActionStatus status : statuses) {
+                    if (status.getAction().equals(OutStockActionEnum.outStock.name())) {   //执行节点
+                        if (isExecution(processLog, processLogs)) {
+
+                        }
+                    }
+                }
+            }
+        }
+
+        return  map;
+    }
+
+    /**
+     * 判断是否是执行节点
+     */
+    private boolean isExecution(ActivitiProcessLog processLog, List<ActivitiProcessLog> processLogs) {
+
+        List<ActivitiSteps> activitiSteps = stepsService.query().eq("process_id", processLog.getPeocessId()).list();
+
+
+        ActivitiSteps parent = null;
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            if (processLog.getSetpsId().equals(activitiStep.getSetpsId())) {
+                parent = findParent(activitiStep, activitiSteps);
+            }
+        }
+        for (ActivitiProcessLog log : processLogs) {
+            if (ToolUtil.isNotEmpty(parent) && log.getSetpsId().equals(parent.getSetpsId()) && log.getStatus() == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private ActivitiSteps findParent(ActivitiSteps step, List<ActivitiSteps> activitiSteps) {
+
+        ActivitiSteps steps = null;
+
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            if (step.getSupper().equals(activitiStep.getSetpsId())) {
+                if (activitiStep.getStepType().equals("send")) {
+                    steps = findParent(activitiStep, activitiSteps);
+                } else {
+                    steps = activitiStep;
+                }
+                break;
+            }
+        }
+        return steps;
+
+    }
+
     @Override
+
     public void outStock(ProductionPickListsParam param) {
         List<Long> stockIds = new ArrayList<>();
         List<Long> pickListsIds = new ArrayList<>();
@@ -798,7 +886,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsCart pickListsCart : pickListsCarts) {
             detailIds.add(pickListsCart.getPickListsDetailId());
         }
-        List<ProductionPickListsDetail> listsDetails =detailIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.listByIds(detailIds.stream().distinct().collect(Collectors.toList()));
+        List<ProductionPickListsDetail> listsDetails = detailIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.listByIds(detailIds.stream().distinct().collect(Collectors.toList()));
         for (ProductionPickListsCartParam cartsParam : param.getCartsParams()) {
             for (ProductionPickListsCart pickListsCart : pickListsCarts) {
                 if (pickListsCart.getStorehouseId().equals(cartsParam.getStorehouseId()) && pickListsCart.getSkuId().equals(cartsParam.getSkuId()) && pickListsCart.getPickListsId().equals(cartsParam.getPickListsId())) {
