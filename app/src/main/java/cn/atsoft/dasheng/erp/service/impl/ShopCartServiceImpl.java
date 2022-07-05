@@ -85,6 +85,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private RemarksService remarksService;
     @Autowired
     private SkuBrandBindService brandBindService;
+   @Autowired
     private InventoryService inventoryService;
     @Autowired
     private InventoryDetailService inventoryDetailService;

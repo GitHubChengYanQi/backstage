@@ -98,6 +98,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private MessageProducer messageProducer;
+    @Autowired
     private InventoryDetailService inventoryDetailService;
 
 
@@ -275,16 +276,19 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         } else {
             updateInventoryStatus(param, -1);
         }
-        for (AnomalyDetailParam detailParam : param.getDetailParams()) {
-            AnomalyDetail detail = new AnomalyDetail();
-            ToolUtil.copyProperties(detailParam, detail);
-            detail.setAnomalyId(param.getAnomalyId());
-            detail.setInkindId(detailParam.getInkindId());
-            if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
-                String json = JSON.toJSONString(detailParam.getNoticeIds());
-                detail.setRemark(json);
+        if (t) {   //添加异常信息
+            for (AnomalyDetailParam detailParam : param.getDetailParams()) {
+                AnomalyDetail detail = new AnomalyDetail();
+                ToolUtil.copyProperties(detailParam, detail);
+                detail.setAnomalyId(param.getAnomalyId());
+                detail.setInkindId(param.getInkind());
+//                detail.setInkindId(detailParam.getPidInKind());
+                if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
+                    String json = JSON.toJSONString(detailParam.getNoticeIds());
+                    detail.setRemark(json);
+                }
+                detailService.save(detail);
             }
-
         }
         return t;
     }

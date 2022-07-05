@@ -437,18 +437,18 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 }
             }
 
+            for (InventoryResult inventoryResult : inventoryResults) {
+                if (inventoryResult.getInventoryTaskId().equals(datum.getFormId())) {
+                    String statusName = statusMap.get(inventoryResult.getStatus());
+                    inventoryResult.setStatusName(statusName);
+                    datum.setReceipts(inventoryResult);
+
+                    break;
+                }
+            }
             for (AnomalyResult anomalyResult : anomalyResults) {
                 if (datum.getType().equals("ErrorForWard") && datum.getFormId().equals(anomalyResult.getAnomalyId())) {
                     datum.setReceipts(anomalyResult);
-                    for (InventoryResult inventoryResult : inventoryResults) {
-                        if (inventoryResult.getInventoryTaskId().equals(datum.getFormId())) {
-                            String statusName = statusMap.get(inventoryResult.getStatus());
-                            inventoryResult.setStatusName(statusName);
-                            datum.setReceipts(inventoryResult);
-
-                            break;
-                        }
-                    }
                 }
             }
         }

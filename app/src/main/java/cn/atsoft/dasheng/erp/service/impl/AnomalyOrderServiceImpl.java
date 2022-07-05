@@ -108,6 +108,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private UserService userService;
     @Autowired
     private SkuService skuService;
+    @Autowired
     private InventoryDetailService inventoryDetailService;
     @Autowired
     private ProductionPickListsService pickListsService;
