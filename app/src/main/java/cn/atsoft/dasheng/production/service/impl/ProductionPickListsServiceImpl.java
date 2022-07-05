@@ -579,23 +579,37 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     /**
      * 所有未执行的出库单
      */
-    private void unExecuted() {
+    @Override
+    public Map<Integer, List<ActivitiProcessTask>> unExecuted() {
+
+        Map<Integer, List<ActivitiProcessTask>> map = new HashMap<>();
+        List<ActivitiProcessTask> executed = new ArrayList<>();
+        List<ActivitiProcessTask> unExecuted = new ArrayList<>();
         /**
          * 先取出领料未完成的任务
          */
         List<ActivitiProcessTask> processTasks = activitiProcessTaskService.query().eq("type", "OUTSTOCK").eq("display", 1).ne("status", 99).list();
         for (ActivitiProcessTask processTask : processTasks) {
-
+            boolean judgeNode = judgeNode(processTask);
+            if (judgeNode) {
+                executed.add(processTask);
+            } else {
+                unExecuted.add(processTask);
+            }
         }
+        map.put(99, executed);
+        map.put(50, unExecuted);
 
+        return map;
     }
 
     /**
      * 通过任务判断节点
      */
-    private Map<Integer, List<ActivitiProcessTask>> judgeNode(ActivitiProcessTask task) {
+    private boolean judgeNode(ActivitiProcessTask task) {
 
-        Map<Integer,  List<ActivitiProcessTask>> map = new HashMap<>();
+        boolean t = false;
+
         /**
          * 取出当前执行节点
          */
@@ -607,14 +621,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 for (ActionStatus status : statuses) {
                     if (status.getAction().equals(OutStockActionEnum.outStock.name())) {   //执行节点
                         if (isExecution(processLog, processLogs)) {
-
+                            t = true;
                         }
                     }
                 }
             }
         }
 
-        return  map;
+        return t;
     }
 
     /**

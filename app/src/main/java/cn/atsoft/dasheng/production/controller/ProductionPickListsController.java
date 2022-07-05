@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
@@ -268,6 +269,14 @@ public class ProductionPickListsController extends BaseController {
         this.productionPickListsService.outStock(productionPickListsParam);
         return ResponseData.success();
     }
+
+    @RequestMapping(value = "/unExecuted", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData unExecuted() {
+        Map<Integer, List<ActivitiProcessTask>> listMap = this.productionPickListsService.unExecuted();
+        return ResponseData.success(listMap);
+    }
+
 
     @RequestMapping(value = "/createOutStockOrderBySku", method = RequestMethod.POST)
     @ApiOperation("列表")

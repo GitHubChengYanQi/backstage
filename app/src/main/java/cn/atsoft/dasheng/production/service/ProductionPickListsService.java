@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
@@ -77,6 +78,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     void sendPersonPick(ProductionPickListsParam param);
 
     List<StorehouseResult> getStockSkus(List<Long> skuIds);
+
+    Map<Integer, List<ActivitiProcessTask>> unExecuted();
 
     void outStock(ProductionPickListsParam param);
 
