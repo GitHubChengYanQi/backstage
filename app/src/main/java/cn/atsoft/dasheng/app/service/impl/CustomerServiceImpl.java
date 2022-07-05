@@ -105,7 +105,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Integer customerCount = this.query().eq("display", 1).eq("customer_name", param.getCustomerName()).count();
 
         //有同名客户 阻止添加
-        if (customerCount>0) {
+        if (customerCount > 0) {
             throw new ServiceException(500, "已有当前客户");
         }
         param.setCustomerId(null);
@@ -152,7 +152,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
         }
 
-        if (ToolUtil.isNotEmpty(param.getSupply())&&param.getSupply() == 1) {   //供应商
+        if (ToolUtil.isNotEmpty(param.getSupply()) && param.getSupply() == 1) {   //供应商
             supplyService.addList(param.getSupplyParams(), entity.getCustomerId());
             brandService.save(new Brand() {{
                 setBrandName(entity.getCustomerName());
@@ -247,6 +247,19 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         return PageFactory.createPageInfo(page);
     }
+
+    /**
+     * 纯净查询
+     * @param param
+     * @return
+     */
+    @Override
+    public PageInfo<CustomerResult> pureList(CustomerParam param) {
+        Page<CustomerResult> pageContext = getPageContext();
+        IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param, null);
+        return PageFactory.createPageInfo(page);
+    }
+
 
     public CustomerResult format(List<CustomerResult> data) {
 

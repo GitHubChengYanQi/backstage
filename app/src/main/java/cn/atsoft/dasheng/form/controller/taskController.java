@@ -4,11 +4,18 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
+import cn.atsoft.dasheng.erp.entity.Inventory;
+import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
+import cn.atsoft.dasheng.erp.model.result.InventoryResult;
+import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
+import cn.atsoft.dasheng.erp.service.InventoryDetailService;
+import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
@@ -91,6 +98,8 @@ public class taskController extends BaseController {
     private StepsService appStepService;
     @Autowired
     private AnomalyService anomalyService;
+    @Autowired
+    private InventoryService inventoryService;
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -165,7 +174,7 @@ public class taskController extends BaseController {
                     add(taskResult);
                 }});
                 break;
-            case "INSTOCKERROR":
+            case "ERROR":
                 AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
                 taskResult.setReceipts(orderResult);
                 break;
@@ -181,6 +190,11 @@ public class taskController extends BaseController {
 //                        add(taskResult);
 //                    }});
                 break;
+            case "Stocktaking":
+                InventoryResult inventoryResult = inventoryService.detail(taskResult.getFormId());
+                taskResult.setReceipts(inventoryResult);
+                break;
+
         }
         //树形结构
         ActivitiStepsResult stepResult = stepsService.getStepResult(taskResult.getProcessId());

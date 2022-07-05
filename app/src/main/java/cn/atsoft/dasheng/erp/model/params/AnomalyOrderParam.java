@@ -26,6 +26,8 @@ public class AnomalyOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String message;
+
     private Long actionId;
 
     private String type;

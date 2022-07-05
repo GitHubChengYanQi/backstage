@@ -24,6 +24,31 @@ public class InventoryDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("real_number")
+    private Long realNumber;
+
+    @TableField("lock_status")
+    private Integer lockStatus;
+
+    @TableField("enclosure")
+    private String enclosure;
+
+    @TableField("anomaly_id")
+    private Long anomalyId;
+
+    @TableField("customer_id")
+    private Long customerId;
+
+    @TableField("brand_id")
+    private Long brandId;
+
+    @TableField("number")
+    private Long number;
+
+
+    @TableField("position_id")
+    private Long positionId;
+
     /**
      * 盘点任务详情id
      */
@@ -166,6 +191,70 @@ public class InventoryDetail implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
+    }
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
+
+    public Long getAnomalyId() {
+        return anomalyId;
+    }
+
+    public void setAnomalyId(Long anomalyId) {
+        this.anomalyId = anomalyId;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
+    }
+
+    public Integer getLockStatus() {
+        return lockStatus;
+    }
+
+    public void setLockStatus(Integer lockStatus) {
+        this.lockStatus = lockStatus;
+    }
+
+    public Long getRealNumber() {
+        return realNumber;
+    }
+
+    public void setRealNumber(Long realNumber) {
+        this.realNumber = realNumber;
     }
 
     @Override

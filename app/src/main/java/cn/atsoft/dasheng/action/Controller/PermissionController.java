@@ -31,7 +31,7 @@ public class PermissionController {
                 return ResponseData.success(QualityDictEnum.enumList());
             case OUTSTOCK:
                 return ResponseData.success(OutStockDictEnum.enumList());
-            case INSTOCKERROR:
+            case ERROR:
                 return ResponseData.success(InstockErrorDictEnum.enumList());
             case PURCHASEORDER:
                 return ResponseData.success(OrderDictEnum.enumList());

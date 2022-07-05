@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 盘点任务主表
@@ -20,6 +24,19 @@ public class InventoryResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private  String statusName;
+
+    private Long status;
+
+    private Object taskList;
+
+    private String coding;
+
+    private int skuSize;
+
+    private int positionSize;
+
+    private List<InventoryDetailResult> detailResults;
 
     private String enclosure;
 

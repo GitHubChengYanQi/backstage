@@ -28,6 +28,8 @@ public interface AnomalyOrderService extends IService<AnomalyOrder> {
     void add(AnomalyOrderParam param);
 
 
+    void addByInventory(AnomalyOrderParam param);
+
     void submit(AnomalyOrderParam orderParam);
 
     /**

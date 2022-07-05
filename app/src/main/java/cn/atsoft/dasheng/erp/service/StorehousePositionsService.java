@@ -56,6 +56,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
     List<BrandResult> selectByBrand(Long skuId, Long brandId);
 
+    Integer getPositionNum(List<Long> skuIds);
+
     StorehousePositionsResult positionsResultById(Long codeId);
 
 
@@ -117,7 +119,11 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
     List<StorehousePositionsResult> getSupperBySkuId(Long skuId);
 
+    List<Long> getEndChild(Long positionId);
+
     Map<Long, Long> getHouseByPositionId(List<Long> postitionIds);
+
+    void format(List<StorehousePositionsResult> data);
 
     void skuFormat(List<SkuResult> data);
 }

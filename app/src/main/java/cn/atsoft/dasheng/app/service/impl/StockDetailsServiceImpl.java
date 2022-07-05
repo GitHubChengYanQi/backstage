@@ -93,6 +93,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
     @Override
+    public List<StockDetails> getStock() {
+        return this.query().eq("display", 1).gt("number", 0).list();
+    }
+
+    @Override
     public List<StockDetailsResult> getDetailsBySkuId(Long id) {
         if (ToolUtil.isEmpty(id)) {
             throw new ServiceException(500, "缺少id");
@@ -133,8 +138,6 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         }
         return detailsResults;
     }
-
-
 
 
     @Override
@@ -308,10 +311,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
         }
     }
+
     @Override
-    public List<StockDetailExcel> getStockDetail(){
+    public List<StockDetailExcel> getStockDetail() {
         List<StockDetailExcel> stockDetailExcels = this.baseMapper.stockDetailExcelExport();
-        List<Long>  skuIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
         List<Long> storeHousePositionIds = new ArrayList<>();
@@ -329,7 +333,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             if (ToolUtil.isNotEmpty(stockDetailExcel.getCustomerId())) {
                 customerIds.add(stockDetailExcel.getCustomerId());
             }
-            if (ToolUtil.isNotEmpty(stockDetailExcel.getStorehousePositionsId())){
+            if (ToolUtil.isNotEmpty(stockDetailExcel.getStorehousePositionsId())) {
                 storeHousePositionIds.add(stockDetailExcel.getStorehousePositionsId());
             }
         }

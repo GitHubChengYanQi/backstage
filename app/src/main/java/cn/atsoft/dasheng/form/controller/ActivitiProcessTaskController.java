@@ -56,7 +56,7 @@ public class ActivitiProcessTaskController extends BaseController {
     @ApiOperation("")
     public ResponseData getUsers(@RequestBody ActivitiAuditParam activitiAuditParam) {
         ActivitiAudit audit = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
-        List<Long> longs = taskSend.selectUsers(audit.getRule(),null);
+        List<Long> longs = taskSend.selectUsers(audit.getRule(), null);
         return ResponseData.success(longs);
     }
 
@@ -111,7 +111,7 @@ public class ActivitiProcessTaskController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ActivitiProcessTaskResult> detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
-        ActivitiProcessTaskResult result= this.activitiProcessTaskService.detail(activitiProcessTaskParam.getProcessTaskId());
+        ActivitiProcessTaskResult result = this.activitiProcessTaskService.detail(activitiProcessTaskParam.getProcessTaskId());
         return ResponseData.success(result);
     }
 

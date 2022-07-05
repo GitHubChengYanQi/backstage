@@ -30,6 +30,10 @@ import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -104,6 +108,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private UserService userService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private InventoryDetailService inventoryDetailService;
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
     @Override
     @Transactional
@@ -180,11 +188,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     }
                     break;
             }
-
-
         }
-
-
         submit(entity);
         shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常描述");
         shopCartService.addDynamic(entity.getOrderId(), "提交了异常");
@@ -198,21 +202,31 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     }
 
     private void submit(AnomalyOrder entity) {
-        ActivitiProcess activitiProcess = activitiProcessService.query()
-                .eq("display", 1)
-                .eq("type", ProcessType.INSTOCKERROR.getType())
-                .eq("status", 99).eq("module", "verifyError").one();
+
+        String module = "";
+        String message = "";
+        switch (entity.getType()) {
+            case "instock":
+                module = "INSTOCKERROR";
+                message = "入库";
+                break;
+            case "Stocktaking":
+                module = "StocktakingError";
+                message = "盘点";
+                break;
+        }
+
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.ERROR.getType()).eq("status", 99).eq("module", module).eq("display", 1).one();
         //    发起审批流程
         if (ToolUtil.isNotEmpty(activitiProcess)) {
-
             this.power(activitiProcess);//检查创建权限
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "提交的入库异常 ");
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + message + "异常 ");
             activitiProcessTaskParam.setQTaskId(entity.getOrderId());
             activitiProcessTaskParam.setUserId(entity.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getOrderId());
-            activitiProcessTaskParam.setType(ProcessType.INSTOCKERROR.getType());
+            activitiProcessTaskParam.setType(ProcessType.ERROR.getType());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加小铃铛
@@ -240,6 +254,74 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     }
 
     /**
+     * 盘点异常打单据添加
+     *
+     * @param param
+     */
+    @Override
+    public void addByInventory(AnomalyOrderParam param) {
+
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "15").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置异常单据自动生成编码规则");
+            }
+        }
+
+        AnomalyOrder entity = getEntity(param);
+        this.save(entity);
+        List<Anomaly> anomalies = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
+            ids.add(anomalyParam.getAnomalyId());
+            Anomaly anomaly = new Anomaly();
+            anomaly.setStatus(98);
+            ToolUtil.copyProperties(anomalyParam, anomaly);
+            anomaly.setOrderId(entity.getOrderId());
+            anomalies.add(anomaly);
+        }
+        anomalyService.updateBatchById(anomalies);    //更新异常单据状态
+        /**
+         * 更新购物车状态
+         */
+        ShopCart shopCart = new ShopCart();
+        shopCart.setStatus(99);
+        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+            in("form_id", ids);
+        }});
+
+
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.ERROR.getType()).eq("status", 99).eq("module", "StocktakingError").one();
+        //    发起审批流程
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+
+            this.power(activitiProcess);//检查创建权限
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的盘点异常 ");
+            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
+            activitiProcessTaskParam.setUserId(entity.getCreateUser());
+            activitiProcessTaskParam.setFormId(entity.getOrderId());
+            activitiProcessTaskParam.setType(ProcessType.ERROR.getType());
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("processTask");
+            wxCpSendTemplate.setSourceId(taskId);
+            //添加log
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+
+        } else {
+            throw new ServiceException(500, "请先设置流程");
+        }
+
+    }
+
+    /**
      * 提交
      *
      * @param orderParam
@@ -263,15 +345,72 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
         anomalyService.format(anomalyResults);
 
+        switch (anomalyOrder.getType()) {
+            case "instock":
+                inStock(anomalyResults);
+                break;
+            case "Stocktaking":
+                stocktaking(anomalyResults, orderParam.getOrderId());
+                break;
+        }
+        /**
+         * 更新状态
+         */
+        anomalyOrder.setComplete(99);
+        this.updateById(anomalyOrder);
+        updateStatus(orderParam);
+    }
 
+    /**
+     * 盘点异常
+     */
+    private void stocktaking(List<AnomalyResult> anomalyResults, Long orderId) {
+
+        ProductionPickListsParam param = new ProductionPickListsParam();
+        param.setSource("StocktakingErrorOutStock");
+        param.setSourceId(orderId);
+        param.setUserId(LoginContextHolder.getContext().getUserId());
+
+        List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+        for (AnomalyResult anomalyResult : anomalyResults) {
+            for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
+                if (detail.getStauts() == 2) {  //报损 创建出库单
+
+                    InventoryDetail inventoryDetail = inventoryDetailService.query()  //找到盘点异常物料 进行出库
+                            .eq("inventory_id", anomalyResult.getFormId())
+                            .eq("inkind_id", detail.getInkindId()).one();
+
+                    ProductionPickListsDetailParam detailParam = new ProductionPickListsDetailParam();
+                    detailParam.setBrandId(inventoryDetail.getBrandId());
+                    detailParam.setSkuId(inventoryDetail.getSkuId());
+                    detailParam.setNumber(Math.toIntExact(inventoryDetail.getRealNumber()));
+                    detailParam.setStorehousePositionsId(inventoryDetail.getPositionId());
+                    detailParam.setReceivedNumber(Math.toIntExact(inventoryDetail.getRealNumber()));
+                    pickListsDetailParams.add(detailParam);
+                }
+            }
+
+            param.setPickListsDetailParams(pickListsDetailParams);
+        }
+
+        pickListsService.add(param);
+    }
+
+    /**
+     * 入库异常
+     *
+     * @param anomalyResults
+     */
+    private void inStock(List<AnomalyResult> anomalyResults) {
+
+        List<Long> anomalyIds = new ArrayList<>();
         for (AnomalyResult anomalyResult : anomalyResults) {
             handle(anomalyResult);
 
         }
-
+        List<AnomalyDetail> details = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
         for (AnomalyResult anomaly : anomalyResults) {
             long errorNum = 0;
-
             boolean t = false;
             for (AnomalyDetailResult detail : anomaly.getDetails()) {
                 if (detail.getStauts() == -1) {
@@ -294,14 +433,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 instockLogDetailService.save(instockLogDetail);
             }
         }
-
-
-        /**
-         * 更新状态
-         */
-        anomalyOrder.setComplete(99);
-        this.updateById(anomalyOrder);
-        updateStatus(orderParam);
     }
 
 
@@ -343,7 +474,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             /**
              * 消息队列完成动作
              */
-            processLogService.checkAction(param.getOrderId(), "INSTOCKERROR", param.getActionId(), LoginContextHolder.getContext().getUserId());
+            processLogService.checkAction(param.getOrderId(), "ERROR", param.getActionId(), LoginContextHolder.getContext().getUserId());
 //            messageProducer.auditMessageDo(new AuditEntity() {{
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);

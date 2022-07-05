@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.List;
+
 
 /**
  * 盘点任务主表控制器
@@ -33,23 +35,55 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "盘点任务主表")
 public class InventoryController extends BaseController {
     @Autowired
-    private OrCodeBindService bindService; 
+    private OrCodeBindService bindService;
 
     @Autowired
     private InventoryService inventoryService;
 
-//    /**
-//     * 新增接口
-//     *
-//     * @author Captain_Jazz
-//     * @Date 2021-12-27
-//     */
-//    @RequestMapping(value = "/add", method = RequestMethod.POST)
-//    @ApiOperation("新增")
-//    public ResponseData addItem(@RequestBody InventoryParam inventoryParam) {
-//        this.inventoryService.add(inventoryParam);
-//        return ResponseData.success();
-//    }
+    /**
+     * 新增接口
+     *
+     * @author Captain_Jazz
+     * @Date 2021-12-27
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addItem(@RequestBody InventoryParam inventoryParam) {
+        this.inventoryService.bySku(inventoryParam);  //通过物料筛选出 品牌 库位
+        this.inventoryService.add(inventoryParam);
+        return ResponseData.success();
+    }
+
+    /**
+     * 即时盘点添加
+     *
+     * @author Captain_Jazz
+     * @Date 2021-12-27
+     */
+    @RequestMapping(value = "/timelyAdd", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData timelyAddItem(@RequestBody InventoryParam inventoryParam) {
+        this.inventoryService.timelyAdd(inventoryParam);
+        return ResponseData.success();
+    }
+
+
+    @RequestMapping(value = "/selectCondition", method = RequestMethod.POST)
+    @ApiOperation("条件盘点")
+    public ResponseData selectCondition(@RequestBody InventoryParam inventoryParam) {
+        this.inventoryService.selectCondition(inventoryParam);
+        return ResponseData.success();
+    }
+
+
+    @RequestMapping(value = "/timely", method = RequestMethod.POST)
+    @ApiOperation("及时盘点")
+    public ResponseData timely(@RequestBody InventoryParam inventoryParam) {
+        List<StorehousePositionsResult> timely = this.inventoryService.timely(inventoryParam.getPositionId());
+        return ResponseData.success(timely);
+    }
+
+
 //
 //    /**
 //     * 编辑接口
@@ -133,12 +167,8 @@ public class InventoryController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<InventoryResult> detail(@RequestBody InventoryParam inventoryParam) {
-        Inventory detail = this.inventoryService.getById(inventoryParam.getInventoryTaskId());
-        InventoryResult result = new InventoryResult();
-        ToolUtil.copyProperties(detail, result);
-
-
-        return ResponseData.success(result);
+        InventoryResult detail = this.inventoryService.detail(inventoryParam.getInventoryTaskId());
+        return ResponseData.success(detail);
     }
 
     /**

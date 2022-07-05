@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -26,6 +27,8 @@ import java.util.List;
 public class ShopCartParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private ReceiptsEnum receiptsEnum;
 
     private List<ShopCartParam> shopCartParams;
 

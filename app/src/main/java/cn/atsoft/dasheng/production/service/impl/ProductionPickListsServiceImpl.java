@@ -290,7 +290,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
 
             for (UserResult userResultsById : userResultsByIds) {
-                if (result.getUserId().equals(userResultsById.getUserId())) {
+                if (ToolUtil.isNotEmpty(result.getUserId()) && result.getUserId().equals(userResultsById.getUserId())) {
                     result.setUserResult(userResultsById);
                 }
                 if (result.getCreateUser().equals(userResultsById.getUserId())) {

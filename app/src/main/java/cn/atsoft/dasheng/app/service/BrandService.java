@@ -67,6 +67,8 @@ public interface BrandService extends IService<Brand> {
      */
     PageInfo<BrandResult> findPageBySpec(BrandParam param, DataScope dataScope);
 
+    PageInfo<BrandResult> pureList(BrandParam param, DataScope dataScope);
+
     /**
      * 返回多个品牌
      *

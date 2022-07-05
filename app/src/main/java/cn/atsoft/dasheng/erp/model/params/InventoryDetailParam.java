@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -25,11 +26,29 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Long> inventoryIds;
+
+    private Integer lockStatus;
+
+    private Long positionId;
+
     private Long skuId;
+
+    private List<Long> mediaIds;
+
+    private Long realNumber;
+
+    private Long anomalyId;
+
+    private Long customerId;
+
+    private String enclosure;
+
+    private Long brandId;
+
 
     private Long storeHouseId;
 
-    private Long positionId;
 
     private Long qrcodeId;
 

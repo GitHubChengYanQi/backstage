@@ -124,6 +124,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private AnomalyService anomalyService;
     @Autowired
     private InstockListService instockListService;
+    @Autowired
+    private InventoryService inventoryService;
 
 
     @Override
@@ -264,7 +266,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
-                        case "INSTOCKERROR":   //入库异常
+                        case "ERROR":   //入库异常
                             if (checkInstock.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 updateStatus(activitiProcessLog.getLogId(), status, loginUserId);
                                 setStatus(logs, activitiProcessLog.getLogId());
@@ -280,6 +282,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         case "createInstock":   //入库创建
                         case "INSTOCK":   //入库创建
                         case "OUTSTOCK":   //出库
+                        case "Stocktaking":
                             updateStatus(activitiProcessLog.getLogId(), status, loginUserId);
                             setStatus(logs, activitiProcessLog.getLogId());
                             //拒绝走拒绝方法
@@ -409,7 +412,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     instockOrder.setStatus(documentsStatusId);
                     instockOrderService.updateById(instockOrder);
                     break;
-                case "INSTOCKERROR":
+                case "ERROR":
                     AnomalyOrder anomalyOrder = anomalyOrderService.getById(formId);
                     anomalyOrder.setStatus(documentsStatusId);
                     anomalyOrderService.updateById(anomalyOrder);
@@ -418,6 +421,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     ProductionPickLists productionPickLists = pickListsService.getById(formId);
                     productionPickLists.setStatus(documentsStatusId);
                     pickListsService.updateById(productionPickLists);
+                    break;
+                case "Stocktaking":
+                    Inventory inventory = inventoryService.getById(formId);
+                    inventory.setStatus(documentsStatusId);
+                    inventoryService.updateById(inventory);
                     break;
             }
 
@@ -444,11 +452,14 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "inquiry":
                 inquiryTaskService.updateStatus(processTask);
                 break;
-            case "INSTOCKERROR":
+            case "ERROR":
                 anomalyOrderService.updateStatus(processTask);
                 break;
             case "INSTOCK":
                 instockOrderService.updateCreateInstockStatus(processTask);
+                break;
+            case "Stocktaking":
+                inventoryService.updateStatus(processTask);
                 break;
         }
     }
@@ -498,15 +509,18 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     }
                 }
                 break;
-            case "INSTOCKERROR":
+            case "ERROR":
                 List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();
                 if (ToolUtil.isNotEmpty(anomalies)) {
                     Anomaly anomaly = anomalies.get(0);
-                    boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
-                    if (b) {
-                        ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
-                        autoAudit(task.getProcessTaskId(), 1, loginUserId);
+                    if (anomaly.getType().equals("InstockError")) {
+                        boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
+                        if (b) {
+                            ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
+                            autoAudit(task.getProcessTaskId(), 1, loginUserId);
+                        }
                     }
+
                 }
 
                 break;
@@ -533,12 +547,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "inquiry":
                 inquiryTaskService.updateRefuseStatus(processTask);
                 break;
-            case "instockError":
+            case "Error":
                 instockOrderService.updateRefuseStatus(processTask);
                 break;
-            case "createInstock":
+            case "INSTOCK":
                 instockOrderService.updateCreateInstockRefuseStatus(processTask);
                 break;
+
         }
     }
 
@@ -605,6 +620,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     public void checkAction(Long id, String formType, Long actionId, Long loginUserId) {
 
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", formType).eq("form_id", id).eq("display", 1).one();
+        if (ToolUtil.isEmpty(processTask)) {
+            throw new ServiceException(500, "当前任务不存在");
+        }
         List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : logs) {

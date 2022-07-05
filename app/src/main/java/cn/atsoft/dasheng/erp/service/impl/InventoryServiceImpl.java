@@ -2,44 +2,38 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
+import cn.atsoft.dasheng.action.Enum.StocktakingEnum;
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
-import cn.atsoft.dasheng.app.service.OutstockOrderService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.app.service.StockService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Inkind;
-import cn.atsoft.dasheng.erp.model.params.InstockListParam;
-import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
-import cn.atsoft.dasheng.erp.model.result.InkindResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.erp.service.InkindService;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.*;
+import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
-import cn.atsoft.dasheng.erp.entity.Inventory;
-import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.mapper.InventoryMapper;
-import cn.atsoft.dasheng.erp.model.params.InventoryParam;
-import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
-import cn.atsoft.dasheng.erp.service.InventoryDetailService;
-import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
-import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -103,26 +97,286 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private RemarksService remarksService;
     @Autowired
     private MobileService mobileService;
+    @Autowired
+    private CodingRulesService codingRulesService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private ShopCartService shopCartService;
+    @Autowired
+    private PartsService partsService;
+    @Autowired
+    private ErpPartsDetailService partsDetailService;
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
     @Override
     @Transactional
     public Inventory add(InventoryParam param) {
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "6").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+            }
+        }
         Inventory entity = getEntity(param);
         this.save(entity);
 
         if (ToolUtil.isEmpty(param.getDetailParams())) {
-            throw new ServiceException(500, "缺少参数");
+            throw new ServiceException(500, "物料不存在");
         }
         List<InventoryDetail> inventoryDetails = BeanUtil.copyToList(param.getDetailParams(), InventoryDetail.class, new CopyOptions());
         for (InventoryDetail inventoryDetail : inventoryDetails) {
             inventoryDetail.setInventoryId(entity.getInventoryTaskId());
+            inventoryDetail.setRealNumber(inventoryDetail.getNumber());
         }
         inventoryDetailService.saveBatch(inventoryDetails);
 
         param.setInventoryTaskId(entity.getInventoryTaskId());
         param.setCreateUser(entity.getCreateUser());
         submit(param);
+
+
+        /**
+         * 清空购物车
+         */
+        ShopCart shopCart = new ShopCart();
+        shopCart.setDisplay(0);
+        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+            eq("type", "stocktaking");
+            eq("create_user", LoginContextHolder.getContext().getUserId());
+        }});
         return entity;
+    }
+
+    @Override
+    public void timelyAdd(InventoryParam param) {
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "6").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+            }
+        }
+        Inventory entity = getEntity(param);
+        this.save(entity);
+
+        if (ToolUtil.isEmpty(param.getDetailParams())) {
+            throw new ServiceException(500, "物料不存在");
+        }
+        List<InventoryDetail> inventoryDetails = BeanUtil.copyToList(param.getDetailParams(), InventoryDetail.class, new CopyOptions());
+        for (InventoryDetail inventoryDetail : inventoryDetails) {
+            inventoryDetail.setInventoryId(entity.getInventoryTaskId());
+            inventoryDetail.setRealNumber(inventoryDetail.getNumber());
+        }
+        inventoryDetailService.saveBatch(inventoryDetails);
+        param.setCreateUser(entity.getCreateUser());
+
+//        /**
+//         * 清空购物车
+//         */
+//        ShopCart shopCart = new ShopCart();
+//        shopCart.setDisplay(0);
+//        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+//            eq("type", AnomalyType.timelyInventory.name());
+//            eq("create_user", LoginContextHolder.getContext().getUserId());
+//        }});
+
+        List<ShopCart> shopCarts = shopCartService.query()
+                .eq("type", AnomalyType.timelyInventory.name())
+                .eq("create_user", LoginContextHolder.getContext().getUserId())
+                .eq("status", 0)
+                .eq("display", 1).list();
+
+
+        List<AnomalyParam> anomalyParams = new ArrayList<>();
+        for (ShopCart cart : shopCarts) {
+            cart.setDisplay(0);
+            AnomalyParam anomalyParam = new AnomalyParam();
+            anomalyParam.setAnomalyId(cart.getFormId());
+        }
+
+        AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
+        anomalyOrderParam.setType(AnomalyType.timelyInventory.name());
+        anomalyOrderParam.setAnomalyParams(anomalyParams);
+        anomalyOrderService.add(anomalyOrderParam);
+        shopCartService.updateBatchById(shopCarts);
+    }
+
+
+    /**
+     * 条件盘点
+     *
+     * @param param
+     */
+    @Override
+    public void selectCondition(InventoryParam param) {
+
+        if (param.getAllSku()) {       //全局盘点
+
+        }
+
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(param.getBrandId())) {  //品牌盘点
+            queryWrapper.eq("brand_id", param.getBrandId());
+        }
+
+        if (ToolUtil.isNotEmpty(param.getPositionId())) {   //库位盘点
+            List<Long> positionIds = positionsService.getEndChild(param.getPositionId());
+            queryWrapper.in("storehouse_positions_id", positionIds);
+        }
+
+
+        if (param.getAllBom()) {   //全局Bom
+            Set<Long> skuIds = new HashSet<>();
+            List<Parts> parts = partsService.query().eq("display", 1).eq("status", 99).list();
+            List<Long> partIds = new ArrayList<>();
+            for (Parts part : parts) {
+                partIds.add(part.getPartsId());
+            }
+            List<ErpPartsDetail> partsDetails = partIds.size() == 0 ? new ArrayList<>() : partsDetailService.query().in("parts_id", partIds).eq("display", 1).list();
+            for (ErpPartsDetail partsDetail : partsDetails) {
+                skuIds.add(partsDetail.getSkuId());
+            }
+            queryWrapper.in("sku_id", skuIds);
+        }
+
+        List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
+        List<InventoryDetailParam> detailParams = new ArrayList<>();
+        for (StockDetails stockDetail : stockDetails) {
+            InventoryDetailParam detailParam = new InventoryDetailParam();
+            detailParam.setSkuId(stockDetail.getSkuId());
+            detailParam.setBrandId(stockDetail.getBrandId());
+            detailParam.setInkindId(stockDetail.getInkindId());
+            detailParam.setPositionId(stockDetail.getStorehousePositionsId());
+            detailParam.setNumber(stockDetail.getNumber());
+            detailParams.add(detailParam);
+        }
+
+        param.setDetailParams(detailParams);
+        this.add(param);
+    }
+
+    @Override
+    public List<StorehousePositionsResult> timely(Long positionId) {
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        List<Long> positionIds = positionsService.getEndChild(positionId);
+        queryWrapper.in("storehouse_positions_id", positionIds);
+        List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
+        return this.positionsResultList(stockDetails);
+
+    }
+
+    private List<StorehousePositionsResult> positionsResultList(List<StockDetails> stockDetails) {
+        if (ToolUtil.isEmpty(stockDetails)) {
+            return new ArrayList<>();
+        }
+        Set<Long> positionIds = new HashSet<>();
+        for (StockDetails detail : stockDetails) {
+            if (ToolUtil.isEmpty(detail.getBrandId())) {
+                detail.setBrandId(0L);
+            }
+            if (ToolUtil.isEmpty(detail.getStorehousePositionsId())) {
+                detail.setStorehousePositionsId(0L);
+            }
+            positionIds.add(detail.getStorehousePositionsId());
+        }
+
+        /**
+         * 通过库位组合
+         */
+        Map<Long, List<StockDetails>> map = new HashMap<>();
+//        Map<Long,Long>
+        for (Long positionId : positionIds) {
+            List<StockDetails> details = new ArrayList<>();
+            for (StockDetails detail : stockDetails) {
+                if (detail.getStorehousePositionsId().equals(positionId)) {
+                    details.add(detail);
+                }
+            }
+            map.put(positionId, details);
+        }
+
+        List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
+        for (Long positionId : positionIds) {
+            List<StockDetails> detailResultList = map.get(positionId);
+            Set<Long> skuIds = new HashSet<>();
+
+
+            for (StockDetails inventoryDetailResult : detailResultList) {
+                skuIds.add(inventoryDetailResult.getSkuId());
+            }
+
+
+            Map<Long, List<BrandResult>> brandMap = new HashMap<>();
+            for (Long skuId : skuIds) {
+                List<BrandResult> brandResults = new ArrayList<>();
+                for (StockDetails inventoryDetailResult : detailResultList) {
+                    if (inventoryDetailResult.getSkuId().equals(skuId)) {
+                        BrandResult brandResult = new BrandResult();
+                        brandResult.setBrandId(inventoryDetailResult.getBrandId());
+                        brandResult.setNumber(inventoryDetailResult.getNumber());
+                        brandResult.setInkind(inventoryDetailResult.getInkindId());
+                        if (inventoryDetailService.mergeBrand(brandResults, brandResult)) {
+                            brandResults.add(brandResult);
+                        }
+                    }
+                }
+
+                inventoryDetailService.brandFormat(brandResults);
+                brandMap.put(skuId, brandResults);
+            }
+
+            List<SkuResult> list = skuService.formatSkuResult(new ArrayList<>(skuIds));
+            for (SkuResult skuResult : list) {
+                skuResult.setBrandResults(brandMap.get(skuResult.getSkuId()));
+            }
+            StorehousePositionsResult positionsResult = new StorehousePositionsResult();
+            positionsResult.setSkuResultList(list);
+            positionsResult.setStorehousePositionsId(positionId);
+            positionsResultList.add(positionsResult);
+
+        }
+
+        inventoryDetailService.positionFormat(positionsResultList);
+        positionsService.format(positionsResultList);
+        return positionsResultList;
+    }
+
+    /**
+     * 通过物料找 盘点条件
+     *
+     * @param param
+     */
+    @Override
+    public void bySku(InventoryParam param) {
+
+        List<Long> skuIds = new ArrayList<>();
+        for (InventoryDetailParam detailParam : param.getDetailParams()) {
+            skuIds.add(detailParam.getSkuId());
+        }
+        List<StockDetails> stockDetails = stockDetailsService.query().in("sku_id", skuIds).list();
+
+        List<InventoryDetailParam> detailParams = new ArrayList<>();
+        for (StockDetails stockDetail : stockDetails) {
+            InventoryDetailParam detailParam = new InventoryDetailParam();
+            detailParam.setSkuId(stockDetail.getSkuId());
+            detailParam.setBrandId(stockDetail.getBrandId());
+            detailParam.setInkindId(stockDetail.getInkindId());
+            detailParam.setPositionId(stockDetail.getStorehousePositionsId());
+            detailParam.setNumber(stockDetail.getNumber());
+            detailParams.add(detailParam);
+        }
+        param.setDetailParams(detailParams);
     }
 
     /**
@@ -131,7 +385,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      * @param param
      */
     private void submit(InventoryParam param) {
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.Stocktaking.name()).eq("status", 99).eq("module", "").one();
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.Stocktaking.name()).eq("status", 99).eq("module", ReceiptsEnum.Stocktaking.name()).one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
@@ -186,6 +440,26 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
 
     @Override
+    public void updateStatus(ActivitiProcessTask processTask) {
+        Inventory inventory = this.getById(processTask.getFormId());
+        inventory.setStatus(StocktakingEnum.done.getStatus());
+        this.updateById(inventory);
+    }
+
+    @Override
+    public InventoryResult detail(Long id) {
+        Inventory inventory = this.getById(id);
+        InventoryResult inventoryResult = new InventoryResult();
+        BeanUtil.copyProperties(inventory, inventoryResult);
+        format(new ArrayList<InventoryResult>() {{
+            add(inventoryResult);
+        }});
+        Object taskList = inventoryDetailService.taskList(id);
+        inventoryResult.setTaskList(taskList);
+        return inventoryResult;
+    }
+
+    @Override
     public void delete(InventoryParam param) {
         Inventory entity = getEntity(param);
         entity.setDisplay(0);
@@ -215,8 +489,10 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public PageInfo<InventoryResult> findPageBySpec(InventoryParam param) {
         Page<InventoryResult> pageContext = getPageContext();
         IPage<InventoryResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
 
     /**
      * 盘点
@@ -503,14 +779,31 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         return entity;
     }
 
-    private void format(List<InventoryResult> data) {
+    @Override
+    public void format(List<InventoryResult> data) {
 
         List<Long> inventoryIds = new ArrayList<>();
-
         for (InventoryResult datum : data) {
             inventoryIds.add(datum.getInventoryTaskId());
         }
 
+        List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
+        for (InventoryResult datum : data) {
 
+            List<InventoryDetailResult> detailResults = new ArrayList<>();
+            List<Long> skuIds = new ArrayList<>();
+
+            for (InventoryDetailResult detail : details) {
+                if (datum.getInventoryTaskId().equals(detail.getInventoryId())) {
+                    detailResults.add(detail);
+                }
+                skuIds.add(detail.getSkuId());
+            }
+            Integer positionNum = storehousePositionsService.getPositionNum(skuIds);
+
+            datum.setPositionSize(positionNum);
+            datum.setSkuSize(detailResults.size());
+//            datum.setDetailResults(detailResults);
+        }
     }
 }

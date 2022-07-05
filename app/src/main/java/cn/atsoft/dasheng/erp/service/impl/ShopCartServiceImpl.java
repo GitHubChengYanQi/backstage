@@ -3,12 +3,12 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.ShopCartMapper;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
@@ -16,12 +16,8 @@ import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.model.result.ShopCartResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
@@ -40,12 +36,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.Data;
-import lombok.Synchronized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -92,6 +85,10 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private RemarksService remarksService;
     @Autowired
     private SkuBrandBindService brandBindService;
+   @Autowired
+    private InventoryService inventoryService;
+    @Autowired
+    private InventoryDetailService inventoryDetailService;
 
     protected static final Logger logger = LoggerFactory.getLogger(ShopCartServiceImpl.class);
 
@@ -154,12 +151,25 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             String skuMessage;
             switch (shopCart.getType()) {
                 case "InstockError":
+                case "StocktakingError":
                     Anomaly anomaly = anomalyService.getById(shopCart.getFormId());
                     anomaly.setDisplay(0);
                     anomalyService.updateById(anomaly);
                     instockList = instockListService.getById(anomaly.getSourceId());
                      skuMessage = skuService.skuMessage(instockList.getSkuId());
                     addDynamic(instockList.getInstockOrderId(), skuMessage + "删除了异常描述");
+                    if (anomaly.getType().equals("InstockError")) {
+                        instockList = instockListService.getById(anomaly.getSourceId());
+                    }
+                    //盘点的撤回
+                    if (anomaly.getType().equals("StocktakingError")) {
+                        List<InventoryDetail> inventoryDetails = inventoryDetailService.query().eq("anomaly_id", anomaly.getAnomalyId()).eq("display", 1).list();
+                        for (InventoryDetail inventoryDetail : inventoryDetails) {
+                            inventoryDetail.setAnomalyId(0L);
+                            inventoryDetail.setStatus(0);
+                        }
+                        inventoryDetailService.updateBatchById(inventoryDetails);
+                    }
                     break;
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
@@ -174,6 +184,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     anomalyService.updateById(error);
                     instockList = instockListService.getById(error.getSourceId());
                     break;
+
             }
             if (instockList != null) {
                 instockList.setStatus(0L);
@@ -306,8 +317,20 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
          * 查看权限
          */
         if (ToolUtil.isNotEmpty(param.getSourceId())) {
-            InstockOrder instockOrder = instockOrderService.getById(param.getSourceId());
-            ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(instockOrder.getInstockOrderId());
+            ActivitiProcessTask processTask = null;
+            Long formId = null;
+            switch (param.getReceiptsEnum()) {
+                case INSTOCK:
+                    InstockOrder instockOrder = instockOrderService.getById(param.getSourceId());
+                    formId = instockOrder.getInstockOrderId();
+                    break;
+                case Stocktaking:
+                    Inventory inventory = inventoryService.getById(param.getSourceId());
+                    formId = inventory.getInventoryTaskId();
+                    break;
+            }
+            processTask = activitiProcessTaskService.getByFormId(formId);
+
             List<Long> userIds = auditService.getUserIds(processTask.getProcessTaskId());
             Long id = LoginContextHolder.getContext().getUserId();
             for (Long userId : userIds) {
@@ -317,11 +340,9 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 }
             }
         }
-
         format(shopCartResults);
         return shopCartResults;
     }
-
 
     /**
      * 申请购物车
@@ -337,6 +358,10 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         format(shopCartResults);
         return shopCartResults;
     }
+
+
+
+
 
 
     @Override
@@ -406,7 +431,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 positionIds.addAll(ids);
             }
 
-            if (ToolUtil.isNotEmpty(datum.getType()) && datum.getType().equals(AnomalyType.InstockError.name())) {
+            if (ToolUtil.isNotEmpty(datum.getType())) {
                 anomalyIds.add(datum.getFormId());
             }
         }
