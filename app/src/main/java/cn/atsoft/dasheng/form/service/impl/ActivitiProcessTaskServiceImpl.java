@@ -79,6 +79,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private ProductionPickListsService productionPickListsService;
     @Autowired
     private AnomalyService anomalyService;
+    @Autowired
     private InventoryService inventoryService;
 
     @Override
