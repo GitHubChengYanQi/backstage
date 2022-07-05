@@ -265,8 +265,8 @@ public class ProductionPickListsController extends BaseController {
             productionPickListsParam = new ProductionPickListsParam();
         }
 
-        this.productionPickListsService.outStock(productionPickListsParam);
-        return ResponseData.success();
+        String code = this.productionPickListsService.outStock(productionPickListsParam);
+        return ResponseData.success(code);
     }
 
     @RequestMapping(value = "/createOutStockOrderBySku", method = RequestMethod.POST)
@@ -302,8 +302,6 @@ public class ProductionPickListsController extends BaseController {
     public ResponseData listByUser(@RequestBody ProductionPickListsParam productionPickListsParam) {
         List<Map<String, Object>> maps = productionPickListsService.listByUser(productionPickListsParam);
         return ResponseData.success(maps);
-
-
     }
 
 
