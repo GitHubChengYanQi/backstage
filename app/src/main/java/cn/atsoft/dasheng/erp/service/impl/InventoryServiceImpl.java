@@ -34,7 +34,6 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
-import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -117,7 +116,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
     @Override
     @Transactional
-    public void add(InventoryParam param) {
+    public Inventory add(InventoryParam param) {
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "6").eq("state", 1).one();
             if (ToolUtil.isNotEmpty(codingRules)) {
@@ -154,6 +153,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             eq("type", "stocktaking");
             eq("create_user", LoginContextHolder.getContext().getUserId());
         }});
+        return entity;
     }
 
     @Override
