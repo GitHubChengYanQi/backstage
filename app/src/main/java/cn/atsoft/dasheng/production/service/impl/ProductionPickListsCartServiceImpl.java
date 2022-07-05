@@ -130,6 +130,9 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
          */
         List<ProductionPickListsCart> entitys = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
+            if(ToolUtil.isEmpty(productionPickListsCartParam.getBrandId())){
+                productionPickListsCartParam.setBrandId(0L);
+            }
             List<StockDetails> stockDetails = new ArrayList<>();
             if (productionPickListsCartParam.getBrandId().equals(0L)){
                 stockDetails = stockDetailsService.query().eq("storehouse_positions_id", productionPickListsCartParam.getStorehousePositionsId()).isNull("brand_id").eq("sku_id", productionPickListsCartParam.getSkuId()).notIn("inkind_id", inkindIds).eq("display", 1).eq("stage", 1).last("limit "+productionPickListsCartParam.getNumber()).orderByAsc("create_time").list();
@@ -327,7 +330,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             }
 
             for (BrandResult brandResult : brandResults) {
-                if (productionPickListsCartResult.getBrandId().equals(brandResult.getBrandId())) {
+                if (ToolUtil.isNotEmpty(productionPickListsCartResult.getBrandId()) && productionPickListsCartResult.getBrandId().equals(brandResult.getBrandId())) {
                     productionPickListsCartResult.setBrandResult(brandResult);
                 }
             }

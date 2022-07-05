@@ -31,6 +31,7 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
     private List<ProductionPickListsCartParam> cartsParams;
     private List<Long> pickListsIds;
     private String pickListsName;
+    private String pickCode;
 
 
 

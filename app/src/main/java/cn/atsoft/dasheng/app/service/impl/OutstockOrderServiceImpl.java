@@ -219,8 +219,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
 
         String encoding = codingRulesService.encoding(2);
-
-
         OutstockOrder entity = getEntity(param);
         entity.setCoding(encoding);
         this.save(entity);
