@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -156,6 +157,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private ActivitiProcessLogService processLogService;
+
     @Autowired
     private ActivitiStepsService stepsService;
 
@@ -543,6 +545,80 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return entity;
     }
 
+    /**
+     * 库存预警
+     */
+    @Override
+    public void warning(ProductionPickListsParam param) {
+
+        List<StockSkuBrand> stockSkuBrands = stockDetailsService.stockSkuBrands();
+        if (stockSkuBrands.size() == 0) {
+            throw new ServiceException(500, "库存数不足");
+        }
+
+        //申请的物料跟库存数比较  并更新库存
+        for (ProductionPickListsDetailParam detailParam : param.getPickListsDetailParams()) {
+            updateStock(detailParam, stockSkuBrands);
+        }
+
+        Map<Integer, List<ActivitiProcessTask>> map = this.unExecuted();
+        List<ActivitiProcessTask> executed = map.get(99);  // 到执行节点的
+        List<ActivitiProcessTask> unExecuted = map.get(50);  //未到执行节点的
+
+
+        List<Long> pickListsIds = new ArrayList<>();
+        for (ActivitiProcessTask processTask : executed) {
+            pickListsIds.add(processTask.getFormId());
+        }
+        for (ActivitiProcessTask processTask : unExecuted) {
+            pickListsIds.add(processTask.getFormId());
+        }
+
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).list();
+        List<ProductionPickListsDetailParam> pickListsDetailParams = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailParam.class, new CopyOptions());
+
+        for (ProductionPickListsDetailParam listsParam : pickListsDetailParams) {
+            if (updateStock(listsParam, stockSkuBrands)) {
+                //TODO  此处调用库存预警
+            }
+        }
+    }
+
+    /**
+     * 更新库存
+     *
+     * @param detailParam
+     * @param stockSkuBrands
+     */
+    private boolean updateStock(ProductionPickListsDetailParam detailParam, List<StockSkuBrand> stockSkuBrands) {
+        if (ToolUtil.isEmpty(stockSkuBrands)) {
+            return true;
+        }
+        boolean f = false;
+
+        for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
+            if (ToolUtil.isEmpty(detailParam.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
+                long number = stockSkuBrand.getNumber() - detailParam.getNumber();
+                if (number < 0) {
+                    f = true;
+                }
+                stockSkuBrand.setNumber(number);
+
+            } else if (detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
+                long number = stockSkuBrand.getNumber() - detailParam.getNumber();
+                if (number < 0) {
+                    f = true;
+                }
+                stockSkuBrand.setNumber(number);
+                break;
+            }
+        }
+        if (f) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public List<StorehouseResult> getStockSkus(List<Long> skuIds) {
 //        List<StockDetails> stockSkus = stockDetailsService.query().in("sku_id", skuIds).list();
@@ -597,8 +673,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 unExecuted.add(processTask);
             }
         }
-        map.put(99, executed);
-        map.put(50, unExecuted);
+        map.put(99, executed);            //执行节点的领料任务
+        map.put(50, unExecuted);          //未到执行节点的领料任务
 
         return map;
     }
@@ -619,11 +695,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {     //找出配置动作的节点
                 List<ActionStatus> statuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
                 for (ActionStatus status : statuses) {
-                    if (status.getAction().equals(OutStockActionEnum.outStock.name())) {   //执行节点
+                    if (status.getAction().equals(OutStockActionEnum.outStock.name())) {   //找出执行节点
                         if (isExecution(processLog, processLogs)) {
                             t = true;
+                            break;
                         }
                     }
+                }
+                if (t) {
+                    break;
                 }
             }
         }
@@ -632,7 +712,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
 
     /**
-     * 判断是否是执行节点
+     * 判断当前是否到执行节点
      */
     private boolean isExecution(ActivitiProcessLog processLog, List<ActivitiProcessLog> processLogs) {
 
@@ -642,10 +722,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         ActivitiSteps parent = null;
         for (ActivitiSteps activitiStep : activitiSteps) {
             if (processLog.getSetpsId().equals(activitiStep.getSetpsId())) {
-                parent = findParent(activitiStep, activitiSteps);
+                parent = findParent(activitiStep, activitiSteps);     //判断执行节点 上一级log状态
             }
         }
-        for (ActivitiProcessLog log : processLogs) {
+        for (ActivitiProcessLog log : processLogs) {     //上级节点log 通过 说明当前已经到执行节点
             if (ToolUtil.isNotEmpty(parent) && log.getSetpsId().equals(parent.getSetpsId()) && log.getStatus() == 1) {
                 return true;
             }
@@ -653,14 +733,20 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return false;
     }
 
-
+    /**
+     * 找上级节点
+     *
+     * @param step
+     * @param activitiSteps
+     * @return
+     */
     private ActivitiSteps findParent(ActivitiSteps step, List<ActivitiSteps> activitiSteps) {
 
         ActivitiSteps steps = null;
 
         for (ActivitiSteps activitiStep : activitiSteps) {
             if (step.getSupper().equals(activitiStep.getSetpsId())) {
-                if (activitiStep.getStepType().equals("send")) {
+                if (activitiStep.getType().toString().equals("4") || activitiStep.getType().toString().equals("3")) {   //上级如果是路由或者分支 在找上级
                     steps = findParent(activitiStep, activitiSteps);
                 } else {
                     steps = activitiStep;

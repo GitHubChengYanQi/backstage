@@ -242,6 +242,21 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         return stockSkuBrands;
     }
 
+    @Override
+    public List<StockSkuBrand> stockSku() {
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("*", "sum(number) AS num").groupBy("sku_id");
+        List<StockDetails> details = this.list(queryWrapper);
+        List<StockSkuBrand> stockSkuBrands = new ArrayList<>();
+
+        for (StockDetails detail : details) {
+            StockSkuBrand stockSkuBrand = new StockSkuBrand();
+            stockSkuBrand.setSkuId(detail.getSkuId());
+            stockSkuBrand.setNumber(detail.getNum());
+        }
+        return stockSkuBrands;
+    }
+
 
     private Serializable getKey(StockDetailsParam param) {
         return param.getStockItemId();

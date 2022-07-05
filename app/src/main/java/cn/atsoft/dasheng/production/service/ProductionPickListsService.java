@@ -77,6 +77,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     void sendPersonPick(ProductionPickListsParam param);
 
+    void warning(ProductionPickListsParam param);
+
     List<StorehouseResult> getStockSkus(List<Long> skuIds);
 
     Map<Integer, List<ActivitiProcessTask>> unExecuted();

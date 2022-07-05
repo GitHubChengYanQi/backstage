@@ -101,6 +101,8 @@ public interface StockDetailsService extends IService<StockDetails> {
 
     List<StockSkuBrand> stockSkuBrands();
 
+    List<StockSkuBrand> stockSku();
+
     void format(List<StockDetailsResult> data);
 
     List<StockDetailExcel> getStockDetail();
