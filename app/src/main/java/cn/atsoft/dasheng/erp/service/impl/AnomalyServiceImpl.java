@@ -115,7 +115,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 break;
         }
         param.setType(param.getAnomalyType().name());
-        Anomaly entity = getEntity(param);
+        Anomaly entity = this.getEntity(param);
         this.save(entity);
         /**
          * 来源
@@ -230,6 +230,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         return map;
     }
 
+
     /**
      * 修改盘点明细状态
      *
@@ -278,27 +279,16 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             AnomalyDetail detail = new AnomalyDetail();
             ToolUtil.copyProperties(detailParam, detail);
             detail.setAnomalyId(param.getAnomalyId());
-            detail.setInkindId(detailParam.getPidInKind());
+            detail.setInkindId(detailParam.getInkindId());
             if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
                 String json = JSON.toJSONString(detailParam.getNoticeIds());
                 detail.setRemark(json);
-
-        if (t) {   //添加异常信息
-            for (AnomalyDetailParam detailParam : param.getDetailParams()) {
-                AnomalyDetail detail = new AnomalyDetail();
-                ToolUtil.copyProperties(detailParam, detail);
-                detail.setAnomalyId(param.getAnomalyId());
-                detail.setInkindId(param.getInkind());
-//                detail.setInkindId(detailParam.getPidInKind());
-                if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
-                    String json = JSON.toJSONString(detailParam.getNoticeIds());
-                    detail.setRemark(json);
-                }
-                detailService.save(detail);
             }
+
         }
         return t;
     }
+
 
     /**
      * 盘点  异常 数据 改成正常数据
@@ -367,6 +357,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
     }
 
+
     @Override
     @Transactional
     public void update(AnomalyParam param) {
@@ -399,7 +390,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         if (power) {
             throw new ServiceException(500, "你没有操作权限");
         }
-
 
 
         ToolUtil.copyProperties(newEntity, oldEntity);
