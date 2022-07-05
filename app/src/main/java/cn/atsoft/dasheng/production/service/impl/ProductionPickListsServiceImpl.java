@@ -518,8 +518,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             setType(0);
             setUserIds(Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
         }});
-
-
+        if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
+            for (Long pickListsId : param.getPickListsIds()) {
+                shopCartService.addDynamic(pickListsId,"通知领料人进行领料");
+            }
+        }
     }
 
     private Serializable getKey(ProductionPickListsParam param) {
@@ -781,13 +784,18 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * true 部分领料 标记部分领料购物车状态  或 拆分购物车标记状态
          * false 全部领料  走默认出库流程
          */
+        for (Long pickListsId : pickListsIds) {
+            shopCartService.addDynamic(pickListsId,"领取了物料");
+        }
         if (this.createAllOrPart(listsCarts, param.getCartsParams())) {
 
             return this.partForOut(listsCarts, param.getCartsParams());
         } else {
             this.allForOut(pickLists, listsCarts, param.getCartsParams());
+
             return null;
         }
+
 
     }
 

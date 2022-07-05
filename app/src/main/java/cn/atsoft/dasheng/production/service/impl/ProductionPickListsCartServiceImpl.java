@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.service.ShopCartService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -76,6 +77,9 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Autowired
     private StorehouseService storehouseService;
+
+    @Autowired
+    private ShopCartService shopCartService;
 
 
     @Override
@@ -190,7 +194,14 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 }
             }
         }
-        this.saveBatch(entitys);
+       if (entitys.size()>0){
+           this.saveBatch(entitys);
+           String skuName = skuService.skuMessage(entitys.get(0).getSkuId());
+           shopCartService.addDynamic(entitys.get(0).getPickListsCart(),skuName+"进行了备料");
+       }else {
+           throw new ServiceException(500,"未匹配到所需物料,备料失败");
+       }
+
     }
 
 
@@ -219,7 +230,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 }
             }
         }
-
     }
 
 
