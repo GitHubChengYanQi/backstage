@@ -132,9 +132,9 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             List<StockDetails> stockDetails = new ArrayList<>();
             if (productionPickListsCartParam.getBrandId().equals(0L)){
-                stockDetails = stockDetailsService.query().eq("storehouse_positions_id", productionPickListsCartParam.getStorehousePositionsId()).eq("sku_id", productionPickListsCartParam.getSkuId()).notIn("inkind_id", inkindIds).eq("display", 1).eq("stage", 1).orderByAsc("create_time").list();
+                stockDetails = stockDetailsService.query().eq("storehouse_positions_id", productionPickListsCartParam.getStorehousePositionsId()).isNull("brand_id").eq("sku_id", productionPickListsCartParam.getSkuId()).notIn("inkind_id", inkindIds).eq("display", 1).eq("stage", 1).last("limit "+productionPickListsCartParam.getNumber()).orderByAsc("create_time").list();
             }else {
-                stockDetails = stockDetailsService.query().eq("storehouse_positions_id",productionPickListsCartParam.getStorehousePositionsId()).eq("sku_id", productionPickListsCartParam.getSkuId()).eq("brand_id",productionPickListsCartParam.getBrandId()).notIn("inkind_id", inkindIds).eq("display", 1).eq("stage", 1).orderByAsc("create_time").list();
+                stockDetails = stockDetailsService.query().eq("storehouse_positions_id",productionPickListsCartParam.getStorehousePositionsId()).eq("sku_id", productionPickListsCartParam.getSkuId()).eq("brand_id",productionPickListsCartParam.getBrandId()).notIn("inkind_id", inkindIds).eq("display", 1).eq("stage", 1).last("limit "+productionPickListsCartParam.getNumber()).orderByAsc("create_time").list();
             }
 
             if (stockDetails.size() == 0) {
@@ -339,28 +339,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
     }
 
-    void mirageByStorehouseAndSkuFormat(List<ProductionPickListsCartResult> param) {
-        List<Long> pickListsId = new ArrayList<>();
-        for (ProductionPickListsCartResult pickListsCartResult : param) {
-            pickListsId.add(pickListsCartResult.getPickListsId());
-        }
-        List<ProductionPickListsDetail> details = pickListsDetailService.query().in("pick_lists_id", pickListsId).eq("status", 0).eq("display", 1).list();
-        List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(details, ProductionPickListsDetailResult.class);
-        List<ProductionPickListsDetailResult> totalList = new ArrayList<>();
-
-        detailResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + item.getStorehouseId() + "_" + item.getPickListsId(), Collectors.toList())).forEach(
-                (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new ProductionPickListsDetailResult() {{
-                        setPickListsId(a.getPickListsId());
-                        setSkuId(a.getSkuId());
-                        setNumber(a.getNumber() + b.getNumber());
-                        setStorehouseId(a.getStorehouseId());
-                    }}).ifPresent(totalList::add);
-                }
-        );
-
-
-    }
 
     private Serializable getKey(ProductionPickListsCartParam param) {
         return param.getPickListsCart();
