@@ -271,12 +271,7 @@ public class ProductionPickListsController extends BaseController {
         return ResponseData.success();
     }
 
-    @RequestMapping(value = "/unExecuted", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public ResponseData unExecuted() {
-        Map<Integer, List<ActivitiProcessTask>> listMap = this.productionPickListsService.unExecuted();
-        return ResponseData.success(listMap);
-    }
+
 
 
     @RequestMapping(value = "/createOutStockOrderBySku", method = RequestMethod.POST)

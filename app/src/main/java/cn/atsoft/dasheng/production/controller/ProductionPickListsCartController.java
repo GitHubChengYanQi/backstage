@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
@@ -45,6 +46,9 @@ public class ProductionPickListsCartController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
         if (productionPickListsCartParam.getWarning()) {
+            if (ToolUtil.isEmpty(productionPickListsCartParam.getTaskId())) {
+                throw new ServiceException(500, "缺少任务id");
+            }
             boolean warning = productionPickListsCartService.warning(productionPickListsCartParam);
             if (warning) {
                 return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), "");   //需要人员确定

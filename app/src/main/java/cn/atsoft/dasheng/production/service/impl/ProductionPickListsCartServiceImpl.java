@@ -216,7 +216,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
 
 
-        Map<Integer, List<ActivitiProcessTask>> map = pickListsService.unExecuted();
+        Map<Integer, List<ActivitiProcessTask>> map = pickListsService.unExecuted(param.getTaskId());
         List<ActivitiProcessTask> executed = map.get(99);  // 到执行节点的
 
         List<Long> pickListsIds = new ArrayList<>();

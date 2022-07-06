@@ -561,7 +561,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             updateStock(detailParam, stockSkuBrands);
         }
 
-        Map<Integer, List<ActivitiProcessTask>> map = this.unExecuted();
+        Map<Integer, List<ActivitiProcessTask>> map = this.unExecuted(null);
         List<ActivitiProcessTask> executed = map.get(99);  // 到执行节点的
         List<ActivitiProcessTask> unExecuted = map.get(50);  //未到执行节点的
 
@@ -593,13 +593,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
      */
     @Override
     public boolean updateStock(ProductionPickListsDetailParam detailParam, List<StockSkuBrand> stockSkuBrands) {
-          if (ToolUtil.isEmpty(stockSkuBrands)) {
+        if (ToolUtil.isEmpty(stockSkuBrands)) {
             return true;
         }
         boolean f = false;
 
         for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
-            if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId()==0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
+            if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId() == 0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
                 if (number <= 0) {
                     f = true;
@@ -658,7 +658,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
      * 所有未执行的出库单
      */
     @Override
-    public Map<Integer, List<ActivitiProcessTask>> unExecuted() {
+    public Map<Integer, List<ActivitiProcessTask>> unExecuted(Long taskId) {
 
         Map<Integer, List<ActivitiProcessTask>> map = new HashMap<>();
         List<ActivitiProcessTask> executed = new ArrayList<>();
@@ -667,6 +667,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 先取出领料未完成的任务
          */
         List<ActivitiProcessTask> processTasks = activitiProcessTaskService.query().eq("type", "OUTSTOCK").eq("display", 1).ne("status", 99).list();
+
+        if (ToolUtil.isNotEmpty(processTasks) && ToolUtil.isNotEmpty(taskId)) {
+            processTasks.removeIf(i -> i.getProcessTaskId().equals(taskId));  //排除自己
+        }
+
         for (ActivitiProcessTask processTask : processTasks) {
             boolean judgeNode = judgeNode(processTask);
             if (judgeNode) {

@@ -69,7 +69,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-     PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param);
+    PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param);
 
     void format(List<ProductionPickListsResult> results);
 
@@ -85,7 +85,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     List<StorehouseResult> getStockSkus(List<Long> skuIds);
 
-    Map<Integer, List<ActivitiProcessTask>> unExecuted();
+    Map<Integer, List<ActivitiProcessTask>> unExecuted(Long taskId);
 
     void outStock(ProductionPickListsParam param);
 
@@ -93,5 +93,5 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     ProductionPickListsResult detail(Long id);
 
-    List<Map<String,Object>> listByUser(ProductionPickListsParam pickListsParam);
+    List<Map<String, Object>> listByUser(ProductionPickListsParam pickListsParam);
 }
