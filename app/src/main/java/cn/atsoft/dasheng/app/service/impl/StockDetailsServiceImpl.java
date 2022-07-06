@@ -366,4 +366,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         }
         return stockDetailExcels;
     }
+
+    @Override
+    public List<StockDetails> maintenanceQuerry(StockDetailsParam param) {
+        return this.baseMapper.maintenanceQuerry(param);
+    }
 }

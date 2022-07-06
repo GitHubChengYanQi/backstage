@@ -83,6 +83,20 @@ public class ProductionPickListsController extends BaseController {
         return ResponseData.success(pickLists);
     }
 
+
+    @RequestMapping(value = "/abortCode", method = RequestMethod.GET)
+    @ApiOperation("部分领料取消")
+    public ResponseData abortCode(@RequestParam String code) {
+        this.productionPickListsService.abortCode(code);
+        return ResponseData.success();
+    }
+    @RequestMapping(value = "/outStockByCode", method = RequestMethod.GET)
+    @ApiOperation("部分领料取消")
+    public ResponseData outStockByCode(@RequestParam String code) {
+        this.productionPickListsService.outStockByCode(code);
+        return ResponseData.success();
+    }
+
     /**
      * 编辑接口
      *
@@ -301,6 +315,12 @@ public class ProductionPickListsController extends BaseController {
     @ApiOperation("详情")
     public ResponseData listByUser(@RequestBody ProductionPickListsParam productionPickListsParam) {
         List<Map<String, Object>> maps = productionPickListsService.listByUser(productionPickListsParam);
+        return ResponseData.success(maps);
+    }
+ @RequestMapping(value = "/listByCode", method = RequestMethod.GET)
+    @ApiOperation("详情")
+    public ResponseData listByUser(@RequestParam String code) {
+        List<Map<String, Object>> maps = productionPickListsService.listByCode(code);
         return ResponseData.success(maps);
     }
 

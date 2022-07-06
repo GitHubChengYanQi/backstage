@@ -17,7 +17,6 @@ import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
-import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -788,12 +787,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             shopCartService.addDynamic(pickListsId,"领取了物料");
         }
         if (this.createAllOrPart(listsCarts, param.getCartsParams())) {
-
-            return this.partForOut(listsCarts, param.getCartsParams());
-        } else {
-            this.allForOut(pickLists, listsCarts, param.getCartsParams());
-
+             this.allForOut(pickLists, listsCarts, param.getCartsParams());
             return null;
+
+        } else {
+            return this.partForOut(listsCarts, param.getCartsParams());
         }
 
 
@@ -966,7 +964,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 //                            int lastNum = num;
 //                            num -= listsCart.getNumber();
                             if (pickListsCartParam.getNumber() >= 0) {
-                                listsCart.setDisplay(0);
                                 listsCart.setStatus(2);
                                 pickListsCartParam.setNumber(pickListsCartParam.getNumber() - listsCart.getNumber());
 
@@ -1276,10 +1273,33 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         return result;
     }
+    @Override
+    public void abortCode(String code){
+        ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("dispaly", 1).last("limit 1").one();
+        if (ToolUtil.isEmpty(pickCode)){
+            throw new ServiceException(500,"未查询到此验证码");
+        }
+        List<ProductionPickLists> productionPickLists = this.query().eq("user_id", pickCode.getCode()).eq("display", 1).ne("status", 99).list();
+        List<Long> listsIds = new ArrayList<>();
+        for (ProductionPickLists productionPickList : productionPickLists) {
+            listsIds.add(productionPickList.getPickListsId());
+        }
+        List<ProductionPickListsCart> pickListsCarts = listsIds.size() == 0 ? new ArrayList<>() : pickListsCartService.query().in("pick_lists_id", listsIds).eq("status", 2).eq("display", 1).list();
+        for (ProductionPickListsCart pickListsCart : pickListsCarts) {
+            pickListsCart.setStatus(0);
+        }
+        pickListsCartService.updateBatchById(pickListsCarts);
+        pickCode.setDisplay(0);
+        pickCodeService.updateById(pickCode);
 
-    private void outStockByCode(ProductionPickListsParam param) {
+    }
+    @Override
+    public void outStockByCode(String code) {
         List<Long> stockIds = new ArrayList<>();
-        ProductionPickCode pickCode = pickCodeService.query().eq("code", param.getPickCode()).eq("dispaly", 1).last("limit 1").one();
+        ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("dispaly", 1).last("limit 1").one();
+        if (ToolUtil.isEmpty(pickCode)){
+            throw new ServiceException(500,"未查询到此验证码");
+        }
         Long createUser = pickCode.getCreateUser();
         List<ProductionPickLists> productionPickLists = this.query().eq("user_id", createUser).eq("display", 1).ne("status", 99).list();
         List<Long> listsIds = new ArrayList<>();
@@ -1339,7 +1359,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             outstockOrder.setSource("pickLists");
         }
     }
-
+    @Override
     public List<Map<String, Object>> listByCode(String code) {
         ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("display", 1).one();
         Long createUser = pickCode.getCreateUser();

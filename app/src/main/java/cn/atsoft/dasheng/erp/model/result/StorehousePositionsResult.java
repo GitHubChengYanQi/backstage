@@ -33,6 +33,7 @@ public class StorehousePositionsResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<SkuResult> skuResultList;
+    private Object object;
 
     private User user;
 

@@ -28,8 +28,9 @@ public enum ProcessModuleEnum {
     INSTOCKERROR("入库异常"),
     StocktakingError("盘点异常"),
 
-    pickLists("出库单申请");
+    pickLists("出库单申请"),
 
+    reMaintenance("复检复调");
 
     @EnumValue
     private String moduleName;

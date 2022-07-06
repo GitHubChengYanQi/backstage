@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.MaintenanceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.Maintenance">
+        <id column="maintenance_id" property="maintenanceId" />
+        <result column="maintenance_name" property="maintenanceName" />
+        <result column="coding" property="coding" />
+        <result column="user_id" property="userId" />
+        <result column="type" property="type" />
+        <result column="near_maintenance" property="nearMaintenance" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="brand_id" property="brandId" />
+        <result column="storehouse_positions_id" property="storehousePositionsId" />
+        <result column="material_id" property="materialId" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+        <result column="status" property="status" />
+        <result column="enclosure" property="enclosure" />
+        <result column="note" property="note" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        maintenance_id AS "maintenanceId", coding AS "coding",brand_id AS "brandId" ,storehouse_positions_id AS "storehousePositionsId" ,material_id AS "materialId",maintenance_name AS "maintenanceName", user_id AS "userId", type AS "type", near_maintenance AS "nearMaintenance", start_time AS "startTime", end_time AS "endTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", enclosure AS "enclosure", note AS "note"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceResult" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_maintenance where 1 = 1
+            <if test="paramCondition.maintenanceId != null">
+                and maintenance_id like CONCAT('%',#{paramCondition.maintenanceId},'%')
+            </if>
+            <if test="paramCondition.maintenanceName != null and paramCondition.maintenanceName != ''">
+                and maintenance_name like CONCAT('%',#{paramCondition.maintenanceName},'%')
+            </if>
+            <if test="paramCondition.userId != null">
+                and user_id like CONCAT('%',#{paramCondition.userId},'%')
+            </if>
+            <if test="paramCondition.type != null and paramCondition.type != ''">
+                and type like CONCAT('%',#{paramCondition.type},'%')
+            </if>
+            <if test="paramCondition.nearMaintenance != null">
+                and near_maintenance like CONCAT('%',#{paramCondition.nearMaintenance},'%')
+            </if>
+            <if test="paramCondition.startTime != null and paramCondition.startTime != ''">
+                and start_time like CONCAT('%',#{paramCondition.startTime},'%')
+            </if>
+            <if test="paramCondition.endTime != null and paramCondition.endTime != ''">
+                and end_time like CONCAT('%',#{paramCondition.endTime},'%')
+            </if>
+            <if test="paramCondition.createUser != null">
+                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+            <if test="paramCondition.updateUser != null">
+                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+            </if>
+            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+            </if>
+            <if test="paramCondition.display != null">
+                and display like CONCAT('%',#{paramCondition.display},'%')
+            </if>
+            <if test="paramCondition.deptId != null">
+                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+            </if>
+            <if test="paramCondition.status != null">
+                and status like CONCAT('%',#{paramCondition.status},'%')
+            </if>
+    </select>
+
+
+    <select id="findTaskByTime" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceResult">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_maintenance
+        where  now() between  start_time and end_time ; and 1=1
+
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceResult" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_maintenance where 1 = 1
+                <if test="paramCondition.maintenanceId != null">
+                        and maintenance_id like CONCAT('%',#{paramCondition.maintenanceId},'%')
+                </if>
+                <if test="paramCondition.maintenanceName != null and paramCondition.maintenanceName != ''">
+                        and maintenance_name like CONCAT('%',#{paramCondition.maintenanceName},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.type != null and paramCondition.type != ''">
+                        and type like CONCAT('%',#{paramCondition.type},'%')
+                </if>
+                <if test="paramCondition.nearMaintenance != null">
+                        and near_maintenance like CONCAT('%',#{paramCondition.nearMaintenance},'%')
+                </if>
+                <if test="paramCondition.startTime != null and paramCondition.startTime != ''">
+                        and start_time like CONCAT('%',#{paramCondition.startTime},'%')
+                </if>
+                <if test="paramCondition.endTime != null and paramCondition.endTime != ''">
+                        and end_time like CONCAT('%',#{paramCondition.endTime},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.status != null">
+                        and status like CONCAT('%',#{paramCondition.status},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_maintenance where 1 = 1
+                <if test="paramCondition.maintenanceId != null">
+                        and maintenance_id like CONCAT('%',#{paramCondition.maintenanceId},'%')
+                </if>
+                <if test="paramCondition.maintenanceName != null and paramCondition.maintenanceName != ''">
+                        and maintenance_name like CONCAT('%',#{paramCondition.maintenanceName},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.type != null and paramCondition.type != ''">
+                        and type like CONCAT('%',#{paramCondition.type},'%')
+                </if>
+                <if test="paramCondition.nearMaintenance != null">
+                        and near_maintenance like CONCAT('%',#{paramCondition.nearMaintenance},'%')
+                </if>
+                <if test="paramCondition.startTime != null and paramCondition.startTime != ''">
+                        and start_time like CONCAT('%',#{paramCondition.startTime},'%')
+                </if>
+                <if test="paramCondition.endTime != null and paramCondition.endTime != ''">
+                        and end_time like CONCAT('%',#{paramCondition.endTime},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.status != null">
+                        and status like CONCAT('%',#{paramCondition.status},'%')
+                </if>
+    </select>
+
+</mapper>

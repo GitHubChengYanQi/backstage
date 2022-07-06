@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickCode;
 import cn.atsoft.dasheng.production.model.params.ProductionPickCodeParam;
@@ -56,6 +57,17 @@ public class ProductionPickCodeController extends BaseController {
     public ResponseData update(@RequestBody ProductionPickCodeParam productionPickCodeParam) {
 
         this.productionPickCodeService.update(productionPickCodeParam);
+        return ResponseData.success();
+    }
+    @RequestMapping(value = "/getCode", method = RequestMethod.GET)
+    @ApiOperation("编辑")
+    public ResponseData getCodeByLoginUser() {
+
+        ProductionPickCode pickCode = this.productionPickCodeService.query().eq("create_user", LoginContextHolder.getContext().getUserId()).eq("display", 1).last("limit 1").one();
+        if (ToolUtil.isNotEmpty(pickCode)){
+            return ResponseData.success(pickCode.getCode());
+
+        }
         return ResponseData.success();
     }
 

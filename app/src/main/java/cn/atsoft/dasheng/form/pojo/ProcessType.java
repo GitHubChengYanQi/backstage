@@ -72,16 +72,18 @@ public enum ProcessType {
         add(ProcessModuleEnum.StocktakingError);
     }}),
 
+    MAINTENANCE("养护申请" ,"MAINTENANCE",new ArrayList<ProcessModuleEnum>(){{
+        add(ProcessModuleEnum.reMaintenance);
+        }}),
+    OUTSTOCK("出库单", "OUTSTOCK", new ArrayList<ProcessModuleEnum>() {{
+        add(ProcessModuleEnum.productionOutStock);
+        add(ProcessModuleEnum.pickLists);
+    }}),
     Stocktaking("盘点", "Stocktaking", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.Stocktaking);
-    }}),
+    }});
 
-    OUTSTOCK("出库单", "OUTSTOCK", new ArrayList<ProcessModuleEnum>() {
-        {
-            add(ProcessModuleEnum.productionOutStock);
-            add(ProcessModuleEnum.pickLists);
-        }
-    });
+
 
 
     //

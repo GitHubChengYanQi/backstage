@@ -80,7 +80,18 @@ public class ActionController {
                     }
                 }
                 break;
-            case ERROR:
+            case MAINTENANCE:
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (MaintenanceActionEnum maintenanceActionEnum : action.maintenanceActionEnums) {
+
+                        String value = maintenanceActionEnum.getValue();
+                        maintenanceActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
+                        i++;
+                    }
+                }
+                break;
+            case INSTOCKERROR:
                 for (AddAction.Action action : actions) {
                     int i = 0;
                     for (InstockErrorActionEnum instockErrorActionEnum : action.instockErrorActionEnums) {
@@ -134,6 +145,7 @@ public class ActionController {
             case OUTSTOCK:
             case ERROR:
             case PURCHASEORDER:
+            case MAINTENANCE:
             case Stocktaking:
                 DocumentsStatusParam status = statusParam.getParam();
                 status.setFormType(statusParam.getReceiptsEnum().name());

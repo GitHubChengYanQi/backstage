@@ -8,7 +8,9 @@ import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.erp.model.result.InventoryResult;
@@ -16,6 +18,7 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.InventoryDetailService;
 import cn.atsoft.dasheng.erp.service.InventoryService;
+import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
@@ -95,6 +98,7 @@ public class taskController extends BaseController {
     @Autowired
     private AnomalyOrderService anomalyOrderService;
     @Autowired
+    private MaintenanceService maintenanceService;
     private StepsService appStepService;
     @Autowired
     private AnomalyService anomalyService;
@@ -190,6 +194,10 @@ public class taskController extends BaseController {
 //                        add(taskResult);
 //                    }});
                 break;
+                case "MAINTENANCE":
+                    MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());
+                    taskResult.setReceipts(maintenanceResult);
+                break;
             case "Stocktaking":
                 InventoryResult inventoryResult = inventoryService.detail(taskResult.getFormId());
                 taskResult.setReceipts(inventoryResult);
@@ -203,7 +211,7 @@ public class taskController extends BaseController {
         //比对log
         stepsService.getStepLog(stepResult, process);
         //返回头像
-        appStepService.headPortrait(stepResult);
+//        appStepService.headPortrait(stepResult);
 
         //取出所有未审核节点
         List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
@@ -245,8 +253,8 @@ public class taskController extends BaseController {
 
         if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
             User user = userService.getById(taskResult.getCreateUser());
-            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
-            user.setAvatar(imgUrl);
+//            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+//            user.setAvatar(imgUrl);
             taskResult.setUser(user);
         }
         return ResponseData.success(taskResult);

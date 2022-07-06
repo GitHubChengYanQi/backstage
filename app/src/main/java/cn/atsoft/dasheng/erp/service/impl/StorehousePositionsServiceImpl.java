@@ -1056,6 +1056,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 }
             }
         }
+        this.format(positionsResults);
         return positionsResults;
     }
 

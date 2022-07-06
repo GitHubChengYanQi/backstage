@@ -10,14 +10,17 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
+import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
 import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
@@ -81,6 +84,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private AnomalyService anomalyService;
     @Autowired
     private InventoryService inventoryService;
+    private MaintenanceService maintenanceService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -351,6 +355,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> pickListsIds = new ArrayList<>();
         List<Long> inventoryIds = new ArrayList<>();
         List<Long> anomalyIds = new ArrayList<>();
+        List<Long> maintenanceIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
@@ -368,6 +373,10 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 case "Stocktaking":
                     inventoryIds.add(datum.getFormId());
                     break;
+                case "MAINTENANCE":
+                    maintenanceIds.add(datum.getFormId());
+                    break;
+
             }
         }
         Map<Long, String> statusMap = new HashMap<>();
@@ -389,6 +398,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<ProductionPickLists> productionPickLists = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsIds);
         List<ProductionPickListsResult> productionPickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
+        List<MaintenanceResult> maintenanceResults =maintenanceIds.size() == 0 ? new ArrayList<>() : maintenanceService.resultsByIds(maintenanceIds);
 
         List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
@@ -449,6 +459,13 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             for (AnomalyResult anomalyResult : anomalyResults) {
                 if (datum.getType().equals("ErrorForWard") && datum.getFormId().equals(anomalyResult.getAnomalyId())) {
                     datum.setReceipts(anomalyResult);
+                    for (MaintenanceResult maintenanceResult : maintenanceResults) {
+                        if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
+                            String statusName = statusMap.get(maintenanceResult.getStatus());
+                            maintenanceResult.setStatusName(statusName);
+                            datum.setReceipts(maintenanceResult);
+                        }
+                    }
                 }
             }
         }
@@ -468,6 +485,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 }
             }
         }
+
     }
 }
 
