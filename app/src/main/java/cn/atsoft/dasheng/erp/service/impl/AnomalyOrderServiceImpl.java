@@ -165,28 +165,30 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
         for (AnomalyDetail detail : details) {
             Inkind inkind = inkindService.getById(detail.getInkindId());
-            switch (inkind.getSource()) {
-                case "inErrorBatch":
-                    inkind.setNumber(detail.getNumber());
-                    inkind.setSource(AnomalyType.InstockError.name());
-                    inkind.setSourceId(detail.getDetailId());
-                    inkindService.updateById(inkind);
-                    bind(inkind.getInkindId(), detail.getDetailId());
-                    break;
-                case "inErrorSingle":
-                    for (long i = 0; i < detail.getNumber(); i++) {
-                        Inkind newInkind = new Inkind();
-                        newInkind.setNumber(1L);
-                        newInkind.setCustomerId(inkind.getCustomerId());
-                        newInkind.setBrandId(inkind.getBrandId());
-                        newInkind.setSkuId(inkind.getSkuId());
-                        newInkind.setPid(inkind.getInkindId());
-                        newInkind.setSource(AnomalyType.InstockError.name());
-                        newInkind.setSourceId(detail.getDetailId());
-                        inkindService.save(newInkind);
-                        bind(newInkind.getInkindId(), detail.getDetailId());
-                    }
-                    break;
+            if (ToolUtil.isNotEmpty(inkind)) {
+                switch (inkind.getSource()) {
+                    case "inErrorBatch":
+                        inkind.setNumber(detail.getNumber());
+                        inkind.setSource(AnomalyType.InstockError.name());
+                        inkind.setSourceId(detail.getDetailId());
+                        inkindService.updateById(inkind);
+                        bind(inkind.getInkindId(), detail.getDetailId());
+                        break;
+                    case "inErrorSingle":
+                        for (long i = 0; i < detail.getNumber(); i++) {
+                            Inkind newInkind = new Inkind();
+                            newInkind.setNumber(1L);
+                            newInkind.setCustomerId(inkind.getCustomerId());
+                            newInkind.setBrandId(inkind.getBrandId());
+                            newInkind.setSkuId(inkind.getSkuId());
+                            newInkind.setPid(inkind.getInkindId());
+                            newInkind.setSource(AnomalyType.InstockError.name());
+                            newInkind.setSourceId(detail.getDetailId());
+                            inkindService.save(newInkind);
+                            bind(newInkind.getInkindId(), detail.getDetailId());
+                        }
+                        break;
+                }
             }
         }
         submit(entity);
