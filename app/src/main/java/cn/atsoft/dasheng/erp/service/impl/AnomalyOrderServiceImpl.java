@@ -112,6 +112,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InventoryDetailService inventoryDetailService;
     @Autowired
     private ProductionPickListsService pickListsService;
+    @Autowired
+    private InstockListService instockListService;
 
     @Override
     @Transactional
@@ -405,12 +407,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
      */
     private void inStock(List<AnomalyResult> anomalyResults) {
 
-        List<Long> anomalyIds = new ArrayList<>();
+
         for (AnomalyResult anomalyResult : anomalyResults) {
             handle(anomalyResult);
-
         }
-        List<AnomalyDetail> details = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
         for (AnomalyResult anomaly : anomalyResults) {
             long errorNum = 0;
             boolean t = false;
@@ -454,7 +454,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         for (AnomalyDetailResult detail : result.getDetails()) {
             //终止入库
             if (detail.getStauts() == -1) {
-                stopInStock(detail.getDetailId());
+                stopInStock(result, detail);
+//                stopInStock(detail.getDetailId());
             }
         }
 
@@ -515,6 +516,36 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         anomalyDetail.setStauts(-1L);
         anomalyDetail.setAnomalyId(id);
         anomalyDetailService.updateById(anomalyDetail);
+    }
+
+    /**
+     * 终止入库
+     * 拆分入库清单物料
+     *
+     * @param
+     */
+    private void stopInStock(AnomalyResult anomalyResult, AnomalyDetailResult detailResult) {
+        Long inStockListId = anomalyResult.getSourceId();
+        InstockList instockList = instockListService.getById(inStockListId);
+        InstockList newInStockList = new InstockList();
+        ToolUtil.copyProperties(instockList, newInStockList);
+
+        if (detailResult.getNumber() > anomalyResult.getRealNumber()) {
+            throw new ServiceException(500, "异常数量超过入库清单数量");
+        }
+
+        newInStockList.setInstockListId(null);
+        newInStockList.setStatus(50L);
+        newInStockList.setNumber(50L);
+        newInStockList.setNumber(detailResult.getNumber());
+        newInStockList.setRealNumber(detailResult.getNumber());
+        instockListService.save(newInStockList);
+
+        instockList.setStatus(1L);
+        instockList.setRealNumber(anomalyResult.getInstockNumber());
+        instockListService.updateById(instockList);
+
+
     }
 
     @Override

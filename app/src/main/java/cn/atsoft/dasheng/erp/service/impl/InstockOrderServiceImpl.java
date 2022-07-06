@@ -1022,7 +1022,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             return false;
         }
 
-        List<InstockList> instockLists = instockListService.query().eq("instock_order_id", orderId).list();
+        List<InstockList> instockLists = instockListService.query().ne("status", 50)
+                .eq("display", 1)
+                .eq("instock_order_id", orderId).list();
         boolean t = true;
 
         for (InstockList instockList : instockLists) {
