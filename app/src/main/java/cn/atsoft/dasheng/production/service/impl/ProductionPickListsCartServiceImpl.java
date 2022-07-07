@@ -521,7 +521,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         for (ProductionPickListsResult pickListsResult : pickListsResults) {
             pickListsIds.add(pickListsResult.getPickListsId());
         }
-        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).list();
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).or().eq("status",2).list();
         List<ProductionPickListsDetailResult> pickListsDetailResults = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class, new CopyOptions());
         pickListsDetailService.format(pickListsDetailResults);
 

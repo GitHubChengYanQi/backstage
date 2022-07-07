@@ -94,7 +94,7 @@
             and source = #{paramCondition.source}
         </if>
         <if test="paramCondition.sourceId != null" >
-            and sourceId = #{paramCondition.sourceId}
+            and source_id = #{paramCondition.sourceId}
         </if>
     </select>
 
@@ -157,7 +157,7 @@
             and source = #{paramCondition.source}
         </if>
         <if test="paramCondition.sourceId != null" >
-            and sourceId = #{paramCondition.sourceId}
+            and source_id = #{paramCondition.sourceId}
         </if>
     </select>
 
@@ -217,7 +217,7 @@
             and source = #{paramCondition.source}
         </if>
         <if test="paramCondition.sourceId != null" >
-            and sourceId = #{paramCondition.sourceId}
+            and source_id = #{paramCondition.sourceId}
         </if>
     </select>
 
@@ -279,7 +279,7 @@
             and source = #{paramCondition.source}
         </if>
         <if test="paramCondition.sourceId != null" >
-            and sourceId = #{paramCondition.sourceId}
+            and source_id = #{paramCondition.sourceId}
         </if>
     </select>
 

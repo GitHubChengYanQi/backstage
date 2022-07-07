@@ -454,7 +454,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             if (ToolUtil.isEmpty(cartParam.getInkindId())) {
                 QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("sku_id", cartParam.getSkuId());
-                if (ToolUtil.isNotEmpty(cartParam.getBrandId()) || !cartParam.getBrandId().equals(0L)) {
+                if (ToolUtil.isNotEmpty(cartParam.getBrandId()) && !cartParam.getBrandId().equals(0L)) {
                     queryWrapper.eq("brand_id", cartParam.getBrandId());
                 }
                 queryWrapper.eq("storehouse_positions_id", cartParam.getStorehousePositionsId());

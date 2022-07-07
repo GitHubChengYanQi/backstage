@@ -588,11 +588,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             if (updateStock(listsParam, stockSkuBrands)) {
                 //TODO  此处调用库存预警
 
-                wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate(){{
-                    setTitle("库存不足预警");
-                    setDescription("库存数量已不满足出库申请");
-
-                }});
+//                wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate(){{
+//                    setTitle("库存不足预警");
+//                    setDescription("库存数量已不满足出库申请");
+//
+//                }});
             }
         }
     }
@@ -1034,6 +1034,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                  * 将申请单详情中不包含的品牌拿出来
                  */
                 for (ProductionPickListsCart listsCart : listsCarts) {
+                    stockIds.add(listsCart.getStorehouseId());
                     if (pickListsCartParam.getNumber() > 0) {
                         /**
                          * 处理出库数量对应购物车
@@ -1115,7 +1116,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         listingParam.setBrandId(listsCart.getBrandId());
                     }
                     InstockLogDetail log = new InstockLogDetail();
-                    ToolUtil.copyProperties(listsCarts, log);
+                    ToolUtil.copyProperties(listsCart, log);
                     log.setSource("pick_lists");
                     log.setSourceId(listsCart.getPickListsId());
                     logDetails.add(log);
@@ -1514,7 +1515,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     @Override
     public void outStockByCode(String code) {
         List<Long> stockIds = new ArrayList<>();
-        ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("dispaly", 1).last("limit 1").one();
+        ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("display", 1).one();
         if (ToolUtil.isEmpty(pickCode)) {
             throw new ServiceException(500, "未查询到此验证码");
         }
@@ -1576,6 +1577,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
             outstockOrder.setSource("pickLists");
         }
+        pickCode.setDisplay(0);
+        pickCodeService.updateById(pickCode);
     }
 
     @Override
