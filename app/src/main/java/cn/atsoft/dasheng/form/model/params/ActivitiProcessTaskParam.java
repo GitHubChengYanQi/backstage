@@ -52,6 +52,8 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private String type;
 
+    private List<String> statusList;
+
     private String remark;
 
     private String cause;

@@ -611,7 +611,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         boolean f = false;
 
         /**
-         * 先比对带品牌的
+         * 比对库存数量
          */
         for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
             if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
@@ -621,15 +621,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
                 stockSkuBrand.setNumber(number);
                 break;
-            }
-        }
-
-
-        /**
-         * 后比对不带品牌的
-         */
-        for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
-            if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId() == 0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
+            } else if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId() == 0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
                 if (number <= 0) {
                     f = true;
@@ -638,6 +630,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
             }
         }
+
         if (f) {
             return true;
         }
@@ -662,14 +655,55 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 先取出领料未完成的任务
          */
-        List<ActivitiProcessTask> processTasks = activitiProcessTaskService.query().eq("type", "OUTSTOCK").eq("display", 1).ne("status", 99).list();
+        List<ActivitiProcessTask> activitiProcessTasks = activitiProcessTaskService.query().select("process_task_id AS processTaskId").eq("type", "OUTSTOCK").eq("display", 1).ne("status", 99).list();
+
+        List<Long> taskIds = new ArrayList<>();
+        for (ActivitiProcessTask activitiProcessTask : activitiProcessTasks) {
+            taskIds.add(activitiProcessTask.getProcessTaskId());
+        }
+        /**
+         * 取出任务的log  组合map
+         */
+        List<ActivitiProcessTask> processTasks = taskIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.listByIds(taskIds);
+        List<ActivitiProcessLog> processLogs = taskIds.size() == 0 ? new ArrayList<>() : processLogService.query().in("task_id", taskIds).list();
+
+        Map<Long, List<ActivitiProcessLog>> logMap = new HashMap<>();
+        Map<Long, List<ActivitiSteps>> stepMaps = new HashMap<>();
+        Set<Long> processIds = new HashSet<>();
+
+        for (ActivitiProcessLog processLog : processLogs) {
+            processIds.add(processLog.getPeocessId());
+
+            List<ActivitiProcessLog> logs = logMap.get(processLog.getTaskId());
+            if (ToolUtil.isEmpty(logs)) {
+                logs = new ArrayList<>();
+            }
+            logs.add(processLog);
+            logMap.put(processLog.getTaskId(), logs);
+        }
+        /**
+         * 通过流程取出结构  组合成map
+         */
+        List<ActivitiSteps> activitiSteps = processIds.size() == 0 ? new ArrayList<>() : stepsService.query().in("process_id", processIds).list();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            List<ActivitiSteps> steps = stepMaps.get(activitiStep.getProcessId());
+            if (ToolUtil.isEmpty(steps)) {
+                steps = new ArrayList<>();
+            }
+            steps.add(activitiStep);
+            stepMaps.put(activitiStep.getProcessId(), steps);
+        }
+
 
         if (ToolUtil.isNotEmpty(processTasks) && ToolUtil.isNotEmpty(taskId)) {
             processTasks.removeIf(i -> i.getProcessTaskId().equals(taskId));  //排除自己
         }
 
+        /**
+         * 比对结构
+         */
         for (ActivitiProcessTask processTask : processTasks) {
-            boolean judgeNode = judgeNode(processTask);
+            boolean judgeNode = judgeNode(logMap.get(processTask.getProcessTaskId()), stepMaps);
             if (judgeNode) {
                 executed.add(processTask);
             } else {
@@ -685,21 +719,19 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     /**
      * 通过任务判断节点
      */
-    private boolean judgeNode(ActivitiProcessTask task) {
+    private boolean judgeNode(List<ActivitiProcessLog> processLogs, Map<Long, List<ActivitiSteps>> stepMaps) {
 
         boolean t = false;
 
         /**
          * 取出当前执行节点
          */
-        List<ActivitiProcessLog> processLogs = processLogService.query().eq("task_id", task.getProcessTaskId()).list();
         for (ActivitiProcessLog processLog : processLogs) {
-
             if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {     //找出配置动作的节点
                 List<ActionStatus> statuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
                 for (ActionStatus status : statuses) {
                     if (status.getAction().equals(OutStockActionEnum.outStock.name())) {   //找出执行节点
-                        if (isExecution(processLog, processLogs)) {
+                        if (isExecution(processLog, processLogs, stepMaps.get(processLog.getPeocessId()))) {
                             t = true;
                             break;
                         }
@@ -717,10 +749,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     /**
      * 判断当前是否到执行节点
      */
-    private boolean isExecution(ActivitiProcessLog processLog, List<ActivitiProcessLog> processLogs) {
-
-        List<ActivitiSteps> activitiSteps = stepsService.query().eq("process_id", processLog.getPeocessId()).list();
-
+    private boolean isExecution(ActivitiProcessLog processLog, List<ActivitiProcessLog> processLogs, List<ActivitiSteps> activitiSteps) {
 
         ActivitiSteps parent = null;
         for (ActivitiSteps activitiStep : activitiSteps) {
