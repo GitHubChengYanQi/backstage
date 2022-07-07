@@ -187,11 +187,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         Long userId = LoginContextHolder.getContext().getUserId();
         param.setUserIds(userId.toString());
 
-        if (ToolUtil.isEmpty(param.getStatus())) {
-            param.setStatus(0);
-        }
-
-
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
         format(page.getRecords());

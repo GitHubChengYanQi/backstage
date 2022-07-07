@@ -178,8 +178,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     addDynamic(instockList.getInstockOrderId(), skuMessage + "取消入库重新核验");
                     break;
                 case "instockByAnomaly":
-                    AnomalyDetail anomalyDetail = anomalyDetailService.getById(shopCart.getCartId());
-                    Anomaly error = anomalyService.getById(anomalyDetail.getAnomalyId());
+                    Anomaly error = anomalyService.getById(shopCart.getFormId());
                     error.setDisplay(0);
                     anomalyService.updateById(error);
                     instockList = instockListService.getById(error.getSourceId());
