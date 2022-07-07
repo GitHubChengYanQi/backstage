@@ -667,7 +667,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         for (InstockListParam listParam : param.getListParams()) {
+
             listParam.setInstockOrderId(param.getInstockOrderId());
+
             if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
                 handle(listParam, listParam.getInkindIds());
             } else {   //创建实物入库
@@ -678,20 +680,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     InstockLogDetail instockLogDetail = addLog(param, listParam, inKind);
                     instockLogDetails.add(instockLogDetail);
                 } else {
-                    Long i = listParam.getNumber();
-                    for (long aLong = 0; aLong < i; aLong++) {    //单个入库
-                        listParam.setNumber(1L);
-                        Long inKind = createInKind(listParam);
-                        listParam.setInkind(inKind);
-                        handle(listParam, inKind);
-                        InstockLogDetail instockLogDetail = addLog(param, listParam, inKind);
-                        instockLogDetails.add(instockLogDetail);
-                    }
-                    listParam.setNumber(i);
+                    batchInStock(param, listParam, instockLogDetails);
                 }
             }
             updateStatus(listParam);
         }
+
         /**
          * 添加入库记录
          */
@@ -727,6 +721,75 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
         return null;
+    }
+
+
+    /**
+     * 单个物料批量添加
+     *
+     * @param param
+     * @param listParam
+     * @param instockLogDetails
+     */
+    private void batchInStock(InstockOrderParam param, InstockListParam listParam, List<InstockLogDetail> instockLogDetails) {
+
+        Long number = listParam.getNumber();
+
+        List<OrCode> orCodes = new ArrayList<>();
+        List<Inkind> inkinds = new ArrayList<>();   //先创建实物
+
+        for (int i = 0; i < number; i++) {
+            Inkind inkind = new Inkind();
+            inkind.setNumber(1L);
+            inkind.setSkuId(listParam.getSkuId());
+            inkind.setCustomerId(listParam.getCustomerId());
+            inkind.setSource("入库");
+            inkind.setSourceId(listParam.getInstockListId());
+            inkind.setType("1");
+            inkind.setBrandId(listParam.getBrandId());
+            inkinds.add(inkind);
+
+            OrCode orCode = new OrCode();    //创建二维码
+            orCode.setState(1);
+            orCode.setType("item");
+            orCodes.add(orCode);
+        }
+
+        if (ToolUtil.isEmpty(listParam.getStorehousePositionsId())) {
+            throw new ServiceException(500, "库位不能为空");
+        }
+        inkindService.saveBatch(inkinds);
+        orCodeService.saveBatch(orCodes);
+        StorehousePositions storehousePositions = positionsService.getById(listParam.getStorehousePositionsId());
+
+        List<OrCodeBind> binds = new ArrayList<>();
+        List<StockDetails> stockDetailList = new ArrayList<>();
+        for (int i = 0; i < number; i++) {
+
+            OrCode orCode = orCodes.get(i);
+            Inkind inkind = inkinds.get(i);
+
+            OrCodeBind bind = new OrCodeBind();   //添加绑定
+            bind.setOrCodeId(orCode.getOrCodeId());
+            bind.setFormId(inkind.getInkindId());
+            bind.setSource("item");
+
+            StockDetails stockDetails = new StockDetails();
+            stockDetails.setSkuId(listParam.getSkuId());
+            stockDetails.setBrandId(listParam.getBrandId());
+            stockDetails.setCustomerId(listParam.getCustomerId());
+            stockDetails.setInkindId(inkind.getInkindId());
+            stockDetails.setStorehousePositionsId(listParam.getStorehousePositionsId());
+            stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
+            stockDetails.setNumber(inkind.getNumber());
+            stockDetailList.add(stockDetails);
+
+            InstockLogDetail instockLogDetail = addLog(param, listParam, inkind.getInkindId());
+            instockLogDetails.add(instockLogDetail);
+
+        }
+        stockDetailsService.saveBatch(stockDetailList);
+        orCodeBindService.saveBatch(binds);
     }
 
     /**
