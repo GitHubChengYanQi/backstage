@@ -28,9 +28,11 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    void add(ProductionPickListsCartParam param);
+    void add(ProductionPickListsCartParam param,List<StockDetails> stockDetails);
 
     boolean warning(ProductionPickListsCartParam param);
+
+    void addCheck(ProductionPickListsCartParam param);
 
     /**
      * 删除
@@ -87,4 +89,6 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
     List<ProductionPickListsCartResult> listByListsDetailIds(List<Long> listsDetailIds);
 
     List<StockDetails>getLockStockDetail();
+
+    List<Long> getCartInkindIds(ProductionPickListsCartParam productionPickListsCartParam);
 }

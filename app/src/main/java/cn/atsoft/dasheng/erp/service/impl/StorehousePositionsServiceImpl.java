@@ -34,6 +34,8 @@ import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONArray;
@@ -87,6 +89,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private StorehousePositionsBindService storehousePositionsBindService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private ProductionPickListsCartService cartService;
 
     @Override
     public void add(StorehousePositionsParam param) {
@@ -423,11 +427,20 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      */
     @Override
     public List<BrandResult> selectByBrand(Long skuId, Long brandId) {
+        List<ProductionPickListsCart> list = cartService.query().ne("status", 99).ne("status", -1).list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (ProductionPickListsCart pickListsCart : list) {
+            inkindIds.add(pickListsCart.getInkindId());
+        }
+
 
         QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
         stockDetailsQueryWrapper.eq("sku_id", skuId);
         if (ToolUtil.isNotEmpty(brandId)) {
             stockDetailsQueryWrapper.eq("brand_id", brandId);
+        }
+        if (inkindIds.size()>0) {
+            stockDetailsQueryWrapper.notIn("inkind_id", inkindIds);
         }
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);

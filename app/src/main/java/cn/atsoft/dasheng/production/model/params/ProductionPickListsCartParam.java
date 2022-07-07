@@ -38,7 +38,7 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
     private Long storehouseId;
     private Long brandId;
     private Long customerId;
-    private Boolean warning = true;
+    private Boolean warning = false;
 
 
     /**

@@ -14,13 +14,12 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
-import cn.atsoft.dasheng.erp.model.result.BackSku;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.SpuResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -36,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -62,6 +62,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Autowired
     private ErpPartsDetailService erpPartsDetailService;
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -228,9 +230,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
         }
 
-        Map<Long, StockSkuBrand> stockSkuBrandMap = new HashMap<>();
+        Map<String, StockSkuBrand> stockSkuBrandMap = new HashMap<>();
         for (StockDetails stockDetail : stockDetails) {
-            StockSkuBrand stockSkuBrand = stockSkuBrandMap.get(stockDetail.getSkuId() + stockDetail.getBrandId());
+            StockSkuBrand stockSkuBrand = stockSkuBrandMap.get(stockDetail.getSkuId() + "_" + stockDetail.getBrandId());
 
             if (ToolUtil.isNotEmpty(stockSkuBrand)) {
                 stockSkuBrand.setNumber(stockDetail.getNumber() + stockSkuBrand.getNumber());
@@ -240,12 +242,21 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 stockSkuBrand.setSkuId(stockDetail.getSkuId());
                 stockSkuBrand.setNumber(stockDetail.getNumber());
             }
-            stockSkuBrandMap.put(stockDetail.getSkuId() + stockDetail.getBrandId(), stockSkuBrand);
+            stockSkuBrandMap.put(stockDetail.getSkuId() + "_" + stockDetail.getBrandId(), stockSkuBrand);
         }
-        for (Long key : stockSkuBrandMap.keySet()) {
+        for (String key : stockSkuBrandMap.keySet()) {
             StockSkuBrand stockSkuBrand = stockSkuBrandMap.get(key);
             stockSkuBrands.add(stockSkuBrand);
         }
+
+//
+//        List<StockSkuBrand> totalList=new ArrayList<>();
+//
+//        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+//                (id, transfer) -> {
+//                    transfer.stream().reduce((a, b) -> new StockSkuBrand()).ifPresent(totalList::add);
+//                }
+//        );
         return stockSkuBrands;
     }
 
@@ -428,5 +439,48 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
     public List<StockDetails> maintenanceQuerry(StockDetailsParam param) {
         return this.baseMapper.maintenanceQuerry(param);
+    }
+
+    @Override
+    public List<StockDetails> fundStockDetailByCart(ProductionPickListsCartParam param) {
+        List<StockDetails> list = new ArrayList<>();
+        List<Long> inkindIds = pickListsCartService.getCartInkindIds(param);
+        for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
+            if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
+                inkindIds.add(productionPickListsCartParam.getInkindId());
+            }
+        }
+        for (ProductionPickListsCartParam cartParam : param.getProductionPickListsCartParams()) {
+            if (ToolUtil.isEmpty(cartParam.getInkindId())) {
+                QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("sku_id", cartParam.getSkuId());
+                if (ToolUtil.isNotEmpty(cartParam.getBrandId()) || !cartParam.getBrandId().equals(0L)) {
+                    queryWrapper.eq("brand_id", cartParam.getBrandId());
+                }
+                queryWrapper.eq("storehouse_positions_id", cartParam.getStorehousePositionsId());
+//            if (inkindIds.size()>0){
+//                queryWrapper.notIn("inkind_id",inkindIds);
+//            }
+                queryWrapper.last("limit " + cartParam.getNumber() + inkindIds.size());
+                list.addAll(this.list(queryWrapper));
+            }
+        }
+        List<StockDetails> detailTotalList = new ArrayList<>();
+
+        list.parallelStream().collect(Collectors.groupingBy(StockDetails::getStockItemId, Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> a).ifPresent(detailTotalList::add);
+                }
+        );
+        List<StockDetails> removeInkind = new ArrayList<>();
+        for (Long inkindId : inkindIds) {
+            for (StockDetails stockDetails : detailTotalList) {
+                if (inkindId.equals(stockDetails.getInkindId())){
+                    removeInkind.add(stockDetails);
+                }
+            }
+        }
+        detailTotalList.removeAll(removeInkind);
+        return detailTotalList;
     }
 }

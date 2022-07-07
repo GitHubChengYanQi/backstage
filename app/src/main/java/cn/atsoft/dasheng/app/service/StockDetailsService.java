@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -108,4 +109,6 @@ public interface StockDetailsService extends IService<StockDetails> {
     List<StockDetailExcel> getStockDetail();
 
     List<StockDetails> maintenanceQuerry(StockDetailsParam param);
+
+    List<StockDetails> fundStockDetailByCart(ProductionPickListsCartParam param);
 }

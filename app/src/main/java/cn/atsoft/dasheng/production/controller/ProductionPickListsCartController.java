@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.production.controller;
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
@@ -35,6 +37,8 @@ public class ProductionPickListsCartController extends BaseController {
 
     @Autowired
     private ProductionPickListsCartService productionPickListsCartService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     /**
      * 新增接口
@@ -45,17 +49,20 @@ public class ProductionPickListsCartController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
-        if (productionPickListsCartParam.getWarning()) {
-            if (ToolUtil.isEmpty(productionPickListsCartParam.getTaskId())) {
-                throw new ServiceException(500, "缺少任务id");
-            }
+        if (ToolUtil.isEmpty(productionPickListsCartParam.getTaskId())) {
+            throw new ServiceException(500, "缺少任务id");
+        }
+        if (!productionPickListsCartParam.getWarning()) {
+
             boolean warning = productionPickListsCartService.warning(productionPickListsCartParam);
             if (warning) {
                 return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), "");   //需要人员确定
             }
         }
+        productionPickListsCartService.addCheck(productionPickListsCartParam);
+        List<StockDetails> stockDetails = stockDetailsService.fundStockDetailByCart(productionPickListsCartParam);
+        this.productionPickListsCartService.add(productionPickListsCartParam,stockDetails);
 
-        this.productionPickListsCartService.add(productionPickListsCartParam);
         return ResponseData.success();
     }
 

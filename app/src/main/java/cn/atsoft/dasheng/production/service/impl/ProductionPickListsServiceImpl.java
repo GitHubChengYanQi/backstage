@@ -39,6 +39,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -161,6 +162,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private ActivitiStepsService stepsService;
+    @Autowired
+    private RoleService roleService;
 
 
     @Override
@@ -585,6 +588,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             if (updateStock(listsParam, stockSkuBrands)) {
                 //TODO  此处调用库存预警
 
+                wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate(){{
+                    setTitle("库存不足预警");
+                    setDescription("库存数量已不满足出库申请");
+
+                }});
             }
         }
     }
