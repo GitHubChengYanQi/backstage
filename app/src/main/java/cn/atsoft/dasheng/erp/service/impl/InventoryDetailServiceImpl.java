@@ -369,6 +369,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             inventoryDetail.setLockStatus(99);  //锁数据
             anomalyIds.add(inventoryDetail.getAnomalyId());
         }
+        this.updateBatchById(inventoryDetails);
 
         List<AnomalyParam> anomalyParams = new ArrayList<>();
         for (Long anomalyId : anomalyIds) {
