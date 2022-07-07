@@ -84,6 +84,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private AnomalyService anomalyService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
     private MaintenanceService maintenanceService;
 
     @Override
