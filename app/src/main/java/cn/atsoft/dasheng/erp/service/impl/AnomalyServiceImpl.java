@@ -104,7 +104,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
     @Transactional
     @Override
-    public void add(AnomalyParam param) {
+    public Anomaly add(AnomalyParam param) {
 
         switch (param.getAnomalyType()) {
             case InstockError:     //判断入库单
@@ -153,6 +153,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             shopCartParam.setNumber(param.getNeedNumber());
             shopCartService.add(shopCartParam);
         }
+        return entity;
     }
 
 
@@ -170,7 +171,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     @Override
     @Transactional
-    public void temporary(AnomalyParam param) {
+    public Long temporary(AnomalyParam param) {
         if (ToolUtil.isNotEmpty(param.getAnomalyId())) {
             detailService.remove(new QueryWrapper<AnomalyDetail>() {{
                 eq("anomaly_id", param.getAnomalyId());
@@ -197,6 +198,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
         param.setAnomalyId(param.getAnomalyId());
         updateInventoryStatus(param, 2);
+        return param.getAnomalyId();
     }
 
     /**
@@ -366,7 +368,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
     @Override
     @Transactional
-    public void update(AnomalyParam param) {
+    public Anomaly update(AnomalyParam param) {
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -377,6 +379,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         addDetails(param);
         String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
         shopCartService.addDynamic(oldEntity.getFormId(), skuMessage + "修改了异常描述");
+        return newEntity;
     }
 
     /**
@@ -401,12 +404,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
-        if (ToolUtil.isNotEmpty(param.getInstockNumber())) {
-            InstockList instockList = new InstockList();
-            instockList.setInstockListId(oldEntity.getSourceId());
-            instockList.setRealNumber(param.getInstockNumber());
-            instockListService.updateById(instockList);
-        }
+//        if (ToolUtil.isNotEmpty(param.getInstockNumber())) {
+//            InstockList instockList = new InstockList();
+//            instockList.setInstockListId(oldEntity.getSourceId());
+//            instockList.setRealNumber(param.getInstockNumber());
+//            instockListService.updateById(instockList);
+//        }
 
         updateStatus(param.getAnomalyId()); //更新异常状态
         if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {
