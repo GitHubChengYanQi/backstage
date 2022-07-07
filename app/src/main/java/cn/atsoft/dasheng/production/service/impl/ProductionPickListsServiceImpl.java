@@ -1106,13 +1106,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     listings.add(listingParam);
                 }
             }
-            instockLogDetailService.saveBatch(logDetails);
-            outstockOrder.setListingParams(listings);
-            outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
-            outstockOrder.setSource("pickLists");
-            Map<Long, Long> longLongMap = outstockOrderService.outBoundByLists(listings);
-            oldAndNewInkindIds.putAll(longLongMap);
 
+            if (ToolUtil.isNotEmpty(listings) || listings.size() > 0) {
+                instockLogDetailService.saveBatch(logDetails);
+                outstockOrder.setListingParams(listings);
+                outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
+                outstockOrder.setSource("pickLists");
+                Map<Long, Long> longLongMap = outstockOrderService.outBoundByLists(listings);
+                oldAndNewInkindIds.putAll(longLongMap);
+            }
         }
 
         this.updateBatchById(pickLists);
