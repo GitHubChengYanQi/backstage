@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.pojo.AllBom;
 import cn.atsoft.dasheng.app.pojo.AllBomParam;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
+import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -53,7 +54,11 @@ public class StockDetailsController extends BaseController {
     }
 
 
-
+    @RequestMapping(value = "/stockSkuBrands", method = RequestMethod.GET)
+    public ResponseData stockSkuBrands() {
+        List<StockSkuBrand> stockSkuBrands = this.stockDetailsService.stockSkuBrands();
+        return ResponseData.success(stockSkuBrands);
+    }
 
 
     /**
@@ -87,7 +92,7 @@ public class StockDetailsController extends BaseController {
         }
 //        return this.stockDetailsService.findPageBySpec(stockDetailsParam);
 //        if (LoginContextHolder.getContext().isAdmin()) {
-            return this.stockDetailsService.findPageBySpec(stockDetailsParam, null);
+        return this.stockDetailsService.findPageBySpec(stockDetailsParam, null);
 //        } else {
 //            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
 //            return this.stockDetailsService.findPageBySpec(stockDetailsParam, dataScope);

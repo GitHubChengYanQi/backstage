@@ -282,7 +282,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 ToolUtil.copyProperties(detailParam, detail);
                 detail.setAnomalyId(param.getAnomalyId());
                 detail.setInkindId(param.getInkind());
-//                detail.setInkindId(detailParam.getPidInKind());
+                if (ToolUtil.isNotEmpty(detailParam.getPidInKind())) {
+                    detail.setInkindId(detailParam.getPidInKind());
+                }
                 if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
                     String json = JSON.toJSONString(detailParam.getNoticeIds());
                     detail.setRemark(json);

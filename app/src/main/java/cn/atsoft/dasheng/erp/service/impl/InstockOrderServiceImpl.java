@@ -673,6 +673,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             } else {   //创建实物入库
                 if (listParam.getBatch()) {   //批量
                     Long inKind = createInKind(listParam);
+                    listParam.setInkind(inKind);
                     handle(listParam, inKind);
                     InstockLogDetail instockLogDetail = addLog(param, listParam, inKind);
                     instockLogDetails.add(instockLogDetail);
@@ -681,6 +682,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     for (long aLong = 0; aLong < i; aLong++) {    //单个入库
                         listParam.setNumber(1L);
                         Long inKind = createInKind(listParam);
+                        listParam.setInkind(inKind);
                         handle(listParam, inKind);
                         InstockLogDetail instockLogDetail = addLog(param, listParam, inKind);
                         instockLogDetails.add(instockLogDetail);
@@ -848,6 +850,31 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
         stockDetailsService.save(stockDetails);
 
+    }
+
+    /**
+     * 批量入库操作
+     */
+    private void batchHandle(List<InstockListParam> params) {
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+        for (InstockListParam param : params) {
+            StockDetails stockDetails = new StockDetails();
+            stockDetails.setSkuId(param.getSkuId());
+            stockDetails.setBrandId(param.getBrandId());
+            stockDetails.setCustomerId(param.getCustomerId());
+            stockDetails.setInkindId(param.getInkindId());
+            stockDetails.setStorehousePositionsId(param.getStorehousePositionsId());
+            stockDetails.setNumber(param.getNumber());
+
+            if (ToolUtil.isEmpty(param.getStorehousePositionsId())) {
+                throw new ServiceException(500, "存在物料缺少库位信息");
+            }
+            StorehousePositions storehousePositions = positionsService.getById(param.getStorehousePositionsId());
+            stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
+
+            stockDetailsList.add(stockDetails);
+        }
+        stockDetailsService.saveBatch(stockDetailsList);
     }
 
     private void handle(InstockListParam param, List<Long> inkindIds) {

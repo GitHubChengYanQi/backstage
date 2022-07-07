@@ -30,6 +30,8 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
      */
     void add(ProductionPickListsCartParam param);
 
+    boolean warning(ProductionPickListsCartParam param);
+
     /**
      * 删除
      *
