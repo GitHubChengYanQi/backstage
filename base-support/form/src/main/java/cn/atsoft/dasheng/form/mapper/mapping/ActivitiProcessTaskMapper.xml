@@ -89,14 +89,20 @@
         select
         <include refid="Base_Column_List"/>
         from activiti_process_task where 1 = 1 and display = 1
-        <if test="paramCondition.status != null ">
-            and status = #{paramCondition.status}
-        </if>
+<!--        <if test="paramCondition.status != null ">-->
+<!--            and status = #{paramCondition.status}-->
+<!--        </if>-->
         <if test="paramCondition.createUser != null ">
             and create_user = #{paramCondition.createUser}
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.statusList !=null and paramCondition.statusList.size>0 ">
+            and status in
+            <foreach collection="paramCondition.statusList" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
         </if>
         <if test="paramCondition.skuName != null">
             and form_id in (

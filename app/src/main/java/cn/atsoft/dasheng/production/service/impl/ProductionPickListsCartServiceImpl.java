@@ -215,6 +215,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
      */
     @Override
     public boolean warning(ProductionPickListsCartParam param) {
+
         List<StockSkuBrand> stockSkuBrands = stockDetailsService.stockSkuBrands();
         if (stockSkuBrands.size() == 0) {
             throw new ServiceException(500, "库存数不足");
@@ -240,7 +241,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         for (ProductionPickListsDetailParam listsParam : pickListsDetailParams) {
             if (pickListsService.updateStock(listsParam, stockSkuBrands)) {
                 return true;
-
             }
         }
         return false;
