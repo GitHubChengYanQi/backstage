@@ -122,18 +122,22 @@ public class StockExcel {
             HSSFCell storeHousePositionName = row1.createCell(5);
             HSSFCell num = row1.createCell(6);
             HSSFCell unit = row1.createCell(7);
-            unit.setCellValue(detail.getSkuResult().getSpuResult().getUnitResult().getUnitName());
+            if (ToolUtil.isNotEmpty(detail.getSkuResult().getSpuResult().getUnitResult().getUnitName())){
+                unit.setCellValue(detail.getSkuResult().getSpuResult().getUnitResult().getUnitName());
+            }
             spuClass.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getSpuClassificationResult().getName()));
             if (ToolUtil.isNotEmpty(detail.getSkuResult())) {
                 coding.setCellValue(new HSSFRichTextString(detail.getSkuResult().getStandard()));
                 spuName.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSpuResult().getName()));
                 skuName.setCellValue(new HSSFRichTextString(detail.getSkuResult().getSkuName()));
-                StringBuffer sb = new StringBuffer();
-                for (SkuJson skuJson : detail.getSkuResult().getSkuJsons()) {
-                    sb.append(skuJson.getAttribute().getAttribute()).append(":").append(skuJson.getValues().getAttributeValues()).append(",");
-                }
-                if(sb.length()>1){
-                    attribute.setCellValue(new HSSFRichTextString(sb.substring(0, sb.length() - 1)));
+                if(ToolUtil.isNotEmpty(detail.getSkuResult().getSkuJsons())){
+                    StringBuffer sb = new StringBuffer();
+                    for (SkuJson skuJson : detail.getSkuResult().getSkuJsons()) {
+                        sb.append(skuJson.getAttribute().getAttribute()).append(":").append(skuJson.getValues().getAttributeValues()).append(",");
+                    }
+                    if(sb.length()>1){
+                        attribute.setCellValue(new HSSFRichTextString(sb.substring(0, sb.length() - 1)));
+                    }
                 }
             }
             if(ToolUtil.isNotEmpty(detail.getStorehousePositionsResult()) && ToolUtil.isNotEmpty(detail.getStorehousePositionsResult().getStorehousePositionsId())){

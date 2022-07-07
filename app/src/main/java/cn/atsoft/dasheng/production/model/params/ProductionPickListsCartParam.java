@@ -7,6 +7,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -31,12 +32,13 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
     private List<Long> pickListsIds;
 
     private List<ProductionPickListsCartParam> productionPickListsCartParams;
-
+    private Long taskId;
     private Long inkindId;
     private Long storehousePositionsId;
     private Long storehouseId;
     private Long brandId;
     private Long customerId;
+    private Boolean warning = true;
 
 
     /**
@@ -56,7 +58,7 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
      * 子表id
      */
     @ApiModelProperty("子表id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long pickListsDetailId;
 
     /**

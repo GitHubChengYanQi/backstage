@@ -639,7 +639,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     public void checkAction(Long id, Long actionId, Long loginUserId) {
-
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(id);
         List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
         List<Long> stepIds = new ArrayList<>();

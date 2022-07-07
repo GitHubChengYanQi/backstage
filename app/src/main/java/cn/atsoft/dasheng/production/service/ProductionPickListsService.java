@@ -1,8 +1,11 @@
 package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -66,7 +69,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-     PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param);
+    PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param);
 
     void format(List<ProductionPickListsResult> results);
 
@@ -76,13 +79,23 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     void sendPersonPick(ProductionPickListsParam param);
 
+    void warning(ProductionPickListsParam param);
+
+    boolean updateStock(ProductionPickListsDetailParam detailParam, List<StockSkuBrand> stockSkuBrands);
+
     List<StorehouseResult> getStockSkus(List<Long> skuIds);
 
+
+    Map<Integer, List<ActivitiProcessTask>> unExecuted(Long taskId);
+
+
     String outStock(ProductionPickListsParam param);
+
 
     void outStockBySku(ProductionPickListsParam param);
 
     ProductionPickListsResult detail(Long id);
+
 
     List<Map<String,Object>> listByUser(ProductionPickListsParam pickListsParam);
 
@@ -91,4 +104,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     void outStockByCode(String code);
 
     List<Map<String, Object>> listByCode(String code);
+
+
+
 }

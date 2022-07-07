@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -32,7 +33,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -206,6 +209,54 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         return detailsResults;
     }
 
+    /**
+     * 获取库存物料品牌数量
+     *
+     * @return
+     */
+    @Override
+    public List<StockSkuBrand> stockSkuBrands() {
+        List<StockSkuBrand> stockSkuBrands = new ArrayList<>();
+        List<StockDetails> stockDetails = this.query().isNotNull("brand_id")
+                .eq("display", 1)
+                .gt("number", 0).list();
+
+        Map<Long, StockSkuBrand> stockSkuBrandMap = new HashMap<>();
+        for (StockDetails stockDetail : stockDetails) {
+            StockSkuBrand stockSkuBrand = stockSkuBrandMap.get(stockDetail.getSkuId() + stockDetail.getBrandId());
+
+            if (ToolUtil.isNotEmpty(stockSkuBrand)) {
+                stockSkuBrand.setNumber(stockDetail.getNumber() + stockSkuBrand.getNumber());
+            } else {
+                stockSkuBrand = new StockSkuBrand();
+                stockSkuBrand.setBrandId(stockDetail.getBrandId());
+                stockSkuBrand.setSkuId(stockDetail.getSkuId());
+                stockSkuBrand.setNumber(stockDetail.getNumber());
+            }
+            stockSkuBrandMap.put(stockDetail.getSkuId() + stockDetail.getBrandId(), stockSkuBrand);
+        }
+        for (Long key : stockSkuBrandMap.keySet()) {
+            StockSkuBrand stockSkuBrand = stockSkuBrandMap.get(key);
+            stockSkuBrands.add(stockSkuBrand);
+        }
+        return stockSkuBrands;
+    }
+
+    @Override
+    public List<StockSkuBrand> stockSku() {
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("*", "sum(number) AS num").groupBy("sku_id");
+        List<StockDetails> details = this.list(queryWrapper);
+        List<StockSkuBrand> stockSkuBrands = new ArrayList<>();
+
+        for (StockDetails detail : details) {
+            StockSkuBrand stockSkuBrand = new StockSkuBrand();
+            stockSkuBrand.setSkuId(detail.getSkuId());
+            stockSkuBrand.setNumber(detail.getNum());
+        }
+        return stockSkuBrands;
+    }
+
 
     private Serializable getKey(StockDetailsParam param) {
         return param.getStockItemId();
@@ -354,7 +405,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 }
             }
             for (CustomerResult customerResult : customerResults) {
-                if (ToolUtil.isNotEmpty(stockDetailExcel.getCustomerId()) && stockDetailExcel.getBrandId().equals(customerResult.getCustomerId())) {
+                if (ToolUtil.isNotEmpty(stockDetailExcel.getCustomerId()) && stockDetailExcel.getCustomerId().equals(customerResult.getCustomerId())) {
                     stockDetailExcel.setCustomerResult(customerResult);
                 }
             }
