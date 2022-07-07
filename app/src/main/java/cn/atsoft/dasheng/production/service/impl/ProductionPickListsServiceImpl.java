@@ -603,7 +603,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         boolean f = false;
 
         /**
-         * 先比对带品牌的
+         * 比对库存数量
          */
         for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
             if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
@@ -613,15 +613,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
                 stockSkuBrand.setNumber(number);
                 break;
-            }
-        }
-
-
-        /**
-         * 后比对不带品牌的
-         */
-        for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
-            if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId() == 0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
+            } else if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId() == 0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
                 if (number <= 0) {
                     f = true;
@@ -630,6 +622,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
             }
         }
+
         if (f) {
             return true;
         }
@@ -664,7 +657,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 取出任务的log  组合map
          */
         List<ActivitiProcessTask> processTasks = taskIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.listByIds(taskIds);
-        List<ActivitiProcessLog> processLogs = processLogService.query().in("task_id", taskIds).list();
+        List<ActivitiProcessLog> processLogs = taskIds.size() == 0 ? new ArrayList<>() : processLogService.query().in("task_id", taskIds).list();
 
         Map<Long, List<ActivitiProcessLog>> logMap = new HashMap<>();
         Map<Long, List<ActivitiSteps>> stepMaps = new HashMap<>();
@@ -683,7 +676,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 通过流程取出结构  组合成map
          */
-        List<ActivitiSteps> activitiSteps = stepsService.query().in("process_id", processIds).list();
+        List<ActivitiSteps> activitiSteps = processIds.size() == 0 ? new ArrayList<>() : stepsService.query().in("process_id", processIds).list();
         for (ActivitiSteps activitiStep : activitiSteps) {
             List<ActivitiSteps> steps = stepMaps.get(activitiStep.getProcessId());
             if (ToolUtil.isEmpty(steps)) {
