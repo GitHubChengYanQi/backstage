@@ -526,7 +526,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }});
         if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
             for (Long pickListsId : param.getPickListsIds()) {
-                shopCartService.addDynamic(pickListsId,"通知领料人进行领料");
+                shopCartService.addDynamic(pickListsId, "通知领料人进行领料");
             }
         }
     }
@@ -602,6 +602,24 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         boolean f = false;
 
+        /**
+         * 先比对带品牌的
+         */
+        for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
+            if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
+                long number = stockSkuBrand.getNumber() - detailParam.getNumber();
+                if (number <= 0) {
+                    f = true;
+                }
+                stockSkuBrand.setNumber(number);
+                break;
+            }
+        }
+
+
+        /**
+         * 后比对不带品牌的
+         */
         for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
             if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId() == 0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
@@ -610,13 +628,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
                 stockSkuBrand.setNumber(number);
 
-            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
-                long number = stockSkuBrand.getNumber() - detailParam.getNumber();
-                if (number <= 0) {
-                    f = true;
-                }
-                stockSkuBrand.setNumber(number);
-                break;
             }
         }
         if (f) {
@@ -743,8 +754,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
 
 
-
-
     @Override
     public String outStock(ProductionPickListsParam param) {
         List<Long> stockIds = new ArrayList<>();
@@ -770,7 +779,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * false 全部领料  走默认出库流程
          */
         for (Long pickListsId : pickListsIds) {
-            shopCartService.addDynamic(pickListsId,"领取了物料");
+            shopCartService.addDynamic(pickListsId, "领取了物料");
         }
         if (this.createAllOrPart(listsCarts, param.getCartsParams())) {
             this.allForOut(pickLists, listsCarts, param.getCartsParams());
@@ -993,8 +1002,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 //        checkListsStatus(pickLists);
 //        return null;
 //    }
-
-
 
 
     private void allForOut(List<ProductionPickLists> pickLists, List<ProductionPickListsCart> listsCarts, List<ProductionPickListsCartParam> cartParams) {
@@ -1472,11 +1479,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         return result;
     }
+
     @Override
-    public void abortCode(String code){
+    public void abortCode(String code) {
         ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("dispaly", 1).last("limit 1").one();
-        if (ToolUtil.isEmpty(pickCode)){
-            throw new ServiceException(500,"未查询到此验证码");
+        if (ToolUtil.isEmpty(pickCode)) {
+            throw new ServiceException(500, "未查询到此验证码");
         }
         List<ProductionPickLists> productionPickLists = this.query().eq("user_id", pickCode.getCode()).eq("display", 1).ne("status", 99).list();
         List<Long> listsIds = new ArrayList<>();
@@ -1492,12 +1500,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         pickCodeService.updateById(pickCode);
 
     }
+
     @Override
     public void outStockByCode(String code) {
         List<Long> stockIds = new ArrayList<>();
         ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("dispaly", 1).last("limit 1").one();
-        if (ToolUtil.isEmpty(pickCode)){
-            throw new ServiceException(500,"未查询到此验证码");
+        if (ToolUtil.isEmpty(pickCode)) {
+            throw new ServiceException(500, "未查询到此验证码");
         }
         Long createUser = pickCode.getCreateUser();
         List<ProductionPickLists> productionPickLists = this.query().eq("user_id", createUser).eq("display", 1).ne("status", 99).list();
@@ -1558,6 +1567,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             outstockOrder.setSource("pickLists");
         }
     }
+
     @Override
     public List<Map<String, Object>> listByCode(String code) {
         ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("display", 1).one();

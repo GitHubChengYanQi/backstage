@@ -217,9 +217,16 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
     public List<StockSkuBrand> stockSkuBrands() {
         List<StockSkuBrand> stockSkuBrands = new ArrayList<>();
-        List<StockDetails> stockDetails = this.query().isNotNull("brand_id")
+        List<StockDetails> stockDetails = this.query()
                 .eq("display", 1)
                 .gt("number", 0).list();
+
+
+        for (StockDetails stockDetail : stockDetails) {
+            if (ToolUtil.isEmpty(stockDetail.getBrandId())) {
+                stockDetail.setBrandId(0L);
+            }
+        }
 
         Map<Long, StockSkuBrand> stockSkuBrandMap = new HashMap<>();
         for (StockDetails stockDetail : stockDetails) {
