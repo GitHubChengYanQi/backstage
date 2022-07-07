@@ -85,7 +85,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     private RemarksService remarksService;
     @Autowired
     private SkuBrandBindService brandBindService;
-   @Autowired
+    @Autowired
     private InventoryService inventoryService;
     @Autowired
     private InventoryDetailService inventoryDetailService;
@@ -156,7 +156,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     anomaly.setDisplay(0);
                     anomalyService.updateById(anomaly);
                     instockList = instockListService.getById(anomaly.getSourceId());
-                     skuMessage = skuService.skuMessage(instockList.getSkuId());
+                    skuMessage = skuService.skuMessage(instockList.getSkuId());
                     addDynamic(instockList.getInstockOrderId(), skuMessage + "删除了异常描述");
                     if (anomaly.getType().equals("InstockError")) {
                         instockList = instockListService.getById(anomaly.getSourceId());
@@ -174,7 +174,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
-                     skuMessage = skuService.skuMessage(instockList.getSkuId());
+                    skuMessage = skuService.skuMessage(instockList.getSkuId());
                     addDynamic(instockList.getInstockOrderId(), skuMessage + "取消入库重新核验");
                     break;
                 case "instockByAnomaly":
@@ -315,6 +315,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         /**
          * 查看权限
          */
+        Long LoginUserId = LoginContextHolder.getContext().getUserId();
         if (ToolUtil.isNotEmpty(param.getSourceId())) {
             ActivitiProcessTask processTask = null;
             Long formId = null;
@@ -331,13 +332,16 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             processTask = activitiProcessTaskService.getByFormId(formId);
 
             List<Long> userIds = auditService.getUserIds(processTask.getProcessTaskId());
-            Long id = LoginContextHolder.getContext().getUserId();
+
             for (Long userId : userIds) {
-                if (userId.equals(id)) {
+                if (userId.equals(LoginUserId)) {
                     shopCartResults = this.baseMapper.customList(param);
                     break;
                 }
             }
+        } else {
+            param.setCreateUser(LoginUserId);
+            shopCartResults = this.baseMapper.customList(param);
         }
         format(shopCartResults);
         return shopCartResults;
@@ -357,10 +361,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         format(shopCartResults);
         return shopCartResults;
     }
-
-
-
-
 
 
     @Override

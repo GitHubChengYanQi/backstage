@@ -5,7 +5,7 @@ public enum ReceiptsEnum {
     PURCHASE("采购申请单"),
     PURCHASEORDER("采购单"),
     INSTOCK("入库单"),
-        ERROR("异常"),
+    ERROR("异常"),
     OUTSTOCK("出库单"),
     QUALITY("质检"),
     Stocktaking("盘点");
