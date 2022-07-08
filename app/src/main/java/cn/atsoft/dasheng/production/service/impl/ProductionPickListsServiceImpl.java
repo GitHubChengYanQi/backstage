@@ -581,7 +581,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             pickListsIds.add(processTask.getFormId());
         }
 
-        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).list();
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds)
+                .eq("display", 1)
+                .eq("status", 0).list();
+
         List<ProductionPickListsDetailParam> pickListsDetailParams = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailParam.class, new CopyOptions());
 
         for (ProductionPickListsDetailParam listsParam : pickListsDetailParams) {
@@ -1349,9 +1352,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             }
         }
     }
-    public void queryDetailStatusByIds(List<Long>ids){
+
+    public void queryDetailStatusByIds(List<Long> ids) {
 
     }
+
     /**
      * 查询判断单据状态是否完成
      *

@@ -61,6 +61,7 @@ public class StockDetailsController extends BaseController {
     }
 
 
+
     /**
      * 查看详情接口
      *
