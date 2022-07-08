@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import cn.atsoft.dasheng.erp.pojo.CheckNumber;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -546,6 +547,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             add(result.getSkuId());
         }});
 
+
+        AnomalyOrder anomalyOrder = ToolUtil.isEmpty(result.getOrderId()) ? new AnomalyOrder() : anomalyOrderService.getById(result.getOrderId());
+        AnomalyOrderResult anomalyOrderResult = new AnomalyOrderResult();
+        ToolUtil.copyProperties(anomalyOrder, anomalyOrderResult);
+        result.setOrderResult(anomalyOrderResult);
+
         Brand brand = ToolUtil.isEmpty(result.getBrandId()) ? new Brand() : brandService.getById(result.getBrandId());
         Customer customer = ToolUtil.isEmpty(result.getCustomerId()) ? new Customer() : customerService.getById(result.getCustomerId());
 
@@ -568,6 +575,18 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             }
             result.setFiledUrls(filedUrls);
         }
+
+        if (ToolUtil.isNotEmpty(result.getCheckNumber())) {
+            List<CheckNumber> checkNumbers = JSON.parseArray(result.getCheckNumber(), CheckNumber.class);
+            for (CheckNumber checkNumber : checkNumbers) {
+                if (ToolUtil.isNotEmpty(checkNumber.getMediaIds())) {
+                    List<String> mediaUrls = mediaService.getMediaUrls(checkNumber.getMediaIds(), null);
+                    checkNumber.setMediaUrls(mediaUrls);
+                }
+            }
+            result.setCheckNumbers(checkNumbers);
+        }
+
     }
 
     @Override
