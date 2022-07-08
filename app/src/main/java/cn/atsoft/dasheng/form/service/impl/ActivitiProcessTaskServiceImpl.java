@@ -254,12 +254,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
-            if (ToolUtil.isNotEmpty(rule)) {
-                if (ToolUtil.isNotEmpty(rule.getType())) {
-                    if (haveME(rule, context)) {
-                        stepIds.add(audit.getSetpsId());
-                    }
-                }
+            if (ToolUtil.isNotEmpty(rule)&&ToolUtil.isNotEmpty(rule.getType())&&haveME(rule, context)) {
+                stepIds.add(audit.getSetpsId());
             }
         }
         return stepIds;
