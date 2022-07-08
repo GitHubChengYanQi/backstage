@@ -38,9 +38,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.1.246/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
-    username: daoxin
-    password: 4SG3xMhet4DyKeRn
+    url: jdbc:mysql://rm-2ze2a8h12t8w1pp9gqo.mysql.rds.aliyuncs.com/daoxinscrm?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: daoxinscrm
+    password: 123QWEasd
     filters: wall,mergeStat
 
     # 连接池大小根据实际情况调整

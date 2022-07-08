@@ -235,11 +235,21 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
         List<ProductionPickListsDetailParam> pickListsDetailParams = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailParam.class, new CopyOptions());
 
-        for (ProductionPickListsDetailParam listsParam : pickListsDetailParams) {
-            if (pickListsService.updateStock(listsParam, stockSkuBrands)) {
-                return true;
+
+        for (ProductionPickListsDetailParam pickListsDetailParam : pickListsDetailParams) {
+            for (ProductionPickListsCartParam listParam : param.getProductionPickListsCartParams()) {
+                if (listParam.getSkuId().equals(pickListsDetailParam.getSkuId())&&listParam.getBrandId().equals(pickListsDetailParam.getBrandId())) {
+                    if (pickListsService.updateStock(pickListsDetailParam, stockSkuBrands)) {
+                        return true;
+                    }
+
+                }
             }
         }
+
+//        for (ProductionPickListsDetailParam listsParam : pickListsDetailParams) {
+//
+//        }
         return false;
     }
 
