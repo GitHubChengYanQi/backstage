@@ -218,45 +218,22 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
      */
     @Override
     public List<StockSkuBrand> stockSkuBrands() {
-        List<StockSkuBrand> stockSkuBrands = new ArrayList<>();
-        List<StockDetails> stockDetails = this.query()
+
+        List<StockDetails> stockDetails = this.query().select("sku_id AS skuId,brand_id AS brandId ,sum(number) as num")
                 .eq("display", 1)
-                .gt("number", 0).list();
+                .groupBy("sku_id,brand_id").list();
 
+
+        List<StockSkuBrand> stockSkuBrands = new ArrayList<>();
 
         for (StockDetails stockDetail : stockDetails) {
-            if (ToolUtil.isEmpty(stockDetail.getBrandId())) {
-                stockDetail.setBrandId(0L);
-            }
-        }
-
-        Map<String, StockSkuBrand> stockSkuBrandMap = new HashMap<>();
-        for (StockDetails stockDetail : stockDetails) {
-            StockSkuBrand stockSkuBrand = stockSkuBrandMap.get(stockDetail.getSkuId() + "_" + stockDetail.getBrandId());
-
-            if (ToolUtil.isNotEmpty(stockSkuBrand)) {
-                stockSkuBrand.setNumber(stockDetail.getNumber() + stockSkuBrand.getNumber());
-            } else {
-                stockSkuBrand = new StockSkuBrand();
-                stockSkuBrand.setBrandId(stockDetail.getBrandId());
-                stockSkuBrand.setSkuId(stockDetail.getSkuId());
-                stockSkuBrand.setNumber(stockDetail.getNumber());
-            }
-            stockSkuBrandMap.put(stockDetail.getSkuId() + "_" + stockDetail.getBrandId(), stockSkuBrand);
-        }
-        for (String key : stockSkuBrandMap.keySet()) {
-            StockSkuBrand stockSkuBrand = stockSkuBrandMap.get(key);
+            StockSkuBrand stockSkuBrand = new StockSkuBrand();
+            stockSkuBrand.setBrandId(stockDetail.getBrandId());
+            stockSkuBrand.setSkuId(stockDetail.getSkuId());
+            stockSkuBrand.setNumber(stockDetail.getNum());
             stockSkuBrands.add(stockSkuBrand);
         }
 
-//
-//        List<StockSkuBrand> totalList=new ArrayList<>();
-//
-//        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
-//                (id, transfer) -> {
-//                    transfer.stream().reduce((a, b) -> new StockSkuBrand()).ifPresent(totalList::add);
-//                }
-//        );
         return stockSkuBrands;
     }
 
@@ -475,7 +452,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<StockDetails> removeInkind = new ArrayList<>();
         for (Long inkindId : inkindIds) {
             for (StockDetails stockDetails : detailTotalList) {
-                if (inkindId.equals(stockDetails.getInkindId())){
+                if (inkindId.equals(stockDetails.getInkindId())) {
                     removeInkind.add(stockDetails);
                 }
             }

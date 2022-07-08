@@ -39,8 +39,8 @@ public class AnomalyController extends BaseController {
     @RequestMapping(value = "/temporary", method = RequestMethod.POST)
     @ApiOperation("暂存")
     public ResponseData temporary(@RequestBody @Valid AnomalyParam anomalyParam) {
-        this.anomalyService.temporary(anomalyParam);
-        return ResponseData.success();
+        Long id = this.anomalyService.temporary(anomalyParam);
+        return ResponseData.success(id);
     }
 
     /**
@@ -52,8 +52,8 @@ public class AnomalyController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody @Valid AnomalyParam anomalyParam) {
-        this.anomalyService.add(anomalyParam);
-        return ResponseData.success();
+        Anomaly anomaly = this.anomalyService.add(anomalyParam);
+        return ResponseData.success(anomaly);
     }
 
     /**
@@ -66,8 +66,8 @@ public class AnomalyController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody AnomalyParam anomalyParam) {
 
-        this.anomalyService.update(anomalyParam);
-        return ResponseData.success();
+        Anomaly update = this.anomalyService.update(anomalyParam);
+        return ResponseData.success(update);
     }
 
     /**

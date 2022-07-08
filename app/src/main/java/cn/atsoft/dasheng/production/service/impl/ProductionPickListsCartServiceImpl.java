@@ -229,7 +229,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             pickListsIds.add(processTask.getFormId());
         }
 
-        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).list();
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds)
+                .eq("display", 1)
+                .eq("status", 0).list();
+
         List<ProductionPickListsDetailParam> pickListsDetailParams = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailParam.class, new CopyOptions());
 
         for (ProductionPickListsDetailParam listsParam : pickListsDetailParams) {

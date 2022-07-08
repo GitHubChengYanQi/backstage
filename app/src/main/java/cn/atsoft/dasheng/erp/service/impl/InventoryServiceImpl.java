@@ -268,6 +268,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
     @Override
     public List<StorehousePositionsResult> timely(Long positionId) {
+
+        ShopCart shopCart = new ShopCart();
+        shopCart.setDisplay(0);
+        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+            eq("type", AnomalyType.timelyInventory.name());
+            eq("create_user", LoginContextHolder.getContext().getUserId());
+        }});
+
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         List<Long> positionIds = positionsService.getEndChild(positionId);
         queryWrapper.in("storehouse_positions_id", positionIds);

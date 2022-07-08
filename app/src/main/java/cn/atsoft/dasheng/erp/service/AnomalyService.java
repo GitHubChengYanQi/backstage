@@ -26,11 +26,11 @@ public interface AnomalyService extends IService<Anomaly> {
      * @author song
      * @Date 2022-05-27
      */
-    void add(AnomalyParam param);
+    Anomaly add(AnomalyParam param);
 
     AnomalyResult detail(Long id);
 
-    void temporary(AnomalyParam param);
+    Long temporary(AnomalyParam param);
 
     Map<Long, AnomalyResult> getMap(List<Long> ids);
 
@@ -48,7 +48,7 @@ public interface AnomalyService extends IService<Anomaly> {
      * @author song
      * @Date 2022-05-27
      */
-    void update(AnomalyParam param);
+    Anomaly update(AnomalyParam param);
 
     void dealWithError(AnomalyParam param);
 
