@@ -432,7 +432,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         for (AnomalyResult anomaly : anomalyResults) {
 
 
-
             long errorNum = 0;
             boolean t = false;
             for (AnomalyDetailResult detail : anomaly.getDetails()) {
@@ -579,8 +578,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 //        instockListService.save(newInStockList);
 
 
-        instockList.setStatus(1L);
-        instockList.setRealNumber(anomalyResult.getInstockNumber());
+        instockList.setStatus(-1L);
+        instockList.setRealNumber(instockList.getRealNumber() - detailResult.getNumber());
         instockListService.updateById(instockList);
 
 

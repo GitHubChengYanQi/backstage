@@ -32,45 +32,45 @@ public class InstockHandleController extends BaseController {
     @Autowired
     private InstockHandleService instockHandleService;
 
-    /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2022-07-08
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody InstockHandleParam instockHandleParam) {
-        this.instockHandleService.add(instockHandleParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2022-07-08
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody InstockHandleParam instockHandleParam) {
-
-        this.instockHandleService.update(instockHandleParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2022-07-08
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InstockHandleParam instockHandleParam)  {
-        this.instockHandleService.delete(instockHandleParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 新增接口
+//     *
+//     * @author song
+//     * @Date 2022-07-08
+//     */
+//    @RequestMapping(value = "/add", method = RequestMethod.POST)
+//    @ApiOperation("新增")
+//    public ResponseData addItem(@RequestBody InstockHandleParam instockHandleParam) {
+//        this.instockHandleService.add(instockHandleParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 编辑接口
+//     *
+//     * @author song
+//     * @Date 2022-07-08
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody InstockHandleParam instockHandleParam) {
+//
+//        this.instockHandleService.update(instockHandleParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 删除接口
+//     *
+//     * @author song
+//     * @Date 2022-07-08
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody InstockHandleParam instockHandleParam)  {
+//        this.instockHandleService.delete(instockHandleParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口
@@ -103,9 +103,6 @@ public class InstockHandleController extends BaseController {
         }
         return this.instockHandleService.findPageBySpec(instockHandleParam);
     }
-
-
-
 
 }
 

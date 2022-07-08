@@ -1,11 +1,18 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 入库操作结果
@@ -19,6 +26,15 @@ import java.util.List;
 public class InstockHandleResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+
+    private SkuResult skuResult;
+
+    private BrandResult brandResult;
+
+    private CustomerResult customerResult;
+
+    private StorehousePositionsResult positionsResult;
 
 
     /**

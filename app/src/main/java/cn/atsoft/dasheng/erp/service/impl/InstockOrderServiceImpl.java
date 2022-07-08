@@ -672,7 +672,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (InstockListParam listParam : param.getListParams()) {
 
-            InstockHandle instockHandle = new InstockHandle();    //入庫處理
+            InstockHandle instockHandle = new InstockHandle();    //添加入庫处理结果
             ToolUtil.copyProperties(listParam, instockHandle);
             instockHandle.setType(listParam.getType());
             instockHandles.add(instockHandle);
