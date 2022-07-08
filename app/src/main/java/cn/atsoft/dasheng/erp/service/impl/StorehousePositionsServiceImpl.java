@@ -427,7 +427,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      */
     @Override
     public List<BrandResult> selectByBrand(Long skuId, Long brandId) {
-        List<ProductionPickListsCart> list = cartService.query().eq("status", 0).eq("status", 2).list();
+        List<ProductionPickListsCart> list = cartService.query().eq("status", 0).or().eq("status", 2).list();
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : list) {
             inkindIds.add(pickListsCart.getInkindId());
