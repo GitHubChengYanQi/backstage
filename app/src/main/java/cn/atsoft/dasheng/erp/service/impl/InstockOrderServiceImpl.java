@@ -154,6 +154,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private AnomalyService anomalyService;
     @Autowired
     private ShopCartService shopCartService;
+    @Autowired
+    private InstockHandleService instockHandleService;
 
 
     @Override
@@ -666,7 +668,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     public List<Long> inStock(InstockOrderParam param) {
 
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
+        List<InstockHandle> instockHandles = new ArrayList<>();
+
         for (InstockListParam listParam : param.getListParams()) {
+
+            InstockHandle instockHandle = new InstockHandle();    //入庫處理
+            ToolUtil.copyProperties(listParam, instockHandle);
+            instockHandle.setType(listParam.getType());
+            instockHandles.add(instockHandle);
 
             listParam.setInstockOrderId(param.getInstockOrderId());
 
@@ -685,7 +694,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
             updateStatus(listParam);
         }
-
+        /**
+         *
+         * 添加入库处理结果
+         */
+        instockHandleService.saveBatch(instockHandles);
         /**
          * 添加入库记录
          */
