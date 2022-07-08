@@ -93,6 +93,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private MaintenanceCycleService maintenanceCycleService;
 
     @Override
     @Transactional
@@ -150,6 +152,10 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     public List<StockDetails> needMaintenanceByRequirement(Maintenance param) {
         List<Long> skuIds = new ArrayList<>();
         List<Sku> skuList = new ArrayList<>();
+        List<Long> positionsChildrenIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(param.getStorehousePositionsId())) {
+            positionsChildrenIds.addAll(storehousePositionsService.getEndChild(param.getStorehousePositionsId()));
+        }
         /**
          * 从材质条件筛选出sku
          * 从sku可获取sku的养护周期
@@ -174,16 +180,19 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             }
             setSkuIds(skuIds);
         }});
+        List<MaintenanceCycle> maintenanceCycles =skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
         for (MaintenanceLogResult logResult : logResults) {
             for (Sku sku : skuList) {
-                if (logResult.getSkuId().equals(sku.getSkuId()) && ToolUtil.isNotEmpty(sku.getMaintenancePeriod())) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(logResult.getCreateTime());
-                    calendar.add(Calendar.DATE, (sku.getMaintenancePeriod() - param.getNearMaintenance()));
-                    String maintenance = DateUtil.format(calendar.getTime(), "yyyy-MM-dd");
-                    String now = DateUtil.format(DateUtil.date(), "yyyy-MM-dd");
-                    if (!maintenance.equals(now)) {
-                        notNeedMaintenanceInkindIds.add(logResult.getInkindId());
+                for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
+                    if (logResult.getSkuId().equals(sku.getSkuId()) && maintenanceCycle.getSkuId().equals(sku.getSkuId())){
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(logResult.getCreateTime());
+                        calendar.add(Calendar.DATE, (maintenanceCycle.getMaintenancePeriod() - param.getNearMaintenance()));
+                        String maintenance = DateUtil.format(calendar.getTime(), "yyyy-MM-dd");
+                        String now = DateUtil.format(DateUtil.date(), "yyyy-MM-dd");
+                        if (!maintenance.equals(now)) {
+                            notNeedMaintenanceInkindIds.add(logResult.getInkindId());
+                        }
                     }
                 }
             }
@@ -195,8 +204,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             if (ToolUtil.isNotEmpty(param.getBrandId())) {
                 setBrandId(param.getBrandId());
             }
-            if (ToolUtil.isNotEmpty(param.getStorehousePositionsId())) {
-                setStorehousePositionsId(param.getStorehousePositionsId());
+            if(positionsChildrenIds.size()>0){
+                setPositionIds(positionsChildrenIds);
             }
         }});
 
