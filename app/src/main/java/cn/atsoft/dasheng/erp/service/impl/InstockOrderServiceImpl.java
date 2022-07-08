@@ -222,7 +222,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     instockList.setNumber(instockRequest.getNumber());
                     instockList.setRealNumber(instockRequest.getNumber());
                     instockList.setInstockOrderId(entity.getInstockOrderId());
-                    instockList.setInstockNumber(instockRequest.getNumber());
+                    instockList.setInstockNumber(0L);
                     instockList.setBrandId(instockRequest.getBrandId());
                     if (ToolUtil.isEmpty(instockRequest.getCustomerId())) {
                         throw new ServiceException(500, "请添加供应商");
@@ -831,6 +831,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             throw new ServiceException(500, "参数不正确");
         }
         instockList.setRealNumber(instockList.getRealNumber() - listParam.getNumber());
+        instockList.setInstockNumber(instockList.getInstockNumber() + listParam.getNumber());
         if (instockList.getRealNumber() < 0) {
             throw new ServiceException(500, "当前入库数量与单据数量不符");
         }

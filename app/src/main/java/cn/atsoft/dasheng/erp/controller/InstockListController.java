@@ -35,51 +35,51 @@ public class InstockListController extends BaseController {
     @Autowired
     private InstockListService instockListService;
 
-    /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2021-10-06
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody InstockListParam instockListParam) {
-        this.instockListService.add(instockListParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 新增接口
+//     *
+//     * @author song
+//     * @Date 2021-10-06
+//     */
+//    @RequestMapping(value = "/add", method = RequestMethod.POST)
+//    @ApiOperation("新增")
+//    public ResponseData addItem(@RequestBody InstockListParam instockListParam) {
+//       this.instockListService.add(instockListParam);
+//        return ResponseData.success();
+//    }
 
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2021-10-06
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @BussinessLog(value = "修改入库清单", key = "name", dict = InstockListParam.class)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody InstockListParam instockListParam) {
+//    /**
+//     * 编辑接口
+//     *
+//     * @author song
+//     * @Date 2021-10-06
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @BussinessLog(value = "修改入库清单", key = "name", dict = InstockListParam.class)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody InstockListParam instockListParam) {
+//
+////        InstockList entity = new InstockList();
+////        entity.setStatus(instockListParam.getStatus());
+////        entity.setInstockListId(instockListParam.getInstockListId());
+////        this.instockListService.updateById(entity);
+//
+//        return ResponseData.success();
+//    }
 
-        InstockList entity = new InstockList();
-        entity.setStatus(instockListParam.getStatus());
-        entity.setInstockListId(instockListParam.getInstockListId());
-        this.instockListService.updateById(entity);
-
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2021-10-06
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @BussinessLog(value = "删除入库清单", key = "name", dict = InstockListParam.class)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InstockListParam instockListParam) {
-        this.instockListService.delete(instockListParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 删除接口
+//     *
+//     * @author song
+//     * @Date 2021-10-06
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @BussinessLog(value = "删除入库清单", key = "name", dict = InstockListParam.class)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody InstockListParam instockListParam) {
+//        this.instockListService.delete(instockListParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口

@@ -178,11 +178,12 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     addDynamic(instockList.getInstockOrderId(), skuMessage + "取消入库重新核验");
                     break;
                 case "instockByAnomaly":
-                    Anomaly error = anomalyService.getById(shopCart.getFormId());
-                    error.setDisplay(0);
-                    anomalyService.updateById(error);
-                    instockList = instockListService.getById(error.getSourceId());
-                    break;
+                    throw new ServiceException(500, "异常件不可退回");
+//                    Anomaly error = anomalyService.getById(shopCart.getFormId());
+//                    error.setDisplay(0);
+//                    anomalyService.updateById(error);
+//                    instockList = instockListService.getById(error.getSourceId());
+//                    break;
 
             }
             if (instockList != null) {

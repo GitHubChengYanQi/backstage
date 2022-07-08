@@ -132,6 +132,9 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                 shopCartService.addDynamic(param.getAnomalyOrderId(), skuMessage);
 
                 if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
+                    if (LoginContextHolder.getContext().getUserId().equals(param.getUserId())) {
+                        throw new ServiceException(500, "不可转交自己");
+                    }
                     User user = userService.getById(param.getUserId());
                     skuMessage = skuService.skuMessage(anomaly.getSkuId());
                     shopCartService.addDynamic(param.getAnomalyOrderId(), "将" + skuMessage + "转交给" + user.getName() + "进行处理");
