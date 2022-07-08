@@ -104,7 +104,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置出库库单据自动生成编码规则");
+                throw new ServiceException(500, "请配置养护单据自动生成编码规则");
             }
         }
 
