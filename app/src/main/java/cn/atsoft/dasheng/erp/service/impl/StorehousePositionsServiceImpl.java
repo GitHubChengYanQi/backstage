@@ -186,11 +186,11 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void delete(StorehousePositionsParam param) {
-        List<StorehousePositions> list = this.query().eq("pid", param.getStorehousePositionsId()).list();
+        List<StorehousePositions> list = this.query().eq("pid", param.getStorehousePositionsId()).eq("display", 1).list();
         if (ToolUtil.isNotEmpty(list)) {
             throw new ServiceException(500, "当前仓位不能删除");
         }
-        List<StockDetails> details = stockDetailsService.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).list();
+        List<StockDetails> details = stockDetailsService.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).eq("display", 1).list();
         if (ToolUtil.isNotEmpty(details)) {
             throw new ServiceException(500, "库位已被使用，不可以删除");
         }
@@ -439,7 +439,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         if (ToolUtil.isNotEmpty(brandId)) {
             stockDetailsQueryWrapper.eq("brand_id", brandId);
         }
-        if (inkindIds.size()>0) {
+        if (inkindIds.size() > 0) {
             stockDetailsQueryWrapper.notIn("inkind_id", inkindIds);
         }
         stockDetailsQueryWrapper.gt("number", 0);
@@ -454,7 +454,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         for (StockDetails stockDetail : stockDetails) {
             if (ToolUtil.isEmpty(stockDetail.getBrandId())) {    //其他品牌
                 stockDetail.setBrandId(0L);
-                otherBrand =true;
+                otherBrand = true;
             }
             positionIds.add(stockDetail.getStorehousePositionsId());
             brandIds.add(stockDetail.getBrandId());
@@ -482,7 +482,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 setBrandName("其他品牌");
             }});//其他品牌
         }
-
 
 
         Map<Long, Long> brandNumber = new HashMap<>();
@@ -1305,13 +1304,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.query().in("storehouse_id", storeIds).list();
         for (StorehousePositionsResult datum : data) {
             for (Storehouse storehouse : storehouses) {
-                    if (datum.getStorehouseId() != null && storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
-                        StorehouseResult storehouseResult = new StorehouseResult();
-                        ToolUtil.copyProperties(storehouse, storehouseResult);
-                        datum.setStorehouseResult(storehouseResult);
-                    }
+                if (datum.getStorehouseId() != null && storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
+                    StorehouseResult storehouseResult = new StorehouseResult();
+                    ToolUtil.copyProperties(storehouse, storehouseResult);
+                    datum.setStorehouseResult(storehouseResult);
                 }
             }
+        }
 
 
     }
