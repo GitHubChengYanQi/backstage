@@ -637,4 +637,30 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         return entity;
     }
 
+    @Override
+    public void format(List<AnomalyOrderResult> data) {
+
+        List<Long> orderIds = new ArrayList<>();
+        for (AnomalyOrderResult datum : data) {
+            orderIds.add(datum.getOrderId());
+        }
+
+        List<Anomaly> anomalies = orderIds.size() == 0 ? new ArrayList<>() : anomalyService.query().in("order_id", orderIds).eq("display", 1).list();
+        List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
+        anomalyService.format(anomalyResults);
+
+
+        for (AnomalyOrderResult datum : data) {
+
+            List<AnomalyResult> anomalyResultList = new ArrayList<>();
+
+            for (AnomalyResult anomalyResult : anomalyResults) {
+                if (datum.getOrderId().equals(anomalyResult.getOrderId())) {
+                    anomalyResultList.add(anomalyResult);
+                }
+            }
+            datum.setAnomalyResults(anomalyResultList);
+        }
+
+    }
 }
