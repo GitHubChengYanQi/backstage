@@ -43,4 +43,7 @@ public interface RestUserMapper extends BaseMapper<RestUser> {
      */
     RestUser getByAccount(@Param("account") String account);
 
+
+    String headPortrait(@Param("userId") Long userId);
+
 }
