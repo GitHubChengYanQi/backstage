@@ -8,8 +8,11 @@ import cn.atsoft.dasheng.erp.service.ShopCartService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -44,7 +47,7 @@ public class ShopCartController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem( @RequestBody ShopCartParam shopCartParam) {
+    public ResponseData addItem(@RequestBody ShopCartParam shopCartParam) {
         Long id = this.shopCartService.add(shopCartParam);
         return ResponseData.success(id);
     }
@@ -62,7 +65,9 @@ public class ShopCartController extends BaseController {
     @ApiOperation("退回")
     public ResponseData sendBack(@RequestBody ShopCartParam shopCartParam) {
         List<ShopCart> shopCarts = this.shopCartService.sendBack(shopCartParam.getIds());
-        return ResponseData.success(shopCarts);
+        List<ShopCartResult> shopCartResults = BeanUtil.copyToList(shopCarts, ShopCartResult.class, new CopyOptions());
+        shopCartService.format(shopCartResults);
+        return ResponseData.success(shopCartResults);
     }
 
     @RequestMapping(value = "/backType", method = RequestMethod.POST)

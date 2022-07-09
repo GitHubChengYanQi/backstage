@@ -79,4 +79,5 @@ public interface ShopCartService extends IService<ShopCart> {
      */
      PageInfo<ShopCartResult> findPageBySpec(ShopCartParam param);
 
+    void format(List<ShopCartResult> data);
 }

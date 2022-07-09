@@ -171,7 +171,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                         inventoryDetailService.updateBatchById(inventoryDetails);
                     }
                     break;
-                    case "waitInStock":
+                case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
                     skuMessage = skuService.skuMessage(instockList.getSkuId());
@@ -409,7 +409,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         return result;
     }
 
-    private void format(List<ShopCartResult> data) {
+    @Override
+    public void format(List<ShopCartResult> data) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
