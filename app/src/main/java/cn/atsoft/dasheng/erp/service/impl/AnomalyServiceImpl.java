@@ -116,6 +116,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 }
                 param.setType(param.getAnomalyType().toString());
                 break;
+            case StocktakingError:  //盘点:
+                boolean normal = isNormal(param);  //判断有无异常件  没有异常件 不执行以下代码 直接退出
+                if (normal) {
+                    updateInventory(param);   //盘点详情 修改成正常状态
+                    return null;
+                }
+                break;
+
         }
         param.setType(param.getAnomalyType().name());
         Anomaly entity = this.getEntity(param);
@@ -153,6 +161,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             shopCartParam.setType(param.getAnomalyType().name());
             shopCartParam.setFormId(entity.getAnomalyId());
             shopCartParam.setNumber(param.getNeedNumber());
+            shopCartParam.setStorehousePositionsId(param.getPositionId().toString());
             shopCartService.add(shopCartParam);
         }
         return entity;
@@ -314,6 +323,18 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         return t;
     }
 
+    /**
+     * 判断是不是异常件
+     *
+     * @param param
+     * @return
+     */
+    private boolean isNormal(AnomalyParam param) {
+        if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * 盘点  异常 数据 改成正常数据

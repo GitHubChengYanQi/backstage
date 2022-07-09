@@ -117,7 +117,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
     @Override
     @Transactional
-    public void add(AnomalyOrderParam param) {
+    public Object add(AnomalyOrderParam param) {
 
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "15").eq("state", 1).one();
@@ -196,6 +196,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         submit(entity);
         shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常描述");
         shopCartService.addDynamic(entity.getOrderId(), "提交了异常");
+
+        return anomalyList;
     }
 
     private void bind(Long inkindId, Long detailId) {

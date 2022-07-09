@@ -43,8 +43,8 @@ public class AnomalyOrderController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody @Valid AnomalyOrderParam anomalyOrderParam) {
-        this.anomalyOrderService.add(anomalyOrderParam);
-        return ResponseData.success();
+        Object add = this.anomalyOrderService.add(anomalyOrderParam);
+        return ResponseData.success(add);
     }
 
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author song
@@ -25,7 +25,7 @@ public interface AnomalyOrderService extends IService<AnomalyOrder> {
      * @author song
      * @Date 2022-06-09
      */
-    void add(AnomalyOrderParam param);
+    Object add(AnomalyOrderParam param);
 
 
     void addByInventory(AnomalyOrderParam param);
@@ -74,6 +74,6 @@ public interface AnomalyOrderService extends IService<AnomalyOrder> {
      * @author song
      * @Date 2022-06-09
      */
-     PageInfo<AnomalyOrderResult> findPageBySpec(AnomalyOrderParam param);
+    PageInfo<AnomalyOrderResult> findPageBySpec(AnomalyOrderParam param);
 
 }

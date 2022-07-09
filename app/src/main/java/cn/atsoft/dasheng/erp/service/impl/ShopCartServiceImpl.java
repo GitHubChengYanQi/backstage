@@ -141,7 +141,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
      * @param ids
      */
     @Override
-    public void sendBack(List<Long> ids) {
+    public List<ShopCart> sendBack(List<Long> ids) {
 
         List<ShopCart> shopCarts = ids.size() == 0 ? new ArrayList<>() : this.listByIds(ids);
         for (ShopCart shopCart : shopCarts) {
@@ -155,11 +155,11 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     Anomaly anomaly = anomalyService.getById(shopCart.getFormId());
                     anomaly.setDisplay(0);
                     anomalyService.updateById(anomaly);
-                    instockList = instockListService.getById(anomaly.getSourceId());
-                    skuMessage = skuService.skuMessage(instockList.getSkuId());
-                    addDynamic(instockList.getInstockOrderId(), skuMessage + "删除了异常描述");
                     if (anomaly.getType().equals("InstockError")) {
                         instockList = instockListService.getById(anomaly.getSourceId());
+                        skuMessage = skuService.skuMessage(instockList.getSkuId());
+                        instockList = instockListService.getById(anomaly.getSourceId());
+                        addDynamic(instockList.getInstockOrderId(), skuMessage + "删除了异常描述");
                     }
                     //盘点的撤回
                     if (anomaly.getType().equals("StocktakingError")) {
@@ -171,7 +171,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                         inventoryDetailService.updateBatchById(inventoryDetails);
                     }
                     break;
-                case "waitInStock":
+                    case "waitInStock":
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
                     skuMessage = skuService.skuMessage(instockList.getSkuId());
@@ -191,7 +191,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             }
             this.updateById(shopCart);
         }
-
+        return shopCarts;
 
     }
 
