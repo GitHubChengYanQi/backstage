@@ -100,6 +100,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private MessageProducer messageProducer;
     @Autowired
     private InventoryDetailService inventoryDetailService;
+    @Autowired
+    private InventoryService inventoryService;
 
 
     @Transactional
@@ -241,10 +243,25 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private void updateInventoryStatus(AnomalyParam param, int status) {
         QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
+
+
+        /**
+         * 同一时间段   统一修改
+         */
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();
+        if (ToolUtil.isNotEmpty(inventoryResults)) {
+            List<Long> inventoryIds = new ArrayList<>();
+            for (InventoryResult inventoryResult : inventoryResults) {
+                inventoryIds.add(inventoryResult.getInventoryTaskId());
+            }
+            queryWrapper.in("inventory_id", inventoryIds);
+        }
+
+
         queryWrapper.eq("sku_id", param.getSkuId());
         queryWrapper.eq("brand_id", param.getBrandId());
         queryWrapper.eq("position_id", param.getPositionId());
-        queryWrapper.eq("inventory_id", param.getFormId());
+
         List<InventoryDetail> inventoryDetails = inventoryDetailService.list(queryWrapper);
         for (InventoryDetail inventoryDetail : inventoryDetails) {
             if (inventoryDetail.getLockStatus() == 99) {
@@ -269,7 +286,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             switch (param.getAnomalyType()) {
                 case StocktakingError:
-                    updateInventory(param);
+                    updateInventory(param);     //盘点正常
                     t = false;
                     break;
                 case InstockError:
@@ -306,12 +323,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private void updateInventory(AnomalyParam param) {
 
         updateInventoryStatus(param, 1);    //数据正常  不添加异常数据
-
-        AnomalyDetail anomalyDetail = new AnomalyDetail();//异常修改为正常
-        anomalyDetail.setDisplay(0);
-        List<AnomalyDetail> anomalyDetails = detailService.list(new QueryWrapper<AnomalyDetail>() {{
-            eq("anomaly_id", param.getAnomalyId());
-        }});
 
 
         ShopCart shopCart = new ShopCart();

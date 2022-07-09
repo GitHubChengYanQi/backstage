@@ -52,4 +52,7 @@ public interface InventoryMapper extends BaseMapper<Inventory> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") InventoryParam paramCondition);
 
+
+    List<InventoryResult> listByTime(@Param("paramCondition") InventoryParam paramCondition);
+
 }
