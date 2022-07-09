@@ -84,6 +84,19 @@ public class ProductionPickListsController extends BaseController {
         ProductionPickLists pickLists = this.productionPickListsService.add(productionPickListsParam);
         return ResponseData.success(pickLists);
     }
+     /**
+         * 生成code
+         *
+         * @author Captain_Jazz
+         * @Date 2022-03-25
+         */
+        @RequestMapping(value = "/createCode", method = RequestMethod.POST)
+        @ApiOperation("新增")
+        public ResponseData createCode(@RequestBody ProductionPickListsParam productionPickListsParam) {
+            this.productionPickListsService.warning(productionPickListsParam);
+            String code = this.productionPickListsService.createCode(productionPickListsParam);
+            return ResponseData.success(code);
+        }
 
 
     @RequestMapping(value = "/abortCode", method = RequestMethod.GET)
@@ -325,8 +338,8 @@ public class ProductionPickListsController extends BaseController {
  @RequestMapping(value = "/listByCode", method = RequestMethod.GET)
     @ApiOperation("详情")
     public ResponseData listByUser(@RequestParam String code) {
-        List<Map<String, Object>> maps = productionPickListsService.listByCode(code);
-        return ResponseData.success(maps);
+
+        return ResponseData.success(productionPickListsService.listByCode(code));
     }
 
 

@@ -36,6 +36,7 @@ import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
 import cn.atsoft.dasheng.production.model.result.*;
 import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -48,7 +49,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,6 +164,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ActivitiStepsService stepsService;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private RedisSendCheck redisSendCheck;
 
 
     @Override
@@ -234,7 +236,18 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public ProductionPickListsResult findBySpec(ProductionPickListsParam param) {
         return null;
     }
-
+    @Override
+    public String createCode(ProductionPickListsParam param){
+        String code = String.valueOf(RandomUtil.randomLong(4));
+        List<Object> list = redisSendCheck.getList(code);
+        param.getCartsParams();
+        List<Object> objects = BeanUtil.copyToList(param.getCartsParams(), Object.class);
+        if (ToolUtil.isEmpty(list)) {
+            redisSendCheck.pushList(code,objects);
+            return code;
+        }
+        return createCode(param);
+    }
     @Override
     public List<ProductionPickListsResult> findListBySpec(ProductionPickListsParam param) {
         List<ProductionPickListsResult> productionPickListsResults = this.baseMapper.customList(param);
@@ -912,10 +925,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                          * 创建新购物车记录  存放出库数量
                          */
                         if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(brandId) && listsCart.getStatus() == 0) {
-                            int lastNum = pickListsCartParam.getNumber();
-//                            int lastNum = num;
-//                            num -= listsCart.getNumber();
-                            if (pickListsCartParam.getNumber() >= 0) {
+//                        if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(brandId) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
+                            int num = pickListsCartParam.getNumber();
+                            int lastNum = num;
+                            num -= listsCart.getNumber();
+                            if (num >= 0) {
                                 listsCart.setDisplay(0);
                                 listsCart.setStatus(99);
                                 pickListsCartParam.setNumber(pickListsCartParam.getNumber() - listsCart.getNumber());
@@ -932,28 +946,28 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                                     }
                                 }
                             }
-//                            else if (num < 0) {
-//                                listsCart.setNumber(listsCart.getNumber() - lastNum);
-//                                ProductionPickListsCart newCart = new ProductionPickListsCart();
-//                                ToolUtil.copyProperties(listsCart, newCart);
-//                                newCart.setPickListsCart(null);
-//                                newCart.setStatus(99);
-//                                newCart.setDisplay(0);
-//                                newCart.setNumber(lastNum);
-//                                newCarts.add(newCart);
-//                                for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
-//                                    if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
-//                                        if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
-//                                            pickListsDetail.setReceivedNumber(pickListsDetail.getReceivedNumber() + lastNum);
-//                                        } else {
-//                                            pickListsDetail.setReceivedNumber(lastNum);
-//                                        }
-//                                        if (Objects.equals(pickListsDetail.getNumber(), pickListsDetail.getReceivedNumber())) {
-//                                            pickListsDetail.setStatus(99);
-//                                        }
-//                                    }
-//                                }
-//                            }
+                            else {
+                                listsCart.setNumber(listsCart.getNumber() - lastNum);
+                                ProductionPickListsCart newCart = new ProductionPickListsCart();
+                                ToolUtil.copyProperties(listsCart, newCart);
+                                newCart.setPickListsCart(null);
+                                newCart.setStatus(99);
+                                newCart.setDisplay(0);
+                                newCart.setNumber(lastNum);
+                                newCarts.add(newCart);
+                                for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+                                    if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
+                                        if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
+                                            pickListsDetail.setReceivedNumber(pickListsDetail.getReceivedNumber() + lastNum);
+                                        } else {
+                                            pickListsDetail.setReceivedNumber(lastNum);
+                                        }
+                                        if (Objects.equals(pickListsDetail.getNumber(), pickListsDetail.getReceivedNumber())) {
+                                            pickListsDetail.setStatus(99);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -1621,55 +1635,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
 
     @Override
-    public List<Map<String, Object>> listByCode(String code) {
-        ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("display", 1).one();
-        Long createUser = pickCode.getCreateUser();
-        List<ProductionPickLists> pickLists = this.query().eq("user_id", createUser).ne("status", 99).eq("display", 1).list();
-        List<ProductionPickListsResult> productionPickLists = BeanUtil.copyToList(pickLists, ProductionPickListsResult.class);
-        List<Long> pickListsIds = new ArrayList<>();
-        for (ProductionPickLists pickList : pickLists) {
-            pickListsIds.add(pickList.getPickListsId());
-        }
-        List<ProductionPickListsCart> carts = pickListsCartService.query().in("pick_lists_id", pickListsIds).eq("status", 2).eq("display", 1).list();
-        List<ProductionPickListsCartResult> productionPickListsCartResults = BeanUtil.copyToList(carts, ProductionPickListsCartResult.class, new CopyOptions());
-        List<ProductionPickListsCartResult> totalList = new ArrayList<>();
-        productionPickListsCartResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()), Collectors.toList())).forEach(
-                (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new ProductionPickListsCartResult() {{
-                        setSkuId(a.getSkuId());
-                        setNumber(a.getNumber() + b.getNumber());
-                        setBrandId(a.getBrandId());
-                        setPickListsId(a.getPickListsId());
-                        setPickListsDetailId(a.getPickListsDetailId());
-                        setPickListsId(a.getPickListsId());
-                    }}).ifPresent(totalList::add);
-                }
-        );
-        pickListsCartService.format(totalList);
-
-
-        User user = userService.getById(createUser);
-        List<Map<String, Object>> result = new ArrayList<>();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("userId", user.getUserId());
-        map.put("userName", user.getName());
-        List<ProductionPickListsResult> pickListsResults = new ArrayList<>();
-        for (ProductionPickListsResult productionPickListsResult : productionPickLists) {
-            List<ProductionPickListsCartResult> cartResults = new ArrayList<>();
-            for (ProductionPickListsCartResult productionPickListsCartResult : totalList) {
-                if (productionPickListsCartResult.getPickListsId().equals(productionPickListsResult.getPickListsId())) {
-                    cartResults.add(productionPickListsCartResult);
-                }
-            }
-            productionPickListsResult.setCartResults(cartResults);
-            if (user.getUserId().equals(productionPickListsResult.getUserId())) {
-                pickListsResults.add(productionPickListsResult);
-            }
-        }
-        map.put("pickListsResults", pickListsResults);
-        result.add(map);
-
-        return result;
+    public List<ProductionPickListsCartResult> listByCode(String code) {
+        List<Object> list = redisSendCheck.getList(code);
+        List<ProductionPickListsCartResult> cartResults = BeanUtil.copyToList(list, ProductionPickListsCartResult.class);
+        pickListsCartService.format(cartResults);
+        return cartResults;
     }
 }

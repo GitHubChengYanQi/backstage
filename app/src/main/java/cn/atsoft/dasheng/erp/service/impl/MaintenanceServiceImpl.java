@@ -116,8 +116,25 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         this.save(entity);
 
         List<StockDetails> stockDetails = this.needMaintenanceByRequirement(entity);
+
+        List<StockDetails> detailTotalList = new ArrayList<>();
+
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+"_"+(ToolUtil.isEmpty(item.getBrandId())?0:item.getBrandId())+"_"+item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails(){{
+                        setNumber(a.getNumber()+b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                        setBrandId(a.getBrandId());
+                        setStorehouseId(a.getStorehouseId());
+                    }}).ifPresent(detailTotalList::add);
+                }
+        );
+
+
+
         List<MaintenanceDetail> details = new ArrayList<>();
-        for (StockDetails stockDetail : stockDetails) {
+        for (StockDetails stockDetail : detailTotalList) {
             MaintenanceDetail detail = new MaintenanceDetail();
             ToolUtil.copyProperties(stockDetail, detail);
             detail.setMaintenanceId(entity.getMaintenanceId());
@@ -218,6 +235,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     //任务开始
     public void startMaintenance(Maintenance maintenance) {
+        //如果从单个任务进入详情   则只更新该任务的养护物料列表
         if (ToolUtil.isNotEmpty(maintenance) && maintenance.getStatus().equals(0)) {
             if (maintenance.getStatus().equals(0)) {
                 List<Maintenance> maintenances = this.findTaskByTime();
@@ -227,12 +245,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 }
             }
 
-        } else {
+        } else { //如果是从合并任务查看界面进入  则筛选出 符合条件的任务  更改这些任务状态为开始  并更新物料列表
             List<Maintenance> maintenances = this.findTaskByTime();
             for (Maintenance entity : maintenances) {
                 if (entity.getStatus().equals(0)) {
                     entity.setStatus(98);
-
                     updateDetail(entity);
                 }
             }
@@ -439,7 +456,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     @Override
     public MaintenanceResult detail(Long id) {
         Maintenance maintenance = this.getById(id);
-        startMaintenance(maintenance);
+        if (ToolUtil.isNotEmpty(maintenance)) {
+            startMaintenance(maintenance);
+        }
         MaintenanceResult maintenanceResult = new MaintenanceResult();
         ToolUtil.copyProperties(maintenance, maintenanceResult);
         List<StorehousePositionsResult> details = this.getDetails(id);
@@ -454,22 +473,34 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
      */
     public void updateDetail(Maintenance maintenance) {
         List<StockDetails> stockDetails = this.needMaintenanceByRequirement(maintenance);
-        List<MaintenanceLog> maintenanceLogs = maintenanceLogService.query().eq("maintenance_id", maintenance.getMaintenanceId()).list();
+        List<StockDetails> detailTotalList = new ArrayList<>();
+
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+"_"+(ToolUtil.isEmpty(item.getBrandId())?0:item.getBrandId())+"_"+item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails(){{
+                        setNumber(a.getNumber()+b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                        setBrandId(a.getBrandId());
+                        setStorehouseId(a.getStorehouseId());
+                    }}).ifPresent(detailTotalList::add);
+                }
+        );
+
         List<MaintenanceDetail> maintenanceDetails = maintenanceDetailService.query().eq("status", 0).eq("display", 1).eq("maintenance_id", maintenance.getMaintenanceId()).list();
-        for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
-            for (StockDetails stockDetail : stockDetails) {
-                //对批量实物 库存更正
-                if (stockDetail.getInkindId().equals(maintenanceDetail.getInkindId()) && Math.toIntExact(stockDetail.getNumber()) != maintenanceDetail.getNumber()) {
-                    maintenanceDetail.setNumber(Math.toIntExact(stockDetail.getNumber()));
+        for (StockDetails details : detailTotalList) {
+            for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
+                if(details.getBrandId().equals(maintenanceDetail.getBrandId()) && details.getSkuId().equals(maintenanceDetail.getMaintenanceDetailId()) && details.getStorehousePositionsId().equals(maintenanceDetail.getStorehousePositionsId())){
+                    if(maintenanceDetail.getStatus()!=99){
+                        maintenanceDetail.setNumber(Math.toIntExact(details.getNumber()));
+                    }
                 }
             }
-            //如果物料在期间被出库  则 删除掉这条数据
-            if (stockDetails.stream().noneMatch(i -> i.getInkindId().equals(maintenanceDetail.getInkindId())) && maintenanceLogs.stream().noneMatch(i -> i.getInkindId().equals(maintenanceDetail.getInkindId()))) {
-                maintenanceDetail.setDisplay(0);
-            }
+
         }
+
         for (StockDetails stockDetail : stockDetails) {
-            if (maintenanceDetails.stream().noneMatch(i -> i.getInkindId().equals(stockDetail.getInkindId()))) {
+            if (maintenanceDetails.stream().noneMatch(i -> i.getSkuId().equals(stockDetail.getSkuId()) && i.getBrandId().equals(stockDetail.getBrandId()) && i.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId()))) {
                 MaintenanceDetail maintenanceDetail = new MaintenanceDetail();
                 ToolUtil.copyProperties(stockDetail, maintenanceDetail);
                 maintenanceDetail.setMaintenanceId(maintenance.getMaintenanceId());
