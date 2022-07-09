@@ -413,7 +413,22 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         detailService.remove(new QueryWrapper<AnomalyDetail>() {{
             eq("anomaly_id", param.getAnomalyId());
         }});
-        addDetails(param);
+        boolean b = addDetails(param);
+        if (b) {   //添加购物车
+                ShopCartParam shopCartParam = new ShopCartParam();
+                shopCartParam.setSkuId(param.getSkuId());
+                shopCartParam.setBrandId(param.getBrandId());
+                shopCartParam.setCustomerId(param.getCustomerId());
+                shopCartParam.setType(param.getAnomalyType().name());
+                shopCartParam.setFormId(oldEntity.getAnomalyId());
+                shopCartParam.setNumber(param.getNeedNumber());
+                List<PositionNum> list = new ArrayList<PositionNum>() {{  //库位解json 兼容之前结构
+                    add(new PositionNum(param.getPositionId(), 0L));
+                }};
+                shopCartParam.setStorehousePositionsId(JSON.toJSONString(list));
+                shopCartService.add(shopCartParam);
+            }
+
         String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
         shopCartService.addDynamic(oldEntity.getFormId(), skuMessage + "修改了异常描述");
         return newEntity;
