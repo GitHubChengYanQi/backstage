@@ -619,14 +619,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (StockSkuBrand stockSkuBrand : stockSkuBrands) {
             if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
-                if (number <= 0) {
+                if (number < 0) {
                     f = true;
                 }
                 stockSkuBrand.setNumber(number);
                 break;
             } else if ((ToolUtil.isEmpty(detailParam.getBrandId()) || detailParam.getBrandId() == 0) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //不指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
-                if (number <= 0) {
+                if (number < 0) {
                     f = true;
                 }
                 stockSkuBrand.setNumber(number);

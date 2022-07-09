@@ -76,4 +76,5 @@ public interface AnomalyOrderService extends IService<AnomalyOrder> {
      */
     PageInfo<AnomalyOrderResult> findPageBySpec(AnomalyOrderParam param);
 
+    void format(List<AnomalyOrderResult> data);
 }

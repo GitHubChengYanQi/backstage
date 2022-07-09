@@ -365,6 +365,21 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         anomalyOrder.setComplete(99);
         this.updateById(anomalyOrder);
         updateStatus(orderParam);
+
+        /**
+         * 如果有转交任务 全部算完成
+         */
+        List<Long> anomalyIds = new ArrayList<>();
+        for (Anomaly anomaly : anomalies) {
+            anomalyIds.add(anomaly.getAnomalyId());
+        }
+        anomalyIds.add(0L);
+        ActivitiProcessTask task = new ActivitiProcessTask();
+        task.setDisplay(0);
+        task.setStatus(99);
+        activitiProcessTaskService.update(task, new QueryWrapper<ActivitiProcessTask>() {{
+            in("form_id", anomalyIds);
+        }});
     }
 
     /**
@@ -639,4 +654,30 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         return entity;
     }
 
+    @Override
+    public void format(List<AnomalyOrderResult> data) {
+
+        List<Long> orderIds = new ArrayList<>();
+        for (AnomalyOrderResult datum : data) {
+            orderIds.add(datum.getOrderId());
+        }
+
+        List<Anomaly> anomalies = orderIds.size() == 0 ? new ArrayList<>() : anomalyService.query().in("order_id", orderIds).eq("display", 1).list();
+        List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
+        anomalyService.format(anomalyResults);
+
+
+        for (AnomalyOrderResult datum : data) {
+
+            List<AnomalyResult> anomalyResultList = new ArrayList<>();
+
+            for (AnomalyResult anomalyResult : anomalyResults) {
+                if (datum.getOrderId().equals(anomalyResult.getOrderId())) {
+                    anomalyResultList.add(anomalyResult);
+                }
+            }
+            datum.setAnomalyResults(anomalyResultList);
+        }
+
+    }
 }

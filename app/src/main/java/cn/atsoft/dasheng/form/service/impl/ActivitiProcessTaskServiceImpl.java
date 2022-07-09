@@ -254,12 +254,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
-            if (ToolUtil.isNotEmpty(rule)) {
-                if (ToolUtil.isNotEmpty(rule.getType())) {
-                    if (haveME(rule, context)) {
-                        stepIds.add(audit.getSetpsId());
-                    }
-                }
+            if (ToolUtil.isNotEmpty(rule)&&ToolUtil.isNotEmpty(rule.getType())&&haveME(rule, context)) {
+                stepIds.add(audit.getSetpsId());
             }
         }
         return stepIds;
@@ -358,7 +354,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 case "INSTOCK":
                     instockOrderIds.add(datum.getFormId());
                     break;
-                case "INSTOCKERROR":
+                case "ERROR":
                     anomalyOrderIds.add(datum.getFormId());
                     break;
                 case "OUTSTOCK":
@@ -380,6 +376,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         statusMap.put(0L, "开始");
         statusMap.put(99L, "完成");
         statusMap.put(50L, "拒绝");
+
         for (DocumentsStatus status : statuses) {
             statusMap.put(status.getDocumentsStatusId(), status.getName());
         }
@@ -391,14 +388,16 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<AnomalyOrder> anomalyOrders = anomalyOrderIds.size() == 0 ? new ArrayList<>() : anomalyOrderService.listByIds(anomalyOrderIds);
         List<AnomalyOrderResult> orderResultList = BeanUtil.copyToList(anomalyOrders, AnomalyOrderResult.class, new CopyOptions());
+        anomalyOrderService.format(orderResultList);
 
         List<ProductionPickLists> productionPickLists = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsIds);
         List<ProductionPickListsResult> productionPickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
-        List<MaintenanceResult> maintenanceResults =maintenanceIds.size() == 0 ? new ArrayList<>() : maintenanceService.resultsByIds(maintenanceIds);
+        List<MaintenanceResult> maintenanceResults = maintenanceIds.size() == 0 ? new ArrayList<>() : maintenanceService.resultsByIds(maintenanceIds);
 
         List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
         List<AnomalyResult> anomalyResults = BeanUtil.copyToList(anomalies, AnomalyResult.class, new CopyOptions());
         anomalyService.getOrder(anomalyResults);
+        anomalyService.format(anomalyResults);
 
         List<Inventory> inventories = inventoryIds.size() == 0 ? new ArrayList<>() : inventoryService.listByIds(inventoryIds);
         List<InventoryResult> inventoryResults = BeanUtil.copyToList(inventories, InventoryResult.class, new CopyOptions());
@@ -424,7 +423,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
 
             for (AnomalyOrderResult anomalyOrderResult : orderResultList) {
-                if (datum.getType().equals("INSTOCKERROR") && datum.getFormId().equals(anomalyOrderResult.getOrderId())) {
+                if (datum.getType().equals("ERROR") && datum.getFormId().equals(anomalyOrderResult.getOrderId())) {
                     String statusName = statusMap.get(anomalyOrderResult.getStatus());
                     anomalyOrderResult.setStatusName(statusName);
                     datum.setReceipts(anomalyOrderResult);
