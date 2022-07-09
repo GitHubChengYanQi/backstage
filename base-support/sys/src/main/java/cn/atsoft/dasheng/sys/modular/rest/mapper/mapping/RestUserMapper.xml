@@ -26,12 +26,14 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
+        user_id
+        AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
     </sql>
 
     <sql id="Base_Column_List_With_Pwd">
-		 user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", password AS "password", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
-	</sql>
+        user_id
+        AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", password AS "password", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
+    </sql>
 
     <select id="selectUsers" resultType="map">
         select
@@ -44,7 +46,8 @@
             or name like CONCAT('%',#{name},'%'))
         </if>
         <if test="deptId != null and deptId != 0">
-            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%$[', #{deptId}, '$]%') escape '$' ))
+            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%$[',
+            #{deptId}, '$]%') escape '$' ))
         </if>
         <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
             and (create_time between CONCAT(#{beginTime},' 00:00:00') and CONCAT(#{endTime},' 23:59:59'))
@@ -62,7 +65,8 @@
             or name like '%' || #{name} || '%')
         </if>
         <if test="deptId != null and deptId != 0">
-            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like '%[' || #{deptId} || ']%'))
+            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like '%[' || #{deptId} ||
+            ']%'))
         </if>
         <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
             and create_time &gt;= to_date(#{beginTime}||'00:00:00','yyyy-mm-dd hh24:mi:ss')
@@ -71,17 +75,23 @@
     </select>
 
     <update id="setStatus">
-		update sys_user set status = #{status} where user_id = #{userId}
-	</update>
+        update sys_user
+        set status = #{status}
+        where user_id = #{userId}
+    </update>
 
     <update id="changePwd">
-		update sys_user set password = #{pwd} where user_id = #{userId}
-	</update>
+        update sys_user
+        set password = #{pwd}
+        where user_id = #{userId}
+    </update>
 
     <update id="setRoles">
-		update sys_user set role_id = #{roleIds} where user_id =
-		#{userId}
-	</update>
+        update sys_user
+        set role_id = #{roleIds}
+        where user_id =
+              #{userId}
+    </update>
 
     <select id="getByAccount" resultType="cn.atsoft.dasheng.sys.modular.rest.entity.RestUser">
         select
@@ -89,4 +99,11 @@
         from sys_user where account = #{account} and status != 'DELETED'
     </select>
 
+    <select id="headPortrait" resultType="string" parameterType="long">
+        select avatar
+        from uc_open_user_info
+        where source = 'wxCp'
+          and member_id =
+              (select member_id from daoxin_portal_wxuser_info where source = 'wxCp' and user_id = #{userId})
+    </select>
 </mapper>
