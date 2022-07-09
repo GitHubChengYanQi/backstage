@@ -6,4 +6,9 @@ import lombok.Data;
 public class PositionNum {
     private Long positionId;
     private Long num;
+
+    public PositionNum(Long positionId, Long num) {
+        this.positionId = positionId;
+        this.num = num;
+    }
 }

@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -161,7 +162,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             shopCartParam.setType(param.getAnomalyType().name());
             shopCartParam.setFormId(entity.getAnomalyId());
             shopCartParam.setNumber(param.getNeedNumber());
-            shopCartParam.setStorehousePositionsId(param.getPositionId().toString());
+
+            List<PositionNum> list = new ArrayList<PositionNum>() {{  //库位解json 兼容之前结构
+                add(new PositionNum(param.getPositionId(), 0L));
+            }};
+            shopCartParam.setStorehousePositionsId(JSON.toJSONString(list));
             shopCartService.add(shopCartParam);
         }
         return entity;
@@ -257,16 +262,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         /**
          * 同一时间段   统一修改
          */
+        List<Long> inventoryIds = new ArrayList<>();
         List<InventoryResult> inventoryResults = inventoryService.listByTime();
         if (ToolUtil.isNotEmpty(inventoryResults)) {
-            List<Long> inventoryIds = new ArrayList<>();
             for (InventoryResult inventoryResult : inventoryResults) {
                 inventoryIds.add(inventoryResult.getInventoryTaskId());
             }
-            queryWrapper.in("inventory_id", inventoryIds);
         }
-
-
+        inventoryIds.add(param.getFormId());
+        queryWrapper.in("inventory_id", inventoryIds);
         queryWrapper.eq("sku_id", param.getSkuId());
         queryWrapper.eq("brand_id", param.getBrandId());
         queryWrapper.eq("position_id", param.getPositionId());
