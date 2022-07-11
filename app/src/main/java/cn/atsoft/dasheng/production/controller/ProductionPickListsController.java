@@ -93,7 +93,6 @@ public class ProductionPickListsController extends BaseController {
         @RequestMapping(value = "/createCode", method = RequestMethod.POST)
         @ApiOperation("新增")
         public ResponseData createCode(@RequestBody ProductionPickListsParam productionPickListsParam) {
-            this.productionPickListsService.warning(productionPickListsParam);
             String code = this.productionPickListsService.createCode(productionPickListsParam);
             return ResponseData.success(code);
         }
