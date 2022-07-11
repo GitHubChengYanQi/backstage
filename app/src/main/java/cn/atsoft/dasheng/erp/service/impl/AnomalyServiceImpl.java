@@ -433,6 +433,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
+        detailService.allowEdit(oldEntity);
 
         ActivitiProcessTask task = taskService.getByFormId(oldEntity.getOrderId());
         List<Long> userIds = new ArrayList<>(auditService.getUserIds(task.getProcessTaskId()));

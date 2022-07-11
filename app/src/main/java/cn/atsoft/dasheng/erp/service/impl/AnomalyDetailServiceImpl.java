@@ -79,6 +79,8 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     private ShopCartService shopCartService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
     @Override
     public void add(AnomalyDetailParam param) {
@@ -96,23 +98,22 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     @Override
     @Transactional
     public void update(AnomalyDetailParam param) {
+
         AnomalyDetail oldEntity = getOldEntity(param);
         AnomalyDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
 
-        if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
-            pushPeople(param.getUserId(), oldEntity.getAnomalyId());
-        }
-        this.updateById(newEntity);
 
-
-        /**
-         * 添加动态
-         */
         String skuMessage = "";
         Anomaly anomaly = anomalyService.getById(oldEntity.getAnomalyId());
+        allowEdit(anomaly);  //验证单据
+
+
         if (ToolUtil.isNotEmpty(anomaly)) {
             skuMessage = skuService.skuMessage(anomaly.getSkuId());
+        }
+        if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {  //转交
+            pushPeople(param.getUserId(), oldEntity.getAnomalyId());
         }
         if (ToolUtil.isNotEmpty(param.getAnomalyOrderId())) {
             ActivitiProcessTask task = taskService.getByFormId(param.getAnomalyOrderId());
@@ -146,6 +147,18 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                     forWard(oldEntity);   //异常明细转交处理
                 }
 
+            }
+        }
+        this.updateById(newEntity);
+    }
+
+    @Override
+    public void allowEdit(Anomaly anomaly) {
+        Long orderId = anomaly.getOrderId();
+        if (ToolUtil.isNotEmpty(orderId)) {
+            AnomalyOrder anomalyOrder = anomalyOrderService.getById(orderId);
+            if (anomalyOrder.getComplete() == 99) {
+                throw new ServiceException(500, "异常单已经提交，不可再次操作");
             }
         }
     }
