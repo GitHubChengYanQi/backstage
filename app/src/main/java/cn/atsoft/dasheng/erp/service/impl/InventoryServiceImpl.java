@@ -288,23 +288,36 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         Inventory entity = getEntity(param);
         this.save(entity);
 
-
+        List<InventoryDetail> details = new ArrayList<>();
         for (InventoryDetailParam detailParam : param.getDetailParams()) {
             switch (detailParam.getType()) {
                 case "sku":
-
-                    break;
                 case "spu":
-
+                    List<InventoryDetail> condition = condition(detailParam);
+                    for (InventoryDetail inventoryDetail : condition) {
+                        if (details.stream().noneMatch(i -> i.getSkuId().equals(inventoryDetail.getSkuId()) && i.getBrandId().equals(inventoryDetail.getBrandId()))) {
+                            details.add(inventoryDetail);
+                        }
+                    }
                     break;
             }
         }
     }
 
-    private List<InventoryDetailParam> condition(InventoryDetailParam detailParam) {
+    @Override
+    public List<InventoryDetail> condition(InventoryDetailParam detailParam) {
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
 
+        if (ToolUtil.isNotEmpty(detailParam.getSpuId())) {    //产品
+            List<Sku> skus = skuService.query().eq("spu_id", detailParam.getSpuId()).eq("display", 1).list();
+            queryWrapper.in("sku_id", new ArrayList<Long>() {{
+                for (Sku skus : skus) {
+                    add(skus.getSkuId());
+                }
+            }});
+        }
 
         if (ToolUtil.isNotEmpty(detailParam.getBrandIds())) {  //品牌盘点
             queryWrapper.in("brand_id", detailParam.getBrandIds());
@@ -324,26 +337,31 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             queryWrapper.in("sku_id", skuIds);
         }
 
+        if (ToolUtil.isNotEmpty(detailParam.getBomIds())) {   //bom
+            List<Long> skuIds = new ArrayList<>();
+            for (Long bomId : detailParam.getBomIds()) {
+                skuIds.addAll(partsService.getSkuIdsByBom(bomId));
+            }
+            queryWrapper.in("sku_id", skuIds);
+        }
 
-
-
-//        if (param.getAllBom()) {    //全局Bom
-//            Set<Long> skuIds = new HashSet<>();
-//            List<Parts> parts = partsService.query().eq("display", 1).eq("status", 99).list();
-//            List<Long> partIds = new ArrayList<>();
-//            for (Parts part : parts) {
-//                partIds.add(part.getPartsId());
-//            }
-//            List<ErpPartsDetail> partsDetails = partIds.size() == 0 ? new ArrayList<>() : partsDetailService.query().in("parts_id", partIds).eq("display", 1).list();
-//            for (ErpPartsDetail partsDetail : partsDetails) {
-//                skuIds.add(partsDetail.getSkuId());
-//            }
-//            queryWrapper.in("sku_id", skuIds);
-//        }
+        if (ToolUtil.isNotEmpty(detailParam.getSkuId())) {   //单选物料
+            queryWrapper.eq("sku_id", detailParam.getSkuId());
+        }
 
         List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
+        List<InventoryDetail> details = new ArrayList<>();
 
-        return null;
+        for (StockDetails stockDetail : stockDetails) {
+            InventoryDetail inventoryDetail = new InventoryDetail();
+            inventoryDetail.setSkuId(stockDetail.getSkuId());
+            inventoryDetail.setBrandId(stockDetail.getBrandId());
+            inventoryDetail.setInkindId(stockDetail.getInkindId());
+            inventoryDetail.setPositionId(stockDetail.getStorehousePositionsId());
+            inventoryDetail.setNumber(stockDetail.getNumber());
+            details.add(inventoryDetail);
+        }
+        return details;
     }
 
     @Override

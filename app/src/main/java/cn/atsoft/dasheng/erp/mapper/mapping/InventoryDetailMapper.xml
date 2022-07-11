@@ -154,7 +154,6 @@
         <foreach collection="classIds" index="index" item="status" close=")" open="(" separator=",">
             #{status}
         </foreach>
-
         )
 
     </select>

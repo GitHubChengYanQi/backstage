@@ -64,8 +64,6 @@ public class PartsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PartsParam partsParam) {
-
-
         if (ToolUtil.isNotEmpty(partsParam) && ToolUtil.isEmpty(partsParam.getSkuId())) {
             if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
                 Sku sku = skuService.getById(partsParam.getItem().getSkuId());
@@ -133,6 +131,13 @@ public class PartsController extends BaseController {
         return ResponseData.success(bom);
     }
 
+
+    @RequestMapping(value = "/getSkuIdsByBom", method = RequestMethod.GET)
+    public ResponseData getSkuIdsByBom(@Param("skuId") Long skuId) {
+        List<Long> skuIdsByBom = this.partsService.getSkuIdsByBom(skuId);
+        return ResponseData.success(skuIdsByBom);
+    }
+
     /**
      * 查看详情接口
      *
@@ -166,7 +171,6 @@ public class PartsController extends BaseController {
         result.setItem(item);
 
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
 
         if (skuResults.size() > 0) {
             result.setSkuResult(skuResults.get(0));

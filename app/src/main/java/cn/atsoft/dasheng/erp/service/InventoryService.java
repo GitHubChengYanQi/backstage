@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.InventoryDetail;
+import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.entity.Inventory;
@@ -35,6 +37,8 @@ public interface InventoryService extends IService<Inventory> {
     void timelyAdd(InventoryParam param);
 
     void selectCondition(InventoryParam param);
+
+    List<InventoryDetail> condition(InventoryDetailParam detailParam);
 
     List<StorehousePositionsResult> timely(Long positionId);
 

@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.InventoryDetail;
+import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.entity.Inventory;
@@ -83,6 +85,12 @@ public class InventoryController extends BaseController {
         return ResponseData.success(timely);
     }
 
+
+    @RequestMapping(value = "/condition", method = RequestMethod.POST)
+    public ResponseData condition(@RequestBody InventoryDetailParam detailParam) {
+        List<InventoryDetail> condition = this.inventoryService.condition(detailParam);
+        return ResponseData.success(condition);
+    }
 
 //
 //    /**
