@@ -186,11 +186,11 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void delete(StorehousePositionsParam param) {
-        List<StorehousePositions> list = this.query().eq("pid", param.getStorehousePositionsId()).list();
+        List<StorehousePositions> list = this.query().eq("pid", param.getStorehousePositionsId()).eq("display", 1).list();
         if (ToolUtil.isNotEmpty(list)) {
             throw new ServiceException(500, "当前仓位不能删除");
         }
-        List<StockDetails> details = stockDetailsService.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).list();
+        List<StockDetails> details = stockDetailsService.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).eq("display", 1).list();
         if (ToolUtil.isNotEmpty(details)) {
             throw new ServiceException(500, "库位已被使用，不可以删除");
         }

@@ -170,4 +170,15 @@
         </if>
     </select>
 
+    <select id="listByTime" resultType="cn.atsoft.dasheng.erp.model.result.InventoryResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_inventory where 1 = 1 and display = 1
+        <if test="paramCondition.currentTime != null">
+            and begin_time &lt;=  #{paramCondition.currentTime}
+            and end_time  &gt;=  #{paramCondition.currentTime}
+        </if>
+
+    </select>
 </mapper>

@@ -42,12 +42,15 @@ import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -155,6 +158,15 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }});
         return entity;
     }
+
+    @Override
+    public List<InventoryResult> listByTime() {
+        InventoryParam param = new InventoryParam();
+        DateTime date = DateUtil.date();
+        param.setCurrentTime(date);
+        return this.baseMapper.listByTime(param);
+    }
+
 
     @Override
     public void timelyAdd(InventoryParam param) {
