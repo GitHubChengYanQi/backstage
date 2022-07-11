@@ -52,4 +52,7 @@ public interface InventoryDetailMapper extends BaseMapper<InventoryDetail> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") InventoryDetailParam paramCondition);
 
+
+
+    List<Long> getSkuIds(@Param("classIds") List<Long> classIds);
 }

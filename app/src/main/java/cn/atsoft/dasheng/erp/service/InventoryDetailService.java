@@ -86,6 +86,8 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
 
     void brandFormat(List<BrandResult> brandResults);
 
+    List<Long> getSkuIds(List<Long> classIds);
+
     void positionFormat(List<StorehousePositionsResult> positionsResults);
 
     List<InventoryDetailResult> getDetails(List<Long> inventoryIds);

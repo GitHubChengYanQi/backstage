@@ -26,6 +26,16 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String type;
+
+    private List<Long> classIds;
+
+    private List<Long> brandIds;
+
+    private List<Long> positionIds;
+
+    private List<Long> bomIds;
+
     private List<Long> inventoryIds;
 
     private Integer lockStatus;

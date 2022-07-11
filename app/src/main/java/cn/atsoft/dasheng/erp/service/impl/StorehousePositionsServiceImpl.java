@@ -1218,6 +1218,23 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return positionIds;
     }
 
+    @Override
+    /**
+     *
+     */
+    public List<Long> getEndChild(Long positionId, List<StorehousePositions> positions) {
+        List<Long> positionIds = new ArrayList<>();
+        positionIds.add(positionId);
+        for (StorehousePositions position : positions) {
+            if (position.getStorehousePositionsId().equals(positionId)) {
+                positionIds.addAll(loop(positionId, positions));
+            }
+        }
+        return positionIds;
+    }
+
+
+
     private List<Long> loop(Long positionId, List<StorehousePositions> positions) {
         List<Long> positionIds = new ArrayList<>();
         for (StorehousePositions position : positions) {

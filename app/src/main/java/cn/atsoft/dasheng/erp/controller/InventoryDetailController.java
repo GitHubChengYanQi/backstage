@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.List;
+
 
 /**
  * 盘点任务详情控制器
@@ -40,6 +42,8 @@ public class InventoryDetailController extends BaseController {
 //        this.inventoryDetailService.add(inventoryDetailParam);
 //        return ResponseData.success();
 //    }
+
+
 
     /**
      * 盘点入库

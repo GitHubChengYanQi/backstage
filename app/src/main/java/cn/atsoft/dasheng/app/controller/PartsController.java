@@ -51,6 +51,7 @@ public class PartsController extends BaseController {
 
     @Autowired
     private ErpPartsDetailService erpPartsDetailService;
+
     @Autowired
     private SkuService skuService;
 

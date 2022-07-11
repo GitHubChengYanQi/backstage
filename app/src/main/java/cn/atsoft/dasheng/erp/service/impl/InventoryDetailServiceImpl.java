@@ -455,6 +455,11 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     }
 
     @Override
+    public List<Long> getSkuIds(List<Long> classIds) {
+        return this.baseMapper.getSkuIds(classIds);
+    }
+
+    @Override
     public void positionFormat(List<StorehousePositionsResult> positionsResults) {
         List<Long> ids = new ArrayList<>();
         for (StorehousePositionsResult positionsResult : positionsResults) {

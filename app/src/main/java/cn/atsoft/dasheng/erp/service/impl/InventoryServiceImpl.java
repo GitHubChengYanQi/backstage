@@ -278,9 +278,76 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         this.add(param);
     }
 
+    /**
+     * 盘点申请
+     *
+     * @param param
+     */
+    private void InventoryApply(InventoryParam param) {
+
+        Inventory entity = getEntity(param);
+        this.save(entity);
+
+
+        for (InventoryDetailParam detailParam : param.getDetailParams()) {
+            switch (detailParam.getType()) {
+                case "sku":
+
+                    break;
+                case "spu":
+
+                    break;
+            }
+        }
+    }
+
+    private List<InventoryDetailParam> condition(InventoryDetailParam detailParam) {
+
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+
+
+        if (ToolUtil.isNotEmpty(detailParam.getBrandIds())) {  //品牌盘点
+            queryWrapper.in("brand_id", detailParam.getBrandIds());
+        }
+
+        if (ToolUtil.isNotEmpty(detailParam.getPositionIds())) {   //库位盘点
+            List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
+            List<Long> positionIds = new ArrayList<>();
+            for (Long positionId : detailParam.getPositionIds()) {
+                positionIds.addAll(positionsService.getEndChild(positionId, positions));
+            }
+            queryWrapper.in("storehouse_positions_id", positionIds);
+        }
+
+        if (ToolUtil.isNotEmpty(detailParam.getClassIds())) {  //分类盘点
+            List<Long> skuIds = inventoryDetailService.getSkuIds(detailParam.getClassIds());
+            queryWrapper.in("sku_id", skuIds);
+        }
+
+
+
+
+//        if (param.getAllBom()) {    //全局Bom
+//            Set<Long> skuIds = new HashSet<>();
+//            List<Parts> parts = partsService.query().eq("display", 1).eq("status", 99).list();
+//            List<Long> partIds = new ArrayList<>();
+//            for (Parts part : parts) {
+//                partIds.add(part.getPartsId());
+//            }
+//            List<ErpPartsDetail> partsDetails = partIds.size() == 0 ? new ArrayList<>() : partsDetailService.query().in("parts_id", partIds).eq("display", 1).list();
+//            for (ErpPartsDetail partsDetail : partsDetails) {
+//                skuIds.add(partsDetail.getSkuId());
+//            }
+//            queryWrapper.in("sku_id", skuIds);
+//        }
+
+        List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
+
+        return null;
+    }
+
     @Override
     public List<StorehousePositionsResult> timely(Long positionId) {
-
         ShopCart shopCart = new ShopCart();
         shopCart.setDisplay(0);
         shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{

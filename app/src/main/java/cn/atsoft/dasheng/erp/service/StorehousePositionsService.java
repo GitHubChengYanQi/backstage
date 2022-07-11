@@ -121,6 +121,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
     List<Long> getEndChild(Long positionId);
 
+    List<Long> getEndChild(Long positionId, List<StorehousePositions> positions);
+
     Map<Long, Long> getHouseByPositionId(List<Long> postitionIds);
 
     void format(List<StorehousePositionsResult> data);

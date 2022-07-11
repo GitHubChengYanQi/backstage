@@ -42,7 +42,7 @@ import java.util.List;
  * @since 2021-09-15
  */
 @Service
-public class ApplyDetailsServiceImpl extends ServiceImpl<ApplyDetailsMapper, ApplyDetails> implements ApplyDetailsService {
+public class  ApplyDetailsServiceImpl extends ServiceImpl<ApplyDetailsMapper, ApplyDetails> implements ApplyDetailsService {
     @Autowired
     private BrandService brandService;
     @Autowired

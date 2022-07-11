@@ -33,7 +33,6 @@
         AS "detailId",inventory_id AS "inventoryId" ,inkind_id AS "inkindId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
     </sql>
 
-
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryDetailResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.InventoryDetailParam">
         select
@@ -144,6 +143,20 @@
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
+    </select>
+
+    <select id="getSkuIds" resultType="java.lang.Long">
+        select sku_id
+        from goods_sku
+        where display = 1
+        and spu_id in (
+        select spu_id from goods_spu where display = 1 and spu_classification_id in
+        <foreach collection="classIds" index="index" item="status" close=")" open="(" separator=",">
+            #{status}
+        </foreach>
+
+        )
+
     </select>
 
 </mapper>
