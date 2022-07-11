@@ -732,7 +732,9 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         storehouseIds = storehouseIds.stream().distinct().collect(Collectors.toList());
         skuIds = skuIds.stream().distinct().collect(Collectors.toList());
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-        List<StorehouseResult> storehouseResults = BeanUtil.copyToList(storehouseService.listByIds(storehouseIds), StorehouseResult.class);
+        List<Storehouse> storehouses = storehouseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(storehouseIds);
+
+        List<StorehouseResult> storehouseResults = BeanUtil.copyToList(storehouses, StorehouseResult.class);
         List<PickListsStorehouseResult> results = new ArrayList<>();
         for (StorehouseResult storehouseResult : storehouseResults) {
             PickListsStorehouseResult result = new PickListsStorehouseResult();

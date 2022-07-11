@@ -47,8 +47,8 @@ public class RedisSendCheck {
                 newUserIds.addAll(carts);
             }
             int i = 1000 * 60 * 10;
-            getRedisTemplate.opsForList().leftPushAll("code", carts);
-            getRedisTemplate.expire("code",i, TimeUnit.MILLISECONDS);
+            getRedisTemplate.opsForList().leftPushAll(code, carts);
+            getRedisTemplate.expire(code,i, TimeUnit.MILLISECONDS);
             return i;
         }
         return null;
