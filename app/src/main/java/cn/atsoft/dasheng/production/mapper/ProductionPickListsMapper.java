@@ -52,5 +52,6 @@ public interface ProductionPickListsMapper extends BaseMapper<ProductionPickList
      * @Date 2022-03-25
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition);
+    List<Long> idsList(@Param("paramCondition") ProductionPickListsParam paramCondition);
 
 }

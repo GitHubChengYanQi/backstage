@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
@@ -168,20 +169,20 @@ public class ProductionPickListsCartController extends BaseController {
         return ResponseData.success(this.productionPickListsCartService.getSelfCarts(productionPickListsCartParam));
     }
 
-    /**
-     * 查询列表
-     *
-     * @author Captain_Jazz
-     * @Date 2022-03-25
-     */
-    @RequestMapping(value = "/getSelfCartsByLists", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public ResponseData getSelfCartsByLists(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
-        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
-            productionPickListsCartParam = new ProductionPickListsCartParam();
-        }
-        return ResponseData.success(this.productionPickListsCartService.getSelfCartsByLists(productionPickListsCartParam));
-    }
+//    /**
+//     * 查询列表
+//     *
+//     * @author Captain_Jazz
+//     * @Date 2022-03-25
+//     */
+//    @RequestMapping(value = "/getSelfCartsByLists", method = RequestMethod.POST)
+//    @ApiOperation("列表")
+//    public ResponseData getSelfCartsByLists(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
+//        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
+//            productionPickListsCartParam = new ProductionPickListsCartParam();
+//        }
+//        return ResponseData.success(this.productionPickListsCartService.getSelfCartsByLists(productionPickListsCartParam));
+//    }
 
     /**
      * 查询列表
@@ -196,6 +197,18 @@ public class ProductionPickListsCartController extends BaseController {
             productionPickListsCartParam = new ProductionPickListsCartParam();
         }
         return ResponseData.success(this.productionPickListsCartService.getSelfCartsBySku(productionPickListsCartParam));
+    }/**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/listPickListsStorehouse", method = RequestMethod.POST)
+    public ResponseData listPickListsStorehouse(@RequestBody(required = false) ProductionPickListsParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new ProductionPickListsParam();
+        }
+        return ResponseData.success(this.productionPickListsCartService.listPickListsStorehouse(param));
     }
 
 
