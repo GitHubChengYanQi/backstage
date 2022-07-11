@@ -482,7 +482,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         if (otherBrand) {
             brandResults.add(new BrandResult() {{    //添加个其他品牌对象
                 setBrandId(0L);
-                setBrandName("其他品牌");
+                setBrandName("无品牌");
             }});//其他品牌
         }
 
