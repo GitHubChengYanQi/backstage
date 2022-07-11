@@ -28,6 +28,8 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
 
     private String type;
 
+    private Long spuId;
+
     private List<Long> classIds;
 
     private List<Long> brandIds;
