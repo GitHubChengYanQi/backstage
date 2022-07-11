@@ -99,11 +99,16 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         AnomalyDetail oldEntity = getOldEntity(param);
         AnomalyDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+
         if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
             pushPeople(param.getUserId(), oldEntity.getAnomalyId());
         }
         this.updateById(newEntity);
 
+
+        /**
+         * 添加动态
+         */
         String skuMessage = "";
         Anomaly anomaly = anomalyService.getById(oldEntity.getAnomalyId());
         if (ToolUtil.isNotEmpty(anomaly)) {

@@ -38,6 +38,8 @@ public class AnomalyOrderResult implements Serializable {
 
     private Long instockOrderId;
 
+    private Integer complete;
+
     @ApiModelProperty("")
     private Long orderId;
 
