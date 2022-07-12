@@ -446,8 +446,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         serviceEntity.setMaxTimes(2);
         serviceEntity.setTimes(0);
         messageProducer.microService(serviceEntity);
-
-
     }
 
     @Override
@@ -674,7 +672,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
             InstockHandle instockHandle = new InstockHandle();    //添加入庫处理结果
             ToolUtil.copyProperties(listParam, instockHandle);
-            instockHandle.setType(listParam.getType());
+            instockHandle.setInstockOrderId(param.getInstockOrderId());
+            instockHandle.setType("inStock");
             instockHandles.add(instockHandle);
 
             listParam.setInstockOrderId(param.getInstockOrderId());
