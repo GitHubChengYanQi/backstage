@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -24,7 +25,9 @@ public class InventoryResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private  String statusName;
+    private StorehousePositionsResult positionsResult;
+
+    private String statusName;
 
     private Long status;
 
@@ -44,6 +47,9 @@ public class InventoryResult implements Serializable {
 
     private String notice;
 
+    private Long positionId;
+
+    private User user;
 
     private Date endTime;
 

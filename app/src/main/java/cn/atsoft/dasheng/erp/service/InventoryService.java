@@ -90,6 +90,8 @@ public interface InventoryService extends IService<Inventory> {
      */
     PageInfo<InventoryResult> findPageBySpec(InventoryParam param);
 
+    PageInfo<InventoryResult> pageList(InventoryParam param);
+
     /**
      * 扫码 盘点
      *

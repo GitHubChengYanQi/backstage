@@ -44,6 +44,9 @@ public interface InventoryMapper extends BaseMapper<Inventory> {
      */
     Page<InventoryResult> customPageList(@Param("page") Page page, @Param("paramCondition") InventoryParam paramCondition);
 
+
+    Page<InventoryResult> pageList(@Param("page") Page page, @Param("paramCondition") InventoryParam paramCondition);
+
     /**
      * 获取分页map列表
      *

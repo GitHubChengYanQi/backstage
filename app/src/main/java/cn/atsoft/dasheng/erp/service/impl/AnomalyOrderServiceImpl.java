@@ -220,6 +220,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 module = "StocktakingError";
                 message = "盘点";
                 break;
+            case "timelyInventory":
+                module = "StocktakingError";
+                message = "及时盘点";
+                break;
         }
 
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ProcessType.ERROR.getType()).eq("status", 99).eq("module", module).eq("display", 1).one();
@@ -356,6 +360,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 inStock(anomalyResults);
                 break;
             case "Stocktaking":
+            case "timelyInventory":
                 stocktaking(anomalyResults, orderParam.getOrderId());
                 break;
         }

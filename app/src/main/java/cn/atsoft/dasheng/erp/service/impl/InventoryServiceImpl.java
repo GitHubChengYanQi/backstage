@@ -40,6 +40,8 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
@@ -116,6 +118,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private SkuService skuService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private UserService userService;
 
     @Override
     @Transactional
@@ -171,6 +175,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
 
     @Override
+    @Transactional
     public void timelyAdd(InventoryParam param) {
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "6").eq("state", 1).one();
@@ -217,6 +222,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             cart.setDisplay(0);
             AnomalyParam anomalyParam = new AnomalyParam();
             anomalyParam.setAnomalyId(cart.getFormId());
+            anomalyParams.add(anomalyParam);
         }
 
         AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
@@ -617,6 +623,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     }
 
 
+    @Override
+    public PageInfo<InventoryResult> pageList(InventoryParam param) {
+        Page<InventoryResult> pageContext = getPageContext();
+        IPage<InventoryResult> page = this.baseMapper.pageList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
     /**
      * 盘点
      *
@@ -905,12 +919,21 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     @Override
     public void format(List<InventoryResult> data) {
 
+        List<Long> positionIds = new ArrayList<>();
         List<Long> inventoryIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
         for (InventoryResult datum : data) {
             inventoryIds.add(datum.getInventoryTaskId());
+            positionIds.add(datum.getPositionId());
+            userIds.add(datum.getCreateUser());
         }
 
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
         List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
+
         for (InventoryResult datum : data) {
 
             List<InventoryDetailResult> detailResults = new ArrayList<>();
@@ -923,6 +946,19 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 skuIds.add(detail.getSkuId());
             }
             Integer positionNum = storehousePositionsService.getPositionNum(skuIds);
+            for (StorehousePositionsResult positionsResult : positionsResultList) {
+                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+                    datum.setPositionsResult(positionsResult);
+                    break;
+                }
+            }
+
+            for (User user : userList) {
+                if (ToolUtil.isNotEmpty(datum.getCreateUser()) && user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
 
             datum.setPositionSize(positionNum);
             datum.setSkuSize(detailResults.size());

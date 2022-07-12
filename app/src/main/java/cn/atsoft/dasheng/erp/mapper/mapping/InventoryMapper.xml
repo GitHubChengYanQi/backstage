@@ -23,11 +23,12 @@
         <result column="user_id" property="userId"/>
         <result column="coding" property="coding"/>
         <result column="status" property="status"/>
+        <result column="position_id" property="positionId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">participants
-    AS "participants",user_id AS "userId",coding AS "coding",status AS "status",
+    AS "participants",user_id AS "userId",coding AS "coding",status AS "status",  position_id AS "positionId",
         notice
         AS "notice",end_time AS "endTime", begin_time AS "beginTime",mode AS "mode",method as "method",
         inventory_task_id
@@ -136,6 +137,41 @@
         </if>
     </select>
 
+
+    <select id="pageList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InventoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_inventory where 1 = 1 and position_id is not null
+        <if test="paramCondition.inventoryTaskId != null">
+            and inventory_task_id like CONCAT('%',#{paramCondition.inventoryTaskId},'%')
+        </if>
+        <if test="paramCondition.inventoryTaskName != null and paramCondition.inventoryTaskName != ''">
+            and inventory_task_name like CONCAT('%',#{paramCondition.inventoryTaskName},'%')
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.erp.model.params.InventoryParam">
         select
@@ -176,8 +212,8 @@
         <include refid="Base_Column_List"/>
         from daoxin_erp_inventory where 1 = 1 and display = 1
         <if test="paramCondition.currentTime != null">
-            and begin_time &lt;=  #{paramCondition.currentTime}
-            and end_time  &gt;=  #{paramCondition.currentTime}
+            and begin_time &lt;= #{paramCondition.currentTime}
+            and end_time &gt;= #{paramCondition.currentTime}
         </if>
 
     </select>

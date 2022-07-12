@@ -33,6 +33,9 @@ public class Inventory implements Serializable {
     @TableField("enclosure")
     private String enclosure;
 
+    @TableField("position_id")
+    private Long positionId;
+
     @TableField("user_id")
     private Long userId;
     /**
@@ -100,6 +103,13 @@ public class Inventory implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Long getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
+    }
 
     public Long getInventoryTaskId() {
         return inventoryTaskId;

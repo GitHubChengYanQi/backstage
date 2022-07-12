@@ -52,7 +52,7 @@ public class InventoryController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody InventoryParam inventoryParam) {
         this.inventoryService.bySku(inventoryParam);  //通过物料筛选出 品牌 库位
-        Inventory inventory = this.inventoryService.add(inventoryParam);
+        Inventory inventory = this.inventoryService.add (inventoryParam);
         return ResponseData.success(inventory);
     }
 
@@ -210,6 +210,15 @@ public class InventoryController extends BaseController {
         return this.inventoryService.findPageBySpec(inventoryParam);
     }
 
+
+    @RequestMapping(value = "/pageList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<InventoryResult> pageList(@RequestBody(required = false) InventoryParam inventoryParam) {
+        if (ToolUtil.isEmpty(inventoryParam)) {
+            inventoryParam = new InventoryParam();
+        }
+        return this.inventoryService.pageList(inventoryParam);
+    }
 
 }
 
