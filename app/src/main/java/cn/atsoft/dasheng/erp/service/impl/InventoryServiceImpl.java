@@ -285,7 +285,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      *
      * @param param
      */
-    private void InventoryApply(InventoryParam param) {
+    @Override
+    public void InventoryApply(InventoryParam param) {
 
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "6").eq("state", 1).one();

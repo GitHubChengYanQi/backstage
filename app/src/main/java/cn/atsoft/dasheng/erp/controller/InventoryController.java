@@ -56,6 +56,15 @@ public class InventoryController extends BaseController {
         return ResponseData.success(inventory);
     }
 
+
+    @RequestMapping(value = "/InventoryApply", method = RequestMethod.POST)
+    @ApiOperation("盘点申请")
+    public ResponseData InventoryApply(@RequestBody InventoryParam inventoryParam) {
+        this.inventoryService.bySku(inventoryParam);
+        this.inventoryService.InventoryApply(inventoryParam);
+        return ResponseData.success();
+    }
+
     /**
      * 即时盘点添加
      *

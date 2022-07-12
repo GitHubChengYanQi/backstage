@@ -38,6 +38,8 @@ public interface InventoryService extends IService<Inventory> {
 
     void selectCondition(InventoryParam param);
 
+    void InventoryApply(InventoryParam param);
+
     List<InventoryDetail> condition(InventoryDetailParam detailParam);
 
     List<StorehousePositionsResult> timely(Long positionId);
