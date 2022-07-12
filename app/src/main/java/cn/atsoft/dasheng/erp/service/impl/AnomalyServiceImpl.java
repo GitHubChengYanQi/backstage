@@ -116,6 +116,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (ToolUtil.isEmpty(order)) {
                     throw new ServiceException(500, "入库单不存在");
                 }
+                Integer count = this.query().eq("source_id", param.getSourceId()).eq("display", 1).count();
+                if (count > 0) {
+                    throw new ServiceException(500, "当前物料已添加异常");
+                }
                 param.setType(param.getAnomalyType().toString());
                 break;
             case StocktakingError:  //盘点:
@@ -139,11 +143,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             this.updateById(entity);
         }
 
-        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
-            InstockList instockList = instockListService.getById(param.getInstockListId());
-            instockList.setStatus(-1L);
-            instockListService.updateById(instockList);
-        }
+//        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
+//            InstockList instockList = instockListService.getById(param.getInstockListId());
+//            instockList.setStatus(-1L);
+//            instockListService.updateById(instockList);
+//        }
 
 
         /**
@@ -161,7 +165,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             shopCartParam.setBrandId(param.getBrandId());
             shopCartParam.setCustomerId(param.getCustomerId());
             shopCartParam.setType(param.getAnomalyType().name());
+            shopCartParam.setFormStatus(-1L);
             shopCartParam.setFormId(entity.getAnomalyId());
+            shopCartParam.setInstockListId(param.getInstockListId());
             shopCartParam.setNumber(param.getNeedNumber());
 
             List<PositionNum> list = new ArrayList<PositionNum>() {{  //库位解json 兼容之前结构
@@ -427,6 +433,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
+        detailService.allowEdit(oldEntity);
 
         ActivitiProcessTask task = taskService.getByFormId(oldEntity.getOrderId());
         List<Long> userIds = new ArrayList<>(auditService.getUserIds(task.getProcessTaskId()));
