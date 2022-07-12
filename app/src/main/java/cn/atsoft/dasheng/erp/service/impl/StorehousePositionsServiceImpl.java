@@ -427,8 +427,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      */
     @Override
     public List<BrandResult> selectByBrand(Long skuId, Long brandId) {
-
-        List<ProductionPickListsCart> list = cartService.query().ne("status", 99).ne("status", -1).list();
+        List<ProductionPickListsCart> list = cartService.query().eq("status", 0).or().eq("status", 2).list();
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : list) {
             inkindIds.add(pickListsCart.getInkindId());
@@ -482,7 +481,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         if (otherBrand) {
             brandResults.add(new BrandResult() {{    //添加个其他品牌对象
                 setBrandId(0L);
-                setBrandName("其他品牌");
+                setBrandName("无品牌");
             }});//其他品牌
         }
 
@@ -1207,7 +1206,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * 查询自己 和自己所有下级
      */
     public List<Long> getEndChild(Long positionId) {
-        List<StorehousePositions> positions = this.query().eq("display", 1).list();
+        StorehousePositions self = this.getById(positionId);
+        List<StorehousePositions> positions = this.query().eq("storehouse_id",self.getStorehouseId()).eq("display", 1).list();
         List<Long> positionIds = new ArrayList<>();
         positionIds.add(positionId);
         for (StorehousePositions position : positions) {

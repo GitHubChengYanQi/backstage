@@ -151,7 +151,17 @@
                         and status like CONCAT('%',#{paramCondition.status},'%')
                 </if>
     </select>
+    <select id="idsList" resultType="long" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsParam">
+        select   pick_lists_id AS "pickListsId" from daoxin_production_pick_lists
+        where 1 = 1
+            and status != 99
+            and display = 1
+            <if test="paramCondition.userId != null">
+                and user_id = #{paramCondition.userId}
+            </if>
+            order by create_time ASC
 
+    </select>
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsParam">
         select
         <include refid="Base_Column_List"/>

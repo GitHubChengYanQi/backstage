@@ -326,7 +326,6 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         if (ToolUtil.isEmpty(rules)) {
             return "${type}";
         }
-
         return this.backCoding(rules.getCodingRulesId());
 
     }

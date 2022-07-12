@@ -193,11 +193,12 @@ stage
                 #{notNeedMaintenanceInkindId}
             </foreach>
         </if>
-    </select>
-
-    <select id="InventorySelect" resultType="cn.atsoft.dasheng.app.model.result.StockDetailsResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
-
+        <if test=" paramCondition.positionIds != null  and paramCondition.positionIds.size>0">
+            and storehouse_positions_id  in
+            <foreach collection="paramCondition.positionIds" index="index" item="positionId" separator="," close=")" open="(">
+                #{positionId}
+            </foreach>
+        </if>
 
     </select>
 </mapper>

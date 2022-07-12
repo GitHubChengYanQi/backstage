@@ -28,15 +28,26 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private Integer stage;
     private String iname;
     private String pname;
+    @ApiModelProperty("库位id")
     private Long storehouseId;
+
     private Long outStockOrderId;
     private Long number;
+    @ApiModelProperty("二维码id")
     private Long qrCodeid;
+    @ApiModelProperty("实物id")
     private Long inkindId;
+    @ApiModelProperty("物料名称")
     private String skuName;
+
+//    库位集合
+    @ApiModelProperty("库位集合")
+    private List<Long> positionIds;
     //不需要养护的实物id
+    @ApiModelProperty("不需要养护的实物id")
     private List<Long> notNeedMaintenanceInkindIds;
     //物料ids
+    @ApiModelProperty("物料ids")
     private List<Long> skuIds;
 
     private Long customerId;

@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.model.result.PickListsStorehouseResult;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -55,6 +57,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      */
     ProductionPickListsResult findBySpec(ProductionPickListsParam param);
 
+    String createCode(ProductionPickListsParam param);
+
     /**
      * 查询列表，Specification模式
      *
@@ -102,5 +106,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     void outStockByCode(String code);
 
-    List<Map<String, Object>> listByCode(String code);
+    List<ProductionPickListsCartResult>  listByCode(String code);
+
+    List<Long> idsList(ProductionPickListsParam param);
 }

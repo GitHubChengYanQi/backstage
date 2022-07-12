@@ -61,6 +61,6 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
     List<StockDetails> maintenanceQuerry(@Param("paramCondition") StockDetailsParam paramCondition);
 
 
-    List<StockDetailsResult> InventorySelect(@Param("paramCondition") StockDetailsParam paramCondition);
+
 
 }

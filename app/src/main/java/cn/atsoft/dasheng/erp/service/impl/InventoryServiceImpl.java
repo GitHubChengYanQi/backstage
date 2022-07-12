@@ -120,6 +120,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     @Override
     @Transactional
     public Inventory add(InventoryParam param) {
+
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "6").eq("state", 1).one();
             if (ToolUtil.isNotEmpty(codingRules)) {
@@ -129,6 +130,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 throw new ServiceException(500, "请配置入库单据自动生成编码规则");
             }
         }
+
         Inventory entity = getEntity(param);
         this.save(entity);
 
@@ -285,6 +287,17 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      */
     private void InventoryApply(InventoryParam param) {
 
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "6").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+            }
+        }
+
+
         Inventory entity = getEntity(param);
         this.save(entity);
 
@@ -319,13 +332,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }});
         }
 
-        if (ToolUtil.isNotEmpty(detailParam.getBrandIds())) {  //品牌盘点
+        if (ToolUtil.isNotEmpty(detailParam.getBrandIds())) {   //品牌盘点
             queryWrapper.in("brand_id", detailParam.getBrandIds());
         }
 
         if (ToolUtil.isNotEmpty(detailParam.getPositionIds())) {   //库位盘点
             List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
             List<Long> positionIds = new ArrayList<>();
+            positionIds.add(0L);
             for (Long positionId : detailParam.getPositionIds()) {
                 positionIds.addAll(positionsService.getEndChild(positionId, positions));
             }
@@ -334,7 +348,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         if (ToolUtil.isNotEmpty(detailParam.getClassIds())) {  //分类盘点
             List<Long> skuIds = inventoryDetailService.getSkuIds(detailParam.getClassIds());
+            skuIds.add(0L);
             queryWrapper.in("sku_id", skuIds);
+
         }
 
         if (ToolUtil.isNotEmpty(detailParam.getBomIds())) {   //bom
@@ -342,6 +358,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             for (Long bomId : detailParam.getBomIds()) {
                 skuIds.addAll(partsService.getSkuIdsByBom(bomId));
             }
+            skuIds.add(0L);
             queryWrapper.in("sku_id", skuIds);
         }
 
