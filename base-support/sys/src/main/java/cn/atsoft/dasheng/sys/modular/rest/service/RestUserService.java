@@ -56,7 +56,6 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
     private RestUserPosService restUserPosService;
 
 
-
     /**
      * 添加用戶
      *
@@ -368,10 +367,12 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         List<Map<String, Object>> menus = this.getUserMenuNodes(roleList);
         List<Map<String, Object>> mobielMenus = this.getUserMobielMenuNodes(roleList);
 
+        String portrait = this.baseMapper.headPortrait(LoginContextHolder.getContext().getUserId()); //获取企业微信头像
         HashMap<String, Object> result = new HashMap<>();
         result.put("menus", menus);
         result.put("mobielMenus", mobielMenus);
-        result.put("avatar", DefaultImages.defaultAvatarUrl());
+//        result.put("avatar", DefaultImages.defaultAvatarUrl());
+        result.put("avatar", portrait);
         result.put("name", user.getName());
         result.put("id", user.getId());
 

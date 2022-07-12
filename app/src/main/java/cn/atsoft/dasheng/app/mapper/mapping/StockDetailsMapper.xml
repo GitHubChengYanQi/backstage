@@ -191,6 +191,12 @@ stage
                 #{notNeedMaintenanceInkindId}
             </foreach>
         </if>
+        <if test=" paramCondition.positionIds != null  and paramCondition.positionIds.size>0">
+            and storehouse_positions_id  in
+            <foreach collection="paramCondition.positionIds" index="index" item="positionId" separator="," close=")" open="(">
+                #{positionId}
+            </foreach>
+        </if>
 
     </select>
 </mapper>

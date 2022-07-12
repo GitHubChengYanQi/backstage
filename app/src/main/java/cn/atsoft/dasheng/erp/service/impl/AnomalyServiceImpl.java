@@ -19,6 +19,8 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import cn.atsoft.dasheng.erp.pojo.CheckNumber;
+import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -100,6 +102,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private MessageProducer messageProducer;
     @Autowired
     private InventoryDetailService inventoryDetailService;
+    @Autowired
+    private InventoryService inventoryService;
 
 
     @Transactional
@@ -112,8 +116,20 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (ToolUtil.isEmpty(order)) {
                     throw new ServiceException(500, "入库单不存在");
                 }
+                Integer count = this.query().eq("source_id", param.getSourceId()).eq("display", 1).count();
+                if (count > 0) {
+                    throw new ServiceException(500, "当前物料已添加异常");
+                }
                 param.setType(param.getAnomalyType().toString());
                 break;
+            case StocktakingError:  //盘点:
+                boolean normal = isNormal(param);  //判断有无异常件  没有异常件 不执行以下代码 直接退出
+                if (normal) {
+                    updateInventory(param);   //盘点详情 修改成正常状态
+                    return null;
+                }
+                break;
+
         }
         param.setType(param.getAnomalyType().name());
         Anomaly entity = this.getEntity(param);
@@ -127,11 +143,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             this.updateById(entity);
         }
 
-        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
-            InstockList instockList = instockListService.getById(param.getInstockListId());
-            instockList.setStatus(-1L);
-            instockListService.updateById(instockList);
-        }
+//        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
+//            InstockList instockList = instockListService.getById(param.getInstockListId());
+//            instockList.setStatus(-1L);
+//            instockListService.updateById(instockList);
+//        }
 
 
         /**
@@ -149,8 +165,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             shopCartParam.setBrandId(param.getBrandId());
             shopCartParam.setCustomerId(param.getCustomerId());
             shopCartParam.setType(param.getAnomalyType().name());
+            shopCartParam.setFormStatus(-1L);
             shopCartParam.setFormId(entity.getAnomalyId());
+            shopCartParam.setInstockListId(param.getInstockListId());
             shopCartParam.setNumber(param.getNeedNumber());
+
+            List<PositionNum> list = new ArrayList<PositionNum>() {{  //库位解json 兼容之前结构
+                add(new PositionNum(param.getPositionId(), 0L));
+            }};
+            shopCartParam.setStorehousePositionsId(JSON.toJSONString(list));
             shopCartService.add(shopCartParam);
         }
         return entity;
@@ -241,10 +264,24 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private void updateInventoryStatus(AnomalyParam param, int status) {
         QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
+
+
+        /**
+         * 同一时间段   统一修改
+         */
+        List<Long> inventoryIds = new ArrayList<>();
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();
+        if (ToolUtil.isNotEmpty(inventoryResults)) {
+            for (InventoryResult inventoryResult : inventoryResults) {
+                inventoryIds.add(inventoryResult.getInventoryTaskId());
+            }
+        }
+        inventoryIds.add(param.getFormId());
+        queryWrapper.in("inventory_id", inventoryIds);
         queryWrapper.eq("sku_id", param.getSkuId());
         queryWrapper.eq("brand_id", param.getBrandId());
         queryWrapper.eq("position_id", param.getPositionId());
-        queryWrapper.eq("inventory_id", param.getFormId());
+
         List<InventoryDetail> inventoryDetails = inventoryDetailService.list(queryWrapper);
         for (InventoryDetail inventoryDetail : inventoryDetails) {
             if (inventoryDetail.getLockStatus() == 99) {
@@ -269,7 +306,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             switch (param.getAnomalyType()) {
                 case StocktakingError:
-                    updateInventory(param);
+                    updateInventory(param);     //盘点正常
                     t = false;
                     break;
                 case InstockError:
@@ -297,6 +334,18 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         return t;
     }
 
+    /**
+     * 判断是不是异常件
+     *
+     * @param param
+     * @return
+     */
+    private boolean isNormal(AnomalyParam param) {
+        if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * 盘点  异常 数据 改成正常数据
@@ -306,12 +355,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private void updateInventory(AnomalyParam param) {
 
         updateInventoryStatus(param, 1);    //数据正常  不添加异常数据
-
-        AnomalyDetail anomalyDetail = new AnomalyDetail();//异常修改为正常
-        anomalyDetail.setDisplay(0);
-        List<AnomalyDetail> anomalyDetails = detailService.list(new QueryWrapper<AnomalyDetail>() {{
-            eq("anomaly_id", param.getAnomalyId());
-        }});
 
 
         ShopCart shopCart = new ShopCart();
@@ -398,6 +441,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
+        detailService.allowEdit(oldEntity);
 
         ActivitiProcessTask task = taskService.getByFormId(oldEntity.getOrderId());
         List<Long> userIds = new ArrayList<>(auditService.getUserIds(task.getProcessTaskId()));
@@ -554,6 +598,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             add(result.getSkuId());
         }});
 
+
+        AnomalyOrder anomalyOrder = ToolUtil.isEmpty(result.getOrderId()) ? new AnomalyOrder() : anomalyOrderService.getById(result.getOrderId());
+        AnomalyOrderResult anomalyOrderResult = new AnomalyOrderResult();
+        ToolUtil.copyProperties(anomalyOrder, anomalyOrderResult);
+        result.setOrderResult(anomalyOrderResult);
+
         Brand brand = ToolUtil.isEmpty(result.getBrandId()) ? new Brand() : brandService.getById(result.getBrandId());
         Customer customer = ToolUtil.isEmpty(result.getCustomerId()) ? new Customer() : customerService.getById(result.getCustomerId());
 
@@ -576,6 +626,18 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             }
             result.setFiledUrls(filedUrls);
         }
+
+        if (ToolUtil.isNotEmpty(result.getCheckNumber())) {
+            List<CheckNumber> checkNumbers = JSON.parseArray(result.getCheckNumber(), CheckNumber.class);
+            for (CheckNumber checkNumber : checkNumbers) {
+                if (ToolUtil.isNotEmpty(checkNumber.getMediaIds())) {
+                    List<String> mediaUrls = mediaService.getMediaUrls(checkNumber.getMediaIds(), null);
+                    checkNumber.setMediaUrls(mediaUrls);
+                }
+            }
+            result.setCheckNumbers(checkNumbers);
+        }
+
     }
 
     @Override

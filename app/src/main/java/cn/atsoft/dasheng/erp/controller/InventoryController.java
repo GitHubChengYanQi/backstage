@@ -113,6 +113,13 @@ public class InventoryController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/listByTime", method = RequestMethod.GET)
+    @ApiOperation("盘点")
+    public ResponseData listByTime() {
+        List<InventoryResult> results = this.inventoryService.listByTime();
+        return ResponseData.success(results);
+    }
+
     /**
      * 扫码 盘点
      *

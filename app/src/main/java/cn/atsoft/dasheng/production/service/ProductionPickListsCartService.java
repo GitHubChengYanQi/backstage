@@ -4,7 +4,9 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
+import cn.atsoft.dasheng.production.model.result.PickListsStorehouseResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -91,4 +93,6 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
     List<StockDetails>getLockStockDetail();
 
     List<Long> getCartInkindIds(ProductionPickListsCartParam productionPickListsCartParam);
+
+    List<PickListsStorehouseResult> listPickListsStorehouse(ProductionPickListsParam param);
 }

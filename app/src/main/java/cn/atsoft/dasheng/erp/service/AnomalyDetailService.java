@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyDetail;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
@@ -41,6 +42,8 @@ public interface AnomalyDetailService extends IService<AnomalyDetail> {
      * @Date 2022-05-27
      */
     void update(AnomalyDetailParam param);
+
+    void allowEdit(Anomaly anomaly);
 
     void pushPeople(Long userId, Long id);
 

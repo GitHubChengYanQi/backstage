@@ -99,6 +99,7 @@ public class taskController extends BaseController {
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private MaintenanceService maintenanceService;
+    @Autowired
     private StepsService appStepService;
     @Autowired
     private AnomalyService anomalyService;
@@ -194,9 +195,9 @@ public class taskController extends BaseController {
 //                        add(taskResult);
 //                    }});
                 break;
-                case "MAINTENANCE":
-                    MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());
-                    taskResult.setReceipts(maintenanceResult);
+            case "MAINTENANCE":
+                MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());
+                taskResult.setReceipts(maintenanceResult);
                 break;
             case "Stocktaking":
                 InventoryResult inventoryResult = inventoryService.detail(taskResult.getFormId());
@@ -211,7 +212,7 @@ public class taskController extends BaseController {
         //比对log
         stepsService.getStepLog(stepResult, process);
         //返回头像
-//        appStepService.headPortrait(stepResult);
+        appStepService.headPortrait(stepResult);
 
         //取出所有未审核节点
         List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
@@ -253,9 +254,10 @@ public class taskController extends BaseController {
 
         if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
             User user = userService.getById(taskResult.getCreateUser());
-//            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
-//            user.setAvatar(imgUrl);
+            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+            user.setAvatar(imgUrl);
             taskResult.setUser(user);
+
         }
         return ResponseData.success(taskResult);
 

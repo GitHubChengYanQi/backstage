@@ -119,7 +119,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
     @Override
     @Transactional
-    public void add(AnomalyOrderParam param) {
+    public Object add(AnomalyOrderParam param) {
 
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "15").eq("state", 1).one();
@@ -201,6 +201,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         submit(entity);
         shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常描述");
         shopCartService.addDynamic(entity.getOrderId(), "提交了异常");
+
+        return anomalyList;
     }
 
     private InstockHandle createInStockHandle(AnomalyResult anomaly, String type) {
@@ -381,6 +383,21 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         anomalyOrder.setComplete(99);
         this.updateById(anomalyOrder);
         updateStatus(orderParam);
+
+        /**
+         * 如果有转交任务 全部算完成
+         */
+        List<Long> anomalyIds = new ArrayList<>();
+        for (Anomaly anomaly : anomalies) {
+            anomalyIds.add(anomaly.getAnomalyId());
+        }
+        anomalyIds.add(0L);
+        ActivitiProcessTask task = new ActivitiProcessTask();
+        task.setDisplay(0);
+        task.setStatus(99);
+        activitiProcessTaskService.update(task, new QueryWrapper<ActivitiProcessTask>() {{
+            in("form_id", anomalyIds);
+        }});
     }
 
     /**

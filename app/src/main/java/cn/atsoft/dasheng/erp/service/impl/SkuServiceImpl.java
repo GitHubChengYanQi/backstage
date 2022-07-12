@@ -1708,16 +1708,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public List<SkuSimpleResult> simpleFormatSkuResult(List<Long> skuIds) {
-        if (ToolUtil.isEmpty(skuIds)) {
-            return new ArrayList<>();
-        }
-        List<Sku> skus = this.listByIds(skuIds);
-        List<SkuResult> skuResults = new ArrayList<>();
-        for (Sku sku : skus) {
-            SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku, skuResult);
-            skuResults.add(skuResult);
-        }
+        List<SkuResult> skuResults = this.formatSkuResult(skuIds);
         this.format(skuResults);
         List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
         for (SkuResult skuResult : skuResults) {
