@@ -416,6 +416,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Transactional
     public Anomaly update(AnomalyParam param) {
         Anomaly oldEntity = getOldEntity(param);
+
+        if (ToolUtil.isNotEmpty(oldEntity.getOrderId())) {
+            AnomalyOrder anomalyOrder = anomalyOrderService.getById(oldEntity.getOrderId());
+            if (anomalyOrder.getComplete() == 99) {
+                throw new ServiceException(500, "當前狀態不可更改");
+            }
+        }
+
         Anomaly newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);

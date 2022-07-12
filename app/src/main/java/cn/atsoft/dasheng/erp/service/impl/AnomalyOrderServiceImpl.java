@@ -114,6 +114,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private ProductionPickListsService pickListsService;
     @Autowired
     private InstockListService instockListService;
+    @Autowired
+    private InstockHandleService instockHandleService;
 
     @Override
     @Transactional
@@ -146,12 +148,15 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
         //判断是否提交过
         List<Anomaly> anomalyList = anomalyService.listByIds(ids);
+
+
         for (Anomaly anomaly : anomalyList) {
             if (anomaly.getStatus() == 98) {
                 throw new ServiceException(500, "请勿重新提交异常");
             }
         }
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
+
         /**
          * 更新购物车状态
          */
@@ -198,6 +203,19 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         shopCartService.addDynamic(entity.getOrderId(), "提交了异常");
 
         return anomalyList;
+    }
+
+    private InstockHandle createInStockHandle(AnomalyResult anomaly, String type) {
+        InstockHandle instockHandle = new InstockHandle();
+        instockHandle.setSkuId(anomaly.getSkuId());
+        instockHandle.setBrandId(anomaly.getBrandId());
+        instockHandle.setNumber(anomaly.getNeedNumber());
+        instockHandle.setType(type);
+        instockHandle.setInstockOrderId(anomaly.getFormId());
+        instockHandle.setInstockListId(anomaly.getSourceId());
+        instockHandle.setRealNumber(anomaly.getRealNumber());
+
+        return instockHandle;
     }
 
     private void bind(Long inkindId, Long detailId) {
@@ -434,6 +452,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             handle(anomalyResult);
         }
         for (AnomalyResult anomaly : anomalyResults) {
+
+
             long errorNum = 0;
             boolean t = false;
             for (AnomalyDetailResult detail : anomaly.getDetails()) {
@@ -443,6 +463,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 }
 
             }
+
             if (t) {
                 /**
                  * 添加异常记录
@@ -455,6 +476,12 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 instockLogDetail.setCustomerId(anomaly.getCustomerId());
                 instockLogDetail.setNumber(errorNum);
                 instockLogDetailService.save(instockLogDetail);
+                /**
+                 * 异常处理 记录入库操作结果
+                 */
+                InstockHandle inStockHandle = createInStockHandle(anomaly, "ErrorStopInstock");
+                inStockHandle.setNumber(errorNum);
+                instockHandleService.save(inStockHandle);
             }
         }
     }
@@ -470,9 +497,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         if (ToolUtil.isNotEmpty(result.getInstockNumber()) && result.getInstockNumber() > 0) {   //允许入库 并添加 入库购物车
             addShopCart(result);
 
+            InstockHandle errorCanInstock = createInStockHandle(result, "ErrorCanInstock");//允许入库处理结果
+            errorCanInstock.setNumber(result.getInstockNumber());
+            instockHandleService.save(errorCanInstock);
+
             String skuMessage = skuService.skuMessage(result.getSkuId());
             shopCartService.addDynamic(result.getFormId(), "异常物料" + skuMessage + "允许入库");
         }
+
         for (AnomalyDetailResult detail : result.getDetails()) {
             //终止入库
             if (detail.getStauts() == -1) {
@@ -526,6 +558,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         shopCart.setFormId(result.getAnomalyId());
         shopCart.setNumber(result.getInstockNumber());
         shopCartService.save(shopCart);
+
     }
 
     /**
@@ -547,24 +580,28 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
      * @param
      */
     private void stopInStock(AnomalyResult anomalyResult, AnomalyDetailResult detailResult) {
+
         Long inStockListId = anomalyResult.getSourceId();
         InstockList instockList = instockListService.getById(inStockListId);
-        InstockList newInStockList = new InstockList();
-        ToolUtil.copyProperties(instockList, newInStockList);
 
-        if (detailResult.getNumber() > anomalyResult.getRealNumber()) {
-            throw new ServiceException(500, "异常数量超过入库清单数量");
-        }
+        /**
+         * 处理方式改了 这个地方先注释
+         */
+//        InstockList newInStockList = new InstockList();
+//        ToolUtil.copyProperties(instockList, newInStockList);
+//        if (detailResult.getNumber() > anomalyResult.getRealNumber()) {
+//            throw new ServiceException(500, "异常数量超过入库清单数量");
+//        }
+//        newInStockList.setInstockListId(null);
+//        newInStockList.setStatus(50L);
+//        newInStockList.setNumber(50L);
+//        newInStockList.setNumber(detailResult.getNumber());
+//        newInStockList.setRealNumber(detailResult.getNumber());
+//        instockListService.save(newInStockList);
 
-        newInStockList.setInstockListId(null);
-        newInStockList.setStatus(50L);
-        newInStockList.setNumber(50L);
-        newInStockList.setNumber(detailResult.getNumber());
-        newInStockList.setRealNumber(detailResult.getNumber());
-        instockListService.save(newInStockList);
 
-        instockList.setStatus(1L);
-        instockList.setRealNumber(anomalyResult.getInstockNumber());
+        instockList.setStatus(-1L);
+        instockList.setRealNumber(instockList.getRealNumber() - detailResult.getNumber());
         instockListService.updateById(instockList);
 
 
