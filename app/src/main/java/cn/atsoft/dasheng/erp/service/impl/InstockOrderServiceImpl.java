@@ -958,6 +958,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<StockDetails> stockDetailList = new ArrayList<>();
         for (Long inkindId : inkindIds) {
+            Integer count = stockDetailsService.query().eq("inkind_id", inkindId).eq("display", 1).count();
+            if (count > 0) {
+                throw new ServiceException(500, "当前实物已在库存");
+            }
             StockDetails stockDetails = new StockDetails();
             stockDetails.setSkuId(param.getSkuId());
             stockDetails.setBrandId(param.getBrandId());
