@@ -306,6 +306,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     List<InventoryDetail> condition = condition(detailParam);
                     for (InventoryDetail inventoryDetail : condition) {
                         if (all.stream().noneMatch(i -> i.getInkindId().equals(inventoryDetail.getInkindId()))) {
+                            inventoryDetail.setInventoryId(entity.getInventoryTaskId());
                             all.add(inventoryDetail);
                         }
                     }
