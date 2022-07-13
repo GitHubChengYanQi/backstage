@@ -147,7 +147,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             anomalies.add(anomaly);
         }
         //判断是否提交过
-        List<Anomaly> anomalyList = anomalyService.listByIds(ids);
+        List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(ids);
 
 
         for (Anomaly anomaly : anomalyList) {

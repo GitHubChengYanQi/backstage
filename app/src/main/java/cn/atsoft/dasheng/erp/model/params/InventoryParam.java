@@ -39,6 +39,8 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private List<InventoryDetailParam> detailParams;
 
+    private InventoryDetailParam detailParam;
+
     private String notice;
 
 

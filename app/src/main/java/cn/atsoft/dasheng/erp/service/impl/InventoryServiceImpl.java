@@ -200,16 +200,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         inventoryDetailService.saveBatch(inventoryDetails);
         param.setCreateUser(entity.getCreateUser());
 
-//        /**
-//         * 清空购物车
-//         */
-//        ShopCart shopCart = new ShopCart();
-//        shopCart.setDisplay(0);
-//        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
-//            eq("type", AnomalyType.timelyInventory.name());
-//            eq("create_user", LoginContextHolder.getContext().getUserId());
-//        }});
-
         List<ShopCart> shopCarts = shopCartService.query()
                 .eq("type", AnomalyType.timelyInventory.name())
                 .eq("create_user", LoginContextHolder.getContext().getUserId())
@@ -308,20 +298,21 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         Inventory entity = getEntity(param);
         this.save(entity);
 
-        List<InventoryDetail> details = new ArrayList<>();
+        List<InventoryDetail> all = new ArrayList<>();
         for (InventoryDetailParam detailParam : param.getDetailParams()) {
             switch (detailParam.getType()) {
                 case "sku":
                 case "spu":
                     List<InventoryDetail> condition = condition(detailParam);
                     for (InventoryDetail inventoryDetail : condition) {
-                        if (details.stream().noneMatch(i -> i.getSkuId().equals(inventoryDetail.getSkuId()) && i.getBrandId().equals(inventoryDetail.getBrandId()))) {
-                            details.add(inventoryDetail);
+                        if (all.stream().noneMatch(i -> i.getInkindId().equals(inventoryDetail.getInkindId()))) {
+                            all.add(inventoryDetail);
                         }
                     }
                     break;
             }
         }
+        inventoryDetailService.saveBatch(all);
     }
 
     @Override

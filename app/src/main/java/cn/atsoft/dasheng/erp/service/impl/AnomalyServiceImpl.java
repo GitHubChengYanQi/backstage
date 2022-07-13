@@ -306,14 +306,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             switch (param.getAnomalyType()) {
                 case StocktakingError:
+                case timelyInventory:
                     updateInventory(param);     //盘点正常
                     t = false;
                     break;
                 case InstockError:
                     throw new ServiceException(500, "缺少异常信息");
-                case timelyInventory:
-                    t = false;
-                    break;
             }
         } else {
             updateInventoryStatus(param, -1);
