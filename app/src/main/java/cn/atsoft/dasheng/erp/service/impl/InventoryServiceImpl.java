@@ -570,6 +570,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     @Override
     public InventoryResult detail(Long id) {
         Inventory inventory = this.getById(id);
+        if (ToolUtil.isEmpty(inventory)) {
+            return null;
+        }
         InventoryResult inventoryResult = new InventoryResult();
         BeanUtil.copyProperties(inventory, inventoryResult);
         format(new ArrayList<InventoryResult>() {{

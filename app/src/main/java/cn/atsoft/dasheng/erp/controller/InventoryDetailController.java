@@ -44,7 +44,6 @@ public class InventoryDetailController extends BaseController {
 //    }
 
 
-
     /**
      * 盘点入库
      *
@@ -85,7 +84,20 @@ public class InventoryDetailController extends BaseController {
     }
 
     /**
+     * 所有盘点任务合并
+     *
+     * @return
+     */
+    @RequestMapping(value = "/mergeDetail", method = RequestMethod.GET)
+    public ResponseData mergeDetail() {
+        Object detail = this.inventoryDetailService.mergeDetail();
+        return ResponseData.success(detail);
+    }
+
+
+    /**
      * 盘点完成
+     *
      * @param inventoryDetailParam
      * @return
      */

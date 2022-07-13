@@ -53,7 +53,7 @@ public class InventoryController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody InventoryParam inventoryParam) {
         this.inventoryService.bySku(inventoryParam);  //通过物料筛选出 品牌 库位
-        Inventory inventory = this.inventoryService.add (inventoryParam);
+        Inventory inventory = this.inventoryService.add(inventoryParam);
         return ResponseData.success(inventory);
     }
 
@@ -101,6 +101,7 @@ public class InventoryController extends BaseController {
         return ResponseData.success(condition);
     }
 
+
 //
 //    /**
 //     * 编辑接口
@@ -131,7 +132,6 @@ public class InventoryController extends BaseController {
     }
 
     @RequestMapping(value = "/listByTime", method = RequestMethod.GET)
-    @ApiOperation("盘点")
     public ResponseData listByTime() {
         List<InventoryResult> results = this.inventoryService.listByTime();
         return ResponseData.success(results);

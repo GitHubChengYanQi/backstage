@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.params.AnomalyOrderParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
+import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.*;
@@ -164,6 +165,31 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return positionsResultList(detailResults);
     }
 
+
+    /**
+     * 时间范围内 所有未完成的盘点任务 合并
+     *
+     * @return
+     */
+    @Override
+    public Object mergeDetail() {
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();
+        List<Long> inventoryTaskIds = new ArrayList<>();
+        for (InventoryResult inventoryResult : inventoryResults) {
+            inventoryTaskIds.add(inventoryResult.getInventoryTaskId());
+        }
+        List<InventoryDetail> inventoryDetails = inventoryTaskIds.size() == 0 ? new ArrayList<>() : this.query().in("inventory_id", inventoryTaskIds)
+                .groupBy("inkind_id")
+                .eq("display", 1).list();
+        List<InventoryDetailResult> detailResults = BeanUtil.copyToList(inventoryDetails, InventoryDetailResult.class, new CopyOptions());
+        List<StorehousePositionsResult> positionsResultList = positionsResultList(detailResults);
+        Map<String, Object> map = new HashMap<>();
+        map.put("ids", inventoryTaskIds);
+        map.put("List", positionsResultList);
+        return map;
+    }
+
+
     /**
      * 组合结构
      *
@@ -274,9 +300,17 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         if (ToolUtil.isEmpty(inventoryDetailParam.getPositionId()) || ToolUtil.isEmpty(inventoryDetailParam.getSkuId())) {
             throw new ServiceException(500, "缺少参数");
         }
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();
+        List<Long> inventoryIds = new ArrayList<>();
+        for (InventoryResult inventoryResult : inventoryResults) {
+            inventoryIds.add(inventoryResult.getInventoryTaskId());
+        }
+
+
+        inventoryIds.add(inventoryDetailParam.getInventoryId());
         List<InventoryDetail> inventoryDetails = this.query().eq("position_id", inventoryDetailParam.getPositionId())
                 .eq("sku_id", inventoryDetailParam.getSkuId())
-                .eq("inventory_id", inventoryDetailParam.getInventoryId())
+                .in("inventory_id", inventoryIds)
                 .eq("display", 1).list();
 
         for (InventoryDetail inventoryDetail : inventoryDetails) {
@@ -291,9 +325,16 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     @Override
     public void temporaryLock(InventoryDetailParam param) {
 
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();
+        List<Long> inventoryIds = new ArrayList<>();
+        for (InventoryResult inventoryResult : inventoryResults) {
+            inventoryIds.add(inventoryResult.getInventoryTaskId());
+        }
+        inventoryIds.add(param.getInventoryId());
+
         List<InventoryDetail> inventoryDetails = this.lambdaQuery()
                 .eq(InventoryDetail::getPositionId, param.getPositionId())
-                .eq(InventoryDetail::getInventoryId, param.getInventoryId())
+                .in(InventoryDetail::getInventoryId, inventoryIds)
                 .eq(InventoryDetail::getSkuId, param.getSkuId())
                 .eq(InventoryDetail::getDisplay, 1).list();
 

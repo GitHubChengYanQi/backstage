@@ -7,6 +7,7 @@ public enum AnomalyType {
 
     StocktakingError("盘点异常"),
     timelyInventory("即时盘点异常"),
+    allStocktaking("合并盘点异常"),
     InstockError("入库异常");
 
 

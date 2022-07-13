@@ -162,9 +162,11 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
          */
         ShopCart shopCart = new ShopCart();
         shopCart.setStatus(99);
-        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
-            in("form_id", ids);
-        }});
+        if (ToolUtil.isNotEmpty(ids)) {
+            shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+                in("form_id", ids);
+            }});
+        }
 
         /**
          * 创建实物并绑定
@@ -282,7 +284,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     }
 
     /**
-     * 盘点异常打单据添加
+     * 盘点异常单据添加
      *
      * @param param
      */

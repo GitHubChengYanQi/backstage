@@ -123,13 +123,13 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 param.setType(param.getAnomalyType().toString());
                 break;
             case StocktakingError:  //盘点:
+            case allStocktaking:    //合并盘点
                 boolean normal = isNormal(param);  //判断有无异常件  没有异常件 不执行以下代码 直接退出
                 if (normal) {
                     updateInventory(param);   //盘点详情 修改成正常状态
                     return null;
                 }
                 break;
-
         }
         param.setType(param.getAnomalyType().name());
         Anomaly entity = this.getEntity(param);
@@ -142,13 +142,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             entity.setOrigin(origin);
             this.updateById(entity);
         }
-
-//        if (ToolUtil.isNotEmpty(param.getInstockListId())) {
-//            InstockList instockList = instockListService.getById(param.getInstockListId());
-//            instockList.setStatus(-1L);
-//            instockListService.updateById(instockList);
-//        }
-
 
         /**
          * 添加异常明细
@@ -356,13 +349,21 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private void updateInventory(AnomalyParam param) {
 
         updateInventoryStatus(param, 1);    //数据正常  不添加异常数据
-
-
         ShopCart shopCart = new ShopCart();
         shopCart.setDisplay(0);
-        shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
-            eq("form_id", param.getAnomalyId());
-        }});
+        switch (param.getAnomalyType()) {
+            case allStocktaking:
+                shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+                    eq("type", param.getAnomalyType().name());
+                }});
+                break;
+            case StocktakingError:
+                shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
+                    eq("form_id", param.getAnomalyId());
+                }});
+                break;
+        }
+
 
         //改为正常
         InventoryDetail inventoryDetail = new InventoryDetail();

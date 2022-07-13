@@ -41,6 +41,8 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
 
     Object taskList(Long inventoryTaskId);
 
+    Object mergeDetail();
+
     boolean mergeBrand(List<BrandResult> brandResults, BrandResult brandResult);
 
     void addPhoto(InventoryDetailParam inventoryDetailParam);
@@ -49,7 +51,7 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
 
     void inventoryInstock(InventoryDetailParam inventoryDetailParam);
 
-    @Transactional
+
     void complete(List<Long> inventoryIds);
 
     /**

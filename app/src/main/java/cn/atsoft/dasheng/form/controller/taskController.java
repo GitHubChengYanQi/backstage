@@ -137,74 +137,78 @@ public class taskController extends BaseController {
         }
         ActivitiProcessTask processTask = taskService.getById(taskId);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
-
         ToolUtil.copyProperties(processTask, taskResult);
 
+        try {
+            switch (taskResult.getType()) {
+                case "quality_task":
+                    QualityTaskResult task = qualityTaskService.getTask(taskResult.getFormId());
+                    taskResult.setObject(task);
+                    break;
+                case "purchase":
+                case "purchaseAsk":
+                    PurchaseAskParam param = new PurchaseAskParam();
+                    param.setPurchaseAskId(taskResult.getFormId());
+                    PurchaseAskResult askResult = askService.detail(param);
+                    taskResult.setObject(askResult);
+                    break;
+                case "procurementOrder":
+                    ProcurementOrder detail = this.procurementOrderService.getById(taskResult.getFormId());
+                    ProcurementOrderResult result = new ProcurementOrderResult();
+                    ToolUtil.copyProperties(detail, result);
+                    User user1 = userService.getById(result.getCreateUser());
+                    result.setUser(user1);
+                    taskResult.setObject(result);
 
-        switch (taskResult.getType()) {
-            case "quality_task":
-                QualityTaskResult task = qualityTaskService.getTask(taskResult.getFormId());
-                taskResult.setObject(task);
-                break;
-            case "purchase":
-            case "purchaseAsk":
-                PurchaseAskParam param = new PurchaseAskParam();
-                param.setPurchaseAskId(taskResult.getFormId());
-                PurchaseAskResult askResult = askService.detail(param);
-                taskResult.setObject(askResult);
-                break;
-            case "procurementOrder":
-                ProcurementOrder detail = this.procurementOrderService.getById(taskResult.getFormId());
-                ProcurementOrderResult result = new ProcurementOrderResult();
-                ToolUtil.copyProperties(detail, result);
-                User user1 = userService.getById(result.getCreateUser());
-                result.setUser(user1);
-                taskResult.setObject(result);
+                    break;
+                case "purchasePlan":
+                    ProcurementPlan procurementPlan = this.procurementPlanService.getById(taskResult.getFormId());
+                    if (ToolUtil.isEmpty(procurementPlan)) {
+                        return null;
+                    }
+                    ProcurementPlanResult procurementPlanResult = new ProcurementPlanResult();
+                    ToolUtil.copyProperties(procurementPlan, procurementPlanResult);
+                    User user = userService.getById(procurementPlanResult.getCreateUser());
+                    procurementPlanResult.setFounder(user);
+                    procurementPlanService.detail(procurementPlanResult);
+                    taskResult.setObject(procurementPlanResult);
+                    break;
+                case "INSTOCK":
+                    taskService.format(new ArrayList<ActivitiProcessTaskResult>() {{
+                        add(taskResult);
+                    }});
+                    break;
+                case "ERROR":
+                    AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
+                    taskResult.setReceipts(orderResult);
+                    break;
+                case "ErrorForWard":
+                    AnomalyResult anomalyResult = anomalyService.detail(taskResult.getFormId());
+                    taskResult.setReceipts(anomalyResult);
+                    break;
+                case "OUTSTOCK":
+                    ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
 
-                break;
-            case "purchasePlan":
-                ProcurementPlan procurementPlan = this.procurementPlanService.getById(taskResult.getFormId());
-                if (ToolUtil.isEmpty(procurementPlan)) {
-                    return null;
-                }
-                ProcurementPlanResult procurementPlanResult = new ProcurementPlanResult();
-                ToolUtil.copyProperties(procurementPlan, procurementPlanResult);
-                User user = userService.getById(procurementPlanResult.getCreateUser());
-                procurementPlanResult.setFounder(user);
-                procurementPlanService.detail(procurementPlanResult);
-                taskResult.setObject(procurementPlanResult);
-                break;
-            case "INSTOCK":
-                taskService.format(new ArrayList<ActivitiProcessTaskResult>() {{
-                    add(taskResult);
-                }});
-                break;
-            case "ERROR":
-                AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
-                taskResult.setReceipts(orderResult);
-                break;
-            case "ErrorForWard":
-                AnomalyResult anomalyResult = anomalyService.detail(taskResult.getFormId());
-                taskResult.setReceipts(anomalyResult);
-                break;
-            case "OUTSTOCK":
-                ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
-
-                taskResult.setReceipts(pickListsRestult);
+                    taskResult.setReceipts(pickListsRestult);
 //                    taskService.format(new ArrayList<ActivitiProcessTaskResult>(){{
 //                        add(taskResult);
 //                    }});
-                break;
-            case "MAINTENANCE":
-                MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());
-                taskResult.setReceipts(maintenanceResult);
-                break;
-            case "Stocktaking":
-                InventoryResult inventoryResult = inventoryService.detail(taskResult.getFormId());
-                taskResult.setReceipts(inventoryResult);
-                break;
+                    break;
+                case "MAINTENANCE":
+                    MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());
+                    taskResult.setReceipts(maintenanceResult);
+                    break;
+                case "Stocktaking":
+                    InventoryResult inventoryResult = inventoryService.detail(taskResult.getFormId());
+                    taskResult.setReceipts(inventoryResult);
+                    break;
 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
+
         //树形结构
         ActivitiStepsResult stepResult = stepsService.getStepResult(taskResult.getProcessId());
         //获取当前processTask 下的所有log

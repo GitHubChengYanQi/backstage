@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.model.result.ShopCartResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -311,7 +312,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
     @Override
     public List<ShopCartResult> allList(ShopCartParam param) {
-
         List<ShopCartResult> shopCartResults = new ArrayList<>();
         /**
          * 查看权限
@@ -331,9 +331,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     break;
             }
             processTask = activitiProcessTaskService.getByFormId(formId);
-
             List<Long> userIds = auditService.getUserIds(processTask.getProcessTaskId());
-
             for (Long userId : userIds) {
                 if (userId.equals(LoginUserId)) {
                     shopCartResults = this.baseMapper.customList(param);
@@ -347,6 +345,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         format(shopCartResults);
         return shopCartResults;
     }
+
+
 
     /**
      * 申请购物车
