@@ -180,7 +180,9 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         }
         List<InventoryDetail> inventoryDetails = inventoryTaskIds.size() == 0 ? new ArrayList<>() : this.query().in("inventory_id", inventoryTaskIds)
                 .groupBy("inkind_id")
-                .eq("display", 1).list();
+                .eq("display", 1)
+
+                .list();
         List<InventoryDetailResult> detailResults = BeanUtil.copyToList(inventoryDetails, InventoryDetailResult.class, new CopyOptions());
         List<StorehousePositionsResult> positionsResultList = positionsResultList(detailResults);
         Map<String, Object> map = new HashMap<>();
@@ -283,6 +285,13 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return positionsResultList;
     }
 
+    /**
+     * 相同品牌累加数量
+     *
+     * @param brandResults
+     * @param brandResult
+     * @return
+     */
     @Override
     public boolean mergeBrand(List<BrandResult> brandResults, BrandResult brandResult) {
         for (BrandResult result : brandResults) {
@@ -396,10 +405,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     public void complete(List<Long> inventoryIds) {
 
         List<Inventory> inventories = inventoryService.listByIds(inventoryIds);
-        for (Inventory inventory : inventories) {
-            inventory.setStatus(99L);
-        }
-        inventoryService.updateBatchById(inventories);
 
         List<InventoryDetail> inventoryDetails = this.query().in("inventory_id", inventoryIds).list();
         List<Long> anomalyIds = new ArrayList<>();
@@ -408,22 +413,28 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                 throw new ServiceException(500, "请全部确定");
             }
             inventoryDetail.setLockStatus(99);  //锁数据
-            anomalyIds.add(inventoryDetail.getAnomalyId());
+            if (ToolUtil.isNotEmpty(inventoryDetail.getAnomalyId())) {
+                anomalyIds.add(inventoryDetail.getAnomalyId());
+            }
         }
         this.updateBatchById(inventoryDetails);
 
-        List<AnomalyParam> anomalyParams = new ArrayList<>();
-        for (Long anomalyId : anomalyIds) {
-            AnomalyParam anomalyParam = new AnomalyParam();
-            anomalyParam.setAnomalyId(anomalyId);
-            anomalyParams.add(anomalyParam);
+        if (anomalyIds.size()>0) {
+            List<AnomalyParam> anomalyParams = new ArrayList<>();
+            for (Long anomalyId : anomalyIds) {
+                AnomalyParam anomalyParam = new AnomalyParam();
+                anomalyParam.setAnomalyId(anomalyId);
+                anomalyParams.add(anomalyParam);
+            }
+
+            AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
+            anomalyOrderParam.setType("Stocktaking");
+            anomalyOrderParam.setAnomalyParams(anomalyParams);
+            anomalyOrderParam.setMessage("盘点");
+            anomalyOrderService.addByInventory(anomalyOrderParam);
         }
 
-        AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
-        anomalyOrderParam.setType("Stocktaking");
-        anomalyOrderParam.setAnomalyParams(anomalyParams);
-        anomalyOrderParam.setMessage("盘点");
-        anomalyOrderService.addByInventory(anomalyOrderParam);
+
 
         for (Inventory inventory : inventories) {
             ActivitiProcessTask processTask = taskService.getByFormId(inventory.getInventoryTaskId());

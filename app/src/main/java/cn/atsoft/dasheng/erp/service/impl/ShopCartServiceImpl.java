@@ -233,9 +233,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
      */
     @Transactional
     public void updateInStockListStatus(Long id, Long status, Long number) {
-
         InstockList instockList = instockListService.getById(id);
-
         if (instockList.getStatus() != 0) {
             throw new ServiceException(500, "当前已操作");
         }
@@ -243,7 +241,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             instockList.setStatus(status);
             this.instockListService.updateById(instockList);
         }
-
     }
 
     @Override
@@ -346,6 +343,27 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         return shopCartResults;
     }
 
+
+    @Override
+    public List<ShopCartResult> merge(Long inventoryId) {
+        List<InventoryDetail> inventoryDetailList = inventoryDetailService.query()
+                .select("sku_id as skuId ,brand_id as brandId").eq("inventory_id", inventoryId).groupBy("sku_id", "brand_id").eq("display", 1).list();
+
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        for (InventoryDetail inventoryDetail : inventoryDetailList) {
+            skuIds.add(inventoryDetail.getSkuId());
+            brandIds.add(inventoryDetail.getBrandId());
+        }
+
+        List<ShopCart> shopCarts = this.query().eq("type", AnomalyType.allStocktaking.name())
+                .in("sku_id", skuIds)
+                .in("brand_id", brandIds)
+                .eq("status", 0)
+                .eq("display", 1).list();
+
+        return BeanUtil.copyToList(shopCarts, ShopCartResult.class, new CopyOptions());
+    }
 
 
     /**

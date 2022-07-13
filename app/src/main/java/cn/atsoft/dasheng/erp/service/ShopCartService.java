@@ -53,6 +53,8 @@ public interface ShopCartService extends IService<ShopCart> {
 
     List<ShopCartResult> allList(ShopCartParam param);
 
+    List<ShopCartResult> merge(Long inventoryId);
+
     List<ShopCartResult> applyList(ShopCartParam param);
 
     /**

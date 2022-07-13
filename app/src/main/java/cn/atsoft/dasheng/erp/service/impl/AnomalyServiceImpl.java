@@ -307,7 +307,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                     throw new ServiceException(500, "缺少异常信息");
             }
         } else {
-            updateInventoryStatus(param, -1);
+            updateInventoryStatus(param, -1);   //修改盘点状态
         }
         if (t) {   //添加异常信息
             for (AnomalyDetailParam detailParam : param.getDetailParams()) {
@@ -399,7 +399,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             instockListService.updateById(instockList);
         }
         //盘点
-        if (anomaly.getType().equals(AnomalyType.StocktakingError.name())) {
+        if (anomaly.getType().equals(AnomalyType.StocktakingError.name()) || anomaly.getType().equals(AnomalyType.allStocktaking.name())) {
             InventoryDetail inventoryDetail = new InventoryDetail();
             inventoryDetail.setStatus(0);
             inventoryDetail.setAnomalyId(0L);
