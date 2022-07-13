@@ -431,6 +431,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }});
         boolean b = addDetails(param);
         if (b) {   //添加购物车
+
+            shopCartService.remove(new QueryWrapper<ShopCart>() {{
+                eq("form_id", oldEntity.getAnomalyId());
+            }});
+
             ShopCartParam shopCartParam = new ShopCartParam();
             shopCartParam.setSkuId(param.getSkuId());
             shopCartParam.setBrandId(param.getBrandId());
