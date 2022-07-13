@@ -20,7 +20,7 @@ public class RedisSendCheck {
     //查询地址
     public List<Object> getList(String code) {
         //判断redis库是否有这个key
-        if(getRedisTemplate.hasKey("code")){
+        if(Boolean.TRUE.equals(getRedisTemplate.hasKey(code))){
             //如果有就查询redis里这个list集合（第一个参数是key,0,-1是查询所有）
             List<Object> range = getRedisTemplate.opsForList().range(code, 0,-1);
             //返回这个集合

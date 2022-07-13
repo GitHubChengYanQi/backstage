@@ -154,6 +154,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private AnomalyService anomalyService;
     @Autowired
     private ShopCartService shopCartService;
+    @Autowired
+    private InstockHandleService instockHandleService;
 
 
     @Override
@@ -444,8 +446,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         serviceEntity.setMaxTimes(2);
         serviceEntity.setTimes(0);
         messageProducer.microService(serviceEntity);
-
-
     }
 
     @Override
@@ -666,7 +666,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     public List<Long> inStock(InstockOrderParam param) {
 
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
+        List<InstockHandle> instockHandles = new ArrayList<>();
+
         for (InstockListParam listParam : param.getListParams()) {
+
+            InstockHandle instockHandle = new InstockHandle();    //添加入庫处理结果
+            ToolUtil.copyProperties(listParam, instockHandle);
+            instockHandle.setInstockOrderId(param.getInstockOrderId());
+            instockHandle.setType("inStock");
+            instockHandles.add(instockHandle);
 
             listParam.setInstockOrderId(param.getInstockOrderId());
 
@@ -685,7 +693,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
             updateStatus(listParam);
         }
-
+        /**
+         *
+         * 添加入库处理结果
+         */
+        instockHandleService.saveBatch(instockHandles);
         /**
          * 添加入库记录
          */
@@ -945,6 +957,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<StockDetails> stockDetailList = new ArrayList<>();
         for (Long inkindId : inkindIds) {
+            Integer count = stockDetailsService.query().eq("inkind_id", inkindId).eq("display", 1).count();
+            if (count > 0) {
+                throw new ServiceException(500, "当前实物已在库存");
+            }
             StockDetails stockDetails = new StockDetails();
             stockDetails.setSkuId(param.getSkuId());
             stockDetails.setBrandId(param.getBrandId());

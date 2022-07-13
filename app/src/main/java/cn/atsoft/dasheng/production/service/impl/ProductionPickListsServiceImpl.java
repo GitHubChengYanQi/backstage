@@ -1638,7 +1638,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public List<ProductionPickListsCartResult> listByCode(String code) {
         List<Object> list = redisSendCheck.getList(code);
         List<ProductionPickListsCartResult> cartResults = BeanUtil.copyToList(list, ProductionPickListsCartResult.class);
-        pickListsCartService.format(cartResults);
+        if (ToolUtil.isNotEmpty(cartResults)) {
+            pickListsCartService.format(cartResults);
+        }
         return cartResults;
     }
 

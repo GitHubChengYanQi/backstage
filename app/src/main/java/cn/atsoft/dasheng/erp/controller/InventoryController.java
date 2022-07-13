@@ -36,6 +36,7 @@ import java.util.List;
 @RequestMapping("/inventory")
 @Api(tags = "盘点任务主表")
 public class InventoryController extends BaseController {
+
     @Autowired
     private OrCodeBindService bindService;
 
@@ -60,7 +61,6 @@ public class InventoryController extends BaseController {
     @RequestMapping(value = "/InventoryApply", method = RequestMethod.POST)
     @ApiOperation("盘点申请")
     public ResponseData InventoryApply(@RequestBody InventoryParam inventoryParam) {
-        this.inventoryService.bySku(inventoryParam);
         this.inventoryService.InventoryApply(inventoryParam);
         return ResponseData.success();
     }
