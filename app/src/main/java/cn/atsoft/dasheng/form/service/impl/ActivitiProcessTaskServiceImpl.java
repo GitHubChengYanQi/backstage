@@ -456,7 +456,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     datum.setReceipts(anomalyResult);
                     for (MaintenanceResult maintenanceResult : maintenanceResults) {
                         if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
-                            String statusName = statusMap.get(maintenanceResult.getStatus());
+                            Long status = Long.valueOf(maintenanceResult.getStatus());
+                            String statusName = statusMap.get(status);
                             maintenanceResult.setStatusName(statusName);
                             datum.setReceipts(maintenanceResult);
                         }

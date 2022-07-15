@@ -165,6 +165,14 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return positionsResultList(detailResults);
     }
 
+    @Override
+    public List<InventoryDetailResult> details(Long inventoryTaskId) {
+        List<InventoryDetail> inventoryDetails = this.query().eq("inventory_id", inventoryTaskId).eq("display", 1).list();
+        List<InventoryDetailResult> detailResults = BeanUtil.copyToList(inventoryDetails, InventoryDetailResult.class, new CopyOptions());
+        this.format(detailResults);
+        detailList(detailResults);
+        return detailResults;
+    }
 
     /**
      * 时间范围内 所有未完成的盘点任务 合并
@@ -191,6 +199,15 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return map;
     }
 
+
+    private void detailList(List<InventoryDetailResult> detailResults) {
+        for (InventoryDetailResult detailResult : detailResults) {
+            if (detailResult.getStatus() == 0) {
+                Integer number = detailsService.getNumberByStock(detailResult.getSkuId(), detailResult.getBrandId(), detailResult.getPositionId());
+                detailResult.setSkuNum(number);
+            }
+        }
+    }
 
     /**
      * 组合结构
@@ -255,7 +272,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                         }
                     }
                 }
-
                 brandFormat(brandResults);
                 brandMap.put(skuId, brandResults);
             }
@@ -277,7 +293,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             positionsResult.setSkuResultList(list);
             positionsResult.setStorehousePositionsId(positionId);
             positionsResultList.add(positionsResult);
-
         }
 
         positionFormat(positionsResultList);
@@ -419,7 +434,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         }
         this.updateBatchById(inventoryDetails);
 
-        if (anomalyIds.size()>0) {
+        if (anomalyIds.size() > 0) {
             List<AnomalyParam> anomalyParams = new ArrayList<>();
             for (Long anomalyId : anomalyIds) {
                 AnomalyParam anomalyParam = new AnomalyParam();
@@ -433,7 +448,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             anomalyOrderParam.setMessage("盘点");
             anomalyOrderService.addByInventory(anomalyOrderParam);
         }
-
 
 
         for (Inventory inventory : inventories) {
@@ -536,4 +550,48 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return detailResults;
     }
 
+    @Override
+    public void format(List<InventoryDetailResult> data) {
+
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+
+        for (InventoryDetailResult datum : data) {
+            skuIds.add(datum.getSkuId());
+            brandIds.add(datum.getBrandId());
+            positionIds.add(datum.getPositionId());
+        }
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class);
+
+        for (InventoryDetailResult datum : data) {
+
+
+            for (SkuResult skuResult : skuResults) {
+                if (datum.getSkuId().equals(skuResult.getSkuId())) {
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(datum.getBrandId())) {
+                    datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
+
+            for (StorehousePositionsResult positionsResult : positionsResultList) {
+                if (datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+                    datum.setPositionsResult(positionsResult);
+                    break;
+                }
+            }
+        }
+
+    }
 }

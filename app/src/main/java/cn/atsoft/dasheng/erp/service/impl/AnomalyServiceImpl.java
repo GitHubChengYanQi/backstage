@@ -276,16 +276,26 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         queryWrapper.eq("position_id", param.getPositionId());
 
         List<InventoryDetail> inventoryDetails = inventoryDetailService.list(queryWrapper);
-        for (InventoryDetail inventoryDetail : inventoryDetails) {
+
+        for (InventoryDetail inventoryDetail : inventoryDetails) {    //保留之前记录
             if (inventoryDetail.getLockStatus() == 99) {
                 throw new ServiceException(500, "当前状态不可更改");
             }
             inventoryDetail.setStatus(status);
             inventoryDetail.setAnomalyId(param.getAnomalyId());
             inventoryDetail.setLockStatus(0);
+            inventoryDetail.setDisplay(0);
         }
+
+        List<InventoryDetail> detailList = BeanUtil.copyToList(inventoryDetails, InventoryDetail.class, new CopyOptions());
+        for (InventoryDetail inventoryDetail : detailList) {
+            inventoryDetail.setDetailId(null);
+            inventoryDetail.setDisplay(1);
+        }
+
         param.setType(param.getAnomalyType().toString());
         inventoryDetailService.updateBatchById(inventoryDetails);
+        inventoryDetailService.saveBatch(detailList);
     }
 
     /**
@@ -430,7 +440,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             eq("anomaly_id", param.getAnomalyId());
         }});
         boolean b = addDetails(param);
-        if (b) {   //添加购物车
+        if (b) {    //添加购物车
 
             shopCartService.remove(new QueryWrapper<ShopCart>() {{
                 eq("form_id", oldEntity.getAnomalyId());

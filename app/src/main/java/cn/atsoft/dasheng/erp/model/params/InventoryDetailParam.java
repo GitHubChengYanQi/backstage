@@ -44,6 +44,8 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
 
     private Long positionId;
 
+    private List<Long> skuIds;
+
     private Long skuId;
 
     private List<Long> mediaIds;

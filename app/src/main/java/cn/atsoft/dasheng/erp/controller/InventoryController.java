@@ -61,8 +61,8 @@ public class InventoryController extends BaseController {
     @RequestMapping(value = "/InventoryApply", method = RequestMethod.POST)
     @ApiOperation("盘点申请")
     public ResponseData InventoryApply(@RequestBody InventoryParam inventoryParam) {
-        this.inventoryService.InventoryApply(inventoryParam);
-        return ResponseData.success();
+        Inventory inventory = this.inventoryService.InventoryApply(inventoryParam);
+        return ResponseData.success(inventory);
     }
 
     /**
@@ -101,6 +101,12 @@ public class InventoryController extends BaseController {
         return ResponseData.success(condition);
     }
 
+
+    @RequestMapping(value = "/conditionGetOne", method = RequestMethod.POST)
+    public ResponseData conditionGetOne(@RequestBody InventoryDetailParam detailParam) {
+        InventoryDetailResult result = this.inventoryService.conditionGetOne(detailParam);
+        return ResponseData.success(result);
+    }
 
 //
 //    /**
