@@ -344,8 +344,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
 
-        if (ToolUtil.isNotEmpty(detailParam.getSpuId())) {    //产品
-            List<Sku> skus = skuService.query().eq("spu_id", detailParam.getSpuId()).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {    //产品
+            List<Sku> skus = skuService.query().in("spu_id", detailParam.getSpuIds()).eq("display", 1).list();
             queryWrapper.in("sku_id", new ArrayList<Long>() {{
                 for (Sku skus : skus) {
                     add(skus.getSkuId());

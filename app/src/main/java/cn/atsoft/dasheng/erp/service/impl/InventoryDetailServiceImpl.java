@@ -59,7 +59,7 @@ import java.util.stream.Stream;
  * @since 2021-12-27
  */
 @Service
-public class  InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMapper, InventoryDetail> implements InventoryDetailService {
+public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMapper, InventoryDetail> implements InventoryDetailService {
 
     @Autowired
     private InkindService inkindService;
@@ -204,6 +204,9 @@ public class  InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMapp
         for (InventoryDetailResult detailResult : detailResults) {
             if (detailResult.getStatus() == 0) {
                 Integer number = detailsService.getNumberByStock(detailResult.getSkuId(), detailResult.getBrandId(), detailResult.getPositionId());
+                if (ToolUtil.isEmpty(number)) {
+                    number = 0;
+                }
                 detailResult.setSkuNum(number);
             }
         }
