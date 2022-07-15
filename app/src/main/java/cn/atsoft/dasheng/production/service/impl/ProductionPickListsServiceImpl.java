@@ -927,8 +927,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                      * 原购物车  更改剩余领料数量
                      * 创建新购物车记录  存放出库数量
                      */
-                    if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getStatus() == 0) {
-//                        if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(brandId) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
+                        if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(pickListsCartParam.getBrandId()) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
                         int num = pickListsCartParam.getNumber();
                         int lastNum = num;
                         num -= listsCart.getNumber();
