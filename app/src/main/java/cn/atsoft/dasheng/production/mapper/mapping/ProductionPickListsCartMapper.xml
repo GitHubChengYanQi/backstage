@@ -175,11 +175,11 @@
                 or l.coding like CONCAT('%',#{paramCondition.query},'%')
                 )
         </if>
-        <if test="paramCondition.userId != null">
+        <if test="userId != null">
             and l.user_id = #{userId}
         </if>
         <if test="paramCondition.pickListsId != null">
-            and c.pick_lists_id = #{pickListsId}
+            and c.pick_lists_id = #{paramCondition.pickListsId}
         </if>
 </select>
 

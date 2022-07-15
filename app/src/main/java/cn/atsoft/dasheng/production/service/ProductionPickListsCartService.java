@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
 import cn.atsoft.dasheng.production.model.result.PickListsStorehouseResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -82,7 +83,7 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
 
     List<ProductionPickListsCartResult> getSelfCarts(ProductionPickListsCartParam param);
 
-    List<ProductionPickListsCartResult> getSelfCartsByLists(Long id);
+    List<ProductionPickListsDetailResult> getSelfCartsByLists(Long id);
 
     List<Map<String, Object>> getSelfCartsBySku(ProductionPickListsCartParam productionPickListsCartParam);
 
