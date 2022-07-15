@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam;
@@ -44,7 +45,7 @@ public interface MaintenanceDetailService extends IService<MaintenanceDetail> {
      */
     void update(MaintenanceDetailParam param);
 
-    List<StorehousePositionsResult> needMaintenance(List<Long> ids);
+    List<StockDetailsResult> needMaintenance(List<Long> ids);
 
     /**
      * 查询单条数据，Specification模式

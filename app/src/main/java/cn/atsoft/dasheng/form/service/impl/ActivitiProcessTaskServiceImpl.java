@@ -454,13 +454,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             for (AnomalyResult anomalyResult : anomalyResults) {
                 if (datum.getType().equals("ErrorForWard") && datum.getFormId().equals(anomalyResult.getAnomalyId())) {
                     datum.setReceipts(anomalyResult);
-                    for (MaintenanceResult maintenanceResult : maintenanceResults) {
-                        if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
-                            String statusName = statusMap.get(maintenanceResult.getStatus());
-                            maintenanceResult.setStatusName(statusName);
-                            datum.setReceipts(maintenanceResult);
-                        }
-                    }
+
+                }
+            }
+            for (MaintenanceResult maintenanceResult : maintenanceResults) {
+                if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
+                    String statusName = statusMap.get(maintenanceResult.getStatus());
+                    maintenanceResult.setStatusName(statusName);
+                    datum.setReceipts(maintenanceResult);
                 }
             }
         }

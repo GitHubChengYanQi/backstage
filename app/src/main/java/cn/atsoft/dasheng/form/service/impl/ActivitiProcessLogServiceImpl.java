@@ -126,6 +126,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private InstockListService instockListService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private AllocationService allocationService;
 
 
     @Override
@@ -283,6 +285,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         case "INSTOCK":   //入库创建
                         case "OUTSTOCK":   //出库
                         case "Stocktaking":
+                        case "MAINTENANCE":
+                        case "ALLOCATION":
                             updateStatus(activitiProcessLog.getLogId(), status, loginUserId);
                             setStatus(logs, activitiProcessLog.getLogId());
                             //拒绝走拒绝方法
@@ -336,6 +340,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * 流程结束需要重新获取需要审批的节点
          */
         audit = this.getAudit(taskId);
+        //TODO 写一个判断如果下步为动作时 执行动作
+        startAction(audit,task);
+
         /**
          * TODO 更新单据状态
          */
@@ -460,6 +467,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 break;
             case "Stocktaking":
                 inventoryService.updateStatus(processTask);
+                break;
+                case "OUTSTOCK":
+                pickListsService.updateStatus(processTask);
                 break;
         }
     }
@@ -1574,6 +1584,18 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", type).eq("form_id", formId).eq("display", 1).one();
         List<ActivitiProcessLog> audit = this.getAudit(processTask.getProcessTaskId());
         return audit;
+    }
+
+    private void startAction( List<ActivitiProcessLog> audit,ActivitiProcessTask task){
+        switch (task.getType()) {
+            case "ALLOCATION":
+                for (ActivitiProcessLog processLog : audit) {
+                    if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
+                        allocationService.createPickLists(task.getFormId());
+                    }
+                }
+                break;
+        }
     }
 
 }

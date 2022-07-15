@@ -82,7 +82,7 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
 
     List<ProductionPickListsCartResult> getSelfCarts(ProductionPickListsCartParam param);
 
-    List<ProductionPickListsResult> getSelfCartsByLists(ProductionPickListsCartParam param);
+    List<ProductionPickListsCartResult> getSelfCartsByLists(Long id);
 
     List<Map<String, Object>> getSelfCartsBySku(ProductionPickListsCartParam productionPickListsCartParam);
 

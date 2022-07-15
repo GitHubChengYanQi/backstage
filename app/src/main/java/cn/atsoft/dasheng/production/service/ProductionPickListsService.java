@@ -100,6 +100,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     ProductionPickListsResult detail(Long id);
 
+    void updateStatus(ActivitiProcessTask processTask);
+
     List<Map<String,Object>> listByUser(ProductionPickListsParam pickListsParam);
 
     void abortCode(String code);

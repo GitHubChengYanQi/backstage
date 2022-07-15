@@ -21,11 +21,29 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="type" property="type" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_cart AS "pickListsCart",inkind_id AS "inkindId",status AS "status", pick_lists_detail_id AS "pickListsDetailId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        pick_lists_cart AS "pickListsCart",type AS "type",inkind_id AS "inkindId",status AS "status", pick_lists_detail_id AS "pickListsDetailId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+    <sql id="Self_Count_List">
+        c.pick_lists_cart AS "pickListsCart",
+        c.inkind_id AS "inkindId",
+        c.STATUS AS "status",
+        c.pick_lists_detail_id AS "pickListsDetailId",
+        c.storehouse_positions_id AS "storehousePositionsId",
+        c.storehouse_id AS "storehouseId",
+        c.pick_lists_id AS "pickListsId",
+        c.sku_id AS "skuId",
+        c.number AS "number",
+        c.create_user AS "createUser",
+        c.update_user AS "updateUser",
+        c.create_time AS "createTime",
+        c.update_time AS "updateTime",
+        c.display AS "display",
+        c.deptId AS "deptId"
     </sql>
 
 
@@ -142,7 +160,28 @@
                 <if test="paramCondition.deptId != null">
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
-    </select>
+    </select><select id="selfCartList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
+    SELECT
+    <include refid="Self_Count_List"/>
+        FROM daoxin_production_pick_lists_cart c
+        LEFT JOIN daoxin_production_pick_lists l on c.pick_lists_id = l.pick_lists_id
+        LEFT JOIN goods_sku s on s.sku_id = c.sku_id
+        LEFT JOIN goods_spu p on p.spu_id = s.spu_id
+        WHERE 1=1 and c.display = 1
+        <if test="paramCondition.queryText !=null and paramCondition.queryText !=''">
+            and (
+                s.sku_name like CONCAT('%',#{paramCondition.query},'%')
+                or p.name like CONCAT('%',#{paramCondition.query},'%')
+                or l.coding like CONCAT('%',#{paramCondition.query},'%')
+                )
+        </if>
+        <if test="paramCondition.userId != null">
+            and l.user_id = #{userId}
+        </if>
+        <if test="paramCondition.pickListsId != null">
+            and c.pick_lists_id = #{pickListsId}
+        </if>
+</select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
         select

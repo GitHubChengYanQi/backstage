@@ -67,6 +67,22 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     private Integer status;
 
 
+
+    @ApiModelProperty("主题")
+    private String theme;
+
+
+    @ApiModelProperty("来源")
+    private String origin;
+
+    @ApiModelProperty("主任务id")
+    private Long mainTaskId;
+
+
+    @ApiModelProperty("上级任务id")
+    private Long pid;
+
+
     /**
      * 删除状态
      */
