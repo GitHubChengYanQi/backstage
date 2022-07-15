@@ -40,6 +40,8 @@ public class InventoryDetail implements Serializable {
     @TableField("position_condition")
     private String positionCondition;
 
+    @TableField("spu_id")
+    private Long spuId;
 
     @TableField("real_number")
     private Long realNumber;
@@ -312,6 +314,14 @@ public class InventoryDetail implements Serializable {
 
     public void setPositionCondition(String positionCondition) {
         this.positionCondition = positionCondition;
+    }
+
+    public Long getSpuId() {
+        return spuId;
+    }
+
+    public void setSpuId(Long spuId) {
+        this.spuId = spuId;
     }
 
     @Override

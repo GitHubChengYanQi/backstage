@@ -95,11 +95,7 @@ public class InventoryController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/condition", method = RequestMethod.POST)
-    public ResponseData condition(@RequestBody InventoryDetailParam detailParam) {
-        List<InventoryDetail> condition = this.inventoryService.condition(detailParam);
-        return ResponseData.success(condition);
-    }
+
 
 
     @RequestMapping(value = "/conditionGetOne", method = RequestMethod.POST)

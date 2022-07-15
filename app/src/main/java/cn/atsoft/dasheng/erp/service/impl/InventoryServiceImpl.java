@@ -122,6 +122,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private InventoryStockService inventoryStockService;
 
     @Override
     @Transactional
@@ -296,50 +298,74 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }
         }
 
-
         Inventory entity = getEntity(param);
         this.save(entity);
 
-        List<InventoryDetail> all = new ArrayList<>();
         for (InventoryDetailParam detailParam : param.getDetailParams()) {
+            List<Long> bomIds = detailParam.getBomIds();
+            List<Long> brandIds = detailParam.getBrandIds();
+            List<Long> positionIds = detailParam.getPositionIds();
+            List<Long> classIds = detailParam.getClassIds();
+            if (ToolUtil.isNotEmpty(bomIds)) {
+                String partJson = JSON.toJSONString(bomIds);
+                detailParam.setPartCondition(partJson);
+            }
+            if (ToolUtil.isNotEmpty(brandIds)) {
+                String brandJson = JSON.toJSONString(brandIds);
+                detailParam.setBrandCondition(brandJson);
+            }
+            if (ToolUtil.isNotEmpty(positionIds)) {
+                String positionJson = JSON.toJSONString(positionIds);
+                detailParam.setPositionCondition(positionJson);
+            }
+            if (ToolUtil.isNotEmpty(classIds)) {
+                String classJson = JSON.toJSONString(classIds);
+                detailParam.setClassCondition(classJson);
+            }
+            detailParam.setInventoryId(entity.getInventoryTaskId());
 
-            List<SkuBind> skuBinds = getSkuBinds(detailParam);  //从物料绑定取
-            for (SkuBind skuBind : skuBinds) {
-                if (all.stream().noneMatch(i -> i.getSkuId().equals(skuBind.getSkuId())
-                        && i.getBrandId().equals(skuBind.getBrandId())
-                        && i.getPositionId().equals(skuBind.getPositionId())
-                )) {
-                    InventoryDetail inventoryDetail = new InventoryDetail();
-                    inventoryDetail.setSkuId(skuBind.getSkuId());
-                    inventoryDetail.setBrandId(skuBind.getBrandId());
-                    inventoryDetail.setPositionId(skuBind.getPositionId());
-                    inventoryDetail.setInventoryId(entity.getInventoryTaskId());
-                    all.add(inventoryDetail);
-                }
-            }
-//----------------------------------------------------------------------------------------------------------------------
-            List<InventoryDetail> condition = condition(detailParam);   //从库存取
-            for (InventoryDetail inventoryDetail : condition) {
-                if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryDetail.getSkuId())
-                        && i.getBrandId().equals(inventoryDetail.getBrandId())
-                        && i.getPositionId().equals(inventoryDetail.getPositionId())
-                )) {
-                    inventoryDetail.setInventoryId(entity.getInventoryTaskId());
-                    all.add(inventoryDetail);
-                }
-            }
+            InventoryDetail inventoryDetail = new InventoryDetail();
+            ToolUtil.copyProperties(detailParam, inventoryDetail);
+            inventoryDetailService.save(inventoryDetail);
+            detailParam.setDetailId(inventoryDetail.getDetailId());
         }
-        inventoryDetailService.saveBatch(all);
+
+        inventoryStockService.addList(param.getDetailParams());
         param.setInventoryTaskId(entity.getInventoryTaskId());
         submit(param);
-
         return entity;
+
+//            List<SkuBind> skuBinds = getSkuBinds(detailParam);  //从物料绑定取
+//            for (SkuBind skuBind : skuBinds) {
+//                if (all.stream().noneMatch(i -> i.getSkuId().equals(skuBind.getSkuId())
+//                        && i.getBrandId().equals(skuBind.getBrandId())
+//                        && i.getPositionId().equals(skuBind.getPositionId())
+//                )) {
+//                    InventoryDetail inventoryDetail = new InventoryDetail();
+//                    inventoryDetail.setSkuId(skuBind.getSkuId());
+//                    inventoryDetail.setBrandId(skuBind.getBrandId());
+//                    inventoryDetail.setPositionId(skuBind.getPositionId());
+//                    inventoryDetail.setInventoryId(entity.getInventoryTaskId());
+//                    all.add(inventoryDetail);
+//                }
+//            }
+////----------------------------------------------------------------------------------------------------------------------
+//            List<InventoryDetail> condition = condition(detailParam);   //从库存取
+//            for (InventoryDetail inventoryDetail : condition) {
+//                if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryDetail.getSkuId())
+//                        && i.getBrandId().equals(inventoryDetail.getBrandId())
+//                        && i.getPositionId().equals(inventoryDetail.getPositionId())
+//                )) {
+//                    inventoryDetail.setInventoryId(entity.getInventoryTaskId());
+//                    all.add(inventoryDetail);
+//                }
+//            }
 
     }
 
 
     @Override
-    public List<InventoryDetail> condition(InventoryDetailParam detailParam) {
+    public List<InventoryStock> condition(InventoryDetailParam detailParam) {
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
@@ -387,16 +413,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }
 
         List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
-        List<InventoryDetail> details = new ArrayList<>();
+        List<InventoryStock> details = new ArrayList<>();
 
         for (StockDetails stockDetail : stockDetails) {
-            InventoryDetail inventoryDetail = new InventoryDetail();
-            inventoryDetail.setSkuId(stockDetail.getSkuId());
-            inventoryDetail.setBrandId(stockDetail.getBrandId());
-//            inventoryDetail.setInkindId(stockDetail.getInkindId());
-            inventoryDetail.setPositionId(stockDetail.getStorehousePositionsId());
-//            inventoryDetail.setNumber(stockDetail.getNumber());
-            details.add(inventoryDetail);
+            InventoryStock inventoryStock = new InventoryStock();
+            inventoryStock.setSkuId(stockDetail.getSkuId());
+            inventoryStock.setBrandId(stockDetail.getBrandId());
+            inventoryStock.setPositionId(stockDetail.getStorehousePositionsId());
+            details.add(inventoryStock);
         }
         return details;
     }
@@ -436,10 +460,17 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         return inventoryDetailResult;
     }
 
-    private List<SkuBind> getSkuBinds(InventoryDetailParam detailParam) {
+    @Override
+    public List<SkuBind> getSkuBinds(InventoryDetailParam detailParam) {
         SkuBindParam skuBindParam = new SkuBindParam();
         ToolUtil.copyProperties(detailParam, skuBindParam);
-        return skuService.skuBindList(skuBindParam);
+        List<SkuBind> skuBinds = skuService.skuBindList(skuBindParam);
+        for (SkuBind skuBind : skuBinds) {
+            if (ToolUtil.isEmpty(skuBind.getBrandId())) {
+                skuBind.setBrandId(0L);
+            }
+        }
+        return skuBinds;
     }
 
     @Override
