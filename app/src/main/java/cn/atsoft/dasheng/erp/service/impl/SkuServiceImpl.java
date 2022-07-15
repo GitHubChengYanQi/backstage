@@ -358,7 +358,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
 
-
     @Override
     public List<SkuResult> getSkuByMd5(SkuParam param) {
         if (ToolUtil.isEmpty(param.getSpuId())) {
@@ -812,6 +811,23 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             throw new ServiceException(500, "当前无此规则");
         }
     }
+
+
+    @Override
+    public List<SkuBind> skuBindList(SkuBindParam skuBindParam) {
+        if (ToolUtil.isNotEmpty(skuBindParam.getBomIds())) {   //bom
+            List<Long> skuIds = skuBindParam.getSkuIds();
+            if (ToolUtil.isEmpty(skuIds)) {
+                skuIds = new ArrayList<>();
+            }
+            for (Long bomId : skuBindParam.getBomIds()) {
+                skuIds.addAll(partsService.getSkuIdsByBom(bomId));
+            }
+            skuBindParam.setSkuIds(skuIds);
+        }
+        return this.baseMapper.skuBindList(skuBindParam);
+    }
+
 
     @Override
     @BussinessLog

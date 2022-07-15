@@ -22,11 +22,17 @@
         <result column="enclosure" property="enclosure"/>
         <result column="lock_status" property="lockStatus"/>
         <result column="real_number" property="realNumber"/>
+        <result column="part_condition" property="partCondition"/>
+        <result column="material_condition" property="materialCondition"/>
+        <result column="class_condition" property="classCondition"/>
+        <result column="brand_condition" property="brandCondition"/>
+        <result column="position_condition" property="positionCondition"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">lock_status
-    AS "lockStatus",real_number AS "realNumber",
+    AS "lockStatus",real_number AS "realNumber", part_condition AS "partCondition",material_condition AS "materialCondition",class_condition AS "classCondition"
+,brand_condition AS "brandCondition" , position_condition AS "positionCondition",
  status
     AS "status",sku_id AS "skuId",customer_id AS customerId ,brand_id AS "brandId",position_id AS "positionId",number AS "number",anomaly_id AS "anomalyId",enclosure AS "enclosure",
         detail_id

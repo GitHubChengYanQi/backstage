@@ -19,6 +19,8 @@ import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import cn.atsoft.dasheng.erp.pojo.SkuBind;
+import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -300,7 +302,23 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         List<InventoryDetail> all = new ArrayList<>();
         for (InventoryDetailParam detailParam : param.getDetailParams()) {
-            List<InventoryDetail> condition = condition(detailParam);
+
+            List<SkuBind> skuBinds = getSkuBinds(detailParam);  //从物料绑定取
+            for (SkuBind skuBind : skuBinds) {
+                if (all.stream().noneMatch(i -> i.getSkuId().equals(skuBind.getSkuId())
+                        && i.getBrandId().equals(skuBind.getBrandId())
+                        && i.getPositionId().equals(skuBind.getPositionId())
+                )) {
+                    InventoryDetail inventoryDetail = new InventoryDetail();
+                    inventoryDetail.setSkuId(skuBind.getSkuId());
+                    inventoryDetail.setBrandId(skuBind.getBrandId());
+                    inventoryDetail.setPositionId(skuBind.getPositionId());
+                    inventoryDetail.setInventoryId(entity.getInventoryTaskId());
+                    all.add(inventoryDetail);
+                }
+            }
+//----------------------------------------------------------------------------------------------------------------------
+            List<InventoryDetail> condition = condition(detailParam);   //从库存取
             for (InventoryDetail inventoryDetail : condition) {
                 if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryDetail.getSkuId())
                         && i.getBrandId().equals(inventoryDetail.getBrandId())
@@ -312,8 +330,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }
         }
         inventoryDetailService.saveBatch(all);
+        param.setInventoryTaskId(entity.getInventoryTaskId());
+        submit(param);
+
         return entity;
+
     }
+
 
     @Override
     public List<InventoryDetail> condition(InventoryDetailParam detailParam) {
@@ -388,10 +411,20 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public InventoryDetailResult conditionGetOne(InventoryDetailParam detailParam) {
 
         InventoryDetailResult inventoryDetailResult = null;
-        List<InventoryDetail> condition = condition(detailParam);
-        List<InventoryDetailResult> detailResults = BeanUtil.copyToList(condition, InventoryDetailResult.class);
-        Set<Long> skuNum = new HashSet<>();
 
+        List<SkuBind> skuBinds = getSkuBinds(detailParam);  //获取物料绑定的信息
+
+        List<InventoryDetailResult> detailResults = new ArrayList<>();
+
+        for (SkuBind skuBind : skuBinds) {
+            InventoryDetailResult result = new InventoryDetailResult();
+            result.setSkuId(skuBind.getSkuId());
+            result.setBrandId(skuBind.getBrandId());
+            result.setPositionId(skuBind.getPositionId());
+            detailResults.add(result);
+        }
+
+        Set<Long> skuNum = new HashSet<>();
         for (InventoryDetailResult detailResult : detailResults) {
             skuNum.add(detailResult.getSkuId());
         }
@@ -403,6 +436,11 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         return inventoryDetailResult;
     }
 
+    private List<SkuBind> getSkuBinds(InventoryDetailParam detailParam) {
+        SkuBindParam skuBindParam = new SkuBindParam();
+        ToolUtil.copyProperties(detailParam, skuBindParam);
+        return skuService.skuBindList(skuBindParam);
+    }
 
     @Override
     public List<StorehousePositionsResult> timely(Long positionId) {
@@ -600,8 +638,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         format(new ArrayList<InventoryResult>() {{
             add(inventoryResult);
         }});
-        Object taskList = inventoryDetailService.details(id);
-        inventoryResult.setTaskList(taskList);
+        List<InventoryDetailResult> details = inventoryDetailService.details(id);
+        inventoryResult.setTaskList(details);
         return inventoryResult;
     }
 

@@ -59,7 +59,7 @@ import java.util.stream.Stream;
  * @since 2021-12-27
  */
 @Service
-public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMapper, InventoryDetail> implements InventoryDetailService {
+public class  InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMapper, InventoryDetail> implements InventoryDetailService {
 
     @Autowired
     private InkindService inkindService;
@@ -229,8 +229,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         /**
          * 通过库位组合
          */
-        Map<Long, List<InventoryDetailResult>> map = new HashMap<>();
-//        Map<Long,Long>
+        Map<Long, List<InventoryDetailResult>> positionMap = new HashMap<>();
+
         for (Long positionId : positionIds) {
             List<InventoryDetailResult> details = new ArrayList<>();
             for (InventoryDetailResult inventoryDetail : detailResults) {
@@ -238,48 +238,48 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                     details.add(inventoryDetail);
                 }
             }
-            map.put(positionId, details);
+            positionMap.put(positionId, details);
         }
 
         List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
         for (Long positionId : positionIds) {
-            List<InventoryDetailResult> detailResultList = map.get(positionId);
+            List<InventoryDetailResult> detailResultList = positionMap.get(positionId);
             Set<Long> skuIds = new HashSet<>();
-            Map<Long, List<Long>> enclosureMap = new HashMap<>();
+            Map<Long, List<Long>> skuMap = new HashMap<>();
             Map<Long, Integer> lock = new HashMap<>();
 
             for (InventoryDetailResult inventoryDetailResult : detailResultList) {
                 skuIds.add(inventoryDetailResult.getSkuId());
                 if (ToolUtil.isNotEmpty(inventoryDetailResult.getEnclosure())) {
-                    enclosureMap.put(inventoryDetailResult.getSkuId(), JSON.parseArray(inventoryDetailResult.getEnclosure(), Long.class));
+                    skuMap.put(inventoryDetailResult.getSkuId(), JSON.parseArray(inventoryDetailResult.getEnclosure(), Long.class));
                 }
                 lock.put(inventoryDetailResult.getSkuId(), inventoryDetailResult.getLockStatus());
             }
 
-            Map<Long, List<BrandResult>> brandMap = new HashMap<>();
-            for (Long skuId : skuIds) {
-                List<BrandResult> brandResults = new ArrayList<>();
-                for (InventoryDetailResult inventoryDetailResult : detailResultList) {
-                    if (inventoryDetailResult.getSkuId().equals(skuId)) {
-                        BrandResult brandResult = new BrandResult();
-                        brandResult.setBrandId(inventoryDetailResult.getBrandId());
-                        brandResult.setNumber(inventoryDetailResult.getNumber());
-                        brandResult.setInkind(inventoryDetailResult.getInkindId());
-                        brandResult.setAnomalyId(inventoryDetailResult.getAnomalyId());
-                        brandResult.setInventoryStatus(inventoryDetailResult.getStatus());
-                        if (mergeBrand(brandResults, brandResult)) {
-                            brandResults.add(brandResult);
-                        }
-                    }
-                }
-                brandFormat(brandResults);
-                brandMap.put(skuId, brandResults);
-            }
+//            Map<Long, List<BrandResult>> brandMap = new HashMap<>();
+//            for (Long skuId : skuIds) {
+//                List<BrandResult> brandResults = new ArrayList<>();
+//                for (InventoryDetailResult inventoryDetailResult : detailResultList) {
+//                    if (inventoryDetailResult.getSkuId().equals(skuId)) {
+//                        BrandResult brandResult = new BrandResult();
+//                        brandResult.setBrandId(inventoryDetailResult.getBrandId());
+//                        brandResult.setNumber(inventoryDetailResult.getNumber());
+//                        brandResult.setInkind(inventoryDetailResult.getInkindId());
+//                        brandResult.setAnomalyId(inventoryDetailResult.getAnomalyId());
+//                        brandResult.setInventoryStatus(inventoryDetailResult.getStatus());
+//                        if (mergeBrand(brandResults, brandResult)) {
+//                            brandResults.add(brandResult);
+//                        }
+//                    }
+//                }
+//                brandFormat(brandResults);
+//                brandMap.put(skuId, brandResults);
+//            }
 
             List<SkuResult> list = skuService.formatSkuResult(new ArrayList<>(skuIds));
             for (SkuResult skuResult : list) {
 
-                List<Long> mediaIds = enclosureMap.get(skuResult.getSkuId());
+                List<Long> mediaIds = skuMap.get(skuResult.getSkuId());
                 if (ToolUtil.isNotEmpty(mediaIds)) {
                     List<String> mediaUrls = mediaService.getMediaUrls(mediaIds, null);
                     skuResult.setInventoryUrls(mediaUrls);
@@ -287,7 +287,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                 }
                 Integer lockStatus = lock.get(skuResult.getSkuId());
                 skuResult.setLockStatus(lockStatus);
-                skuResult.setBrandResults(brandMap.get(skuResult.getSkuId()));
+//                skuResult.setBrandResults(brandMap.get(skuResult.getSkuId()));
             }
             StorehousePositionsResult positionsResult = new StorehousePositionsResult();
             positionsResult.setSkuResultList(list);
@@ -579,14 +579,14 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             }
 
             for (BrandResult brandResult : brandResults) {
-                if (brandResult.getBrandId().equals(datum.getBrandId())) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && brandResult.getBrandId().equals(datum.getBrandId())) {
                     datum.setBrandResult(brandResult);
                     break;
                 }
             }
 
             for (StorehousePositionsResult positionsResult : positionsResultList) {
-                if (datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
                     datum.setPositionsResult(positionsResult);
                     break;
                 }
