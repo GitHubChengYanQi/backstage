@@ -119,7 +119,7 @@
                 #{state}
             </foreach>
         </if>
-        <if test="paramCondition.userIds">
+        <if test="paramCondition.userIds !=null  and paramCondition.type == 'ERROR' " >
             union
             select
             <include refid="Base_Column_List"/>
