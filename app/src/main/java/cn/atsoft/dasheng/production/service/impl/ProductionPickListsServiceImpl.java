@@ -240,7 +240,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Override
     public String createCode(ProductionPickListsParam param) {
-        String code = String.valueOf(RandomUtil.randomLong(1000,9999));
+        String code = String.valueOf(RandomUtil.randomLong(1000, 9999));
         List<Object> list = redisSendCheck.getList(code);
         param.getCartsParams();
         List<Object> objects = BeanUtil.copyToList(param.getCartsParams(), Object.class);
@@ -927,7 +927,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                      * 原购物车  更改剩余领料数量
                      * 创建新购物车记录  存放出库数量
                      */
-                        if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(pickListsCartParam.getBrandId()) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
+                    if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(pickListsCartParam.getBrandId()) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
                         int num = pickListsCartParam.getNumber();
                         int lastNum = num;
                         num -= listsCart.getNumber();
@@ -1467,8 +1467,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return result;
 
     }
+
     @Override
-    public void updateStatus(ActivitiProcessTask processTask){
+    public void updateStatus(ActivitiProcessTask processTask) {
         /**
          *    更新表单状态
          */
@@ -1476,6 +1477,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         entity.setStatus(OutStockActionEnum.done.getStatus());
         this.updateById(entity);
     }
+
     void checkAction(Long id) {
 
 
@@ -1638,6 +1640,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     @Override
     public List<ProductionPickListsCartResult> listByCode(String code) {
         List<Object> list = redisSendCheck.getList(code);
+        if (ToolUtil.isEmpty(list)) {
+            throw new ServiceException(500,"此领料码为查询到物料或码已被使用");
+        }
         List<ProductionPickListsCartResult> cartResults = BeanUtil.copyToList(list, ProductionPickListsCartResult.class);
         if (ToolUtil.isNotEmpty(cartResults)) {
             pickListsCartService.format(cartResults);

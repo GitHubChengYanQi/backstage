@@ -142,6 +142,9 @@
                 #{state}
             </foreach>
         </if>
+        <if test="paramCondition.userId != null">
+            and user_id = #{paramCondition.userId}
+        </if>
         <if test="paramCondition.userIds">
             union
             select

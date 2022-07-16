@@ -430,12 +430,10 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 if (ToolUtil.isNotEmpty(cartParam.getBrandId()) && !cartParam.getBrandId().equals(0L)) {
                     queryWrapper.eq("brand_id", cartParam.getBrandId());
                 }
-                if (ToolUtil.isNotEmpty(cartParam.getStorehousePositionsId())){
-                    queryWrapper.eq("storehouse_positions_id", cartParam.getStorehousePositionsId());
-                }
-                if (ToolUtil.isNotEmpty(cartParam.getStorehouseId())){
-                    queryWrapper.eq("storehouse_id",param.getStorehouseId());
-                }
+                queryWrapper.eq("storehouse_positions_id", cartParam.getStorehousePositionsId());
+//            if (inkindIds.size()>0){
+//                queryWrapper.notIn("inkind_id",inkindIds);
+//            }
                 queryWrapper.last("limit " + cartParam.getNumber() + inkindIds.size());
                 list.addAll(this.list(queryWrapper));
             }
