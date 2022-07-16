@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -22,6 +23,9 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.cp.bean.WxCpUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * member
@@ -45,6 +49,8 @@ public class UcMemberController extends BaseController {
     private UserService userService;
     @Autowired
     private WxuserInfoService wxuserInfoService;
+    @Autowired
+    private StepsService appStepService;
 
     /**
      * 新增接口
@@ -126,13 +132,11 @@ public class UcMemberController extends BaseController {
         try {
             WxCpUser wxCpUser = wxCpService.getWxCpClient().getUserService().getById(CpUserId);
             if (ToolUtil.isNotEmpty(wxCpUser) && ToolUtil.isNotEmpty(wxCpUser.getUserId())) {
-
                 OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).eq("source", "wxCp").one();
                 if (ToolUtil.isEmpty(openUserInfo)) {
                     openUserInfo = new OpenUserInfo();
                 }
                 Long memberId = openUserInfo.getMemberId();
-
                 WxuserInfo wxuserInfo = ToolUtil.isEmpty(memberId) ? new WxuserInfo() : wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").one();
                 if (ToolUtil.isEmpty(wxuserInfo)) {
                     wxuserInfo = new WxuserInfo();
@@ -144,6 +148,36 @@ public class UcMemberController extends BaseController {
         }
         return ResponseData.success(user);
     }
+
+
+    @RequestMapping(value = "/getUserByCps", method = RequestMethod.POST)
+    public ResponseData getUserByCps(@RequestBody UcMemberParam param) {
+        List<User> users = new ArrayList<>();
+        for (String cpUserId : param.getCpUserIds()) {
+            try {
+                WxCpUser wxCpUser = wxCpService.getWxCpClient().getUserService().getById(cpUserId);
+                if (ToolUtil.isNotEmpty(wxCpUser) && ToolUtil.isNotEmpty(wxCpUser.getUserId())) {
+                    OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).eq("source", "wxCp").one();
+                    if (ToolUtil.isEmpty(openUserInfo)) {
+                        openUserInfo = new OpenUserInfo();
+                    }
+                    Long memberId = openUserInfo.getMemberId();
+                    WxuserInfo wxuserInfo = ToolUtil.isEmpty(memberId) ? new WxuserInfo() : wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").one();
+                    if (ToolUtil.isEmpty(wxuserInfo)) {
+                        wxuserInfo = new WxuserInfo();
+                    }
+                    User user = ToolUtil.isEmpty(wxuserInfo.getUserId()) ? new User() : userService.getById(wxuserInfo.getUserId());
+                    String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+                    user.setAvatar(imgUrl);
+                    users.add(user);
+                }
+            } catch (WxErrorException e) {
+                e.printStackTrace();
+            }
+        }
+        return ResponseData.success(users);
+    }
+
 
 //    /**
 //     * 批量删除
