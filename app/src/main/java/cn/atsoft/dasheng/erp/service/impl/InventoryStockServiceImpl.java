@@ -165,10 +165,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         for (InventoryStock inventoryStock : stockList) {
             inventoryStock.setDetailId(null);
             inventoryStock.setDisplay(1);
+            if (status == 1) {   //正常物料    清楚异常id
+                inventoryStock.setAnomalyId(0L);
+            }
         }
 
         param.setType(param.getAnomalyType().toString());
-
         this.updateBatchById(inventoryStocks);
         this.saveBatch(stockList);
     }

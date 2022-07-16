@@ -359,8 +359,13 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @param param
      */
     private void updateInventory(AnomalyParam param) {
+
         inventoryStockService.updateInventoryStatus(param, 1);//数据正常  不添加异常数据
 //        updateInventoryStatus(param, 1);
+        /**
+         * 更新购物车
+         */
+
         ShopCart shopCart = new ShopCart();
         shopCart.setDisplay(0);
         switch (param.getAnomalyType()) {
@@ -377,12 +382,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
 
 
-        //改为正常
-        InventoryDetail inventoryDetail = new InventoryDetail();
-        inventoryDetail.setAnomalyId(0L);
-        inventoryDetailService.update(inventoryDetail, new QueryWrapper<InventoryDetail>() {{
-            eq("anomaly_id", param.getAnomalyId());
-        }});
     }
 
 
