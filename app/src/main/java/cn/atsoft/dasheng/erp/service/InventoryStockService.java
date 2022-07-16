@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InventoryStock;
+import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryStockParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryStockResult;
@@ -54,6 +55,15 @@ public interface InventoryStockService extends IService<InventoryStock> {
     InventoryStockResult findBySpec(InventoryStockParam param);
 
     /**
+     * 修改状态
+     *
+     * @param param
+     * @param status
+     */
+
+    void updateInventoryStatus(AnomalyParam param, int status);
+
+    /**
      * 查询列表，Specification模式
      *
      * @author song
@@ -67,6 +77,6 @@ public interface InventoryStockService extends IService<InventoryStock> {
      * @author song
      * @Date 2022-07-15
      */
-     PageInfo<InventoryStockResult> findPageBySpec(InventoryStockParam param);
+    PageInfo<InventoryStockResult> findPageBySpec(InventoryStockParam param);
 
 }

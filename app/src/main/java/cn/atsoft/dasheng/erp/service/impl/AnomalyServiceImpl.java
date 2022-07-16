@@ -104,6 +104,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InventoryDetailService inventoryDetailService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private InventoryStockService inventoryStockService;
 
 
     @Transactional
@@ -213,7 +215,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             detailService.save(detail);
         }
         param.setAnomalyId(param.getAnomalyId());
-        updateInventoryStatus(param, 2);
+        inventoryStockService.updateInventoryStatus(param, 2);
+//        updateInventoryStatus(param, 2);
         return param.getAnomalyId();
     }
 
@@ -257,8 +260,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private void updateInventoryStatus(AnomalyParam param, int status) {
         QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
-
-
         /**
          * 同一时间段   统一修改
          */
@@ -317,7 +318,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                     throw new ServiceException(500, "缺少异常信息");
             }
         } else {
-            updateInventoryStatus(param, -1);   //修改盘点状态
+            inventoryStockService.updateInventoryStatus(param, -1);
+//            updateInventoryStatus(param, -1);   //修改盘点状态
         }
         if (t) {   //添加异常信息
             for (AnomalyDetailParam detailParam : param.getDetailParams()) {
@@ -357,8 +359,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @param param
      */
     private void updateInventory(AnomalyParam param) {
-
-        updateInventoryStatus(param, 1);    //数据正常  不添加异常数据
+        inventoryStockService.updateInventoryStatus(param, 1);//数据正常  不添加异常数据
+//        updateInventoryStatus(param, 1);
         ShopCart shopCart = new ShopCart();
         shopCart.setDisplay(0);
         switch (param.getAnomalyType()) {

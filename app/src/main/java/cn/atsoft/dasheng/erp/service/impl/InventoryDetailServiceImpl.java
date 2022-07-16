@@ -86,7 +86,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
     @Override
     public void add(InventoryDetailParam param) {
-
         InventoryDetail entity = getEntity(param);
         this.save(entity);
     }
@@ -110,19 +109,16 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         List<StockDetails> details = detailsService.query().in("inkind_id", inkindIds).list();
 
         List<InventoryDetail> inventories = new ArrayList<>();
-        List<Long> outInkind = new ArrayList<>();
         InventoryDetail inventory = null;
 
         //添加盘点数据----------------------------------------------------------------------------------------------------
         for (StockDetails detail : details) {
             for (InventoryRequest.InkindParam param : params) {
                 if (detail.getInkindId().equals(param.getInkindId())) {  //相同实物
-
                     if (detail.getNumber() > param.getNumber()) {  //出库
                         inventory = new InventoryDetail();
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(2);
-                        outInkind.add(param.getInkindId());
                         inventories.add(inventory);
                     } else {                                       //入库
                         inventory = new InventoryDetail();

@@ -28,10 +28,13 @@
         <result column="brand_condition" property="brandCondition"/>
         <result column="position_condition" property="positionCondition"/>
         <result column="spu_id" property="spuId"/>
+        <result column="type" property="type"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">lock_status
+    <sql id="Base_Column_List">type
+    AS "type",
+lock_status
     AS "lockStatus",real_number AS "realNumber", part_condition AS "partCondition",material_condition AS "materialCondition",class_condition AS "classCondition"
 ,brand_condition AS "brandCondition" , position_condition AS "positionCondition",spu_id AS "spuId",
  status

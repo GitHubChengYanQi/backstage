@@ -24,6 +24,8 @@ public class InventoryDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("type")
+    private String type;
 
     @TableField("part_condition")
     private String partCondition;
@@ -322,6 +324,14 @@ public class InventoryDetail implements Serializable {
 
     public void setSpuId(Long spuId) {
         this.spuId = spuId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

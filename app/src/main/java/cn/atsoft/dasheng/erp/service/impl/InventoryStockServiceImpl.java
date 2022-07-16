@@ -10,8 +10,10 @@ import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.entity.InventoryStock;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.mapper.InventoryStockMapper;
+import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryStockParam;
+import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.model.result.InventoryStockResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -24,6 +26,8 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -78,6 +82,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     public void addList(List<InventoryDetailParam> detailParams) {
         List<InventoryStock> all = new ArrayList<>();
         for (InventoryDetailParam detailParam : detailParams) {
+
             List<SkuBind> skuBinds = inventoryService.getSkuBinds(detailParam);  //从物料绑定取
             for (SkuBind skuBind : skuBinds) {
                 if (ToolUtil.isNotEmpty(skuBind.getPositionId()) &&
@@ -123,6 +128,51 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     public InventoryStockResult findBySpec(InventoryStockParam param) {
         return null;
     }
+
+
+    @Override
+    public void updateInventoryStatus(AnomalyParam param, int status) {
+        QueryWrapper<InventoryStock> queryWrapper = new QueryWrapper<>();
+        /**
+         * 同一时间段   统一修改
+         */
+        List<Long> inventoryIds = new ArrayList<>();
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();
+        if (ToolUtil.isNotEmpty(inventoryResults)) {
+            for (InventoryResult inventoryResult : inventoryResults) {
+                inventoryIds.add(inventoryResult.getInventoryTaskId());
+            }
+        }
+        inventoryIds.add(param.getFormId());
+        queryWrapper.in("inventory_id", inventoryIds);
+        queryWrapper.eq("sku_id", param.getSkuId());
+        queryWrapper.eq("brand_id", param.getBrandId());
+        queryWrapper.eq("position_id", param.getPositionId());
+
+        List<InventoryStock> inventoryStocks = this.list(queryWrapper);
+
+        for (InventoryStock inventoryStock : inventoryStocks) {    //保留之前记录
+            if (inventoryStock.getLockStatus() == 99) {
+                throw new ServiceException(500, "当前状态不可更改");
+            }
+            inventoryStock.setStatus(status);
+            inventoryStock.setAnomalyId(param.getAnomalyId());
+            inventoryStock.setLockStatus(0);
+            inventoryStock.setDisplay(0);
+        }
+
+        List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
+        for (InventoryStock inventoryStock : stockList) {
+            inventoryStock.setDetailId(null);
+            inventoryStock.setDisplay(1);
+        }
+
+        param.setType(param.getAnomalyType().toString());
+
+        this.updateBatchById(inventoryStocks);
+        this.saveBatch(stockList);
+    }
+
 
     @Override
     public List<InventoryStockResult> findListBySpec(InventoryStockParam param) {

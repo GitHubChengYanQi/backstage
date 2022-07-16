@@ -322,6 +322,10 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 String classJson = JSON.toJSONString(classIds);
                 detailParam.setClassCondition(classJson);
             }
+            if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {
+                List<Long> spuIds = detailParam.getSpuIds();
+                detailParam.setSpuId(spuIds.get(0));
+            }
             detailParam.setInventoryId(entity.getInventoryTaskId());
 
             InventoryDetail inventoryDetail = new InventoryDetail();
