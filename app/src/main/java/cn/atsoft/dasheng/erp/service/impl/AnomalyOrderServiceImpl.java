@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import cn.atsoft.dasheng.erp.pojo.CheckNumber;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
@@ -40,6 +41,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -467,8 +469,11 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
 
             if (!anomaly.getRealNumber().equals(anomaly.getNeedNumber())) {    //数量核实异常
+                List<CheckNumber> checkNumbers = JSON.parseArray(anomaly.getCheckNumber(), CheckNumber.class);
+                int i = checkNumbers.size() - 1;
+                CheckNumber checkNumber = checkNumbers.get(i);
                 InstockHandle inStockHandle = createInStockHandle(anomaly, "ErrorNumber");
-                inStockHandle.setNumber(anomaly.getRealNumber()-anomaly.getNeedNumber());
+                inStockHandle.setNumber(checkNumber.getNumber()-anomaly.getNeedNumber());
                 instockHandleService.save(inStockHandle);
             }
 
@@ -505,10 +510,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         if (ToolUtil.isNotEmpty(result.getInstockNumber()) && result.getInstockNumber() > 0) {   //允许入库 并添加 入库购物车
             addShopCart(result);
-
-//            InstockHandle errorCanInstock = createInStockHandle(result, "ErrorCanInstock");//允许入库处理结果
-//            errorCanInstock.setNumber(result.getInstockNumber());
-//            instockHandleService.save(errorCanInstock);
 
             String skuMessage = skuService.skuMessage(result.getSkuId());
             shopCartService.addDynamic(result.getFormId(), "异常物料" + skuMessage + "允许入库");
@@ -592,23 +593,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         Long inStockListId = anomalyResult.getSourceId();
         InstockList instockList = instockListService.getById(inStockListId);
-
-        /**
-         * 处理方式改了 这个地方先注释
-         */
-//        InstockList newInStockList = new InstockList();
-//        ToolUtil.copyProperties(instockList, newInStockList);
-//        if (detailResult.getNumber() > anomalyResult.getRealNumber()) {
-//            throw new ServiceException(500, "异常数量超过入库清单数量");
-//        }
-//        newInStockList.setInstockListId(null);
-//        newInStockList.setStatus(50L);
-//        newInStockList.setNumber(50L);
-//        newInStockList.setNumber(detailResult.getNumber());
-//        newInStockList.setRealNumber(detailResult.getNumber());
-//        instockListService.save(newInStockList);
-
-
         instockList.setStatus(-1L);
         instockList.setRealNumber(instockList.getRealNumber() - detailResult.getNumber());
         instockListService.updateById(instockList);
