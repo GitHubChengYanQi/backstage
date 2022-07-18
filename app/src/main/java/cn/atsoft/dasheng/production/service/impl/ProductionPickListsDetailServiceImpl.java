@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.production.service.impl;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
@@ -11,16 +10,15 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsDetailMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
-import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -83,12 +81,20 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
     @Override
     public List<ProductionPickListsDetailResult> findListBySpec(ProductionPickListsDetailParam param) {
         List<ProductionPickListsDetailResult> productionPickListsDetailResults = this.baseMapper.customList(param);
-
-
-
         this.format(productionPickListsDetailResults);
         return productionPickListsDetailResults;
 
+    }
+
+    @Override
+    public List<ProductionPickListsDetailResult> resultsByPickListsIds(List<Long> listsIds) {
+        if (ToolUtil.isEmpty(listsIds) || listsIds.size() == 0) {
+            return new ArrayList<>();
+        }
+        List<ProductionPickListsDetailResult> pickListsDetailResults = BeanUtil.copyToList(this.query().in("pick_lists_id", listsIds).eq("display", 1).list(), ProductionPickListsDetailResult.class);
+        this.format(pickListsDetailResults);
+
+        return pickListsDetailResults;
     }
 
     @Override
@@ -112,18 +118,18 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
             }
         }
         List<StockDetails> totalList = new ArrayList<>();
-        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L :item.getBrandId()),Collectors.toList())).forEach(
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setSkuId(a.getSkuId());
                         setNumber(a.getNumber() + b.getNumber());
-                        setBrandId(ToolUtil.isEmpty(a.getBrandId())? 0L:a.getBrandId());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
                         setStorehousePositionsId(a.getStorehousePositionsId());
                     }}).ifPresent(totalList::add);
                 }
         );
         List<StockDetails> anyBrand = new ArrayList<>();
-        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() ,Collectors.toList())).forEach(
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setSkuId(a.getSkuId());
@@ -136,7 +142,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
         List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         for (ProductionPickListsDetailResult result : results) {
             result.setIsMeet(false);
-            if (!result.getBrandId().equals(0L)){
+            if (!result.getBrandId().equals(0L)) {
                 for (StockDetails stockSkuTotal : totalList) {
                     if (result.getSkuId().equals(stockSkuTotal.getSkuId()) && result.getBrandId().equals(stockSkuTotal.getBrandId())) {
                         result.setStockNumber(Math.toIntExact(stockSkuTotal.getNumber()));
@@ -145,7 +151,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                         }
                     }
                 }
-            }else {
+            } else {
                 for (StockDetails stockDetails : anyBrand) {
                     if (result.getSkuId().equals(stockDetails.getSkuId())) {
                         result.setStockNumber(Math.toIntExact(stockDetails.getNumber()));
@@ -156,7 +162,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                 }
             }
             for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                if (result.getSkuId().equals(skuSimpleResult.getSkuId())){
+                if (result.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     result.setSkuResult(skuSimpleResult);
                     break;
                 }
@@ -171,7 +177,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
             }
             List<ProductionPickListsCartResult> cartResultList = new ArrayList<>();
             for (ProductionPickListsCartResult cartResult : cartResults) {
-                if (result.getPickListsDetailId().equals(cartResult.getPickListsDetailId())){
+                if (result.getPickListsDetailId().equals(cartResult.getPickListsDetailId())) {
                     cartResultList.add(cartResult);
                 }
             }

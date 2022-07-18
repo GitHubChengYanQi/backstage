@@ -36,6 +36,7 @@ import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
 import cn.atsoft.dasheng.production.model.result.*;
 import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -166,6 +167,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private RoleService roleService;
     @Autowired
     private RedisSendCheck redisSendCheck;
+    @Autowired
+    private GetOrigin getOrigin;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
 
 
     @Override
@@ -176,6 +181,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         entity.setStatus(0L);
 //        entity.setUserId(LoginContextHolder.getContext().getUserId());
         this.save(entity);
+        String origin = getOrigin.newThemeAndOrigin("OUTSTOCK", entity.getPickListsId(), entity.getSource(), entity.getSourceId());
+        entity.setOrigin(origin);
+        this.updateById(entity);
 
         if (ToolUtil.isNotEmpty(param.getPickListsDetailParams())) {
             List<ShopCart> carts = new ArrayList<>();
@@ -205,6 +213,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             activitiProcessTaskParam.setType("OUTSTOCK");
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            activitiProcessTaskParam.setSource(param.getSource());
+            activitiProcessTaskParam.setSourceId(param.getSourceId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
             ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
@@ -266,6 +276,49 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             this.format(page.getRecords());
         }
         return PageFactory.createPageInfo(page);
+    }
+@Override
+    public void taskFormat(List<ProductionPickListsResult> results) {
+        List<Long> pickListsIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        for (ProductionPickListsResult result : results) {
+
+            pickListsIds.add(result.getPickListsId());
+            userIds.add(result.getUserId());
+            userIds.add(result.getCreateUser());
+
+        }
+
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.resultsByPickListsIds(pickListsIds);
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionPickListsDetailResult detailResult : detailResults) {
+            skuIds.add(detailResult.getSkuId());
+        }
+        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+
+
+        for (ProductionPickListsResult result : results) {
+            List<Long> listsSkuIds = new ArrayList<>();
+            List<Long> listsPositionIds = new ArrayList<>();
+            Integer numberCount = 0;
+            Integer receivedCount = 0;
+            for (ProductionPickListsDetailResult detailResult : detailResults) {
+                listsSkuIds.add(detailResult.getSkuId());
+                if (detailResult.getPickListsId().equals(result.getPickListsId())) {
+                    numberCount += detailResult.getNumber();
+                    receivedCount += detailResult.getReceivedNumber();
+                    for (StorehousePositionsBind positionsBind : positionsBinds) {
+                        if (detailResult.getSkuId().equals(positionsBind.getSkuId())) {
+                            listsPositionIds.add(positionsBind.getPositionId());
+                        }
+                    }
+                }
+            }
+            result.setNumberCount(numberCount);
+            result.setReceivedCount(receivedCount);
+        }
+
+
     }
 
     @Override
@@ -1641,7 +1694,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public List<ProductionPickListsCartResult> listByCode(String code) {
         List<Object> list = redisSendCheck.getList(code);
         if (ToolUtil.isEmpty(list)) {
-            throw new ServiceException(500,"此领料码为查询到物料或码已被使用");
+            throw new ServiceException(500, "此领料码为查询到物料或码已被使用");
         }
         List<ProductionPickListsCartResult> cartResults = BeanUtil.copyToList(list, ProductionPickListsCartResult.class);
         if (ToolUtil.isNotEmpty(cartResults)) {
@@ -1655,4 +1708,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return this.baseMapper.idsList(param);
     }
 
+    @Override
+    public void updateOutStockRefuseStatus(ActivitiProcessTask processTask) {
+        ProductionPickLists lists = this.getById(processTask.getFormId());
+        lists.setStatus(OutStockActionEnum.refuse.getStatus());
+        this.updateById(lists);
+    }
 }

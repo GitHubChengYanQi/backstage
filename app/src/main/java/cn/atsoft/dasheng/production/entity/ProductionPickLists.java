@@ -111,6 +111,18 @@ public class ProductionPickLists implements Serializable {
     private Long deptId;
 
     /**
+     * 主题
+     */
+    @TableField("theme")
+    private String theme;
+
+    /**
+     * 来源
+     */
+    @TableField("origin")
+    private String origin;
+
+    /**
      * 状态
      */
     @TableField("status")
@@ -250,6 +262,22 @@ public class ProductionPickLists implements Serializable {
 
     public void setPickListsName(String pickListsName) {
         this.pickListsName = pickListsName;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     @Override

@@ -65,6 +65,8 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     private Long qTaskId;
 
     private Integer status;
+    private Long sourceId;
+    private String source;
 
 
 

@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -45,6 +46,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private ProductionPickListsService productionPickListsService;
     @Autowired
     private InstockOrderService instockOrderService;
+    @Autowired
+    private GetOrigin getOrigin;
     @Override
     public void add(AllocationParam param){
         Allocation entity = getEntity(param);
@@ -65,7 +68,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
      * @param allocationId
      */
     @Override
-   public void createPickLists(Long allocationId){
+   public void createPickListsAndInStockOrder(Long allocationId){
         Allocation allocation = this.getById(allocationId);
         List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).list();
         List<Long> storehouseIds = new ArrayList<>();
@@ -94,8 +97,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             }
            if (details.size()>0){
                instockOrderParam.setListParams(listParams);
-               instockOrderService.add(instockOrderParam);
                productionPickListsService.add(listsParam);
+               instockOrderService.add(instockOrderParam);
            }
         }
 

@@ -283,6 +283,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
+            activitiProcessTaskParam.setSource(param.getSource());
+            activitiProcessTaskParam.setSourceId(param.getSourceId());
             if (param.getDirectInStock()) {
                 activitiProcessTaskParam.setStatus(99);
             }

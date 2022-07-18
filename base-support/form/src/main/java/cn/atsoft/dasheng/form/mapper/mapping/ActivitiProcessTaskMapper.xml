@@ -18,6 +18,8 @@
         <result column="form_id" property="formId"/>
         <result column="type" property="type"/>
         <result column="remark" property="remark"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
         <result column="cause" property="cause"/>
         <result column="status" property="status"/>
         <result column="create_user" property="createUser"/>
@@ -47,7 +49,9 @@
 	    create_user AS "createUser",
 	    update_user AS "updateUser",
 	    create_time AS "createTime",
-	    update_time AS "updateTime"
+	    update_time AS "updateTime",
+            source AS "source",
+            source_id AS "source_id"
     </sql>
 
 

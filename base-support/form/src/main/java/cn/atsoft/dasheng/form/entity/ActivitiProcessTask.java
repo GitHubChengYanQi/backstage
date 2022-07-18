@@ -82,6 +82,19 @@ public class ActivitiProcessTask implements Serializable {
      */
     @TableField("origin")
     private String origin;
+
+    /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private String sourceId;
     /**
      * 来源Json字符串
      */
@@ -260,6 +273,23 @@ public class ActivitiProcessTask implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 
     @Override
