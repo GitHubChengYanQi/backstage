@@ -455,7 +455,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(inventoryResult.getStatus());
                     inventoryResult.setStatusName(statusName);
                     datum.setReceipts(inventoryResult);
-
                     break;
                 }
             }

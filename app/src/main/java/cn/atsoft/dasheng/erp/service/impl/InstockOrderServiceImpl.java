@@ -1449,7 +1449,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     results.add(instockListResult);
                 }
             }
-            datum.setInStockNum(inStockNum);
+
+            if (datum.getStatus()==99) {   //单据完成 进度条直接完成
+                datum.setInStockNum(applyNum);
+            }else {
+                datum.setInStockNum(inStockNum);
+            }
             datum.setApplyNum(applyNum);
             datum.setInstockListResults(results);
             datum.setPositionNum(positionNum);
