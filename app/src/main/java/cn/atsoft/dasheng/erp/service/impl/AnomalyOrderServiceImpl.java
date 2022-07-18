@@ -464,8 +464,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     errorNum = errorNum + detail.getNumber();
                     t = true;
                 }
-
             }
+
+            if (!anomaly.getRealNumber().equals(anomaly.getNeedNumber())) {    //数量核实异常
+                InstockHandle inStockHandle = createInStockHandle(anomaly, "ErrorNumber");
+                inStockHandle.setNumber(anomaly.getRealNumber()-anomaly.getNeedNumber());
+                instockHandleService.save(inStockHandle);
+            }
+
 
             if (t) {
                 /**
@@ -500,9 +506,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         if (ToolUtil.isNotEmpty(result.getInstockNumber()) && result.getInstockNumber() > 0) {   //允许入库 并添加 入库购物车
             addShopCart(result);
 
-            InstockHandle errorCanInstock = createInStockHandle(result, "ErrorCanInstock");//允许入库处理结果
-            errorCanInstock.setNumber(result.getInstockNumber());
-            instockHandleService.save(errorCanInstock);
+//            InstockHandle errorCanInstock = createInStockHandle(result, "ErrorCanInstock");//允许入库处理结果
+//            errorCanInstock.setNumber(result.getInstockNumber());
+//            instockHandleService.save(errorCanInstock);
 
             String skuMessage = skuService.skuMessage(result.getSkuId());
             shopCartService.addDynamic(result.getFormId(), "异常物料" + skuMessage + "允许入库");
