@@ -1,13 +1,20 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam;
+import cn.atsoft.dasheng.erp.model.result.MaintenanceAndDetail;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.MaintenanceDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +38,8 @@ public class MaintenanceDetailController extends BaseController {
 
     @Autowired
     private MaintenanceDetailService maintenanceDetailService;
+    @Autowired
+    private MaintenanceService maintenanceService;
 
     /**
      * 新增接口
@@ -110,12 +119,19 @@ public class MaintenanceDetailController extends BaseController {
      */
     @RequestMapping(value = "/getNeed", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MaintenanceDetailResult> getNeed(@RequestBody(required = false) MaintenanceDetailParam maintenanceDetailParam) {
+    public List<StockDetailsResult> getNeed(@RequestBody(required = false) MaintenanceDetailParam maintenanceDetailParam) {
         if(ToolUtil.isEmpty(maintenanceDetailParam)){
             maintenanceDetailParam = new MaintenanceDetailParam();
         }
-//        return this.maintenanceDetailService.needMaintenance(maintenanceDetailParam);
-        return null;
+        MaintenanceAndDetail andDetailByTime = maintenanceService.findTaskAndDetailByTime();
+        List<Long> ids = new ArrayList<>();
+        for (Maintenance maintenance : andDetailByTime.getMaintenances()) {
+            maintenanceService.startMaintenance(maintenance);
+            ids.add(maintenance.getMaintenanceId());
+
+        }
+        List<StockDetailsResult> storehousePositionsResults = ids.size() == 0 ? new ArrayList<>() :  maintenanceDetailService.needMaintenance(ids);
+        return storehousePositionsResults;
     }
 
 

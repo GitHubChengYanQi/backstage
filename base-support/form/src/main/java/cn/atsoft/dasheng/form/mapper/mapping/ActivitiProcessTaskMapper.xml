@@ -8,11 +8,18 @@
         <result column="process_id" property="processId"/>
         <result column="display" property="display"/>
         <result column="task_name" property="taskName"/>
+        <result column="user_id" property="userId"/>
+        <result column="main_task_id" property="mainTaskId"/>
+        <result column="pid" property="pid"/>
+        <result column="theme" property="theme"/>
+        <result column="origin" property="origin"/>
         <result column="deptIds" property="deptIds"/>
         <result column="user_ids" property="userIds"/>
         <result column="form_id" property="formId"/>
         <result column="type" property="type"/>
         <result column="remark" property="remark"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
         <result column="cause" property="cause"/>
         <result column="status" property="status"/>
         <result column="create_user" property="createUser"/>
@@ -23,8 +30,28 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        process_task_id
-        AS "processTaskId",form_id AS "formId",type AS "type",remark AS "remark",cause AS "cause",user_ids AS "userIds",status AS "status",deptIds AS "deptIds",task_name AS "taskName", process_id AS "processId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        process_task_id AS "processTaskId",
+	    form_id AS "formId",
+	    type AS "type",
+	    remark AS "remark",
+	    cause AS "cause",
+        user_id AS "userId",
+        main_task_id AS "mainTaskId",
+        pid AS "pid",
+        theme AS "theme",
+        origin AS "origin",
+	    user_ids AS "userIds",
+	    STATUS AS "status",
+	    deptIds AS "deptIds",
+	    task_name AS "taskName",
+	    process_id AS "processId",
+	    display AS "display",
+	    create_user AS "createUser",
+	    update_user AS "updateUser",
+	    create_time AS "createTime",
+	    update_time AS "updateTime",
+            source AS "source",
+            source_id AS "source_id"
     </sql>
 
 

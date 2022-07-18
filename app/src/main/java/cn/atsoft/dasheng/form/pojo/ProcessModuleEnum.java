@@ -27,9 +27,9 @@ public enum ProcessModuleEnum {
     Stocktaking("普通盘点"),
     INSTOCKERROR("入库异常"),
     StocktakingError("盘点异常"),
-
     pickLists("出库单申请"),
-
+    internalAllocation("库内调拨"),
+    externalAllocation("库间调拨"),
     reMaintenance("复检复调");
 
     @EnumValue

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.AllocationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.Allocation">
+        <id column="allocation_id" property="allocationId" />
+        <result column="coding" property="coding" />
+        <result column="allocation_name" property="allocationName" />
+        <result column="storehouse_id" property="storehouseId" />
+        <result column="user_id" property="userId" />
+        <result column="reason" property="reason" />
+        <result column="remark" property="remark" />
+        <result column="note" property="note" />
+        <result column="enclosure" property="enclosure" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+        <result column="status" property="status" />
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
+        <result column="type" property="type" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        allocation_id AS "allocationId", coding AS "coding", allocation_name AS "allocationName", storehouse_id AS "storehouseId", user_id AS "userId", reason AS "reason", remark AS "remark", note AS "note", enclosure AS "enclosure", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", theme AS "theme", origin AS "origin", type AS "type"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.AllocationResult" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_allocation where 1 = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_allocation where 1 = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.AllocationResult" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_allocation where 1 = 1
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_allocation where 1 = 1
+    </select>
+
+</mapper>
