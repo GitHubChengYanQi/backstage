@@ -69,6 +69,12 @@ public class StockDetailsController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/getNumberByStock", method = RequestMethod.POST)
+    public ResponseData getNumberByStock(@RequestBody StockDetailsParam stockDetailsParam) {
+        Integer number = this.stockDetailsService.getNumberByStock(stockDetailsParam.getSkuId(), stockDetailsParam.getBrandId(), stockDetailsParam.getStorehousePositionsId());
+        return ResponseData.success(number);
+    }
+
 
     /**
      * 查看详情接口

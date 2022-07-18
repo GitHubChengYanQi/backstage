@@ -102,6 +102,8 @@ public interface StockDetailsService extends IService<StockDetails> {
 
     List<StockSkuBrand> stockSkuBrands();
 
+    Integer getNumberByStock(Long skuId, Long brandId, Long positionId);
+
     List<StockSkuBrand> stockSku();
 
     void format(List<StockDetailsResult> data);

@@ -12,6 +12,8 @@ import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.pojo.SkuBind;
+import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -188,6 +190,14 @@ public class SkuController extends BaseController {
         String skuMessage = this.skuService.skuMessage(skuParam.getSkuId());
         return ResponseData.success(skuMessage);
     }
+
+
+    @RequestMapping(value = "/skuBindList", method = RequestMethod.POST)
+    public ResponseData skuBindList(@RequestBody SkuBindParam skuBindParam) {
+        List<SkuBind> skuBinds = this.skuService.skuBindList(skuBindParam);
+        return ResponseData.success(skuBinds);
+    }
+
     /**
      * 查看详情接口
      *

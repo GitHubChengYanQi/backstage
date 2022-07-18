@@ -336,7 +336,7 @@
         <if test="paramCondition.maxNum != null">
             and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
         </if>
-     </select>
+    </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select
@@ -513,5 +513,63 @@
             and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
         </if>
 
+    </select>
+
+    <select id="skuBindList" resultType="cn.atsoft.dasheng.erp.pojo.SkuBind"
+            parameterType="cn.atsoft.dasheng.erp.pojo.SkuBindParam">
+        select goods_sku.sku_id as skuId,
+        goods_spu.spu_id as spuId,
+        goods_spu_class.spu_classification_id as spuClassId,
+        goods_sku_brand_bind.brand_id as brandId,
+        daoxin_erp_storehouse_positions_bind.position_id as positionId
+        FROM goods_sku
+        LEFT JOIN (SELECT * FROM goods_spu WHERE display = 1) AS goods_spu
+        ON goods_sku.spu_id = goods_spu.spu_id
+        LEFT JOIN (SELECT * FROM goods_spu_class WHERE display = 1) AS goods_spu_class
+        ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
+        LEFT JOIN (SELECT * FROM goods_sku_brand_bind WHERE display = 1 AND brand_id IN ( SELECT brand_id FROM
+        daoxin_erp_brand WHERE display = 1 )) AS goods_sku_brand_bind
+        ON goods_sku_brand_bind.sku_id = goods_sku.sku_id
+        LEFT JOIN (SELECT * FROM daoxin_erp_storehouse_positions_bind WHERE display = 1 AND position_id IN ( SELECT
+        storehouse_positions_id FROM daoxin_erp_storehouse_positions WHERE display = 1 )) AS
+        daoxin_erp_storehouse_positions_bind
+        ON daoxin_erp_storehouse_positions_bind.sku_id = goods_sku.sku_id
+        WHERE 1 = 1
+        AND goods_sku.display = 1
+
+        <if test="SkuBindParam.skuIds != null and SkuBindParam.skuIds.size >0">
+            and goods_sku.sku_id in
+            <foreach collection="SkuBindParam.skuIds" separator="," open="(" close=")" index="index" item="status">
+                #{status}
+            </foreach>
+        </if>
+
+        <if test="SkuBindParam.brandIds != null and SkuBindParam.brandIds.size >0">
+            and goods_sku_brand_bind.brand_id in
+            <foreach collection="SkuBindParam.brandIds" separator="," open="(" close=")" index="index" item="status">
+                #{status}
+            </foreach>
+        </if>
+
+        <if test="SkuBindParam.positionIds != null and SkuBindParam.positionIds.size >0">
+            and daoxin_erp_storehouse_positions_bind.position_id in
+            <foreach collection="SkuBindParam.positionIds" separator="," open="(" close=")" index="index" item="status">
+                #{status}
+            </foreach>
+        </if>
+
+        <if test="SkuBindParam.spuIds != null and SkuBindParam.spuIds.size >0">
+            and goods_spu.spu_id in
+            <foreach collection="SkuBindParam.spuIds" separator="," open="(" close=")" index="index" item="status">
+                #{status}
+            </foreach>
+        </if>
+
+        <if test="SkuBindParam.classIds != null and SkuBindParam.classIds.size >0">
+            and goods_spu_class.spu_classification_id in
+            <foreach collection="SkuBindParam.classIds" separator="," open="(" close=")" index="index" item="status">
+                #{status}
+            </foreach>
+        </if>
     </select>
 </mapper>

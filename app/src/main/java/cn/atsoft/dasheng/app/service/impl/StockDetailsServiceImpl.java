@@ -29,6 +29,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.util.resources.cldr.mg.LocaleNames_mg;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,7 +60,6 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private CustomerService customerService;
     @Autowired
     private PartsService partsService;
-
     @Autowired
     private ErpPartsDetailService erpPartsDetailService;
     @Autowired
@@ -235,6 +235,23 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         }
 
         return stockSkuBrands;
+    }
+
+    @Override
+    public Integer getNumberByStock(Long skuId, Long brandId, Long positionId) {
+
+        return this.baseMapper.getNumberByStock(skuId, brandId, positionId);
+//        StockDetails details = this.query().select("sum(number) as num ")
+//                .eq("sku_id", skuId)
+//                .eq("brand_id", brandId)
+//                .eq("storehouse_positions_id", positionId)
+//                .groupBy("sku_id", "brand_id", "storehouse_positions_id")
+//                .eq("display", 1)
+//                .one();
+//        if (ToolUtil.isNotEmpty(details)) {
+//            return Math.toIntExact(details.getNum());
+//        }
+//        return 0;
     }
 
     @Override

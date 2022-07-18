@@ -71,6 +71,9 @@ public class SkuResult implements Serializable {
     private List<String> inventoryUrls;
     private List<Long> mediaIds;
     private Integer lockStatus;
+    private Integer inventoryStatus;
+    private Long anomalyId;
+    private Long inventoryStockId;
     /**
      * 预购数量
      */

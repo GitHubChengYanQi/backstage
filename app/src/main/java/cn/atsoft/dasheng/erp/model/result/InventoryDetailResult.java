@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -24,6 +25,26 @@ import java.util.List;
 public class InventoryDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private Long spuId;
+
+    private String partCondition;
+
+    private String materialCondition;
+
+    private String classCondition;
+
+    private String brandCondition;
+
+    private String positionCondition;
+
+    private Integer skuNum;
+
+    private SkuResult skuResult;
+
+    private BrandResult brandResult;
+
+    private StorehousePositionsResult positionsResult;
 
     private Integer lockStatus;
 

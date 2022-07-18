@@ -200,11 +200,39 @@ stage
             </foreach>
         </if>
         <if test=" paramCondition.positionIds != null  and paramCondition.positionIds.size>0">
-            and storehouse_positions_id  in
-            <foreach collection="paramCondition.positionIds" index="index" item="positionId" separator="," close=")" open="(">
+            and storehouse_positions_id in
+            <foreach collection="paramCondition.positionIds" index="index" item="positionId" separator="," close=")"
+                     open="(">
                 #{positionId}
             </foreach>
         </if>
 
+    </select>
+
+    <select id="getNumberByStock" resultType="integer" parameterType="long">
+        select sum(number) as number
+        from daoxin_erp_stock_details where display = 1
+        <if test="skuId != null ">
+            and sku_id = #{skuId}
+        </if>
+        <if test="brandId !=null">
+            and brand_id =#{brandId}
+        </if>
+        <if test="positionId != null">
+            and storehouse_positions_id = #{positionId}
+        </if>
+        group by
+        <trim suffixOverrides=",">
+            <if test="skuId != null ">
+                sku_id,
+            </if>
+            <if test="brandId !=null">
+                brand_id ,
+            </if>
+            <if test="positionId != null">
+                storehouse_positions_id ,
+            </if>
+
+        </trim>
     </select>
 </mapper>

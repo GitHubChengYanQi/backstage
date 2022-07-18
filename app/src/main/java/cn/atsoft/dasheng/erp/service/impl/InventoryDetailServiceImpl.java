@@ -86,7 +86,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
     @Override
     public void add(InventoryDetailParam param) {
-
         InventoryDetail entity = getEntity(param);
         this.save(entity);
     }
@@ -110,19 +109,16 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         List<StockDetails> details = detailsService.query().in("inkind_id", inkindIds).list();
 
         List<InventoryDetail> inventories = new ArrayList<>();
-        List<Long> outInkind = new ArrayList<>();
         InventoryDetail inventory = null;
 
         //添加盘点数据----------------------------------------------------------------------------------------------------
         for (StockDetails detail : details) {
             for (InventoryRequest.InkindParam param : params) {
                 if (detail.getInkindId().equals(param.getInkindId())) {  //相同实物
-
                     if (detail.getNumber() > param.getNumber()) {  //出库
                         inventory = new InventoryDetail();
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(2);
-                        outInkind.add(param.getInkindId());
                         inventories.add(inventory);
                     } else {                                       //入库
                         inventory = new InventoryDetail();
@@ -165,6 +161,14 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return positionsResultList(detailResults);
     }
 
+    @Override
+    public List<InventoryDetailResult> details(Long inventoryTaskId) {
+        List<InventoryDetail> inventoryDetails = this.query().eq("inventory_id", inventoryTaskId).eq("display", 1).list();
+        List<InventoryDetailResult> detailResults = BeanUtil.copyToList(inventoryDetails, InventoryDetailResult.class, new CopyOptions());
+        this.format(detailResults);
+        detailList(detailResults);
+        return detailResults;
+    }
 
     /**
      * 时间范围内 所有未完成的盘点任务 合并
@@ -192,6 +196,18 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     }
 
 
+    private void detailList(List<InventoryDetailResult> detailResults) {
+        for (InventoryDetailResult detailResult : detailResults) {
+            if (detailResult.getStatus() == 0) {
+                Integer number = detailsService.getNumberByStock(detailResult.getSkuId(), detailResult.getBrandId(), detailResult.getPositionId());
+                if (ToolUtil.isEmpty(number)) {
+                    number = 0;
+                }
+                detailResult.setSkuNum(number);
+            }
+        }
+    }
+
     /**
      * 组合结构
      *
@@ -212,8 +228,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         /**
          * 通过库位组合
          */
-        Map<Long, List<InventoryDetailResult>> map = new HashMap<>();
-//        Map<Long,Long>
+        Map<Long, List<InventoryDetailResult>> positionMap = new HashMap<>();
+
         for (Long positionId : positionIds) {
             List<InventoryDetailResult> details = new ArrayList<>();
             for (InventoryDetailResult inventoryDetail : detailResults) {
@@ -221,49 +237,48 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                     details.add(inventoryDetail);
                 }
             }
-            map.put(positionId, details);
+            positionMap.put(positionId, details);
         }
 
         List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
         for (Long positionId : positionIds) {
-            List<InventoryDetailResult> detailResultList = map.get(positionId);
+            List<InventoryDetailResult> detailResultList = positionMap.get(positionId);
             Set<Long> skuIds = new HashSet<>();
-            Map<Long, List<Long>> enclosureMap = new HashMap<>();
+            Map<Long, List<Long>> skuMap = new HashMap<>();
             Map<Long, Integer> lock = new HashMap<>();
 
             for (InventoryDetailResult inventoryDetailResult : detailResultList) {
                 skuIds.add(inventoryDetailResult.getSkuId());
                 if (ToolUtil.isNotEmpty(inventoryDetailResult.getEnclosure())) {
-                    enclosureMap.put(inventoryDetailResult.getSkuId(), JSON.parseArray(inventoryDetailResult.getEnclosure(), Long.class));
+                    skuMap.put(inventoryDetailResult.getSkuId(), JSON.parseArray(inventoryDetailResult.getEnclosure(), Long.class));
                 }
                 lock.put(inventoryDetailResult.getSkuId(), inventoryDetailResult.getLockStatus());
             }
 
-            Map<Long, List<BrandResult>> brandMap = new HashMap<>();
-            for (Long skuId : skuIds) {
-                List<BrandResult> brandResults = new ArrayList<>();
-                for (InventoryDetailResult inventoryDetailResult : detailResultList) {
-                    if (inventoryDetailResult.getSkuId().equals(skuId)) {
-                        BrandResult brandResult = new BrandResult();
-                        brandResult.setBrandId(inventoryDetailResult.getBrandId());
-                        brandResult.setNumber(inventoryDetailResult.getNumber());
-                        brandResult.setInkind(inventoryDetailResult.getInkindId());
-                        brandResult.setAnomalyId(inventoryDetailResult.getAnomalyId());
-                        brandResult.setInventoryStatus(inventoryDetailResult.getStatus());
-                        if (mergeBrand(brandResults, brandResult)) {
-                            brandResults.add(brandResult);
-                        }
-                    }
-                }
-
-                brandFormat(brandResults);
-                brandMap.put(skuId, brandResults);
-            }
+//            Map<Long, List<BrandResult>> brandMap = new HashMap<>();
+//            for (Long skuId : skuIds) {
+//                List<BrandResult> brandResults = new ArrayList<>();
+//                for (InventoryDetailResult inventoryDetailResult : detailResultList) {
+//                    if (inventoryDetailResult.getSkuId().equals(skuId)) {
+//                        BrandResult brandResult = new BrandResult();
+//                        brandResult.setBrandId(inventoryDetailResult.getBrandId());
+//                        brandResult.setNumber(inventoryDetailResult.getNumber());
+//                        brandResult.setInkind(inventoryDetailResult.getInkindId());
+//                        brandResult.setAnomalyId(inventoryDetailResult.getAnomalyId());
+//                        brandResult.setInventoryStatus(inventoryDetailResult.getStatus());
+//                        if (mergeBrand(brandResults, brandResult)) {
+//                            brandResults.add(brandResult);
+//                        }
+//                    }
+//                }
+//                brandFormat(brandResults);
+//                brandMap.put(skuId, brandResults);
+//            }
 
             List<SkuResult> list = skuService.formatSkuResult(new ArrayList<>(skuIds));
             for (SkuResult skuResult : list) {
 
-                List<Long> mediaIds = enclosureMap.get(skuResult.getSkuId());
+                List<Long> mediaIds = skuMap.get(skuResult.getSkuId());
                 if (ToolUtil.isNotEmpty(mediaIds)) {
                     List<String> mediaUrls = mediaService.getMediaUrls(mediaIds, null);
                     skuResult.setInventoryUrls(mediaUrls);
@@ -271,17 +286,15 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                 }
                 Integer lockStatus = lock.get(skuResult.getSkuId());
                 skuResult.setLockStatus(lockStatus);
-                skuResult.setBrandResults(brandMap.get(skuResult.getSkuId()));
+//                skuResult.setBrandResults(brandMap.get(skuResult.getSkuId()));
             }
             StorehousePositionsResult positionsResult = new StorehousePositionsResult();
             positionsResult.setSkuResultList(list);
             positionsResult.setStorehousePositionsId(positionId);
             positionsResultList.add(positionsResult);
-
         }
 
         positionFormat(positionsResultList);
-        positionsService.format(positionsResultList);
         return positionsResultList;
     }
 
@@ -409,17 +422,17 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         List<InventoryDetail> inventoryDetails = this.query().in("inventory_id", inventoryIds).list();
         List<Long> anomalyIds = new ArrayList<>();
         for (InventoryDetail inventoryDetail : inventoryDetails) {
-            if (inventoryDetail.getLockStatus() != 98) {
-                throw new ServiceException(500, "请全部确定");
-            }
-            inventoryDetail.setLockStatus(99);  //锁数据
+//            if (inventoryDetail.getLockStatus() != 98) {
+//                throw new ServiceException(500, "请全部确定");
+//            }
+//            inventoryDetail.setLockStatus(99);  //锁数据
             if (ToolUtil.isNotEmpty(inventoryDetail.getAnomalyId())) {
                 anomalyIds.add(inventoryDetail.getAnomalyId());
             }
         }
         this.updateBatchById(inventoryDetails);
 
-        if (anomalyIds.size()>0) {
+        if (anomalyIds.size() > 0) {
             List<AnomalyParam> anomalyParams = new ArrayList<>();
             for (Long anomalyId : anomalyIds) {
                 AnomalyParam anomalyParam = new AnomalyParam();
@@ -433,7 +446,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             anomalyOrderParam.setMessage("盘点");
             anomalyOrderService.addByInventory(anomalyOrderParam);
         }
-
 
 
         for (Inventory inventory : inventories) {
@@ -536,4 +548,48 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return detailResults;
     }
 
+    @Override
+    public void format(List<InventoryDetailResult> data) {
+
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+
+        for (InventoryDetailResult datum : data) {
+            skuIds.add(datum.getSkuId());
+            brandIds.add(datum.getBrandId());
+            positionIds.add(datum.getPositionId());
+        }
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
+        List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class);
+
+        for (InventoryDetailResult datum : data) {
+
+
+            for (SkuResult skuResult : skuResults) {
+                if (datum.getSkuId().equals(skuResult.getSkuId())) {
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && brandResult.getBrandId().equals(datum.getBrandId())) {
+                    datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
+
+            for (StorehousePositionsResult positionsResult : positionsResultList) {
+                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+                    datum.setPositionsResult(positionsResult);
+                    break;
+                }
+            }
+        }
+
+    }
 }
