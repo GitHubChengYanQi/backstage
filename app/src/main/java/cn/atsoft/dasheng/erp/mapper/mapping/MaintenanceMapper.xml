@@ -12,9 +12,7 @@
         <result column="near_maintenance" property="nearMaintenance" />
         <result column="start_time" property="startTime" />
         <result column="end_time" property="endTime" />
-        <result column="brand_id" property="brandId" />
-        <result column="storehouse_positions_id" property="storehousePositionsId" />
-        <result column="material_id" property="materialId" />
+        <result column="select_params" property="selectParams" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
         <result column="update_user" property="updateUser" />
@@ -28,7 +26,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        maintenance_id AS "maintenanceId", coding AS "coding",brand_id AS "brandId" ,storehouse_positions_id AS "storehousePositionsId" ,material_id AS "materialId",maintenance_name AS "maintenanceName", user_id AS "userId", type AS "type", near_maintenance AS "nearMaintenance", start_time AS "startTime", end_time AS "endTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", enclosure AS "enclosure", note AS "note"
+        maintenance_id AS "maintenanceId", coding AS "coding",select_params AS "selectParams",maintenance_name AS "maintenanceName", user_id AS "userId", type AS "type", near_maintenance AS "nearMaintenance", start_time AS "startTime", end_time AS "endTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", enclosure AS "enclosure", note AS "note"
     </sql>
 
 

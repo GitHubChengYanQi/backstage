@@ -1,12 +1,20 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
+import cn.atsoft.dasheng.erp.entity.ShopCart;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceParam;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
+import cn.atsoft.dasheng.erp.model.result.MaintenanceSelectSku;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.ShopCartService;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
@@ -17,6 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -32,6 +41,12 @@ public class MaintenanceController extends BaseController {
 
     @Autowired
     private MaintenanceService maintenanceService;
+    @Autowired
+    private ShopCartService shopCartService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private SkuService skuService;
 
     /**
      * 新增接口
@@ -116,6 +131,59 @@ public class MaintenanceController extends BaseController {
         List<MaintenanceResult> maintenanceResults = BeanUtil.copyToList(taskByTime, MaintenanceResult.class);
         maintenanceService.format(maintenanceResults);
         return ResponseData.success(maintenanceResults) ;
+    }
+    /* 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-06-28
+     */
+    @RequestMapping(value = "/findSkuInStoreHouse", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData findSkuInStoreHouse(@RequestBody(required = false) MaintenanceParam maintenanceParam) {
+        List<ShopCart> shopCarts = shopCartService.query().eq("type", "allocation").eq("create_user", LoginContextHolder.getContext().getUserId()).eq("display", 1).list();
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandId = new ArrayList<>();
+        for (ShopCart shopCart : shopCarts) {
+            skuIds.add(shopCart.getSkuId());
+            brandId.add(shopCart.getBrandId());
+        }
+        List<StockDetails> list = stockDetailsService.query().in("sku_id", skuIds).in("brand_id", brandId).eq("display", 1).eq("stage", 1).list();
+        List<StockDetails> totalList = new ArrayList<>();
+        list.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() +"_"+item.getBrandId()+"_"+item.getStorehouseId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setStorehouseId(a.getStorehouseId());
+                        setBrandId(a.getBrandId());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+        List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
+        List<MaintenanceSelectSku> results = new ArrayList<>();
+        for (ShopCart shopCart : shopCarts) {
+            MaintenanceSelectSku result = new MaintenanceSelectSku();
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
+                if (shopCart.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    result.setSkuResult(skuSimpleResult);
+                }
+            }
+            List<StockDetails> bySku = new ArrayList<>();
+            for (StockDetails stockDetails : totalList) {
+                if (stockDetails.getBrandId().equals(shopCart.getBrandId()) && stockDetails.getSkuId().equals(shopCart.getSkuId())){
+                    bySku.add(stockDetails);
+                }
+            }
+            result.setStockDetails(bySku);
+            results.add(result);
+        }
+
+
+
+
+
+
+        return ResponseData.success(results) ;
     }
 
 

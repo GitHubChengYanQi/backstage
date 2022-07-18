@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.MaintenanceActionEnum;
+import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
@@ -14,6 +17,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceMapper;
+import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
+import cn.atsoft.dasheng.erp.model.params.MaintenanceAndInventorySelectParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceParam;
 import cn.atsoft.dasheng.erp.model.result.*;
@@ -27,6 +32,7 @@ import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -57,6 +63,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private MaterialService materialService;
 
     @Autowired
     private SpuService spuService;
@@ -98,6 +106,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     @Autowired
     private MaintenanceCycleService maintenanceCycleService;
 
+    @Autowired
+    private SpuClassificationService spuClassificationService;
+    @Autowired
+    private InventoryService inventoryService;
+
     @Override
     @Transactional
     public Maintenance add(MaintenanceParam param) {
@@ -114,6 +127,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
         // 根据2个查询维度  写出两个查询方法  (条件查询维度 对应 查询出实物),(物料维度直接通过sku查询出库存实物  进行养护) （）实物 或 sku
         Maintenance entity = getEntity(param);
+        String selectParams = JSON.toJSONString(param.getSelectParams());
+        entity.setSelectParams(selectParams);
         entity.setMaintenanceName(LoginContextHolder.getContext().getUser().getName() + "创建的养护任务");
         this.save(entity);
 
@@ -172,86 +187,41 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     @Override
     public List<StockDetails> needMaintenanceByRequirement(Maintenance param) {
         List<Long> skuIds = new ArrayList<>();
-        List<Sku> skuList = new ArrayList<>();
-        List<Long> positionsChildrenIds = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
-            List<Long> positions =  Arrays.asList(param.getStorehousePositionsIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            for (Long position : positions) {
-                positionsChildrenIds.addAll(storehousePositionsService.getEndChild(position));
+        List<Long> inkindIds = new ArrayList<>();
+        List<MaintenanceAndInventorySelectParam> maintenanceAndInventorySelectParams = JSON.parseArray(param.getSelectParams(), MaintenanceAndInventorySelectParam.class);
+        for (MaintenanceAndInventorySelectParam maintenanceAndInventorySelectParam : maintenanceAndInventorySelectParams) {
+            InventoryDetailParam inventoryDetailParam =new InventoryDetailParam();
+            inventoryDetailParam.setBrandIds(maintenanceAndInventorySelectParam.getBrandIds());
+            inventoryDetailParam.setBomIds(maintenanceAndInventorySelectParam.getPartsIds());
+            inventoryDetailParam.setPositionIds(maintenanceAndInventorySelectParam.getStorehousePositionsIds());
+            inventoryDetailParam.setClassIds(maintenanceAndInventorySelectParam.getSpuClassificationIds());
+            List<InventoryStock> condition = inventoryService.condition(inventoryDetailParam);
+            for (InventoryStock inventoryDetail : condition) {
+                inkindIds.add(inventoryDetail.getInkindId());
+                skuIds.add(inventoryDetail.getSkuId());
             }
         }
-        /**
-         * 从材质条件筛选出sku
-         * 从sku可获取sku的养护周期
-         * 去log表查询 排除不需要养护的实物
-         */
-        if (ToolUtil.isNotEmpty(param.getMaterialIds())) {
-            List<Long> spuIds = new ArrayList<>();
-            List<Long> materialIds = Arrays.asList(param.getMaterialIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            List<Spu> spuList = spuService.query().in("material_id",materialIds ).eq("display", 1).list();
-            for (Spu spu : spuList) {
-                spuIds.add(spu.getSpuId());
-            }
-            skuList = spuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("spu_id", spuIds).eq("display", 1).list();
-            for (Sku sku : skuList) {
-                skuIds.add(sku.getSkuId());
-            }
-        }
-        /**
-         * 查询 bom中的sku
-         */
+        inkindIds = inkindIds.stream().distinct().collect(Collectors.toList());
 
-        if (ToolUtil.isNotEmpty(param.getPartsIds())) {
-            List<Long> list = Arrays.asList(param.getPartsIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            for (Long aLong : list) {
-               skuIds.addAll(partsService.getSkuIdsByBom(aLong));
-            }
-        }
-
-        //查询出不需要养护的实物
-        List<Long> notNeedMaintenanceInkindIds = new ArrayList<>();
-
-
-        List<Long> brandIds = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(param.getBrandIds())) {
-            brandIds = Arrays.asList(param.getBrandIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        }
-        List<Long> finalBrandIds = brandIds;
-        List<Long> finalSkuIds = skuIds.stream().distinct().collect(Collectors.toList());
-        List<MaintenanceLogResult> logResults = maintenanceLogService.findListBySpec(new MaintenanceLogParam() {{
-            if(finalBrandIds.size() >0){
-                setBrandIds(finalBrandIds);
-            }
-            setSkuIds(finalSkuIds);
-        }});
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
-        for (MaintenanceLogResult logResult : logResults) {
-            for (Sku sku : skuList) {
+        List<MaintenanceLog> logs =skuIds.size() == 0 ? new ArrayList<>() : maintenanceLogService.query().in("sku_id", skuIds).list();
+        for (MaintenanceLog log : logs) {
                 for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
-                    if (logResult.getSkuId().equals(sku.getSkuId()) && maintenanceCycle.getSkuId().equals(sku.getSkuId())) {
+                    if (log.getSkuId().equals(maintenanceCycle.getSkuId())) {
                         Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(logResult.getCreateTime());
+                        calendar.setTime(log.getCreateTime());
                         calendar.add(Calendar.DATE, (maintenanceCycle.getMaintenancePeriod() - param.getNearMaintenance()));
                         String maintenance = DateUtil.format(calendar.getTime(), "yyyy-MM-dd");
                         String now = DateUtil.format(DateUtil.date(), "yyyy-MM-dd");
                         if (!maintenance.equals(now)) {
-                            notNeedMaintenanceInkindIds.add(logResult.getInkindId());
+                            inkindIds.remove(log.getInkindId());
                         }
                     }
                 }
             }
-        }
+
         //根据此条件去库存查询需要养护的实物
-        return stockDetailsService.maintenanceQuerry(new StockDetailsParam() {{
-            setSkuIds(finalSkuIds);
-            setNotNeedMaintenanceInkindIds(notNeedMaintenanceInkindIds);
-            if (finalBrandIds.size()>0) {
-                setBrandIds(finalBrandIds);
-            }
-            if (positionsChildrenIds.size() > 0) {
-                setPositionIds(positionsChildrenIds);
-            }
-        }});
+        return inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).list();
 
     }
 
@@ -379,11 +349,13 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             List<Long> storehousePositionsIds = new ArrayList<>();
             List<Long> skuIds = new ArrayList<>();
             Integer num = 0;
+            Integer doneNumber = 0 ;
             for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
                 if (maintenanceDetail.getMaintenanceId().equals(maintenanceResult.getMaintenanceId())) {
                     storehousePositionsIds.add(maintenanceDetail.getStorehousePositionsId());
                     skuIds.add(maintenanceDetail.getSkuId());
                     num += maintenanceDetail.getNumber();
+                    doneNumber+= maintenanceDetail.getDoneNumber();
                 }
             }
             skuIds = skuIds.stream().distinct().collect(Collectors.toList());
@@ -391,6 +363,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             maintenanceResult.setNumberCount(num);
             maintenanceResult.setSkuCount(skuIds.size());
             maintenanceResult.setPositionCount(storehousePositionsIds.size());
+            maintenanceResult.setDoneNumberCount(doneNumber);
         }
     }
 
@@ -510,6 +483,12 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     //自动判断是否满足  时间条件   自动开始任务
     @Override
     public MaintenanceResult detail(Long id) {
+        List<Long> materialIds = new ArrayList<>();
+        List<Long> partsIds = new ArrayList<>();
+        List<Long> spuClassificationIds = new ArrayList<>();
+        List<Long> storehousePositionsIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+
         Maintenance maintenance = this.getById(id);
         if (ToolUtil.isNotEmpty(maintenance)) {
             startMaintenance(maintenance);
@@ -520,6 +499,27 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         statusMap.put(50L, "拒绝");
         MaintenanceResult maintenanceResult = new MaintenanceResult();
         ToolUtil.copyProperties(maintenance, maintenanceResult);
+//        if (ToolUtil.isNotEmpty(maintenanceResult.getMaterialIds())) {
+//            materialIds.addAll(Arrays.asList(maintenanceResult.getMaterialIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+//        }
+//        if (ToolUtil.isNotEmpty(maintenanceResult.getPartsIds())) {
+//            partsIds.addAll(Arrays.asList(maintenanceResult.getPartsIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+//        }
+//        if (ToolUtil.isNotEmpty(maintenanceResult.getSpuClassificationIds())) {
+//            spuClassificationIds.addAll(Arrays.asList(maintenanceResult.getSpuClassificationIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+//        }
+//        if (ToolUtil.isNotEmpty(maintenanceResult.getStorehousePositionsIds())) {
+//            storehousePositionsIds.addAll(Arrays.asList(maintenanceResult.getStorehousePositionsIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+//        }
+//        if (ToolUtil.isNotEmpty(maintenanceResult.getBrandIds())) {
+//            brandIds.addAll(Arrays.asList(maintenanceResult.getBrandIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+//        }
+//
+//        maintenanceResult.setMaterialResults(materialIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(materialService.listByIds(materialIds), MaterialResult.class));
+////        maintenanceResult.setMaterialResults(materialIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(materialService.listByIds(materialIds), MaterialResult.class));
+//        maintenanceResult.setSpuClassificationResults(spuClassificationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(spuClassificationService.listByIds(spuClassificationIds), SpuClassificationResult.class));
+//        maintenanceResult.setStorehousePositionsResults(storehousePositionsIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehousePositionsService.listByIds(storehousePositionsIds), StorehousePositionsResult.class));
+//        maintenanceResult.setBrandResults(brandIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(brandService.listByIds(brandIds), BrandResult.class));
         maintenanceResult.setStatusName(statusMap.get((long)maintenanceResult.getStatus()));
         List<StorehousePositionsResult> details = this.getDetails(id);
         if (details.size() == 0 ){
