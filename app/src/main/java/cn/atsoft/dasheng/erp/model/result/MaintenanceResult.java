@@ -1,11 +1,19 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Material;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.MaterialResult;
+import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
+import cn.atsoft.dasheng.erp.model.params.MaintenanceAndInventorySelectParam;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,9 +30,6 @@ import java.util.Map;
 public class MaintenanceResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Long materialId;
-    private Long brandId;
-    private Long storehousePositionsId;
     private String coding;
     private String statusName;
     private Integer skuCount;
@@ -33,10 +38,10 @@ public class MaintenanceResult implements Serializable {
     private List<MaintenanceDetailResult> maintenanceDetailResults;
     private List<StorehousePositionsResult> detailResultsByPositions;
 
+    private List<MaintenanceAndInventorySelectParam> selectParamResults;
+    private String selectParams;
 
-    /**
-     * 养护
-     */
+
     @ApiModelProperty("养护")
     private Long maintenanceId;
 

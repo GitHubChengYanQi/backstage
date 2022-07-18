@@ -27,7 +27,7 @@ public class MaintenanceParam implements Serializable, BaseValidatingParam {
     List<MaintenanceDetailParam> detailParams;
     //材质id
     private String  materialIds;
-
+    List<MaintenanceAndInventorySelectParam> selectParams;
 
     /**
      * 品牌id
