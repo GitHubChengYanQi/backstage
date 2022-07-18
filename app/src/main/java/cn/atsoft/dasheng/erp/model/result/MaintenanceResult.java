@@ -35,6 +35,7 @@ public class MaintenanceResult implements Serializable {
     private Integer skuCount;
     private Integer numberCount;
     private Integer positionCount;
+    private Integer doneNumberCount;
     private List<MaintenanceDetailResult> maintenanceDetailResults;
     private List<StorehousePositionsResult> detailResultsByPositions;
 

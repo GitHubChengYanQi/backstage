@@ -20,7 +20,7 @@ import java.io.Serializable;
 public class InventoryStock implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private Long InkindId;
       @TableId(value = "inventory_stock_id", type = IdType.ID_WORKER)
     private Long inventoryStockId;
 
@@ -242,6 +242,14 @@ public class InventoryStock implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getInkindId() {
+        return InkindId;
+    }
+
+    public void setInkindId(Long inkindId) {
+        InkindId = inkindId;
     }
 
     @Override

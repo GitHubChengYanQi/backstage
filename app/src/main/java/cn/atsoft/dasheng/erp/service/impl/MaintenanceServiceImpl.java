@@ -190,9 +190,13 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         List<Long> inkindIds = new ArrayList<>();
         List<MaintenanceAndInventorySelectParam> maintenanceAndInventorySelectParams = JSON.parseArray(param.getSelectParams(), MaintenanceAndInventorySelectParam.class);
         for (MaintenanceAndInventorySelectParam maintenanceAndInventorySelectParam : maintenanceAndInventorySelectParams) {
-            InventoryDetailParam inventoryDetailParam = BeanUtil.copyProperties(maintenanceAndInventorySelectParam, InventoryDetailParam.class);
-            List<InventoryDetail> condition = inventoryService.condition(inventoryDetailParam);
-            for (InventoryDetail inventoryDetail : condition) {
+            InventoryDetailParam inventoryDetailParam =new InventoryDetailParam();
+            inventoryDetailParam.setBrandIds(maintenanceAndInventorySelectParam.getBrandIds());
+            inventoryDetailParam.setBomIds(maintenanceAndInventorySelectParam.getPartsIds());
+            inventoryDetailParam.setPositionIds(maintenanceAndInventorySelectParam.getStorehousePositionsIds());
+            inventoryDetailParam.setClassIds(maintenanceAndInventorySelectParam.getSpuClassificationIds());
+            List<InventoryStock> condition = inventoryService.condition(inventoryDetailParam);
+            for (InventoryStock inventoryDetail : condition) {
                 inkindIds.add(inventoryDetail.getInkindId());
                 skuIds.add(inventoryDetail.getSkuId());
             }
@@ -345,11 +349,13 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             List<Long> storehousePositionsIds = new ArrayList<>();
             List<Long> skuIds = new ArrayList<>();
             Integer num = 0;
+            Integer doneNumber = 0 ;
             for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
                 if (maintenanceDetail.getMaintenanceId().equals(maintenanceResult.getMaintenanceId())) {
                     storehousePositionsIds.add(maintenanceDetail.getStorehousePositionsId());
                     skuIds.add(maintenanceDetail.getSkuId());
                     num += maintenanceDetail.getNumber();
+                    doneNumber+= maintenanceDetail.getDoneNumber();
                 }
             }
             skuIds = skuIds.stream().distinct().collect(Collectors.toList());
@@ -357,6 +363,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             maintenanceResult.setNumberCount(num);
             maintenanceResult.setSkuCount(skuIds.size());
             maintenanceResult.setPositionCount(storehousePositionsIds.size());
+            maintenanceResult.setDoneNumberCount(doneNumber);
         }
     }
 

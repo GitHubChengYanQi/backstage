@@ -398,6 +398,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryStock.setSkuId(stockDetail.getSkuId());
             inventoryStock.setBrandId(stockDetail.getBrandId());
             inventoryStock.setPositionId(stockDetail.getStorehousePositionsId());
+            inventoryStock.setInkindId(stockDetail.getInkindId());
             details.add(inventoryStock);
         }
         return details;
