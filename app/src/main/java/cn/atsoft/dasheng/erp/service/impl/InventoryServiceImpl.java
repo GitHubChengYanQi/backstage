@@ -193,15 +193,22 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         Inventory entity = getEntity(param);
         this.save(entity);
 
-        if (ToolUtil.isEmpty(param.getDetailParams())) {
-            throw new ServiceException(500, "物料不存在");
+//        if (ToolUtil.isEmpty(param.getDetailParams())) {
+//            throw new ServiceException(500, "物料不存在");
+//        }
+
+        List<InventoryStock> inventoryStocks = BeanUtil.copyToList(param.getStockParams(), InventoryStock.class);
+        for (InventoryStock inventoryStock : inventoryStocks) {
+            inventoryStock.setInventoryId(entity.getInventoryTaskId());
+            inventoryStock.setRealNumber(inventoryStock.getNumber());
         }
-        List<InventoryDetail> inventoryDetails = BeanUtil.copyToList(param.getDetailParams(), InventoryDetail.class, new CopyOptions());
-        for (InventoryDetail inventoryDetail : inventoryDetails) {
-            inventoryDetail.setInventoryId(entity.getInventoryTaskId());
-            inventoryDetail.setRealNumber(inventoryDetail.getNumber());
-        }
-        inventoryDetailService.saveBatch(inventoryDetails);
+        inventoryStockService.saveBatch(inventoryStocks);
+//        List<InventoryDetail> inventoryDetails = BeanUtil.copyToList(param.getDetailParams(), InventoryDetail.class, new CopyOptions());
+//        for (InventoryDetail inventoryDetail : inventoryDetails) {
+//            inventoryDetail.setInventoryId(entity.getInventoryTaskId());
+//            inventoryDetail.setRealNumber(inventoryDetail.getNumber());
+//        }
+//        inventoryDetailService.saveBatch(inventoryDetails);
         param.setCreateUser(entity.getCreateUser());
 
         List<ShopCart> shopCarts = shopCartService.query()
@@ -625,6 +632,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     setRemarksParam(remarksParam);
                 }});
             }
+        } else {
+            throw new ServiceException(500, "请先设置或启用盘点流程");
         }
     }
 
@@ -649,6 +658,24 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }});
         List<InventoryDetailResult> details = inventoryDetailService.details(id);
         inventoryResult.setTaskList(details);
+
+        if (ToolUtil.isNotEmpty(inventoryResult.getParticipants())) {   //参与人员
+            List<String> participants = new ArrayList<>();
+            List<Long> userIds = JSON.parseArray(inventoryResult.getParticipants(), Long.class);
+            List<User> users = userService.listByIds(userIds);
+            for (User user : users) {
+                participants.add(user.getName());
+            }
+            inventoryResult.setParticipantList(participants);
+        }
+
+        User user = ToolUtil.isEmpty(inventoryResult.getUserId()) ? new User() : userService.getById(inventoryResult.getUserId());
+        inventoryResult.setUserName(user.getName());
+
+        Map<String, Integer> map = inventoryStockService.speedProgress(id);
+        inventoryResult.setTotal(map.get("total"));
+        inventoryResult.setHandle(map.get("handle"));
+
         return inventoryResult;
     }
 
@@ -1024,9 +1051,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 }
             }
 
+            Map<String, Integer> map = inventoryStockService.speedProgress(datum.getInventoryTaskId());
+            datum.setTotal(map.get("total"));
+            datum.setHandle(map.get("handle"));
+
             datum.setPositionSize(positionNum);
             datum.setSkuSize(detailResults.size());
-//            datum.setDetailResults(detailResults);
+
         }
     }
 }

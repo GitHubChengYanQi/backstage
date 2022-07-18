@@ -1427,12 +1427,25 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (InstockOrderResult datum : data) {
             List<InstockListResult> results = new ArrayList<>();
+
+            long applyNum = 0L;
+            long inStockNum = 0;
+            int positionNum = 0;
+            int skuNum = 0;
             for (InstockListResult instockListResult : instockListResults) {
                 if (instockListResult.getInstockOrderId().equals(datum.getInstockOrderId())) {
+                    skuNum = skuNum + 1;
+                    positionNum = positionNum + instockListResult.getPositionNum();
+                    applyNum = applyNum + instockListResult.getNumber();
+                    inStockNum = inStockNum + instockListResult.getInstockNumber();
                     results.add(instockListResult);
                 }
             }
+            datum.setInStockNum(inStockNum);
+            datum.setApplyNum(applyNum);
             datum.setInstockListResults(results);
+            datum.setPositionNum(positionNum);
+            datum.setSkuNum(skuNum);
         }
     }
 

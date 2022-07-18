@@ -27,6 +27,14 @@ public class InventoryResult implements Serializable {
 
     private StorehousePositionsResult positionsResult;
 
+    private Integer total;
+
+    private Integer handle;
+
+    private List<String> participantList;   //参与人
+
+    private String userName; //负责人
+
     private String statusName;
 
     private Long status;
@@ -55,6 +63,8 @@ public class InventoryResult implements Serializable {
 
 
     private Date beginTime;
+
+    private Long userId;
 
 
     private String mode;

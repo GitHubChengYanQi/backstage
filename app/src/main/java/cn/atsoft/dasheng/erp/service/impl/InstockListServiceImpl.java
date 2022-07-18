@@ -12,10 +12,7 @@ import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Inkind;
-import cn.atsoft.dasheng.erp.entity.InstockList;
-import cn.atsoft.dasheng.erp.entity.InstockOrder;
-import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
@@ -71,6 +68,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private CustomerService customerService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
 
     @Override
     public void add(InstockListParam param) {
@@ -328,8 +327,18 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<CustomerResult> customerResults = BeanUtil.copyToList(customerList, CustomerResult.class, new CopyOptions());
         Map<Long, List<StorehousePositionsResult>> positionMap = positionsService.getMap(skuIds);
+        List<StorehousePositionsBind> storehousePositionsBinds = skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         for (InstockListResult datum : data) {
+
+            int positionNum = 0;
+            for (StorehousePositionsBind storehousePositionsBind : storehousePositionsBinds) {
+                if (storehousePositionsBind.getSkuId().equals(datum.getSkuId())) {
+                    positionNum = positionNum + 1;
+                }
+            }
+            datum.setPositionNum(positionNum);
+
             for (CustomerResult customerResult : customerResults) {
                 if (ToolUtil.isNotEmpty(datum.getCustomerId()) && datum.getCustomerId().equals(customerResult.getCustomerId())) {
                     datum.setCustomerResult(customerResult);

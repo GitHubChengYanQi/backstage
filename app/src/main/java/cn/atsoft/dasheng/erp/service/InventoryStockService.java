@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -56,6 +57,8 @@ public interface InventoryStockService extends IService<InventoryStock> {
     InventoryStockResult findBySpec(InventoryStockParam param);
 
     Object taskList(Long inventoryId);
+
+    Map<String, Integer> speedProgress(Long inventoryId);
 
     List<StorehousePositionsResult> positionsResultList(List<InventoryStockResult> detailResults);
 

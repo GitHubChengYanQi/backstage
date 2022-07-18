@@ -13,16 +13,13 @@ import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Inkind;
-import cn.atsoft.dasheng.erp.entity.Inventory;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.AnomalyOrderParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.mapper.InventoryDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
@@ -83,6 +80,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     private ActivitiProcessTaskService taskService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     @Override
     public void add(InventoryDetailParam param) {
@@ -554,17 +553,32 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
-
+        List<Long> classIds = new ArrayList<>();
         for (InventoryDetailResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             positionIds.add(datum.getPositionId());
+
+            if (ToolUtil.isNotEmpty(datum.getClassCondition())) {
+                datum.setClassIds(JSON.parseArray(datum.getClassCondition(), Long.class));
+                classIds.addAll(datum.getClassIds());
+            }
+            if (ToolUtil.isNotEmpty(datum.getPositionCondition())) {
+                datum.setPositionIds(JSON.parseArray(datum.getPositionCondition(), Long.class));
+                positionIds.addAll(datum.getPositionIds());
+            }
+            if (ToolUtil.isNotEmpty(datum.getBrandCondition())) {
+                datum.setBrandIds(JSON.parseArray(datum.getBrandCondition(), Long.class));
+                brandIds.addAll(datum.getBrandIds());
+            }
+
         }
 
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class);
+        List<SpuClassification> spuClassifications = classIds.size() == 0 ? new ArrayList<>() : spuClassificationService.listByIds(classIds);
 
         for (InventoryDetailResult datum : data) {
 
@@ -589,6 +603,39 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                     break;
                 }
             }
+
+            List<String> condition = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(datum.getBrandIds())) {
+                for (Long brandId : datum.getBrandIds()) {
+                    for (BrandResult brandResult : brandResults) {
+                        if (brandResult.getBrandId().equals(brandId)) {
+                            condition.add(brandResult.getBrandName());
+                        }
+                    }
+                }
+            }
+
+            if (ToolUtil.isNotEmpty(datum.getPositionIds())) {
+                for (Long positionId : datum.getPositionIds()) {
+                    for (StorehousePositionsResult positionsResult : positionsResultList) {
+                        if (positionId.equals(positionsResult.getStorehousePositionsId())) {
+                            condition.add(positionsResult.getName());
+                        }
+                    }
+                }
+            }
+
+            if (ToolUtil.isNotEmpty(datum.getClassIds())) {
+                for (Long classId : datum.getClassIds()) {
+                    for (SpuClassification spuClassification : spuClassifications) {
+                        if (classId.equals(spuClassification.getSpuClassificationId())) {
+                            condition.add(spuClassification.getName());
+                        }
+                    }
+                }
+            }
+
+            datum.setCondition(condition);
         }
 
     }

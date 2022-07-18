@@ -44,7 +44,7 @@ public class InstockListResult implements Serializable {
     private StorehouseResult storehouseResult;
     private SkuResult skuResult;
     private Sku sku;
-
+    private Integer positionNum;
     private Long inkindId;
 
     private Long notNumber;

@@ -138,6 +138,29 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     }
 
     /**
+     * 进度条
+     *
+     * @param inventoryId
+     * @return
+     */
+    @Override
+    public Map<String, Integer> speedProgress(Long inventoryId) {
+        List<InventoryStock> inventoryStocks = this.query().select("status AS status").eq("inventory_id", inventoryId).eq("display", 1).list();
+        int size = inventoryStocks.size();
+        int operation = 0;
+        for (InventoryStock inventoryStock : inventoryStocks) {
+            if (inventoryStock.getStatus() != 0) {
+                operation = operation + 1;
+            }
+        }
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("total", size);
+        map.put("handle", operation);
+        return map;
+    }
+
+    /**
      * 组合结构
      *
      * @return
