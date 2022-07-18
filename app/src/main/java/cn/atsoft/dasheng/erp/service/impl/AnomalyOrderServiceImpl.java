@@ -258,6 +258,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             activitiProcessTaskParam.setFormId(entity.getOrderId());
             activitiProcessTaskParam.setType(ProcessType.ERROR.getType());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");

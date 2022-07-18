@@ -32,6 +32,8 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
     private List<Long> pickListsIds;
     private String pickListsName;
     private String pickCode;
+    @ApiModelProperty("redisCode")
+    private String code;
 
 
 

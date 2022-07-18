@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.production.entity;
+package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -6,73 +6,62 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.io.Serializable;
 
 /**
  * <p>
- * 领料单
+ * 调拨主表
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-03-25
+ * @since 2022-07-13
  */
-@TableName("daoxin_production_pick_lists")
-public class ProductionPickLists implements Serializable {
+@TableName("daoxin_erp_allocation")
+public class Allocation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 领料单
+     * 调拨id
      */
-      @TableId(value = "pick_lists_id", type = IdType.ID_WORKER)
-    private Long pickListsId;
+      @TableId(value = "allocation_id", type = IdType.ID_WORKER)
+    private Long allocationId;
 
     /**
-     * 领取物料码
-     */
-    @TableField("pick_lists_name")
-    private String pickListsName;
-    /**
-     * 领取物料码
+     * 编码
      */
     @TableField("coding")
     private String coding;
 
+    @TableField("allocation_name")
+    private String allocationName;
+
+    /**
+     * 仓库id
+     */
+    @TableField("storehouse_id")
+    private Long storehouseId;
+
+    /**
+     * 负责人
+     */
     @TableField("user_id")
     private Long userId;
 
-    @TableField("user_ids")
-    private Long userIds;
+    @TableField("reason")
+    private String reason;
 
-    /**
-     * 来源
-     */
-    @TableField("source")
-    private String source;
+    @TableField("remark")
+    private String remark;
+
+    @TableField("note")
+    private String note;
+
     /**
      * 附件
      */
     @TableField("enclosure")
     private String enclosure;
-    /**
-     * remark
-     */
-    @TableField("remarks")
-    private String remarks;
-
-    /**
-     * remark
-     */
-    @TableField("note")
-    private String note;
-
-    /**
-     * 来源id
-     */
-    @TableField("source_id")
-    private Long sourceId;
 
     /**
      * 创建者
@@ -111,37 +100,36 @@ public class ProductionPickLists implements Serializable {
     private Long deptId;
 
     /**
+     * 状态
+     */
+    @TableField("status")
+    private Long status;
+
+    /**
      * 主题
      */
     @TableField("theme")
     private String theme;
 
     /**
-     * 来源
+     * 来源Json字符串
      */
     @TableField("origin")
     private String origin;
 
     /**
-     * 状态
+     * 库间调拨  仓库调拨
      */
-    @TableField("status")
-    private Long status;
+    @TableField("type")
+    private Integer type;
 
-    public Long getUserIds() {
-        return userIds;
+
+    public Long getAllocationId() {
+        return allocationId;
     }
 
-    public void setUserIds(Long userIds) {
-        this.userIds = userIds;
-    }
-
-    public Long getPickListsId() {
-        return pickListsId;
-    }
-
-    public void setPickListsId(Long pickListsId) {
-        this.pickListsId = pickListsId;
+    public void setAllocationId(Long allocationId) {
+        this.allocationId = allocationId;
     }
 
     public String getCoding() {
@@ -152,6 +140,22 @@ public class ProductionPickLists implements Serializable {
         this.coding = coding;
     }
 
+    public String getAllocationName() {
+        return allocationName;
+    }
+
+    public void setAllocationName(String allocationName) {
+        this.allocationName = allocationName;
+    }
+
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
+    }
+
     public Long getUserId() {
         return userId;
     }
@@ -160,20 +164,36 @@ public class ProductionPickLists implements Serializable {
         this.userId = userId;
     }
 
-    public String getSource() {
-        return source;
+    public String getReason() {
+        return reason;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
-    public Long getSourceId() {
-        return sourceId;
+    public String getRemark() {
+        return remark;
     }
 
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
     }
 
     public Long getCreateUser() {
@@ -232,38 +252,6 @@ public class ProductionPickLists implements Serializable {
         this.status = status;
     }
 
-    public String getEnclosure() {
-        return enclosure;
-    }
-
-    public void setEnclosure(String enclosure) {
-        this.enclosure = enclosure;
-    }
-
-    public String getRemarks() {
-        return remarks;
-    }
-
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getPickListsName() {
-        return pickListsName;
-    }
-
-    public void setPickListsName(String pickListsName) {
-        this.pickListsName = pickListsName;
-    }
-
     public String getTheme() {
         return theme;
     }
@@ -280,13 +268,26 @@ public class ProductionPickLists implements Serializable {
         this.origin = origin;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
-        return "ProductionPickLists{" +
-        "pickListsId=" + pickListsId +
+        return "Allocation{" +
+        "allocationId=" + allocationId +
+        ", coding=" + coding +
+        ", allocationName=" + allocationName +
+        ", storehouseId=" + storehouseId +
         ", userId=" + userId +
-        ", source=" + source +
-        ", sourceId=" + sourceId +
+        ", reason=" + reason +
+        ", remark=" + remark +
+        ", note=" + note +
+        ", enclosure=" + enclosure +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
@@ -294,6 +295,9 @@ public class ProductionPickLists implements Serializable {
         ", display=" + display +
         ", deptId=" + deptId +
         ", status=" + status +
+        ", theme=" + theme +
+        ", origin=" + origin +
+        ", type=" + type +
         "}";
     }
 }

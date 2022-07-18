@@ -73,52 +73,46 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         if (ToolUtil.isEmpty(param.getMaintenanceLogParams())) {
             throw new ServiceException(500, "请选择养护完成的物料与数量");
         }
-
+        List<StockDetails> stockDetails = new ArrayList<>();
+        List<MaintenanceDetail> maintenanceDetails = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getMaintenanceId())) {
             Maintenance maintenance = maintenanceService.getById(param.getMaintenanceId());
-            List<MaintenanceDetail> maintenanceDetails = maintenanceDetailService.query().eq("maintenances_id", param.getMaintenanceId()).eq("status", 0).list();
-            List<StockDetails> stockDetails = maintenanceService.needMaintenanceByRequirement(maintenance);
-            List<MaintenanceLog> logs = new ArrayList<>();
-            for (MaintenanceLogParam maintenanceLogParam : param.getMaintenanceLogParams()) {
-                List<StockDetails> need = new ArrayList<>();
-                for (StockDetails stockDetail : stockDetails) {
-                    if (maintenanceLogParam.getSkuId().equals(stockDetail.getSkuId()) && maintenanceLogParam.getBrandId().equals(stockDetail.getBrandId()) && maintenanceLogParam.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())) {
-                        need.add(stockDetail);
-                    }
-                }
-                int num = maintenanceLogParam.getNumber();
-                if  (num>0){
-                    for (StockDetails details : need) {
-                            MaintenanceLog log = new MaintenanceLog();
-                            log.setNumber(Math.toIntExact(details.getNumber()));
-                            log.setBrandId(details.getBrandId());
-                            log.setSkuId(details.getSkuId());
-                            log.setInkindId(details.getInkindId());
-                            log.setEnclosure(maintenanceLogParam.getEnclosure());
-                            logs.add(log);
-                    }
-                }
-                for (MaintenanceDetail detail : maintenanceDetails) {
-                    if (detail.getSkuId().equals(maintenanceLogParam.getSkuId()) && detail.getStorehousePositionsId().equals(maintenanceLogParam.getStorehousePositionsId()) && detail.getBrandId().equals(maintenanceLogParam.getBrandId())) {
-                        detail.setDoneNumber(detail.getDoneNumber()+maintenanceLogParam.getNumber());
-                        if (detail.getDoneNumber()>=detail.getNumber()){
-                            detail.setStatus(99);
-                        }
-                    }
-                }
-            }
+            maintenanceDetails = maintenanceDetailService.query().eq("maintenance_id", param.getMaintenanceId()).eq("status", 0).list();
+            stockDetails = maintenanceService.needMaintenanceByRequirement(maintenance);
             maintenanceDetailService.updateBatchById(maintenanceDetails);
-            this.saveBatch(logs);
             /**
              * 判断任务是否完成
              */
             if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
-                    maintenanceService.updateStatus(param.getMaintenanceId());
+                maintenanceService.updateStatus(param.getMaintenanceId());
             }
 
         } else {
-            List<Maintenance> taskByTime = maintenanceService.findTaskByTime();
+            MaintenanceAndDetail taskAndDetailByTime = maintenanceService.findTaskAndDetailByTime();
+            List<Maintenance> maintenances = taskAndDetailByTime.getMaintenances();
+            maintenanceDetails.addAll(taskAndDetailByTime.getMaintenanceDetails());
+            for (Maintenance maintenance : maintenances) {
+                stockDetails .addAll(maintenanceService.needMaintenanceByRequirement(maintenance));
+            }
+            /**
+             * 判断任务是否完成
+            */
+            if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
+                maintenanceService.updateStatus(param.getMaintenanceId());
+            }
         }
+
+        /**
+         * 处理数据 并添加保养记录
+         */
+        List<MaintenanceLog> logs = new ArrayList<>();
+        processingData(param, stockDetails, maintenanceDetails, logs);
+        maintenanceDetailService.updateBatchById(maintenanceDetails);
+        this.saveBatch(logs);
+        if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
+            maintenanceService.updateStatus(param.getMaintenanceId());
+        }
+
 
 
 //        List<MaintenanceDetail> details = new ArrayList<>();
@@ -174,6 +168,36 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
 
     }
 
+    public void processingData(MaintenanceLogParam param, List<StockDetails> stockDetails, List<MaintenanceDetail> maintenanceDetails, List<MaintenanceLog> logs) {
+        for (MaintenanceLogParam maintenanceLogParam : param.getMaintenanceLogParams()) {
+            List<StockDetails> need = new ArrayList<>();
+            for (StockDetails stockDetail : stockDetails) {
+                if (maintenanceLogParam.getSkuId().equals(stockDetail.getSkuId()) && maintenanceLogParam.getBrandId().equals(stockDetail.getBrandId()) && maintenanceLogParam.getStorehousePositionsId().equals(stockDetail.getStorehousePositionsId())) {
+                    need.add(stockDetail);
+                }
+            }
+            int num = maintenanceLogParam.getNumber();
+            if (num > 0) {
+                for (StockDetails details : need) {
+                    MaintenanceLog log = new MaintenanceLog();
+                    log.setNumber(Math.toIntExact(details.getNumber()));
+                    log.setBrandId(details.getBrandId());
+                    log.setSkuId(details.getSkuId());
+                    log.setInkindId(details.getInkindId());
+                    log.setEnclosure(maintenanceLogParam.getEnclosure());
+                    logs.add(log);
+                }
+            }
+            for (MaintenanceDetail detail : maintenanceDetails) {
+                if (detail.getSkuId().equals(maintenanceLogParam.getSkuId()) && detail.getStorehousePositionsId().equals(maintenanceLogParam.getStorehousePositionsId()) && detail.getBrandId().equals(maintenanceLogParam.getBrandId())) {
+                    detail.setDoneNumber(detail.getDoneNumber() + maintenanceLogParam.getNumber());
+                    if (detail.getDoneNumber() >= detail.getNumber()) {
+                        detail.setStatus(99);
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public void delete(MaintenanceLogParam param) {

@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.MaintenanceActionEnum;
-import cn.atsoft.dasheng.action.Enum.OutStockActionEnum;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
@@ -25,7 +24,6 @@ import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -119,10 +117,10 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
         List<StockDetails> detailTotalList = new ArrayList<>();
 
-        stockDetails.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+"_"+(ToolUtil.isEmpty(item.getBrandId())?0:item.getBrandId())+"_"+item.getStorehousePositionsId(), Collectors.toList())).forEach(
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new StockDetails(){{
-                        setNumber(a.getNumber()+b.getNumber());
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setNumber(a.getNumber() + b.getNumber());
                         setSkuId(a.getSkuId());
                         setStorehousePositionsId(a.getStorehousePositionsId());
                         setBrandId(a.getBrandId());
@@ -132,13 +130,15 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         );
 
 
-
         List<MaintenanceDetail> details = new ArrayList<>();
         for (StockDetails stockDetail : detailTotalList) {
             MaintenanceDetail detail = new MaintenanceDetail();
             ToolUtil.copyProperties(stockDetail, detail);
             detail.setMaintenanceId(entity.getMaintenanceId());
             details.add(detail);
+        }
+        if (details.size() == 0) {
+            throw new ServiceException(500, "当前条件未找到需要养护物料");
         }
         maintenanceDetailService.saveBatch(details);
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "MAINTENANCE").eq("status", 99).eq("module", "reMaintenance").one();
@@ -180,7 +180,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
          */
         if (ToolUtil.isNotEmpty(param.getMaterialId())) {
             List<Long> spuIds = new ArrayList<>();
-            List<Spu> spuList = spuService.query().eq("meterial_id", param.getMaterialId()).eq("display", 1).list();
+            List<Spu> spuList = spuService.query().eq("material_id", param.getMaterialId()).eq("display", 1).list();
             for (Spu spu : spuList) {
                 spuIds.add(spu.getSpuId());
             }
@@ -197,11 +197,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             }
             setSkuIds(skuIds);
         }});
-        List<MaintenanceCycle> maintenanceCycles =skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
         for (MaintenanceLogResult logResult : logResults) {
             for (Sku sku : skuList) {
                 for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
-                    if (logResult.getSkuId().equals(sku.getSkuId()) && maintenanceCycle.getSkuId().equals(sku.getSkuId())){
+                    if (logResult.getSkuId().equals(sku.getSkuId()) && maintenanceCycle.getSkuId().equals(sku.getSkuId())) {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(logResult.getCreateTime());
                         calendar.add(Calendar.DATE, (maintenanceCycle.getMaintenancePeriod() - param.getNearMaintenance()));
@@ -221,7 +221,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             if (ToolUtil.isNotEmpty(param.getBrandId())) {
                 setBrandId(param.getBrandId());
             }
-            if(positionsChildrenIds.size()>0){
+            if (positionsChildrenIds.size() > 0) {
                 setPositionIds(positionsChildrenIds);
             }
         }});
@@ -230,18 +230,45 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Override
     public List<Maintenance> findTaskByTime() {
-        return this.query().eq("display", 1).ne("status", 99).apply(" now() between start_time and end_time").list();
+        Long userId = LoginContextHolder.getContext().getUserId();
+        List<Maintenance> list = this.query().eq("display", 1).eq("user_id", userId).ne("status", 99).apply(" now() between start_time and end_time").list();
+        list.addAll(this.query().eq("display", 1).eq("user_id", userId).eq("status", 98).list());
+        List<Maintenance> totalList = new ArrayList<>();
+        list.parallelStream().collect(Collectors.groupingBy(item -> item.getMaintenanceId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> a).ifPresent(totalList::add);
+                }
+        );
+
+
+        return totalList;
+    }
+
+    @Override
+    public MaintenanceAndDetail findTaskAndDetailByTime() {
+        List<Maintenance> taskByTime = findTaskByTime();
+        List<Long> ids = new ArrayList<>();
+        for (Maintenance maintenance : taskByTime) {
+            ids.add(maintenance.getMaintenanceId());
+        }
+        List<MaintenanceDetail> details = ids.size() == 0 ? new ArrayList<>() : maintenanceDetailService.query().eq("status", 0).eq("display", 1).in("maintenance_id", ids).list();
+        MaintenanceAndDetail result = new MaintenanceAndDetail();
+        result.setMaintenances(taskByTime);
+        result.setMaintenanceDetails(details);
+        return result;
     }
 
     //任务开始
+    @Override
     public void startMaintenance(Maintenance maintenance) {
         //如果从单个任务进入详情   则只更新该任务的养护物料列表
         if (ToolUtil.isNotEmpty(maintenance) && maintenance.getStatus().equals(0)) {
-            if (maintenance.getStatus().equals(0)) {
-                List<Maintenance> maintenances = this.findTaskByTime();
-                if (maintenances.stream().anyMatch(i -> i.getMaintenanceId().equals(maintenance.getMaintenanceId()))) {
+            List<Maintenance> maintenances = this.findTaskByTime();
+            for (Maintenance maintenance1 : maintenances) {
+                if (maintenance1.getMaintenanceId().equals(maintenance.getMaintenanceId()) && updateDetail(maintenance) && maintenance.getStatus().equals(0)) {
+                    maintenance.setStatus(99);
+                } else {
                     maintenance.setStatus(98);
-                    updateDetail(maintenance);
                 }
             }
 
@@ -250,10 +277,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             for (Maintenance entity : maintenances) {
                 if (entity.getStatus().equals(0)) {
                     entity.setStatus(98);
-                    updateDetail(entity);
+                    if (updateDetail(entity)) {
+                        entity.setStatus(99);
+                    }
                 }
             }
-            this.updateBatchById(maintenances);
         }
     }
 
@@ -399,7 +427,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
 
             List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-            brandResults.add(new BrandResult(){{
+            brandResults.add(new BrandResult() {{
                 setBrandId(0L);
                 setBrandName("无品牌");
             }});
@@ -459,9 +487,17 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         if (ToolUtil.isNotEmpty(maintenance)) {
             startMaintenance(maintenance);
         }
+        Map<Long, String> statusMap = new HashMap<>();
+        statusMap.put(0L, "开始");
+        statusMap.put(99L, "完成");
+        statusMap.put(50L, "拒绝");
         MaintenanceResult maintenanceResult = new MaintenanceResult();
         ToolUtil.copyProperties(maintenance, maintenanceResult);
+        maintenanceResult.setStatusName(statusMap.get((long)maintenanceResult.getStatus()));
         List<StorehousePositionsResult> details = this.getDetails(id);
+        if (details.size() == 0 ){
+            this.updateStatus(maintenanceResult.getMaintenanceId());
+        }
         maintenanceResult.setDetailResultsByPositions(details);
         return maintenanceResult;
     }
@@ -471,14 +507,15 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
      *
      * @param maintenance
      */
-    public void updateDetail(Maintenance maintenance) {
+    @Override
+    public Boolean updateDetail(Maintenance maintenance) {
         List<StockDetails> stockDetails = this.needMaintenanceByRequirement(maintenance);
         List<StockDetails> detailTotalList = new ArrayList<>();
 
-        stockDetails.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+"_"+(ToolUtil.isEmpty(item.getBrandId())?0:item.getBrandId())+"_"+item.getStorehousePositionsId(), Collectors.toList())).forEach(
+        stockDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new StockDetails(){{
-                        setNumber(a.getNumber()+b.getNumber());
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setNumber(a.getNumber() + b.getNumber());
                         setSkuId(a.getSkuId());
                         setStorehousePositionsId(a.getStorehousePositionsId());
                         setBrandId(a.getBrandId());
@@ -487,11 +524,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 }
         );
 
-        List<MaintenanceDetail> maintenanceDetails = maintenanceDetailService.query().eq("status", 0).eq("display", 1).eq("maintenance_id", maintenance.getMaintenanceId()).list();
+        List<MaintenanceDetail> maintenanceDetails = maintenanceDetailService.query().eq("display", 1).eq("maintenance_id", maintenance.getMaintenanceId()).list();
         for (StockDetails details : detailTotalList) {
             for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
-                if(details.getBrandId().equals(maintenanceDetail.getBrandId()) && details.getSkuId().equals(maintenanceDetail.getMaintenanceDetailId()) && details.getStorehousePositionsId().equals(maintenanceDetail.getStorehousePositionsId())){
-                    if(maintenanceDetail.getStatus()!=99){
+                if (details.getBrandId().equals(maintenanceDetail.getBrandId()) && details.getSkuId().equals(maintenanceDetail.getSkuId()) && details.getStorehousePositionsId().equals(maintenanceDetail.getStorehousePositionsId())) {
+                    if (maintenanceDetail.getStatus() != 99) {
                         maintenanceDetail.setNumber(Math.toIntExact(details.getNumber()));
                     }
                 }
@@ -508,6 +545,16 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             }
         }
         maintenanceDetailService.saveOrUpdateBatch(maintenanceDetails);
+        if (maintenanceDetails.stream().allMatch(i -> i.getDisplay().equals(0))) {
+            maintenance.setStatus(99);
+            this.updateById(maintenance);
+            return true;
+        } else {
+            maintenance.setStatus(98);
+            this.updateById(maintenance);
+            return false;
+        }
+
     }
 
 
@@ -518,7 +565,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
          */
         Maintenance entity = new Maintenance();
         entity.setMaintenanceId(id);
-
+        entity.setStatus(99);
         this.updateById(entity);
 
         /**

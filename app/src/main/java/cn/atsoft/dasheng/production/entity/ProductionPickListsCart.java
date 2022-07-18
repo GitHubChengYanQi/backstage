@@ -43,6 +43,12 @@ public class ProductionPickListsCart implements Serializable {
     private Long storehousePositionsId;
 
 
+
+
+    @TableField("type")
+    private String type;
+
+
     /**
      * 状态
      */
@@ -244,6 +250,14 @@ public class ProductionPickListsCart implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

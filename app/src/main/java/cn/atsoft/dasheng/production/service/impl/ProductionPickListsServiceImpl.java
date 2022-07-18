@@ -36,6 +36,7 @@ import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
 import cn.atsoft.dasheng.production.model.result.*;
 import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -166,6 +167,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private RoleService roleService;
     @Autowired
     private RedisSendCheck redisSendCheck;
+    @Autowired
+    private GetOrigin getOrigin;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
 
 
     @Override
@@ -176,6 +181,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         entity.setStatus(0L);
 //        entity.setUserId(LoginContextHolder.getContext().getUserId());
         this.save(entity);
+        String origin = getOrigin.newThemeAndOrigin("OUTSTOCK", entity.getPickListsId(), entity.getSource(), entity.getSourceId());
+        entity.setOrigin(origin);
+        this.updateById(entity);
 
         if (ToolUtil.isNotEmpty(param.getPickListsDetailParams())) {
             List<ShopCart> carts = new ArrayList<>();
@@ -203,7 +211,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getPickListsId());
             activitiProcessTaskParam.setType("OUTSTOCK");
+            activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            activitiProcessTaskParam.setSource(param.getSource());
+            activitiProcessTaskParam.setSourceId(param.getSourceId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
             ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
@@ -239,7 +250,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Override
     public String createCode(ProductionPickListsParam param) {
-        String code = String.valueOf(RandomUtil.randomLong(1000,9999));
+        String code = String.valueOf(RandomUtil.randomLong(1000, 9999));
         List<Object> list = redisSendCheck.getList(code);
         param.getCartsParams();
         List<Object> objects = BeanUtil.copyToList(param.getCartsParams(), Object.class);
@@ -265,6 +276,49 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             this.format(page.getRecords());
         }
         return PageFactory.createPageInfo(page);
+    }
+@Override
+    public void taskFormat(List<ProductionPickListsResult> results) {
+        List<Long> pickListsIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        for (ProductionPickListsResult result : results) {
+
+            pickListsIds.add(result.getPickListsId());
+            userIds.add(result.getUserId());
+            userIds.add(result.getCreateUser());
+
+        }
+
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.resultsByPickListsIds(pickListsIds);
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionPickListsDetailResult detailResult : detailResults) {
+            skuIds.add(detailResult.getSkuId());
+        }
+        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+
+
+        for (ProductionPickListsResult result : results) {
+            List<Long> listsSkuIds = new ArrayList<>();
+            List<Long> listsPositionIds = new ArrayList<>();
+            Integer numberCount = 0;
+            Integer receivedCount = 0;
+            for (ProductionPickListsDetailResult detailResult : detailResults) {
+                listsSkuIds.add(detailResult.getSkuId());
+                if (detailResult.getPickListsId().equals(result.getPickListsId())) {
+                    numberCount += detailResult.getNumber();
+                    receivedCount += detailResult.getReceivedNumber();
+                    for (StorehousePositionsBind positionsBind : positionsBinds) {
+                        if (detailResult.getSkuId().equals(positionsBind.getSkuId())) {
+                            listsPositionIds.add(positionsBind.getPositionId());
+                        }
+                    }
+                }
+            }
+            result.setNumberCount(numberCount);
+            result.setReceivedCount(receivedCount);
+        }
+
+
     }
 
     @Override
@@ -926,8 +980,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                      * 原购物车  更改剩余领料数量
                      * 创建新购物车记录  存放出库数量
                      */
-                    if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getStatus() == 0) {
-//                        if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(brandId) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
+                    if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(pickListsCartParam.getBrandId()) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
                         int num = pickListsCartParam.getNumber();
                         int lastNum = num;
                         num -= listsCart.getNumber();
@@ -1351,7 +1404,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<ProductionPickListsDetail> pickListsDetails = pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).list();
         if (listsDetails.size() == 0) {
             for (Long pickListsId : pickListsIds) {
-                this.updateStatus(pickListsId);
+                this.checkAction(pickListsId);
             }
         } else {
             for (Long pickListsId : pickListsIds) {
@@ -1362,7 +1415,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     }
                 }
                 if (statusFlag) {
-                    updateStatus(pickListsId);
+                    checkAction(pickListsId);
                 }
             }
         }
@@ -1386,13 +1439,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<ProductionPickListsDetail> update = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).ne("status", 99).list();
         if (update.size() == 0) {
             for (ProductionPickLists pickList : pickLists) {
-                this.updateStatus(pickList.getPickListsId());
+                this.checkAction(pickList.getPickListsId());
             }
         } else {
             for (
                     ProductionPickLists pickList : pickLists) {
                 if (update.stream().noneMatch(i -> i.getPickListsId().equals(pickList.getPickListsId()))) {
-                    this.updateStatus(pickList.getPickListsId());
+                    this.checkAction(pickList.getPickListsId());
                 }
             }
         }
@@ -1456,7 +1509,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (StockDetails details : totalList) {
             storeHousePositionIds.add(details.getStorehousePositionsId());
         }
-        List<StorehousePositions> storehousePositions = storeHousePositionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(storeHousePositionIds);
 
 
         this.pickListsDetailService.format(detailResults);
@@ -1469,14 +1521,18 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     }
 
-    void updateStatus(Long id) {
+    @Override
+    public void updateStatus(ActivitiProcessTask processTask) {
         /**
          *    更新表单状态
          */
-        ProductionPickLists entity = new ProductionPickLists();
-        entity.setPickListsId(id);
-        entity.setStatus(99L);
+        ProductionPickLists entity = this.getById(processTask.getFormId());
+        entity.setStatus(OutStockActionEnum.done.getStatus());
         this.updateById(entity);
+    }
+
+    void checkAction(Long id) {
+
 
         /**
          * 如果有任务则更新任务单据动作状态
@@ -1637,6 +1693,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     @Override
     public List<ProductionPickListsCartResult> listByCode(String code) {
         List<Object> list = redisSendCheck.getList(code);
+        if (ToolUtil.isEmpty(list)) {
+            throw new ServiceException(500, "此领料码为查询到物料或码已被使用");
+        }
         List<ProductionPickListsCartResult> cartResults = BeanUtil.copyToList(list, ProductionPickListsCartResult.class);
         if (ToolUtil.isNotEmpty(cartResults)) {
             pickListsCartService.format(cartResults);
@@ -1649,4 +1708,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return this.baseMapper.idsList(param);
     }
 
+    @Override
+    public void updateOutStockRefuseStatus(ActivitiProcessTask processTask) {
+        ProductionPickLists lists = this.getById(processTask.getFormId());
+        lists.setStatus(OutStockActionEnum.refuse.getStatus());
+        this.updateById(lists);
+    }
 }

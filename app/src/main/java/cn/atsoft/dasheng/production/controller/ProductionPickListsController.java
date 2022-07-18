@@ -24,6 +24,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.service.ProductionTaskService;
+import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.CharsetUtil;
@@ -70,6 +71,8 @@ public class ProductionPickListsController extends BaseController {
 
     @Autowired
     private ProductionTaskService productionTaskService;
+    @Autowired
+    private RedisSendCheck redisSendCheck;
 
     /**
      * 新增接口
@@ -294,6 +297,7 @@ public class ProductionPickListsController extends BaseController {
         }
 
         String code = this.productionPickListsService.outStock(productionPickListsParam);
+        redisSendCheck.deleteList(productionPickListsParam.getCode());
         return ResponseData.success(code);
     }
 

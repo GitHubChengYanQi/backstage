@@ -69,6 +69,50 @@ public class ActivitiProcessTask implements Serializable {
 
     @TableField("user_ids")
     private String userIds;
+
+
+    /**
+     * 主题
+     */
+    @TableField("theme")
+    private String theme;
+
+    /**
+     * 来源Json字符串
+     */
+    @TableField("origin")
+    private String origin;
+
+    /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private String sourceId;
+    /**
+     * 来源Json字符串
+     */
+    @TableField("main_task_id")
+    private Long mainTaskId;
+
+    /**
+     * 来源Json字符串
+     */
+    @TableField("pid")
+    private Long pid;
+    /**
+     * 来源Json字符串
+     */
+    @TableField("user_id")
+    private Long userId;
+
+
     /**
      * 删除状态
      */
@@ -190,6 +234,64 @@ public class ActivitiProcessTask implements Serializable {
     public void setTaskName(String taskName) {
         this.taskName = taskName;
     }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public Long getMainTaskId() {
+        return mainTaskId;
+    }
+
+    public void setMainTaskId(Long mainTaskId) {
+        this.mainTaskId = mainTaskId;
+    }
+
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
     @Override
     public String toString() {
         return "ActivitiProcessTask{" +

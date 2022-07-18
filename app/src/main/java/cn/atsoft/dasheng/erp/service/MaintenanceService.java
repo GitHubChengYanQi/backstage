@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceParam;
+import cn.atsoft.dasheng.erp.model.result.MaintenanceAndDetail;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -31,6 +32,11 @@ public interface MaintenanceService extends IService<Maintenance> {
     List<StockDetails> needMaintenanceByRequirement(Maintenance param);
 
     List<Maintenance> findTaskByTime();
+
+    MaintenanceAndDetail findTaskAndDetailByTime();
+
+    //任务开始
+    void startMaintenance(Maintenance maintenance);
 
     /**
      * 删除
@@ -79,6 +85,8 @@ public interface MaintenanceService extends IService<Maintenance> {
     List<StorehousePositionsResult> getDetails(Long id);
 
     MaintenanceResult detail(Long id);
+
+    Boolean updateDetail(Maintenance maintenance);
 
     void updateStatus(Long id);
 }

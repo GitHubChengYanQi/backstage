@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import lombok.Data;
@@ -31,19 +32,24 @@ public class ProductionPickListsCartResult implements Serializable {
     private ProductionPickListsResult productionPickListsResult;
     private ProductionPickListsResult pickListsResult;
     private ProductionPickListsDetailResult productionPickListsDetailResult;
+    //仓库
     private StorehouseSimpleResult storehouseResult;
+    //库位
+    private StorehousePositionsResult storehousePositionsResult;
+
+
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long brandId;
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long customerId;
-
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehousePositionsId;
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehouseId;
 
     private BrandResult brandResult;
-
+    @ApiModelProperty("类型")
+    private String type;
     /**
      * 购物车id
      */
