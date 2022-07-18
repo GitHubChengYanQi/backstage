@@ -75,6 +75,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      */
     PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param);
 
+    void taskFormat(List<ProductionPickListsResult> results);
+
     void format(List<ProductionPickListsResult> results);
 
     void formatStatus99(List<ProductionPickListsResult> results);
@@ -100,6 +102,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     ProductionPickListsResult detail(Long id);
 
+    void updateStatus(ActivitiProcessTask processTask);
+
     List<Map<String,Object>> listByUser(ProductionPickListsParam pickListsParam);
 
     void abortCode(String code);
@@ -109,4 +113,6 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     List<ProductionPickListsCartResult>  listByCode(String code);
 
     List<Long> idsList(ProductionPickListsParam param);
+
+    void updateOutStockRefuseStatus(ActivitiProcessTask processTask);
 }

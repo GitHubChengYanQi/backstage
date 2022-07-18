@@ -299,16 +299,19 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<Long> stoIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (StockDetailsResult datum : data) {
             stoIds.add(datum.getStorehouseId());
             customerIds.add(datum.getCustomerId());
             brandIds.add(datum.getBrandId());
             pIds.add(datum.getStorehousePositionsId());
+            skuIds.add(datum.getSkuId());
         }
         List<CustomerResult> results = customerService.getResults(customerIds);
 
         List<StorehousePositions> positions = pIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", pIds).list();
 
+        List<StorehouseResult> storehouseResults =stoIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehouseService.listByIds(stoIds), StorehouseResult.class);
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         if (!stoIds.isEmpty()) {
             storehouseQueryWrapper.in("storehouse_id", stoIds);
@@ -321,23 +324,20 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             brandQueryWrapper.in("brand_id", brandIds);
         }
         List<Brand> brandList = brandService.list(brandQueryWrapper);
-
+        List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
         for (StockDetailsResult datum : data) {
-            List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
-            SpuResult spuResult = skuService.backSpu(datum.getSkuId());
-            datum.setBackSkus(backSkus);
-            datum.setSpuResult(spuResult);
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
+                if (datum.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    datum.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
 
             for (CustomerResult result : results) {
                 if (result.getCustomerId().equals(datum.getCustomerId())) {
                     datum.setCustomerResult(result);
                     break;
                 }
-            }
-
-            if (ToolUtil.isNotEmpty(datum.getSkuId())) {
-                Sku sku = skuService.getById(datum.getSkuId());
-                datum.setSku(sku);
             }
 
             if (ToolUtil.isNotEmpty(positions)) {
@@ -351,14 +351,10 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 }
             }
 
-            if (!storehouseList.isEmpty()) {
-                for (Storehouse storehouse : storehouseList) {
-                    if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
-                        StorehouseResult storehouseResult = new StorehouseResult();
-                        ToolUtil.copyProperties(storehouse, storehouseResult);
-                        datum.setStorehouseResult(storehouseResult);
-                        break;
-                    }
+            for (StorehouseResult storehouseResult : storehouseResults) {
+                if (storehouseResult.getStorehouseId().equals(datum.getStorehouseId())){
+                    datum.setStorehouseResult(storehouseResult);
+                    break;
                 }
             }
 

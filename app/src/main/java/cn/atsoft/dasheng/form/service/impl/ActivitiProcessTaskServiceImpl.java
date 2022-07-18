@@ -434,7 +434,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 if (datum.getType().equals("OUTSTOCK") && datum.getFormId().equals(productionPickListsResult.getPickListsId())) {
                     String statusName = statusMap.get(productionPickListsResult.getStatus());
                     productionPickListsResult.setStatusName(statusName);
-                    productionPickListsService.format(new ArrayList<ProductionPickListsResult>() {{
+                    productionPickListsService.taskFormat(new ArrayList<ProductionPickListsResult>() {{
                         add(productionPickListsResult);
                     }});
                     datum.setReceipts(productionPickListsResult);
@@ -454,14 +454,13 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             for (AnomalyResult anomalyResult : anomalyResults) {
                 if (datum.getType().equals("ErrorForWard") && datum.getFormId().equals(anomalyResult.getAnomalyId())) {
                     datum.setReceipts(anomalyResult);
-                    for (MaintenanceResult maintenanceResult : maintenanceResults) {
-                        if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
-                            Long status = Long.valueOf(maintenanceResult.getStatus());
-                            String statusName = statusMap.get(status);
-                            maintenanceResult.setStatusName(statusName);
-                            datum.setReceipts(maintenanceResult);
-                        }
-                    }
+                }
+            }
+            for (MaintenanceResult maintenanceResult : maintenanceResults) {
+                if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
+                    String statusName = statusMap.get(maintenanceResult.getStatus());
+                    maintenanceResult.setStatusName(statusName);
+                    datum.setReceipts(maintenanceResult);
                 }
             }
         }
@@ -474,7 +473,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<ActivitiSteps> steps = activitiStepsService.query().eq("process_id", processId).eq("display", 1).list();
 
         List<ActivitiAudit> audits = activitiAuditService.getListBySteps(steps);
-        Boolean throwFlag = false;
         for (ActivitiAudit audit : audits) {
             if (audit.getType().equals("start")) {
                 if (!startHaveME(audit.getRule(), LoginContextHolder.getContext())) {

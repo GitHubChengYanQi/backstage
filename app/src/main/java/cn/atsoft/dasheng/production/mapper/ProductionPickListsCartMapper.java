@@ -28,6 +28,7 @@ public interface ProductionPickListsCartMapper extends BaseMapper<ProductionPick
      * @Date 2022-03-25
      */
     List<ProductionPickListsCartResult> customList(@Param("paramCondition") ProductionPickListsCartParam paramCondition);
+    List<ProductionPickListsCartResult> selfCartList(@Param("paramCondition") ProductionPickListsCartParam paramCondition,@Param("userId") Long userId);
 
     /**
      * 获取map列表

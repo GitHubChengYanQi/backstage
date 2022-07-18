@@ -53,4 +53,11 @@ public class RedisSendCheck {
         }
         return null;
     }
+    public void deleteList(String code) {
+        //判断redis库是否有这个key
+        if(getRedisTemplate.hasKey(code)){
+            //如果有就查询redis里这个list集合（第一个参数是key,0,-1是查询所有）
+            getRedisTemplate.delete(code);
+        }
+    }
 }

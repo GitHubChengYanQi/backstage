@@ -39,6 +39,8 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
     private Long brandId;
     private Long customerId;
     private Boolean warning = false;
+    //搜索用字段
+    private String queryText;
 
 
     /**

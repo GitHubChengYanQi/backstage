@@ -8,44 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public enum ProcessType {
-//    QUALITY("质检" ,"quality", new ArrayList<Map<String, Object>>(){{
-//        add(new HashMap<String,Object>(){{
-//            put("moduleName","入场检");
-//            put("module",ProcessModuleEnum.inQuality);
-//        }});
-//        add(new HashMap<String,Object>(){{
-//            put("moduleName","出厂检");
-//            put("module",ProcessModuleEnum.outQuality);
-//        }});
-//        add(new HashMap<String,Object>(){{
-//            put("moduleName","生产检");
-//            put("module",ProcessModuleEnum.productionQuality);
-//        }});
-//    }}),
-//    INSTOCK("入库操作" ,"instock", new ArrayList<Map<String,Object>>(){{
-//        add(new HashMap<String,Object>(){{
-//            put("moduleName","生产入库");
-//            put("module",ProcessModuleEnum.productionInstock);
-//        }});
-//        add(new HashMap<String,Object>(){{
-//            put("moduleName","采购入库");
-//            put("module",ProcessModuleEnum.purchaseInstock);
-//        }});
-//    }}),
-//    SHIP("工艺路线" ,"ship", new ArrayList<Map<String,Object>>(){{
-//
-//    }}),
-//    PURCHASE("采购" ,"purchase", new ArrayList<Map<String,Object>>(){{
-//        add(new HashMap<String,Object>(){{
-//            put("moduleName","采购申请");
-//            put("module",ProcessModuleEnum.purchaseAsk);
-//        }});
-//    }}),
-//    INSTOCKERROR("入库异常" ,"instockError", new ArrayList<Map<String,Object>>(){{
-//
-//    }});
-
-
     QUALITY("质检", "QUALITY", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.inQuality);
         add(ProcessModuleEnum.outQuality);
@@ -78,6 +40,10 @@ public enum ProcessType {
     OUTSTOCK("出库单", "OUTSTOCK", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.productionOutStock);
         add(ProcessModuleEnum.pickLists);
+    }}),
+    ALLOCATION("调拨", "ALLOCATION", new ArrayList<ProcessModuleEnum>() {{
+        add(ProcessModuleEnum.externalAllocation);
+        add(ProcessModuleEnum.internalAllocation);
     }}),
     Stocktaking("盘点", "Stocktaking", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.Stocktaking);

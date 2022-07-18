@@ -169,20 +169,20 @@ public class ProductionPickListsCartController extends BaseController {
         return ResponseData.success(this.productionPickListsCartService.getSelfCarts(productionPickListsCartParam));
     }
 
-//    /**
-//     * 查询列表
-//     *
-//     * @author Captain_Jazz
-//     * @Date 2022-03-25
-//     */
-//    @RequestMapping(value = "/getSelfCartsByLists", method = RequestMethod.POST)
-//    @ApiOperation("列表")
-//    public ResponseData getSelfCartsByLists(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
-//        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
-//            productionPickListsCartParam = new ProductionPickListsCartParam();
-//        }
-//        return ResponseData.success(this.productionPickListsCartService.getSelfCartsByLists(productionPickListsCartParam));
-//    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/getSelfCartsByLists", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getSelfCartsByLists(@RequestBody(required = false) ProductionPickListsCartParam productionPickListsCartParam) {
+        if (ToolUtil.isEmpty(productionPickListsCartParam)) {
+            productionPickListsCartParam = new ProductionPickListsCartParam();
+        }
+        return ResponseData.success(this.productionPickListsCartService.getSelfCartsByLists(productionPickListsCartParam.getPickListsId()));
+    }
 
     /**
      * 查询列表
