@@ -41,6 +41,8 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
 
     Object taskList(Long inventoryTaskId);
 
+    List<InventoryDetailResult> details(Long inventoryTaskId);
+
     Object mergeDetail();
 
     boolean mergeBrand(List<BrandResult> brandResults, BrandResult brandResult);
@@ -93,4 +95,6 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
     void positionFormat(List<StorehousePositionsResult> positionsResults);
 
     List<InventoryDetailResult> getDetails(List<Long> inventoryIds);
+
+    void format(List<InventoryDetailResult> data);
 }

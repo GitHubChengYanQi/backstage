@@ -79,10 +79,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private OrCodeBindService orCodeBindService;
     @Autowired
     private QrCodeCreateService qrCodeCreateService;
-
     @Autowired
     private PrintTemplateService printTemplateService;
-
     @Autowired
     private OrCodeService codeService;
     @Autowired
@@ -183,6 +181,19 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return positionId;
     }
 
+
+    @Override
+    public List<StorehousePositionsResult> details(List<Long> positionIds) {
+        if (ToolUtil.isEmpty(positionIds)) {
+            return new ArrayList<>();
+        }
+        List<StorehousePositions> positions = this.listByIds(positionIds);
+        if (ToolUtil.isEmpty(positions)) {
+            return new ArrayList<>();
+        }
+
+        return BeanUtil.copyToList(positions, StorehousePositionsResult.class);
+    }
 
     @Override
     public void delete(StorehousePositionsParam param) {
@@ -1207,7 +1218,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      */
     public List<Long> getEndChild(Long positionId) {
         StorehousePositions self = this.getById(positionId);
-        List<StorehousePositions> positions = this.query().eq("storehouse_id",self.getStorehouseId()).eq("display", 1).list();
+        List<StorehousePositions> positions = this.query().eq("storehouse_id", self.getStorehouseId()).eq("display", 1).list();
         List<Long> positionIds = new ArrayList<>();
         positionIds.add(positionId);
         for (StorehousePositions position : positions) {
@@ -1232,7 +1243,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         return positionIds;
     }
-
 
 
     private List<Long> loop(Long positionId, List<StorehousePositions> positions) {

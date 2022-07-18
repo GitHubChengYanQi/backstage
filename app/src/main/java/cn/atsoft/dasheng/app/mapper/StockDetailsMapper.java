@@ -61,6 +61,6 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
     List<StockDetails> maintenanceQuerry(@Param("paramCondition") StockDetailsParam paramCondition);
 
 
-
+    Integer getNumberByStock(@Param("skuId") Long skuId, @Param("brandId") Long brandId, @Param("positionId") Long positionId);
 
 }

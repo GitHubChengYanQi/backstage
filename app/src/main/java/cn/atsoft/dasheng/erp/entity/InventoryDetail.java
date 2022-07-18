@@ -24,6 +24,27 @@ public class InventoryDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("type")
+    private String type;
+
+    @TableField("part_condition")
+    private String partCondition;
+
+    @TableField("material_condition")
+    private String materialCondition;
+
+    @TableField("class_condition")
+    private String classCondition;
+
+    @TableField("brand_condition")
+    private String brandCondition;
+
+    @TableField("position_condition")
+    private String positionCondition;
+
+    @TableField("spu_id")
+    private Long spuId;
+
     @TableField("real_number")
     private Long realNumber;
 
@@ -255,6 +276,62 @@ public class InventoryDetail implements Serializable {
 
     public void setRealNumber(Long realNumber) {
         this.realNumber = realNumber;
+    }
+
+    public String getPartCondition() {
+        return partCondition;
+    }
+
+    public void setPartCondition(String partCondition) {
+        this.partCondition = partCondition;
+    }
+
+    public String getMaterialCondition() {
+        return materialCondition;
+    }
+
+    public void setMaterialCondition(String materialCondition) {
+        this.materialCondition = materialCondition;
+    }
+
+    public String getClassCondition() {
+        return classCondition;
+    }
+
+    public void setClassCondition(String classCondition) {
+        this.classCondition = classCondition;
+    }
+
+    public String getBrandCondition() {
+        return brandCondition;
+    }
+
+    public void setBrandCondition(String brandCondition) {
+        this.brandCondition = brandCondition;
+    }
+
+    public String getPositionCondition() {
+        return positionCondition;
+    }
+
+    public void setPositionCondition(String positionCondition) {
+        this.positionCondition = positionCondition;
+    }
+
+    public Long getSpuId() {
+        return spuId;
+    }
+
+    public void setSpuId(Long spuId) {
+        this.spuId = spuId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

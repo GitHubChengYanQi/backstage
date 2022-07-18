@@ -116,6 +116,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InstockListService instockListService;
     @Autowired
     private InstockHandleService instockHandleService;
+    @Autowired
+    private InventoryStockService inventoryStockService;
 
     @Override
     @Transactional
@@ -149,14 +151,18 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         //判断是否提交过
         List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(ids);
 
-
+        List<Long> sourceIds = new ArrayList<>();
         for (Anomaly anomaly : anomalyList) {
             if (anomaly.getStatus() == 98) {
                 throw new ServiceException(500, "请勿重新提交异常");
             }
+            sourceIds.add(anomaly.getSourceId());
         }
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
 
+        if (entity.getType().equals("Stocktaking")) {   //更新盘点处理状态
+            inventoryStockService.updateStatus(sourceIds);
+        }
         /**
          * 更新购物车状态
          */
@@ -171,35 +177,39 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         /**
          * 创建实物并绑定
          */
-        List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
-        for (AnomalyDetail detail : details) {
-            Inkind inkind = inkindService.getById(detail.getInkindId());
-            if (ToolUtil.isNotEmpty(inkind)) {
-                switch (inkind.getSource()) {
-                    case "inErrorBatch":
-                        inkind.setNumber(detail.getNumber());
-                        inkind.setSource(AnomalyType.InstockError.name());
-                        inkind.setSourceId(detail.getDetailId());
-                        inkindService.updateById(inkind);
-                        bind(inkind.getInkindId(), detail.getDetailId());
-                        break;
-                    case "inErrorSingle":
-                        for (long i = 0; i < detail.getNumber(); i++) {
-                            Inkind newInkind = new Inkind();
-                            newInkind.setNumber(1L);
-                            newInkind.setCustomerId(inkind.getCustomerId());
-                            newInkind.setBrandId(inkind.getBrandId());
-                            newInkind.setSkuId(inkind.getSkuId());
-                            newInkind.setPid(inkind.getInkindId());
-                            newInkind.setSource(AnomalyType.InstockError.name());
-                            newInkind.setSourceId(detail.getDetailId());
-                            inkindService.save(newInkind);
-                            bind(newInkind.getInkindId(), detail.getDetailId());
-                        }
-                        break;
+        if (entity.getType().equals("instock")) {
+            List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
+            for (AnomalyDetail detail : details) {
+                Inkind inkind = inkindService.getById(detail.getInkindId());
+                if (ToolUtil.isNotEmpty(inkind)) {
+                    switch (inkind.getSource()) {
+                        case "inErrorBatch":
+                            inkind.setNumber(detail.getNumber());
+                            inkind.setSource(AnomalyType.InstockError.name());
+                            inkind.setSourceId(detail.getDetailId());
+                            inkindService.updateById(inkind);
+                            bind(inkind.getInkindId(), detail.getDetailId());
+                            break;
+                        case "inErrorSingle":
+                            for (long i = 0; i < detail.getNumber(); i++) {
+                                Inkind newInkind = new Inkind();
+                                newInkind.setNumber(1L);
+                                newInkind.setCustomerId(inkind.getCustomerId());
+                                newInkind.setBrandId(inkind.getBrandId());
+                                newInkind.setSkuId(inkind.getSkuId());
+                                newInkind.setPid(inkind.getInkindId());
+                                newInkind.setSource(AnomalyType.InstockError.name());
+                                newInkind.setSourceId(detail.getDetailId());
+                                inkindService.save(newInkind);
+                                bind(newInkind.getInkindId(), detail.getDetailId());
+                            }
+                            break;
+                    }
                 }
             }
         }
+
+
         submit(entity);
         shopCartService.addDynamic(param.getInstockOrderId(), "提交了异常描述");
         shopCartService.addDynamic(entity.getOrderId(), "提交了异常");
@@ -422,7 +432,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         for (AnomalyResult anomalyResult : anomalyResults) {
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 if (detail.getStauts() == 2) {  //报损 创建出库单
-
                     InventoryDetail inventoryDetail = inventoryDetailService.query()  //找到盘点异常物料 进行出库
                             .eq("inventory_id", anomalyResult.getFormId())
                             .eq("inkind_id", detail.getInkindId()).one();

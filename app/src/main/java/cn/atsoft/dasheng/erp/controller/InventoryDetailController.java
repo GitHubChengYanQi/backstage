@@ -58,7 +58,7 @@ public class InventoryDetailController extends BaseController {
     }
 
     @RequestMapping(value = "/taskList", method = RequestMethod.POST)
-    public ResponseData taskList(@RequestBody InventoryDetailParam inventoryDetailParam) {
+    public ResponseData taskList(@RequestBody InventoryDetailParam inventoryDetailParam) {   
         Object taskList = this.inventoryDetailService.taskList(inventoryDetailParam.getInventoryId());
         return ResponseData.success(taskList);
     }

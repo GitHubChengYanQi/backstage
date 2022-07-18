@@ -104,6 +104,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InventoryDetailService inventoryDetailService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private InventoryStockService inventoryStockService;
 
 
     @Transactional
@@ -213,7 +215,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             detailService.save(detail);
         }
         param.setAnomalyId(param.getAnomalyId());
-        updateInventoryStatus(param, 2);
+        inventoryStockService.updateInventoryStatus(param, 2);
+//        updateInventoryStatus(param, 2);
         return param.getAnomalyId();
     }
 
@@ -257,8 +260,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private void updateInventoryStatus(AnomalyParam param, int status) {
         QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
-
-
         /**
          * 同一时间段   统一修改
          */
@@ -276,16 +277,26 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         queryWrapper.eq("position_id", param.getPositionId());
 
         List<InventoryDetail> inventoryDetails = inventoryDetailService.list(queryWrapper);
-        for (InventoryDetail inventoryDetail : inventoryDetails) {
+
+        for (InventoryDetail inventoryDetail : inventoryDetails) {    //保留之前记录
             if (inventoryDetail.getLockStatus() == 99) {
                 throw new ServiceException(500, "当前状态不可更改");
             }
             inventoryDetail.setStatus(status);
             inventoryDetail.setAnomalyId(param.getAnomalyId());
             inventoryDetail.setLockStatus(0);
+            inventoryDetail.setDisplay(0);
         }
+
+        List<InventoryDetail> detailList = BeanUtil.copyToList(inventoryDetails, InventoryDetail.class, new CopyOptions());
+        for (InventoryDetail inventoryDetail : detailList) {
+            inventoryDetail.setDetailId(null);
+            inventoryDetail.setDisplay(1);
+        }
+
         param.setType(param.getAnomalyType().toString());
         inventoryDetailService.updateBatchById(inventoryDetails);
+        inventoryDetailService.saveBatch(detailList);
     }
 
     /**
@@ -307,7 +318,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                     throw new ServiceException(500, "缺少异常信息");
             }
         } else {
-            updateInventoryStatus(param, -1);   //修改盘点状态
+            inventoryStockService.updateInventoryStatus(param, -1);
+//            updateInventoryStatus(param, -1);   //修改盘点状态
         }
         if (t) {   //添加异常信息
             for (AnomalyDetailParam detailParam : param.getDetailParams()) {
@@ -348,7 +360,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private void updateInventory(AnomalyParam param) {
 
-        updateInventoryStatus(param, 1);    //数据正常  不添加异常数据
+        inventoryStockService.updateInventoryStatus(param, 1);//数据正常  不添加异常数据
+//        updateInventoryStatus(param, 1);
+        /**
+         * 更新购物车
+         */
+
         ShopCart shopCart = new ShopCart();
         shopCart.setDisplay(0);
         switch (param.getAnomalyType()) {
@@ -365,18 +382,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
 
 
-        //改为正常
-        InventoryDetail inventoryDetail = new InventoryDetail();
-        inventoryDetail.setAnomalyId(0L);
-        inventoryDetailService.update(inventoryDetail, new QueryWrapper<InventoryDetail>() {{
-            eq("anomaly_id", param.getAnomalyId());
-        }});
     }
 
 
     @Override
     public void delete(AnomalyParam param) {
         Anomaly anomaly = this.getById(param.getAnomalyId());
+        if (ToolUtil.isEmpty(anomaly)) {
+            return;
+        }
         anomaly.setDisplay(0);
         this.updateById(anomaly);
 
@@ -395,8 +409,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         if (ToolUtil.isNotEmpty(anomaly.getSourceId())) {
             InstockList instockList = instockListService.getById(anomaly.getSourceId());
-            instockList.setStatus(0L);
-            instockListService.updateById(instockList);
+            if (ToolUtil.isNotEmpty(instockList)) {
+                instockList.setStatus(0L);
+                instockListService.updateById(instockList);
+            }
         }
         //盘点
         if (anomaly.getType().equals(AnomalyType.StocktakingError.name()) || anomaly.getType().equals(AnomalyType.allStocktaking.name())) {
@@ -430,7 +446,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             eq("anomaly_id", param.getAnomalyId());
         }});
         boolean b = addDetails(param);
-        if (b) {   //添加购物车
+        if (b) {    //添加购物车
 
             shopCartService.remove(new QueryWrapper<ShopCart>() {{
                 eq("form_id", oldEntity.getAnomalyId());

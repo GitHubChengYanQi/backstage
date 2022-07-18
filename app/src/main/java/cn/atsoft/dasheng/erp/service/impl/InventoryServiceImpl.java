@@ -19,6 +19,8 @@ import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
+import cn.atsoft.dasheng.erp.pojo.SkuBind;
+import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -120,6 +122,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private InventoryStockService inventoryStockService;
 
     @Override
     @Transactional
@@ -282,7 +286,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      * @param param
      */
     @Override
-    public void InventoryApply(InventoryParam param) {
+    public Inventory InventoryApply(InventoryParam param) {
 
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "6").eq("state", 1).one();
@@ -294,36 +298,58 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }
         }
 
-
         Inventory entity = getEntity(param);
         this.save(entity);
 
-        List<InventoryDetail> all = new ArrayList<>();
         for (InventoryDetailParam detailParam : param.getDetailParams()) {
-            switch (detailParam.getType()) {
-                case "sku":
-                case "spu":
-                    List<InventoryDetail> condition = condition(detailParam);
-                    for (InventoryDetail inventoryDetail : condition) {
-                        if (all.stream().noneMatch(i -> i.getInkindId().equals(inventoryDetail.getInkindId()))) {
-                            inventoryDetail.setInventoryId(entity.getInventoryTaskId());
-                            all.add(inventoryDetail);
-                        }
-                    }
-                    break;
+            List<Long> bomIds = detailParam.getBomIds();
+            List<Long> brandIds = detailParam.getBrandIds();
+            List<Long> positionIds = detailParam.getPositionIds();
+            List<Long> classIds = detailParam.getClassIds();
+            if (ToolUtil.isNotEmpty(bomIds)) {
+                String partJson = JSON.toJSONString(bomIds);
+                detailParam.setPartCondition(partJson);
             }
+            if (ToolUtil.isNotEmpty(brandIds)) {
+                String brandJson = JSON.toJSONString(brandIds);
+                detailParam.setBrandCondition(brandJson);
+            }
+            if (ToolUtil.isNotEmpty(positionIds)) {
+                String positionJson = JSON.toJSONString(positionIds);
+                detailParam.setPositionCondition(positionJson);
+            }
+            if (ToolUtil.isNotEmpty(classIds)) {
+                String classJson = JSON.toJSONString(classIds);
+                detailParam.setClassCondition(classJson);
+            }
+            if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {
+                List<Long> spuIds = detailParam.getSpuIds();
+                detailParam.setSpuId(spuIds.get(0));
+            }
+            detailParam.setInventoryId(entity.getInventoryTaskId());
+
+            InventoryDetail inventoryDetail = new InventoryDetail();
+            ToolUtil.copyProperties(detailParam, inventoryDetail);
+            inventoryDetailService.save(inventoryDetail);
+            detailParam.setDetailId(inventoryDetail.getDetailId());
         }
-        inventoryDetailService.saveBatch(all);
+
+        inventoryStockService.addList(param.getDetailParams());
+        param.setInventoryTaskId(entity.getInventoryTaskId());
+        submit(param);
+        return entity;
+
     }
 
+
     @Override
-    public List<InventoryDetail> condition(InventoryDetailParam detailParam) {
+    public List<InventoryStock> condition(InventoryDetailParam detailParam) {
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
 
-        if (ToolUtil.isNotEmpty(detailParam.getSpuId())) {    //产品
-            List<Sku> skus = skuService.query().eq("spu_id", detailParam.getSpuId()).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {    //产品
+            List<Sku> skus = skuService.query().in("spu_id", detailParam.getSpuIds()).eq("display", 1).list();
             queryWrapper.in("sku_id", new ArrayList<Long>() {{
                 for (Sku skus : skus) {
                     add(skus.getSkuId());
@@ -331,7 +357,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }});
         }
 
-        if (ToolUtil.isNotEmpty(detailParam.getBrandIds())) {   //品牌盘点
+        if (ToolUtil.isNotEmpty(detailParam.getBrandIds())) {    //品牌盘点
             queryWrapper.in("brand_id", detailParam.getBrandIds());
         }
 
@@ -349,7 +375,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             List<Long> skuIds = inventoryDetailService.getSkuIds(detailParam.getClassIds());
             skuIds.add(0L);
             queryWrapper.in("sku_id", skuIds);
-
         }
 
         if (ToolUtil.isNotEmpty(detailParam.getBomIds())) {   //bom
@@ -361,23 +386,69 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             queryWrapper.in("sku_id", skuIds);
         }
 
-        if (ToolUtil.isNotEmpty(detailParam.getSkuId())) {   //单选物料
-            queryWrapper.eq("sku_id", detailParam.getSkuId());
+        if (ToolUtil.isNotEmpty(detailParam.getSkuIds())) {   //指定物料
+            queryWrapper.in("sku_id", detailParam.getSkuIds());
         }
 
         List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
-        List<InventoryDetail> details = new ArrayList<>();
+        List<InventoryStock> details = new ArrayList<>();
 
         for (StockDetails stockDetail : stockDetails) {
-            InventoryDetail inventoryDetail = new InventoryDetail();
-            inventoryDetail.setSkuId(stockDetail.getSkuId());
-            inventoryDetail.setBrandId(stockDetail.getBrandId());
-            inventoryDetail.setInkindId(stockDetail.getInkindId());
-            inventoryDetail.setPositionId(stockDetail.getStorehousePositionsId());
-            inventoryDetail.setNumber(stockDetail.getNumber());
-            details.add(inventoryDetail);
+            InventoryStock inventoryStock = new InventoryStock();
+            inventoryStock.setSkuId(stockDetail.getSkuId());
+            inventoryStock.setBrandId(stockDetail.getBrandId());
+            inventoryStock.setPositionId(stockDetail.getStorehousePositionsId());
+            details.add(inventoryStock);
         }
         return details;
+    }
+
+    /**
+     * 通过条件查库存呢  默认获取一个
+     *
+     * @param detailParam
+     * @return
+     */
+    @Override
+    public InventoryDetailResult conditionGetOne(InventoryDetailParam detailParam) {
+
+        InventoryDetailResult inventoryDetailResult = null;
+
+        List<SkuBind> skuBinds = getSkuBinds(detailParam);  //获取物料绑定的信息
+
+        List<InventoryDetailResult> detailResults = new ArrayList<>();
+
+        for (SkuBind skuBind : skuBinds) {
+            InventoryDetailResult result = new InventoryDetailResult();
+            result.setSkuId(skuBind.getSkuId());
+            result.setBrandId(skuBind.getBrandId());
+            result.setPositionId(skuBind.getPositionId());
+            detailResults.add(result);
+        }
+
+        Set<Long> skuNum = new HashSet<>();
+        for (InventoryDetailResult detailResult : detailResults) {
+            skuNum.add(detailResult.getSkuId());
+        }
+        if (ToolUtil.isNotEmpty(detailResults)) {
+            inventoryDetailService.format(detailResults);
+            inventoryDetailResult = detailResults.get(0);
+            inventoryDetailResult.setSkuNum(skuNum.size());
+        }
+        return inventoryDetailResult;
+    }
+
+    @Override
+    public List<SkuBind> getSkuBinds(InventoryDetailParam detailParam) {
+        SkuBindParam skuBindParam = new SkuBindParam();
+        ToolUtil.copyProperties(detailParam, skuBindParam);
+        List<SkuBind> skuBinds = skuService.skuBindList(skuBindParam);
+        for (SkuBind skuBind : skuBinds) {
+            if (ToolUtil.isEmpty(skuBind.getBrandId())) {
+                skuBind.setBrandId(0L);
+            }
+        }
+        return skuBinds;
     }
 
     @Override
@@ -416,7 +487,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
          * 通过库位组合
          */
         Map<Long, List<StockDetails>> map = new HashMap<>();
-//        Map<Long,Long>
         for (Long positionId : positionIds) {
             List<StockDetails> details = new ArrayList<>();
             for (StockDetails detail : stockDetails) {
@@ -452,7 +522,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         }
                     }
                 }
-
                 inventoryDetailService.brandFormat(brandResults);
                 brandMap.put(skuId, brandResults);
             }
@@ -578,8 +647,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         format(new ArrayList<InventoryResult>() {{
             add(inventoryResult);
         }});
-        Object taskList = inventoryDetailService.taskList(id);
-        inventoryResult.setTaskList(taskList);
+        List<InventoryDetailResult> details = inventoryDetailService.details(id);
+        inventoryResult.setTaskList(details);
         return inventoryResult;
     }
 
@@ -693,7 +762,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         inventory.setStatus(2);
                         inventories.add(inventory);
 
-                    } else if (detail.getNumber() < param.getNumber()) {  //修正入库
+                    } else if (detail.getNumber() < param.getNumber()) {   //修正入库
 
                         InstockListParam instockListParam = new InstockListParam();//添加记录
                         instockListParam.setSkuId(detail.getSkuId());

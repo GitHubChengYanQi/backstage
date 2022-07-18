@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.erp.mapper;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.pojo.SkuBind;
+import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -48,6 +50,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     /**
      * 选择物料查询接口
+     *
      * @param spuIds
      * @param page
      * @param paramCondition
@@ -57,6 +60,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
 
     List<SkuResult> allList(@Param("spuIds") List<Long> spuIds, @Param("paramCondition") SkuParam paramCondition);
+
     /**
      * 获取分页map列表
      *
@@ -64,5 +68,8 @@ public interface SkuMapper extends BaseMapper<Sku> {
      * @Date 2021-10-18
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") SkuParam paramCondition);
+
+
+    List<SkuBind> skuBindList(@Param("SkuBindParam") SkuBindParam skuBindParam);
 
 }

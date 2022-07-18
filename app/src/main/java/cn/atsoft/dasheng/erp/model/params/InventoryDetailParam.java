@@ -26,9 +26,17 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private String type;
+    private String partCondition;
 
-    private Long spuId;
+    private String materialCondition;
+
+    private String classCondition;
+
+    private String brandCondition;
+
+    private String positionCondition;
+
+    private List<Long> spuIds;
 
     private List<Long> classIds;
 
@@ -44,7 +52,15 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
 
     private Long positionId;
 
+    private List<Long> skuIds;
+
+    private String type;
+
     private Long skuId;
+
+    private Long brandId;
+
+    private Long spuId;
 
     private List<Long> mediaIds;
 
@@ -55,9 +71,6 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
     private Long customerId;
 
     private String enclosure;
-
-    private Long brandId;
-
 
     private Long storeHouseId;
 
