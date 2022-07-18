@@ -198,6 +198,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         InstockOrder entity = getEntity(param);
         this.save(entity);
+        String origin = this.getOrigin.newThemeAndOrigin("INSTOCK", entity.getInstockOrderId(), ToolUtil.isEmpty(param.getSource()) ? null : param.getSource(), ToolUtil.isEmpty(param.getSourceId()) ? null : param.getSourceId());
+        entity.setOrigin(origin);
+        this.updateById(entity);
+
 
         List<Long> skuIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getListParams())) {
@@ -265,8 +269,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 entity.setTheme(stringBuffer.toString());
             }
 
-//            entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder", entity.getInstockOrderId(), entity.getSource(), entity.getSourceId()));
-//            this.updateById(entity);
+            entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder", entity.getInstockOrderId(), ToolUtil.isEmpty(entity.getSource())? null :entity.getSource(),  ToolUtil.isEmpty(entity.getSourceId())? null :entity.getSourceId()));
+            this.updateById(entity);
 
             //发起审批流程
             if (ToolUtil.isEmpty(param.getModule())) {
@@ -285,8 +289,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
-            activitiProcessTaskParam.setSource(param.getSource());
-            activitiProcessTaskParam.setSourceId(param.getSourceId());
+            if (ToolUtil.isNotEmpty(entity.getSource() ) && ToolUtil.isNotEmpty(entity.getSourceId())) {
+                activitiProcessTaskParam.setSource(entity.getSource());
+                activitiProcessTaskParam.setSourceId(entity.getSourceId());
+            }
             if (param.getDirectInStock()) {
                 activitiProcessTaskParam.setStatus(99);
             }

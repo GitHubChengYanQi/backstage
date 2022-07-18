@@ -69,6 +69,12 @@
                     #{state}
                 </foreach>
             </if>
+        <if test="paramCondition.brandIds != null and paramCondition.brandIds.size > 0">
+                and brand_id in
+                <foreach collection="paramCondition.brandIds" index="index" item="state" separator="," close=")" open="(">
+                    #{state}
+                </foreach>
+            </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam">

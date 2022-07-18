@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockHandle;
 import cn.atsoft.dasheng.erp.model.params.InstockHandleParam;
@@ -8,6 +9,7 @@ import cn.atsoft.dasheng.erp.service.InstockHandleService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -103,6 +106,37 @@ public class InstockHandleController extends BaseController {
         }
         return this.instockHandleService.findPageBySpec(instockHandleParam);
     }
+    /**
+         * 查询列表
+         *
+         * @author song
+         * @Date 2022-07-08
+         */
+        @RequestMapping(value = "/listByInstockOrderId", method = RequestMethod.GET)
+        @ApiOperation("列表")
+        public ResponseData listByInstockOrderId(@RequestParam Long instockOrderId) {
+            List<InstockHandle> instockHandles = this.instockHandleService.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
+            List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
+
+            List<InstockHandleResult> detailTotalList = new ArrayList<>();
+
+            instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId()+"_"+item.getType(), Collectors.toList())).forEach(
+                    (id, transfer) -> {
+                        transfer.stream().reduce((a, b) -> new InstockHandleResult() {{
+                            setNumber(a.getNumber() + b.getNumber());
+                            setSkuId(a.getSkuId());
+                            setBrandId(a.getBrandId());
+                            setType(a.getType());
+                        }}).ifPresent(detailTotalList::add);
+                    }
+            );
+
+
+
+            this.instockHandleService.format(detailTotalList);
+
+            return ResponseData.success(detailTotalList) ;
+        }
 
 }
 
