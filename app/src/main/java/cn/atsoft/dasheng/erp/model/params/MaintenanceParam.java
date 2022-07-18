@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -25,9 +26,27 @@ public class MaintenanceParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     List<MaintenanceDetailParam> detailParams;
     //材质id
-    private Long materialId;
-    private Long brandId;
-    private Long storehousePositionsId;
+    private String  materialIds;
+
+
+    /**
+     * 品牌id
+     */
+    private String brandIds;
+
+    /**
+     * 库位id
+     */
+    private String storehousePositionsIds;
+    /**
+     * 库位id
+     */
+    private String partsIds;
+
+    /**
+     * 库位id
+     */
+    private String spuClassificationIds;
     private String coding;
     /**
      * 养护
