@@ -34,6 +34,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
     //判断当前库位是否为最下级
     Long judgePosition(Long positionId);
 
+
     List<StorehousePositionsResult> details(List<Long> positionIds);
 
     /**
@@ -95,7 +96,9 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
     PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param);
 
+
     StorehousePositionsResult getDetail(Long id, List<StorehousePositions> positions);
+
 
     List<StorehousePositionsResult> getDetails(List<Long> ids);
 
@@ -107,7 +110,6 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
 
     Map<String, Map<String, Object>> takeStock(StorehousePositionsParam param);
-
 
     StorehousePositionsResult detail(Long id);
 
