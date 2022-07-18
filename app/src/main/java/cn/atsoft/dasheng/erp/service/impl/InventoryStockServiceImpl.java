@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inventory;
@@ -53,6 +54,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private StorehousePositionsService positionsService;
     @Autowired
     private InventoryDetailService inventoryDetailService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
 
     @Override
@@ -178,12 +181,19 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             Map<Long, Integer> status = new HashMap<>();
             Map<Long, Long> anomalyId = new HashMap<>();
             Map<Long, Long> inventoryStockId = new HashMap<>();
+            Map<Long, Integer> number = new HashMap<>();
+
             for (InventoryStockResult result : detailResultList) {
                 skuIds.add(result.getSkuId());
                 lock.put(result.getSkuId(), result.getLockStatus());
                 status.put(result.getSkuId(), result.getStatus());
                 anomalyId.put(result.getSkuId(), result.getAnomalyId());
                 inventoryStockId.put(result.getSkuId(), result.getInventoryStockId());
+                if (result.getStatus().equals(0)) {
+                    Integer stockNum = stockDetailsService.getNumberByStock(result.getSkuId(), null, positionId);
+                    result.setRealNumber(Long.valueOf(stockNum));
+                }
+                number.put(result.getSkuId(), Math.toIntExact(result.getRealNumber()));
             }
 
             List<SkuResult> list = skuService.formatSkuResult(new ArrayList<>(skuIds));
@@ -192,6 +202,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                 skuResult.setInventoryStatus(status.get(skuResult.getSkuId()));
                 skuResult.setLockStatus(lockStatus);
                 skuResult.setAnomalyId(anomalyId.get(skuResult.getSkuId()));
+                skuResult.setStockNumber(number.get(skuResult.getSkuId()));
                 skuResult.setInventoryStockId(inventoryStockId.get(skuResult.getSkuId()));
             }
             StorehousePositionsResult positionsResult = new StorehousePositionsResult();
@@ -246,6 +257,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             inventoryStock.setAnomalyId(param.getAnomalyId());
             inventoryStock.setLockStatus(0);
             inventoryStock.setDisplay(0);
+            inventoryStock.setRealNumber(param.getRealNumber());
         }
 
         List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
