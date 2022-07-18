@@ -66,4 +66,5 @@ public interface InstockHandleService extends IService<InstockHandle> {
      */
      PageInfo<InstockHandleResult> findPageBySpec(InstockHandleParam param);
 
+    void format(List<InstockHandleResult> data);
 }

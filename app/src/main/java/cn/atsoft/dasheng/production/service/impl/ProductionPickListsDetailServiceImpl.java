@@ -129,7 +129,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                 }
         );
         List<StockDetails> anyBrand = new ArrayList<>();
-        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId(), Collectors.toList())).forEach(
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId()+"", Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setSkuId(a.getSkuId());

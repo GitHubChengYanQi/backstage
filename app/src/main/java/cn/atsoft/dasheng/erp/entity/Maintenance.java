@@ -43,21 +43,32 @@ public class Maintenance implements Serializable {
     /**
      * 材质id
      */
-    @TableField("material_id")
-    private Long materialId;
+    @TableField("material_ids")
+    private String  materialIds;
 
 
     /**
      * 品牌id
      */
-    @TableField("brand_id")
-    private Long brandId;
+    @TableField("brand_ids")
+    private String brandIds;
 
     /**
      * 库位id
      */
-    @TableField("storehouse_positions_id")
-    private Long storehousePositionsId;
+    @TableField("storehouse_positions_ids")
+    private String storehousePositionsIds;
+    /**
+     * 库位id
+     */
+    @TableField("parts_ids")
+    private String partsIds;
+
+    /**
+     * 库位id
+     */
+    @TableField("spu_classification_ids")
+    private String spuClassificationIds;
 
     /**
      * 负责人
@@ -272,28 +283,44 @@ public class Maintenance implements Serializable {
         this.note = note;
     }
 
-    public Long getMaterialId() {
-        return materialId;
+    public String getMaterialIds() {
+        return materialIds;
     }
 
-    public void setMaterialId(Long materialId) {
-        this.materialId = materialId;
+    public void setMaterialIds(String materialIds) {
+        this.materialIds = materialIds;
     }
 
-    public Long getBrandId() {
-        return brandId;
+    public String getBrandIds() {
+        return brandIds;
     }
 
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
+    public void setBrandIds(String brandIds) {
+        this.brandIds = brandIds;
     }
 
-    public Long getStorehousePositionsId() {
-        return storehousePositionsId;
+    public String getStorehousePositionsIds() {
+        return storehousePositionsIds;
     }
 
-    public void setStorehousePositionsId(Long storehousePositionsId) {
-        this.storehousePositionsId = storehousePositionsId;
+    public void setStorehousePositionsIds(String storehousePositionsIds) {
+        this.storehousePositionsIds = storehousePositionsIds;
+    }
+
+    public String getPartsIds() {
+        return partsIds;
+    }
+
+    public void setPartsIds(String partsIds) {
+        this.partsIds = partsIds;
+    }
+
+    public String getSpuClassificationIds() {
+        return spuClassificationIds;
+    }
+
+    public void setSpuClassificationIds(String spuClassificationIds) {
+        this.spuClassificationIds = spuClassificationIds;
     }
 
     public String getCoding() {

@@ -42,7 +42,7 @@ public class ProductionPickListsDetailResult implements Serializable {
     private Long storehouseId;
     private UserResult userResult;
     private String pickListsCoding;
-    private Integer stockNumber;
+    private Integer stockNumber = 0;
     private Boolean isMeet;
     private List<ProductionPickListsCartResult> cartResults;
     private Map<String,String> brandResult;

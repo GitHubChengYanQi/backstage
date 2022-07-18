@@ -186,6 +186,12 @@ stage
                 #{state}
             </foreach>
         </if>
+        <if test="paramCondition.brandIds != null and  paramCondition.brandIds.size>0">
+            and brand_id in
+            <foreach collection="paramCondition.brandIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
         <if test=" paramCondition.notNeedMaintenanceInkindIds != null  and paramCondition.notNeedMaintenanceInkindIds.size>0">
             and inkind_id not in
             <foreach collection="paramCondition.notNeedMaintenanceInkindIds" index="index"
