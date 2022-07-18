@@ -181,9 +181,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         entity.setStatus(0L);
 //        entity.setUserId(LoginContextHolder.getContext().getUserId());
         this.save(entity);
-        String origin = getOrigin.newThemeAndOrigin("OUTSTOCK", entity.getPickListsId(), entity.getSource(), entity.getSourceId());
-        entity.setOrigin(origin);
-        this.updateById(entity);
+//        String origin = getOrigin.newThemeAndOrigin("OUTSTOCK", entity.getPickListsId(), entity.getSource(), entity.getSourceId());
+//        entity.setOrigin(origin);
+//        this.updateById(entity);
 
         if (ToolUtil.isNotEmpty(param.getPickListsDetailParams())) {
             List<ShopCart> carts = new ArrayList<>();
