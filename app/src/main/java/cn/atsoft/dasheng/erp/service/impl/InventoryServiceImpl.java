@@ -421,10 +421,16 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         InventoryDetailResult inventoryDetailResult = null;
 
+        if (ToolUtil.isNotEmpty(detailParam.getPositionIds())) {
+            List<Long> positionIds = new ArrayList<>();
+            for (Long positionId : detailParam.getPositionIds()) {
+                positionIds.addAll(positionsService.getEndChild(positionId));
+            }
+            detailParam.setPositionIds(positionIds);
+        }
+
         List<SkuBind> skuBinds = getSkuBinds(detailParam);  //获取物料绑定的信息
-
         List<InventoryDetailResult> detailResults = new ArrayList<>();
-
         for (SkuBind skuBind : skuBinds) {
             InventoryDetailResult result = new InventoryDetailResult();
             result.setSkuId(skuBind.getSkuId());
