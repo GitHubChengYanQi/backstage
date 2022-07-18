@@ -265,8 +265,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 entity.setTheme(stringBuffer.toString());
             }
 
-//            entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder", entity.getInstockOrderId(), entity.getSource(), entity.getSourceId()));
-//            this.updateById(entity);
+            entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder", entity.getInstockOrderId(), ToolUtil.isEmpty(entity.getSource())? null :entity.getSource(),  ToolUtil.isEmpty(entity.getSourceId())? null :entity.getSourceId()));
+            this.updateById(entity);
 
             //发起审批流程
             if (ToolUtil.isEmpty(param.getModule())) {

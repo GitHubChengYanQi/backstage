@@ -314,6 +314,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     }
                 }
             }
+            result.setSkuCount(listsSkuIds.stream().distinct().collect(Collectors.toList()).size());
+            result.setPositionCount(listsPositionIds.stream().distinct().collect(Collectors.toList()).size());
             result.setNumberCount(numberCount);
             result.setReceivedCount(receivedCount);
         }

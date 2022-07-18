@@ -13,7 +13,6 @@ import cn.atsoft.dasheng.erp.entity.InstockHandle;
 import cn.atsoft.dasheng.erp.mapper.InstockHandleMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockHandleParam;
 import cn.atsoft.dasheng.erp.model.result.InstockHandleResult;
-import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.InstockHandleService;
@@ -107,8 +106,8 @@ public class InstockHandleServiceImpl extends ServiceImpl<InstockHandleMapper, I
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
-    private void format(List<InstockHandleResult> data) {
+    @Override
+    public void format(List<InstockHandleResult> data) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
