@@ -28,6 +28,9 @@ public class ShopCart implements Serializable {
     private Long cartId;
 
 
+    @TableField("storehouse_id")
+    private Long storehouseId;
+
     @TableField("storehouse_positions_id")
     private String storehousePositionsId;
 
@@ -216,6 +219,14 @@ public class ShopCart implements Serializable {
 
     public void setStorehousePositionsId(String storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
     }
 
     @Override
