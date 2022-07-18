@@ -13,20 +13,15 @@ import cn.atsoft.dasheng.erp.mapper.InventoryStockMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryStockParam;
-import cn.atsoft.dasheng.erp.model.result.InventoryResult;
-import cn.atsoft.dasheng.erp.model.result.InventoryStockResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.SkuBind;
 import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
-import cn.atsoft.dasheng.erp.service.InventoryService;
-import cn.atsoft.dasheng.erp.service.InventoryStockService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -35,8 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -57,6 +51,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private BrandService brandService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private InventoryDetailService inventoryDetailService;
 
 
     @Override
@@ -106,6 +102,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                         && i.getBrandId().equals(inventoryStock.getBrandId())
                         && i.getPositionId().equals(inventoryStock.getPositionId())
                 )) {
+                    inventoryStock.setInventoryId(detailParam.getInventoryId());
                     all.add(inventoryStock);
                 }
             }
@@ -131,6 +128,93 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
 
     @Override
+    public Object taskList(Long inventoryId) {
+        List<InventoryStock> inventoryStocks = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
+        List<InventoryStockResult> inventoryStockResults = BeanUtil.copyToList(inventoryStocks, InventoryStockResult.class);
+        return positionsResultList(inventoryStockResults);
+    }
+
+    /**
+     * 组合结构
+     *
+     * @return
+     */
+    @Override
+
+    public List<StorehousePositionsResult> positionsResultList(List<InventoryStockResult> detailResults) {
+        Set<Long> positionIds = new HashSet<>();
+
+        for (InventoryStockResult result : detailResults) {
+            if (ToolUtil.isEmpty(result.getBrandId())) {
+                result.setBrandId(0L);
+            }
+            if (ToolUtil.isEmpty(result.getPositionId())) {
+                result.setPositionId(0L);
+            }
+            positionIds.add(result.getPositionId());
+        }
+
+        /**
+         * 通过库位组合
+         */
+        Map<Long, List<InventoryStockResult>> positionMap = new HashMap<>();
+
+        for (Long positionId : positionIds) {
+            List<InventoryStockResult> details = new ArrayList<>();
+            for (InventoryStockResult result : detailResults) {
+                if (result.getPositionId().equals(positionId)) {
+                    details.add(result);
+                }
+            }
+            positionMap.put(positionId, details);
+        }
+
+        List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
+        for (Long positionId : positionIds) {
+            List<InventoryStockResult> detailResultList = positionMap.get(positionId);
+            Set<Long> skuIds = new HashSet<>();
+
+            Map<Long, Integer> lock = new HashMap<>();
+            Map<Long, Integer> status = new HashMap<>();
+            Map<Long, Long> anomalyId = new HashMap<>();
+            Map<Long, Long> inventoryStockId = new HashMap<>();
+            for (InventoryStockResult result : detailResultList) {
+                skuIds.add(result.getSkuId());
+                lock.put(result.getSkuId(), result.getLockStatus());
+                status.put(result.getSkuId(), result.getStatus());
+                anomalyId.put(result.getSkuId(), result.getAnomalyId());
+                inventoryStockId.put(result.getSkuId(), result.getInventoryStockId());
+            }
+
+            List<SkuResult> list = skuService.formatSkuResult(new ArrayList<>(skuIds));
+            for (SkuResult skuResult : list) {
+                Integer lockStatus = lock.get(skuResult.getSkuId());
+                skuResult.setInventoryStatus(status.get(skuResult.getSkuId()));
+                skuResult.setLockStatus(lockStatus);
+                skuResult.setAnomalyId(anomalyId.get(skuResult.getSkuId()));
+                skuResult.setInventoryStockId(inventoryStockId.get(skuResult.getSkuId()));
+            }
+            StorehousePositionsResult positionsResult = new StorehousePositionsResult();
+            positionsResult.setSkuResultList(list);
+            positionsResult.setStorehousePositionsId(positionId);
+            positionsResultList.add(positionsResult);
+        }
+
+        inventoryDetailService.positionFormat(positionsResultList);
+        positionsService.format(positionsResultList);
+        return positionsResultList;
+    }
+
+    @Override
+    public void updateStatus(List<Long> ids) {
+        List<InventoryStock> inventoryStocks = ids.size() == 0 ? new ArrayList<>() : this.listByIds(ids);
+        for (InventoryStock inventoryStock : inventoryStocks) {
+            inventoryStock.setLockStatus(99);
+        }
+        this.updateBatchById(inventoryStocks);
+    }
+
+    @Override
     public void updateInventoryStatus(AnomalyParam param, int status) {
         QueryWrapper<InventoryStock> queryWrapper = new QueryWrapper<>();
         /**
@@ -144,9 +228,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             }
         }
         inventoryIds.add(param.getFormId());
+        queryWrapper.eq("display", 1);
         queryWrapper.in("inventory_id", inventoryIds);
         queryWrapper.eq("sku_id", param.getSkuId());
-        queryWrapper.eq("brand_id", param.getBrandId());
+        if (ToolUtil.isNotEmpty(param.getBrandId())) {
+            queryWrapper.eq("brand_id", param.getBrandId());
+        }
         queryWrapper.eq("position_id", param.getPositionId());
 
         List<InventoryStock> inventoryStocks = this.list(queryWrapper);
@@ -163,7 +250,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
         for (InventoryStock inventoryStock : stockList) {
-            inventoryStock.setDetailId(null);
+            inventoryStock.setInventoryStockId(null);
             inventoryStock.setDisplay(1);
             if (status == 1) {   //正常物料    清楚异常id
                 inventoryStock.setAnomalyId(0L);

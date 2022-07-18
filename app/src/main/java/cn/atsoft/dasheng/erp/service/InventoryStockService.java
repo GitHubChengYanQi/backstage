@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryStockParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryStockResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -53,6 +54,12 @@ public interface InventoryStockService extends IService<InventoryStock> {
      * @Date 2022-07-15
      */
     InventoryStockResult findBySpec(InventoryStockParam param);
+
+    Object taskList(Long inventoryId);
+
+    List<StorehousePositionsResult> positionsResultList(List<InventoryStockResult> detailResults);
+
+    void updateStatus(List<Long> ids);
 
     /**
      * 修改状态

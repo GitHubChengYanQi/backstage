@@ -388,6 +388,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Override
     public void delete(AnomalyParam param) {
         Anomaly anomaly = this.getById(param.getAnomalyId());
+        if (ToolUtil.isEmpty(anomaly)) {
+            return;
+        }
         anomaly.setDisplay(0);
         this.updateById(anomaly);
 
@@ -406,8 +409,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         if (ToolUtil.isNotEmpty(anomaly.getSourceId())) {
             InstockList instockList = instockListService.getById(anomaly.getSourceId());
-            instockList.setStatus(0L);
-            instockListService.updateById(instockList);
+            if (ToolUtil.isNotEmpty(instockList)) {
+                instockList.setStatus(0L);
+                instockListService.updateById(instockList);
+            }
         }
         //盘点
         if (anomaly.getType().equals(AnomalyType.StocktakingError.name()) || anomaly.getType().equals(AnomalyType.allStocktaking.name())) {

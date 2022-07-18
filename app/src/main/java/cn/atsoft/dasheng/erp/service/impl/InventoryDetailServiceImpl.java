@@ -295,7 +295,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         }
 
         positionFormat(positionsResultList);
-        positionsService.format(positionsResultList);
         return positionsResultList;
     }
 
@@ -423,10 +422,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         List<InventoryDetail> inventoryDetails = this.query().in("inventory_id", inventoryIds).list();
         List<Long> anomalyIds = new ArrayList<>();
         for (InventoryDetail inventoryDetail : inventoryDetails) {
-            if (inventoryDetail.getLockStatus() != 98) {
-                throw new ServiceException(500, "请全部确定");
-            }
-            inventoryDetail.setLockStatus(99);  //锁数据
+//            if (inventoryDetail.getLockStatus() != 98) {
+//                throw new ServiceException(500, "请全部确定");
+//            }
+//            inventoryDetail.setLockStatus(99);  //锁数据
             if (ToolUtil.isNotEmpty(inventoryDetail.getAnomalyId())) {
                 anomalyIds.add(inventoryDetail.getAnomalyId());
             }

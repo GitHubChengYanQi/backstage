@@ -527,9 +527,11 @@
         ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN (SELECT * FROM goods_spu_class WHERE display = 1) AS goods_spu_class
         ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
-        LEFT JOIN (SELECT * FROM goods_sku_brand_bind WHERE display = 1) AS goods_sku_brand_bind
+        LEFT JOIN (SELECT * FROM goods_sku_brand_bind WHERE display = 1 AND brand_id IN ( SELECT brand_id FROM
+        daoxin_erp_brand WHERE display = 1 )) AS goods_sku_brand_bind
         ON goods_sku_brand_bind.sku_id = goods_sku.sku_id
-        LEFT JOIN (SELECT * FROM daoxin_erp_storehouse_positions_bind WHERE display = 1) AS
+        LEFT JOIN (SELECT * FROM daoxin_erp_storehouse_positions_bind WHERE display = 1 AND position_id IN ( SELECT
+        storehouse_positions_id FROM daoxin_erp_storehouse_positions WHERE display = 1 )) AS
         daoxin_erp_storehouse_positions_bind
         ON daoxin_erp_storehouse_positions_bind.sku_id = goods_sku.sku_id
         WHERE 1 = 1

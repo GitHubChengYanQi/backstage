@@ -339,32 +339,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         submit(param);
         return entity;
 
-//            List<SkuBind> skuBinds = getSkuBinds(detailParam);  //从物料绑定取
-//            for (SkuBind skuBind : skuBinds) {
-//                if (all.stream().noneMatch(i -> i.getSkuId().equals(skuBind.getSkuId())
-//                        && i.getBrandId().equals(skuBind.getBrandId())
-//                        && i.getPositionId().equals(skuBind.getPositionId())
-//                )) {
-//                    InventoryDetail inventoryDetail = new InventoryDetail();
-//                    inventoryDetail.setSkuId(skuBind.getSkuId());
-//                    inventoryDetail.setBrandId(skuBind.getBrandId());
-//                    inventoryDetail.setPositionId(skuBind.getPositionId());
-//                    inventoryDetail.setInventoryId(entity.getInventoryTaskId());
-//                    all.add(inventoryDetail);
-//                }
-//            }
-////----------------------------------------------------------------------------------------------------------------------
-//            List<InventoryDetail> condition = condition(detailParam);   //从库存取
-//            for (InventoryDetail inventoryDetail : condition) {
-//                if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryDetail.getSkuId())
-//                        && i.getBrandId().equals(inventoryDetail.getBrandId())
-//                        && i.getPositionId().equals(inventoryDetail.getPositionId())
-//                )) {
-//                    inventoryDetail.setInventoryId(entity.getInventoryTaskId());
-//                    all.add(inventoryDetail);
-//                }
-//            }
-
     }
 
 

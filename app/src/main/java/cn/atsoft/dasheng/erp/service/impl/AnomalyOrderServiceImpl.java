@@ -116,6 +116,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InstockListService instockListService;
     @Autowired
     private InstockHandleService instockHandleService;
+    @Autowired
+    private InventoryStockService inventoryStockService;
 
     @Override
     @Transactional
@@ -149,14 +151,18 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         //判断是否提交过
         List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(ids);
 
-
+        List<Long> sourceIds = new ArrayList<>();
         for (Anomaly anomaly : anomalyList) {
             if (anomaly.getStatus() == 98) {
                 throw new ServiceException(500, "请勿重新提交异常");
             }
+            sourceIds.add(anomaly.getSourceId());
         }
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
 
+        if (entity.getType().equals("Stocktaking")) {   //更新盘点处理状态
+            inventoryStockService.updateStatus(sourceIds);
+        }
         /**
          * 更新购物车状态
          */
@@ -425,7 +431,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         for (AnomalyResult anomalyResult : anomalyResults) {
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 if (detail.getStauts() == 2) {  //报损 创建出库单
-
                     InventoryDetail inventoryDetail = inventoryDetailService.query()  //找到盘点异常物料 进行出库
                             .eq("inventory_id", anomalyResult.getFormId())
                             .eq("inkind_id", detail.getInkindId()).one();

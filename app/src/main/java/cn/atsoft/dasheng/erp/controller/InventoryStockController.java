@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,20 @@ public class InventoryStockController extends BaseController {
 //        this.inventoryStockService.add(inventoryStockParam);
 //        return ResponseData.success();
 //    }
+
+
+    /**
+     * 新增接口
+     *
+     * @author song
+     * @Date 2022-07-15
+     */
+    @RequestMapping(value = "/taskList", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData taskList(@RequestBody InventoryStockParam param ) {
+        Object taskList = this.inventoryStockService.taskList(param.getInventoryId());
+        return ResponseData.success(taskList);
+    }
 //
 //    /**
 //     * 编辑接口
