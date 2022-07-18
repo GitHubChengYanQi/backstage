@@ -8,9 +8,11 @@ import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
 import cn.atsoft.dasheng.production.model.result.ProductionPlanResult;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.production.service.ProductionPlanService;
 import cn.atsoft.dasheng.production.service.ProductionWorkOrderService;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
@@ -56,6 +58,8 @@ public class GetOrigin {
     @Autowired
     private ProductionWorkOrderService workOrderService;
 
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
     public ThemeAndOrigin getOrigin(ThemeAndOrigin themeAndOrigin) {
 //        ThemeAndOrigin themeAndOrigin = JSON.parseObject(Origin, ThemeAndOrigin.class); //将字段中的JSON解析出对象
@@ -153,7 +157,7 @@ public class GetOrigin {
                 }
             }
             for (ProductionPlanResult productionPlanResult : productionPlanResults) {
-                if (themeAndOrigin.getSource().equals("productionPlan") && themeAndOrigin.getSourceId().equals(productionPlanResult.getProductionPlanId())){
+                if (themeAndOrigin.getSource().equals("productionPlan") && themeAndOrigin.getSourceId().equals(productionPlanResult.getProductionPlanId())) {
                     for (UserResult userResult : userResults) {
                         if (productionPlanResult.getCreateUser().equals(userResult.getUserId())) {
                             this.copy2Ret(themeAndOrigin, productionPlanResult, themeAndOrigin.getSource(), userResult);
@@ -162,10 +166,6 @@ public class GetOrigin {
                     }
                 }
             }
-
-
-
-
 
 
         }
@@ -233,11 +233,13 @@ public class GetOrigin {
                 coding = instockOrder.getCoding();
                 createTime = instockOrder.getCreateTime();
                 break;
+            case "OUTSTOCK":
+            case "pickLists":
             case "outstockOrder":
-                OutstockOrder outstockOrder = JSONObject.parseObject(JSONObject.toJSONString(param), OutstockOrder.class);
-                fromId = outstockOrder.getOutstockOrderId();
-                coding = outstockOrder.getCoding();
-                createTime = outstockOrder.getCreateTime();
+                ProductionPickLists pickLists = JSONObject.parseObject(JSONObject.toJSONString(param), ProductionPickLists.class);
+                fromId = pickLists.getPickListsId();
+                coding = pickLists.getCoding();
+                createTime = pickLists.getCreateTime();
                 break;
             case "order":
                 Order order = JSONObject.parseObject(JSONObject.toJSONString(param), Order.class);
@@ -245,10 +247,10 @@ public class GetOrigin {
 //                coding = order.getCoding();
                 createTime = order.getCreateTime();
                 break;
-                case "processTask":
-                    JSONObject.toJSONString(param);
-                    ActivitiProcessTask activitiProcessTask = JSON.parseObject(JSONObject.toJSONString(param), ActivitiProcessTask.class);
-                    fromId = activitiProcessTask.getProcessTaskId();
+            case "processTask":
+                JSONObject.toJSONString(param);
+                ActivitiProcessTask activitiProcessTask = JSON.parseObject(JSONObject.toJSONString(param), ActivitiProcessTask.class);
+                fromId = activitiProcessTask.getProcessTaskId();
 //                coding = activitiProcessTas
                 createTime = activitiProcessTask.getCreateTime();
                 break;
@@ -266,14 +268,16 @@ public class GetOrigin {
         }});
 
     }
-    public String newThemeAndOrigin(String self,Long selfId,String source,Long sourceId){
+
+    public String newThemeAndOrigin(String self, Long selfId, String source, Long sourceId) {
         ThemeAndOrigin themeAndOrigin = originFormat(source, sourceId);
         themeAndOrigin.setSource(self);
         themeAndOrigin.setSourceId(selfId);
         return JSON.toJSONString(themeAndOrigin);
     }
+
     public ThemeAndOrigin originFormat(String source, Long sourceId) {
-        if (ToolUtil.isEmpty(source) || ToolUtil.isEmpty(sourceId)){
+        if (ToolUtil.isEmpty(source) || ToolUtil.isEmpty(sourceId)) {
             return new ThemeAndOrigin();
         }
         ThemeAndOrigin themeAndOrigin = new ThemeAndOrigin();
@@ -282,11 +286,11 @@ public class GetOrigin {
         switch (source) {
             case "purchaseAsk":
                 PurchaseAsk byId = purchaseAskService.getById(sourceId);
-                json  = byId.getOrigin();
+                json = byId.getOrigin();
                 break;
             case "order":
                 Order order = orderService.getById(sourceId);
-                json  = order.getOrigin();
+                json = order.getOrigin();
                 break;
             case "instockOrder":
                 InstockOrder instockOrder = instockOrderService.getById(sourceId);
@@ -314,8 +318,8 @@ public class GetOrigin {
                 break;
             default:
         }
-        if (ToolUtil.isNotEmpty(json) && !json.equals("")){
-            parent =  JSON.parseObject(json, ThemeAndOrigin.class);
+        if (ToolUtil.isNotEmpty(json) && !json.equals("")) {
+            parent = JSON.parseObject(json, ThemeAndOrigin.class);
         }
         List<ThemeAndOrigin> parents = new ArrayList<>();
         parents.add(parent);

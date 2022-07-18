@@ -34,6 +34,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -86,11 +87,18 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private InventoryService inventoryService;
     @Autowired
     private MaintenanceService maintenanceService;
+    @Autowired
+    private GetOrigin getOrigin;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
         this.save(entity);
+        String origin = this.getOrigin.newThemeAndOrigin("productionTask", entity.getProcessTaskId(), ToolUtil.isEmpty(param.getSource()) ? null : param.getSource(), ToolUtil.isEmpty(param.getSourceId()) ? null : param.getSourceId());
+        entity.setOrigin(origin);
+        this.updateById(entity);
+
+
         return entity.getProcessTaskId();
 
     }
