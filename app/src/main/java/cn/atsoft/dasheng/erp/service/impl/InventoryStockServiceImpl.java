@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -78,6 +79,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     }
 
     @Override
+    @Async
     public void addList(List<InventoryDetailParam> detailParams) {
         List<InventoryStock> all = new ArrayList<>();
         for (InventoryDetailParam detailParam : detailParams) {
@@ -101,6 +103,11 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 //----------------------------------------------------------------------------------------------------------------------
             List<InventoryStock> condition = inventoryService.condition(detailParam);   //从库存取
             for (InventoryStock inventoryStock : condition) {
+                if (all.stream().anyMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
+                        && i.getBrandId().equals(inventoryStock.getBrandId())
+                        && i.getPositionId().equals(inventoryStock.getPositionId()))) {
+
+                }
                 if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
                         && i.getBrandId().equals(inventoryStock.getBrandId())
                         && i.getPositionId().equals(inventoryStock.getPositionId())
@@ -214,6 +221,9 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                 inventoryStockId.put(result.getSkuId(), result.getInventoryStockId());
                 if (result.getStatus().equals(0)) {
                     Integer stockNum = stockDetailsService.getNumberByStock(result.getSkuId(), null, positionId);
+                    if (ToolUtil.isEmpty(stockNum)) {
+                        stockNum = 0;
+                    }
                     result.setRealNumber(Long.valueOf(stockNum));
                 }
                 number.put(result.getSkuId(), Math.toIntExact(result.getRealNumber()));
@@ -307,6 +317,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     public PageInfo<InventoryStockResult> findPageBySpec(InventoryStockParam param) {
         Page<InventoryStockResult> pageContext = getPageContext();
         IPage<InventoryStockResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -329,6 +340,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     }
 
     private void format(List<InventoryStockResult> data) {
+
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();

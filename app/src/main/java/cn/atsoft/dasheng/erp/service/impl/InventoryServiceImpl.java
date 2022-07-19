@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -26,10 +27,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.form.service.RemarksService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.erp.mapper.InventoryMapper;
 import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -53,6 +51,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.bouncycastle.tsp.TSPUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -61,6 +60,7 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
 
+import static com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isNull;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -124,6 +124,12 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private UserService userService;
     @Autowired
     private InventoryStockService inventoryStockService;
+    @Autowired
+    private StepsService stepsService;
+    @Autowired
+    private AnnouncementsService announcementsService;
+    @Autowired
+    private MediaService mediaService;
 
     @Override
     @Transactional
@@ -420,6 +426,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     @Override
     public InventoryDetailResult conditionGetOne(InventoryDetailParam detailParam) {
 
+
+
         InventoryDetailResult inventoryDetailResult = null;
 
         if (ToolUtil.isNotEmpty(detailParam.getPositionIds())) {
@@ -667,17 +675,35 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         inventoryResult.setTaskList(details);
 
         if (ToolUtil.isNotEmpty(inventoryResult.getParticipants())) {   //参与人员
-            List<String> participants = new ArrayList<>();
             List<Long> userIds = JSON.parseArray(inventoryResult.getParticipants(), Long.class);
             List<User> users = userService.listByIds(userIds);
             for (User user : users) {
-                participants.add(user.getName());
+                String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+                user.setAvatar(imgUrl);
             }
-            inventoryResult.setParticipantList(participants);
+            inventoryResult.setParticipantList(users);
         }
 
+        //负责人
         User user = ToolUtil.isEmpty(inventoryResult.getUserId()) ? new User() : userService.getById(inventoryResult.getUserId());
-        inventoryResult.setUserName(user.getName());
+        if (ToolUtil.isNotEmpty(user)&&ToolUtil.isNotEmpty(user.getUserId())) {
+            String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+            user.setAvatar(imgUrl);
+            inventoryResult.setPrincipal(user);
+        }
+
+
+        if (ToolUtil.isNotEmpty(inventoryResult.getNotice())) {
+            List<Long> noticeIds = JSON.parseArray(inventoryResult.getNotice(), Long.class);
+            List<Announcements> announcements = noticeIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(noticeIds);
+            inventoryResult.setAnnouncements(announcements);
+        }
+
+        if (ToolUtil.isNotEmpty(inventoryResult.getEnclosure())) {
+            List<Long> medias = JSON.parseArray(inventoryResult.getEnclosure(), Long.class);
+            List<String> mediaUrls = mediaService.getMediaUrls(medias, null);
+            inventoryResult.setMediaUrls(mediaUrls);
+        }
 
         Map<String, Integer> map = inventoryStockService.speedProgress(id);
         inventoryResult.setTotal(map.get("total"));
