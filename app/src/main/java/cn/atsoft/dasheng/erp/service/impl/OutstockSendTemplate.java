@@ -78,21 +78,7 @@ public class OutstockSendTemplate {
     public String getUrl() {
         return url;
     }
-    public void send(String url){
-        List<Long> users = new ArrayList();
-        users.add(getUserId());
 
-
-        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
-            setItems(getTitle());
-            setType(0);
-            setDescription("有新的物料需要出库");
-            setUrl(url);
-            setUserIds(users);
-        }});
-
-
-    }
     public void sendTemplate() {
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setType(MessageType.CP);

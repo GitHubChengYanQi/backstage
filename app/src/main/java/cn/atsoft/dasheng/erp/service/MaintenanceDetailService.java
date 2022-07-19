@@ -71,4 +71,5 @@ public interface MaintenanceDetailService extends IService<MaintenanceDetail> {
      */
      PageInfo<MaintenanceDetailResult> findPageBySpec(MaintenanceDetailParam param);
 
+    void format(List<MaintenanceDetailResult> data);
 }

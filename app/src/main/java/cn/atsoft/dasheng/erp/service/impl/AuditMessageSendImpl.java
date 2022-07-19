@@ -46,6 +46,8 @@ public class AuditMessageSendImpl implements AuditMessageSend {
             setUrl(url);
             setType(0);
             setDescription(processTask.getTaskName());
+            setSource("processTask");
+            setSourceId(taskId);
             setUserIds(users);
         }});
     }
@@ -62,6 +64,8 @@ public class AuditMessageSendImpl implements AuditMessageSend {
             setUrl(url);
             setType(0);
             setDescription(processTask.getTaskName());
+            setSource("processTask");
+            setSourceId(taskId);
             setUserIds(users);
         }});
     }

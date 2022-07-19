@@ -30,6 +30,8 @@ public class PurchaseMessageSend implements AuditMessageSend {
             setDescription(processTask.getTaskName());
             setUrl(url);
             setUserIds(users);
+            setSource("processTask");
+            setSourceId(taskId);
         }});
 
     }

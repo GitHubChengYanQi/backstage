@@ -572,25 +572,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Override
     public void sendPersonPick(ProductionPickListsParam param) {
-//        List<ProductionPickListsCart> carts = new ArrayList<>();
-//        for (ProductionPickListsCartParam cartsParam : param.getCartsParams()) {
-//            ProductionPickListsCart cart = new ProductionPickListsCart();
-//            ToolUtil.copyProperties(cartsParam, cart);
-//            cart.setStatus(99);
-//            carts.add(cart);
-//        }
-//        pickListsCartService.updateBatchById(carts);
-//        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//        wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/MyPicking");
-//        wxCpTemplate.setTitle("新的生产任务");
-//        wxCpTemplate.setDescription("库管那里有新的物料待领取");
-//        wxCpTemplate.setUserIds(Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
-//        wxCpTemplate.setType(0);
-//        wxCpSendTemplate.setSource("selfPick");
-//        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//        wxCpSendTemplate.sendTemplate();
-
-
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("领料通知");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/MyPicking");

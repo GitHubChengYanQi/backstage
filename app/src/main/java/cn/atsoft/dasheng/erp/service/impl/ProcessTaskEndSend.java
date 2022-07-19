@@ -36,6 +36,8 @@ public class ProcessTaskEndSend {
             setUrl(url);
             setDescription(processTask.getTaskName());
             setUserIds(users);
+            setSource("processTask");
+            setSourceId(taskId);
         }});
         activitiProcessTaskService.updateById(processTask);
     }

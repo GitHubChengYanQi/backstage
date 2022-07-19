@@ -61,6 +61,8 @@ public class QualityMessageSend implements AuditMessageSend {
             setItems(finalTitle);
             setUrl(url);
             setDescription("发出"+createName+"创建的任务"+qualityTask.getCoding());
+            setSource("processTask");
+            setSourceId(taskId);
             setUserIds(users);
         }});
 
@@ -79,6 +81,8 @@ public class QualityMessageSend implements AuditMessageSend {
             setUrl(finalUrl);
             setType(1);
             setDescription("您被分派新的任务");
+            setSource("processTask");
+            setSourceId(parentId);
             setUserIds(users);
         }});
     }
