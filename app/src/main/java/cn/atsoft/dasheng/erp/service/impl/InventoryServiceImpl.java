@@ -474,7 +474,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     }
 
     @Override
-    public List<StorehousePositionsResult> timely(Long positionId) {
+    public Object timely(Long positionId) {
         ShopCart shopCart = new ShopCart();
         shopCart.setDisplay(0);
         shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{

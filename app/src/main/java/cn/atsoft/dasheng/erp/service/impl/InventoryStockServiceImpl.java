@@ -103,11 +103,6 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 //----------------------------------------------------------------------------------------------------------------------
             List<InventoryStock> condition = inventoryService.condition(detailParam);   //从库存取
             for (InventoryStock inventoryStock : condition) {
-                if (all.stream().anyMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
-                        && i.getBrandId().equals(inventoryStock.getBrandId())
-                        && i.getPositionId().equals(inventoryStock.getPositionId()))) {
-
-                }
                 if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
                         && i.getBrandId().equals(inventoryStock.getBrandId())
                         && i.getPositionId().equals(inventoryStock.getPositionId())
@@ -316,6 +311,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     @Override
     public PageInfo<InventoryStockResult> findPageBySpec(InventoryStockParam param) {
         Page<InventoryStockResult> pageContext = getPageContext();
+        pageContext.setOrders(null);
         IPage<InventoryStockResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
@@ -355,8 +351,15 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<StorehousePositionsResult> positionsResults = positionsService.details(positionIds);
+        positionsService.format(positionsResults);
 
         for (InventoryStockResult datum : data) {
+
+            Integer number = stockDetailsService.getNumberByStock(datum.getSkuId(), datum.getBrandId(), datum.getPositionId());
+            if (ToolUtil.isEmpty(number)) {
+                number = 0;
+            }
+            datum.setNumber(Long.valueOf(number));
 
             for (SkuResult skuResult : skuResults) {
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {

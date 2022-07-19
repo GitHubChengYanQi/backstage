@@ -90,7 +90,7 @@ public class InventoryController extends BaseController {
     @RequestMapping(value = "/timely", method = RequestMethod.POST)
     @ApiOperation("及时盘点")
     public ResponseData timely(@RequestBody InventoryParam inventoryParam) {
-        List<StorehousePositionsResult> timely = this.inventoryService.timely(inventoryParam.getPositionId());
+        Object timely = this.inventoryService.timely(inventoryParam.getPositionId());
         return ResponseData.success(timely);
     }
 

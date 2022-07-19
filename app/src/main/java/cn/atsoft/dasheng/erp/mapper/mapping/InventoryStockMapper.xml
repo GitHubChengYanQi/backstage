@@ -163,7 +163,7 @@
             and inventory_stock_id like CONCAT('%',#{paramCondition.inventoryStockId},'%')
         </if>
         <if test="paramCondition.inventoryId != null">
-            and inventory_id like CONCAT('%',#{paramCondition.inventoryId},'%')
+            and inventory_id = #{paramCondition.inventoryId}
         </if>
         <if test="paramCondition.detailId != null">
             and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
@@ -217,17 +217,18 @@
             and sku_id in (
             select sku_id from goods_sku where display = 1 and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
             union
-            select sku_id from goods_sku where display = 1 where spu_id in (select spu_id from goods_spu where display =
+            select sku_id from goods_sku where display = 1 and spu_id in (select spu_id from goods_spu where display =
             1 and name like
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
         </if>
+
         <if test="paramCondition.positionSort != null">
-            order by position_id
-            <if test="paramCondition.positionSort == 'asc">
+              order by position_id
+            <if test="paramCondition.positionSort == 'asc'">
                 asc
             </if>
-            <if test="paramCondition.positionSort == 'desc">
+            <if test="paramCondition.positionSort == 'desc'">
                 desc
             </if>
         </if>
