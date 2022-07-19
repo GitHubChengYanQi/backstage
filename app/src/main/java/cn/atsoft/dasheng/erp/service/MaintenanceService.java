@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.model.result.MaintenanceAndDetail;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 
@@ -28,6 +29,8 @@ public interface MaintenanceService extends IService<Maintenance> {
      * @Date 2022-06-28
      */
     Maintenance add(MaintenanceParam param);
+
+    void saveDetails(Maintenance entity);
 
     List<StockDetails> needMaintenanceByRequirement(Maintenance param);
 

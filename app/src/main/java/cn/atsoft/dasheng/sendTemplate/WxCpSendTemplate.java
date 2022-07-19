@@ -171,7 +171,7 @@ public class WxCpSendTemplate {
                 messageEntity.setType(MessageType.MESSAGE);
                 Message message = new Message();
                 message.setTime(new DateTime());
-                message.setTitle(markDownTemplate.getTitle());
+                message.setTitle(markDownTemplate.getItems());
                 message.setContent(markDownTemplate.getDescription());
                 message.setType(markDownTemplate.getType());
                 message.setUserId(userId);

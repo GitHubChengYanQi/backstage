@@ -74,19 +74,6 @@ public class InstockSendTemplate {
         return uuIds;
     }
 
-    public void send(String url){
-        List<Long> users = new ArrayList();
-        users.add(businessTrack.getUserId());
-;
-        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
-            setItems("入库提醒");
-            setType(0);
-            setUrl(url);
-            setDescription("有新的物料需要入库");
-            setUserIds(users);
-        }});
-
-    }
     public String getTitle() {
         return "入库提醒";
     }

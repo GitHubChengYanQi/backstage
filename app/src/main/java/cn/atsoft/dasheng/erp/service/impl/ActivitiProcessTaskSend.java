@@ -230,6 +230,8 @@ public class ActivitiProcessTaskSend {
             setCreateUserName(createUser.getName());
             setUrl(aboutSend.get("url"));
             setDescription(processTask.getTaskName());
+            setSource("processTask");
+            setSourceId(processTask.getProcessTaskId());
             setUserIds(users);
         }});
     }
