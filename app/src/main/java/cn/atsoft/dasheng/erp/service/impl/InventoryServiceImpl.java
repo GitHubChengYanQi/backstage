@@ -498,26 +498,23 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             eq("create_user", LoginContextHolder.getContext().getUserId());
         }});
 
-        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         List<Long> positionIds = positionsService.getEndChild(positionId);
-        queryWrapper.in("storehouse_positions_id", positionIds);
-        List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
-        List<InventoryStock> all = new ArrayList<>();
+        InventoryDetailParam inventoryDetailParam = new InventoryDetailParam();
+        inventoryDetailParam.setPositionIds(positionIds);
 
-        for (StockDetails details : stockDetails) {
-            if (all.stream().noneMatch(i -> i.getSkuId().equals(details.getSkuId())
-                    && i.getBrandId().equals(details.getBrandId())
-                    && i.getPositionId().equals(details.getStorehousePositionsId())
+        List<InventoryStock> all = new ArrayList<>();
+        List<InventoryStock> condition = condition(inventoryDetailParam);
+        for (InventoryStock inventoryStock : condition) {
+            if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
+                    && i.getBrandId().equals(inventoryStock.getBrandId())
+                    && i.getPositionId().equals(inventoryStock.getPositionId())
             )) {
-                InventoryStock inventoryStock = new InventoryStock();
-                inventoryStock.setSkuId(details.getSkuId());
-                inventoryStock.setBrandId(details.getBrandId());
-                inventoryStock.setPositionId(details.getStorehousePositionsId());
                 all.add(inventoryStock);
             }
         }
-        return all;
-
+        List<InventoryStockResult> inventoryStockResults = BeanUtil.copyToList(all, InventoryStockResult.class, new CopyOptions());
+        inventoryStockService.format(inventoryStockResults);
+        return inventoryStockResults;
     }
 
     private List<StorehousePositionsResult> positionsResultList(List<StockDetails> stockDetails) {

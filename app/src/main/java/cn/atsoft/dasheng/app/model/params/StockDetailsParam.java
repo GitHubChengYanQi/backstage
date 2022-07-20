@@ -25,6 +25,7 @@ import java.util.List;
 public class StockDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    private String inkind;
     private Integer stage;
     private String iname;
     private String pname;
@@ -40,7 +41,7 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("物料名称")
     private String skuName;
 
-//    库位集合
+    //    库位集合
     @ApiModelProperty("库位集合")
     private List<Long> positionIds;
     //不需要养护的实物id

@@ -797,6 +797,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             bind.setOrCodeId(orCode.getOrCodeId());
             bind.setFormId(inkind.getInkindId());
             bind.setSource("item");
+            binds.add(bind);
 
             StockDetails stockDetails = new StockDetails();
             stockDetails.setSkuId(listParam.getSkuId());

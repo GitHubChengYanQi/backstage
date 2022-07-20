@@ -89,4 +89,5 @@ public interface InventoryStockService extends IService<InventoryStock> {
      */
     PageInfo<InventoryStockResult> findPageBySpec(InventoryStockParam param);
 
+    void format(List<InventoryStockResult> data);
 }

@@ -12,12 +12,15 @@ import cn.atsoft.dasheng.app.mapper.StockDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
@@ -64,6 +67,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private ErpPartsDetailService erpPartsDetailService;
     @Autowired
     private ProductionPickListsCartService pickListsCartService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -311,13 +316,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
         List<StorehousePositions> positions = pIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", pIds).list();
 
-        List<StorehouseResult> storehouseResults =stoIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehouseService.listByIds(stoIds), StorehouseResult.class);
+        List<StorehouseResult> storehouseResults = stoIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehouseService.listByIds(stoIds), StorehouseResult.class);
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         if (!stoIds.isEmpty()) {
             storehouseQueryWrapper.in("storehouse_id", stoIds);
         }
-        List<Storehouse> storehouseList = storehouseService.list(storehouseQueryWrapper);
-
 
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         if (!brandIds.isEmpty()) {
@@ -327,7 +330,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
         for (StockDetailsResult datum : data) {
             for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
-                if (datum.getSkuId().equals(skuSimpleResult.getSkuId())){
+                if (datum.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     datum.setSkuResult(skuSimpleResult);
                     break;
                 }
@@ -352,7 +355,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
 
             for (StorehouseResult storehouseResult : storehouseResults) {
-                if (storehouseResult.getStorehouseId().equals(datum.getStorehouseId())){
+                if (storehouseResult.getStorehouseId().equals(datum.getStorehouseId())) {
                     datum.setStorehouseResult(storehouseResult);
                     break;
                 }
@@ -429,6 +432,29 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
     public List<StockDetails> maintenanceQuerry(StockDetailsParam param) {
         return this.baseMapper.maintenanceQuerry(param);
+    }
+
+    @Override
+    public StockDetails getInkind(StockDetailsParam param) {
+        List<OrCodeBind> list = orCodeBindService.query().eq("source", "item").likeLeft("qr_code_id", param.getInkind()).eq("display", 1).list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (OrCodeBind bind : list) {
+            inkindIds.add(bind.getFormId());
+        }
+        if (ToolUtil.isNotEmpty(inkindIds)) {
+            QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("display", 1);
+            queryWrapper.eq("inkind_id", inkindIds.get(0));
+            queryWrapper.eq("sku_id", param.getSkuId());
+            queryWrapper.eq("brand_id", param.getBrandId());
+            queryWrapper.eq("storehouse_positions_id", param.getStorehousePositionsId());
+          StockDetails stockDetails = this.getOne(queryWrapper);
+            if (ToolUtil.isNotEmpty(stockDetails)) {
+                stockDetails.setQrCodeId(list.get(0).getOrCodeId());
+                return stockDetails;
+            }
+        }
+        return null;
     }
 
     @Override
