@@ -25,14 +25,13 @@ public class InventoryStockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long inkindId;
 
     private SkuResult skuResult;
 
     private BrandResult brandResult;
 
     private StorehousePositionsResult positionsResult;
-
-
 
     @ApiModelProperty("")
     private Long inventoryStockId;

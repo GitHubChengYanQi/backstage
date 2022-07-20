@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.Announcements;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
@@ -23,9 +24,23 @@ import java.util.List;
 @ApiModel
 public class InventoryResult implements Serializable {
 
+    private Long inkindId;
+
     private static final long serialVersionUID = 1L;
 
     private StorehousePositionsResult positionsResult;
+
+    private Integer total;
+
+    private Integer handle;
+
+    private List<Announcements> announcements; //盘点原由
+
+    private List<User> participantList;   //参与人
+
+    private User principal; //负责人
+
+    private List<String> mediaUrls; //附件
 
     private String statusName;
 
@@ -55,6 +70,8 @@ public class InventoryResult implements Serializable {
 
 
     private Date beginTime;
+
+    private Long userId;
 
 
     private String mode;

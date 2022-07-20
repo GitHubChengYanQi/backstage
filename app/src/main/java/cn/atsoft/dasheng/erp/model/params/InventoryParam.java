@@ -39,10 +39,11 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private List<InventoryDetailParam> detailParams;
 
+    private List<InventoryStockParam> stockParams;
+
     private InventoryDetailParam detailParam;
 
     private String notice;
-
 
     private Long brandId;
 
@@ -52,12 +53,11 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private Date endTime;
 
+    private Long userId;
 
     private Date beginTime;
 
-
     private String mode;
-
 
     private String method;
     /**

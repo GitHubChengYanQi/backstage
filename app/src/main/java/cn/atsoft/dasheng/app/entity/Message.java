@@ -24,6 +24,12 @@ public class Message implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("view")
+    private Integer view;
+
+    @TableField("promoter")
+    private Long promoter;
+
     /**
      * 消息提醒id
      */
@@ -262,6 +268,14 @@ public class Message implements Serializable {
         this.deptId = deptId;
     }
 
+    public Integer getView() {
+        return view;
+    }
+
+    public void setView(Integer view) {
+        this.view = view;
+    }
+
     public Long getPromoter() {
         return promoter;
     }
@@ -269,7 +283,6 @@ public class Message implements Serializable {
     public void setPromoter(Long promoter) {
         this.promoter = promoter;
     }
-
 
     @Override
     public String toString() {

@@ -26,7 +26,15 @@ public class InventoryDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long spuId;
+    private Long realNumber;
+
+    private List<String> condition;
+
+    private List<Long> classIds;
+
+    private List<Long> positionIds;
+
+    private List<Long> brandIds;
 
     private String partCondition;
 

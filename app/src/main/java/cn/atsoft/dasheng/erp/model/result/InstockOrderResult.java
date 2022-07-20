@@ -53,6 +53,10 @@ public class InstockOrderResult implements Serializable {
     private List<String> url;
     private Integer waitInStockNum;
     private Integer instockErrorNum;
+    private long applyNum;
+    private long inStockNum;
+    private int positionNum;
+    private int skuNum;
 
     /**
      * 来源

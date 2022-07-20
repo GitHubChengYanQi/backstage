@@ -983,6 +983,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
         Page<SkuResult> pageContext = getPageContext();
+        selectFormat(param);  //查询格式化
         IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
         PageInfo<SkuResult> pageInfo = PageFactory.createPageInfo(page);
 
@@ -1019,7 +1020,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     bomSearch = bomSearch(skuIds);
                 }
             }
-
 
             /**
              * 分類查詢
@@ -1121,6 +1121,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         positionsService.skuFormat(page.getRecords());
 
         return pageInfo;
+    }
+
+    private void selectFormat(SkuParam param) {
+        if (ToolUtil.isNotEmpty(param.getStorehousePositionsIds())) {
+            List<Long> positionIds = new ArrayList<>();
+            for (Long storehousePositionsId : param.getStorehousePositionsIds()) {
+                positionIds.addAll(positionsService.getEndChild(storehousePositionsId));
+            }
+            param.setStorehousePositionsIds(positionIds);
+        }
     }
 
     /**

@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiOperation;
 /**
  * 消息提醒控制器
  *
- * @author 
+ * @author
  * @Date 2021-08-03 11:51:29
  */
 @RestController
@@ -33,7 +33,7 @@ public class MessageController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-03
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -46,7 +46,7 @@ public class MessageController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-03
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -60,12 +60,12 @@ public class MessageController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-03
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody MessageParam messageParam)  {
+    public ResponseData delete(@RequestBody MessageParam messageParam) {
         this.messageService.delete(messageParam);
         return ResponseData.success();
     }
@@ -73,7 +73,7 @@ public class MessageController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-03
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -90,13 +90,13 @@ public class MessageController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-08-03
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<MessageResult> list(@RequestBody(required = false) MessageParam messageParam) {
-        if(ToolUtil.isEmpty(messageParam)){
+        if (ToolUtil.isEmpty(messageParam)) {
             messageParam = new MessageParam();
         }
 //        return this.messageService.findPageBySpec(messageParam);
@@ -109,8 +109,14 @@ public class MessageController extends BaseController {
     }
 
 
-
-
+    @RequestMapping(value = "/view", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<MessageResult> view(@RequestBody(required = false) MessageParam messageParam) {
+        if (ToolUtil.isEmpty(messageParam)) {
+            messageParam = new MessageParam();
+        }
+        return this.messageService.findPageBySpec(messageParam, null);
+    }
 }
 
 

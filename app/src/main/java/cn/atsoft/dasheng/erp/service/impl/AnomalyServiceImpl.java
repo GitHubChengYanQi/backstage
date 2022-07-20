@@ -431,7 +431,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Transactional
     public Anomaly update(AnomalyParam param) {
         Anomaly oldEntity = getOldEntity(param);
-
+        param.setType(oldEntity.getType());
         if (ToolUtil.isNotEmpty(oldEntity.getOrderId())) {
             AnomalyOrder anomalyOrder = anomalyOrderService.getById(oldEntity.getOrderId());
             if (anomalyOrder.getComplete() == 99) {
@@ -456,7 +456,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             shopCartParam.setSkuId(param.getSkuId());
             shopCartParam.setBrandId(param.getBrandId());
             shopCartParam.setCustomerId(param.getCustomerId());
-            shopCartParam.setType(param.getAnomalyType().name());
+            shopCartParam.setType(param.getType());
             shopCartParam.setFormId(oldEntity.getAnomalyId());
             shopCartParam.setNumber(param.getNeedNumber());
             List<PositionNum> list = new ArrayList<PositionNum>() {{  //库位解json 兼容之前结构
@@ -494,12 +494,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
-//        if (ToolUtil.isNotEmpty(param.getInstockNumber())) {
-//            InstockList instockList = new InstockList();
-//            instockList.setInstockListId(oldEntity.getSourceId());
-//            instockList.setRealNumber(param.getInstockNumber());
-//            instockListService.updateById(instockList);
-//        }
+        if (ToolUtil.isNotEmpty(param.getInstockNumber())) {
+            InstockList instockList = new InstockList();
+            instockList.setInstockListId(oldEntity.getSourceId());
+            instockList.setRealNumber(param.getInstockNumber());
+            instockListService.updateById(instockList);
+        }
 
         updateStatus(param.getAnomalyId()); //更新异常状态
         if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {

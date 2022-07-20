@@ -23,6 +23,9 @@ public class MessageParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+
+    private Integer view;
+
     private Long promoter;
     /**
      * 路径

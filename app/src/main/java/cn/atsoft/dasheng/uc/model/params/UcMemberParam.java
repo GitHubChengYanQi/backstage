@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Sing
@@ -22,6 +22,8 @@ import java.util.List;
 public class UcMemberParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private List<String> cpUserIds;
 
     @ApiModelProperty("")
     private Long memberId;
