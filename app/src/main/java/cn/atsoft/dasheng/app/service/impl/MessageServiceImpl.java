@@ -87,6 +87,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             DateTime date = DateUtil.date(param.getCreateTime());
             param.setCreateTime(date);
         }
+        param.setUserId(LoginContextHolder.getContext().getUserId());
         Page<MessageResult> pageContext = getPageContext();
         IPage<MessageResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         return PageFactory.createPageInfo(page);
