@@ -650,6 +650,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }});
         List<InventoryDetailResult> details = inventoryDetailService.details(id);
         inventoryResult.setTaskList(details);
+        inventoryResult.setDetailResults(details);
         return inventoryResult;
     }
 

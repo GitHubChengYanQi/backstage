@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.sendTemplate;
 
 
 import cn.atsoft.dasheng.app.entity.Message;
+import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -43,6 +44,8 @@ public class WxCpSendTemplate {
     private UserService userService;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private MessageService messageService;
 
 //    //添加系统小铃铛信息
 //    private Message message;
@@ -170,8 +173,11 @@ public class WxCpSendTemplate {
                     e.printStackTrace();
                 }
             }
+            List<Message> messageEntities = new ArrayList<>();
             for (Long userId : markDownTemplate.getUserIds()) {
                 messageEntity.setType(MessageType.MESSAGE);
+                messageEntity.setTimes(0);
+                messageEntity.setMaxTimes(2);
                 Message message = new Message();
                 message.setTime(new DateTime());
                 message.setTitle(markDownTemplate.getItems());
@@ -186,9 +192,11 @@ public class WxCpSendTemplate {
                     message.setPromoter(markDownTemplate.getCreateUser());
                 }
                 messageEntity.setMessage(message);
+                messageEntities.add(message);
                 logger.info("铃铛发送" + messageEntity.getCpData().getDescription());
-                messageProducer.sendMessage(messageEntity);
+                messageProducer.sendMessage(messageEntity,100);
             }
+//            messageService.saveBatch(messageEntities);
         }
     }
 
