@@ -24,6 +24,7 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -39,6 +40,8 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.hutool.core.date.DateTime.now;
 
 /**
  * <p>
@@ -176,12 +179,16 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         activitiProcessTaskParam.setUserId(detail.getUserId());
         Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setFunction(MarkDownTemplateTypeEnum.forward);
             setType(1);
             setItems("入库异常 转交您处理");
             setUrl(mobileService.getMobileConfig().getUrl() + "/Receipts/ReceiptsDetail?id=" + taskId);
             setDescription("入库异常 转交处理");
             setSource("processTask");
             setSourceId(taskId);
+            setCreateTime(now());
+            setTaskId(taskId);
+            setCreateUser(LoginContextHolder.getContext().getUserId());
             setUserIds(new ArrayList<Long>() {{
                 add(detail.getUserId());
             }});
@@ -196,17 +203,16 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
      */
     @Override
     public void pushPeople(Long userId, Long id) {
-        Anomaly anomalyServiceById = this.anomalyService.getById(id);
-        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
-            setType(1);
-            setItems("入库异常 转交您处理");
-            setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Error/Detail/Handle?id=" + id);
-            setDescription("入库异常 转交处理");
-            setRemark(anomalyServiceById.getRemark());
-            setUserIds(new ArrayList<Long>() {{
-                add(userId);
-            }});
-        }});
+//        Anomaly anomalyServiceById = this.anomalyService.getById(id);
+//        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+//            setType(1);
+//            setItems("入库异常 转交您处理");
+//            setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/Error/Detail/Handle?id=" + id);
+//            setDescription("入库异常 转交处理");
+//            setUserIds(new ArrayList<Long>() {{
+//                add(userId);
+//            }});
+//        }});
     }
 
     @Override

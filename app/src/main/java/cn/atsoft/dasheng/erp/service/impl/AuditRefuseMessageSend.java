@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,14 @@ public class AuditRefuseMessageSend implements AuditMessageSend {
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("审批被否决");
             setType(1);
-            setCreateUserName(user.getName());
+            setFunction(MarkDownTemplateTypeEnum.refuse);
             setUrl(url);
             setDescription(createName + "创建的任务" + qualityTask.getCoding());
             setSource("processTask");
             setSourceId(taskId);
+            setTaskId(taskId);
+            setCreateTime(processTask.getCreateTime());
+            setCreateUser(processTask.getCreateUser());
             setUserIds(users);
         }});
     }

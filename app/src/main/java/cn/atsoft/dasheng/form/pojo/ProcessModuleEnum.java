@@ -60,4 +60,12 @@ public enum ProcessModuleEnum {
         }
         return enumList;
     }
+    public static String getModelNameByEnum(String param){
+        for (ProcessModuleEnum value : ProcessModuleEnum.values()) {
+            if (value.name().equals(param)){
+                return value.moduleName;
+            }
+        }
+        return null;
+    }
 }

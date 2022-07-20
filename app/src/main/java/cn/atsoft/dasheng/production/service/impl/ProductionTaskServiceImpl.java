@@ -39,6 +39,7 @@ import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.alibaba.fastjson.JSON;
@@ -233,14 +234,18 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
              * 发送消息
              */
             wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+                setFunction(MarkDownTemplateTypeEnum.action);
                 setType(0);
                 setTitle("新的生产任务");
                 setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
                 setDescription("您被分派了新的生产任务" + entity.getCoding());
-                setCreateUser(entity.getCreateUser());
                 setSource("productionTask");
                 setSourceId(entity.getProductionTaskId());
+                setTaskId(entity.getProductionTaskId());
+                setCreateTime(entity.getCreateTime());
                 setType(0);
+                setCreateUser(entity.getCreateUser());
+
                 setUserIds(new ArrayList<Long>() {{
                     add(entity.getUserId());
                 }});
@@ -270,11 +275,13 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
             wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
                 setTitle("新的生产任务");
+                setFunction(MarkDownTemplateTypeEnum.action);
                 setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
                 setDescription("您被分派了新的生产任务" + entity.getCoding());
-                setCreateUser(entity.getCreateUser());
                 setSource("productionTask");
                 setSourceId(entity.getProductionTaskId());
+                setTaskId(entity.getProductionTaskId());
+                setCreateTime(entity.getCreateTime());
                 setType(0);
                 setUserIds(new ArrayList<Long>() {{
                     add(entity.getUserId());
@@ -440,9 +447,10 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             setItems("新的生产任务");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
             setDescription("您领取了新的生产任务" + entity.getCoding());
-            setCreateUser(entity.getCreateUser());
             setSource("productionTask");
             setSourceId(entity.getProductionTaskId());
+            setCreateUser(entity.getCreateUser());
+
             setType(0);
             setUserIds(new ArrayList<Long>() {{
                 add(entity.getUserId());
@@ -492,10 +500,10 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setFunction(MarkDownTemplateTypeEnum.forward);
             setItems("新的生产任务");
             setUrl(entity.getProductionTaskId().toString());
             setDescription("您被转派了新的生产任务" + entity.getCoding());
-            setCreateUser(entity.getCreateUser());
             setSource("productionTask");
             setSourceId(entity.getProductionTaskId());
             setType(0);

@@ -46,9 +46,9 @@ public class AnomalyResult implements Serializable {
 
     private Long errorNumber;
 
-    private SkuResult skuResult;
+//    private SkuResult skuResult;
 
-    private SkuSimpleResult skuSimpleResult;
+    private SkuSimpleResult skuResult;
 
     private Brand brand;
 

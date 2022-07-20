@@ -98,12 +98,6 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     public void add(InquiryTaskParam param) {
         InquiryTask entity = getEntity(param);
 
-
-
-
-
-
-
         this.save(entity);
 
         List<Long> skuIds = new ArrayList<>();
@@ -156,9 +150,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
                 setTitle("新的采购单");
                 setUrl(url);
                 setDescription(user.getName() + "提交的采购申请");
-                setCreateUser(entity.getCreateUser());
                 setType(0);
-
                 setUserIds(new ArrayList<Long>() {{
                     add(entity.getUserId());
                 }});

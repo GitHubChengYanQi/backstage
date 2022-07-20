@@ -317,7 +317,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         for (InventoryDetailParam detailParam : param.getDetailParams()) {
             if ((ToolUtil.isEmpty(detailParam.getType()) || !detailParam.getType().equals("all")) && param.getMode().equals("staticState")) {
-                throw new ServiceException(500, "当前方法 不可以是静态");
+                throw new ServiceException(500, "仅可在全局盘点下进行静态盘点");
             }
 
             List<Long> bomIds = detailParam.getBomIds();

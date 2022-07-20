@@ -35,6 +35,10 @@ public class Message implements Serializable {
      */
     @TableId(value = "message_id", type = IdType.ID_WORKER)
     private Long messageId;
+
+
+    @TableField("promoter")
+    private Long promoter;
     /**
      * 路径
      */

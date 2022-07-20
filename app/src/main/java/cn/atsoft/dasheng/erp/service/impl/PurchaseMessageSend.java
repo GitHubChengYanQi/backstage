@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class PurchaseMessageSend implements AuditMessageSend {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setFunction(MarkDownTemplateTypeEnum.action);
             setType(1);
             setItems("采购审批完成");
             setDescription(processTask.getTaskName());
@@ -32,6 +34,10 @@ public class PurchaseMessageSend implements AuditMessageSend {
             setUserIds(users);
             setSource("processTask");
             setSourceId(taskId);
+            setTaskId(taskId);
+            setCreateTime(processTask.getCreateTime());
+            setCreateUser(processTask.getCreateUser());
+
         }});
 
     }
