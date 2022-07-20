@@ -27,6 +27,8 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     private static final long serialVersionUID = 1L;
 
 
+    private List<String> types;
+
     private String skuName;
 
     private Long deptId;
@@ -50,7 +52,7 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private String cause;
 
-    private List<String> types;
+
 
     @ApiModelProperty("主题")
     private String theme;
