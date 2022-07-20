@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.message.enmu.MessageType;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
@@ -16,6 +17,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -26,8 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Data
@@ -40,6 +41,8 @@ public class WxCpSendTemplate {
     private MessageProducer messageProducer;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
 
 //    //添加系统小铃铛信息
 //    private Message message;
@@ -179,6 +182,9 @@ public class WxCpSendTemplate {
                 message.setSourceId(markDownTemplate.getSourceId());
                 message.setSource(markDownTemplate.getSource());
                 message.setUrl(markDownTemplate.getUrl());
+                if (ToolUtil.isNotEmpty(markDownTemplate.getCreateUser())) {
+                    message.setPromoter(markDownTemplate.getCreateUser());
+                }
                 messageEntity.setMessage(message);
                 logger.info("铃铛发送" + messageEntity.getCpData().getDescription());
                 messageProducer.sendMessage(messageEntity);
@@ -187,52 +193,75 @@ public class WxCpSendTemplate {
     }
 
     public String getContent(MarkDownTemplate markDownTemplate) {
-        if (ToolUtil.isNotEmpty(markDownTemplate.getCreateUser())) {
-            User user = userService.getById(markDownTemplate.getCreateUser());
-            markDownTemplate.setCreateUserName(user.getName());
-        }
+        MarkDownTemplate markDownTemplate1 = this.selectTitle(markDownTemplate);
         StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("**").append(markDownTemplate1.getTitle()).append("**").append("\n\n");
 
-        if (ToolUtil.isNotEmpty(markDownTemplate.getItems())) {
-            stringBuffer.append("<font color=\"info\">").append(markDownTemplate.getItems()).append("</font>").append("\n \n ");
+        if (ToolUtil.isNotEmpty(markDownTemplate1.getCoding())) {
+            String string = markDownTemplate1.getItems() + markDownTemplate1.getCoding();
+            if (string.length()>13){
+                string = string.substring(0,13);
+                string+="......";
+            }
+            stringBuffer.append(string).append("\n\n");
         }
-//        stringBuffer.append(">**").append("任务详情").append("**").append("\n \n");
-//        stringBuffer.append(">").append("\n \n");
-
-
-        if (ToolUtil.isNotEmpty(markDownTemplate.getDescription())) {
-            stringBuffer.append(">**详　情**：").append("<font color=\"warning\">").append(markDownTemplate.getDescription()).append("</font>").append("\n\n");
+        if (ToolUtil.isNotEmpty(markDownTemplate1.getDescription())) {
+            stringBuffer.append(markDownTemplate1.getDescription()).append("\n\n").append("\n\n");
         }
-        if (ToolUtil.isEmpty(markDownTemplate.getRemark())) {
-            stringBuffer.append(">**备　注**：").append("<font color=\"comment\">").append(" ").append("</font>").append("\n\n");
-        }else {
-            stringBuffer.append(">**备　注**：").append("<font color=\"comment\">").append(markDownTemplate.getRemark()).append("</font>").append("\n\n");
+        if (ToolUtil.isNotEmpty(markDownTemplate.getCreateTime())) {
+            String date = DateUtil.format(markDownTemplate1.getCreateTime(), "yyyy/MM/dd hh:mm:ss");
+            stringBuffer.append(date).append("\n \n");
         }
-        if (ToolUtil.isNotEmpty(markDownTemplate.getCreateUserName())) {
-            stringBuffer.append(">**发起人**：").append(markDownTemplate.getCreateUserName()).append("\n \n");
-        }
-        if (ToolUtil.isNotEmpty(markDownTemplate.getUrl())) {
-            stringBuffer.append(">").append("\n\n");
-            stringBuffer.append(">[点击查看详情](").append(markDownTemplate.getUrl()).append(")");
+        if (ToolUtil.isNotEmpty(markDownTemplate1.getUrl())) {
+            stringBuffer.append("[点击查看详情](").append(markDownTemplate1.getUrl()).append(")");
         }
         return stringBuffer.toString();
     }
 
-    void selectTitle(MarkDownTemplate markDownTemplate) {
-        ToolUtil.isNotEmpty(markDownTemplate.getType());
-        {
-            switch (markDownTemplate.getType()) {
-                case 2:
-                    markDownTemplate.setTitle("消息");
+    MarkDownTemplate selectTitle(MarkDownTemplate markDownTemplate) {
+        if (ToolUtil.isEmpty(markDownTemplate.getCreateTime())) {
+            markDownTemplate.setCreateTime(new Date());
+        }
+        if (ToolUtil.isNotEmpty(markDownTemplate.getFunction())) {
+            Map<String, String> data = new HashMap<>();
+            if (ToolUtil.isNotEmpty(markDownTemplate.getTaskId())) {
+                data = activitiProcessTaskService.getSendData(markDownTemplate.getTaskId());
+            }
+            switch (markDownTemplate.getFunction()) {
+                case audit:
+                case refuse:
+                case send:
+                case pickSend:
+                case warning:
+                    markDownTemplate.setTitle(markDownTemplate.getFunction().getEnumName());
                     break;
-                case 1:
-                    markDownTemplate.setTitle("通知");
+                case atPerson:
+                case toPerson:
+                case forward:
+                    String enumName = markDownTemplate.getFunction().getEnumName();
+                    if (ToolUtil.isNotEmpty(markDownTemplate.getUserId())) {
+                        User user = userService.getById(markDownTemplate.getUserId());
+                        enumName.replace("${userName}", user.getName());
+                        markDownTemplate.setTitle(enumName);
+                    }
+                case done:
+                case action:
+                    markDownTemplate.setTitle(markDownTemplate.getFunction().getEnumName().replace("${functionName}",data.get("function")));
                     break;
-                case 0:
-                    markDownTemplate.setTitle("待办");
+                default:
                     break;
             }
+            if (ToolUtil.isNotEmpty(data.get("description"))) {
+                markDownTemplate.setDescription(data.get("description"));
+            }
+            if (ToolUtil.isNotEmpty(data.get("coding"))) {
+                markDownTemplate.setCoding(data.get("coding"));
+            }
+
+
         }
+        return markDownTemplate;
+
     }
 
 }

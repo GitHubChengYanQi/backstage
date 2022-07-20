@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.form.pojo.RuleType;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -86,6 +87,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
     Long getTaskIdByFormId(Long formId);
 
     void format(List<ActivitiProcessTaskResult> data);
+
+    Map<String,String> getSendData(Long taskId);
 
     void checkStartUser(Long processId);
 }

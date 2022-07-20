@@ -22,6 +22,7 @@ import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -225,13 +226,16 @@ public class ActivitiProcessTaskSend {
         Map<String, String> aboutSend = this.getAboutSend(taskId, send);
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setFunction(MarkDownTemplateTypeEnum.refuse);
             setType(1);
             setItems("审批被否决");
-            setCreateUserName(createUser.getName());
             setUrl(aboutSend.get("url"));
             setDescription(processTask.getTaskName());
             setSource("processTask");
             setSourceId(processTask.getProcessTaskId());
+            setCreateTime(processTask.getCreateTime());
+            setCreateUser(processTask.getCreateUser());
+            setTaskId(processTask.getProcessTaskId());
             setUserIds(users);
         }});
     }

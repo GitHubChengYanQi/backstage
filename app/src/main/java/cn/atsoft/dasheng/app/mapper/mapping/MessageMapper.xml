@@ -8,6 +8,7 @@
         <result column="time" property="time"/>
         <result column="state" property="state"/>
         <result column="title" property="title"/>
+        <result column="promoter" property="promoter"/>
         <result column="content" property="content"/>
         <result column="type" property="type"/>
         <result column="user_id" property="userId"/>
@@ -26,7 +27,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">deptId
     AS "deptId",url AS "url",
-        message_id AS "messageId", time AS "time",source AS "source",source_id AS "sourceId", state AS "state", user_id AS "userId",title AS "title", content AS "content", type AS "type", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sort AS "sort"
+        message_id AS "messageId", promoter AS "promoter",time AS "time",source AS "source",source_id AS "sourceId", state AS "state", user_id AS "userId",title AS "title", content AS "content", type AS "type", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sort AS "sort"
     </sql>
 
 

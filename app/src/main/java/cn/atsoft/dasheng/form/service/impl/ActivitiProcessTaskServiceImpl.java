@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -10,13 +11,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
-import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.entity.Inventory;
-import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
-import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
-import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
-import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
-import cn.atsoft.dasheng.erp.model.result.InventoryResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
@@ -29,9 +25,11 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.pojo.AppointUser;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.DataType;
+import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
@@ -87,6 +85,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private InventoryService inventoryService;
     @Autowired
     private MaintenanceService maintenanceService;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
     @Autowired
     private GetOrigin getOrigin;
 
@@ -474,6 +474,114 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
         }
 
+    }
+    @Override
+    public Map<String,String> getSendData(Long taskId) {
+        ActivitiProcessTask processTask = this.getById(taskId);
+        Long processId = processTask.getProcessId();
+        ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
+        String modelName = ProcessModuleEnum.getModelNameByEnum(activitiProcess.getType());
+        Map<String,String> result = new HashMap<>();
+        result.put("function",modelName);
+        String coding = "";
+        List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
+        try {
+            switch (processTask.getType()) {
+//                case "quality_task":
+//                    QualityTaskResult task = qualityTaskService.getTask(taskResult.getFormId());
+//                    break;
+//                case "purchase":
+//                case "purchaseAsk":
+//                    PurchaseAskParam param = new PurchaseAskParam();
+//                    param.setPurchaseAskId(taskResult.getFormId());
+//                    PurchaseAskResult askResult = askService.detail(param);
+//                    taskResult.setObject(askResult);
+//                    break;
+//                case "procurementOrder":
+//                    ProcurementOrder detail = this.procurementOrderService.getById(taskResult.getFormId());
+//                    ProcurementOrderResult result = new ProcurementOrderResult();
+//                    ToolUtil.copyProperties(detail, result);
+//                    User user1 = userService.getById(result.getCreateUser());
+//                    result.setUser(user1);
+//                    taskResult.setObject(result);
+//
+//                    break;
+//                case "purchasePlan":
+//                    ProcurementPlan procurementPlan = this.procurementPlanService.getById(taskResult.getFormId());
+//                    if (ToolUtil.isEmpty(procurementPlan)) {
+//                        return null;
+//                    }
+//                    ProcurementPlanResult procurementPlanResult = new ProcurementPlanResult();
+//                    ToolUtil.copyProperties(procurementPlan, procurementPlanResult);
+//                    User user = userService.getById(procurementPlanResult.getCreateUser());
+//                    procurementPlanResult.setFounder(user);
+//                    procurementPlanService.detail(procurementPlanResult);
+//                    taskResult.setObject(procurementPlanResult);
+//                    break;
+                case "INSTOCK":
+                    InstockOrderResult instockOrderResult = BeanUtil.copyProperties(instockOrderService.getById(processTask.getFormId()), InstockOrderResult.class);
+                    coding  = instockOrderResult.getCoding();
+                    break;
+                case "ERROR":
+                    AnomalyOrderResult orderResult = anomalyOrderService.detail(processTask.getFormId());
+                    for (AnomalyResult anomalyResult : orderResult.getAnomalyResults()) {
+                        skuSimpleResults.add(anomalyResult.getSkuResult());
+                    }
+                    coding = orderResult.getCoding();
+                    break;
+                case "ErrorForWard":
+                    AnomalyResult anomalyResult = anomalyService.detail(processTask.getFormId());
+                    skuSimpleResults.add(anomalyResult.getSkuResult());
+                    break;
+                case "OUTSTOCK":
+                    ProductionPickListsResult pickListsRestult = pickListsService.detail(processTask.getFormId());
+                    for (ProductionPickListsDetailResult detailResult : pickListsRestult.getDetailResults()) {
+                        skuSimpleResults.add(detailResult.getSkuResult());
+                    }
+                    coding  = pickListsRestult.getCoding();
+                    break;
+                case "MAINTENANCE":
+                    MaintenanceResult maintenanceResult = maintenanceService.detail(processTask.getFormId());
+                    for (MaintenanceDetailResult maintenanceDetailResult : maintenanceResult.getMaintenanceDetailResults()) {
+                        skuSimpleResults.add(maintenanceDetailResult.getSkuResult());
+                    }
+                    coding  = maintenanceResult.getCoding();
+                    break;
+                case "Stocktaking":
+                    InventoryResult inventoryResult = inventoryService.detail(processTask.getFormId());
+                    for (InventoryDetailResult detailResult : inventoryResult.getDetailResults()) {
+                        skuSimpleResults.add(BeanUtil.copyProperties(detailResult.getSkuResult(), SkuSimpleResult.class));
+                    }
+                    coding  = inventoryResult.getCoding();
+
+                    break;
+
+
+            }
+        } catch (Exception e) {
+
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+            if (ToolUtil.isNotEmpty(skuSimpleResult.getSpuResult()) && ToolUtil.isNotEmpty(skuSimpleResult.getSpuResult().getName())) {
+                stringBuffer.append(skuSimpleResult.getSpuResult().getName()).append("/");
+            }
+            if (ToolUtil.isNotEmpty(skuSimpleResult.getSkuName())) {
+                stringBuffer.append(skuSimpleResult.getSkuName()).append("/");
+
+            }
+            if (ToolUtil.isNotEmpty(skuSimpleResult.getSpecifications())) {
+                stringBuffer.append(skuSimpleResult.getSpecifications());
+            }
+            stringBuffer.append(",");
+            if (stringBuffer.length()>20){
+                break;
+            }
+        }
+        stringBuffer.append(".....");
+        result.put("description",stringBuffer.toString());
+        result.put("coding",coding);
+        return result;
     }
 
     @Override

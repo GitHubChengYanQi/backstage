@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -230,15 +231,19 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     public void pushPeople(List<Long> userIds, Long taskId, String content, Remarks remarks) {
         ActivitiProcessTask task = taskService.getById(taskId);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setFunction(MarkDownTemplateTypeEnum.atPerson);
             setType(2);
             setItems("收到评论");
             setDescription("有人在 " + task.getTaskName() + " 中@了你");
-            setCreateUser(task.getCreateUser());
-            setRemark(remarks.getContent());
+            setCreateTime(remarks.getCreateTime());
+            setTaskId(taskId);
+            setDescription(remarks.getContent());
             setSource("processTask");
             setSourceId(taskId);
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
             setUserIds(userIds);
+            setCreateUser(task.getCreateUser());
+
         }});
 
     }

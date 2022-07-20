@@ -23,6 +23,8 @@ import java.util.List;
 public class MessageResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private Long promoter;
     /**
      * 路径
      */

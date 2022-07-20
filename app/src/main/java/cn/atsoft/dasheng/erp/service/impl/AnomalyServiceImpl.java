@@ -649,7 +649,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         result.setUser(user);
 
         if (ToolUtil.isNotEmpty(skuSimpleResults)) {
-            result.setSkuSimpleResult(skuSimpleResults.get(0));
+            result.setSkuResult(skuSimpleResults.get(0));
         }
         result.setBrand(brand);
         result.setCustomer(customer);
@@ -692,7 +692,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             ids.add(datum.getAnomalyId());
         }
 
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
         List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
@@ -700,7 +700,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
 
         for (AnomalyResult datum : data) {
-            for (SkuResult skuResult : skuResults) {
+            for (SkuSimpleResult skuResult : skuSimpleResultList) {
                 if (skuResult.getSkuId().equals(datum.getSkuId())) {
                     datum.setSkuResult(skuResult);
                     break;

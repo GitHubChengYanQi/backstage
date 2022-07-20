@@ -29,6 +29,10 @@ public class Message implements Serializable {
      */
     @TableId(value = "message_id", type = IdType.ID_WORKER)
     private Long messageId;
+
+
+    @TableField("promoter")
+    private Long promoter;
     /**
      * 路径
      */
@@ -257,6 +261,15 @@ public class Message implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
+
+    public Long getPromoter() {
+        return promoter;
+    }
+
+    public void setPromoter(Long promoter) {
+        this.promoter = promoter;
+    }
+
 
     @Override
     public String toString() {

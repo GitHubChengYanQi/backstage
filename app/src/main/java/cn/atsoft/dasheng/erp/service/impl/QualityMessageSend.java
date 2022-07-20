@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +65,10 @@ public class QualityMessageSend implements AuditMessageSend {
             setSource("processTask");
             setSourceId(taskId);
             setUserIds(users);
+            setTaskId(taskId);
+            setCreateTime(processTask.getCreateTime());
+            setCreateUser(processTask.getCreateUser());
+
         }});
 
     }
@@ -83,7 +88,9 @@ public class QualityMessageSend implements AuditMessageSend {
             setDescription("您被分派新的任务");
             setSource("processTask");
             setSourceId(parentId);
+            setTaskId(parentId);
             setUserIds(users);
+
         }});
     }
     
