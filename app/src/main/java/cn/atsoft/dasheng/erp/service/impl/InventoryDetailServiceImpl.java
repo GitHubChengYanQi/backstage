@@ -82,6 +82,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private SpuClassificationService spuClassificationService;
+    @Autowired
+    private AnomalyService anomalyService;
+    @Autowired
+    private InventoryStockService inventoryStockService;
 
     @Override
     public void add(InventoryDetailParam param) {
@@ -416,34 +420,21 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     @Override
     public void complete(List<Long> inventoryIds) {
 
+        List<InventoryStock> inventoryStocks = inventoryStockService.query().in("inventory_id", inventoryIds).eq("display", 1).list();
         List<Inventory> inventories = inventoryService.listByIds(inventoryIds);
 
-        List<InventoryDetail> inventoryDetails = this.query().in("inventory_id", inventoryIds).list();
         List<Long> anomalyIds = new ArrayList<>();
-        for (InventoryDetail inventoryDetail : inventoryDetails) {
-//            if (inventoryDetail.getLockStatus() != 98) {
-//                throw new ServiceException(500, "请全部确定");
-//            }
-//            inventoryDetail.setLockStatus(99);  //锁数据
-            if (ToolUtil.isNotEmpty(inventoryDetail.getAnomalyId())) {
-                anomalyIds.add(inventoryDetail.getAnomalyId());
+        for (InventoryStock inventoryStock : inventoryStocks) {
+            if (ToolUtil.isNotEmpty(inventoryStock.getAnomalyId())) {
+                anomalyIds.add(inventoryStock.getAnomalyId());
             }
         }
-        this.updateBatchById(inventoryDetails);
 
-        if (anomalyIds.size() > 0) {
-            List<AnomalyParam> anomalyParams = new ArrayList<>();
-            for (Long anomalyId : anomalyIds) {
-                AnomalyParam anomalyParam = new AnomalyParam();
-                anomalyParam.setAnomalyId(anomalyId);
-                anomalyParams.add(anomalyParam);
+        List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
+        for (Anomaly anomaly : anomalies) {
+            if (anomaly.getStatus() == 0) {
+                throw new ServiceException(500, "请先提交异常");
             }
-
-            AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
-            anomalyOrderParam.setType("Stocktaking");
-            anomalyOrderParam.setAnomalyParams(anomalyParams);
-            anomalyOrderParam.setMessage("盘点");
-            anomalyOrderService.addByInventory(anomalyOrderParam);
         }
 
 

@@ -147,18 +147,24 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
      */
     @Override
     public Map<String, Integer> speedProgress(Long inventoryId) {
-        List<InventoryStock> inventoryStocks = this.query().select("status AS status").eq("inventory_id", inventoryId).eq("display", 1).list();
+        List<InventoryStock> inventoryStocks = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
         int size = inventoryStocks.size();
         int operation = 0;
+        Set<Long> positionIds = new HashSet<>();
+        Set<Long> skuIds = new HashSet<>();
         for (InventoryStock inventoryStock : inventoryStocks) {
             if (inventoryStock.getStatus() != 0) {
                 operation = operation + 1;
             }
+            positionIds.add(inventoryStock.getPositionId());
+            skuIds.add(inventoryStock.getSkuId());
         }
 
         Map<String, Integer> map = new HashMap<>();
         map.put("total", size);
         map.put("handle", operation);
+        map.put("positionNum", positionIds.size());
+        map.put("skuNum", skuIds.size());
         return map;
     }
 
@@ -297,7 +303,6 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             }
         }
 
-        param.setType(param.getAnomalyType().toString());
         this.updateBatchById(inventoryStocks);
         this.saveBatch(stockList);
     }

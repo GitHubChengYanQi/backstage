@@ -45,7 +45,6 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private String notice;
 
-
     private Long brandId;
 
     private Long positionId;
@@ -58,9 +57,7 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private Date beginTime;
 
-
     private String mode;
-
 
     private String method;
     /**

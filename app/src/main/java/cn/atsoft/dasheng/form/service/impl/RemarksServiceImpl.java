@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.service.ShopCartService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -63,6 +65,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     private ActivitiProcessTaskService taskService;
     @Autowired
     private StepsService appStepService;
+    @Autowired
+    private ShopCartService shopCartService;
 
     @Override
     public void add(Long logId, String note) {
@@ -194,6 +198,15 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         remarks.setPid(auditParam.getPid());
         remarks.setUserIds(auditParam.getUserIds());
         this.save(remarks);
+
+        /**
+         * 添加动态
+         */
+        ActivitiProcessTask processTask = taskService.getById(auditParam.getTaskId());
+        if (ToolUtil.isNotEmpty(processTask)) {
+            shopCartService.addDynamic(processTask.getFormId(), "添加了评论");
+        }
+
 
         if (ToolUtil.isNotEmpty(auditParam.getUserIds())) {
             String[] split = auditParam.getUserIds().split(",");

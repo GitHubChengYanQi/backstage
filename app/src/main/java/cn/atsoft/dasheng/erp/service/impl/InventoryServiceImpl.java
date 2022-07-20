@@ -311,10 +311,15 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }
         }
 
+
         Inventory entity = getEntity(param);
         this.save(entity);
 
         for (InventoryDetailParam detailParam : param.getDetailParams()) {
+            if ((ToolUtil.isEmpty(detailParam.getType()) || !detailParam.getType().equals("all")) && param.getMode().equals("staticState")) {
+                throw new ServiceException(500, "当前方法 不可以是静态");
+            }
+
             List<Long> bomIds = detailParam.getBomIds();
             List<Long> brandIds = detailParam.getBrandIds();
             List<Long> positionIds = detailParam.getPositionIds();
@@ -1073,16 +1078,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         for (InventoryResult datum : data) {
 
-            List<InventoryDetailResult> detailResults = new ArrayList<>();
-            List<Long> skuIds = new ArrayList<>();
-
-            for (InventoryDetailResult detail : details) {
-                if (datum.getInventoryTaskId().equals(detail.getInventoryId())) {
-                    detailResults.add(detail);
-                }
-                skuIds.add(detail.getSkuId());
-            }
-            Integer positionNum = storehousePositionsService.getPositionNum(skuIds);
             for (StorehousePositionsResult positionsResult : positionsResultList) {
                 if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
                     datum.setPositionsResult(positionsResult);
@@ -1100,9 +1095,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             Map<String, Integer> map = inventoryStockService.speedProgress(datum.getInventoryTaskId());
             datum.setTotal(map.get("total"));
             datum.setHandle(map.get("handle"));
-
-            datum.setPositionSize(positionNum);
-            datum.setSkuSize(detailResults.size());
+            datum.setPositionSize(map.get("positionNum"));
+            datum.setSkuSize(map.get("skuNum"));
 
         }
     }

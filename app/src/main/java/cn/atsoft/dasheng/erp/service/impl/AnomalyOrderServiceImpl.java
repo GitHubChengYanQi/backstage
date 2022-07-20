@@ -433,20 +433,15 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         for (AnomalyResult anomalyResult : anomalyResults) {
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 if (detail.getStauts() == 2) {  //报损 创建出库单
-                    InventoryDetail inventoryDetail = inventoryDetailService.query()  //找到盘点异常物料 进行出库
-                            .eq("inventory_id", anomalyResult.getFormId())
-                            .eq("inkind_id", detail.getInkindId()).one();
-
                     ProductionPickListsDetailParam detailParam = new ProductionPickListsDetailParam();
-                    detailParam.setBrandId(inventoryDetail.getBrandId());
-                    detailParam.setSkuId(inventoryDetail.getSkuId());
-                    detailParam.setNumber(Math.toIntExact(inventoryDetail.getRealNumber()));
-                    detailParam.setStorehousePositionsId(inventoryDetail.getPositionId());
-                    detailParam.setReceivedNumber(Math.toIntExact(inventoryDetail.getRealNumber()));
+                    detailParam.setBrandId(anomalyResult.getBrandId());
+                    detailParam.setSkuId(anomalyResult.getSkuId());
+                    detailParam.setNumber(Math.toIntExact(detail.getNumber()));
+                    detailParam.setStorehousePositionsId(anomalyResult.getPositionId());
+                    detailParam.setReceivedNumber(Math.toIntExact(detail.getNumber()));
                     pickListsDetailParams.add(detailParam);
                 }
             }
-
             param.setPickListsDetailParams(pickListsDetailParams);
         }
 
@@ -602,7 +597,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         Long inStockListId = anomalyResult.getSourceId();
         InstockList instockList = instockListService.getById(inStockListId);
         instockList.setStatus(-1L);
-        instockList.setRealNumber(instockList.getRealNumber() - detailResult.getNumber());
         instockListService.updateById(instockList);
 
 
