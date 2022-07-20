@@ -700,6 +700,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }});
         List<InventoryDetailResult> details = inventoryDetailService.details(id);
         inventoryResult.setTaskList(details);
+        inventoryResult.setDetailResults(details);
 
         if (ToolUtil.isNotEmpty(inventoryResult.getParticipants())) {   //参与人员
             List<Long> userIds = JSON.parseArray(inventoryResult.getParticipants(), Long.class);

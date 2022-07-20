@@ -295,7 +295,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
         }
-        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<StorehousePositionsBind> positionsBinds =skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
 
         for (ProductionPickListsResult result : results) {
