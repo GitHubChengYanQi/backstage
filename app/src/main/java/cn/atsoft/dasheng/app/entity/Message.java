@@ -37,8 +37,7 @@ public class Message implements Serializable {
     private Long messageId;
 
 
-    @TableField("promoter")
-    private Long promoter;
+
     /**
      * 路径
      */
