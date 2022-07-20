@@ -425,10 +425,15 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
         List<Long> anomalyIds = new ArrayList<>();
         for (InventoryStock inventoryStock : inventoryStocks) {
+            if (inventoryStock.getStatus() == 0) {
+                throw new ServiceException(500, "有未操作物料");
+            }
             if (ToolUtil.isNotEmpty(inventoryStock.getAnomalyId())) {
                 anomalyIds.add(inventoryStock.getAnomalyId());
             }
         }
+
+
 
         List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
         for (Anomaly anomaly : anomalies) {

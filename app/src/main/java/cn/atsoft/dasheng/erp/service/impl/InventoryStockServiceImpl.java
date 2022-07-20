@@ -281,7 +281,9 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         }
         queryWrapper.eq("position_id", param.getPositionId());
 
+
         List<InventoryStock> inventoryStocks = this.list(queryWrapper);
+        List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
 
         for (InventoryStock inventoryStock : inventoryStocks) {    //保留之前记录
             if (inventoryStock.getLockStatus() == 99) {
@@ -290,17 +292,16 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             inventoryStock.setStatus(status);
             inventoryStock.setAnomalyId(param.getAnomalyId());
             inventoryStock.setLockStatus(0);
-            inventoryStock.setDisplay(0);
-            inventoryStock.setRealNumber(param.getRealNumber());
-        }
-
-        List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
-        for (InventoryStock inventoryStock : stockList) {
-            inventoryStock.setInventoryStockId(null);
             inventoryStock.setDisplay(1);
+            inventoryStock.setRealNumber(param.getRealNumber());
             if (status == 1) {   //正常物料    清楚异常id
                 inventoryStock.setAnomalyId(0L);
             }
+        }
+
+        for (InventoryStock inventoryStock : stockList) {
+            inventoryStock.setInventoryStockId(null);
+            inventoryStock.setDisplay(0);
         }
 
         this.updateBatchById(inventoryStocks);
