@@ -218,6 +218,5 @@
             and begin_time &lt;= #{paramCondition.currentTime}
             and end_time &gt;= #{paramCondition.currentTime}
         </if>
-
     </select>
 </mapper>

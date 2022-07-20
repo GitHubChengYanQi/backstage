@@ -239,6 +239,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         shopCartService.updateBatchById(shopCarts);
     }
 
+    /**
+     * 静态限制
+     */
+    @Override
+    public void staticState() {
+        List<InventoryResult> inventoryResults = this.listByTime();  //时间范围内 所有未完成的盘点任务
+        for (InventoryResult inventoryResult : inventoryResults) {
+            if (ToolUtil.isNotEmpty(inventoryResult.getMode()) && inventoryResult.getMode().equals("staticState")) {   //如果 有静态  抛出异常 不可操作
+                throw new ServiceException(500, "当前属于静态盘点阶段 ，不可执行所有操作!!!");
+            }
+        }
+    }
 
     /**
      * 条件盘点

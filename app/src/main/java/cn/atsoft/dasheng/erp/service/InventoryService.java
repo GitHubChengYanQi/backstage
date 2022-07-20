@@ -39,6 +39,8 @@ public interface InventoryService extends IService<Inventory> {
 
     void timelyAdd(InventoryParam param);
 
+    void staticState();
+
     void selectCondition(InventoryParam param);
 
     Inventory InventoryApply(InventoryParam param);
