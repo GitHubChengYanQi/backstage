@@ -55,7 +55,6 @@ public class MicroMessageService {
     public void microServiceDo(MicroServiceEntity microServiceEntity) {
         switch (microServiceEntity.getType()) {
             case CONTRACT:
-
                 switch (microServiceEntity.getOperationType()) {
                     case SAVE:
                         //保存
@@ -92,8 +91,6 @@ public class MicroMessageService {
                     case ADD:
                         List<ProductionCard> cardList = productionCardService.addBatchCardByProductionPlan(microServiceEntity.getObject());
                         productionWorkOrderService.microServiceAdd(microServiceEntity.getObject());
-
-
                 }
                 break;
             case PRODUCTION_PICKLISTS:

@@ -21,11 +21,13 @@
         <result column="sort" property="sort"/>
         <result column="deptId" property="deptId"/>
         <result column="url" property="url"/>
+        <result column="view" property="view"/>
+        <result column="promoter" property="promoter"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">deptId
-    AS "deptId",url AS "url",
+    AS "deptId",url AS "url",view AS "view",promoter AS "promoter",
         message_id AS "messageId", time AS "time",source AS "source",source_id AS "sourceId", state AS "state", user_id AS "userId",title AS "title", content AS "content", type AS "type", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sort AS "sort"
     </sql>
 

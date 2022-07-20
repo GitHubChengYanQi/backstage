@@ -427,7 +427,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public InventoryDetailResult conditionGetOne(InventoryDetailParam detailParam) {
 
 
-
         InventoryDetailResult inventoryDetailResult = null;
 
         if (ToolUtil.isNotEmpty(detailParam.getPositionIds())) {
@@ -486,7 +485,21 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<Long> positionIds = positionsService.getEndChild(positionId);
         queryWrapper.in("storehouse_positions_id", positionIds);
         List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
-        return this.positionsResultList(stockDetails);
+        List<InventoryStock> all = new ArrayList<>();
+
+        for (StockDetails details : stockDetails) {
+            if (all.stream().noneMatch(i -> i.getSkuId().equals(details.getSkuId())
+                    && i.getBrandId().equals(details.getBrandId())
+                    && i.getPositionId().equals(details.getStorehousePositionsId())
+            )) {
+                InventoryStock inventoryStock = new InventoryStock();
+                inventoryStock.setSkuId(details.getSkuId());
+                inventoryStock.setBrandId(details.getBrandId());
+                inventoryStock.setPositionId(details.getStorehousePositionsId());
+                all.add(inventoryStock);
+            }
+        }
+        return all;
 
     }
 
@@ -686,7 +699,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         //负责人
         User user = ToolUtil.isEmpty(inventoryResult.getUserId()) ? new User() : userService.getById(inventoryResult.getUserId());
-        if (ToolUtil.isNotEmpty(user)&&ToolUtil.isNotEmpty(user.getUserId())) {
+        if (ToolUtil.isNotEmpty(user) && ToolUtil.isNotEmpty(user.getUserId())) {
             String imgUrl = stepsService.imgUrl(user.getUserId().toString());
             user.setAvatar(imgUrl);
             inventoryResult.setPrincipal(user);

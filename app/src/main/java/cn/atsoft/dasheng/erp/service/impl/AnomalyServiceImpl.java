@@ -494,12 +494,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
-//        if (ToolUtil.isNotEmpty(param.getInstockNumber())) {
-//            InstockList instockList = new InstockList();
-//            instockList.setInstockListId(oldEntity.getSourceId());
-//            instockList.setRealNumber(param.getInstockNumber());
-//            instockListService.updateById(instockList);
-//        }
+        if (ToolUtil.isNotEmpty(param.getInstockNumber())) {
+            InstockList instockList = new InstockList();
+            instockList.setInstockListId(oldEntity.getSourceId());
+            instockList.setRealNumber(param.getInstockNumber());
+            instockListService.updateById(instockList);
+        }
 
         updateStatus(param.getAnomalyId()); //更新异常状态
         if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {

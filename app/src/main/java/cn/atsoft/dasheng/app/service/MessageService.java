@@ -59,6 +59,8 @@ public interface MessageService extends IService<Message> {
      */
     List<MessageResult> findListBySpec(MessageParam param);
 
+    PageInfo<MessageResult> view(MessageParam param);
+
     /**
      * 查询分页数据，Specification模式
      *
