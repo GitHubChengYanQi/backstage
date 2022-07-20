@@ -248,6 +248,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             setDescription("有人在 " + task.getTaskName() + " 中@了你");
             setCreateUser(task.getCreateUser());
             setRemark(remarks.getContent());
+            setSource("processTask");
+            setSourceId(taskId);
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
             setUserIds(userIds);
         }});

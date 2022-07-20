@@ -5,7 +5,9 @@ import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
+import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
 import cn.atsoft.dasheng.erp.entity.ShopCart;
+import cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceParam;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceSelectSku;
@@ -102,6 +104,12 @@ public class MaintenanceController extends BaseController {
         ToolUtil.copyProperties(detail, result);
 
         return ResponseData.success(result);
+    }
+    @RequestMapping(value = "/getDetails", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData getDetails(@RequestBody(required = false) MaintenanceDetailParam maintenanceDetailParam) {
+
+        return ResponseData.success(this.maintenanceService.getDetails(maintenanceDetailParam.getMaintenanceId()));
     }
 
     /**

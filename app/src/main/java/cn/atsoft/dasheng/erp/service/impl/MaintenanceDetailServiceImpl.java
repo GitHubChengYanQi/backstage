@@ -1,29 +1,21 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.StockDetailRequest;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam;
-import cn.atsoft.dasheng.erp.model.request.MaintenanceMirageRequest;
-import cn.atsoft.dasheng.erp.model.request.SkuBrandPositionNumber;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -32,11 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
 
 /**
  * <p>
@@ -95,7 +82,7 @@ public class MaintenanceDetailServiceImpl extends ServiceImpl<MaintenanceDetailM
         List<StockDetailsResult> stockDetailsResults = BeanUtil.copyToList(maintenanceDetails, StockDetailsResult.class);
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
-        List<Long> positionsIds=new ArrayList<>();
+        List<Long> positionsIds = new ArrayList<>();
         for (StockDetailsResult details : stockDetailsResults) {
             skuIds.add(details.getSkuId());
             brandIds.add(details.getBrandId());
@@ -186,39 +173,78 @@ public class MaintenanceDetailServiceImpl extends ServiceImpl<MaintenanceDetailM
 //    }
 
 
-        @Override
-        public MaintenanceDetailResult findBySpec (MaintenanceDetailParam param){
-            return null;
-        }
+    @Override
+    public MaintenanceDetailResult findBySpec(MaintenanceDetailParam param) {
+        return null;
+    }
 
-        @Override
-        public List<MaintenanceDetailResult> findListBySpec (MaintenanceDetailParam param){
-            return null;
-        }
+    @Override
+    public List<MaintenanceDetailResult> findListBySpec(MaintenanceDetailParam param) {
+        return null;
+    }
 
-        @Override
-        public PageInfo<MaintenanceDetailResult> findPageBySpec (MaintenanceDetailParam param){
-            Page<MaintenanceDetailResult> pageContext = getPageContext();
-            IPage<MaintenanceDetailResult> page = this.baseMapper.customPageList(pageContext, param);
-            return PageFactory.createPageInfo(page);
-        }
+    @Override
+    public PageInfo<MaintenanceDetailResult> findPageBySpec(MaintenanceDetailParam param) {
+        Page<MaintenanceDetailResult> pageContext = getPageContext();
+        IPage<MaintenanceDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
 
-        private Serializable getKey (MaintenanceDetailParam param){
-            return param.getMaintenanceDetailId();
+    @Override
+    public void format(List<MaintenanceDetailResult> data) {
+        List<Long> positionIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        for (MaintenanceDetailResult datum : data) {
+            positionIds.add(datum.getStorehousePositionsId());
+            skuIds.add(datum.getSkuId());
+            brandIds.add(datum.getBrandId());
         }
+        List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<StorehousePositionsResult> storehousePositionsResults = storehousePositionsService.getDetails(positionIds);
+        for (MaintenanceDetailResult datum : data) {
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
+                if (datum.getSkuId().equals(skuSimpleResult.getSkuId())) {
+                    datum.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
 
-        private Page<MaintenanceDetailResult> getPageContext () {
-            return PageFactory.defaultPage();
-        }
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(datum.getBrandId())) {
+                    datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
 
-        private MaintenanceDetail getOldEntity (MaintenanceDetailParam param){
-            return this.getById(getKey(param));
-        }
-
-        private MaintenanceDetail getEntity (MaintenanceDetailParam param){
-            MaintenanceDetail entity = new MaintenanceDetail();
-            ToolUtil.copyProperties(param, entity);
-            return entity;
+            for (StorehousePositionsResult storehousePositionsResult : storehousePositionsResults) {
+                if (datum.getStorehousePositionsId().equals(storehousePositionsResult.getStorehousePositionsId())) {
+                    datum.setStorehousePositionsResult(storehousePositionsResult);
+                }
+            }
         }
 
     }
+
+
+    private Serializable getKey(MaintenanceDetailParam param) {
+        return param.getMaintenanceDetailId();
+    }
+
+    private Page<MaintenanceDetailResult> getPageContext() {
+        return PageFactory.defaultPage();
+    }
+
+    private MaintenanceDetail getOldEntity(MaintenanceDetailParam param) {
+        return this.getById(getKey(param));
+    }
+
+    private MaintenanceDetail getEntity(MaintenanceDetailParam param) {
+        MaintenanceDetail entity = new MaintenanceDetail();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
+}

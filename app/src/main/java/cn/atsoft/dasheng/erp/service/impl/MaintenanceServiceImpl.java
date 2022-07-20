@@ -2,11 +2,8 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.MaintenanceActionEnum;
-import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.app.service.PartsService;
@@ -19,7 +16,6 @@ import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceMapper;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceAndInventorySelectParam;
-import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
@@ -29,6 +25,9 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
@@ -38,12 +37,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cn.atsoft.dasheng.message.enmu.OperationType.SAVEDETAILS;
 
 /**
  * <p>
@@ -110,9 +111,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private SpuClassificationService spuClassificationService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Override
-    @Transactional
+
     public Maintenance add(MaintenanceParam param) {
 
         if (ToolUtil.isEmpty(param.getCoding())) {
@@ -132,6 +135,41 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         entity.setMaintenanceName(LoginContextHolder.getContext().getUser().getName() + "创建的养护任务");
         this.save(entity);
 
+        messageProducer.microService(new MicroServiceEntity(){{
+            setObject(entity);
+            setOperationType(SAVEDETAILS);
+            setType(MicroServiceType.MAINTENANCE);
+            setMaxTimes(2);
+            setTimes(0);
+        }});
+
+
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "MAINTENANCE").eq("status", 99).eq("module", "reMaintenance").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            activitiProcessTaskService.checkStartUser(activitiProcess.getProcessId());
+            auditService.power(activitiProcess);//检查创建权限
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            String name = LoginContextHolder.getContext().getUser().getName();
+            activitiProcessTaskParam.setTaskName(name + "养护申请 ");
+            activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setFormId(entity.getMaintenanceId());
+            activitiProcessTaskParam.setType("MAINTENANCE");
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
+            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+
+            //添加log
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+        } else {
+            throw new ServiceException(500, "请创建质检流程！");
+        }
+        return entity;
+    }
+
+    @Override
+    public void saveDetails(Maintenance entity){
         List<StockDetails> stockDetails = this.needMaintenanceByRequirement(entity);
 
         List<StockDetails> detailTotalList = new ArrayList<>();
@@ -160,28 +198,6 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             throw new ServiceException(500, "当前条件未找到需要养护物料");
         }
         maintenanceDetailService.saveBatch(details);
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "MAINTENANCE").eq("status", 99).eq("module", "reMaintenance").one();
-        if (ToolUtil.isNotEmpty(activitiProcess)) {
-            activitiProcessTaskService.checkStartUser(activitiProcess.getProcessId());
-            auditService.power(activitiProcess);//检查创建权限
-            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            String name = LoginContextHolder.getContext().getUser().getName();
-            activitiProcessTaskParam.setTaskName(name + "养护申请 ");
-            activitiProcessTaskParam.setUserId(param.getUserId());
-            activitiProcessTaskParam.setFormId(entity.getMaintenanceId());
-            activitiProcessTaskParam.setType("MAINTENANCE");
-            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
-            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
-            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-
-            //添加log
-            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
-        } else {
-            throw new ServiceException(500, "请创建质检流程！");
-        }
-        return entity;
     }
 
     @Override
