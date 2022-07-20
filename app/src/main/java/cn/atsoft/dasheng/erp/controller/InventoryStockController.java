@@ -104,22 +104,22 @@ public class InventoryStockController extends BaseController {
 //        return ResponseData.success(result);
 //    }
 //
-//    /**
-//     * 查询列表
-//     *
-//     * @author song
-//     * @Date 2022-07-15
-//     */
-//    @RequestMapping(value = "/list", method = RequestMethod.POST)
-//    @ApiOperation("列表")
-//    public PageInfo<InventoryStockResult> list(@RequestBody(required = false) InventoryStockParam inventoryStockParam) {
-//        if(ToolUtil.isEmpty(inventoryStockParam)){
-//            inventoryStockParam = new InventoryStockParam();
-//        }
-//        return this.inventoryStockService.findPageBySpec(inventoryStockParam);
-//    }
-//
-//
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-07-15
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<InventoryStockResult> list(@RequestBody(required = false) InventoryStockParam inventoryStockParam) {
+        if(ToolUtil.isEmpty(inventoryStockParam)){
+            inventoryStockParam = new InventoryStockParam();
+        }
+        return this.inventoryStockService.findPageBySpec(inventoryStockParam);
+    }
+
+
 
 
 }

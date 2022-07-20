@@ -49,7 +49,7 @@ public interface InventoryService extends IService<Inventory> {
 
     List<SkuBind> getSkuBinds(InventoryDetailParam detailParam);
 
-    List<StorehousePositionsResult> timely(Long positionId);
+    Object timely(Long positionId);
 
     void bySku(InventoryParam param);
 

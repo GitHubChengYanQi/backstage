@@ -54,6 +54,7 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private Date endTime;
 
+    private Long userId;
 
     private Date beginTime;
 
