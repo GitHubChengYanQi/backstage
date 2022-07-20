@@ -136,7 +136,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     public Object taskList(Long inventoryId) {
         List<InventoryStock> inventoryStocks = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
         List<InventoryStockResult> inventoryStockResults = BeanUtil.copyToList(inventoryStocks, InventoryStockResult.class);
-      this.format(inventoryStockResults);
+        this.format(inventoryStockResults);
         return inventoryStockResults;
     }
 

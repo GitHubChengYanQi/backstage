@@ -50,7 +50,7 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private String cause;
 
-
+    private List<String> types;
 
     @ApiModelProperty("主题")
     private String theme;
@@ -65,9 +65,6 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     @ApiModelProperty("上级任务id")
     private Long pid;
-
-
-
 
 
     /**
