@@ -23,7 +23,8 @@ import java.util.List;
 public class MaintenanceDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    @ApiModelProperty("搜索条件")
+    private String queryParam;
 
     @ApiModelProperty("")
     private Long maintenanceDetailId;
