@@ -37,8 +37,11 @@ import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -130,6 +133,10 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private AnnouncementsService announcementsService;
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private OrCodeService orCodeService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
     @Override
     @Transactional
@@ -1060,10 +1067,11 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      * @param realNumber
      */
     @Override
-    public void updateStockDetail(Long skuId, Long brandId, Long positionId, Long realNumber) {
+    public void updateStockDetail(Long skuId, Long brandId, Long customerId, Long positionId, Long realNumber) {
         List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuId)
                 .eq("brand_id", brandId)
                 .eq("storehouse_positions_id", positionId)
+                .orderByAsc("create_time")
                 .eq("display", 1).list();
 
         long stockNum = 0;  // 计算当前物料库存数
@@ -1081,14 +1089,17 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         if (stockNum > realNumber) {    //库存数 大于 复核数  出库
             outOrIn = true;
         }
-
+        /**
+         * 需要进行出库
+         */
         if (outOrIn) {
+            realNumber = stockNum - realNumber;  //需要出库的数量
             for (StockDetails stockDetail : stockDetails) {
                 if (realNumber == 0) {   //复核数为0  直接退出   不进行操作
                     break;
                 }
                 long num = stockDetail.getNumber() - realNumber;   //库存数 - 复核数
-                if (num < 0) {   //当前实物数量不足出库  出去当前实物数量 继续循环 找下一个满足条件的实物进行出库
+                if (num <= 0) {   //当前实物数量不足出库  出去当前实物数量 继续循环 找下一个满足条件的实物进行出库
                     realNumber = realNumber - stockDetail.getNumber();
                     stockDetail.setNumber(0L);
                     stockDetail.setDisplay(0);
@@ -1098,9 +1109,117 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 }
             }
         } else {
-
+            /**
+             * 需要进行入库
+             */
+            realNumber = realNumber - stockNum;  //需要入库的数量
+            Sku sku = skuService.getById(skuId);  //先判断是不是批量
+            if (sku.getBatch() == 1) {  //批量
+                instock(skuId, brandId, customerId, positionId, realNumber);
+            } else {
+                inStockBatch(skuId, brandId, customerId,positionId, realNumber);
+            }
         }
         stockDetailsService.updateBatchById(stockDetails);
+    }
+
+    /**
+     * 盘点入库
+     *
+     * @param skuId
+     * @param brandId
+     * @param positionId
+     * @param number
+     */
+    private void instock(Long skuId, Long brandId, Long customerId, Long positionId, Long number) {
+        Inkind inkind = new Inkind();
+        inkind.setNumber(number);
+        inkind.setSkuId(skuId);
+        inkind.setSource("盘点入库");
+        inkind.setType("1");
+        inkind.setCustomerId(customerId);
+        inkind.setBrandId(brandId);
+        inkindService.save(inkind);
+
+        OrCode orCode = new OrCode();
+        orCode.setState(1);
+        orCode.setType("item");
+        orCodeService.save(orCode);
+
+        OrCodeBindParam bindParam = new OrCodeBindParam();
+        bindParam.setOrCodeId(orCode.getOrCodeId());
+        bindParam.setFormId(inkind.getInkindId());
+        bindParam.setSource("item");
+        orCodeBindService.add(bindParam);
+
+        StockDetails stockDetails = new StockDetails();
+        stockDetails.setSkuId(skuId);
+        stockDetails.setBrandId(brandId);
+        stockDetails.setStorehousePositionsId(positionId);
+        stockDetails.setNumber(number);
+        stockDetails.setCustomerId(customerId);
+        stockDetails.setInkindId(inkind.getInkindId());
+        StorehousePositions storehousePositions = positionsService.getById(positionId);
+        stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
+
+        stockDetailsService.save(stockDetails);
+    }
+
+
+    /**
+     * 循环入库
+     */
+    private void inStockBatch(Long skuId, Long brandId, Long customerId, Long positionId, Long number) {
+
+        List<OrCode> orCodes = new ArrayList<>();
+        List<Inkind> inkinds = new ArrayList<>();   //先创建实物
+
+        for (int i = 0; i < number; i++) {
+            Inkind inkind = new Inkind();
+            inkind.setNumber(1L);
+            inkind.setSkuId(skuId);
+            inkind.setSource("盘点入库");
+            inkind.setType("1");
+            inkind.setBrandId(brandId);
+            inkind.setCustomerId(customerId);
+            inkinds.add(inkind);
+
+            OrCode orCode = new OrCode();    //创建二维码
+            orCode.setState(1);
+            orCode.setType("item");
+            orCodes.add(orCode);
+        }
+        inkindService.saveBatch(inkinds);
+        orCodeService.saveBatch(orCodes);
+        StorehousePositions storehousePositions = positionsService.getById(positionId);
+
+        List<OrCodeBind> binds = new ArrayList<>();
+        List<StockDetails> stockDetailList = new ArrayList<>();
+
+        for (int i = 0; i < number; i++) {
+
+            OrCode orCode = orCodes.get(i);
+            Inkind inkind = inkinds.get(i);
+
+            OrCodeBind bind = new OrCodeBind();   //添加绑定
+            bind.setOrCodeId(orCode.getOrCodeId());
+            bind.setFormId(inkind.getInkindId());
+            bind.setSource("item");
+            binds.add(bind);
+
+            StockDetails stockDetails = new StockDetails();
+            stockDetails.setSkuId(skuId);
+            stockDetails.setBrandId(brandId);
+            stockDetails.setInkindId(inkind.getInkindId());
+            stockDetails.setCustomerId(customerId);
+            stockDetails.setStorehousePositionsId(positionId);
+            stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
+            stockDetails.setNumber(inkind.getNumber());
+            stockDetailList.add(stockDetails);
+
+        }
+        stockDetailsService.saveBatch(stockDetailList);
+        orCodeBindService.saveBatch(binds);
     }
 
     private Serializable getKey(InventoryParam param) {

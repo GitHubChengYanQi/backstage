@@ -440,7 +440,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
                 int size = checkNumbers.size();
                 CheckNumber checkNumber = checkNumbers.get(size - 1);
-          inventoryService.updateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), Long.valueOf(checkNumber.getNumber()));
+                inventoryService.updateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getCustomerId(), anomalyResult.getPositionId(), Long.valueOf(checkNumber.getNumber()));
 
             }
             //TODO
@@ -457,8 +457,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
             param.setPickListsDetailParams(pickListsDetailParams);
         }
+        if (pickListsDetailParams.size() > 0) {   //调用出库申请
+            pickListsService.add(param);
+        }
 
-        pickListsService.add(param);
     }
 
     /**
