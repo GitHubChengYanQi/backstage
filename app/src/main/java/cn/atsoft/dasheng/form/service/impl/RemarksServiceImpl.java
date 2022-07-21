@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
@@ -215,7 +216,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
-            pushPeople(userIds, auditParam.getTaskId(), "你有一条被@的消息", remarks);
+            pushPeople(userIds, auditParam.getTaskId(), remarks);
         }
     }
 
@@ -230,7 +231,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
-            pushPeople(userIds, remarksParam.getTaskId(), "你有一条被@的消息", entity);
+            pushPeople(userIds, remarksParam.getTaskId(), entity);
         }
     }
 
@@ -241,7 +242,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
      * @param taskId
      */
     @Override
-    public void pushPeople(List<Long> userIds, Long taskId, String content, Remarks remarks) {
+    public void pushPeople(List<Long> userIds, Long taskId, Remarks remarks) {
         ActivitiProcessTask task = taskService.getById(taskId);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setFunction(MarkDownTemplateTypeEnum.atPerson);
@@ -253,6 +254,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             setDescription(remarks.getContent());
             setSource("processTask");
             setSourceId(taskId);
+            setUserId(remarks.getCreateUser());
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + taskId);
             setUserIds(userIds);
             setCreateUser(task.getCreateUser());

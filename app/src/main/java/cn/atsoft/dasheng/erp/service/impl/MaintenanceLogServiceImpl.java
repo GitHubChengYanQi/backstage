@@ -77,7 +77,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         List<MaintenanceDetail> maintenanceDetails = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getMaintenanceId())) {
             Maintenance maintenance = maintenanceService.getById(param.getMaintenanceId());
-            maintenanceDetails = maintenanceDetailService.query().eq("maintenance_id", param.getMaintenanceId()).eq("status", 0).list();
+            maintenanceDetails = maintenanceDetailService.query().eq("maintenance_id", param.getMaintenanceId()).eq("status", 0).eq("display",1).list();
             stockDetails = maintenanceService.needMaintenanceByRequirement(maintenance);
             maintenanceDetailService.updateBatchById(maintenanceDetails);
             /**
@@ -179,6 +179,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
             int num = maintenanceLogParam.getNumber();
             if (num > 0) {
                 for (StockDetails details : need) {
+                    num -= details.getNumber();
                     MaintenanceLog log = new MaintenanceLog();
                     log.setNumber(Math.toIntExact(details.getNumber()));
                     log.setBrandId(details.getBrandId());

@@ -25,6 +25,23 @@
     <sql id="Base_Column_List">
         maintenance_detail_id AS "maintenanceDetailId",storehouse_positions_id AS "storehousePositionsId", done_number AS "doneNumber",maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", number AS "number", brand_id AS "brandId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
     </sql>
+    <sql id="Base_LeftJoin_List">
+        md.maintenance_detail_id AS "maintenanceDetailId",
+        md.storehouse_positions_id AS "storehousePositionsId",
+        md.done_number AS "doneNumber",
+        md.maintenance_id AS "maintenanceId",
+        md.inkind_id AS "inkindId",
+        md.sku_id AS "skuId",
+        md.number AS "number",
+        md.brand_id AS "brandId",
+        md.create_user AS "createUser",
+        md.create_time AS "createTime",
+        md.update_user AS "updateUser",
+        md.update_time AS "updateTime",
+        md.display AS "display",
+        md.deptId AS "deptId",
+        STATUS AS "status"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam">
@@ -41,8 +58,29 @@
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceDetailResult" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_erp_maintenance_detail where 1 = 1
+        <include refid="Base_LeftJoin_List"/>
+        from daoxin_erp_maintenance_detail md
+        LEFT JOIN goods_sku sku on sku.sku_id=md.sku_id
+        LEFT JOIN goods_spu spu on spu.spu_id=sku.spu_id
+        LEFT JOIN daoxin_erp_storehouse_positions position on position.storehouse_positions_id = md.storehouse_positions_id
+        LEFT JOIN daoxin_erp_brand brand on brand.brand_id = md.brand_id
+        where 1 = 1 and md.display = 1
+        <if test="paramCondition.maintenanceId != null and paramCondition.maintenanceId != 0">
+            and md.maintenance_id = #{paramCondition.maintenanceId}
+        </if>
+        <if test="paramCondition.status != null">
+            and md.status = #{paramCondition.status}
+        </if>
+
+        <if test="paramCondition.queryParam != null and paramCondition.queryParam !=''">
+            and (
+                    sku.sku_name like CONCAT('%',#{paramCondition.queryParam},'%')
+                    or spu.name like CONCAT('%',#{paramCondition.queryParam},'%')
+                    or brand.brand_name like CONCAT('%',#{paramCondition.queryParam},'%')
+                    or position.name like CONCAT('%',#{paramCondition.queryParam},'%')
+                )
+        </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceDetailParam">

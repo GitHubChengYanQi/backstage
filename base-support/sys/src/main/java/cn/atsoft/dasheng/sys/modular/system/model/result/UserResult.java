@@ -40,7 +40,6 @@ public class UserResult implements Serializable {
     /**
      * 头像
      */
-    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private String avatar;
 

@@ -155,27 +155,29 @@ public class ActivitiProcessTaskSend {
             users = users.stream().distinct().collect(Collectors.toList());
         }
 
-        switch (type) {
-            case audit:
-            case send:
-                auditMessageSend.send(taskId, type, users, url, createName);
-                break;
-            case quality_complete:
-                this.completeSend(type, aboutSend);
-                break;
-            case quality_perform:
-            case quality_dispatch:
-                qualityMessageSend.send(taskId, type, users, url, createName);
-                break;
-            case purchase_complete:
-                purchaseAskService.complateAsk(taskId, loginUserId);
-                this.completeSend(type, aboutSend);
-                break;
-            case status:
-                auditMessageSend.statusSend(taskId,type ,users,url, createName);
-                break;
-        }
+        if (ToolUtil.isNotEmpty(users)) {
+            switch (type) {
+                case audit:
+                case send:
+                    auditMessageSend.send(taskId, type, users, url, createName);
+                    break;
+                case quality_complete:
+                    this.completeSend(type, aboutSend);
+                    break;
+                case quality_perform:
+                case quality_dispatch:
+                    qualityMessageSend.send(taskId, type, users, url, createName);
+                    break;
+                case purchase_complete:
+                    purchaseAskService.complateAsk(taskId, loginUserId);
+                    this.completeSend(type, aboutSend);
+                    break;
+                case status:
+                    auditMessageSend.statusSend(taskId,type ,users,url, createName);
+                    break;
+            }
 
+        }
     }
 
     private void completeSend(RuleType type, Map<String, String> aboutSend) {
