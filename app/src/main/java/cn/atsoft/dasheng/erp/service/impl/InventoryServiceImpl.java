@@ -1088,13 +1088,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     break;
                 }
                 long num = stockDetail.getNumber() - realNumber;   //库存数 - 复核数
-                if (num > 0) {         //当前实物数量满足需要出库的数量 修正库存数  退出方法;
-                    stockDetail.setNumber(num);
-                    break;
-                } else {                //当前实物数量不足出库  出去当前实物数量 继续循环 找下一个满足条件的实物进行出库
+                if (num < 0) {   //当前实物数量不足出库  出去当前实物数量 继续循环 找下一个满足条件的实物进行出库
+                    realNumber = realNumber - stockDetail.getNumber();
                     stockDetail.setNumber(0L);
                     stockDetail.setDisplay(0);
-                    realNumber = realNumber - stockDetail.getNumber();
+                } else {    //当前实物数量满足需要出库的数量 修正库存数  退出方法;
+                    stockDetail.setNumber(num);
+                    break;
                 }
             }
         } else {
