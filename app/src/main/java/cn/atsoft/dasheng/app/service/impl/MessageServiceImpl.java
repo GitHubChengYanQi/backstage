@@ -57,9 +57,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Override
     public void update(MessageParam param) {
         Message oldEntity = getOldEntity(param);
-        Message newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        oldEntity.setView(1);
+        this.updateById(oldEntity);
     }
 
     @Override
