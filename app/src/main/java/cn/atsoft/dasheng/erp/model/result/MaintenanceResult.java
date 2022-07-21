@@ -6,6 +6,8 @@ import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceAndInventorySelectParam;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -36,8 +38,12 @@ public class MaintenanceResult implements Serializable {
     private Integer numberCount;
     private Integer positionCount;
     private Integer doneNumberCount;
+    private List<String> enclosureUrl;
+    private UserResult userResult;
+    private UserResult createUserResult;
     private List<MaintenanceDetailResult> maintenanceDetailResults;
     private List<StorehousePositionsResult> detailResultsByPositions;
+    private List<AnnouncementsResult> announcementsResults;
 
     private List<MaintenanceAndInventorySelectParam> selectParamResults;
     private String selectParams;
@@ -45,6 +51,8 @@ public class MaintenanceResult implements Serializable {
 
     @ApiModelProperty("养护")
     private Long maintenanceId;
+
+    private String notice;
 
     /**
      * name
@@ -86,6 +94,7 @@ public class MaintenanceResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long createUser;
 
     /**
@@ -98,24 +107,28 @@ public class MaintenanceResult implements Serializable {
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false)
     private Integer display;
 
     /**
      * 部门id
      */
     @ApiModelProperty("部门id")
+    @JSONField(serialize = false)
     private Long deptId;
 
     /**

@@ -43,6 +43,8 @@ public class MaintenanceParam implements Serializable, BaseValidatingParam {
      */
     private String partsIds;
 
+    private String notice;
+
     /**
      * 库位id
      */

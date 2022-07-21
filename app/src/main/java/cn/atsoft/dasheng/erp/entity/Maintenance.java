@@ -46,6 +46,13 @@ public class Maintenance implements Serializable {
     @TableField("coding")
     private String coding;
     /**
+    /**
+    /**
+     * coding
+     */
+    @TableField("notice")
+    private String notice;
+    /**
      * 材质id
      */
 
@@ -232,6 +239,14 @@ public class Maintenance implements Serializable {
 
     public Long getDeptId() {
         return deptId;
+    }
+
+    public String getNotice() {
+        return notice;
+    }
+
+    public void setNotice(String notice) {
+        this.notice = notice;
     }
 
     public void setDeptId(Long deptId) {
