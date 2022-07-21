@@ -249,7 +249,7 @@ public class WxCpSendTemplate {
                     String enumName = markDownTemplate.getFunction().getEnumName();
                     if (ToolUtil.isNotEmpty(markDownTemplate.getUserId())) {
                         User user = userService.getById(markDownTemplate.getUserId());
-                        enumName.replace("${userName}", user.getName());
+                        enumName = enumName.replace("${userName}", user.getName());
                         markDownTemplate.setTitle(enumName);
                     }
                 case done:
