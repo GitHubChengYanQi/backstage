@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.erp.pojo.SkuBind;
 import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -118,6 +119,53 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         this.saveBatch(all);
     }
 
+    /**
+     * 同步 盘点所需的物料
+     */
+    public void matchingData(Long inventoryId) {
+
+        List<InventoryStock> all = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
+
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();
+        List<Long> inventoryIds = new ArrayList<>();
+        inventoryResults.removeIf(i -> i.getStatus() == 99);  //找出符合当前时间段 并且未完成 的盘点任务
+
+        for (InventoryResult inventoryResult : inventoryResults) {
+            inventoryIds.add(inventoryResult.getInventoryTaskId());
+        }
+
+        List<InventoryStock> inventoryStocks = inventoryIds.size() == 0 ? new ArrayList<>() : this.query()  //找出 当前时间段 执行过程中的物料
+                .in("inventory_id", inventoryIds)
+                .eq("display", 1).ne("status", 0)
+                .list();
+
+        for (InventoryStock inventoryStock : all) {
+            updateList(inventoryStock, inventoryStocks);
+        }
+        this.updateBatchById(all);
+    }
+
+    /**
+     * 同步数据
+     *
+     * @param applyAdd
+     * @param inventoryStocks
+     */
+    private void updateList(InventoryStock applyAdd, List<InventoryStock> inventoryStocks) {
+
+        for (InventoryStock inventoryStock : inventoryStocks) {
+            if (applyAdd.getSkuId().equals(inventoryStock.getSkuId()) &&
+                    applyAdd.getBrandId().equals(inventoryStock.getBrandId()) &&
+                    applyAdd.getPositionId().equals(inventoryStock.getPositionId())) {
+                applyAdd.setNumber(inventoryStock.getNumber());
+                applyAdd.setRealNumber(inventoryStock.getRealNumber());
+                applyAdd.setStatus(inventoryStock.getStatus());
+                applyAdd.setAnomalyId(inventoryStock.getAnomalyId());
+                applyAdd.setLockStatus(inventoryStock.getLockStatus());
+            }
+        }
+    }
+
     public List<InventoryStockResult> details(Long inventoryId) {
 
         List<InventoryStock> inventoryStocks = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
@@ -153,12 +201,16 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         int operation = 0;
         Set<Long> positionIds = new HashSet<>();
         Set<Long> skuIds = new HashSet<>();
+        int shopCartNum = 0;
         for (InventoryStock inventoryStock : inventoryStocks) {
             if (inventoryStock.getStatus() != 0) {
                 operation = operation + 1;
             }
             positionIds.add(inventoryStock.getPositionId());
             skuIds.add(inventoryStock.getSkuId());
+            if (inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99) {
+                shopCartNum = shopCartNum + 1;
+            }
         }
 
         Map<String, Integer> map = new HashMap<>();
@@ -166,6 +218,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         map.put("handle", operation);
         map.put("positionNum", positionIds.size());
         map.put("skuNum", skuIds.size());
+        map.put("shopCartNum", shopCartNum);
         return map;
     }
 
@@ -251,9 +304,17 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         return positionsResultList;
     }
 
+    /**
+     * 通过异常id  修改盘点状态
+     *
+     * @param ids
+     */
     @Override
     public void updateStatus(List<Long> ids) {
-        List<InventoryStock> inventoryStocks = ids.size() == 0 ? new ArrayList<>() : this.listByIds(ids);
+
+        List<InventoryStock> inventoryStocks = ids.size() == 0 ? new ArrayList<>() :
+                this.query().in("anomaly_id", ids)
+                        .eq("display", 1).list();
         for (InventoryStock inventoryStock : inventoryStocks) {
             inventoryStock.setLockStatus(99);
         }
@@ -317,6 +378,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
     @Override
     public PageInfo<InventoryStockResult> findPageBySpec(InventoryStockParam param) {
+        matchingData(param.getInventoryId());  //开始盘点 同步数据
         Page<InventoryStockResult> pageContext = getPageContext();
         pageContext.setOrders(null);
         IPage<InventoryStockResult> page = this.baseMapper.customPageList(pageContext, param);

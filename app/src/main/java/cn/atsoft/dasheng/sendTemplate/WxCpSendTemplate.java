@@ -194,7 +194,7 @@ public class WxCpSendTemplate {
                 messageEntity.setMessage(message);
                 messageEntities.add(message);
                 logger.info("铃铛发送" + messageEntity.getCpData().getDescription());
-                messageProducer.sendMessage(messageEntity,100);
+                messageProducer.sendMessage(messageEntity, 100);
             }
 //            messageService.saveBatch(messageEntities);
         }
@@ -207,9 +207,9 @@ public class WxCpSendTemplate {
 
         if (ToolUtil.isNotEmpty(markDownTemplate1.getCoding())) {
             String string = markDownTemplate1.getItems() + markDownTemplate1.getCoding();
-            if (string.length()>13){
-                string = string.substring(0,13);
-                string+="......";
+            if (string.length() > 13) {
+                string = string.substring(0, 13);
+                string += "......";
             }
             stringBuffer.append(string).append("\n\n");
         }
@@ -254,7 +254,12 @@ public class WxCpSendTemplate {
                     }
                 case done:
                 case action:
-                    markDownTemplate.setTitle(markDownTemplate.getFunction().getEnumName().replace("${functionName}",data.get("function")));
+                    try {
+                        markDownTemplate.setTitle(markDownTemplate.getFunction().getEnumName().replace("${functionName}", data.get("function")));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     break;
                 default:
                     break;

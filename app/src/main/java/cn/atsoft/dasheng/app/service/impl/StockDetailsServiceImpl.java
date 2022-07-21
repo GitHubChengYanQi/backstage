@@ -448,7 +448,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             queryWrapper.eq("sku_id", param.getSkuId());
             queryWrapper.eq("brand_id", param.getBrandId());
             queryWrapper.eq("storehouse_positions_id", param.getStorehousePositionsId());
-          StockDetails stockDetails = this.getOne(queryWrapper);
+            StockDetails stockDetails = this.getOne(queryWrapper);
             if (ToolUtil.isNotEmpty(stockDetails)) {
                 stockDetails.setQrCodeId(list.get(0).getOrCodeId());
                 return stockDetails;

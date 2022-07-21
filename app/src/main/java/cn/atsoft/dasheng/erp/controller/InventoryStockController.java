@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.InventoryStockResult;
 import cn.atsoft.dasheng.erp.service.InventoryStockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +56,19 @@ public class InventoryStockController extends BaseController {
      */
     @RequestMapping(value = "/taskList", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData taskList(@RequestBody InventoryStockParam param ) {
+    public ResponseData taskList(@RequestBody InventoryStockParam param) {
         Object taskList = this.inventoryStockService.taskList(param.getInventoryId());
         return ResponseData.success(taskList);
+    }
+
+    @RequestMapping(value = "/speedProgress", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData speedProgress(@RequestBody InventoryStockParam param) {
+        if (ToolUtil.isEmpty(param.getInventoryId())) {
+            throw new ServiceException(500, "请提交盘点id");
+        }
+        Map<String, Integer> map = this.inventoryStockService.speedProgress(param.getInventoryId());
+        return ResponseData.success(map);
     }
 //
 //    /**
@@ -104,6 +115,7 @@ public class InventoryStockController extends BaseController {
 //        return ResponseData.success(result);
 //    }
 //
+
     /**
      * 查询列表
      *
@@ -113,13 +125,11 @@ public class InventoryStockController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InventoryStockResult> list(@RequestBody(required = false) InventoryStockParam inventoryStockParam) {
-        if(ToolUtil.isEmpty(inventoryStockParam)){
+        if (ToolUtil.isEmpty(inventoryStockParam)) {
             inventoryStockParam = new InventoryStockParam();
         }
         return this.inventoryStockService.findPageBySpec(inventoryStockParam);
     }
-
-
 
 
 }

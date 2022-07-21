@@ -132,7 +132,13 @@
                 #{state}
             </foreach>
         </if>
-    <if test="paramCondition.skuName != null">
+        <if test="paramCondition.types !=null and paramCondition.types.size>0 ">
+            and type in
+            <foreach collection="paramCondition.types" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.skuName != null">
             and (form_id in (
             select instock_order_id from daoxin_erp_instock_order where coding like
             CONCAT('%',#{paramCondition.skuName},'%')

@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.InstockErrorActionEnum;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -120,6 +121,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InstockHandleService instockHandleService;
     @Autowired
     private InventoryStockService inventoryStockService;
+    @Autowired
+    private InventoryService inventoryService;
 
     @Override
     @Transactional
@@ -153,16 +156,16 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         //判断是否提交过
         List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(ids);
 
-        List<Long> sourceIds = new ArrayList<>();
+        List<Long> anomalyIds = new ArrayList<>();
         for (Anomaly anomaly : anomalyList) {
             if (anomaly.getStatus() == 98) {
                 throw new ServiceException(500, "请勿重新提交异常");
             }
-            sourceIds.add(anomaly.getSourceId());
+            anomalyIds.add(anomaly.getAnomalyId());
         }
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
         if (entity.getType().equals("Stocktaking")) {   //更新盘点处理状态
-            inventoryStockService.updateStatus(sourceIds);
+            inventoryStockService.updateStatus(anomalyIds);
         }
         /**
          * 更新购物车状态
@@ -431,6 +434,16 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
         for (AnomalyResult anomalyResult : anomalyResults) {
+
+            //核实数量 修改库存数
+//            if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {
+//                List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
+//                int size = checkNumbers.size();
+//                CheckNumber checkNumber = checkNumbers.get(size - 1);
+//          inventoryService.updateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), Long.valueOf(checkNumber.getNumber()));
+//
+//            }
+            //TODO
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 if (detail.getStauts() == 2) {  //报损 创建出库单
                     ProductionPickListsDetailParam detailParam = new ProductionPickListsDetailParam();
@@ -476,7 +489,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 int i = checkNumbers.size() - 1;
                 CheckNumber checkNumber = checkNumbers.get(i);
                 InstockHandle inStockHandle = createInStockHandle(anomaly, "ErrorNumber");
-                inStockHandle.setNumber(checkNumber.getNumber()-anomaly.getNeedNumber());
+                inStockHandle.setNumber(checkNumber.getNumber() - anomaly.getNeedNumber());
                 instockHandleService.save(inStockHandle);
             }
 

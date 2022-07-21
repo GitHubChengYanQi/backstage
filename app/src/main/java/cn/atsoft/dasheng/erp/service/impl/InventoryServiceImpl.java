@@ -736,7 +736,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         Map<String, Integer> map = inventoryStockService.speedProgress(id);
         inventoryResult.setTotal(map.get("total"));
         inventoryResult.setHandle(map.get("handle"));
-
+        inventoryResult.setPositionSize(map.get("positionNum"));
+        inventoryResult.setSkuSize(map.get("skuNum"));
         return inventoryResult;
     }
 
@@ -1048,6 +1049,58 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             positionsResult.setDetailsResults(detailsResults);
         }
         return positionsResult;
+    }
+
+    /**
+     * 异常提交处理 更新库存数量
+     *
+     * @param skuId
+     * @param brandId
+     * @param positionId
+     * @param realNumber
+     */
+    @Override
+    public void updateStockDetail(Long skuId, Long brandId, Long positionId, Long realNumber) {
+        List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuId)
+                .eq("brand_id", brandId)
+                .eq("storehouse_positions_id", positionId)
+                .eq("display", 1).list();
+
+        long stockNum = 0;  // 计算当前物料库存数
+        for (StockDetails stockDetail : stockDetails) {
+            stockNum = stockNum + stockDetail.getNumber();
+        }
+        if (realNumber == stockNum) {  //数量相同不需要更新库存数
+            return;
+        }
+        /**
+         * ture :需要从库存出库
+         * false:需要从库存入库
+         */
+        boolean outOrIn = false;
+        if (stockNum > realNumber) {    //库存数 大于 复核数  出库
+            outOrIn = true;
+        }
+
+        if (outOrIn) {
+            for (StockDetails stockDetail : stockDetails) {
+                if (realNumber == 0) {   //复核数为0  直接退出   不进行操作
+                    break;
+                }
+                long num = stockDetail.getNumber() - realNumber;   //库存数 - 复核数
+                if (num > 0) {         //当前实物数量满足需要出库的数量 修正库存数  退出方法;
+                    stockDetail.setNumber(num);
+                    break;
+                } else {                //当前实物数量不足出库  出去当前实物数量 继续循环 找下一个满足条件的实物进行出库
+                    stockDetail.setNumber(0L);
+                    stockDetail.setDisplay(0);
+                    realNumber = realNumber - stockDetail.getNumber();
+                }
+            }
+        } else {
+
+        }
+        stockDetailsService.updateBatchById(stockDetails);
     }
 
     private Serializable getKey(InventoryParam param) {
