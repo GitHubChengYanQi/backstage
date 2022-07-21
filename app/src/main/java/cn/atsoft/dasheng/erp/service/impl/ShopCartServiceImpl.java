@@ -377,7 +377,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     public List<ShopCartResult> applyList(ShopCartParam param) {
         Long userId = LoginContextHolder.getContext().getUserId();
         param.setCreateUser(userId);
-        List<ShopCartResult> shopCartResults = this.baseMapper.customList(param);
+        List<ShopCartResult> shopCartResults = this.baseMapper.applyList(param);
         format(shopCartResults);
         return shopCartResults;
     }

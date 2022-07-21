@@ -53,4 +53,7 @@ public interface ShopCartMapper extends BaseMapper<ShopCart> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ShopCartParam paramCondition);
 
+
+    List<ShopCartResult> applyList(@Param("paramCondition") ShopCartParam paramCondition);
+
 }

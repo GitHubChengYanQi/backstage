@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.form.entity.DocumentsStatus;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -109,12 +110,15 @@ public class InstockOrderResult implements Serializable {
     private Date createTime;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(deserialize = false)
     private Long createUser;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(deserialize = false)
     private Date updateTime;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(deserialize = false)
     private Long updateUser;
 
     @ApiModelProperty("")
