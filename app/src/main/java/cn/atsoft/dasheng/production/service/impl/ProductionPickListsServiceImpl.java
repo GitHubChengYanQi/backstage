@@ -256,7 +256,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         param.getCartsParams();
         List<Object> objects = BeanUtil.copyToList(param.getCartsParams(), Object.class);
         if (ToolUtil.isEmpty(list)) {
-            Integer integer = redisSendCheck.pushList(code, objects);
+            redisSendCheck.pushList(code, objects,1000L * 60L * 10L);
             return code;
         }
         return createCode(param);
@@ -1607,80 +1607,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     }
 
-    @Override
-    public void outStockByCode(String code) {
-        List<Long> stockIds = new ArrayList<>();
-        ProductionPickCode pickCode = pickCodeService.query().eq("code", code).eq("display", 1).one();
-        if (ToolUtil.isEmpty(pickCode)) {
-            throw new ServiceException(500, "未查询到此验证码");
-        }
-        Long createUser = pickCode.getCreateUser();
-        List<ProductionPickLists> productionPickLists = this.query().eq("user_id", createUser).eq("display", 1).ne("status", 99).list();
-        List<Long> listsIds = new ArrayList<>();
-        for (ProductionPickLists productionPickList : productionPickLists) {
-            listsIds.add(productionPickList.getPickListsId());
-        }
-        List<ProductionPickListsCart> pickListsCarts = listsIds.size() == 0 ? new ArrayList<>() : pickListsCartService.query().in("pick_lists_id", listsIds).eq("status", 2).eq("display", 1).list();
-        List<Long> detailIds = new ArrayList<>();
-        for (ProductionPickListsCart pickListsCart : pickListsCarts) {
-            detailIds.add(pickListsCart.getPickListsDetailId());
-            stockIds.add(pickListsCart.getStorehouseId());
-        }
 
-        List<ProductionPickListsDetail> details = detailIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.listByIds(detailIds);
-        for (ProductionPickListsDetail detail : details) {
-            for (ProductionPickListsCart pickListsCart : pickListsCarts) {
-                if (detail.getPickListsDetailId().equals(pickListsCart.getPickListsDetailId())) {
-                    detail.setReceivedNumber(detail.getReceivedNumber() + pickListsCart.getNumber());
-                    if (Objects.equals(detail.getNumber(), detail.getReceivedNumber())) {
-                        detail.setStatus(99);
-                    }
-                    pickListsCart.setDisplay(0);
-                    pickListsCart.setStatus(99);
-                }
-            }
-        }
-        pickListsDetailService.updateBatchById(details);
-        pickListsCartService.updateBatchById(pickListsCarts);
-        //创建出库
-        for (Long stockId : stockIds.stream().distinct().collect(Collectors.toList())) {
-            OutstockOrderParam outstockOrder = new OutstockOrderParam();
-            outstockOrder.setStorehouseId(stockId);
-            List<InstockLogDetail> logDetails = new ArrayList<>();
-            outstockOrder.setUserId(LoginContextHolder.getContext().getUserId());
-            List<OutstockListingParam> listings = new ArrayList<>();
-            for (ProductionPickListsCart listsCart : pickListsCarts) {
-                if (listsCart.getStatus() == 99 && listsCart.getStorehouseId().equals(stockId)) {
-                    OutstockListingParam listingParam = new OutstockListingParam();
-                    listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
-                    listingParam.setSkuId(listsCart.getSkuId());
-                    listingParam.setPositionsId(listsCart.getStorehousePositionsId());
-                    listingParam.setInkindId(listsCart.getInkindId());
-                    if (ToolUtil.isNotEmpty(listsCart.getBrandId())) {
-                        listingParam.setBrandId(listsCart.getBrandId());
-                    }
-                    InstockLogDetail log = new InstockLogDetail();
-                    ToolUtil.copyProperties(pickListsCarts, log);
-                    log.setSource("pick_lists");
-                    log.setSourceId(listsCart.getPickListsId());
-                    logDetails.add(log);
-                    listings.add(listingParam);
-                }
-            }
-            instockLogDetailService.saveBatch(logDetails);
-            outstockOrder.setListingParams(listings);
-            outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
-            outstockOrder.setSource("pickLists");
-        }
-        pickCode.setDisplay(0);
-        pickCodeService.updateById(pickCode);
-    }
 
     @Override
     public List<ProductionPickListsCartResult> listByCode(String code) {
         List<Object> list = redisSendCheck.getList(code);
         if (ToolUtil.isEmpty(list)) {
-            throw new ServiceException(500, "此领料码为查询到物料或码已被使用");
+            throw new ServiceException(500, "领料码已失效");
         }
         List<ProductionPickListsCartResult> cartResults = BeanUtil.copyToList(list, ProductionPickListsCartResult.class);
         if (ToolUtil.isNotEmpty(cartResults)) {

@@ -574,10 +574,11 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
             stringBuffer.append(",");
             if (stringBuffer.length()>20){
+                stringBuffer.append(".....");
+
                 break;
             }
         }
-        stringBuffer.append(".....");
         result.put("description",stringBuffer.toString());
         result.put("coding",coding);
         return result;

@@ -108,8 +108,6 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     void abortCode(String code);
 
-    void outStockByCode(String code);
-
     List<ProductionPickListsCartResult>  listByCode(String code);
 
     List<Long> idsList(ProductionPickListsParam param);

@@ -217,7 +217,7 @@ public class WxCpSendTemplate {
             stringBuffer.append(markDownTemplate1.getDescription()).append("\n\n").append("\n\n");
         }
         if (ToolUtil.isNotEmpty(markDownTemplate.getCreateTime())) {
-            String date = DateUtil.format(markDownTemplate1.getCreateTime(), "yyyy/MM/dd hh:mm:ss");
+            String date = DateUtil.format(markDownTemplate1.getCreateTime(), "yyyy/MM/dd HH:mm:ss");
             stringBuffer.append(date).append("\n \n");
         }
         if (ToolUtil.isNotEmpty(markDownTemplate1.getUrl())) {
