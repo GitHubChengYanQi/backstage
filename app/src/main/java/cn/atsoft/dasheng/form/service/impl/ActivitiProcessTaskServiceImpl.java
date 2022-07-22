@@ -87,8 +87,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private ActivitiProcessService activitiProcessService;
     @Autowired
     private GetOrigin getOrigin;
-    @Autowired
-    private StepsService stepsService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -582,7 +580,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
         }
         String string = stringBuffer.toString();
-         string = string.substring(0,string.length()-1);
+        if (string.length()>0) {
+            string = string.substring(0,string.length()-1);
+        }
         if(string.length()>27){
             string= string+".....";
         }
