@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.Announcements;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -100,18 +101,22 @@ public class InventoryResult implements Serializable {
      * 删除状态
      */
     @ApiModelProperty("删除状态")
+    @JSONField(deserialize = false)
     private Integer display;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(deserialize = false)
     private Long createUser;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(deserialize = false)
     private Long updateUser;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(deserialize = false)
     private Date updateTime;
 
     /**

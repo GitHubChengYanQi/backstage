@@ -114,6 +114,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         switch (param.getAnomalyType()) {
             case InstockError:     //判断入库单
+                inventoryService.staticState();  //静态盘点判断
                 InstockOrder order = instockOrderService.getById(param.getFormId());
                 if (ToolUtil.isEmpty(order)) {
                     throw new ServiceException(500, "入库单不存在");

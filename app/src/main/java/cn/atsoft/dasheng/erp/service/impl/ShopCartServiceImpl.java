@@ -115,6 +115,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         this.save(entity);
 
         if (ToolUtil.isNotEmpty(param.getInstockListId())) {
+            inventoryService.staticState();  //静态盘点判断
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
             InstockList instockList = instockListService.getById(param.getInstockListId());
             String skuMessage = skuService.skuMessage(instockList.getSkuId());
@@ -376,7 +377,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     public List<ShopCartResult> applyList(ShopCartParam param) {
         Long userId = LoginContextHolder.getContext().getUserId();
         param.setCreateUser(userId);
-        List<ShopCartResult> shopCartResults = this.baseMapper.customList(param);
+        List<ShopCartResult> shopCartResults = this.baseMapper.applyList(param);
         format(shopCartResults);
         return shopCartResults;
     }

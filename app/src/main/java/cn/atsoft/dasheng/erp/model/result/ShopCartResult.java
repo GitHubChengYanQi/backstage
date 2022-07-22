@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.pojo.PositionNum;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -84,38 +85,45 @@ public class ShopCartResult implements Serializable {
     /**
      * 创建者
      */
+    @JSONField(deserialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改者
      */
+    @JSONField(deserialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 创建时间
      */
+    @JSONField(deserialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @JSONField(deserialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 状态
      */
+    @JSONField(deserialize = false)
     @ApiModelProperty("状态")
     private Integer display;
 
     /**
      * 部门编号
      */
+    @JSONField(deserialize = false)
     @ApiModelProperty("部门编号")
     private Long deptId;
+    @JSONField(deserialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

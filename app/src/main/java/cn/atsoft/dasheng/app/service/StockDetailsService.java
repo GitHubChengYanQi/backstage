@@ -112,5 +112,7 @@ public interface StockDetailsService extends IService<StockDetails> {
 
     List<StockDetails> maintenanceQuerry(StockDetailsParam param);
 
+    StockDetails getInkind(StockDetailsParam param);
+
     List<StockDetails> fundStockDetailByCart(ProductionPickListsCartParam param);
 }

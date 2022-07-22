@@ -30,7 +30,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        process_task_id AS "processTaskId",
+        process_task_id
+        AS "processTaskId",
 	    form_id AS "formId",
 	    type AS "type",
 	    remark AS "remark",
@@ -131,6 +132,12 @@
                 #{state}
             </foreach>
         </if>
+        <if test="paramCondition.types !=null and paramCondition.types.size>0 ">
+            and type in
+            <foreach collection="paramCondition.types" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
         <if test="paramCondition.skuName != null">
             and (form_id in (
             select instock_order_id from daoxin_erp_instock_order where coding like
@@ -146,7 +153,7 @@
                 #{state}
             </foreach>
         </if>
-        <if test="paramCondition.userIds !=null  and paramCondition.type == 'ERROR' " >
+        <if test="paramCondition.userIds !=null  and paramCondition.type == 'ERROR' ">
             union
             select
             <include refid="Base_Column_List"/>

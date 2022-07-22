@@ -156,6 +156,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private ShopCartService shopCartService;
     @Autowired
     private InstockHandleService instockHandleService;
+    @Autowired
+    private InventoryService inventoryService;
 
 
     @Override
@@ -269,7 +271,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 entity.setTheme(stringBuffer.toString());
             }
 
-            entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder", entity.getInstockOrderId(), ToolUtil.isEmpty(entity.getSource())? null :entity.getSource(),  ToolUtil.isEmpty(entity.getSourceId())? null :entity.getSourceId()));
+            entity.setOrigin(getOrigin.newThemeAndOrigin("instockOrder", entity.getInstockOrderId(), ToolUtil.isEmpty(entity.getSource()) ? null : entity.getSource(), ToolUtil.isEmpty(entity.getSourceId()) ? null : entity.getSourceId()));
             this.updateById(entity);
 
             //发起审批流程
@@ -289,7 +291,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
-            if (ToolUtil.isNotEmpty(entity.getSource() ) && ToolUtil.isNotEmpty(entity.getSourceId())) {
+            if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {
                 activitiProcessTaskParam.setSource(entity.getSource());
                 activitiProcessTaskParam.setSourceId(entity.getSourceId());
             }
@@ -673,6 +675,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Transactional
     public List<Long> inStock(InstockOrderParam param) {
 
+        inventoryService.staticState();  //静态盘点判断
+
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         List<InstockHandle> instockHandles = new ArrayList<>();
 
@@ -793,6 +797,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             bind.setOrCodeId(orCode.getOrCodeId());
             bind.setFormId(inkind.getInkindId());
             bind.setSource("item");
+            binds.add(bind);
 
             StockDetails stockDetails = new StockDetails();
             stockDetails.setSkuId(listParam.getSkuId());
@@ -1450,9 +1455,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
             }
 
-            if (datum.getStatus()==99) {   //单据完成 进度条直接完成
+            if (datum.getStatus() == 99) {   //单据完成 进度条直接完成
                 datum.setInStockNum(applyNum);
-            }else {
+            } else {
                 datum.setInStockNum(inStockNum);
             }
             datum.setApplyNum(applyNum);

@@ -26,6 +26,8 @@ public class InventoryDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long spuId;
+
     private Long realNumber;
 
     private List<String> condition;
@@ -121,5 +123,6 @@ public class InventoryDetailResult implements Serializable {
 
     @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
+
     private List<String> pidValue;
 }

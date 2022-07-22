@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.entity.InventoryStock;
@@ -38,6 +39,8 @@ public interface InventoryService extends IService<Inventory> {
     List<InventoryResult> listByTime();
 
     void timelyAdd(InventoryParam param);
+
+    void staticState();
 
     void selectCondition(InventoryParam param);
 
@@ -110,6 +113,8 @@ public interface InventoryService extends IService<Inventory> {
     InkindResult inkindInventory(Long id);
 
     StorehousePositionsResult positionInventory(Long id);
+
+    void updateStockDetail(Long skuId, Long brandId, Long customerId, Long positionId, Long realNumber);
 
     void format(List<InventoryResult> data);
 }

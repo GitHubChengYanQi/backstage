@@ -57,7 +57,7 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private Date beginTime;
 
-    private String mode;
+    private String mode = "dynamic";
 
     private String method;
     /**

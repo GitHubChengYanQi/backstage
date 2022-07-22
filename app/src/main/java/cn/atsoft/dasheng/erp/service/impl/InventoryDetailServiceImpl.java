@@ -86,6 +86,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     private AnomalyService anomalyService;
     @Autowired
     private InventoryStockService inventoryStockService;
+    @Autowired
+    private SpuService spuService;
 
     @Override
     public void add(InventoryDetailParam param) {
@@ -425,10 +427,14 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
         List<Long> anomalyIds = new ArrayList<>();
         for (InventoryStock inventoryStock : inventoryStocks) {
+            if (inventoryStock.getStatus() == 0) {
+                throw new ServiceException(500, "有未操作物料");
+            }
             if (ToolUtil.isNotEmpty(inventoryStock.getAnomalyId())) {
                 anomalyIds.add(inventoryStock.getAnomalyId());
             }
         }
+
 
         List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
         for (Anomaly anomaly : anomalies) {
@@ -545,6 +551,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         List<Long> brandIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
         List<Long> classIds = new ArrayList<>();
+        List<Long> spuIds = new ArrayList<>();
         for (InventoryDetailResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
@@ -562,7 +569,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                 datum.setBrandIds(JSON.parseArray(datum.getBrandCondition(), Long.class));
                 brandIds.addAll(datum.getBrandIds());
             }
-
+            spuIds.add(datum.getSpuId());
         }
 
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
@@ -570,6 +577,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class);
         List<SpuClassification> spuClassifications = classIds.size() == 0 ? new ArrayList<>() : spuClassificationService.listByIds(classIds);
+        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.listByIds(spuIds);
 
         for (InventoryDetailResult datum : data) {
 
@@ -623,6 +631,12 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                             condition.add(spuClassification.getName());
                         }
                     }
+                }
+            }
+
+            for (Spu spu : spus) {
+                if (ToolUtil.isNotEmpty(datum.getSpuId()) && datum.getSpuId().equals(spu.getSpuId())) {
+                    condition.add(spu.getName());
                 }
             }
 

@@ -114,6 +114,12 @@ public class StockDetailsController extends BaseController {
 //        }
     }
 
+
+    @RequestMapping(value = "/getInkind", method = RequestMethod.POST)
+    public ResponseData getInkind(@RequestBody StockDetailsParam stockDetailsParam) {
+        StockDetails detail = this.stockDetailsService.getInkind(stockDetailsParam);
+        return ResponseData.success(detail);
+    }
     /**
      * 返回sku
      *

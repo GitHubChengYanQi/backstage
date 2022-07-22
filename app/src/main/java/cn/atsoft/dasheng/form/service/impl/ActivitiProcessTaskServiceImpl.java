@@ -42,6 +42,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -519,6 +520,10 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 //                    break;
                 case "INSTOCK":
                     InstockOrderResult instockOrderResult = BeanUtil.copyProperties(instockOrderService.getById(processTask.getFormId()), InstockOrderResult.class);
+                    instockOrderService.formatDetail(instockOrderResult);
+                    for (InstockListResult instockListResult : instockOrderResult.getInstockListResults()) {
+                        skuSimpleResults.add(BeanUtil.copyProperties(instockListResult.getSkuResult(),SkuSimpleResult.class));
+                    }
                     coding  = instockOrderResult.getCoding();
                     break;
                 case "ERROR":

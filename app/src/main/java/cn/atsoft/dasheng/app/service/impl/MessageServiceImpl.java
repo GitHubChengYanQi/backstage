@@ -57,9 +57,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Override
     public void update(MessageParam param) {
         Message oldEntity = getOldEntity(param);
-        Message newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        oldEntity.setView(1);
+        this.updateById(oldEntity);
     }
 
     @Override
@@ -90,6 +89,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         param.setUserId(LoginContextHolder.getContext().getUserId());
         Page<MessageResult> pageContext = getPageContext();
         IPage<MessageResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
