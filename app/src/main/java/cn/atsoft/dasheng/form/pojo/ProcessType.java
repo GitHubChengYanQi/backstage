@@ -127,5 +127,14 @@ public enum ProcessType {
         }
         return enumList;
     }
+
+    public static String getNameByEnum(String param){
+        for (ProcessType value : ProcessType.values()) {
+            if (value.name().equals(param)){
+                return value.getName();
+            }
+        }
+        return null;
+    }
 }
 
