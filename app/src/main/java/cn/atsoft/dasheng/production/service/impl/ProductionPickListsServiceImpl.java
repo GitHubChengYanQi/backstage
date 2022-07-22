@@ -39,6 +39,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
@@ -576,6 +577,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             setItems("领料通知");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/MyPicking");
             setDescription("库管那里有新的物料待领取");
+            setFunction(MarkDownTemplateTypeEnum.pickSend);
             setType(0);
             setUserIds(Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
         }});
