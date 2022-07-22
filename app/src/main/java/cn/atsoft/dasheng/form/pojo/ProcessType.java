@@ -111,8 +111,6 @@ public enum ProcessType {
         List<Map<String, Object>> enumList = new ArrayList<>();
         for (ProcessType value : ProcessType.values()) {
             Map<String, Object> enumDetail = new HashMap<>();
-
-
             List<Map<String, String>> detail = new ArrayList<>();
             for (ProcessModuleEnum anEnum : value.getModuleEnums()) {
                 Map<String, String> map = new HashMap<>();
@@ -120,8 +118,6 @@ public enum ProcessType {
                 map.put("moduleName", anEnum.getModuleName());
                 detail.add(map);
             }
-
-
             String type = value.getType();
             String name = value.getName();
             enumDetail.put("details", detail);

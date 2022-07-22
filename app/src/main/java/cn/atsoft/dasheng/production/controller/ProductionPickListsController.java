@@ -107,12 +107,6 @@ public class ProductionPickListsController extends BaseController {
         this.productionPickListsService.abortCode(code);
         return ResponseData.success();
     }
-    @RequestMapping(value = "/outStockByCode", method = RequestMethod.GET)
-    @ApiOperation("部分领料取消")
-    public ResponseData outStockByCode(@RequestParam String code) {
-        this.productionPickListsService.outStockByCode(code);
-        return ResponseData.success();
-    }
 
     /**
      * 编辑接口
