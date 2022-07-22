@@ -425,6 +425,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         List<InventoryStock> inventoryStocks = inventoryStockService.query().eq("inventory_id", inventoryId).eq("display", 1).list();
         Inventory inventory = inventoryService.getById(inventoryId);
 
+        if (ToolUtil.isEmpty(inventory)) {
+            throw new ServiceException(500, "盘点不存在");
+        }
+
         List<Long> anomalyIds = new ArrayList<>();
         for (InventoryStock inventoryStock : inventoryStocks) {
             if (inventoryStock.getStatus() == 0) {
@@ -443,7 +447,19 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                 }
             }
         } else {
-            
+            if (anomalyIds.size() > 0) {
+                List<AnomalyParam> anomalyParams = new ArrayList<>();
+                for (Long anomalyId : anomalyIds) {
+                    AnomalyParam anomalyParam = new AnomalyParam();
+                    anomalyParam.setAnomalyId(anomalyId);
+                    anomalyParams.add(anomalyParam);
+                }
+                AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
+                anomalyOrderParam.setType("Stocktaking");
+                anomalyOrderParam.setAnomalyParams(anomalyParams);
+                anomalyOrderParam.setMessage("盘点");
+                anomalyOrderService.addByInventory(anomalyOrderParam);
+            }
         }
 
 
