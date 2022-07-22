@@ -106,6 +106,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InventoryService inventoryService;
     @Autowired
     private InventoryStockService inventoryStockService;
+    @Autowired
+    private AnomalyBindService anomalyBindService;
 
 
     @Transactional
@@ -336,6 +338,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                     detail.setRemark(json);
                 }
                 detailService.save(detail);
+                /**
+                 * 实物绑定
+                 */
+                AnomalyBind anomalyBind = new AnomalyBind();
+                anomalyBind.setInkindId(detail.getInkindId());
+                anomalyBind.setDetailId(detail.getDetailId());
+                anomalyBind.setAnomalyId(param.getAnomalyId());
+                anomalyBindService.save(anomalyBind);
+
             }
         }
         return t;
@@ -433,19 +444,26 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public Anomaly update(AnomalyParam param) {
         Anomaly oldEntity = getOldEntity(param);
         param.setType(oldEntity.getType());
+
         if (ToolUtil.isNotEmpty(oldEntity.getOrderId())) {
             AnomalyOrder anomalyOrder = anomalyOrderService.getById(oldEntity.getOrderId());
             if (anomalyOrder.getComplete() == 99) {
                 throw new ServiceException(500, "當前狀態不可更改");
             }
         }
-
         Anomaly newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
         detailService.remove(new QueryWrapper<AnomalyDetail>() {{
             eq("anomaly_id", param.getAnomalyId());
         }});
+
+        anomalyBindService.remove(new QueryWrapper<AnomalyBind>() {{
+            eq("anomaly_id", param.getAnomalyId());
+        }});
+
+
         boolean b = addDetails(param);
         if (b) {    //添加购物车
 

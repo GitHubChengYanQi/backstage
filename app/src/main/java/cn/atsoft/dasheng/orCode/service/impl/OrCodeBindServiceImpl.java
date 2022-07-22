@@ -33,9 +33,10 @@ import java.util.List;
 public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeBind> implements OrCodeBindService {
     @Transactional
     @Override
-    public void add(OrCodeBindParam param) {
+    public OrCodeBind add(OrCodeBindParam param) {
         OrCodeBind entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override

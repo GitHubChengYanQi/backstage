@@ -27,6 +27,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.erp.mapper.InventoryMapper;
 import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
@@ -1117,11 +1118,12 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             if (sku.getBatch() == 1) {  //批量
                 instock(skuId, brandId, customerId, positionId, realNumber);
             } else {
-                inStockBatch(skuId, brandId, customerId,positionId, realNumber);
+                inStockBatch(skuId, brandId, customerId, positionId, realNumber);
             }
         }
         stockDetailsService.updateBatchById(stockDetails);
     }
+
 
     /**
      * 盘点入库
@@ -1131,7 +1133,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      * @param positionId
      * @param number
      */
-    private void instock(Long skuId, Long brandId, Long customerId, Long positionId, Long number) {
+
+    private Long instock(Long skuId, Long brandId, Long customerId, Long positionId, Long number) {
         Inkind inkind = new Inkind();
         inkind.setNumber(number);
         inkind.setSkuId(skuId);
@@ -1163,6 +1166,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         stockDetails.setStorehouseId(storehousePositions.getStorehouseId());
 
         stockDetailsService.save(stockDetails);
+
+        return inkind.getInkindId();
     }
 
 

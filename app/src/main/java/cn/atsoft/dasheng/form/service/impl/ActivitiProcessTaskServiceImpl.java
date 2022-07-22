@@ -90,6 +90,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private ActivitiProcessService activitiProcessService;
     @Autowired
     private GetOrigin getOrigin;
+    @Autowired
+    private StepsService stepsService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {

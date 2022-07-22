@@ -420,10 +420,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
     @Transactional
     @Override
-    public void complete(List<Long> inventoryIds) {
+    public void complete(Long inventoryId) {
 
-        List<InventoryStock> inventoryStocks = inventoryStockService.query().in("inventory_id", inventoryIds).eq("display", 1).list();
-        List<Inventory> inventories = inventoryService.listByIds(inventoryIds);
+        List<InventoryStock> inventoryStocks = inventoryStockService.query().eq("inventory_id", inventoryId).eq("display", 1).list();
+        Inventory inventory = inventoryService.getById(inventoryId);
 
         List<Long> anomalyIds = new ArrayList<>();
         for (InventoryStock inventoryStock : inventoryStocks) {
@@ -435,19 +435,23 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             }
         }
 
-
-        List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
-        for (Anomaly anomaly : anomalies) {
-            if (anomaly.getStatus() == 0) {
-                throw new ServiceException(500, "请先提交异常");
+        if (ToolUtil.isNotEmpty(inventory.getMethod()) && inventory.getMethod().equals("OpenDisc")) {
+            List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
+            for (Anomaly anomaly : anomalies) {
+                if (anomaly.getStatus() == 0) {
+                    throw new ServiceException(500, "请先提交异常");
+                }
             }
+        } else {
+            
         }
 
 
-        for (Inventory inventory : inventories) {
-            ActivitiProcessTask processTask = taskService.getByFormId(inventory.getInventoryTaskId());
-            activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1, LoginContextHolder.getContext().getUserId());
-        }
+        /**
+         * 流程
+         */
+        ActivitiProcessTask processTask = taskService.getByFormId(inventory.getInventoryTaskId());
+        activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1, LoginContextHolder.getContext().getUserId());
     }
 
 

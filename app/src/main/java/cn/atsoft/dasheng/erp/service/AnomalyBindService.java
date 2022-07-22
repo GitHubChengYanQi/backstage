@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AnomalyBind;
 import cn.atsoft.dasheng.erp.model.params.AnomalyBindParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyBindResult;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public interface AnomalyBindService extends IService<AnomalyBind> {
      * @Date 2022-05-28
      */
     void delete(AnomalyBindParam param);
+
+    OrCodeBind addInKindByAnomaly(AnomalyBindParam param);
 
     /**
      * 更新
