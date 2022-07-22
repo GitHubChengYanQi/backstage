@@ -22,10 +22,7 @@ import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
-import cn.atsoft.dasheng.form.pojo.AppointUser;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.DataType;
-import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
+import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -482,7 +479,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcessTask processTask = this.getById(taskId);
         Long processId = processTask.getProcessId();
         ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
-        String modelName = ProcessModuleEnum.getModelNameByEnum(activitiProcess.getType());
+        String modelName = ProcessType.getNameByEnum(activitiProcess.getType());
         Map<String,String> result = new HashMap<>();
         result.put("function",modelName);
         String coding = "";
@@ -581,10 +578,11 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
             stringBuffer.append(",");
             if (stringBuffer.length()>20){
+                stringBuffer.append(".....");
+
                 break;
             }
         }
-        stringBuffer.append(".....");
         result.put("description",stringBuffer.toString());
         result.put("coding",coding);
         return result;

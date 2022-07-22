@@ -31,7 +31,7 @@ public class RedisSendCheck {
 
     }
     //查询地址
-    public Integer pushList(String code, List<Object> carts ) {
+    public Integer pushList(String code, List<Object> carts,Long  effectiveTime) {
         //判断redis库是否有这个key
         if(getRedisTemplate.hasKey(code)){
             //如果有就查询redis里这个list集合（第一个参数是key,0,-1是查询所有）
@@ -46,10 +46,8 @@ public class RedisSendCheck {
             if (ToolUtil.isNotEmpty(carts)){
                 newUserIds.addAll(carts);
             }
-            int i = 1000 * 60 * 10;
             getRedisTemplate.opsForList().leftPushAll(code, carts);
-            getRedisTemplate.expire(code,i, TimeUnit.MILLISECONDS);
-            return i;
+            getRedisTemplate.expire(code,effectiveTime, TimeUnit.MILLISECONDS);
         }
         return null;
     }
