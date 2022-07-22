@@ -575,13 +575,19 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 stringBuffer.append(skuSimpleResult.getSpecifications());
             }
             stringBuffer.append(",");
-            if (stringBuffer.length()>20){
-                stringBuffer.append(".....");
-
+            if (stringBuffer.length()>28){
                 break;
             }
         }
-        result.put("description",stringBuffer.toString());
+        String string = stringBuffer.toString();
+         string = string.substring(0,string.length()-1);
+        if(string.length()>27){
+            string= string+".....";
+        }
+
+
+
+        result.put("description",string);
         result.put("coding",coding);
         return result;
     }
