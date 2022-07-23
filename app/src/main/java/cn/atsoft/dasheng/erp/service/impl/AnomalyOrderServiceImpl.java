@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.action.Enum.InstockErrorActionEnum;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -33,8 +34,12 @@ import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
+import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -53,9 +58,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
@@ -123,6 +126,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InventoryStockService inventoryStockService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private ProductionPickListsCartService listsCartService;
+    @Autowired
+    private ProductionPickListsDetailService listsDetailService;
+    @Autowired
+    private StorehousePositionsService positionsService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     @Transactional
@@ -433,17 +444,21 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         param.setUserId(LoginContextHolder.getContext().getUserId());
 
         List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+        Map<String, Long> inkindMap = new HashMap<>();
         for (AnomalyResult anomalyResult : anomalyResults) {
 
+            /**
+             * 有核实的数量 才走判断
+             */
             //核实数量 修改库存数
             if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
                 int size = checkNumbers.size();
                 CheckNumber checkNumber = checkNumbers.get(size - 1);
                 inventoryService.updateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getCustomerId(), anomalyResult.getPositionId(), Long.valueOf(checkNumber.getNumber()));
-
             }
-            //TODO
+
+
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 if (detail.getStauts() == 2) {  //报损 创建出库单
                     ProductionPickListsDetailParam detailParam = new ProductionPickListsDetailParam();
@@ -451,16 +466,53 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     detailParam.setSkuId(anomalyResult.getSkuId());
                     detailParam.setNumber(Math.toIntExact(detail.getNumber()));
                     detailParam.setStorehousePositionsId(anomalyResult.getPositionId());
-                    detailParam.setReceivedNumber(Math.toIntExact(detail.getNumber()));
+                    detailParam.setReceivedNumber(0);
                     pickListsDetailParams.add(detailParam);
+                    inkindMap.put("sku_" + anomalyResult.getSkuId() + "brand_" + anomalyResult.getBrandId() + "position_" + anomalyResult.getPositionId(), detail.getInkindId());
                 }
             }
             param.setPickListsDetailParams(pickListsDetailParams);
         }
-        if (pickListsDetailParams.size() > 0) {   //调用出库申请
-            pickListsService.add(param);
-        }
 
+        /**
+         * 直接调用出库申请 并且添加到购物车
+         */
+        if (pickListsDetailParams.size() > 0) {
+            ProductionPickLists productionPickLists = pickListsService.add(param);
+
+            Long pickListsId = productionPickLists.getPickListsId();
+            //添加带领购物车
+            List<ProductionPickListsDetail> pickListsDetails = listsDetailService.query().eq("pick_lists_id", pickListsId).list();
+            List<ProductionPickListsCartParam> cartParams = new ArrayList<>();
+
+            for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+                ProductionPickListsCartParam cartParam = new ProductionPickListsCartParam();
+
+                cartParam.setSkuId(pickListsDetail.getSkuId());
+                cartParam.setBrandId(pickListsDetail.getBrandId());
+                cartParam.setPickListsId(pickListsDetail.getPickListsId());
+                cartParam.setPickListsDetailId(pickListsDetail.getPickListsDetailId());
+                cartParam.setNumber(pickListsDetail.getNumber());
+                cartParam.setStorehousePositionsId(pickListsDetail.getStorehousePositionsId());
+
+                StorehousePositions positions = positionsService.getById(pickListsDetail.getStorehousePositionsId());
+                cartParam.setStorehouseId(positions.getStorehouseId());
+                cartParams.add(cartParam);
+            }
+
+
+            for (ProductionPickListsCartParam cartParam : cartParams) {
+                Long inkindId = inkindMap.get("sku_" + cartParam.getSkuId() + "brand_" + cartParam.getBrandId() + "position_" + cartParam.getStorehousePositionsId());
+                cartParam.setInkindId(inkindId);
+            }
+            List<StockDetails> stockDetails = stockDetailsService.fundStockDetailByCart(new ProductionPickListsCartParam(){{
+                setProductionPickListsCartParams(cartParams);
+            }});
+            listsCartService.add(new ProductionPickListsCartParam(){{
+                setProductionPickListsCartParams(cartParams);
+            }}, stockDetails);
+
+        }
     }
 
     /**
@@ -721,14 +773,22 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         for (AnomalyOrderResult datum : data) {
 
+            Set<Long> skuIds = new HashSet<>();
             List<AnomalyResult> anomalyResultList = new ArrayList<>();
-
+            int handle = 0;
             for (AnomalyResult anomalyResult : anomalyResults) {
                 if (datum.getOrderId().equals(anomalyResult.getOrderId())) {
+                    skuIds.add(anomalyResult.getSkuId());
                     anomalyResultList.add(anomalyResult);
+                    if (datum.getStatus() != 0) {
+                        handle = handle + 1;
+                    }
                 }
             }
+            datum.setSkuNumber(skuIds.size());
             datum.setAnomalyResults(anomalyResultList);
+            datum.setHandle(handle);
+            datum.setTotal(anomalyResultList.size());
         }
 
     }

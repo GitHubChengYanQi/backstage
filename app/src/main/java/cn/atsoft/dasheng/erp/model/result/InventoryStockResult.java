@@ -25,6 +25,8 @@ public class InventoryStockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer errorNum;
+
     private Long inkindId;
 
     private SkuResult skuResult;

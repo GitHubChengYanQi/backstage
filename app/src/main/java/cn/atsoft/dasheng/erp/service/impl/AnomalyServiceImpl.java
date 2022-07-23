@@ -333,9 +333,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 ToolUtil.copyProperties(detailParam, detail);
                 detail.setAnomalyId(param.getAnomalyId());
                 detail.setInkindId(param.getInkind());
-                if (ToolUtil.isNotEmpty(detailParam.getPidInKind())) {
-                    detail.setInkindId(detailParam.getPidInKind());
-                }
                 if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
                     String json = JSON.toJSONString(detailParam.getNoticeIds());
                     detail.setRemark(json);
@@ -493,14 +490,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     @Override
     public void deleteBind(Long anomalyId) {
-
-        if (ToolUtil.isNotEmpty(anomalyId)) {
-            Anomaly anomaly = this.getById(anomalyId);
-            anomaly.setDisplay(0);
-            this.updateById(anomaly);
-        }
-
-
         detailService.remove(new QueryWrapper<AnomalyDetail>() {{
             eq("anomaly_id", anomalyId);
         }});
