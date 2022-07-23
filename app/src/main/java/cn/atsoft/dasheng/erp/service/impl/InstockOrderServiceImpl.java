@@ -30,6 +30,7 @@ import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.*;
@@ -133,15 +134,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private DocumentStatusService documentStatusService;
-
     @Autowired
     private DocumentsActionService documentsActionService;
-
     @Autowired
     private AnnouncementsService announcementsService;
     @Autowired
     private RemarksService remarksService;
-
     @Autowired
     private MediaService mediaService;
     @Autowired
@@ -158,6 +156,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private InstockHandleService instockHandleService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
 
     @Override
@@ -1262,6 +1262,37 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         microServiceEntity.setMaxTimes(2);
         microServiceEntity.setTimes(0);
         messageProducer.microService(microServiceEntity);
+    }
+
+    /**
+     * 关联单据
+     *
+     * @return
+     */
+    @Override
+    public Object document(Long inStockId) {
+        List<Anomaly> anomalies = anomalyService.query().eq("form_id", inStockId).eq("display", 1).list();
+        List<Long> anomalyOrderIds = new ArrayList<>();
+        for (Anomaly anomaly : anomalies) {
+            anomalyOrderIds.add(anomaly.getOrderId());
+        }
+
+        List<ActivitiProcessTask> processTasks = anomalyOrderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.
+                query().in("form_id", anomalyOrderIds).list();
+
+        List<ActivitiProcessTaskResult> results = BeanUtil.copyToList(processTasks, ActivitiProcessTaskResult.class);
+        activitiProcessTaskService.format(results);
+
+        for (ActivitiProcessTaskResult result : results) {
+            User user = result.getUser();
+            if (ToolUtil.isNotEmpty(user)) {
+                String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+                user.setAvatar(imgUrl);
+            }
+            result.setUser(user);
+        }
+
+        return results;
     }
 
     /**

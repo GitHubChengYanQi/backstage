@@ -104,6 +104,12 @@ public class AnomalyBindController extends BaseController {
 //    }
 //
 
+    @RequestMapping(value = "/addInKindByAnomaly", method = RequestMethod.POST)
+    public ResponseData addInKindByAnomaly(@RequestBody AnomalyBindParam anomalyBindParam) {
+        this.anomalyBindService.addInKindByAnomaly(anomalyBindParam);
+        return ResponseData.success();
+    }
+
     /**
      * 查询列表
      *

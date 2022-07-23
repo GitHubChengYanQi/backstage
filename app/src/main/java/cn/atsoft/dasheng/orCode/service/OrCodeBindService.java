@@ -26,7 +26,7 @@ public interface OrCodeBindService extends IService<OrCodeBind> {
      * @author song
      * @Date 2021-10-29
      */
-    void add(OrCodeBindParam param);
+    OrCodeBind add(OrCodeBindParam param);
 
     /**
      * 删除

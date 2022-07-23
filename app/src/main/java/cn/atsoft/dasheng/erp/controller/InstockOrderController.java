@@ -66,6 +66,7 @@ public class InstockOrderController extends BaseController {
         boolean b = this.instockOrderService.judgeLoginUser();
         return ResponseData.success(b);
     }
+
     /**
      * 新增接口
      *
@@ -79,6 +80,11 @@ public class InstockOrderController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/document", method = RequestMethod.GET)
+    public ResponseData document(@RequestParam("id") Long id) {
+        Object document = this.instockOrderService.document(id);
+        return ResponseData.success(document);
+    }
 
     /**
      * 通过质检创建入库单

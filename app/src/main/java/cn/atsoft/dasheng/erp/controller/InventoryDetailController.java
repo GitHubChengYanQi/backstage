@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
 import cn.atsoft.dasheng.erp.service.InventoryDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +59,7 @@ public class InventoryDetailController extends BaseController {
     }
 
     @RequestMapping(value = "/taskList", method = RequestMethod.POST)
-    public ResponseData taskList(@RequestBody InventoryDetailParam inventoryDetailParam) {   
+    public ResponseData taskList(@RequestBody InventoryDetailParam inventoryDetailParam) {
         Object taskList = this.inventoryDetailService.taskList(inventoryDetailParam.getInventoryId());
         return ResponseData.success(taskList);
     }
@@ -103,7 +104,10 @@ public class InventoryDetailController extends BaseController {
      */
     @RequestMapping(value = "/complete", method = RequestMethod.POST)
     public ResponseData complete(@RequestBody InventoryDetailParam inventoryDetailParam) {
-        this.inventoryDetailService.complete(inventoryDetailParam.getInventoryIds());
+        if (ToolUtil.isEmpty(inventoryDetailParam.getInventoryId())) {
+            throw new ServiceException(500, "请确定盘点id");
+        }
+        this.inventoryDetailService.complete(inventoryDetailParam.getInventoryId());
         return ResponseData.success();
     }
 //    /**

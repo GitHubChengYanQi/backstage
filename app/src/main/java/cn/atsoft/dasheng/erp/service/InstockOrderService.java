@@ -126,6 +126,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     void addInStockRecord(List<InstockListParam> instockListParams, String source);
 
+    Object document(Long inStockId);
+
     Stock judgeStockExist(Inkind inkind, List<Stock> stocks);
 
     boolean judgeSkuBind(Inkind inkind, List<Supply> supplies);

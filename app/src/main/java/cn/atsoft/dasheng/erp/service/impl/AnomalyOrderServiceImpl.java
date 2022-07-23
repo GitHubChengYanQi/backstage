@@ -436,13 +436,13 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         for (AnomalyResult anomalyResult : anomalyResults) {
 
             //核实数量 修改库存数
-//            if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {
-//                List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
-//                int size = checkNumbers.size();
-//                CheckNumber checkNumber = checkNumbers.get(size - 1);
-//          inventoryService.updateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), Long.valueOf(checkNumber.getNumber()));
-//
-//            }
+            if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {
+                List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
+                int size = checkNumbers.size();
+                CheckNumber checkNumber = checkNumbers.get(size - 1);
+                inventoryService.updateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getCustomerId(), anomalyResult.getPositionId(), Long.valueOf(checkNumber.getNumber()));
+
+            }
             //TODO
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 if (detail.getStauts() == 2) {  //报损 创建出库单
@@ -457,8 +457,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
             param.setPickListsDetailParams(pickListsDetailParams);
         }
+        if (pickListsDetailParams.size() > 0) {   //调用出库申请
+            pickListsService.add(param);
+        }
 
-        pickListsService.add(param);
     }
 
     /**

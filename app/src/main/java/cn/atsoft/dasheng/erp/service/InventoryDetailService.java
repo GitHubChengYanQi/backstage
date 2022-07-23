@@ -54,7 +54,7 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
     void inventoryInstock(InventoryDetailParam inventoryDetailParam);
 
 
-    void complete(List<Long> inventoryIds);
+    void complete(Long inventoryId);
 
     /**
      * 更新

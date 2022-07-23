@@ -4,14 +4,22 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AnomalyBind;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.mapper.AnomalyBindMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyBindParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyBindResult;
 import cn.atsoft.dasheng.erp.service.AnomalyBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.InkindService;
+import cn.atsoft.dasheng.orCode.entity.OrCode;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -27,6 +35,12 @@ import java.util.List;
  */
 @Service
 public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, AnomalyBind> implements AnomalyBindService {
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
+    @Autowired
+    private OrCodeService orCodeService;
 
     @Override
     public void add(AnomalyBindParam param) {
@@ -40,6 +54,37 @@ public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, Anoma
         entity.setDisplay(0);
         this.updateById(entity);
     }
+
+    /**
+     * 异常临时生成实物
+     *
+     */
+    @Override
+    public OrCodeBind addInKindByAnomaly(AnomalyBindParam param) {
+
+        Inkind inkind = new Inkind();
+        inkind.setNumber(param.getNumber());
+        inkind.setSkuId(param.getSkuId());
+        inkind.setSource("临时异常");
+        inkind.setType("1");
+        inkind.setCustomerId(param.getCustomerId());
+        inkind.setBrandId(param.getBrandId());
+        inkindService.save(inkind);
+
+        OrCode orCode = new OrCode();
+        orCode.setState(1);
+        orCode.setType("item");
+        orCodeService.save(orCode);
+
+        OrCodeBindParam bindParam = new OrCodeBindParam();
+        bindParam.setOrCodeId(orCode.getOrCodeId());
+        bindParam.setFormId(inkind.getInkindId());
+        bindParam.setSource("item");
+
+
+        return orCodeBindService.add(bindParam);
+    }
+
 
     @Override
     public void update(AnomalyBindParam param) {

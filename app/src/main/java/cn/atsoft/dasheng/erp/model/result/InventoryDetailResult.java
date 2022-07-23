@@ -123,5 +123,6 @@ public class InventoryDetailResult implements Serializable {
 
     @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
+
     private List<String> pidValue;
 }

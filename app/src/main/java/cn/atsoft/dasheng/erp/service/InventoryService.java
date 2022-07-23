@@ -114,7 +114,7 @@ public interface InventoryService extends IService<Inventory> {
 
     StorehousePositionsResult positionInventory(Long id);
 
-    void updateStockDetail(Long skuId, Long brandId, Long positionId, Long realNumber);
+    void updateStockDetail(Long skuId, Long brandId, Long customerId, Long positionId, Long realNumber);
 
     void format(List<InventoryResult> data);
 }

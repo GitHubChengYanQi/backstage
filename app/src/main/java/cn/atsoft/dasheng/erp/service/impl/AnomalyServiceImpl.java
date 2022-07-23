@@ -106,6 +106,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InventoryService inventoryService;
     @Autowired
     private InventoryStockService inventoryStockService;
+    @Autowired
+    private AnomalyBindService anomalyBindService;
 
 
     @Transactional
@@ -134,6 +136,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 }
                 break;
         }
+
+
         param.setType(param.getAnomalyType().name());
         Anomaly entity = this.getEntity(param);
         this.save(entity);
@@ -312,6 +316,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             switch (param.getAnomalyType()) {
                 case StocktakingError:
                 case timelyInventory:
+                    deleteBind(param.getAnomalyId());
                     updateInventory(param);     //盘点正常
                     t = false;
                     break;
@@ -336,6 +341,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                     detail.setRemark(json);
                 }
                 detailService.save(detail);
+                /**
+                 * 实物绑定
+                 */
+                AnomalyBind anomalyBind = new AnomalyBind();
+                anomalyBind.setInkindId(detail.getInkindId());
+                anomalyBind.setDetailId(detail.getDetailId());
+                anomalyBind.setAnomalyId(param.getAnomalyId());
+                anomalyBindService.save(anomalyBind);
+
             }
         }
         return t;
@@ -349,8 +363,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private boolean isNormal(AnomalyParam param) {
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
+            deleteBind(param.getAnomalyId()); //删除绑定数据
             return true;
         }
+
         return false;
     }
 
@@ -361,12 +377,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private void updateInventory(AnomalyParam param) {
 
+
         inventoryStockService.updateInventoryStatus(param, 1);//数据正常  不添加异常数据
-//        updateInventoryStatus(param, 1);
         /**
          * 更新购物车
          */
-
         ShopCart shopCart = new ShopCart();
         shopCart.setDisplay(0);
         switch (param.getAnomalyType()) {
@@ -381,7 +396,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 }});
                 break;
         }
-
 
     }
 
@@ -433,19 +447,19 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public Anomaly update(AnomalyParam param) {
         Anomaly oldEntity = getOldEntity(param);
         param.setType(oldEntity.getType());
+
         if (ToolUtil.isNotEmpty(oldEntity.getOrderId())) {
             AnomalyOrder anomalyOrder = anomalyOrderService.getById(oldEntity.getOrderId());
             if (anomalyOrder.getComplete() == 99) {
                 throw new ServiceException(500, "當前狀態不可更改");
             }
         }
-
         Anomaly newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
-        detailService.remove(new QueryWrapper<AnomalyDetail>() {{
-            eq("anomaly_id", param.getAnomalyId());
-        }});
+
+        deleteBind(param.getAnomalyId());   //删除绑定数据
+
         boolean b = addDetails(param);
         if (b) {    //添加购物车
 
@@ -470,6 +484,30 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
         shopCartService.addDynamic(oldEntity.getFormId(), skuMessage + "修改了异常描述");
         return newEntity;
+    }
+
+    /**
+     * 异常修改为正常 删除 异常 绑定的数据
+     *
+     * @param anomalyId
+     */
+    @Override
+    public void deleteBind(Long anomalyId) {
+
+        if (ToolUtil.isNotEmpty(anomalyId)) {
+            Anomaly anomaly = this.getById(anomalyId);
+            anomaly.setDisplay(0);
+            this.updateById(anomaly);
+        }
+
+
+        detailService.remove(new QueryWrapper<AnomalyDetail>() {{
+            eq("anomaly_id", anomalyId);
+        }});
+
+        anomalyBindService.remove(new QueryWrapper<AnomalyBind>() {{
+            eq("anomaly_id", anomalyId);
+        }});
     }
 
     /**
