@@ -128,6 +128,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private QueryLogService queryLogService;
     @Autowired
     private ProductionPickListsCartService pickListsCartService;
+    @Autowired
+    private MaintenanceCycleService maintenanceCycleService;
 
 
     @Transactional
@@ -293,6 +295,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //                    throw new ServiceException(500, "此物料在产品中已存在");
 //                } else {
                 this.save(entity);
+                if (ToolUtil.isNotEmpty(param.getMaintenancePeriod())) {
+                    MaintenanceCycle maintenanceCycle = new MaintenanceCycle();
+                    maintenanceCycle.setSkuId(entity.getSkuId());
+                    maintenanceCycle.setMaintenancePeriod(param.getMaintenancePeriod());
+                    maintenanceCycleService.save(maintenanceCycle);
+                }
                 skuId = entity.getSkuId();
                 ToolUtil.copyProperties(entity, result);
                 /**
@@ -890,6 +898,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         this.updateById(newEntity);
+        if (ToolUtil.isNotEmpty(param.getMaintenancePeriod())) {
+            MaintenanceCycle maintenanceCycle = maintenanceCycleService.query().eq("sku_id", newEntity.getSkuId()).eq("display", 1).one();
+            if (ToolUtil.isNotEmpty(maintenanceCycle)) {
+                if(param.getMaintenancePeriod()!=maintenanceCycle.getMaintenancePeriod()){
+                    maintenanceCycle.setMaintenancePeriod(param.getMaintenancePeriod());
+                    maintenanceCycleService.updateById(maintenanceCycle);
+                }
+            }else {
+                maintenanceCycle = new MaintenanceCycle();
+                maintenanceCycle.setSkuId(newEntity.getSkuId());
+                maintenanceCycle.setMaintenancePeriod(param.getMaintenancePeriod());
+                maintenanceCycleService.save(maintenanceCycle);
+
+            }
+        }
 
 
     }

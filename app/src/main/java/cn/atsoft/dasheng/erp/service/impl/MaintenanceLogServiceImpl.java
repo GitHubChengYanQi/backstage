@@ -9,10 +9,7 @@ import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Maintenance;
-import cn.atsoft.dasheng.erp.entity.MaintenanceDetail;
-import cn.atsoft.dasheng.erp.entity.MaintenanceLog;
-import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceLogMapper;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
 import cn.atsoft.dasheng.erp.model.result.*;
@@ -21,6 +18,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.StoreHousePositionsRequest;
 import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -66,6 +64,10 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     private StockDetailsService stockDetailsService;
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private MaintenanceCycleService maintenanceCycleService;
 
 
     @Override
@@ -176,9 +178,12 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
                     need.add(stockDetail);
                 }
             }
+            List<Long> inkindIds = new ArrayList<>();
+            List<Long> skuIds = new ArrayList<>();
             int num = maintenanceLogParam.getNumber();
             if (num > 0) {
                 for (StockDetails details : need) {
+                    inkindIds.add(details.getInkindId());
                     num -= details.getNumber();
                     MaintenanceLog log = new MaintenanceLog();
                     log.setNumber(Math.toIntExact(details.getNumber()));
@@ -187,6 +192,26 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
                     log.setInkindId(details.getInkindId());
                     log.setEnclosure(maintenanceLogParam.getEnclosure());
                     logs.add(log);
+                }
+            }
+            List<Inkind> inkinds =inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
+            for (Inkind inkind : inkinds) {
+                skuIds.add(inkind.getSkuId());
+            }
+            List<MaintenanceCycle> cycles =skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
+            //实物添加下次养护时间
+            for (Inkind inkind : inkinds) {
+                for (MaintenanceCycle cycle : cycles) {
+                    if (inkind.getSkuId().equals(cycle.getSkuId())){
+                        Calendar calendar = Calendar.getInstance();
+                        if (ToolUtil.isNotEmpty(inkind.getLastMaintenanceTime())) {
+                            calendar.setTime(inkind.getLastMaintenanceTime());
+                        }else {
+                            calendar.setTime(new Date());
+                        }
+                        calendar.add(Calendar.DATE, cycle.getMaintenancePeriod());
+                        inkind.setLastMaintenanceTime(calendar.getTime());
+                    }
                 }
             }
             for (MaintenanceDetail detail : maintenanceDetails) {

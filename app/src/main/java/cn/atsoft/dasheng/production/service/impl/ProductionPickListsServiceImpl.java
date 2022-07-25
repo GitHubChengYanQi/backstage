@@ -22,10 +22,14 @@ import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsMapper;
@@ -172,6 +176,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private GetOrigin getOrigin;
     @Autowired
     private StorehousePositionsBindService positionsBindService;
+    @Autowired
+    private MessageProducer messageProducer;
 
 
     @Override
@@ -202,6 +208,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             shopCartService.updateBatchById(carts);
             pickListsDetailService.saveBatch(details);
         }
+
+
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "OUTSTOCK").eq("status", 99).eq("module", "pickLists").one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             activitiProcessTaskService.checkStartUser(activitiProcess.getProcessId());
@@ -225,6 +233,30 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+
+            if (ToolUtil.isNotEmpty(param.getRemarkUserIds())) {
+                /**
+                 * 评论
+                 */
+                RemarksParam remarksParam = new RemarksParam();
+                remarksParam.setTaskId(taskId);
+                remarksParam.setType("remark");
+                StringBuffer userIdStr = new StringBuffer();
+                for (Long userId : param.getRemarkUserIds()) {
+                    userIdStr.append(userId).append(",");
+                }
+                String userStrtoString = userIdStr.toString();
+                if (userIdStr.length() > 1) {
+                    userStrtoString = userStrtoString.substring(0, userStrtoString.length() - 1);
+                }
+                remarksParam.setUserIds(userStrtoString);
+                remarksParam.setContent(param.getRemark());
+                messageProducer.remarksServiceDo(new RemarksEntity() {{
+                    setOperationType(OperationType.ADD);
+                    setRemarksParam(remarksParam);
+                }});
+            }
+
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
@@ -256,7 +288,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         param.getCartsParams();
         List<Object> objects = BeanUtil.copyToList(param.getCartsParams(), Object.class);
         if (ToolUtil.isEmpty(list)) {
-            redisSendCheck.pushList(code, objects,1000L * 60L * 10L);
+            redisSendCheck.pushList(code, objects, 1000L * 60L * 10L);
             return code;
         }
         return createCode(param);
@@ -278,7 +310,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         return PageFactory.createPageInfo(page);
     }
-@Override
+
+    @Override
     public void taskFormat(List<ProductionPickListsResult> results) {
         List<Long> pickListsIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
@@ -1605,7 +1638,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         pickCodeService.updateById(pickCode);
 
     }
-
 
 
     @Override
