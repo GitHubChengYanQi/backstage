@@ -31,6 +31,9 @@ public class AllocationParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("调拨id")
     private Long allocationId;
 
+
+    private Long storeHousePositionsId;
+
     /**
      * 编码
      */

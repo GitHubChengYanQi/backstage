@@ -11,7 +11,7 @@ import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationResult;
 import cn.atsoft.dasheng.erp.service.AllocationDetailService;
-import  cn.atsoft.dasheng.erp.service.AllocationService;
+import cn.atsoft.dasheng.erp.service.AllocationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
@@ -48,15 +48,24 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private InstockOrderService instockOrderService;
     @Autowired
     private GetOrigin getOrigin;
+
     @Override
-    public void add(AllocationParam param){
+    public void add(AllocationParam param) {
         Allocation entity = getEntity(param);
         this.save(entity);
         if (ToolUtil.isNotEmpty(param.getDetailParams())) {
             List<AllocationDetail> allocationDetails = BeanUtil.copyToList(param.getDetailParams(), AllocationDetail.class);
             for (AllocationDetail allocationDetail : allocationDetails) {
-                allocationDetail.setToStorehouseId(param.getStorehouseId());
+
                 allocationDetail.setAllocationId(entity.getAllocationId());
+                if (entity.getType().equals(1)) {
+                    allocationDetail.setToStorehouseId(param.getStorehouseId());
+                } else if (entity.getType().equals(2)) {
+                    allocationDetail.setStorehouseId(param.getStorehouseId());
+                } else if (entity.getType().equals(3)) {
+                    allocationDetail.setStorehouseId(param.getStorehouseId());
+                    allocationDetail.setStorehousePositionsId(param.getStoreHousePositionsId());
+                }
             }
             allocationDetailService.saveBatch(allocationDetails);
         }
@@ -65,54 +74,63 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
     /**
      * 创建出库单
+     *
      * @param allocationId
      */
     @Override
-   public void createPickListsAndInStockOrder(Long allocationId){
+    public void createPickListsAndInStockOrder(Long allocationId) {
         Allocation allocation = this.getById(allocationId);
         List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).list();
         List<Long> storehouseIds = new ArrayList<>();
         for (AllocationDetail allocationDetail : allocationDetails) {
             storehouseIds.add(allocationDetail.getStorehouseId());
         }
-
-        for (Long storehouseId : storehouseIds.stream().distinct().collect(Collectors.toList())) {
-            ProductionPickListsParam listsParam = new ProductionPickListsParam();
-            InstockOrderParam instockOrderParam = new InstockOrderParam();
-            listsParam.setPickListsName(allocation.getAllocationName());
-            listsParam.setUserId(allocation.getUserId());
-            listsParam.setSource("ALLOCATION");
-            listsParam.setSourceId(allocationId);
-            List<ProductionPickListsDetailParam> details = new ArrayList<>();
-            List<InstockListParam> listParams = new ArrayList<>();
-            for (AllocationDetail allocationDetail : allocationDetails) {
-                if (allocationDetail.getStorehouseId().equals(storehouseId)){
-                    ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
-                    ToolUtil.copyProperties(allocationDetail,listsDetailParam);
-                    details.add(listsDetailParam);
-                    InstockListParam instockListParam = new InstockListParam();
-                    ToolUtil.copyProperties(listsDetailParam,instockListParam);
-                    listParams.add(instockListParam);
+        switch (allocation.getType()) {
+            case 1:
+                for (Long storehouseId : storehouseIds.stream().distinct().collect(Collectors.toList())) {
+                    ProductionPickListsParam listsParam = new ProductionPickListsParam();
+                    InstockOrderParam instockOrderParam = new InstockOrderParam();
+                    listsParam.setPickListsName(allocation.getAllocationName());
+                    listsParam.setUserId(allocation.getUserId());
+                    listsParam.setSource("ALLOCATION");
+                    listsParam.setSourceId(allocationId);
+                    List<ProductionPickListsDetailParam> details = new ArrayList<>();
+                    List<InstockListParam> listParams = new ArrayList<>();
+                    for (AllocationDetail allocationDetail : allocationDetails) {
+                        if (allocationDetail.getStorehouseId().equals(storehouseId)|| ToolUtil.isEmpty(allocationDetail.getStorehousePositionsId())) {
+                            ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
+                            ToolUtil.copyProperties(allocationDetail, listsDetailParam);
+                            details.add(listsDetailParam);
+                            InstockListParam instockListParam = new InstockListParam();
+                            ToolUtil.copyProperties(listsDetailParam, instockListParam);
+                            listParams.add(instockListParam);
+                        }
+                    }
+                    if (details.size() > 0) {
+                        instockOrderParam.setListParams(listParams);
+                        productionPickListsService.add(listsParam);
+                        instockOrderService.add(instockOrderParam);
+                    }
                 }
-            }
-           if (details.size()>0){
-               instockOrderParam.setListParams(listParams);
-               productionPickListsService.add(listsParam);
-               instockOrderService.add(instockOrderParam);
-           }
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                break;
         }
-
 
 
     }
 
     @Override
-    public void delete(AllocationParam param){
+    public void delete(AllocationParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(AllocationParam param){
+    public void update(AllocationParam param) {
         Allocation oldEntity = getOldEntity(param);
         Allocation newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -120,23 +138,23 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     }
 
     @Override
-    public AllocationResult findBySpec(AllocationParam param){
+    public AllocationResult findBySpec(AllocationParam param) {
         return null;
     }
 
     @Override
-    public List<AllocationResult> findListBySpec(AllocationParam param){
+    public List<AllocationResult> findListBySpec(AllocationParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<AllocationResult> findPageBySpec(AllocationParam param){
+    public PageInfo<AllocationResult> findPageBySpec(AllocationParam param) {
         Page<AllocationResult> pageContext = getPageContext();
         IPage<AllocationResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(AllocationParam param){
+    private Serializable getKey(AllocationParam param) {
         return param.getAllocationId();
     }
 
