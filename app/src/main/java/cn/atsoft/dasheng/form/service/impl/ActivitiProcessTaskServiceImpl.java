@@ -582,7 +582,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
         }
         String string = stringBuffer.toString();
-         string = string.substring(0,string.length()-1);
+        if (string.length()>0) {
+            string = string.substring(0,string.length()-1);
+        }
         if(string.length()>27){
             string= string+".....";
         }
@@ -591,6 +593,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         result.put("description",string);
         result.put("coding",coding);
+        if (ToolUtil.isNotEmpty(processTask.getTaskName())) {
+            result.put("items",processTask.getTaskName());
+        }
         return result;
     }
 

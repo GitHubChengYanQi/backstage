@@ -14,14 +14,17 @@ import java.io.Serializable;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-07-13
+ * @since 2022-07-25
  */
-@TableName("daoxin_erp_allocation_detail")
-public class AllocationDetail implements Serializable {
+@TableName("daoxin_erp_allocation_cart")
+public class AllocationCart implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "allocation_detail_id", type = IdType.ID_WORKER)
+      @TableId(value = "allocation_cart_id", type = IdType.ID_WORKER)
+    private Long allocationCartId;
+
+    @TableField("allocation_detail_id")
     private Long allocationDetailId;
 
     /**
@@ -50,9 +53,6 @@ public class AllocationDetail implements Serializable {
 
     @TableField("brand_id")
     private Long brandId;
-
-    @TableField("status")
-    private Integer status;
 
     /**
      * 创建者
@@ -102,17 +102,20 @@ public class AllocationDetail implements Serializable {
     @TableField("to_storehouse_id")
     private Long toStorehouseId;
 
+    @TableField("status")
+    private Integer status;
+
+
+    public Long getAllocationCartId() {
+        return allocationCartId;
+    }
+
+    public void setAllocationCartId(Long allocationCartId) {
+        this.allocationCartId = allocationCartId;
+    }
 
     public Long getAllocationDetailId() {
         return allocationDetailId;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
     }
 
     public void setAllocationDetailId(Long allocationDetailId) {
@@ -231,10 +234,19 @@ public class AllocationDetail implements Serializable {
         this.toStorehouseId = toStorehouseId;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "AllocationDetail{" +
-        "allocationDetailId=" + allocationDetailId +
+        return "AllocationCart{" +
+        "allocationCartId=" + allocationCartId +
+        ", allocationDetailId=" + allocationDetailId +
         ", allocationId=" + allocationId +
         ", skuId=" + skuId +
         ", number=" + number +
@@ -249,6 +261,7 @@ public class AllocationDetail implements Serializable {
         ", deptId=" + deptId +
         ", toStorehousePositionsId=" + toStorehousePositionsId +
         ", toStorehouseId=" + toStorehouseId +
+        ", status=" + status +
         "}";
     }
 }

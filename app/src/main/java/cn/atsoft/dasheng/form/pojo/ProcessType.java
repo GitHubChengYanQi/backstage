@@ -42,8 +42,7 @@ public enum ProcessType {
         add(ProcessModuleEnum.pickLists);
     }}),
     ALLOCATION("调拨", "ALLOCATION", new ArrayList<ProcessModuleEnum>() {{
-        add(ProcessModuleEnum.externalAllocation);
-        add(ProcessModuleEnum.internalAllocation);
+        add(ProcessModuleEnum.allocation);
     }}),
     Stocktaking("盘点", "Stocktaking", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.Stocktaking);

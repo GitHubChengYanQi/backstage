@@ -1,38 +1,40 @@
-package cn.atsoft.dasheng.erp.model.params;
+package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
- * 调拨子表
+ * 
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-07-13
+ * @since 2022-07-25
  */
 @Data
 @ApiModel
-public class AllocationDetailParam implements Serializable, BaseValidatingParam {
+public class AllocationLogResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Long positionId;
 
-    @ApiModelProperty("")
-    private Long allocationDetailId;
+
+    /**
+     * 调拨logid
+     */
+    @ApiModelProperty("调拨logid")
+    private Long allocationLogId;
 
     /**
      * 调拨id
      */
     @ApiModelProperty("调拨id")
     private Long allocationId;
+
+    @ApiModelProperty("")
+    private Long allocationDetailId;
 
     @ApiModelProperty("")
     private Long skuId;
@@ -102,13 +104,6 @@ public class AllocationDetailParam implements Serializable, BaseValidatingParam 
      */
     @ApiModelProperty("调拨目标位置仓库id")
     private Long toStorehouseId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

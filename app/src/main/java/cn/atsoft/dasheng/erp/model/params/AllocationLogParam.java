@@ -12,27 +12,33 @@ import java.util.List;
 
 /**
  * <p>
- * 调拨子表
+ * 
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-07-13
+ * @since 2022-07-25
  */
 @Data
 @ApiModel
-public class AllocationDetailParam implements Serializable, BaseValidatingParam {
+public class AllocationLogParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private Long positionId;
 
-    @ApiModelProperty("")
-    private Long allocationDetailId;
+
+    /**
+     * 调拨logid
+     */
+    @ApiModelProperty("调拨logid")
+    private Long allocationLogId;
 
     /**
      * 调拨id
      */
     @ApiModelProperty("调拨id")
     private Long allocationId;
+
+    @ApiModelProperty("")
+    private Long allocationDetailId;
 
     @ApiModelProperty("")
     private Long skuId;

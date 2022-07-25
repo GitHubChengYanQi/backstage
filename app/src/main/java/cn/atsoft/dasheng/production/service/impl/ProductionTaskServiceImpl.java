@@ -238,7 +238,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 setType(0);
                 setTitle("新的生产任务");
                 setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
-                setDescription("您被分派了新的生产任务" + entity.getCoding());
+//                setDescription("您被分派了新的生产任务" + entity.getCoding());
                 setSource("productionTask");
                 setSourceId(entity.getProductionTaskId());
                 setTaskId(entity.getProductionTaskId());
@@ -277,7 +277,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 setTitle("新的生产任务");
                 setFunction(MarkDownTemplateTypeEnum.action);
                 setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
-                setDescription("您被分派了新的生产任务" + entity.getCoding());
+//                setDescription("您被分派了新的生产任务" + entity.getCoding());
                 setSource("productionTask");
                 setSourceId(entity.getProductionTaskId());
                 setTaskId(entity.getProductionTaskId());
@@ -446,7 +446,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("新的生产任务");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
-            setDescription("您领取了新的生产任务" + entity.getCoding());
+//            setDescription("您领取了新的生产任务" + entity.getCoding());
             setSource("productionTask");
             setSourceId(entity.getProductionTaskId());
             setCreateUser(entity.getCreateUser());
@@ -503,7 +503,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             setFunction(MarkDownTemplateTypeEnum.forward);
             setItems("新的生产任务");
             setUrl(entity.getProductionTaskId().toString());
-            setDescription("您被转派了新的生产任务" + entity.getCoding());
+//            setDescription("您被转派了新的生产任务" + entity.getCoding());
             setSource("productionTask");
             setSourceId(entity.getProductionTaskId());
             setType(0);

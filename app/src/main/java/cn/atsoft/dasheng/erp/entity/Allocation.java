@@ -92,6 +92,11 @@ public class Allocation implements Serializable {
      */
     @TableField("display")
     private Integer display;
+    /**
+     * 调入/调出
+     */
+    @TableField("allocation_type")
+    private Integer allocationType;
 
     /**
      * 部门id
@@ -121,7 +126,7 @@ public class Allocation implements Serializable {
      * 库间调拨  仓库调拨
      */
     @TableField("type")
-    private Integer type;
+    private String type;
 
 
     public Long getAllocationId() {
@@ -268,11 +273,19 @@ public class Allocation implements Serializable {
         this.origin = origin;
     }
 
-    public Integer getType() {
+    public Integer getAllocationType() {
+        return allocationType;
+    }
+
+    public void setAllocationType(Integer allocationType) {
+        this.allocationType = allocationType;
+    }
+
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(String type) {
         this.type = type;
     }
 

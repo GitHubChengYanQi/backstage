@@ -183,7 +183,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
             setType(1);
             setItems("入库异常 转交您处理");
             setUrl(mobileService.getMobileConfig().getUrl() + "/Receipts/ReceiptsDetail?id=" + taskId);
-            setDescription("入库异常 转交处理");
+//            setDescription("入库异常 转交处理");
             setSource("processTask");
             setSourceId(taskId);
             setCreateTime(now());

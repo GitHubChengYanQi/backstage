@@ -24,6 +24,7 @@ public class AllocationParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<AllocationDetailParam> detailParams;
+    private List<Long> userIds;
 
     /**
      * 调拨id
@@ -124,11 +125,13 @@ public class AllocationParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("来源Json字符串")
     private String origin;
 
+    private Integer allocationType;
+
     /**
      * 库间调拨  仓库调拨
      */
     @ApiModelProperty("库间调拨  仓库调拨")
-    private Integer type;
+    private String type;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
