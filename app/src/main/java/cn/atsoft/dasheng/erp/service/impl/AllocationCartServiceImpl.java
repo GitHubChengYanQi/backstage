@@ -122,7 +122,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
         List<StorehouseResult> storehouseResults =storehouseId.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehouseService.listByIds(storehouseId), StorehouseResult.class);
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-        List<StorehousePositionsResult> positionsResults = storehousePositionsService.getDetails(positionIds);
+        List<StorehousePositionsResult> positionsResults = positionIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehousePositionsService.listByIds(positionIds),StorehousePositionsResult.class) ;
         for (AllocationCartResult result : results) {
             for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
                 if(result.getSkuId().equals(skuSimpleResult.getSkuId())){
