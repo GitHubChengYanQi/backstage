@@ -54,6 +54,7 @@ public class InstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody InstockOrderParam instockOrderParam) {
         InstockOrder instockOrder = this.instockOrderService.add(instockOrderParam);
         return ResponseData.success(instockOrder);
@@ -127,6 +128,7 @@ public class InstockOrderController extends BaseController {
      * @Date 2021-10-06
      */
     @RequestMapping(value = "/inStockByOrder", method = RequestMethod.POST)
+    @Permission
     public ResponseData inStockByOrder(@Valid @RequestBody InstockOrderParam param) {
         List<Long> inkindIds = this.instockOrderService.inStock(param);
         return ResponseData.success(inkindIds);
