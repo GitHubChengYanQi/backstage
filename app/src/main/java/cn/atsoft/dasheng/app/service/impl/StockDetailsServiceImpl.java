@@ -211,6 +211,13 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         }
         Inkind inkindResult = inkindService.getById(inkind);
 
+        StockDetails details = new StockDetails();
+        details.setSkuId(inkindResult.getSkuId());
+        details.setBrandId(inkindResult.getBrandId());
+        details.setCustomerId(inkindResult.getCustomerId());
+        details.setStorehousePositionsId(inkindResult.getPositionId());
+
+
     }
 
 

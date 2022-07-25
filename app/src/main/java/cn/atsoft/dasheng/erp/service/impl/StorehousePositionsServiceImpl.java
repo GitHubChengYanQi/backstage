@@ -768,6 +768,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             PositionLoop loop = new PositionLoop();
             loop.setTitle(positionsResult.getName());
             loop.setKey(positionsResult.getStorehousePositionsId());
+            loop.setStoreHouseId(positionsResult.getStorehouseId());
             loop.setPid(positionsResult.getPid());
             allPositionLoop.add(loop);
         }
