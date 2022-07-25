@@ -25,6 +25,8 @@ public class AnomalyBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Long> inkindIds;
+
     private Long skuId;
 
     private Long brandId;

@@ -8,6 +8,8 @@ import cn.atsoft.dasheng.erp.service.AnomalyBindService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.result.OrCodeBindResult;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -106,8 +108,15 @@ public class AnomalyBindController extends BaseController {
 
     @RequestMapping(value = "/addInKindByAnomaly", method = RequestMethod.POST)
     public ResponseData addInKindByAnomaly(@RequestBody AnomalyBindParam anomalyBindParam) {
-        this.anomalyBindService.addInKindByAnomaly(anomalyBindParam);
-        return ResponseData.success();
+        OrCodeBind codeBind = this.anomalyBindService.addInKindByAnomaly(anomalyBindParam);
+        return ResponseData.success(codeBind);
+    }
+
+
+    @RequestMapping(value = "/backStockInKind", method = RequestMethod.POST)
+    public ResponseData backStockInKind(@RequestBody AnomalyBindParam anomalyBindParam) {
+        List<OrCodeBindResult> orCodeBinds = this.anomalyBindService.backStockInKind(anomalyBindParam);
+        return ResponseData.success(orCodeBinds);
     }
 
     /**

@@ -369,7 +369,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     public PageInfo<PartsResult> findPageBySpec(PartsParam param) {
         Page<PartsResult> pageContext = getPageContext();
         IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
-        format(page.getRecords());
+        pageFormat(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -674,6 +674,53 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+    public void pageFormat(List<PartsResult> data) {
+
+
+        List<Long> userIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (PartsResult datum : data) {
+
+            userIds.add(datum.getCreateUser());
+            skuIds.add(datum.getSkuId());
+        }
+
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+
+        for (PartsResult datum : data) {
+            List<ErpPartsDetailResult> detailResults = new ArrayList<>();
+
+
+            datum.setParts(detailResults);
+
+
+
+            List<PartsResult> partsResults = new ArrayList<>();
+
+            datum.setPartsResults(partsResults);
+            if (ToolUtil.isNotEmpty(datum.getAttribute())) {
+                datum.setPartsAttributes(datum.getAttribute());
+            }
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    datum.setUserResult(userResult);
+                    break;
+                }
+            }
+            for (SkuResult skuResult : skuResults) {
+                if (ToolUtil.isNotEmpty(datum.getSkuId()) && datum.getSkuId().equals(skuResult.getSkuId())) {
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+    }
+
 
     public void format(List<PartsResult> data) {
 
