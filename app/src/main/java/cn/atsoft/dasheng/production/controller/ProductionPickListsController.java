@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
@@ -88,23 +89,25 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody ProductionPickListsParam productionPickListsParam) {
         this.productionPickListsService.warning(productionPickListsParam);
         ProductionPickLists pickLists = this.productionPickListsService.add(productionPickListsParam);
         return ResponseData.success(pickLists);
     }
-     /**
-         * 生成code
-         *
-         * @author Captain_Jazz
-         * @Date 2022-03-25
-         */
-        @RequestMapping(value = "/createCode", method = RequestMethod.POST)
-        @ApiOperation("新增")
-        public ResponseData createCode(@RequestBody ProductionPickListsParam productionPickListsParam) {
-            String code = this.productionPickListsService.createCode(productionPickListsParam);
-            return ResponseData.success(code);
-        }
+
+    /**
+     * 生成code
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/createCode", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData createCode(@RequestBody ProductionPickListsParam productionPickListsParam) {
+        String code = this.productionPickListsService.createCode(productionPickListsParam);
+        return ResponseData.success(code);
+    }
 
 
     @RequestMapping(value = "/abortCode", method = RequestMethod.GET)
@@ -231,9 +234,7 @@ public class ProductionPickListsController extends BaseController {
         result.setProductionTaskResults(productionTaskResults);
         result.setCartResults(pickListsCartResults);
 //         JSON.toJSONString(result);
-        String toJSONString =JSON.toJSONString(result,JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.DisableCircularReferenceDetect.getMask());
-
-
+        String toJSONString = JSON.toJSONString(result, JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.DisableCircularReferenceDetect.getMask());
 
 
         byte[] gzip = ZipUtil.gzip(toJSONString, CharsetUtil.UTF_8);
@@ -305,8 +306,6 @@ public class ProductionPickListsController extends BaseController {
     }
 
 
-
-
     @RequestMapping(value = "/createOutStockOrderBySku", method = RequestMethod.POST)
     @ApiOperation("列表")
     public ResponseData outStockBySku(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
@@ -327,7 +326,7 @@ public class ProductionPickListsController extends BaseController {
         ProductionPickListsResult result = new ProductionPickListsResult();
         if (ToolUtil.isEmpty(detail)) {
             return ResponseData.success(result);
-        }else {
+        } else {
             ToolUtil.copyProperties(detail, result);
             productionPickListsService.formatStatus99(new ArrayList<ProductionPickListsResult>() {{
                 add(result);
@@ -335,13 +334,15 @@ public class ProductionPickListsController extends BaseController {
         }
         return ResponseData.success(result);
     }
+
     @RequestMapping(value = "/listByUser", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData listByUser(@RequestBody ProductionPickListsParam productionPickListsParam) {
         List<Map<String, Object>> maps = productionPickListsService.listByUser(productionPickListsParam);
         return ResponseData.success(maps);
     }
- @RequestMapping(value = "/listByCode", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/listByCode", method = RequestMethod.GET)
     @ApiOperation("详情")
     public ResponseData listByUser(@RequestParam String code) {
 

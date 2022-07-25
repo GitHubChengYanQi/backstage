@@ -109,7 +109,7 @@ public class StorehousePositionsController extends BaseController {
         if (ToolUtil.isEmpty(storehousePositionsParam)) {
             storehousePositionsParam = new StorehousePositionsParam();
         }
-        List<PositionLoop> positionLoops = this.storehousePositionsService.treeViewByName(storehousePositionsParam.getName());
+        List<PositionLoop> positionLoops = this.storehousePositionsService.treeViewByName(storehousePositionsParam.getName(),storehousePositionsParam.getStorehouseId());
         return ResponseData.success(positionLoops);
     }
 

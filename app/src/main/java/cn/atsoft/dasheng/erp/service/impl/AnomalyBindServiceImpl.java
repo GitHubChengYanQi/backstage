@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AnomalyBind;
@@ -14,8 +16,11 @@ import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
+import cn.atsoft.dasheng.orCode.model.result.OrCodeBindResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,7 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -41,6 +49,8 @@ public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, Anoma
     private OrCodeBindService orCodeBindService;
     @Autowired
     private OrCodeService orCodeService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public void add(AnomalyBindParam param) {
@@ -57,10 +67,10 @@ public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, Anoma
 
     /**
      * 异常临时生成实物
-     *
      */
     @Override
     public OrCodeBind addInKindByAnomaly(AnomalyBindParam param) {
+
 
         Inkind inkind = new Inkind();
         inkind.setNumber(param.getNumber());
@@ -69,6 +79,7 @@ public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, Anoma
         inkind.setType("1");
         inkind.setCustomerId(param.getCustomerId());
         inkind.setBrandId(param.getBrandId());
+        inkind.setPositionId(param.getPositionId());
         inkindService.save(inkind);
 
         OrCode orCode = new OrCode();
@@ -83,6 +94,37 @@ public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, Anoma
 
 
         return orCodeBindService.add(bindParam);
+    }
+
+
+    @Override
+    public List<OrCodeBindResult> backStockInKind(AnomalyBindParam param) {
+
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("sku_id", param.getSkuId());
+        queryWrapper.eq("brand_id", param.getBrandId());
+        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+            queryWrapper.eq("customer_id", param.getCustomerId());
+        }
+        queryWrapper.eq("storehouse_positions_id", param.getPositionId());
+        queryWrapper.eq("display", 1);
+        List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
+
+        List<Long> inkindIds = new ArrayList<>();
+        Map<Long, Long> inkindNum = new HashMap<>();
+        for (StockDetails stockDetail : stockDetails) {
+            inkindIds.add(stockDetail.getInkindId());
+            inkindNum.put(stockDetail.getInkindId(), stockDetail.getNumber());
+        }
+
+        List<OrCodeBind> orCodeBinds = inkindIds.size() == 0 ? new ArrayList<>() : orCodeBindService.query().in("form_id", inkindIds).eq("display", 1).list();
+        List<OrCodeBindResult> orCodeBindResults = BeanUtil.copyToList(orCodeBinds, OrCodeBindResult.class);
+
+        for (OrCodeBindResult orCodeBindResult : orCodeBindResults) {
+            Long num = inkindNum.get(orCodeBindResult.getFormId());
+            orCodeBindResult.setNum(num);
+        }
+        return orCodeBindResults;
     }
 
 

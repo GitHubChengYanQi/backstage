@@ -24,6 +24,12 @@ import java.util.List;
 @ApiModel
 public class AnomalyOrderResult implements Serializable {
 
+    private Integer total;
+
+    private Integer handle;
+
+    private Integer skuNumber;
+
     private User masterUser;
 
     private static final long serialVersionUID = 1L;

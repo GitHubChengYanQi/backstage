@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -69,6 +70,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private ProductionPickListsCartService pickListsCartService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private InkindService inkindService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -199,6 +202,17 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         }
 
     }
+
+    public void splitInkind(Long inkind) {
+
+        StockDetails stockDetails = this.query().eq("inkind_id", inkind).one();   //库存有当前实物 无需操作
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+            return;
+        }
+        Inkind inkindResult = inkindService.getById(inkind);
+
+    }
+
 
     @Override
     public List<StockDetailsResult> getStockDetails(Long stockId) {

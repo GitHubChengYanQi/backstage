@@ -6,10 +6,7 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Inventory;
-import cn.atsoft.dasheng.erp.entity.InventoryDetail;
-import cn.atsoft.dasheng.erp.entity.InventoryStock;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InventoryStockMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
@@ -58,6 +55,10 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private InventoryDetailService inventoryDetailService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private AnomalyDetailService anomalyDetailService;
+    @Autowired
+    private AnomalyService anomalyService;
 
 
     @Override
@@ -196,6 +197,9 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
      */
     @Override
     public Map<String, Integer> speedProgress(Long inventoryId) {
+
+        Inventory inventory = inventoryService.getById(inventoryId);
+
         List<InventoryStock> inventoryStocks = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
         int size = inventoryStocks.size();
         int operation = 0;
@@ -208,9 +212,22 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             }
             positionIds.add(inventoryStock.getPositionId());
             skuIds.add(inventoryStock.getSkuId());
-            if (inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99) {
-                shopCartNum = shopCartNum + 1;
+
+            if (inventory.getMethod().equals("OpenDisc")) {
+                if (inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99) {
+                    shopCartNum = shopCartNum + 1;
+                }
+            } else if (
+                    inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99 &&
+                            inventoryStock.getAnomalyId() != null && inventoryStock.getAnomalyId() != 0) {
+                Integer count = anomalyDetailService.query()
+                        .eq("anomaly_id", inventoryStock.getAnomalyId())
+                        .eq("display", 1).count();
+                if (count > 0) {
+                    shopCartNum = shopCartNum + 1;
+                }
             }
+
         }
 
         Map<String, Integer> map = new HashMap<>();
@@ -312,9 +329,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     @Override
     public void updateStatus(List<Long> ids) {
 
+        List<Anomaly> anomalies = anomalyService.listByIds(ids);
+
         List<InventoryStock> inventoryStocks = ids.size() == 0 ? new ArrayList<>() :
                 this.query().in("anomaly_id", ids)
                         .eq("display", 1).list();
+
         for (InventoryStock inventoryStock : inventoryStocks) {
             inventoryStock.setLockStatus(99);
         }
@@ -410,17 +430,19 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
-
+        List<Long> anomalyIds = new ArrayList<>();
 
         for (InventoryStockResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             positionIds.add(datum.getPositionId());
+            anomalyIds.add(datum.getAnomalyId());
         }
-
+        List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<StorehousePositionsResult> positionsResults = positionsService.details(positionIds);
+
         positionsService.format(positionsResults);
 
         for (InventoryStockResult datum : data) {
@@ -452,6 +474,14 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                     break;
                 }
             }
+
+            int errorNum = 0;
+            for (AnomalyDetail anomalyDetail : anomalyDetails) {
+                if (ToolUtil.isNotEmpty(datum.getAnomalyId()) && datum.getAnomalyId().equals(anomalyDetail.getAnomalyId())) {
+                    errorNum = errorNum + 1;
+                }
+            }
+            datum.setErrorNum(errorNum);
 
         }
 
