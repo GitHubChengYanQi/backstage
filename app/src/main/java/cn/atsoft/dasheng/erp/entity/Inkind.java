@@ -24,6 +24,9 @@ public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("position_id")
+    private Long positionId;
+
     @TableField("pid")
     private Long pid;
 
@@ -127,6 +130,14 @@ public class Inkind implements Serializable {
      */
     @TableField("deptId")
     private Long deptId;
+
+    public Long getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
+    }
 
     public Long getNumber() {
         return number;

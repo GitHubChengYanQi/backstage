@@ -327,19 +327,22 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
         }
 
+
         AnomalyOrder entity = getEntity(param);
         this.save(entity);
-        List<Anomaly> anomalies = new ArrayList<>();
+
         List<Long> ids = new ArrayList<>();
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
             ids.add(anomalyParam.getAnomalyId());
-            Anomaly anomaly = new Anomaly();
-            anomaly.setStatus(98);
-            ToolUtil.copyProperties(anomalyParam, anomaly);
-            anomaly.setOrderId(entity.getOrderId());
-            anomalies.add(anomaly);
         }
-        anomalyService.updateBatchById(anomalies);    //更新异常单据状态
+        List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.query().in("anomaly_id", ids).isNull("order_id").eq("display", 1).list();
+        for (Anomaly anomaly : anomalyList) {
+            anomaly.setOrderId(entity.getOrderId());
+            anomaly.setStatus(98);
+        }
+
+        inventoryStockService.updateStatus(ids);
+        anomalyService.updateBatchById(anomalyList);    //更新异常单据状态
         /**
          * 更新购物车状态
          */
@@ -503,12 +506,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
             for (ProductionPickListsCartParam cartParam : cartParams) {
                 Long inkindId = inkindMap.get("sku_" + cartParam.getSkuId() + "brand_" + cartParam.getBrandId() + "position_" + cartParam.getStorehousePositionsId());
-                cartParam.setInkindId(inkindId);
+                cartParam.setType("frmLoss");
+//                cartParam.setInkindId(inkindId);    //TODO
             }
-            List<StockDetails> stockDetails = stockDetailsService.fundStockDetailByCart(new ProductionPickListsCartParam(){{
+            List<StockDetails> stockDetails = stockDetailsService.fundStockDetailByCart(new ProductionPickListsCartParam() {{
                 setProductionPickListsCartParams(cartParams);
             }});
-            listsCartService.add(new ProductionPickListsCartParam(){{
+
+            listsCartService.add(new ProductionPickListsCartParam() {{
                 setProductionPickListsCartParams(cartParams);
             }}, stockDetails);
 

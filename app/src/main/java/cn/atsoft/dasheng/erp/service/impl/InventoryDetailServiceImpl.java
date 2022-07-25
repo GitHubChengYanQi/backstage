@@ -446,14 +446,18 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                     throw new ServiceException(500, "请先提交异常");
                 }
             }
-        } else {
-            if (anomalyIds.size() > 0) {
-                List<AnomalyParam> anomalyParams = new ArrayList<>();
-                for (Long anomalyId : anomalyIds) {
+        } else {            //暗盘 自动提交异常
+            List<Anomaly> anomalies = anomalyService.query().eq("form_id", inventoryId).eq("display", 1)
+                    .list();   //除去正常的物料
+            List<AnomalyParam> anomalyParams = new ArrayList<>();
+            for (Anomaly anomaly : anomalies) {
+                if (!anomaly.getRealNumber().equals(anomaly.getNeedNumber())) {
                     AnomalyParam anomalyParam = new AnomalyParam();
-                    anomalyParam.setAnomalyId(anomalyId);
+                    anomalyParam.setAnomalyId(anomaly.getAnomalyId());
                     anomalyParams.add(anomalyParam);
                 }
+            }
+            if (anomalyParams.size() > 0) {
                 AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
                 anomalyOrderParam.setType("Stocktaking");
                 anomalyOrderParam.setAnomalyParams(anomalyParams);

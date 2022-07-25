@@ -43,6 +43,7 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
     private String queryText;
 
 
+    private String type;
     /**
      * 购物车id
      */

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
@@ -103,6 +104,7 @@ public class InventoryDetailController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/complete", method = RequestMethod.POST)
+    @Permission
     public ResponseData complete(@RequestBody InventoryDetailParam inventoryDetailParam) {
         if (ToolUtil.isEmpty(inventoryDetailParam.getInventoryId())) {
             throw new ServiceException(500, "请确定盘点id");
