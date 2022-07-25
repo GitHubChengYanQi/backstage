@@ -742,8 +742,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<PositionLoop> treeViewByName(String name) {
-        List<StorehousePositions> positions = this.query().eq("display", 1).list();
+    public List<PositionLoop> treeViewByName(String name, Long houseId) {
+        QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
+        if (ToolUtil.isNotEmpty(houseId)) {
+            queryWrapper.eq("storehouse_id", houseId);
+        }
+        List<StorehousePositions> positions = this.list(queryWrapper);
         List<Long> positionIds = new ArrayList<>();
         for (StorehousePositions position : positions) {
             if (ToolUtil.isEmpty(name)) {
@@ -763,6 +768,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             PositionLoop loop = new PositionLoop();
             loop.setTitle(positionsResult.getName());
             loop.setKey(positionsResult.getStorehousePositionsId());
+            loop.setStoreHouseId(positionsResult.getStorehouseId());
             loop.setPid(positionsResult.getPid());
             allPositionLoop.add(loop);
         }

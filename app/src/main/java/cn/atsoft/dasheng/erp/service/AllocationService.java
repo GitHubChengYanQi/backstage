@@ -26,6 +26,8 @@ public interface AllocationService extends IService<Allocation> {
      */
     Allocation add(AllocationParam param);
 
+    void checkCart(Long allocation);
+
     void createPickListsAndInStockOrder(Long allocationId);
 
     /**

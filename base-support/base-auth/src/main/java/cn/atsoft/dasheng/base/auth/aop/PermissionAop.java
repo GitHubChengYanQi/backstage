@@ -63,7 +63,7 @@ public class PermissionAop {
             if (result) {
                 return point.proceed();
             } else {
-                throw new PermissionException(name);
+                throw new PermissionException();
             }
 
         } else {

@@ -22,6 +22,7 @@ public class AllocationResult implements Serializable {
     private static final long serialVersionUID = 1L;
     List<AllocationDetailResult> detailResults;
     List<AllocationCartResult> allocationCartResults;
+    private String statusName;
 
     /**
      * 调拨id

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.AllocationActionEnum;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -19,12 +20,10 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
@@ -89,6 +88,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private DocumentsActionService documentsActionService;
 
 
 
@@ -165,7 +166,11 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         }
     return entity;
     }
-
+    @Override
+    public void checkCart(Long allocation){
+        DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.assign.name()).eq("display", 1).one();
+        activitiProcessLogService.checkAction(allocation,"ALLOCATION",action.getDocumentsActionId(),LoginContextHolder.getContext().getUserId());
+    }
     /**
      * 创建出库单
      *
@@ -208,8 +213,11 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                         InstockListParam instockListParam = new InstockListParam();
                         ToolUtil.copyProperties(listsDetailParam, instockListParam);
                         listParams.add(instockListParam);
+                        allocationCart.setStatus(98);
                     }
                 }
+                allocationCartService.updateBatchById(allocationCarts);
+
                 if (details.size() > 0) {
                     instockOrderParam.setListParams(listParams);
                     productionPickListsService.add(listsParam);
@@ -234,7 +242,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
 
     }
+    void format(){
 
+    }
     @Override
     public void delete(AllocationParam param) {
         this.removeById(getKey(param));

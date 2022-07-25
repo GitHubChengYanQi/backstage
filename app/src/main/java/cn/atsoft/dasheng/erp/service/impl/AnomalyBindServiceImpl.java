@@ -79,6 +79,7 @@ public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, Anoma
         inkind.setType("1");
         inkind.setCustomerId(param.getCustomerId());
         inkind.setBrandId(param.getBrandId());
+        inkind.setPositionId(param.getPositionId());
         inkindService.save(inkind);
 
         OrCode orCode = new OrCode();

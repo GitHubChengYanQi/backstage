@@ -9,6 +9,7 @@ public class PositionLoop {
     private Long key;
     private String title;
     private Long pid;
+    private Long storeHouseId;
 
     private List<PositionLoop> loops;
 }

@@ -57,6 +57,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private StockDetailsService stockDetailsService;
     @Autowired
     private AnomalyDetailService anomalyDetailService;
+    @Autowired
+    private AnomalyService anomalyService;
 
 
     @Override
@@ -327,9 +329,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     @Override
     public void updateStatus(List<Long> ids) {
 
+        List<Anomaly> anomalies = anomalyService.listByIds(ids);
+
         List<InventoryStock> inventoryStocks = ids.size() == 0 ? new ArrayList<>() :
                 this.query().in("anomaly_id", ids)
                         .eq("display", 1).list();
+
         for (InventoryStock inventoryStock : inventoryStocks) {
             inventoryStock.setLockStatus(99);
         }
