@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -75,6 +76,9 @@ public class ProductionPickListsController extends BaseController {
     private ProductionTaskService productionTaskService;
     @Autowired
     private RedisSendCheck redisSendCheck;
+
+    @Autowired
+    private InventoryService inventoryService;
 
     /**
      * 新增接口
@@ -288,6 +292,7 @@ public class ProductionPickListsController extends BaseController {
     @RequestMapping(value = "/createOutStockOrder", method = RequestMethod.POST)
     @ApiOperation("列表")
     public ResponseData createOutStockOrder(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+        inventoryService.staticState();
         if (ToolUtil.isEmpty(productionPickListsParam)) {
             productionPickListsParam = new ProductionPickListsParam();
         }

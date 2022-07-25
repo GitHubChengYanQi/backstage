@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.controller;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
@@ -40,6 +41,8 @@ public class ProductionPickListsCartController extends BaseController {
     private ProductionPickListsCartService productionPickListsCartService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private InventoryService inventoryService;
 
     /**
      * 新增接口
@@ -53,6 +56,7 @@ public class ProductionPickListsCartController extends BaseController {
         if (ToolUtil.isEmpty(productionPickListsCartParam.getTaskId())) {
             throw new ServiceException(500, "缺少任务id");
         }
+        inventoryService.staticState();
         if (!productionPickListsCartParam.getWarning()) {
 
             boolean warning = productionPickListsCartService.warning(productionPickListsCartParam);
