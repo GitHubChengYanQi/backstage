@@ -18,7 +18,8 @@ public enum ReceiptsEnum {
     MAINTENANCE("养护")
 ,
     Stocktaking("盘点"),
-    ERROR("错误");
+    ERROR("错误"),
+    ALLOCATION("调拨");
 
 
     private String value;

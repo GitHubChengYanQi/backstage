@@ -889,6 +889,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 maintenanceDetails.add(maintenanceDetail);
             }
         }
+        for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
+            if (stockDetails.stream().noneMatch(i -> i.getSkuId().equals(maintenanceDetail.getSkuId()) && i.getBrandId().equals(maintenanceDetail.getBrandId()) && i.getStorehousePositionsId().equals(maintenanceDetail.getStorehousePositionsId()))) {
+                maintenanceDetail.setDisplay(0);
+            }
+        }
         maintenanceDetailService.saveOrUpdateBatch(maintenanceDetails);
         if (maintenanceDetails.stream().allMatch(i -> i.getDisplay().equals(0))) {
             maintenance.setStatus(99);

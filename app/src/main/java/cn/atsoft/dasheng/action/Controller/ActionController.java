@@ -120,6 +120,17 @@ public class ActionController {
                         i++;
                     }
                 }
+                break;
+            case ALLOCATION:
+                for (AddAction.Action action : actions) {
+                    int i = 0;
+                    for (AllocationActionEnum allocationActionEnum : action.getAllocationActionEnums()) {
+                        String value = allocationActionEnum.getValue();
+                        allocationActionEnum.setStatus(action.getStatusId(), param.getReceiptsEnum().name(), value, i);
+                        i++;
+                    }
+                }
+                break;
         }
 
 
@@ -146,6 +157,7 @@ public class ActionController {
             case PURCHASEORDER:
             case MAINTENANCE:
             case Stocktaking:
+            case ALLOCATION:
                 DocumentsStatusParam status = statusParam.getParam();
                 status.setFormType(statusParam.getReceiptsEnum().name());
                 id = documentStatusService.add(status);

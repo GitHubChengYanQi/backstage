@@ -43,7 +43,7 @@ public class AuditMessageSendImpl implements AuditMessageSend {
             setUrl(url);
             setType(0);
             setItems(processTask.getTaskName());
-            setDescription(processTask.getTaskName());
+//            setDescription(processTask.getTaskName());
             setSource("processTask");
             setSourceId(taskId);
             setTaskId(taskId);
@@ -60,11 +60,10 @@ public class AuditMessageSendImpl implements AuditMessageSend {
     public void statusSend(Long taskId, RuleType type, List<Long> users, String url, String createName) {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
-            setItems("您有新的单据需要操作");
             setFunction(MarkDownTemplateTypeEnum.action);
             setUrl(url);
             setType(0);
-            setDescription(processTask.getTaskName());
+//            setDescription(processTask.getTaskName());
             setSource("processTask");
             setSourceId(taskId);
             setTaskId(taskId);

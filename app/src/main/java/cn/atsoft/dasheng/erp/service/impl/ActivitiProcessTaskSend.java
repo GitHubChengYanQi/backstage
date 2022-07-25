@@ -232,7 +232,7 @@ public class ActivitiProcessTaskSend {
             setType(1);
             setItems("审批被否决");
             setUrl(aboutSend.get("url"));
-            setDescription(processTask.getTaskName());
+//            setDescription(processTask.getTaskName());
             setSource("processTask");
             setSourceId(processTask.getProcessTaskId());
             setCreateTime(processTask.getCreateTime());

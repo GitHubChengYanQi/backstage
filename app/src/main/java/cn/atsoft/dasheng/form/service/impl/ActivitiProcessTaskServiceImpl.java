@@ -591,6 +591,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         result.put("description",string);
         result.put("coding",coding);
+        if (ToolUtil.isNotEmpty(processTask.getTaskName())) {
+            result.put("items",processTask.getTaskName());
+        }
         return result;
     }
 

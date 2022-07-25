@@ -16,14 +16,17 @@ import java.util.List;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-07-13
+ * @since 2022-07-25
  */
 @Data
 @ApiModel
-public class AllocationDetailParam implements Serializable, BaseValidatingParam {
+public class AllocationCartParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private Long positionId;
+
+
+    @ApiModelProperty("")
+    private Long allocationCartId;
 
     @ApiModelProperty("")
     private Long allocationDetailId;
@@ -102,6 +105,9 @@ public class AllocationDetailParam implements Serializable, BaseValidatingParam 
      */
     @ApiModelProperty("调拨目标位置仓库id")
     private Long toStorehouseId;
+
+    @ApiModelProperty("")
+    private Integer status;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

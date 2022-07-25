@@ -41,8 +41,8 @@ public class AllocationController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AllocationParam allocationParam) {
-        this.allocationService.add(allocationParam);
-        return ResponseData.success();
+        Allocation allocation = this.allocationService.add(allocationParam);
+        return ResponseData.success(allocation);
     }
 
     /**
@@ -81,11 +81,9 @@ public class AllocationController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<AllocationResult> detail(@RequestBody AllocationParam allocationParam) {
-        Allocation detail = this.allocationService.getById(allocationParam.getAllocationId());
-        AllocationResult result = new AllocationResult();
-        ToolUtil.copyProperties(detail, result);
+        AllocationResult detail = this.allocationService.detail(allocationParam.getAllocationId());
 
-        return ResponseData.success(result);
+        return ResponseData.success(detail);
     }
 
     /**
