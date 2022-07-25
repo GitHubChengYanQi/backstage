@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.entity;
 
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
@@ -72,7 +73,7 @@ public class Maintenance implements Serializable {
      * 养护临近期
      */
     @TableField("near_maintenance")
-    private Integer nearMaintenance;
+    private Date nearMaintenance;
 
     /**
      * 开始时间
@@ -173,11 +174,11 @@ public class Maintenance implements Serializable {
         this.type = type;
     }
 
-    public Integer getNearMaintenance() {
+    public Date getNearMaintenance() {
         return nearMaintenance;
     }
 
-    public void setNearMaintenance(Integer nearMaintenance) {
+    public void setNearMaintenance(Date nearMaintenance) {
         this.nearMaintenance = nearMaintenance;
     }
 

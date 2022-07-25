@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -20,6 +21,7 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -104,6 +106,56 @@ public class MaintenanceController extends BaseController {
         ToolUtil.copyProperties(detail, result);
 
         return ResponseData.success(result);
+    }
+    /**
+     * 查看详情接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-06-28
+     */
+    @RequestMapping(value = "/viewDetail", method = RequestMethod.POST)
+    @ApiOperation("查看筛选物料")
+    public ResponseData viewDetail(@RequestBody MaintenanceParam maintenanceParam) {
+        if(ToolUtil.isEmpty(maintenanceParam.getSelectParams())){
+            return ResponseData.success();
+        }
+        String jsonString = JSON.toJSONString(maintenanceParam.getSelectParams());
+        Maintenance maintenance = new Maintenance();
+        maintenance.setSelectParams(jsonString);
+        if (ToolUtil.isNotEmpty(maintenanceParam.getNearMaintenance())) {
+            maintenance.setNearMaintenance(maintenanceParam.getNearMaintenance());
+        }
+
+
+        List<StockDetails> stockDetails = this.maintenanceService.needMaintenanceByRequirement(maintenance);
+        List<StockDetails> totalList = new ArrayList<>();
+        stockDetails.parallelStream().collect(Collectors.groupingBy(StockDetails::getSkuId, Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+        List<StockDetailsResult> stockDetailsResults = BeanUtil.copyToList(totalList, StockDetailsResult.class);
+        List<Long> skuIds = new ArrayList<>();
+
+        for (StockDetailsResult stockDetailsResult : stockDetailsResults) {
+            skuIds.add(stockDetailsResult.getSkuId());
+        }
+
+        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
+
+        for (StockDetailsResult stockDetailsResult : stockDetailsResults) {
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                if (stockDetailsResult.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    stockDetailsResult.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+        }
+
+        return ResponseData.success(stockDetailsResults);
     }
     @RequestMapping(value = "/getDetails", method = RequestMethod.POST)
     @ApiOperation("详情")

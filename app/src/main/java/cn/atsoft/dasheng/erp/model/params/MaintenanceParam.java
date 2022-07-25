@@ -33,6 +33,8 @@ public class MaintenanceParam implements Serializable, BaseValidatingParam {
      * 品牌id
      */
     private String brandIds;
+    private String remark;
+    private List<Long> userIds;
 
     /**
      * 库位id
@@ -78,7 +80,7 @@ public class MaintenanceParam implements Serializable, BaseValidatingParam {
      * 养护临近期
      */
     @ApiModelProperty("养护临近期")
-    private Integer nearMaintenance;
+    private Date nearMaintenance;
 
     /**
      * 开始时间

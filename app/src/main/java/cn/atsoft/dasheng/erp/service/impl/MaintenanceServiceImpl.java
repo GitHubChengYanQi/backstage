@@ -26,9 +26,12 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -132,6 +135,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Autowired
     private StepsService stepsService;
+    @Autowired
+    private InkindService inkindService;
 
     @Override
 
@@ -181,6 +186,28 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+            if (ToolUtil.isNotEmpty(param.getUserIds())) {
+                /**
+                 * 评论
+                 */
+                RemarksParam remarksParam = new RemarksParam();
+                remarksParam.setTaskId(taskId);
+                remarksParam.setType("remark");
+                StringBuffer userIdStr = new StringBuffer();
+                for (Long userId : param.getUserIds()) {
+                    userIdStr.append(userId).append(",");
+                }
+                String userStrtoString = userIdStr.toString();
+                if (userIdStr.length() > 1) {
+                    userStrtoString = userStrtoString.substring(0, userStrtoString.length() - 1);
+                }
+                remarksParam.setUserIds(userStrtoString);
+                remarksParam.setContent(param.getRemark());
+                messageProducer.remarksServiceDo(new RemarksEntity() {{
+                    setOperationType(OperationType.ADD);
+                    setRemarksParam(remarksParam);
+                }});
+            }
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
@@ -241,21 +268,17 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         inkindIds = inkindIds.stream().distinct().collect(Collectors.toList());
 
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
-        List<MaintenanceLog> logs = skuIds.size() == 0 ? new ArrayList<>() : maintenanceLogService.query().in("sku_id", skuIds).list();
-        for (MaintenanceLog log : logs) {
-            for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
-                if (log.getSkuId().equals(maintenanceCycle.getSkuId())) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(log.getCreateTime());
-                    calendar.add(Calendar.DATE, (maintenanceCycle.getMaintenancePeriod() - param.getNearMaintenance()));
-                    String maintenance = DateUtil.format(calendar.getTime(), "yyyy-MM-dd");
-                    String now = DateUtil.format(DateUtil.date(), "yyyy-MM-dd");
-                    if (!maintenance.equals(now)) {
-                        inkindIds.remove(log.getInkindId());
+        List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
+        if (ToolUtil.isNotEmpty(param.getNearMaintenance())) {
+            for (Inkind inkind : inkinds) {
+                for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
+                    if (inkind.getSkuId().equals(maintenanceCycle.getSkuId()) && ToolUtil.isNotEmpty(inkind.getLastMaintenanceTime()) && param.getNearMaintenance().getTime() < inkind.getLastMaintenanceTime().getTime()) {
+                        inkindIds.remove(inkind.getInkindId());
                     }
                 }
             }
         }
+
 
         //根据此条件去库存查询需要养护的实物
         return inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).list();
@@ -385,7 +408,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         List<Long> bomIds = new ArrayList<>();
 
         List<Long> spuClassificationIds = new ArrayList<>();
+
         List<Long> ids = new ArrayList<>();
+
         for (MaintenanceResult maintenanceResult : param) {
             ids.add(maintenanceResult.getMaintenanceId());
             if (ToolUtil.isNotEmpty(maintenanceResult.getSelectParams())) {
@@ -644,11 +669,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         }
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
         for (UserResult userResultsById : userResultsByIds) {
-            if(userResultsById.getUserId().equals(maintenanceResult.getUserId())){
+            if (userResultsById.getUserId().equals(maintenanceResult.getUserId())) {
                 userResultsById.setAvatar(stepsService.imgUrl(userResultsById.getUserId().toString()));
                 maintenanceResult.setUserResult(userResultsById);
             }
-            if (userResultsById.getUserId().equals(maintenanceResult.getCreateUser())){
+            if (userResultsById.getUserId().equals(maintenanceResult.getCreateUser())) {
                 userResultsById.setAvatar(stepsService.imgUrl(userResultsById.getUserId().toString()));
                 maintenanceResult.setCreateUserResult(userResultsById);
             }
@@ -845,8 +870,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         for (StockDetails details : detailTotalList) {
             for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
                 if (details.getBrandId().equals(maintenanceDetail.getBrandId()) && details.getSkuId().equals(maintenanceDetail.getSkuId()) && details.getStorehousePositionsId().equals(maintenanceDetail.getStorehousePositionsId())) {
-                    if (maintenanceDetail.getDisplay() == 1 && maintenanceDetail.getNumber()!= Math.toIntExact(details.getNumber())) {
-                        if (maintenanceDetail.getNumber()<details.getNumber()){
+                    if (maintenanceDetail.getDisplay() == 1 && maintenanceDetail.getNumber() != Math.toIntExact(details.getNumber())) {
+                        if (maintenanceDetail.getNumber() < details.getNumber()) {
                             maintenanceDetail.setStatus(0);
                         }
                         maintenanceDetail.setNumber(Math.toIntExact(details.getNumber()));
