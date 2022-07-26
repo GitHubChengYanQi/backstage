@@ -666,21 +666,17 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         for (ProductionPickListsCartParam cartParam : cartParams) {
             pickListsIds.add(cartParam.getPickListsId());
         }
-        List<ProductionPickListsCart> list =pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id",pickListsIds).eq("display", 1).isNull("type").list();
+        List<ProductionPickListsCart> list =pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id",pickListsIds).eq("display", 1).ne("type","frmLoss").list();
         List<ProductionPickListsCart> updateEntity = new ArrayList<>();
         for (ProductionPickListsCartParam cartParam : cartParams) {
             for (ProductionPickListsCart pickListsCart : list) {
                 if (cartParam.getSkuId().equals(pickListsCart.getSkuId()) && cartParam.getPickListsId().equals(pickListsCart.getPickListsId()) && cartParam.getBrandId().equals(pickListsCart.getBrandId())) {
                     pickListsCart.setStatus(-1);
                     pickListsCart.setDisplay(0);
-                    if (ToolUtil.isNotEmpty(pickListsCart.getType()) && pickListsCart.getType().equals("frmLoss")) {
-                        throw new ServiceException(500, "报损物料不可退回");
-                    }
                     updateEntity.add(pickListsCart);
                 }
             }
         }
-
         this.updateBatchById(updateEntity);
     }
 
