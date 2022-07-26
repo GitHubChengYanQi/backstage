@@ -102,6 +102,12 @@ public class AllocationDetail implements Serializable {
     @TableField("to_storehouse_id")
     private Long toStorehouseId;
 
+    /**
+     * 调拨目标位置仓库id
+     */
+    @TableField("params")
+    private String params;
+
 
     public Long getAllocationDetailId() {
         return allocationDetailId;
@@ -229,6 +235,14 @@ public class AllocationDetail implements Serializable {
 
     public void setToStorehouseId(Long toStorehouseId) {
         this.toStorehouseId = toStorehouseId;
+    }
+
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
     }
 
     @Override

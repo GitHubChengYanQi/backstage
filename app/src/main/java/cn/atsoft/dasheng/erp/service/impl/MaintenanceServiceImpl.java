@@ -704,6 +704,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 if (ToolUtil.isNotEmpty(selectParam.getStorehousePositionsIds())) {
                     positionsIds.addAll(selectParam.getStorehousePositionsIds());
                 }
+                if (ToolUtil.isNotEmpty(selectParam.getSkuIds())){
+                    bomIds.add(selectParam.getSkuId());
+                }
                 if (ToolUtil.isNotEmpty(selectParam.getPartsIds())) {
                     bomIds.addAll(selectParam.getPartsIds());
                 }
@@ -742,6 +745,14 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                             if (brandResult.getBrandId().equals(brandId)) {
                                 brandResults.add(brandResult);
                             }
+                        }
+                    }
+                }
+                if (ToolUtil.isNotEmpty(selectParam.getSkuIds())){
+                    for (SkuSimpleResult skuResult : skuResults) {
+                        if (skuResult.getSkuId().equals(selectParam.getSkuId())){
+                            selectParam.setSkuResult(skuResult);
+                            break;
                         }
                     }
                 }
