@@ -24,7 +24,9 @@ public interface AllocationService extends IService<Allocation> {
      * @author Captain_Jazz
      * @Date 2022-07-13
      */
-    void add(AllocationParam param);
+    Allocation add(AllocationParam param);
+
+    void checkCart(Long allocation);
 
     void createPickListsAndInStockOrder(Long allocationId);
 
@@ -35,6 +37,10 @@ public interface AllocationService extends IService<Allocation> {
      * @Date 2022-07-13
      */
     void delete(AllocationParam param);
+
+    AllocationResult detail(Long allocationId);
+
+    void transferInStorehouse(AllocationParam param);
 
     /**
      * 更新

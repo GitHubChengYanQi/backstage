@@ -6,20 +6,11 @@ import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
-import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
-import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
-import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
-import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
-import cn.atsoft.dasheng.erp.service.AnomalyService;
-import cn.atsoft.dasheng.erp.model.result.InventoryResult;
+import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
-import cn.atsoft.dasheng.erp.service.InventoryDetailService;
-import cn.atsoft.dasheng.erp.service.InventoryService;
-import cn.atsoft.dasheng.erp.service.MaintenanceService;
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.impl.AllocationServiceImpl;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -105,6 +96,8 @@ public class taskController extends BaseController {
     private AnomalyService anomalyService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private AllocationService allocationService;
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -201,6 +194,10 @@ public class taskController extends BaseController {
                 case "Stocktaking":
                     InventoryResult inventoryResult = inventoryService.detail(taskResult.getFormId());
                     taskResult.setReceipts(inventoryResult);
+                    break;
+                case "ALLOCATION":
+                    AllocationResult allocationResult = allocationService.detail(taskResult.getFormId());
+                    taskResult.setReceipts(allocationResult);
                     break;
 
             }

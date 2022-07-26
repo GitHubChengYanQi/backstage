@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
-import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
-import cn.atsoft.dasheng.action.Enum.InstockErrorActionEnum;
-import cn.atsoft.dasheng.action.Enum.QualityActionEnum;
-import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
+import cn.atsoft.dasheng.action.Enum.*;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -128,7 +125,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private InventoryService inventoryService;
     @Autowired
     private AllocationService allocationService;
-
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -1599,7 +1595,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "ALLOCATION":
                 for (ActivitiProcessLog processLog : audit) {
                     if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
-                        allocationService.createPickListsAndInStockOrder(task.getFormId());
+                        List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+                        DocumentsAction action = documentsActionService.query().eq("action", MaintenanceActionEnum.maintenanceing.name()).eq("display", 1).one();
+                        for (ActionStatus actionStatus : actionStatuses) {
+                            if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)){
+                                allocationService.createPickListsAndInStockOrder(task.getFormId());
+                                continue;
+                            }
+                        }
+
                     }
                 }
                 break;

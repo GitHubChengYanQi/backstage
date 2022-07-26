@@ -454,6 +454,16 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             if (ToolUtil.isNotEmpty(datum.getType())) {
                 anomalyIds.add(datum.getFormId());
             }
+            if (ToolUtil.isNotEmpty(datum.getPositionNums())) {
+                for (PositionNum positionNum : datum.getPositionNums()) {
+                    if (ToolUtil.isNotEmpty(positionNum.getPositionId())) {
+                        positionIds.add(positionNum.getPositionId());
+                    }
+                    if (ToolUtil.isNotEmpty(positionNum.getToPositionId())) {
+                        positionIds.add(positionNum.getToPositionId());
+                    }
+                }
+            }
         }
 
 
@@ -476,9 +486,13 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 List<StorehousePositionsResult> positionsResultList = new ArrayList<>();
                 for (PositionNum positionNum : datum.getPositionNums()) {
                     for (StorehousePositionsResult position : positionsResults) {
-                        if (positionNum.getPositionId().equals(position.getStorehousePositionsId())) {
+                        if (ToolUtil.isNotEmpty(positionNum.getPositionId()) && positionNum.getPositionId().equals(position.getStorehousePositionsId())) {
                             position.setNumber(positionNum.getNum());
                             positionsResultList.add(position);
+                            positionNum.setPositionsResult(position);
+                        }
+                        if(ToolUtil.isNotEmpty(positionNum.getToPositionId()) && positionNum.getToPositionId().equals(position.getStorehousePositionsId())){
+                            positionNum.setToPositionsResult(position);
                         }
 
                     }

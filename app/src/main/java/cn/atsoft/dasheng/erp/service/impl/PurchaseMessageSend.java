@@ -28,8 +28,8 @@ public class PurchaseMessageSend implements AuditMessageSend {
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setFunction(MarkDownTemplateTypeEnum.action);
             setType(1);
-            setItems("采购审批完成");
-            setDescription(processTask.getTaskName());
+//            setItems("采购审批完成");
+//            setDescription(processTask.getTaskName());
             setUrl(url);
             setUserIds(users);
             setSource("processTask");

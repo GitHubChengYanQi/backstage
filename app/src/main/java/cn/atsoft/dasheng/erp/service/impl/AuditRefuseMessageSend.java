@@ -40,7 +40,7 @@ public class AuditRefuseMessageSend implements AuditMessageSend {
             setType(1);
             setFunction(MarkDownTemplateTypeEnum.refuse);
             setUrl(url);
-            setDescription(createName + "创建的任务" + qualityTask.getCoding());
+//            setDescription(createName + "创建的任务" + qualityTask.getCoding());
             setSource("processTask");
             setSourceId(taskId);
             setTaskId(taskId);

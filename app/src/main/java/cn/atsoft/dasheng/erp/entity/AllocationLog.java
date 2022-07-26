@@ -10,25 +10,33 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 调拨子表
+ * 
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-07-13
+ * @since 2022-07-25
  */
-@TableName("daoxin_erp_allocation_detail")
-public class AllocationDetail implements Serializable {
+@TableName("daoxin_erp_allocation_log")
+public class AllocationLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "allocation_detail_id", type = IdType.ID_WORKER)
-    private Long allocationDetailId;
+    /**
+     * 调拨logid
+     */
+      @TableId(value = "allocation_log_id", type = IdType.ID_WORKER)
+    private Long allocationLogId;
 
     /**
      * 调拨id
      */
     @TableField("allocation_id")
     private Long allocationId;
+
+    @TableField("allocation_detail_id")
+    private Long allocationDetailId;
+    @TableField("inkind_id")
+    private Long inKindId;
 
     @TableField("sku_id")
     private Long skuId;
@@ -50,9 +58,6 @@ public class AllocationDetail implements Serializable {
 
     @TableField("brand_id")
     private Long brandId;
-
-    @TableField("status")
-    private Integer status;
 
     /**
      * 创建者
@@ -103,20 +108,12 @@ public class AllocationDetail implements Serializable {
     private Long toStorehouseId;
 
 
-    public Long getAllocationDetailId() {
-        return allocationDetailId;
+    public Long getAllocationLogId() {
+        return allocationLogId;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public void setAllocationDetailId(Long allocationDetailId) {
-        this.allocationDetailId = allocationDetailId;
+    public void setAllocationLogId(Long allocationLogId) {
+        this.allocationLogId = allocationLogId;
     }
 
     public Long getAllocationId() {
@@ -125,6 +122,14 @@ public class AllocationDetail implements Serializable {
 
     public void setAllocationId(Long allocationId) {
         this.allocationId = allocationId;
+    }
+
+    public Long getAllocationDetailId() {
+        return allocationDetailId;
+    }
+
+    public void setAllocationDetailId(Long allocationDetailId) {
+        this.allocationDetailId = allocationDetailId;
     }
 
     public Long getSkuId() {
@@ -231,11 +236,20 @@ public class AllocationDetail implements Serializable {
         this.toStorehouseId = toStorehouseId;
     }
 
+    public Long getInKindId() {
+        return inKindId;
+    }
+
+    public void setInKindId(Long inKindId) {
+        this.inKindId = inKindId;
+    }
+
     @Override
     public String toString() {
-        return "AllocationDetail{" +
-        "allocationDetailId=" + allocationDetailId +
+        return "AllocationLog{" +
+        "allocationLogId=" + allocationLogId +
         ", allocationId=" + allocationId +
+        ", allocationDetailId=" + allocationDetailId +
         ", skuId=" + skuId +
         ", number=" + number +
         ", storehousePositionsId=" + storehousePositionsId +

@@ -9,6 +9,7 @@
         <result column="allocation_name" property="allocationName" />
         <result column="storehouse_id" property="storehouseId" />
         <result column="user_id" property="userId" />
+        <result column="allocation_type" property="allocationType" />
         <result column="reason" property="reason" />
         <result column="remark" property="remark" />
         <result column="note" property="note" />
@@ -27,7 +28,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        allocation_id AS "allocationId", coding AS "coding", allocation_name AS "allocationName", storehouse_id AS "storehouseId", user_id AS "userId", reason AS "reason", remark AS "remark", note AS "note", enclosure AS "enclosure", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", theme AS "theme", origin AS "origin", type AS "type"
+        allocation_id AS "allocationId", allocation_type AS "allocationType",coding AS "coding", allocation_name AS "allocationName", storehouse_id AS "storehouseId", user_id AS "userId", reason AS "reason", remark AS "remark", note AS "note", enclosure AS "enclosure", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", theme AS "theme", origin AS "origin", type AS "type"
     </sql>
 
 

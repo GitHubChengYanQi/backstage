@@ -36,7 +36,7 @@ public class ProcessTaskEndSend {
             setFunction(MarkDownTemplateTypeEnum.done);
             setItems("流程已结束");
             setUrl(url);
-            setDescription(processTask.getTaskName());
+//            setDescription(processTask.getTaskName());
             setUserIds(users);
             setSource("processTask");
             setSourceId(taskId);

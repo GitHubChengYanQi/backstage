@@ -11,6 +11,7 @@
         <result column="storehouse_positions_id" property="storehousePositionsId" />
         <result column="storehouse_id" property="storehouseId" />
         <result column="brand_id" property="brandId" />
+        <result column="status" property="status" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -23,7 +24,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        allocation_detail_id AS "allocationDetailId", allocation_id AS "allocationId", sku_id AS "skuId", number AS "number", storehouse_positions_id AS "storehousePositionsId", storehouse_id AS "storehouseId", brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", to_storehouse_positions_id AS "toStorehousePositionsId", to_storehouse_id AS "toStorehouseId"
+        allocation_detail_id AS "allocationDetailId", status AS "status",allocation_id AS "allocationId", sku_id AS "skuId", number AS "number", storehouse_positions_id AS "storehousePositionsId", storehouse_id AS "storehouseId", brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", to_storehouse_positions_id AS "toStorehousePositionsId", to_storehouse_id AS "toStorehouseId"
     </sql>
 
 

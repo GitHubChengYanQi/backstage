@@ -20,7 +20,9 @@ import java.util.List;
 public class AllocationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    List<AllocationDetailResult> detailResults;
+    List<AllocationCartResult> allocationCartResults;
+    private String statusName;
 
     /**
      * 调拨id
@@ -57,6 +59,8 @@ public class AllocationResult implements Serializable {
 
     @ApiModelProperty("")
     private String note;
+
+    private Integer allocationType;
 
     /**
      * 附件
@@ -130,7 +134,7 @@ public class AllocationResult implements Serializable {
      * 库间调拨  仓库调拨
      */
     @ApiModelProperty("库间调拨  仓库调拨")
-    private Integer type;
+    private String type;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

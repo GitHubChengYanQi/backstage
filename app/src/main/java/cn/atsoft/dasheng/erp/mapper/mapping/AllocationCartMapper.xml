@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.AllocationCartMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.AllocationCart">
+        <id column="allocation_cart_id" property="allocationCartId" />
+        <result column="allocation_detail_id" property="allocationDetailId" />
+        <result column="allocation_id" property="allocationId" />
+        <result column="sku_id" property="skuId" />
+        <result column="number" property="number" />
+        <result column="storehouse_positions_id" property="storehousePositionsId" />
+        <result column="storehouse_id" property="storehouseId" />
+        <result column="brand_id" property="brandId" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+        <result column="to_storehouse_positions_id" property="toStorehousePositionsId" />
+        <result column="to_storehouse_id" property="toStorehouseId" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        allocation_cart_id AS "allocationCartId", allocation_detail_id AS "allocationDetailId", allocation_id AS "allocationId", sku_id AS "skuId", number AS "number", storehouse_positions_id AS "storehousePositionsId", storehouse_id AS "storehouseId", brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", to_storehouse_positions_id AS "toStorehousePositionsId", to_storehouse_id AS "toStorehouseId", status AS "status"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.AllocationCartResult" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationCartParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_allocation_cart where 1 = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationCartParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_allocation_cart where 1 = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.AllocationCartResult" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationCartParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_allocation_cart where 1 = 1
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationCartParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_allocation_cart where 1 = 1
+    </select>
+
+</mapper>

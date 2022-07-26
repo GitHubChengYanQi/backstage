@@ -1,20 +1,20 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.AllocationDetail;
-import cn.atsoft.dasheng.erp.mapper.AllocationDetailMapper;
-import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
+import cn.atsoft.dasheng.erp.entity.AllocationCart;
+import cn.atsoft.dasheng.erp.mapper.AllocationCartMapper;
+import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
+import cn.atsoft.dasheng.erp.model.result.AllocationCartResult;
 import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import  cn.atsoft.dasheng.erp.service.AllocationDetailService;
+import  cn.atsoft.dasheng.erp.service.AllocationCartService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -23,7 +23,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -36,73 +35,72 @@ import java.util.List;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-07-13
+ * @since 2022-07-25
  */
 @Service
-public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMapper, AllocationDetail> implements AllocationDetailService {
+public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper, AllocationCart> implements AllocationCartService {
     @Autowired
     private SkuService skuService;
 
     @Autowired
     private BrandService brandService;
-    
+
     @Autowired
     private StorehousePositionsService storehousePositionsService;
-
     @Autowired
     private StorehouseService storehouseService;
 
-
     @Override
-    public void add(AllocationDetailParam param){
-        AllocationDetail entity = getEntity(param);
+    public void add(AllocationCartParam param){
+        AllocationCart entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(AllocationDetailParam param){
+    public void delete(AllocationCartParam param){
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(AllocationDetailParam param){
-        AllocationDetail oldEntity = getOldEntity(param);
-        AllocationDetail newEntity = getEntity(param);
+    public void update(AllocationCartParam param){
+        AllocationCart oldEntity = getOldEntity(param);
+        AllocationCart newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
 
     @Override
-    public AllocationDetailResult findBySpec(AllocationDetailParam param){
+    public AllocationCartResult findBySpec(AllocationCartParam param){
         return null;
     }
 
     @Override
-    public List<AllocationDetailResult> findListBySpec(AllocationDetailParam param){
+    public List<AllocationCartResult> findListBySpec(AllocationCartParam param){
         return null;
     }
 
     @Override
-    public PageInfo<AllocationDetailResult> findPageBySpec(AllocationDetailParam param){
-        Page<AllocationDetailResult> pageContext = getPageContext();
-        IPage<AllocationDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+    public PageInfo<AllocationCartResult> findPageBySpec(AllocationCartParam param){
+        Page<AllocationCartResult> pageContext = getPageContext();
+        IPage<AllocationCartResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
+
     @Override
-    public List<AllocationDetailResult> resultsByAllocationId(Long allocationId){
-        List<AllocationDetail> allocationDetails = this.query().eq("allocation_id", allocationId).eq("display", 1).list();
-        List<AllocationDetailResult> results = BeanUtil.copyToList(allocationDetails, AllocationDetailResult.class);
+    public List<AllocationCartResult> resultsByAllocationId(Long allocationId){
+        List<AllocationCart> allocationCarts = this.query().eq("allocation_id", allocationId).eq("display", 1).list();
+        List<AllocationCartResult> results = BeanUtil.copyToList(allocationCarts, AllocationCartResult.class);
         this.format(results);
         return results;
     }
 
-    public void format(List<AllocationDetailResult> results){
+    public void format(List<AllocationCartResult> results){
 
         List<Long> skuIds = new ArrayList<>();
         List<Long> storehouseId = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
-        for (AllocationDetailResult result : results) {
+        for (AllocationCartResult result : results) {
             skuIds.add(result.getSkuId());
             brandIds.add(result.getBrandId());
             if (ToolUtil.isNotEmpty(result.getStorehousePositionsId())) {
@@ -125,7 +123,7 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<StorehousePositionsResult> positionsResults = positionIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehousePositionsService.listByIds(positionIds),StorehousePositionsResult.class) ;
-        for (AllocationDetailResult result : results) {
+        for (AllocationCartResult result : results) {
             for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
                 if(result.getSkuId().equals(skuSimpleResult.getSkuId())){
                     result.setSkuResult(skuSimpleResult);
@@ -155,20 +153,21 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
             }
         }
     }
-    private Serializable getKey(AllocationDetailParam param){
-        return param.getAllocationDetailId();
+
+    private Serializable getKey(AllocationCartParam param){
+        return param.getAllocationCartId();
     }
 
-    private Page<AllocationDetailResult> getPageContext() {
+    private Page<AllocationCartResult> getPageContext() {
         return PageFactory.defaultPage();
     }
 
-    private AllocationDetail getOldEntity(AllocationDetailParam param) {
+    private AllocationCart getOldEntity(AllocationCartParam param) {
         return this.getById(getKey(param));
     }
 
-    private AllocationDetail getEntity(AllocationDetailParam param) {
-        AllocationDetail entity = new AllocationDetail();
+    private AllocationCart getEntity(AllocationCartParam param) {
+        AllocationCart entity = new AllocationCart();
         ToolUtil.copyProperties(param, entity);
         return entity;
     }

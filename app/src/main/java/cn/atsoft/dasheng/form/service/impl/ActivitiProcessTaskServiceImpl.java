@@ -13,11 +13,7 @@ import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
-import cn.atsoft.dasheng.erp.service.AnomalyService;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.MaintenanceService;
-import cn.atsoft.dasheng.erp.service.InventoryService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -87,6 +83,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private ActivitiProcessService activitiProcessService;
     @Autowired
     private GetOrigin getOrigin;
+    @Autowired
+    private AllocationService allocationService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -354,6 +352,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> inventoryIds = new ArrayList<>();
         List<Long> anomalyIds = new ArrayList<>();
         List<Long> maintenanceIds = new ArrayList<>();
+        List<Long> allocationIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
@@ -373,6 +372,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     break;
                 case "MAINTENANCE":
                     maintenanceIds.add(datum.getFormId());
+                    break;
+                case "ALLOCATION":
+                    allocationIds.add(datum.getFormId());
                     break;
 
             }
@@ -409,6 +411,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<InventoryResult> inventoryResults = BeanUtil.copyToList(inventories, InventoryResult.class, new CopyOptions());
         inventoryService.format(inventoryResults);
 
+        List<AllocationResult> allocationResults =allocationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(allocationService.listByIds(allocationIds), AllocationResult.class);
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
 
@@ -469,17 +472,25 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     datum.setReceipts(maintenanceResult);
                 }
             }
+            for (AllocationResult allocationResult:allocationResults) {
+                if (datum.getType().equals("ALLOCATION") && datum.getFormId().equals(allocationResult.getAllocationId())) {
+                    String statusName = statusMap.get(allocationResult.getStatus());
+                    allocationResult.setStatusName(statusName);
+                    datum.setReceipts(allocationResult);
+                }
+            }
         }
 
     }
+
     @Override
-    public Map<String,String> getSendData(Long taskId) {
+    public Map<String, String> getSendData(Long taskId) {
         ActivitiProcessTask processTask = this.getById(taskId);
         Long processId = processTask.getProcessId();
         ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
         String modelName = ProcessType.getNameByEnum(activitiProcess.getType());
-        Map<String,String> result = new HashMap<>();
-        result.put("function",modelName);
+        Map<String, String> result = new HashMap<>();
+        result.put("function", modelName);
         String coding = "";
         List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
         try {
@@ -519,9 +530,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     InstockOrderResult instockOrderResult = BeanUtil.copyProperties(instockOrderService.getById(processTask.getFormId()), InstockOrderResult.class);
                     instockOrderService.formatDetail(instockOrderResult);
                     for (InstockListResult instockListResult : instockOrderResult.getInstockListResults()) {
-                        skuSimpleResults.add(BeanUtil.copyProperties(instockListResult.getSkuResult(),SkuSimpleResult.class));
+                        skuSimpleResults.add(BeanUtil.copyProperties(instockListResult.getSkuResult(), SkuSimpleResult.class));
                     }
-                    coding  = instockOrderResult.getCoding();
+                    coding = instockOrderResult.getCoding();
                     break;
                 case "ERROR":
                     AnomalyOrderResult orderResult = anomalyOrderService.detail(processTask.getFormId());
@@ -539,21 +550,21 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     for (ProductionPickListsDetailResult detailResult : pickListsRestult.getDetailResults()) {
                         skuSimpleResults.add(detailResult.getSkuResult());
                     }
-                    coding  = pickListsRestult.getCoding();
+                    coding = pickListsRestult.getCoding();
                     break;
                 case "MAINTENANCE":
                     MaintenanceResult maintenanceResult = maintenanceService.detail(processTask.getFormId());
                     for (MaintenanceDetailResult maintenanceDetailResult : maintenanceResult.getMaintenanceDetailResults()) {
                         skuSimpleResults.add(maintenanceDetailResult.getSkuResult());
                     }
-                    coding  = maintenanceResult.getCoding();
+                    coding = maintenanceResult.getCoding();
                     break;
                 case "Stocktaking":
                     InventoryResult inventoryResult = inventoryService.detail(processTask.getFormId());
                     for (InventoryDetailResult detailResult : inventoryResult.getDetailResults()) {
                         skuSimpleResults.add(BeanUtil.copyProperties(detailResult.getSkuResult(), SkuSimpleResult.class));
                     }
-                    coding  = inventoryResult.getCoding();
+                    coding = inventoryResult.getCoding();
 
                     break;
 
@@ -575,22 +586,24 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 stringBuffer.append(skuSimpleResult.getSpecifications());
             }
             stringBuffer.append(",");
-            if (stringBuffer.length()>28){
+            if (stringBuffer.length() > 28) {
                 break;
             }
         }
         String string = stringBuffer.toString();
-        if (string.length()>0) {
-            string = string.substring(0,string.length()-1);
+        if (string.length() > 0) {
+            string = string.substring(0, string.length() - 1);
         }
-        if(string.length()>27){
-            string= string+".....";
+        if (string.length() > 27) {
+            string = string + ".....";
         }
 
 
-
-        result.put("description",string);
-        result.put("coding",coding);
+        result.put("description", string);
+        result.put("coding", coding);
+        if (ToolUtil.isNotEmpty(processTask.getTaskName())) {
+            result.put("items", processTask.getTaskName());
+        }
         return result;
     }
 
