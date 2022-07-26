@@ -86,6 +86,8 @@ public interface StockDetailsService extends IService<StockDetails> {
 
     void splitInKind(Long inKind);
 
+    List<StockDetailsResult> inkindList(Long skuId);
+
     /**
      * 返回当前仓库下所有数据
      *

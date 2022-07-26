@@ -57,7 +57,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
     Object selectBySku(Long skuId);
 
-    List<BrandResult> selectByBrand(Long skuId, Long brandId);
+    List<BrandResult> selectByBrand(Long skuId, Long brandId, Long storehouseId);
 
     Integer getPositionNum(List<Long> skuIds);
 
@@ -67,6 +67,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
     List<PositionLoop> treeViewBySku(List<Long> skuIds);
 
     List<PositionLoop> treeViewByName(String name, Long houseId);
+
+    void positionFormat(List<PositionLoop> positionLoops, Long skuId);
 
     List<Long> getLoopPositionIds(Long positionId);
 

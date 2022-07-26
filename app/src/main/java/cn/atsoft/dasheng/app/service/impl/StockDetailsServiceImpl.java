@@ -260,6 +260,17 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         inkindService.updateById(inkindResult);
     }
 
+    @Override
+    public List<StockDetailsResult> inkindList(Long skuId) {
+        List<StockDetails> stockDetails = this.query().eq("sku_id", skuId).eq("display", 1).list();
+        if (ToolUtil.isEmpty(stockDetails)) {
+            return new ArrayList<>();
+        }
+        List<StockDetailsResult> detailsResults = BeanUtil.copyToList(stockDetails, StockDetailsResult.class);
+        format(detailsResults);
+        return detailsResults;
+    }
+
 
     @Override
     public List<StockDetailsResult> getStockDetails(Long stockId) {
@@ -525,14 +536,14 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
          * 获取购物车中实物
          */
         List<Long> cartInkindIds = pickListsCartService.getCartInkindIds(param);
-        List<Long> inkindIds =new ArrayList<>();
+        List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
                 inkindIds.add(productionPickListsCartParam.getInkindId());
             }
         }
-        if (inkindIds.size() > 0){
-            list.addAll(this.query().in("inkind_id",inkindIds).eq("display",1).list());
+        if (inkindIds.size() > 0) {
+            list.addAll(this.query().in("inkind_id", inkindIds).eq("display", 1).list());
         }
         for (ProductionPickListsCartParam cartParam : param.getProductionPickListsCartParams()) {
             if (ToolUtil.isEmpty(cartParam.getInkindId())) {
