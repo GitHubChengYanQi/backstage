@@ -133,6 +133,19 @@ public class StockDetailsController extends BaseController {
         List<Long> longs = this.stockDetailsService.backSkuByStoreHouse(id);
         return ResponseData.success(longs);
     }
+    /**
+     * 根据skuId返回仓库
+     *
+     * @author
+     * @Date 2021-07-15
+     */
+    @RequestMapping(value = "/getStockNumberBySkuId", method = RequestMethod.GET)
+    @ApiOperation("编辑")
+    public ResponseData getStockNumberBySkuId(@RequestParam Long skuId) {
+
+        List<Map<String, Object>> stockNumberBySkuId = this.stockDetailsService.getStockNumberBySkuId(skuId);
+        return ResponseData.success(stockNumberBySkuId);
+    }
  /**
      * 返回sku
      *
