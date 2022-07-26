@@ -34,6 +34,10 @@ public class ShopCart implements Serializable {
     @TableField("storehouse_positions_id")
     private String storehousePositionsId;
 
+
+    @TableField("allocation_json")
+    private String allocationJson;
+
     @TableField("form_id")
     private Long formId;
 
@@ -227,6 +231,14 @@ public class ShopCart implements Serializable {
 
     public void setStorehouseId(Long storehouseId) {
         this.storehouseId = storehouseId;
+    }
+
+    public String getAllocationJson() {
+        return allocationJson;
+    }
+
+    public void setAllocationJson(String allocationJson) {
+        this.allocationJson = allocationJson;
     }
 
     @Override

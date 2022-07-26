@@ -34,6 +34,8 @@ public class ShopCartParam implements Serializable, BaseValidatingParam {
 
     private List<PositionNum> positionNums;
 
+    private String allocationJson;
+
     private Long storehouseId;
 
     private List<String> types;

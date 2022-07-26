@@ -114,13 +114,15 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
         Allocation entity = getEntity(param);
         this.save(entity);
-        if (ToolUtil.isNotEmpty(param.getDetailParams())) {
-            List<AllocationDetail> allocationDetails = BeanUtil.copyToList(param.getDetailParams(), AllocationDetail.class);
-            for (AllocationDetail allocationDetail : allocationDetails) {
-                allocationDetail.setAllocationId(entity.getAllocationId());
-            }
-            allocationDetailService.saveBatch(allocationDetails);
-        }
+        param.setAllocationId(entity.getAllocationId());
+        allocationDetailService.add(param);
+//        if (ToolUtil.isNotEmpty(param.getDetailParams())) {
+//            List<AllocationDetail> allocationDetails = BeanUtil.copyToList(param.getDetailParams(), AllocationDetail.class);
+//            for (AllocationDetail allocationDetail : allocationDetails) {
+//                allocationDetail.setAllocationId(entity.getAllocationId());
+//            }
+//            allocationDetailService.saveBatch(allocationDetails);
+//        }
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "ALLOCATION").eq("status", 99).eq("module", "allocation").one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             activitiProcessTaskService.checkStartUser(activitiProcess.getProcessId());

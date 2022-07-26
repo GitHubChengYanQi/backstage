@@ -657,7 +657,11 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Override
     public void deleteBatchByIds(List<ProductionPickListsCartParam> cartParams) {
-        List<ProductionPickListsCart> list = this.query().eq("display", 1).list();
+        List<Long> pickListsIds = new ArrayList<>();
+        for (ProductionPickListsCartParam cartParam : cartParams) {
+            pickListsIds.add(cartParam.getPickListsId());
+        }
+        List<ProductionPickListsCart> list =pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id",pickListsIds).eq("display", 1).isNull("type").list();
         List<ProductionPickListsCart> updateEntity = new ArrayList<>();
         for (ProductionPickListsCartParam cartParam : cartParams) {
             for (ProductionPickListsCart pickListsCart : list) {

@@ -32,6 +32,8 @@ public class AllocationDetailResult implements Serializable {
     @ApiModelProperty("")
     private Long allocationDetailId;
 
+    private String params;
+
     /**
      * 调拨id
      */

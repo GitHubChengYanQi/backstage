@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.BrandService;
@@ -11,6 +10,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AllocationDetail;
 import cn.atsoft.dasheng.erp.mapper.AllocationDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
+import cn.atsoft.dasheng.erp.model.params.AllocationParam;
+import cn.atsoft.dasheng.erp.model.request.AllocationDetailParamJson;
 import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -18,12 +19,13 @@ import  cn.atsoft.dasheng.erp.service.AllocationDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -56,6 +58,19 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
     @Override
     public void add(AllocationDetailParam param){
         AllocationDetail entity = getEntity(param);
+        this.save(entity);
+    }
+    @Override
+    public void add(AllocationParam param){
+        if (ToolUtil.isEmpty(param.getJsonParam())) {
+            throw  new ServiceException(500,"请选择所需物料及库位后提交");
+        }
+
+        String jsonString = JSON.toJSONString(param.getJsonParam());
+
+        AllocationDetail entity = new AllocationDetail();
+        entity.setAllocationId(param.getAllocationId());
+        entity.setParams(jsonString);
         this.save(entity);
     }
 
@@ -103,6 +118,13 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
         List<Long> brandIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
         for (AllocationDetailResult result : results) {
+            if (ToolUtil.isNotEmpty(result.getParams())) {
+                AllocationDetailParamJson allocationDetailParamJson = JSON.parseObject(result.getParams(), AllocationDetailParamJson.class);
+                for (AllocationDetailParamJson.SkuAndNumber skuAndNumber : allocationDetailParamJson.getSkuAndNumbers()) {
+
+                }
+            }
+
             skuIds.add(result.getSkuId());
             brandIds.add(result.getBrandId());
             if (ToolUtil.isNotEmpty(result.getStorehousePositionsId())) {
