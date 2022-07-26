@@ -43,6 +43,8 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -57,6 +59,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.bouncycastle.tsp.TSPUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
@@ -138,6 +141,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private OrCodeService orCodeService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private ProductionPickListsCartService listsCartService;
 
     @Override
     @Transactional
@@ -257,6 +262,28 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             if (ToolUtil.isNotEmpty(inventoryResult.getMode()) && inventoryResult.getMode().equals("staticState")) {   //如果 有静态  抛出异常 不可操作
                 throw new ServiceException(500, "仓库正在盘点中，盘点结束后可继续执行任务");
             }
+        }
+    }
+
+    /**
+     * 静态开始时间  退回所有备料购物车
+     */
+    @Scheduled(cron = "0 */15 * * * ?")
+    public void darkDiskUpdateCart() {
+        System.err.println("定时任务------------------------》" + new DateTime());
+        DateTime dateTime = new DateTime();
+        Integer count = this.query().eq("method", "DarkDisk")
+                .eq("begin_time", dateTime)
+                .eq("display", 1)
+                .count();
+        if (count > 0) {
+            QueryWrapper<ProductionPickListsCart> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("display", 1);
+            queryWrapper.ne("type", "frmLoss");
+            queryWrapper.eq("status", 0);
+            ProductionPickListsCart pickListsCart = new ProductionPickListsCart();
+            pickListsCart.setDisplay(0);
+            listsCartService.update(pickListsCart, queryWrapper);
         }
     }
 

@@ -447,7 +447,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         param.setUserId(LoginContextHolder.getContext().getUserId());
 
         List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
-        Map<String, Long> inkindMap = new HashMap<>();
+
         for (AnomalyResult anomalyResult : anomalyResults) {
 
             /**
@@ -463,6 +463,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
 
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
+                stockDetailsService.splitInKind(detail.getInkindId());   //拆分 库存中的实物
                 if (detail.getStauts() == 2) {  //报损 创建出库单
                     ProductionPickListsDetailParam detailParam = new ProductionPickListsDetailParam();
                     detailParam.setBrandId(anomalyResult.getBrandId());
@@ -470,8 +471,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     detailParam.setNumber(Math.toIntExact(detail.getNumber()));
                     detailParam.setStorehousePositionsId(anomalyResult.getPositionId());
                     detailParam.setReceivedNumber(0);
+                    detailParam.setInkindId(detail.getInkindId());
                     pickListsDetailParams.add(detailParam);
-                    inkindMap.put("sku_" + anomalyResult.getSkuId() + "brand_" + anomalyResult.getBrandId() + "position_" + anomalyResult.getPositionId(), detail.getInkindId());
                 }
             }
             param.setPickListsDetailParams(pickListsDetailParams);
@@ -490,25 +491,20 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
             for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
                 ProductionPickListsCartParam cartParam = new ProductionPickListsCartParam();
-
                 cartParam.setSkuId(pickListsDetail.getSkuId());
                 cartParam.setBrandId(pickListsDetail.getBrandId());
                 cartParam.setPickListsId(pickListsDetail.getPickListsId());
                 cartParam.setPickListsDetailId(pickListsDetail.getPickListsDetailId());
                 cartParam.setNumber(pickListsDetail.getNumber());
+                cartParam.setType("frmLoss");
+                cartParam.setInkindId(pickListsDetail.getInkindId());
                 cartParam.setStorehousePositionsId(pickListsDetail.getStorehousePositionsId());
-
                 StorehousePositions positions = positionsService.getById(pickListsDetail.getStorehousePositionsId());
                 cartParam.setStorehouseId(positions.getStorehouseId());
                 cartParams.add(cartParam);
             }
 
 
-            for (ProductionPickListsCartParam cartParam : cartParams) {
-                Long inkindId = inkindMap.get("sku_" + cartParam.getSkuId() + "brand_" + cartParam.getBrandId() + "position_" + cartParam.getStorehousePositionsId());
-                cartParam.setType("frmLoss");
-//                cartParam.setInkindId(inkindId);    //TODO
-            }
             List<StockDetails> stockDetails = stockDetailsService.fundStockDetailByCart(new ProductionPickListsCartParam() {{
                 setProductionPickListsCartParams(cartParams);
             }});

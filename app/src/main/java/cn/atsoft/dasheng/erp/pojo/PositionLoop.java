@@ -10,6 +10,8 @@ public class PositionLoop {
     private String title;
     private Long pid;
     private Long storeHouseId;
+    private Long skuId;
+    private Long num;
 
     private List<PositionLoop> loops;
 }

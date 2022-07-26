@@ -328,6 +328,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 //            updateInventoryStatus(param, -1);   //修改盘点状态
         }
         if (t) {   //添加异常信息
+            List<Inkind> inkinds = new ArrayList<>();
             for (AnomalyDetailParam detailParam : param.getDetailParams()) {
                 AnomalyDetail detail = new AnomalyDetail();
                 ToolUtil.copyProperties(detailParam, detail);
@@ -347,7 +348,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 anomalyBind.setAnomalyId(param.getAnomalyId());
                 anomalyBindService.save(anomalyBind);
 
+                Inkind inkind = new Inkind();
+                inkind.setInkindId(detailParam.getInkindId());
+                inkind.setNumber(detailParam.getNumber());
+                inkinds.add(inkind);
             }
+            inkindService.updateBatchById(inkinds);
         }
         return t;
     }

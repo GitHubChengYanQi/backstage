@@ -437,7 +437,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * @return
      */
     @Override
-    public List<BrandResult> selectByBrand(Long skuId, Long brandId) {
+    public List<BrandResult> selectByBrand(Long skuId, Long brandId, Long storehouseId) {
         List<ProductionPickListsCart> list = cartService.query().eq("status", 0).or().eq("status", 2).list();
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : list) {
@@ -451,10 +451,10 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         if (ToolUtil.isNotEmpty(brandId)) {
             stockDetailsQueryWrapper.eq("brand_id", brandId);
         }
+        if (ToolUtil.isNotEmpty(storehouseId)) {
+            stockDetailsQueryWrapper.eq("storehouse_id", storehouseId);
+        }
 
-//        if (inkindIds.size()>0) {
-//            stockDetailsQueryWrapper.notIn("inkind_id", inkindIds);
-//        }
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);
 
@@ -772,6 +772,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             loop.setPid(positionsResult.getPid());
             allPositionLoop.add(loop);
         }
+
         //需要的下级库位
         List<PositionLoop> childs = new ArrayList<>();
         for (Long positionId : positionIds) {
@@ -781,8 +782,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                     break;
                 }
             }
-
         }
+
         for (PositionLoop child : childs) {
             loop(child, allPositionLoop);
         }
@@ -811,6 +812,31 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
     }
 
+    @Override
+    public void positionFormat(List<PositionLoop> positionLoops, Long skuId) {
+        for (PositionLoop positionLoop : positionLoops) {
+            if (ToolUtil.isNotEmpty(positionLoop.getLoops())) {
+                positionFormat(positionLoop.getLoops(), skuId);
+            } else {
+                loopFormat(positionLoop, skuId);   //最下级
+            }
+        }
+    }
+
+    private void loopFormat(PositionLoop positionLoop, Long skuId) {
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
+        queryWrapper.eq("sku_id", skuId);
+        queryWrapper.eq("storehouse_positions_id", positionLoop.getKey());
+        queryWrapper.select("sum(number) as num ");
+        queryWrapper.groupBy("sku_id", "storehouse_positions_id");
+        StockDetails stockDetails = stockDetailsService.getOne(queryWrapper);
+
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+            positionLoop.setSkuId(skuId);
+            positionLoop.setNum(stockDetails.getNum());
+        }
+    }
 
     /**
      * 通过库位查询skuId
@@ -846,7 +872,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         for (StorehousePositions storehousePositions : positions) {
             if (storehousePositions.getPid().equals(position.getStorehousePositionsId())) {
-
                 positionIds.addAll(loopChild(storehousePositions, positions));
             }
         }

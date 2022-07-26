@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.production.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,7 +27,7 @@ public class ProductionPickListsDetail implements Serializable {
     /**
      * 子表id
      */
-      @TableId(value = "pick_lists_detail_id", type = IdType.ID_WORKER)
+    @TableId(value = "pick_lists_detail_id", type = IdType.ID_WORKER)
     private Long pickListsDetailId;
 
 
@@ -32,6 +35,9 @@ public class ProductionPickListsDetail implements Serializable {
     private Integer status;
     @TableField("received_number")
     private Integer receivedNumber;
+
+    @TableField("inkind_id")
+    private Long inkindId;
 
     /**
      * 主表id
@@ -42,7 +48,6 @@ public class ProductionPickListsDetail implements Serializable {
 
     @TableField("storehouse_positions_id")
     private Long storehousePositionsId;
-
 
 
     @TableField("storehouse_id")
@@ -63,25 +68,25 @@ public class ProductionPickListsDetail implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -95,6 +100,14 @@ public class ProductionPickListsDetail implements Serializable {
      */
     @TableField("deptId")
     private Long deptId;
+
+    public Long getInkindId() {
+        return inkindId;
+    }
+
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
+    }
 
     public Integer getReceivedNumber() {
         return receivedNumber;
@@ -135,7 +148,7 @@ public class ProductionPickListsDetail implements Serializable {
     public void setStorehouseId(Long storehouseId) {
         this.storehouseId = storehouseId;
     }
-    
+
     public Long getPickListsDetailId() {
         return pickListsDetailId;
     }
@@ -219,16 +232,16 @@ public class ProductionPickListsDetail implements Serializable {
     @Override
     public String toString() {
         return "ProductionPickListsDetail{" +
-        "pickListsDetailId=" + pickListsDetailId +
-        ", pickListsId=" + pickListsId +
-        ", skuId=" + skuId +
-        ", number=" + number +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "pickListsDetailId=" + pickListsDetailId +
+                ", pickListsId=" + pickListsId +
+                ", skuId=" + skuId +
+                ", number=" + number +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }
