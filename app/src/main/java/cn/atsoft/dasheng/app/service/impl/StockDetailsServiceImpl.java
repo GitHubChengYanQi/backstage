@@ -274,32 +274,34 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 //        }
 //        return 0;
     }
+
     @Override
-    public List<Map<String,Object>> getStockNumberBySkuId(Long skuId){
+    public List<Map<String, Object>> getStockNumberBySkuId(Long skuId) {
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("*", "sum(number) AS num").eq("sku_id",skuId).groupBy("sku_id").groupBy("storehouse_id");
+        queryWrapper.select("*", "sum(number) AS num").eq("sku_id", skuId).groupBy("sku_id").groupBy("storehouse_id");
         List<StockDetails> details = this.list(queryWrapper);
         List<Long> storehouseIds = new ArrayList<>();
         for (StockDetails detail : details) {
             storehouseIds.add(detail.getStorehouseId());
         }
-        List<Storehouse> storehouses =storehouseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(storehouseIds);
-        List<Map<String,Object>> results = new ArrayList<>();
+        List<Storehouse> storehouses = storehouseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(storehouseIds);
+        List<Map<String, Object>> results = new ArrayList<>();
         for (Storehouse storehouse : storehouses) {
-            Map<String,Object> result = new HashMap<>();
-            result.put("storehouseResult",BeanUtil.copyProperties(storehouse,StorehouseResult.class));
-            int number = 0 ;
+            Map<String, Object> result = new HashMap<>();
+            result.put("storehouseResult", BeanUtil.copyProperties(storehouse, StorehouseResult.class));
+            int number = 0;
             for (StockDetails detail : details) {
-                if (storehouse.getStorehouseId().equals(detail.getStorehouseId())){
-                    number+=detail.getNumber();
+                if (storehouse.getStorehouseId().equals(detail.getStorehouseId())) {
+                    number += detail.getNumber();
                 }
             }
-            result.put("number",number);
+            result.put("number", number);
             results.add(result);
         }
-        results = results.stream().sorted(Comparator.comparingInt(e -> (Integer) (e.get("number")))).collect(Collectors.toList());
+        results = results.stream().sorted().collect(Collectors.toList());
         return results;
     }
+
     @Override
     public List<StockSkuBrand> stockSku() {
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
