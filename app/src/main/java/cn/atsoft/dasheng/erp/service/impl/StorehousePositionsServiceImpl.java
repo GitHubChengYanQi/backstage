@@ -772,6 +772,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             loop.setPid(positionsResult.getPid());
             allPositionLoop.add(loop);
         }
+
         //需要的下级库位
         List<PositionLoop> childs = new ArrayList<>();
         for (Long positionId : positionIds) {
@@ -781,8 +782,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                     break;
                 }
             }
-
         }
+
         for (PositionLoop child : childs) {
             loop(child, allPositionLoop);
         }
