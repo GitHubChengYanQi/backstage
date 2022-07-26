@@ -122,9 +122,14 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                 entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
                 entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());
+                entity.setSkuId(productionPickListsCartParam.getSkuId());
+                entity.setBrandId(productionPickListsCartParam.getBrandId());
+                entity.setCustomerId(productionPickListsCartParam.getCustomerId());
+                entity.setNumber(productionPickListsCartParam.getNumber());
                 entity.setType(productionPickListsCartParam.getType());
                 entity.setInkindId(productionPickListsCartParam.getInkindId());
                 entitys.add(entity);
+                stockDetails.removeIf(i -> i.getInkindId().equals(productionPickListsCartParam.getInkindId()));
             } else {
                 for (StockDetails stockDetail : stockDetails) {
                     if (number > 0) {
@@ -661,6 +666,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         List<ProductionPickListsCart> updateEntity = new ArrayList<>();
         for (ProductionPickListsCartParam cartParam : cartParams) {
             for (ProductionPickListsCart pickListsCart : list) {
+                if (ToolUtil.isNotEmpty(pickListsCart.getType()) && pickListsCart.getType().equals("frmLoss")) {
+                    throw new ServiceException(500, "报损物料不可退回");
+                }
+
                 if (cartParam.getSkuId().equals(pickListsCart.getSkuId()) && cartParam.getPickListsId().equals(pickListsCart.getPickListsId()) && cartParam.getBrandId().equals(pickListsCart.getBrandId())) {
                     pickListsCart.setStatus(-1);
                     pickListsCart.setDisplay(0);

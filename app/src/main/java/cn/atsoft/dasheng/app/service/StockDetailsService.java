@@ -84,6 +84,8 @@ public interface StockDetailsService extends IService<StockDetails> {
      */
     List<Long> backSkuByStoreHouse(Long id);
 
+    void splitInKind(Long inKind);
+
     /**
      * 返回当前仓库下所有数据
      *

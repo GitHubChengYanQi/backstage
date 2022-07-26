@@ -203,21 +203,61 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     }
 
-    public void splitInkind(Long inkind) {
+    @Override
+    public void splitInKind(Long inKind) {
 
-        StockDetails stockDetails = this.query().eq("inkind_id", inkind).one();   //库存有当前实物 无需操作
+        StockDetails stockDetails = this.query().eq("inkind_id", inKind).one();   //库存有当前实物 无需操作
         if (ToolUtil.isNotEmpty(stockDetails)) {
             return;
         }
-        Inkind inkindResult = inkindService.getById(inkind);
 
+        /**
+         * 把之前实物数量拆开  入一个新的实物
+         */
+
+        Inkind inkindResult = inkindService.getById(inKind);
         StockDetails details = new StockDetails();
         details.setSkuId(inkindResult.getSkuId());
         details.setBrandId(inkindResult.getBrandId());
         details.setCustomerId(inkindResult.getCustomerId());
+        if (ToolUtil.isEmpty(inkindResult.getPositionId())) {
+            throw new ServiceException(500, "缺少库位id");
+        }
+        StorehousePositions storehousePositions = positionsService.getById(inkindResult.getPositionId());
+        details.setStorehouseId(storehousePositions.getStorehouseId());
         details.setStorehousePositionsId(inkindResult.getPositionId());
+        details.setNumber(inkindResult.getNumber());
+        details.setInkindId(inkindResult.getInkindId());
 
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("sku_id", inkindResult.getSkuId());
+        queryWrapper.eq("brand_id", inkindResult.getBrandId());
+        queryWrapper.eq("storehouse_positions_id", inkindResult.getPositionId());
+        if (ToolUtil.isNotEmpty(inkindResult.getCustomerId())) {
+            queryWrapper.eq("customer_id", inkindResult.getCustomerId());
+        }
+        queryWrapper.eq("display", 1);
+        queryWrapper.orderByAsc("create_time");
 
+        Long num = inkindResult.getNumber();
+        List<StockDetails> stockDetailsList = this.list(queryWrapper);
+        for (StockDetails stock : stockDetailsList) {
+            if (num == 0) {
+                break;
+            }
+            if (stock.getNumber() > num) {
+                stock.setNumber(stock.getNumber() - num);
+                break;
+            } else {
+                num = num - stock.getNumber();
+                stock.setNumber(0L);
+                stock.setDisplay(0);
+            }
+        }
+        this.updateBatchById(stockDetailsList);
+        this.save(details);
+        inkindResult.setSource("临时异常(生效)");
+        inkindService.updateById(inkindResult);
     }
 
 
@@ -481,11 +521,18 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
     public List<StockDetails> fundStockDetailByCart(ProductionPickListsCartParam param) {
         List<StockDetails> list = new ArrayList<>();
-        List<Long> inkindIds = pickListsCartService.getCartInkindIds(param);
+        /**
+         * 获取购物车中实物
+         */
+        List<Long> cartInkindIds = pickListsCartService.getCartInkindIds(param);
+        List<Long> inkindIds =new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
                 inkindIds.add(productionPickListsCartParam.getInkindId());
             }
+        }
+        if (inkindIds.size() > 0){
+            list.addAll(this.query().in("inkind_id",inkindIds).eq("display",1).list());
         }
         for (ProductionPickListsCartParam cartParam : param.getProductionPickListsCartParams()) {
             if (ToolUtil.isEmpty(cartParam.getInkindId())) {
@@ -498,19 +545,18 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 //            if (inkindIds.size()>0){
 //                queryWrapper.notIn("inkind_id",inkindIds);
 //            }
-                queryWrapper.last("limit " + cartParam.getNumber() + inkindIds.size());
+                queryWrapper.last("limit " + cartParam.getNumber() + cartInkindIds.size());
                 list.addAll(this.list(queryWrapper));
             }
         }
         List<StockDetails> detailTotalList = new ArrayList<>();
-
         list.parallelStream().collect(Collectors.groupingBy(StockDetails::getStockItemId, Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> a).ifPresent(detailTotalList::add);
                 }
         );
         List<StockDetails> removeInkind = new ArrayList<>();
-        for (Long inkindId : inkindIds) {
+        for (Long inkindId : cartInkindIds) {
             for (StockDetails stockDetails : detailTotalList) {
                 if (inkindId.equals(stockDetails.getInkindId())) {
                     removeInkind.add(stockDetails);

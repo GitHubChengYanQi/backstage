@@ -75,6 +75,12 @@ public class StockDetailsController extends BaseController {
         return ResponseData.success(number);
     }
 
+    @RequestMapping(value = "/splitInKind", method = RequestMethod.POST)
+    public ResponseData splitInKind(@RequestBody StockDetailsParam stockDetailsParam) {
+        this.stockDetailsService.splitInKind(stockDetailsParam.getInkindId());
+        return ResponseData.success();
+    }
+
 
     /**
      * 查看详情接口
