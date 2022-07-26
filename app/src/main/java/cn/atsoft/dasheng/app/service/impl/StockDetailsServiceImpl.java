@@ -349,7 +349,14 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             result.put("number", number);
             results.add(result);
         }
-        results = results.stream().sorted().collect(Collectors.toList());
+
+        Collections.sort(results, new Comparator<Map<String, Object>>() {
+            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                Integer number1 = (Integer)(o1.get("number")) ;
+                Integer number2 = (Integer)(o2.get("number")) ;
+                return number2.compareTo(number1);
+            }
+        });
         return results;
     }
 
