@@ -272,7 +272,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public void darkDiskUpdateCart() {
         System.err.println("定时任务------------------------》" + new DateTime());
         DateTime dateTime = new DateTime();
-        Integer count = this.query().eq("method", "DarkDisk")
+        Integer count = this.query().eq("mode", "staticState")
                 .eq("begin_time", dateTime)
                 .eq("display", 1)
                 .count();
