@@ -335,7 +335,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         for (StockDetails detail : details) {
             storehouseIds.add(detail.getStorehouseId());
         }
-        List<Storehouse> storehouses = storehouseIds.size() == 0 ? new ArrayList<>() : storehouseService.listByIds(storehouseIds);
+        List<Storehouse> storehouses = storehouseService.list();
         List<Map<String, Object>> results = new ArrayList<>();
         for (Storehouse storehouse : storehouses) {
             Map<String, Object> result = new HashMap<>();
