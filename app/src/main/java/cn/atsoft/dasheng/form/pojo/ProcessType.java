@@ -51,6 +51,7 @@ public enum ProcessType {
 
 
 
+
     //
 //    @EnumValue
 //    private final Map<String, String> detail;

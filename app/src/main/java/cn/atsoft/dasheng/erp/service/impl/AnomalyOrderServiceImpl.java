@@ -781,7 +781,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 if (datum.getOrderId().equals(anomalyResult.getOrderId())) {
                     skuIds.add(anomalyResult.getSkuId());
                     anomalyResultList.add(anomalyResult);
-                    if (datum.getStatus() != 0) {
+                    if ((datum.getStatus() != 98 && datum.getStatus() != 0) || datum.getStatus() == 90) {
                         handle = handle + 1;
                     }
                 }

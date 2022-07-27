@@ -1404,6 +1404,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     public void updateCreateInstockRefuseStatus(ActivitiProcessTask processTask) {
         InstockOrder order = this.getById(processTask.getFormId());
         order.setState(Math.toIntExact(InStockActionEnum.refuse.getStatus()));
+        order.setStatus(InStockActionEnum.refuse.getStatus());
         this.updateById(order);
     }
 
