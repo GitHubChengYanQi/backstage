@@ -343,7 +343,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             int number = 0;
             for (StockDetails detail : details) {
                 if (storehouse.getStorehouseId().equals(detail.getStorehouseId())) {
-                    number += detail.getNumber();
+                    number += detail.getNum();
                 }
             }
             result.put("number", number);
