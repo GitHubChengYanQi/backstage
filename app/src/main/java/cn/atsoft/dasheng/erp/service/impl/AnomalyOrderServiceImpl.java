@@ -174,8 +174,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
             anomalyIds.add(anomaly.getAnomalyId());
         }
+
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
-        if (entity.getType().equals("Stocktaking")) {   //更新盘点处理状态
+        if (entity.getType().equals("Stocktaking")||entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
             inventoryStockService.updateStatus(anomalyIds);
         }
         /**

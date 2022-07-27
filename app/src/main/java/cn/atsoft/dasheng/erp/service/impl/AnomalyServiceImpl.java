@@ -128,7 +128,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 param.setType(param.getAnomalyType().toString());
                 break;
             case StocktakingError:  //盘点:
-            case allStocktaking:    //合并盘点
                 boolean normal = isNormal(param);  //判断有无异常件  没有异常件 不执行以下代码 直接退出
                 if (normal) {
                     updateInventory(param);   //盘点详情 修改成正常状态
@@ -325,7 +324,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             }
         } else {
             inventoryStockService.updateInventoryStatus(param, -1);
-//            updateInventoryStatus(param, -1);   //修改盘点状态
         }
         if (t) {   //添加异常信息
             List<Inkind> inkinds = new ArrayList<>();

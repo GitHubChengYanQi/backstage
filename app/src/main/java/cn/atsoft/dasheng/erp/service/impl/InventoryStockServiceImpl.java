@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryStockParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.SkuBind;
 import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
 import cn.atsoft.dasheng.erp.service.*;
@@ -213,7 +214,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             positionIds.add(inventoryStock.getPositionId());
             skuIds.add(inventoryStock.getSkuId());
 
-            if (inventory.getMethod().equals("OpenDisc")) {
+            if (ToolUtil.isNotEmpty(inventory.getMethod()) && inventory.getMethod().equals("OpenDisc")) {
                 if (inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99) {
                     shopCartNum = shopCartNum + 1;
                 }
@@ -329,8 +330,6 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     @Override
     public void updateStatus(List<Long> ids) {
 
-        List<Anomaly> anomalies = anomalyService.listByIds(ids);
-
         List<InventoryStock> inventoryStocks = ids.size() == 0 ? new ArrayList<>() :
                 this.query().in("anomaly_id", ids)
                         .eq("display", 1).list();
@@ -362,23 +361,25 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             queryWrapper.eq("brand_id", param.getBrandId());
         }
         queryWrapper.eq("position_id", param.getPositionId());
+        queryWrapper.ne("lock_status", 99);
 
 
         List<InventoryStock> inventoryStocks = this.list(queryWrapper);
         List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
 
-        for (InventoryStock inventoryStock : inventoryStocks) {    //保留之前记录
-            if (inventoryStock.getLockStatus() == 99) {
+        for (InventoryStock inventoryStock : inventoryStocks) {
+            //保留之前记录
+            if (inventoryStock.getLockStatus() == 99) {                                                             //普通盘点
                 throw new ServiceException(500, "当前状态不可更改");
             }
             inventoryStock.setStatus(status);
             inventoryStock.setAnomalyId(param.getAnomalyId());
-            inventoryStock.setLockStatus(0);
             inventoryStock.setDisplay(1);
             inventoryStock.setRealNumber(param.getRealNumber());
             if (status == 1) {   //正常物料    清楚异常id
                 inventoryStock.setAnomalyId(0L);
             }
+
         }
 
         for (InventoryStock inventoryStock : stockList) {
