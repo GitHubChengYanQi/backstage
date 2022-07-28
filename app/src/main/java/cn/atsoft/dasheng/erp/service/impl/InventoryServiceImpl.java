@@ -218,7 +218,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 inventoryStock.setCustomerId(0L);
             }
             inventoryStock.setInventoryId(entity.getInventoryTaskId());
-            inventoryStock.setRealNumber(inventoryStock.getNumber());
+//            inventoryStock.setRealNumber(inventoryStock.getNumber());
         }
         inventoryStockService.saveBatch(inventoryStocks);
         param.setCreateUser(entity.getCreateUser());
@@ -246,23 +246,23 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         /**
          * 同步盘点任务的物料
          */
-//        List<InventoryResult> inventoryResults = this.listByTime();
-//        List<Long> inventoryIds = new ArrayList<>();
-//        for (InventoryResult inventoryResult : inventoryResults) {
-//            inventoryIds.add(inventoryResult.getInventoryTaskId());
-//        }
-//
-//        List<InventoryStock> stockList = inventoryStockService.query().in("inventory_id", inventoryIds)
-//                .eq("display", 1)
-//                .ne("lock_status", 99)
-//                .list();
-//
-//
-//        for (InventoryStock time : inventoryStocks) {
-//            updateInventoryStock(time, stockList);
-//        }
-//
-//        inventoryStockService.updateBatchById(stockList);
+        List<InventoryResult> inventoryResults = this.listByTime();
+        List<Long> inventoryIds = new ArrayList<>();
+        for (InventoryResult inventoryResult : inventoryResults) {
+            inventoryIds.add(inventoryResult.getInventoryTaskId());
+        }
+
+        List<InventoryStock> stockList = inventoryStockService.query().in("inventory_id", inventoryIds)
+                .eq("display", 1)
+                .ne("lock_status", 99)
+                .list();
+
+
+        for (InventoryStock time : inventoryStocks) {
+            updateInventoryStock(time, stockList);
+        }
+
+        inventoryStockService.updateBatchById(stockList);
 
     }
 
@@ -276,11 +276,22 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         for (InventoryStock task : tasks) {
             if (time.getSkuId().equals(task.getSkuId())
                     && time.getBrandId().equals(task.getBrandId())
-                    && time.getCustomerId().equals(task.getCustomerId())) {
+                    && time.getCustomerId().equals(task.getCustomerId())
+                    && time.getPositionId().equals(task.getPositionId())
+            ) {
+
                 task.setStatus(time.getStatus());
+                task.setAnomalyId(time.getAnomalyId());
+                task.setDisplay(1);
+                task.setRealNumber(time.getRealNumber());
+
+                if (time.getStatus() == 1) {   //正常物料    清楚异常id
+                    task.setAnomalyId(0L);
+                }
                 if (time.getStatus() == -1) {
                     task.setLockStatus(99);
                 }
+
             }
         }
     }
@@ -304,7 +315,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      */
     @Scheduled(cron = "0 */15 * * * ?")
     public void darkDiskUpdateCart() {
-        System.err.println("定时任务------------------------》" + new DateTime());
+        System.err.println("静态盘点定时任务-----------(锁库)----------->" + new DateTime());
         DateTime dateTime = new DateTime();
         Integer count = this.query().eq("mode", "staticState")
                 .eq("begin_time", dateTime)

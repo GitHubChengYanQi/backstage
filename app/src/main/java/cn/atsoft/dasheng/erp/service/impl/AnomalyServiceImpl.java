@@ -314,7 +314,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             switch (param.getAnomalyType()) {
                 case StocktakingError:
-                case timelyInventory:
+//                case timelyInventory:
                     deleteBind(param.getAnomalyId());
                     updateInventory(param);     //盘点正常
                     t = false;
