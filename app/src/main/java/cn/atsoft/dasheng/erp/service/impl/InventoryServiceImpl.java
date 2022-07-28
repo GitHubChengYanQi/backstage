@@ -278,7 +278,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     && time.getBrandId().equals(task.getBrandId())
                     && time.getCustomerId().equals(task.getCustomerId())) {
                 task.setStatus(time.getStatus());
-                if (time.getStatus()==-1) {
+                if (time.getStatus() == -1) {
                     task.setLockStatus(99);
                 }
             }
@@ -575,8 +575,10 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<InventoryStock> condition = condition(inventoryDetailParam);
         for (InventoryStock inventoryStock : condition) {
             if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
-                    && i.getBrandId().equals(inventoryStock.getBrandId())
-                    && i.getPositionId().equals(inventoryStock.getPositionId())
+                            && i.getBrandId().equals(inventoryStock.getBrandId())
+                            && i.getPositionId().equals(inventoryStock.getPositionId())
+                            && i.getCustomerId().equals(inventoryStock.getCustomerId()
+                    )
             )) {
                 all.add(inventoryStock);
             }
