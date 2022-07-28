@@ -39,6 +39,9 @@ public class AllocationCart implements Serializable {
     @TableField("number")
     private Integer number;
 
+    @TableField("type")
+    private String type;
+
     /**
      * 仓库库位id
      */
@@ -240,6 +243,14 @@ public class AllocationCart implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

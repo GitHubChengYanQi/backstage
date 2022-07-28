@@ -70,4 +70,6 @@ public interface AllocationDetailService extends IService<AllocationDetail> {
      PageInfo<AllocationDetailResult> findPageBySpec(AllocationDetailParam param);
 
     List<AllocationDetailResult> resultsByAllocationId(Long allocationId);
+
+    List<AllocationDetailResult> listByAllocationIdAndSkuId(Long allocationId, Long skuId);
 }

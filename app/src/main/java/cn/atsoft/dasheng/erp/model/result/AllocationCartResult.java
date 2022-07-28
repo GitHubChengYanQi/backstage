@@ -33,6 +33,8 @@ public class AllocationCartResult implements Serializable {
 
     @ApiModelProperty("")
     private Long allocationDetailId;
+    @ApiModelProperty("")
+    private String type;
 
     /**
      * 调拨id

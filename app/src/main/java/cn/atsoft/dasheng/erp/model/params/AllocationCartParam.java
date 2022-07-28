@@ -39,6 +39,8 @@ public class AllocationCartParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("")
     private Long skuId;
+    @ApiModelProperty("")
+    private String type;
 
     @ApiModelProperty("")
     private Integer number;

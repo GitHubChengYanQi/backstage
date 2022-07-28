@@ -327,36 +327,23 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
     @Override
-    public List<Map<String, Object>> getStockNumberBySkuId(Long skuId) {
-        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("*", "sum(number) AS num").eq("sku_id", skuId).groupBy("sku_id").groupBy("storehouse_id");
-        List<StockDetails> details = this.list(queryWrapper);
-        List<Long> storehouseIds = new ArrayList<>();
-        for (StockDetails detail : details) {
-            storehouseIds.add(detail.getStorehouseId());
-        }
-        List<Storehouse> storehouses = storehouseService.list();
-        List<Map<String, Object>> results = new ArrayList<>();
-        for (Storehouse storehouse : storehouses) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("storehouseResult", BeanUtil.copyProperties(storehouse, StorehouseResult.class));
-            int number = 0;
-            for (StockDetails detail : details) {
-                if (storehouse.getStorehouseId().equals(detail.getStorehouseId())) {
-                    number += detail.getNumber();
-                }
-            }
-            result.put("number", number);
-            results.add(result);
-        }
+    public List<StockDetailsResult> getStockNumberBySkuId(Long skuId,Long storehouseId) {
+        List<StockDetails> details = this.query().eq("storehouse_id", storehouseId).eq("sku_id", skuId).list();
+        List<StockDetails> totalList = new ArrayList<>();
 
-        Collections.sort(results, new Comparator<Map<String, Object>>() {
-            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-                Integer number1 = (Integer)(o1.get("number")) ;
-                Integer number2 = (Integer)(o2.get("number")) ;
-                return number2.compareTo(number1);
-            }
-        });
+        details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                        setBrandId(a.getBrandId());
+                        setStorehouseId(a.getStorehouseId());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+        List<StockDetailsResult> results =totalList.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(totalList,StockDetailsResult.class);
+        this.format(results);
         return results;
     }
 
