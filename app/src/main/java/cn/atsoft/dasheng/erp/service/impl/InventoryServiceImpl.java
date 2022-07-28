@@ -212,24 +212,16 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         Inventory entity = getEntity(param);
         this.save(entity);
 
-//        if (ToolUtil.isEmpty(param.getDetailParams())) {
-//            throw new ServiceException(500, "物料不存在");
-//        }
-
         List<InventoryStock> inventoryStocks = BeanUtil.copyToList(param.getStockParams(), InventoryStock.class);
         for (InventoryStock inventoryStock : inventoryStocks) {
+            if (ToolUtil.isEmpty(inventoryStock.getCustomerId())) {
+                inventoryStock.setCustomerId(0L);
+            }
             inventoryStock.setInventoryId(entity.getInventoryTaskId());
             inventoryStock.setRealNumber(inventoryStock.getNumber());
         }
         inventoryStockService.saveBatch(inventoryStocks);
-//        List<InventoryDetail> inventoryDetails = BeanUtil.copyToList(param.getDetailParams(), InventoryDetail.class, new CopyOptions());
-//        for (InventoryDetail inventoryDetail : inventoryDetails) {
-//            inventoryDetail.setInventoryId(entity.getInventoryTaskId());
-//            inventoryDetail.setRealNumber(inventoryDetail.getNumber());
-//        }
-//        inventoryDetailService.saveBatch(inventoryDetails);
         param.setCreateUser(entity.getCreateUser());
-
         List<ShopCart> shopCarts = shopCartService.query()
                 .eq("type", AnomalyType.timelyInventory.name())
                 .eq("create_user", LoginContextHolder.getContext().getUserId())
@@ -250,7 +242,49 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         anomalyOrderParam.setAnomalyParams(anomalyParams);
         anomalyOrderService.add(anomalyOrderParam);
         shopCartService.updateBatchById(shopCarts);
+
+        /**
+         * 同步盘点任务的物料
+         */
+//        List<InventoryResult> inventoryResults = this.listByTime();
+//        List<Long> inventoryIds = new ArrayList<>();
+//        for (InventoryResult inventoryResult : inventoryResults) {
+//            inventoryIds.add(inventoryResult.getInventoryTaskId());
+//        }
+//
+//        List<InventoryStock> stockList = inventoryStockService.query().in("inventory_id", inventoryIds)
+//                .eq("display", 1)
+//                .ne("lock_status", 99)
+//                .list();
+//
+//
+//        for (InventoryStock time : inventoryStocks) {
+//            updateInventoryStock(time, stockList);
+//        }
+//
+//        inventoryStockService.updateBatchById(stockList);
+
     }
+
+    /**
+     * 比对 盘点任务的 物料 进行同步
+     *
+     * @param time
+     * @param tasks
+     */
+    private void updateInventoryStock(InventoryStock time, List<InventoryStock> tasks) {
+        for (InventoryStock task : tasks) {
+            if (time.getSkuId().equals(task.getSkuId())
+                    && time.getBrandId().equals(task.getBrandId())
+                    && time.getCustomerId().equals(task.getCustomerId())) {
+                task.setStatus(time.getStatus());
+                if (time.getStatus()==-1) {
+                    task.setLockStatus(99);
+                }
+            }
+        }
+    }
+
 
     /**
      * 静态限制
@@ -272,7 +306,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public void darkDiskUpdateCart() {
         System.err.println("定时任务------------------------》" + new DateTime());
         DateTime dateTime = new DateTime();
-        Integer count = this.query().eq("method", "DarkDisk")
+        Integer count = this.query().eq("mode", "staticState")
                 .eq("begin_time", dateTime)
                 .eq("display", 1)
                 .count();
@@ -551,6 +585,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         inventoryStockService.format(inventoryStockResults);
         return inventoryStockResults;
     }
+
 
     private List<StorehousePositionsResult> positionsResultList(List<StockDetails> stockDetails) {
         if (ToolUtil.isEmpty(stockDetails)) {
@@ -1288,7 +1323,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
-        List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
+//        List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
 
         for (InventoryResult datum : data) {
 

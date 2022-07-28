@@ -174,8 +174,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
             anomalyIds.add(anomaly.getAnomalyId());
         }
+
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
-        if (entity.getType().equals("Stocktaking")) {   //更新盘点处理状态
+        if (entity.getType().equals("Stocktaking")||entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
             inventoryStockService.updateStatus(anomalyIds);
         }
         /**
@@ -781,7 +782,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 if (datum.getOrderId().equals(anomalyResult.getOrderId())) {
                     skuIds.add(anomalyResult.getSkuId());
                     anomalyResultList.add(anomalyResult);
-                    if (datum.getStatus() != 0) {
+                    if ((anomalyResult.getStatus() != 98 && anomalyResult.getStatus() != 0) || anomalyResult.getStatus() == 90) {
                         handle = handle + 1;
                     }
                 }

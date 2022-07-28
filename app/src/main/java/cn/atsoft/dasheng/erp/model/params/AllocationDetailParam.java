@@ -28,6 +28,8 @@ public class AllocationDetailParam implements Serializable, BaseValidatingParam 
     @ApiModelProperty("")
     private Long allocationDetailId;
     private String params;
+    private Boolean haveBrand;
+
 
     /**
      * 调拨id

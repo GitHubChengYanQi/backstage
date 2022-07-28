@@ -13,7 +13,9 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
@@ -84,6 +86,8 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     private SkuService skuService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private ActivitiProcessService processService;
 
     @Override
     public void add(AnomalyDetailParam param) {
@@ -147,7 +151,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                     User user = userService.getById(param.getUserId());
                     skuMessage = skuService.skuMessage(anomaly.getSkuId());
                     shopCartService.addDynamic(param.getAnomalyOrderId(), "将" + skuMessage + "转交给" + user.getName() + "进行处理");
-                    forWard(oldEntity);   //异常明细转交处理
+                    forWard(oldEntity, anomaly);   //异常明细转交处理
                 }
 
             }
@@ -169,12 +173,14 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     /**
      * 转交处理
      */
-    private void forWard(AnomalyDetail detail) {
+    private void forWard(AnomalyDetail detail,   Anomaly anomaly) {
+        ActivitiProcessTask processTask = taskService.getByFormId(anomaly.getOrderId());
         LoginUser user = LoginContextHolder.getContext().getUser();
         ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
         activitiProcessTaskParam.setTaskName(user.getName() + "转交的异常处理");
         activitiProcessTaskParam.setUserIds(detail.getUserId().toString());
         activitiProcessTaskParam.setFormId(detail.getAnomalyId());
+        activitiProcessTaskParam.setProcessId(processTask.getProcessId());
         activitiProcessTaskParam.setType("ErrorForWard");
         activitiProcessTaskParam.setUserId(detail.getUserId());
         Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);

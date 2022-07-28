@@ -53,6 +53,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
     @Override
     public void add(AllocationCartParam param){
         AllocationCart entity = getEntity(param);
+        entity.setType("carry");
         this.save(entity);
     }
 

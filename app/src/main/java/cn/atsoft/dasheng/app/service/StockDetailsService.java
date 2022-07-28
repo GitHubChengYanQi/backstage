@@ -109,7 +109,7 @@ public interface StockDetailsService extends IService<StockDetails> {
 
     Integer getNumberByStock(Long skuId, Long brandId, Long positionId);
 
-    List<Map<String,Object>> getStockNumberBySkuId(Long skuId);
+    List<StockDetailsResult> getStockNumberBySkuId(Long skuId,Long storehouseId);
 
     List<StockSkuBrand> stockSku();
 

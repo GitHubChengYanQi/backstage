@@ -222,9 +222,9 @@
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
         </if>
-
+        order by inventory_stock_id asc
         <if test="paramCondition.positionSort != null">
-              order by position_id
+            , position_id
             <if test="paramCondition.positionSort == 'asc'">
                 asc
             </if>

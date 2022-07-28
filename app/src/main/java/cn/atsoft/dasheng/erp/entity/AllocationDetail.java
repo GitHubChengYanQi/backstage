@@ -36,6 +36,9 @@ public class AllocationDetail implements Serializable {
     @TableField("number")
     private Integer number;
 
+    @TableField("have_brand")
+    private Boolean haveBrand;
+
     /**
      * 仓库库位id
      */
@@ -243,6 +246,14 @@ public class AllocationDetail implements Serializable {
 
     public void setParams(String params) {
         this.params = params;
+    }
+
+    public Boolean getHaveBrand() {
+        return haveBrand;
+    }
+
+    public void setHaveBrand(Boolean haveBrand) {
+        this.haveBrand = haveBrand;
     }
 
     @Override

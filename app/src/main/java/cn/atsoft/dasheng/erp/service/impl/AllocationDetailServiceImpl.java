@@ -7,14 +7,17 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.AllocationCart;
 import cn.atsoft.dasheng.erp.entity.AllocationDetail;
 import cn.atsoft.dasheng.erp.mapper.AllocationDetailMapper;
+import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationParam;
 import cn.atsoft.dasheng.erp.model.request.AllocationDetailParamJson;
 import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.AllocationCartService;
 import cn.atsoft.dasheng.erp.service.AllocationDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -54,6 +57,9 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
     @Autowired
     private StorehouseService storehouseService;
 
+    @Autowired
+    private AllocationCartService allocationCartService;
+
 
     @Override
     public void add(AllocationDetailParam param) {
@@ -63,16 +69,35 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
 
     @Override
     public void add(AllocationParam param) {
+        List<AllocationDetail> entityList = new ArrayList<>();
+        List<AllocationCart> cartList = new ArrayList<>();
         if (ToolUtil.isEmpty(param.getJsonParam())) {
             throw new ServiceException(500, "请选择所需物料及库位后提交");
         }
+        /**
+         * 需求目标位置
+         */
+        if (ToolUtil.isNotEmpty(param.getJsonParam().getSkuAndNumbers())) {
+            for (AllocationDetailParam storehouseAndPosition : param.getJsonParam().getSkuAndNumbers()) {
+                AllocationDetail entity = this.getEntity(storehouseAndPosition);
+                entity.setAllocationId(param.getAllocationId());
+                entityList.add(entity);
+            }
+            this.saveBatch(entityList);
+        }
+        /**
+         * 期望目标位置
+         */
+        if (ToolUtil.isNotEmpty(param.getJsonParam().getStorehouseAndPositions())) {
+            for (AllocationCartParam storehouseAndPosition : param.getJsonParam().getStorehouseAndPositions()) {
+                AllocationCart cart = BeanUtil.copyProperties(storehouseAndPosition, AllocationCart.class);
+                cart.setAllocationId(param.getAllocationId());
+                cart.setType("hope");
+                cartList.add(cart);
+            }
+            allocationCartService.saveBatch(cartList);
 
-        String jsonString = JSON.toJSONString(param.getJsonParam());
-
-        AllocationDetail entity = new AllocationDetail();
-        entity.setAllocationId(param.getAllocationId());
-        entity.setParams(jsonString);
-        this.save(entity);
+        }
     }
 
     @Override
@@ -122,38 +147,9 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
         for (AllocationDetailResult result : results) {
             if (ToolUtil.isNotEmpty(result.getParams())) {
                 AllocationDetailParamJson allocationDetailParamJson = JSON.parseObject(result.getParams(), AllocationDetailParamJson.class);
-                if (ToolUtil.isNotEmpty(allocationDetailParamJson.getSkuAndNumbers())) {
-                    for (AllocationDetailParamJson.SkuAndNumber skuAndNumber : allocationDetailParamJson.getSkuAndNumbers()) {
-                        if (ToolUtil.isNotEmpty(skuAndNumber.getSkuId())) {
-                            skuIds.add(skuAndNumber.getSkuId());
-                        }
-                        if (ToolUtil.isNotEmpty(skuAndNumber.getBrandId())) {
-                            brandIds.add(skuAndNumber.getBrandId());
-                        }
-                        if (ToolUtil.isNotEmpty(skuAndNumber.getStorehouseId())) {
-                            storehouseId.add(skuAndNumber.getStorehouseId());
-                        }
-                        if (ToolUtil.isNotEmpty(skuAndNumber.getStorehousePositionsId())) {
-                            positionIds.add(skuAndNumber.getStorehousePositionsId());
-                        }
-                    }
-                }
-                if (ToolUtil.isNotEmpty(allocationDetailParamJson.getStorehouseAndPositions())) {
-                    for (AllocationDetailParamJson.SkuAndNumber storehouseAndPositions : allocationDetailParamJson.getStorehouseAndPositions()) {
-                        if (ToolUtil.isNotEmpty(storehouseAndPositions.getSkuId())) {
-                            skuIds.add(storehouseAndPositions.getSkuId());
-                        }
-                        if (ToolUtil.isNotEmpty(storehouseAndPositions.getBrandId())) {
-                            brandIds.add(storehouseAndPositions.getBrandId());
-                        }
-                        if (ToolUtil.isNotEmpty(storehouseAndPositions.getStorehouseId())) {
-                            storehouseId.add(storehouseAndPositions.getStorehouseId());
-                        }
-                        if (ToolUtil.isNotEmpty(storehouseAndPositions.getStorehousePositionsId())) {
-                            positionIds.add(storehouseAndPositions.getStorehousePositionsId());
-                        }
-                    }
-                }
+//                for (AllocationDetailParamJson.SkuAndNumber skuAndNumber : allocationDetailParamJson.getSkuAndNumbers()) {
+//
+//                }
             }
 
             skuIds.add(result.getSkuId());
@@ -294,6 +290,14 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
         AllocationDetail entity = new AllocationDetail();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public List<AllocationDetailResult> listByAllocationIdAndSkuId(Long allocationId, Long skuId){
+        List<AllocationDetail> allocationDetails = this.query().eq("allocation_id", allocationId).eq("sku_id", skuId).eq("display", 1).list();
+        List<AllocationDetailResult> allocationResults = BeanUtil.copyToList(allocationDetails, AllocationDetailResult.class);
+        this.format(allocationResults);
+        return allocationResults;
+
     }
 
 }

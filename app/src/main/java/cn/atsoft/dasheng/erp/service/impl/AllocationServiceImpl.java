@@ -181,7 +181,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Override
     public void createPickListsAndInStockOrder(Long allocationId) {
         Allocation allocation = this.getById(allocationId);
-        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).list();
+        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type","carry").list();
+        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type","carry").list();
         List<Long> storehouseIds = new ArrayList<>();
         for (AllocationCart allocationCart : allocationCarts) {
             storehouseIds.add(allocationCart.getStorehouseId());
@@ -200,7 +201,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 //        }
             for (Long storehouseId : storehouseIds.stream().distinct().collect(Collectors.toList())) {
                 ProductionPickListsParam listsParam = new ProductionPickListsParam();
-                InstockOrderParam instockOrderParam = new InstockOrderParam();
+
                 listsParam.setPickListsName(allocation.getAllocationName());
                 listsParam.setUserId(allocation.getUserId());
                 listsParam.setSource("ALLOCATION");
@@ -219,13 +220,29 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     }
                 }
                 allocationCartService.updateBatchById(allocationCarts);
-
                 if (details.size() > 0) {
-                    instockOrderParam.setListParams(listParams);
                     productionPickListsService.add(listsParam);
-                    instockOrderService.add(instockOrderParam);
                 }
             }
+        List<Long> storehouseIds2 = new ArrayList<>();
+        for (AllocationDetail allocationDetail : allocationDetails) {
+            storehouseIds2.add(allocationDetail.getStorehouseId());
+        }
+
+
+        InstockOrderParam instockOrderParam = new InstockOrderParam();
+        instockOrderParam.setSource("ALLOCATION");
+        instockOrderParam.setSourceId(allocationId);
+        List<InstockListParam> listParams = new ArrayList<>();
+        for (AllocationDetail allocationDetail : allocationDetails) {
+            InstockListParam instockListParam = new InstockListParam();
+            ToolUtil.copyProperties(allocationDetail,instockListParam);
+            listParams.add(instockListParam);
+        }
+        instockOrderParam.setListParams(listParams);
+        instockOrderService.add(instockOrderParam);
+
+
         /**
          * 如果是移库操作  审批通过删除库位绑定
          */
