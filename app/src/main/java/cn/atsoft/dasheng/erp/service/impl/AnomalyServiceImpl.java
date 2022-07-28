@@ -108,6 +108,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InventoryStockService inventoryStockService;
     @Autowired
     private AnomalyBindService anomalyBindService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
 
     @Transactional
@@ -367,7 +369,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             deleteBind(param.getAnomalyId()); //删除绑定数据
             return true;
         }
-
         return false;
     }
 
@@ -461,6 +462,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         deleteBind(param.getAnomalyId());   //删除绑定数据
 
+
+        for (AnomalyType value : AnomalyType.values()) {
+            if (value.getName().equals(oldEntity.getType())) {
+                param.setAnomalyType(value);
+            }
+        }
         boolean b = addDetails(param);
         if (b) {    //添加购物车
 
@@ -717,11 +724,13 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
         for (AnomalyResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             customerIds.add(datum.getCustomerId());
             ids.add(datum.getAnomalyId());
+            positionIds.add(datum.getPositionId());
         }
 
         List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
@@ -729,9 +738,17 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
         List<AnomalyDetailResult> anomalyDetailResults = BeanUtil.copyToList(details, AnomalyDetailResult.class, new CopyOptions());
-
+        List<StorehousePositionsResult> positionsResults = positionsService.details(positionIds);
 
         for (AnomalyResult datum : data) {
+
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+                    datum.setPositionsResult(positionsResult);
+                    break;
+                }
+            }
+
             for (SkuSimpleResult skuResult : skuSimpleResultList) {
                 if (skuResult.getSkuId().equals(datum.getSkuId())) {
                     datum.setSkuResult(skuResult);

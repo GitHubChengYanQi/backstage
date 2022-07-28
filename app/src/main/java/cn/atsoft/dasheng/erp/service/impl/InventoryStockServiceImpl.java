@@ -60,6 +60,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private AnomalyDetailService anomalyDetailService;
     @Autowired
     private AnomalyService anomalyService;
+    @Autowired
+    private ShopCartService shopCartService;
 
 
     @Override
@@ -156,7 +158,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             this.updateBatchById(all);
         }
 
-   }
+    }
 
     /**
      * 同步数据
@@ -345,10 +347,16 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                 this.query().in("anomaly_id", ids)
                         .eq("display", 1).list();
 
+        Set<Long> inventoryIds = new HashSet<>();
         for (InventoryStock inventoryStock : inventoryStocks) {
             inventoryStock.setLockStatus(99);
+            inventoryIds.add(inventoryStock.getInventoryId());
         }
         this.updateBatchById(inventoryStocks);
+
+        for (Long inventoryId : inventoryIds) {    //添加动态
+            shopCartService.addDynamic(inventoryId, "提交了异常描述");
+        }
     }
 
     @Override
@@ -400,6 +408,21 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         this.updateBatchById(inventoryStocks);
         this.saveBatch(stockList);
+
+
+        //添加动态
+        String skuMessage = skuService.skuMessage(param.getSkuId());
+        String content = "";
+        if (status == 2) {
+            content = "暂存了" + skuMessage + "的盘点结果";
+        } else {
+            content = "对"+skuMessage + "进行了盘点";
+        }
+        Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
+        for (Long inventoryId : inventoryIdsSet) {
+            shopCartService.addDynamic(inventoryId, content);
+        }
+
     }
 
 

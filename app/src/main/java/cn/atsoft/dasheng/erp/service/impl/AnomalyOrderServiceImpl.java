@@ -176,7 +176,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
 
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
-        if (entity.getType().equals("Stocktaking")||entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
+        if (entity.getType().equals("Stocktaking") || entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
             inventoryStockService.updateStatus(anomalyIds);
         }
         /**
@@ -774,13 +774,16 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
 
         for (AnomalyOrderResult datum : data) {
-
+            Set<Long> positionNum = new HashSet<>();
             Set<Long> skuIds = new HashSet<>();
             List<AnomalyResult> anomalyResultList = new ArrayList<>();
             int handle = 0;
             for (AnomalyResult anomalyResult : anomalyResults) {
                 if (datum.getOrderId().equals(anomalyResult.getOrderId())) {
-                    skuIds.add(anomalyResult.getSkuId());
+                    if (ToolUtil.isNotEmpty(anomalyResult.getPositionId())) {   //涉及库位数量
+                        positionNum.add(anomalyResult.getPositionId());
+                    }
+                    skuIds.add(anomalyResult.getSkuId());                     //涉及物料种类
                     anomalyResultList.add(anomalyResult);
                     if ((anomalyResult.getStatus() != 98 && anomalyResult.getStatus() != 0) || anomalyResult.getStatus() == 90) {
                         handle = handle + 1;
@@ -791,6 +794,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             datum.setAnomalyResults(anomalyResultList);
             datum.setHandle(handle);
             datum.setTotal(anomalyResultList.size());
+            datum.setPositionNum(positionNum.size());
         }
 
     }

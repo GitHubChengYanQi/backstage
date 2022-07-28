@@ -24,6 +24,8 @@ import java.util.List;
 @ApiModel
 public class AnomalyOrderResult implements Serializable {
 
+    private Integer positionNum;
+
     private Integer total;
 
     private Integer handle;

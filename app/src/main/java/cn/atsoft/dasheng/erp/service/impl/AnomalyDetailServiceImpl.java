@@ -136,6 +136,15 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                         case "0":
                             skuMessage = skuMessage + "修改了处理意见";
                             break;
+                        case "2":
+                            skuMessage = "对" + skuMessage + "给出了报损处理意见";
+                            break;
+                        case "3":
+                            skuMessage = "对" + skuMessage + "给出了继续使用处理意见";
+                            break;
+                        case "4":
+                            skuMessage = "对" + skuMessage + "给出了维修处理意见";
+                            break;
                     }
                 }
 
@@ -173,7 +182,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     /**
      * 转交处理
      */
-    private void forWard(AnomalyDetail detail,   Anomaly anomaly) {
+    private void forWard(AnomalyDetail detail, Anomaly anomaly) {
         ActivitiProcessTask processTask = taskService.getByFormId(anomaly.getOrderId());
         LoginUser user = LoginContextHolder.getContext().getUser();
         ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
