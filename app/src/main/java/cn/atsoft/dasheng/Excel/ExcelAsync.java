@@ -351,13 +351,21 @@ public class ExcelAsync {
         asynTask.setStatus(0);
         asynTask.setAllCount(spuExcels.size());
 
+        /**
+         * 先去重
+         */
+        List<SpuExcel> excels = new ArrayList<>();
+        for (SpuExcel spuExcel : spuExcels) {
+            if (excels.stream().noneMatch(c -> c.getSpuName().equals(spuExcel.getSpuName()))) {
+                excels.add(spuExcel);
+            }
+        }
+
         taskService.save(asynTask);
-
-
         List<Spu> spus = new ArrayList<>();
         List<AsynTaskDetail> asynTaskDetails = new ArrayList<>();
         int i = 0;
-        for (SpuExcel spuExcel : spuExcels) {
+        for (SpuExcel spuExcel : excels) {
             i++;
             asynTask.setCount(i);
             taskService.updateById(asynTask);
@@ -385,12 +393,11 @@ public class ExcelAsync {
                     if (ToolUtil.isNotEmpty(spu.getCoding()) && spu.getCoding().equals(spuExcel.getSpuCoding())) {
                         throw new ServiceException(500, "产品编码已存在");
                     }
-                }
-                for (Spu spu : spuList) {
                     if (spuExcel.getSpuName().equals(spu.getName()) && spu.getSpuClassificationId().equals(classId)) {
                         throw new ServiceException(500, "产品名称已存在");
                     }
                 }
+
                 //------------------------------------------------------------------------------
                 Category cate = null;
                 for (Category category : categoryList) {
@@ -399,28 +406,38 @@ public class ExcelAsync {
                         break;
                     }
                 }
+
+                if (ToolUtil.isEmpty(cate)) {
+                    cate = new Category();
+                    cate.setCategoryName(spuExcel.getSpuName());
+                    categoryService.save(cate);
+                    categoryList.add(cate);
+                }
+
+                if (ToolUtil.isEmpty(spuExcel.getUnit()) || spuExcel.getUnit().equals("")) {
+                    throw new ServiceException(500, "缺少单位");
+                }
                 for (Unit unit : units) {
                     if (unit.getUnitName().equals(spuExcel.getUnit())) {
                         newSpu.setUnitId(unit.getUnitId());
                         break;
                     }
                 }
+
                 if (ToolUtil.isEmpty(newSpu.getUnitId())) {
                     Unit unit = new Unit();
                     unit.setUnitName(spuExcel.getUnit());
                     unitService.save(unit);
+                    units.add(unit);
                     newSpu.setUnitId(unit.getUnitId());
                 }
 
-                if (ToolUtil.isEmpty(cate)) {
-                    cate = new Category();
-                    cate.setCategoryName(spuExcel.getSpuName());
-                    categoryService.save(cate);
-                }
+
                 newSpu.setCategoryId(cate.getCategoryId());
                 newSpu.setName(spuExcel.getSpuName());
                 newSpu.setSpuClassificationId(classId);
                 spus.add(newSpu);
+
                 asynTaskDetail.setStatus(99);
             } catch (Exception e) {
                 asynTaskDetail.setStatus(50);
