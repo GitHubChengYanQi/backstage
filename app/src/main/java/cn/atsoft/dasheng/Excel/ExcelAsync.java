@@ -354,18 +354,13 @@ public class ExcelAsync {
         /**
          * 先去重
          */
-        List<SpuExcel> excels = new ArrayList<>();
-        for (SpuExcel spuExcel : spuExcels) {
-            if (excels.stream().noneMatch(c -> c.getSpuName().equals(spuExcel.getSpuName()))) {
-                excels.add(spuExcel);
-            }
-        }
+
 
         taskService.save(asynTask);
         List<Spu> spus = new ArrayList<>();
         List<AsynTaskDetail> asynTaskDetails = new ArrayList<>();
         int i = 0;
-        for (SpuExcel spuExcel : excels) {
+        for (SpuExcel spuExcel : spuExcels) {
             i++;
             asynTask.setCount(i);
             taskService.updateById(asynTask);
@@ -433,9 +428,12 @@ public class ExcelAsync {
                 newSpu.setCategoryId(cate.getCategoryId());
                 newSpu.setName(spuExcel.getSpuName());
                 newSpu.setSpuClassificationId(classId);
-                spus.add(newSpu);
-
+                
+                if (spus.stream().noneMatch(p->p.getName().equals(newSpu.getName()))) {
+                    spus.add(newSpu);
+                }
                 asynTaskDetail.setStatus(99);
+
             } catch (Exception e) {
                 asynTaskDetail.setStatus(50);
                 spuExcel.setError(e.getMessage());
