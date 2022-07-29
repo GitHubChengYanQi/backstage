@@ -384,8 +384,11 @@ public class ExcelAsync {
                     throw new ServiceException(500, "产品分类不存在");
                 }
 
+                newSpu.setSpuClassificationId(classId);
+
+
                 for (Spu spu : spuList) {
-                    if (ToolUtil.isNotEmpty(spu.getName()) && spu.getName().equals(spuExcel.getSpuName())) {
+                    if (newSpu.getClassId().equals(spu.getClassId()) && spu.getName().equals(spuExcel.getSpuName())) {
                         throw new ServiceException(500, "产品已存在");
                     }
                 }
@@ -427,9 +430,9 @@ public class ExcelAsync {
 
                 newSpu.setCategoryId(cate.getCategoryId());
                 newSpu.setName(spuExcel.getSpuName());
-                newSpu.setSpuClassificationId(classId);
-                
-                if (spus.stream().noneMatch(p->p.getName().equals(newSpu.getName()))) {
+
+
+                if (spus.stream().noneMatch(p -> p.getName().equals(newSpu.getName()) && p.getClassId().equals(newSpu.getClassId()))) {
                     spus.add(newSpu);
                 }
                 asynTaskDetail.setStatus(99);
