@@ -195,6 +195,15 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         Long userId = LoginContextHolder.getContext().getUserId();
         param.setUserIds(userId.toString());
 
+        /**
+         * 超期筛选
+         */
+        if (ToolUtil.isNotEmpty(param.getOutTime()) && param.getOutTime().equals("yes")) {
+            List<Long> timeOutTaskIds = new ArrayList<>();
+            timeOutTaskIds.addAll(inventoryService.timeOut(true));
+            param.setTimeOutTaskIds(timeOutTaskIds);
+        }
+
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
@@ -411,7 +420,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<InventoryResult> inventoryResults = BeanUtil.copyToList(inventories, InventoryResult.class, new CopyOptions());
         inventoryService.format(inventoryResults);
 
-        List<AllocationResult> allocationResults =allocationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(allocationService.listByIds(allocationIds), AllocationResult.class);
+        List<AllocationResult> allocationResults = allocationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(allocationService.listByIds(allocationIds), AllocationResult.class);
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
 
@@ -472,7 +481,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     datum.setReceipts(maintenanceResult);
                 }
             }
-            for (AllocationResult allocationResult:allocationResults) {
+            for (AllocationResult allocationResult : allocationResults) {
                 if (datum.getType().equals("ALLOCATION") && datum.getFormId().equals(allocationResult.getAllocationId())) {
                     String statusName = statusMap.get(allocationResult.getStatus());
                     allocationResult.setStatusName(statusName);

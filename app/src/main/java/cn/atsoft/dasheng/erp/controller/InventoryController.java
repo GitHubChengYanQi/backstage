@@ -103,6 +103,16 @@ public class InventoryController extends BaseController {
         return ResponseData.success(result);
     }
 
+
+    /**
+     * 盘点超时
+     * @return
+     */
+    @RequestMapping(value = "/timeOut", method = RequestMethod.GET)
+    public ResponseData timeOut( ) {
+
+        return ResponseData.success();
+    }
 //
 //    /**
 //     * 编辑接口

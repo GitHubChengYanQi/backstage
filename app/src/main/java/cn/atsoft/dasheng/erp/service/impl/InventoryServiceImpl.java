@@ -58,6 +58,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.bouncycastle.tsp.TSPUtil;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.parameters.P;
@@ -1199,6 +1200,36 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         stockDetailsService.updateBatchById(stockDetails);
     }
 
+
+    /**
+     * 盘点超时
+     */
+    @Override
+    public List<Long> timeOut(boolean timeOut) {
+        DateTime dateTime = new DateTime();
+        QueryWrapper<Inventory> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
+        if (timeOut) {
+            queryWrapper.ne("status", 99);
+            queryWrapper.lt("end_time", dateTime);
+        }
+
+        List<Inventory> inventories = this.list(queryWrapper);
+        List<Long> fromIds = new ArrayList<>();
+        for (Inventory inventory : inventories) {
+            fromIds.add(inventory.getInventoryTaskId());
+        }
+        List<ActivitiProcessTask> activitiProcessTasks = fromIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.query()
+                .eq("display", 1)
+                .in("form_id", fromIds)
+                .select("process_task_id AS processTaskId ").list();
+
+        List<Long> taskIds = new ArrayList<>();
+        for (ActivitiProcessTask activitiProcessTask : activitiProcessTasks) {
+            taskIds.add(activitiProcessTask.getProcessTaskId());
+        }
+        return taskIds;
+    }
 
     /**
      * 盘点入库

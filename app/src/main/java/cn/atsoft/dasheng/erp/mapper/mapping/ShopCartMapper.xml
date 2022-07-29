@@ -242,5 +242,8 @@
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type = #{paramCondition.type}
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user = #{paramCondition.createUser}
+        </if>
   </select>
 </mapper>

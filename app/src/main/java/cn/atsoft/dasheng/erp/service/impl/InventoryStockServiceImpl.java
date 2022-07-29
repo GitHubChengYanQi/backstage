@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -253,6 +254,10 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         return map;
     }
 
+
+
+
+
     /**
      * 组合结构
      *
@@ -416,7 +421,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         if (status == 2) {
             content = "暂存了" + skuMessage + "的盘点结果";
         } else {
-            content = "对"+skuMessage + "进行了盘点";
+            content = "对" + skuMessage + "进行了盘点";
         }
         Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
         for (Long inventoryId : inventoryIdsSet) {
