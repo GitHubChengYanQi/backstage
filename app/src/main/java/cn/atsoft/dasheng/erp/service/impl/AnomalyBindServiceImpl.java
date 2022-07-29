@@ -103,9 +103,9 @@ public class AnomalyBindServiceImpl extends ServiceImpl<AnomalyBindMapper, Anoma
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("sku_id", param.getSkuId());
         queryWrapper.eq("brand_id", param.getBrandId());
-        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
-            queryWrapper.eq("customer_id", param.getCustomerId());
-        }
+//        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+//            queryWrapper.eq("customer_id", param.getCustomerId());
+//        }
         queryWrapper.eq("storehouse_positions_id", param.getPositionId());
         queryWrapper.eq("display", 1);
         List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);

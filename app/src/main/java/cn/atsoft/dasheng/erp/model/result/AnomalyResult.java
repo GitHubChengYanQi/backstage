@@ -30,6 +30,8 @@ public class AnomalyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private StorehousePositionsResult positionsResult;
+
     private List<CheckNumber> checkNumbers;
 
     private Long positionId;

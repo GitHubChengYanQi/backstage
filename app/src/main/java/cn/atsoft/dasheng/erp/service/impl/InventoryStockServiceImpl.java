@@ -60,6 +60,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private AnomalyDetailService anomalyDetailService;
     @Autowired
     private AnomalyService anomalyService;
+    @Autowired
+    private ShopCartService shopCartService;
 
 
     @Override
@@ -111,6 +113,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                         && i.getPositionId().equals(inventoryStock.getPositionId())
                 )) {
                     inventoryStock.setInventoryId(detailParam.getInventoryId());
+                    inventoryStock.setDetailId(detailParam.getDetailId());
                     all.add(inventoryStock);
                 }
             }
@@ -128,23 +131,33 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         List<InventoryStock> all = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
 
-        List<InventoryResult> inventoryResults = inventoryService.listByTime();
-        List<Long> inventoryIds = new ArrayList<>();
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();    //满足现在时间段的任务
         inventoryResults.removeIf(i -> i.getStatus() == 99);  //找出符合当前时间段 并且未完成 的盘点任务
 
+        boolean b = false;    //判断当前任务时间是否满足 同步
         for (InventoryResult inventoryResult : inventoryResults) {
-            inventoryIds.add(inventoryResult.getInventoryTaskId());
+            if (inventoryResult.getInventoryTaskId().equals(inventoryId)) {
+                b = true;
+                break;
+            }
+        }
+        if (b) {
+            List<Long> inventoryIds = new ArrayList<>();
+            for (InventoryResult inventoryResult : inventoryResults) {
+                inventoryIds.add(inventoryResult.getInventoryTaskId());
+            }
+
+            List<InventoryStock> inventoryStocks = inventoryIds.size() == 0 ? new ArrayList<>() : this.query()  //找出 当前时间段 执行过程中的物料
+                    .in("inventory_id", inventoryIds)
+                    .eq("display", 1).ne("status", 0)
+                    .list();
+
+            for (InventoryStock inventoryStock : all) {
+                updateList(inventoryStock, inventoryStocks);
+            }
+            this.updateBatchById(all);
         }
 
-        List<InventoryStock> inventoryStocks = inventoryIds.size() == 0 ? new ArrayList<>() : this.query()  //找出 当前时间段 执行过程中的物料
-                .in("inventory_id", inventoryIds)
-                .eq("display", 1).ne("status", 0)
-                .list();
-
-        for (InventoryStock inventoryStock : all) {
-            updateList(inventoryStock, inventoryStocks);
-        }
-        this.updateBatchById(all);
     }
 
     /**
@@ -334,10 +347,16 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                 this.query().in("anomaly_id", ids)
                         .eq("display", 1).list();
 
+        Set<Long> inventoryIds = new HashSet<>();
         for (InventoryStock inventoryStock : inventoryStocks) {
             inventoryStock.setLockStatus(99);
+            inventoryIds.add(inventoryStock.getInventoryId());
         }
         this.updateBatchById(inventoryStocks);
+
+        for (Long inventoryId : inventoryIds) {    //添加动态
+            shopCartService.addDynamic(inventoryId, "提交了异常描述");
+        }
     }
 
     @Override
@@ -389,6 +408,21 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         this.updateBatchById(inventoryStocks);
         this.saveBatch(stockList);
+
+
+        //添加动态
+        String skuMessage = skuService.skuMessage(param.getSkuId());
+        String content = "";
+        if (status == 2) {
+            content = "暂存了" + skuMessage + "的盘点结果";
+        } else {
+            content = "对"+skuMessage + "进行了盘点";
+        }
+        Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
+        for (Long inventoryId : inventoryIdsSet) {
+            shopCartService.addDynamic(inventoryId, content);
+        }
+
     }
 
 
