@@ -180,6 +180,9 @@ public class ExcelAsync {
 
                 //物料编码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
+                    if (ToolUtil.isEmpty(codingRules)) {
+                        throw new ServiceException(500, "  自动生成编码 未检测到编码规则 ,请检查 编码规则");
+                    }
                     String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), newItem.getSpuId());
                     backCoding = backCoding.replace("${skuClass}", ToolUtil.isEmpty(spuClass.getCodingClass()) ? "" : spuClass.getCodingClass());
                     newSku.setStandard(backCoding);
@@ -384,7 +387,7 @@ public class ExcelAsync {
                     }
                 }
                 for (Spu spu : spuList) {
-                    if (spuExcel.getSpuName().equals(spu.getName())&&spu.getSpuClassificationId().equals(classId)) {
+                    if (spuExcel.getSpuName().equals(spu.getName()) && spu.getSpuClassificationId().equals(classId)) {
                         throw new ServiceException(500, "产品名称已存在");
                     }
                 }
@@ -537,6 +540,7 @@ public class ExcelAsync {
 
                 asynTaskDetail.setStatus(99);
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.error(excel.getLine() + "------->" + e);
                 excel.setError(e.getMessage());
                 asynTaskDetail.setStatus(50);
