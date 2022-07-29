@@ -390,11 +390,8 @@ public class ExcelAsync {
                 }
 
                 for (Spu spu : spuList) {
-                    if (ToolUtil.isNotEmpty(spu.getCoding()) && spu.getCoding().equals(spuExcel.getSpuCoding())) {
-                        throw new ServiceException(500, "产品编码已存在");
-                    }
-                    if (spuExcel.getSpuName().equals(spu.getName()) && spu.getSpuClassificationId().equals(classId)) {
-                        throw new ServiceException(500, "产品名称已存在");
+                    if (ToolUtil.isNotEmpty(spu.getName()) && spu.getName().equals(spuExcel.getSpuName())) {
+                        throw new ServiceException(500, "产品已存在");
                     }
                 }
 
