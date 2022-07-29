@@ -202,75 +202,7 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
                     result.setToStorehouseResult(storehouseResult);
                 }
             }
-            if (ToolUtil.isNotEmpty(result.getParams())) {
-                AllocationDetailParamJson allocationDetailParamJson = JSON.parseObject(result.getParams(), AllocationDetailParamJson.class);
-                if (ToolUtil.isNotEmpty(allocationDetailParamJson.getSkuAndNumbers())) {
-                    for (AllocationDetailParamJson.SkuAndNumber skuAndNumber : allocationDetailParamJson.getSkuAndNumbers()) {
-                        if (ToolUtil.isNotEmpty(skuAndNumber.getSkuId())) {
-                            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                                if (skuAndNumber.getSkuId().equals(skuSimpleResult.getSkuId())) {
-                                    skuAndNumber.setSkuResult(skuSimpleResult);
-                                }
-                            }
-                        }
-                        if (ToolUtil.isNotEmpty(skuAndNumber.getBrandId())) {
-                            for (BrandResult brandResult : brandResults) {
-                                if (skuAndNumber.getBrandId().equals(brandResult.getBrandId())) {
-                                    skuAndNumber.setBrandResult(brandResult);
-                                }
-                            }
 
-                        }
-                        if (ToolUtil.isNotEmpty(skuAndNumber.getStorehouseId())) {
-                            for (StorehouseResult storehouseResult : storehouseResults) {
-                                if (ToolUtil.isNotEmpty(skuAndNumber.getStorehouseId()) && skuAndNumber.getStorehouseId().equals(storehouseResult.getStorehouseId())) {
-                                    skuAndNumber.setStorehouseResult(storehouseResult);
-                                }
-                            }
-                        }
-                        if (ToolUtil.isNotEmpty(skuAndNumber.getStorehousePositionsId())) {
-                            for (StorehousePositionsResult positionsResult : positionsResults) {
-                                if (ToolUtil.isNotEmpty(skuAndNumber.getStorehousePositionsId()) && skuAndNumber.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
-                                    skuAndNumber.setStorehousePositionsResult(positionsResult);
-                                }
-                            }
-                        }
-                    }
-                }
-                if (ToolUtil.isNotEmpty(allocationDetailParamJson.getStorehouseAndPositions())) {
-                    for (AllocationDetailParamJson.SkuAndNumber storehouseAndPositions : allocationDetailParamJson.getStorehouseAndPositions()) {
-                        if (ToolUtil.isNotEmpty(storehouseAndPositions.getSkuId())) {
-                            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                                if (storehouseAndPositions.getSkuId().equals(skuSimpleResult.getSkuId())) {
-                                    storehouseAndPositions.setSkuResult(skuSimpleResult);
-                                }
-                            }
-                        }
-                        if (ToolUtil.isNotEmpty(storehouseAndPositions.getBrandId())) {
-                            for (BrandResult brandResult : brandResults) {
-                                if (storehouseAndPositions.getBrandId().equals(brandResult.getBrandId())) {
-                                    storehouseAndPositions.setBrandResult(brandResult);
-                                }
-                            }
-
-                        }
-                        if (ToolUtil.isNotEmpty(storehouseAndPositions.getStorehouseId())) {
-                            for (StorehouseResult storehouseResult : storehouseResults) {
-                                if (storehouseAndPositions.getStorehouseId().equals(storehouseResult.getStorehouseId())) {
-                                    storehouseAndPositions.setStorehouseResult(storehouseResult);
-                                }
-                            }
-                        }
-                        if (ToolUtil.isNotEmpty(storehouseAndPositions.getStorehousePositionsId())) {
-                            for (StorehousePositionsResult positionsResult : positionsResults) {
-                                if (storehouseAndPositions.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())) {
-                                    storehouseAndPositions.setStorehousePositionsResult(positionsResult);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 
