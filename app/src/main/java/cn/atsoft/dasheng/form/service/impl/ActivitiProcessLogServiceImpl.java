@@ -1596,7 +1596,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 for (ActivitiProcessLog processLog : audit) {
                     if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
                         List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
-                        DocumentsAction action = documentsActionService.query().eq("action", MaintenanceActionEnum.maintenanceing.name()).eq("display", 1).one();
+                        DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
                         for (ActionStatus actionStatus : actionStatuses) {
                             if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)){
                                 allocationService.createPickListsAndInStockOrder(task.getFormId());

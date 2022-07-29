@@ -33,7 +33,8 @@ public class AllocationDetailResult implements Serializable {
     private Long allocationDetailId;
 
     private String params;
-    private Boolean haveBrand;
+
+    private Integer haveBrand;
 
     /**
      * 调拨id

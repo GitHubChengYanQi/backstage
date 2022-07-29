@@ -26,6 +26,8 @@ public interface AllocationCartService extends IService<AllocationCart> {
      */
     void add(AllocationCartParam param);
 
+    void addBatch(AllocationCartParam param);
+
     /**
      * 删除
      *
