@@ -1212,6 +1212,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         if (timeOut) {
             queryWrapper.ne("status", 99);
             queryWrapper.lt("end_time", dateTime);
+        } else {
+            queryWrapper.ge("end_time", dateTime);
         }
 
         List<Inventory> inventories = this.list(queryWrapper);
