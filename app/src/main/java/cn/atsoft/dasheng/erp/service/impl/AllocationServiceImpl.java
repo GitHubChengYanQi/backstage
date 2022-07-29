@@ -92,7 +92,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private DocumentsActionService documentsActionService;
 
 
-
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
@@ -166,13 +165,15 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
-    return entity;
+        return entity;
     }
+
     @Override
-    public void checkCart(Long allocation){
+    public void checkCart(Long allocation) {
         DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.assign.name()).eq("display", 1).one();
-        activitiProcessLogService.checkAction(allocation,"ALLOCATION",action.getDocumentsActionId(),LoginContextHolder.getContext().getUserId());
+        activitiProcessLogService.checkAction(allocation, "ALLOCATION", action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
     }
+
     /**
      * 创建出库单
      *
@@ -181,120 +182,123 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Override
     public void createPickListsAndInStockOrder(Long allocationId) {
         Allocation allocation = this.getById(allocationId);
-        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type","carry").list();
-        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type","carry").list();
+        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type", "carry").list();
+//        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type","carry").list();
         List<Long> storehouseIds = new ArrayList<>();
         for (AllocationCart allocationCart : allocationCarts) {
             storehouseIds.add(allocationCart.getStorehouseId());
         }
 
-           if (allocation.getType().equals("allocation")){
-               if (allocation.getAllocationType() == 1){
-                   List<Long> stockIds = new ArrayList<>();
-                   for (AllocationCart allocationCart : allocationCarts) {
-                       stockIds.add(allocationCart.getStorehouseId());
-                   }
-                   //入库单
-                   InstockOrderParam instockOrderParam = new InstockOrderParam();
-                   instockOrderParam.setSource("ALLOCATION");
-                   instockOrderParam.setSourceId(allocationId);
-                   List<InstockListParam> listParams = new ArrayList<>();
+        if (allocation.getType().equals("allocation")) {
+            if (allocation.getAllocationType() == 1) {
+                List<Long> stockIds = new ArrayList<>();
+                for (AllocationCart allocationCart : allocationCarts) {
+                    stockIds.add(allocationCart.getStorehouseId());
+                }
+                //入库单
+                InstockOrderParam instockOrderParam = new InstockOrderParam();
+                instockOrderParam.setSource("ALLOCATION");
+                instockOrderParam.setSourceId(allocationId);
+                instockOrderParam.setType("调拨入库");
+                List<InstockListParam> listParams = new ArrayList<>();
 
-                   for (Long stockId : stockIds) {
-                       ProductionPickListsParam listsParam = new ProductionPickListsParam();
-                       listsParam.setPickListsName(allocation.getAllocationName());
-                       listsParam.setUserId(allocation.getUserId());
-                       listsParam.setSource("ALLOCATION");
-                       listsParam.setSourceId(allocationId);
-                       List<ProductionPickListsDetailParam> details = new ArrayList<>();
-                       for (AllocationCart allocationCart : allocationCarts) {
-                           if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isEmpty(allocationCart.getStorehousePositionsId())) {
-                               ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
-                               ToolUtil.copyProperties(allocationCart, listsDetailParam);
-                               details.add(listsDetailParam);
-                               InstockListParam instockListParam = new InstockListParam();
-                               ToolUtil.copyProperties(listsDetailParam, instockListParam);
-                               instockListParam.setStoreHouseId(allocation.getStorehouseId());
-                               listParams.add(instockListParam);
-                               allocationCart.setStatus(98);
-                           }
-                       }
-                       if (details.size()>0){
-                           productionPickListsService.add(listsParam);
-                       }
-                   }
-                   instockOrderParam.setListParams(listParams);
-                   if (listParams.size() >0){
-                       instockOrderService.add(instockOrderParam);
-                   }
-               }else if (allocation.getAllocationType() == 2){
-                   List<Long> stockIds = new ArrayList<>();
-                   for (AllocationCart allocationCart : allocationCarts) {
-                       stockIds.add(allocationCart.getStorehouseId());
-                   }
-                   ProductionPickListsParam listsParam = new ProductionPickListsParam();
-                   listsParam.setPickListsName(allocation.getAllocationName());
-                   listsParam.setUserId(allocation.getUserId());
-                   listsParam.setSource("ALLOCATION");
-                   listsParam.setSourceId(allocationId);
-                   List<ProductionPickListsDetailParam> details = new ArrayList<>();
-                   //入库单
+                for (Long stockId : stockIds) {
+                    ProductionPickListsParam listsParam = new ProductionPickListsParam();
+                    listsParam.setPickListsName(allocation.getAllocationName());
+                    listsParam.setUserId(allocation.getUserId());
+                    listsParam.setSource("ALLOCATION");
+                    listsParam.setSourceId(allocationId);
+                    List<ProductionPickListsDetailParam> details = new ArrayList<>();
+                    for (AllocationCart allocationCart : allocationCarts) {
+                        if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isEmpty(allocationCart.getStorehousePositionsId())) {
+                            ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
+                            ToolUtil.copyProperties(allocationCart, listsDetailParam);
+                            details.add(listsDetailParam);
+                            InstockListParam instockListParam = new InstockListParam();
+                            ToolUtil.copyProperties(listsDetailParam, instockListParam);
+                            instockListParam.setStoreHouseId(allocation.getStorehouseId());
+                            listParams.add(instockListParam);
+                            allocationCart.setStatus(98);
+                        }
+                    }
+                    if (details.size() > 0) {
+                        productionPickListsService.add(listsParam);
+                    }
+                }
+                instockOrderParam.setListParams(listParams);
+                if (listParams.size() > 0) {
+                    instockOrderService.add(instockOrderParam);
+                }
+            } else if (allocation.getAllocationType() == 2) {
+                List<Long> stockIds = new ArrayList<>();
+                for (AllocationCart allocationCart : allocationCarts) {
+                    stockIds.add(allocationCart.getStorehouseId());
+                }
+                ProductionPickListsParam listsParam = new ProductionPickListsParam();
+                listsParam.setPickListsName(allocation.getAllocationName());
+                listsParam.setUserId(allocation.getUserId());
+                listsParam.setSource("ALLOCATION");
+                listsParam.setSourceId(allocationId);
+                List<ProductionPickListsDetailParam> details = new ArrayList<>();
+                //入库单
 
-                   for (Long stockId : stockIds) {
-                       InstockOrderParam instockOrderParam = new InstockOrderParam();
-                       instockOrderParam.setSource("ALLOCATION");
-                       instockOrderParam.setSourceId(allocationId);
-                       List<InstockListParam> listParams = new ArrayList<>();
-                       for (AllocationCart allocationCart : allocationCarts) {
-                           if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isEmpty(allocationCart.getStorehousePositionsId())) {
-                               ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
-                               listsDetailParam.setStorehouseId(allocation.getStorehouseId());
-                               ToolUtil.copyProperties(allocationCart, listsDetailParam);
-                               details.add(listsDetailParam);
-                               InstockListParam instockListParam = new InstockListParam();
-                               ToolUtil.copyProperties(listsDetailParam, instockListParam);
-                               listParams.add(instockListParam);
-                               allocationCart.setStatus(98);
-                           }
-                       }
-                       instockOrderParam.setListParams(listParams);
-                       if (listParams.size() >0){
-                           instockOrderService.add(instockOrderParam);
-                       }
+                for (Long stockId : stockIds) {
+                    InstockOrderParam instockOrderParam = new InstockOrderParam();
+                    instockOrderParam.setSource("ALLOCATION");
+                    instockOrderParam.setSourceId(allocationId);
+                    List<InstockListParam> listParams = new ArrayList<>();
+                    for (AllocationCart allocationCart : allocationCarts) {
+                        if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isEmpty(allocationCart.getStorehousePositionsId())) {
+                            ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
+                            listsDetailParam.setStorehouseId(allocation.getStorehouseId());
+                            ToolUtil.copyProperties(allocationCart, listsDetailParam);
+                            details.add(listsDetailParam);
+                            InstockListParam instockListParam = new InstockListParam();
+                            ToolUtil.copyProperties(listsDetailParam, instockListParam);
+                            listParams.add(instockListParam);
+                            allocationCart.setStatus(98);
+                        }
+                    }
+                    instockOrderParam.setListParams(listParams);
+                    if (listParams.size() > 0) {
+                        instockOrderService.add(instockOrderParam);
+                    }
 
-                   }
-                   if (details.size()>0){
-                       productionPickListsService.add(listsParam);
-                   }
-               }
+                }
+                if (details.size() > 0) {
+                    productionPickListsService.add(listsParam);
+                }
+            }
 
-           }
+        }
 
         /**
          * 如果是移库操作  审批通过删除库位绑定
          */
-        if (allocation.getType().equals("transfer")){
+        if (allocation.getType().equals("transfer")) {
             for (AllocationCart allocationCart : allocationCarts) {
-                    List<StorehousePositionsBind> list = storehousePositionsBindService.query().eq("sku_id", allocationCart.getSkuId()).eq("storehouse_positions_id", allocationCart.getStorehousePositionsId()).list();
-                    if (ToolUtil.isNotEmpty(list)) {
-                        for (StorehousePositionsBind storehousePositionsBind : list) {
-                            storehousePositionsBind.setDisplay(0);
-                        }
-                        storehousePositionsBindService.updateBatchById(list);
+                List<StorehousePositionsBind> list = storehousePositionsBindService.query().eq("sku_id", allocationCart.getSkuId()).eq("storehouse_positions_id", allocationCart.getStorehousePositionsId()).list();
+                if (ToolUtil.isNotEmpty(list)) {
+                    for (StorehousePositionsBind storehousePositionsBind : list) {
+                        storehousePositionsBind.setDisplay(0);
                     }
+                    storehousePositionsBindService.updateBatchById(list);
                 }
             }
-
+        }
 
 
     }
-    void format(){
+
+    void format() {
 
     }
+
     @Override
     public void delete(AllocationParam param) {
         this.removeById(getKey(param));
     }
+
     @Override
     public AllocationResult detail(Long allocationId) {
         Allocation allocation = this.getById(allocationId);
