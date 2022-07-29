@@ -146,6 +146,7 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(skuExcelItem.getClassItem())) {
                     throw new ServiceException(500, "产品不存在");
                 }
+
                 skuExcelItem.setClassItem(skuExcelItem.getClassItem().replaceAll(" ", ""));
                 Long categoryId = null;
                 for (Category category : categories) {
@@ -434,16 +435,16 @@ public class ExcelAsync {
 
                 if (spus.stream().noneMatch(p -> p.getName().equals(newSpu.getName()) && p.getClassId().equals(newSpu.getClassId()))) {
                     spus.add(newSpu);
+                    spuList.add(newSpu);
                 }
                 asynTaskDetail.setStatus(99);
 
             } catch (Exception e) {
                 asynTaskDetail.setStatus(50);
                 spuExcel.setError(e.getMessage());
-                e.printStackTrace();
-            } finally {
                 asynTaskDetail.setContentJson(JSON.toJSONString(spuExcel));
                 asynTaskDetails.add(asynTaskDetail);
+                e.printStackTrace();
             }
 
         }
@@ -559,10 +560,10 @@ public class ExcelAsync {
                 logger.error(excel.getLine() + "------->" + e);
                 excel.setError(e.getMessage());
                 asynTaskDetail.setStatus(50);
-            } finally {
                 asynTaskDetail.setContentJson(JSON.toJSONString(excel));
                 asynTaskDetails.add(asynTaskDetail);
             }
+
         }
 
         asynTask.setStatus(99);
