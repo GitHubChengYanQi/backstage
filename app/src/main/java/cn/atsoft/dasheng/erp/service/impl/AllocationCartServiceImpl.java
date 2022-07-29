@@ -8,16 +8,18 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AllocationCart;
+import cn.atsoft.dasheng.erp.entity.AllocationDetail;
 import cn.atsoft.dasheng.erp.mapper.AllocationCartMapper;
 import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationCartResult;
-import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import  cn.atsoft.dasheng.erp.service.AllocationCartService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.AllocationDetailService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -49,12 +51,30 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
     private StorehousePositionsService storehousePositionsService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private AllocationDetailService allocationDetailService;
 
     @Override
     public void add(AllocationCartParam param){
         AllocationCart entity = getEntity(param);
         entity.setType("carry");
         this.save(entity);
+    }
+    @Override
+    public void addBatch(AllocationCartParam param){
+        if (ToolUtil.isEmpty(param.getAllocationCartParams())) {
+            throw new ServiceException(500,"请填写您要分派的信息");
+        }
+        param.getAllocationId();
+        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("status",0).list();
+        List<AllocationCart> entityList = new ArrayList<>();
+        for (AllocationCartParam allocationCartParam : param.getAllocationCartParams()) {
+            AllocationCart entity = this.getEntity(allocationCartParam);
+            entity.setAllocationId(param.getAllocationId());
+            entity.setType("carry");
+            entityList.add(entity);
+        }
+        this.saveBatch(entityList);
     }
 
     @Override
@@ -64,10 +84,20 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
 
     @Override
     public void update(AllocationCartParam param){
-        AllocationCart oldEntity = getOldEntity(param);
-        AllocationCart newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+
+
+        /**
+         * 先删除
+         */
+        List<AllocationCart> list = this.query().eq("allocation_id", param.getAllocationId()).eq("sku_id", param.getSkuId()).eq("type", "carry").eq("display", 1).list();
+        for (AllocationCart allocationCart : list) {
+            allocationCart.setDisplay(0);
+        }
+        this.updateBatchById(list);
+        /**
+         * 后添加
+         */
+        this.addBatch(param);
     }
 
     @Override

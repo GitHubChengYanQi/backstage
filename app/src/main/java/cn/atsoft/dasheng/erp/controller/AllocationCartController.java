@@ -41,7 +41,7 @@ public class AllocationCartController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AllocationCartParam allocationCartParam) {
-        this.allocationCartService.add(allocationCartParam);
+        this.allocationCartService.addBatch(allocationCartParam);
         return ResponseData.success();
     }
 

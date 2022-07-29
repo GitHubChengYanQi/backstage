@@ -68,10 +68,6 @@ spring:
         acknowledge-mode: manual
     prefix: jazzasdadsads
 
-
-
-
-
 # 邮件发送（改为自己的账号）
 mail:
   from: sn93@qq.com

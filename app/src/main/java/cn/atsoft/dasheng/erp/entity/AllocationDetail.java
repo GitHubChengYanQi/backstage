@@ -37,7 +37,7 @@ public class AllocationDetail implements Serializable {
     private Integer number;
 
     @TableField("have_brand")
-    private Boolean haveBrand;
+    private Integer haveBrand;
 
     /**
      * 仓库库位id
@@ -248,11 +248,11 @@ public class AllocationDetail implements Serializable {
         this.params = params;
     }
 
-    public Boolean getHaveBrand() {
+    public Integer getHaveBrand() {
         return haveBrand;
     }
 
-    public void setHaveBrand(Boolean haveBrand) {
+    public void setHaveBrand(Integer haveBrand) {
         this.haveBrand = haveBrand;
     }
 
