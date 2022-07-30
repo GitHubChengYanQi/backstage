@@ -458,7 +458,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);
         if (inkindIds.size()>0){
-            stockDetailsQueryWrapper.notIn("inkindId", inkindIds);//将已经备料的实物抛出
+            stockDetailsQueryWrapper.notIn("inkind_id", inkindIds);//将已经备料的实物抛出
         }
 
         List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);  //物料查询库存
