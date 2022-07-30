@@ -714,7 +714,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "的盘点任务");
             activitiProcessTaskParam.setQTaskId(param.getInventoryTaskId());
-            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setUserIds(param.getParticipants());
             activitiProcessTaskParam.setFormId(param.getInventoryTaskId());
             activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());

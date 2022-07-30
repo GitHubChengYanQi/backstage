@@ -30,6 +30,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -185,13 +186,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param) {
-
-        List<Long> taskId = getTaskId();    //查看权限
-        if (ToolUtil.isEmpty(taskId)) {
-            taskId = new ArrayList<>();
-            taskId.add(0L);
-        }
-        param.setTaskIds(taskId);
+        List<Long> taskIds = new ArrayList<>();
+        taskIds.add(0L);
+        taskIds.addAll(getTaskId());    //查看节点权限
+        // 参与人权限
+        taskIds.addAll(getTaskIdsByUserIds());
+        param.setTaskIds(taskIds);
         Long userId = LoginContextHolder.getContext().getUserId();
         param.setUserIds(userId.toString());
 
@@ -218,6 +218,23 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return PageFactory.createPageInfo(page);
 
     }
+
+    private List<Long> getTaskIdsByUserIds() {
+        List<Long> taskIds = new ArrayList<>();
+        List<ActivitiProcessTask> processTasks = this.query().eq("display", 1).isNotNull("user_ids").ne("status", 99).list();
+
+        for (ActivitiProcessTask processTask : processTasks) {
+
+            List<Long> userIds = JSON.parseArray(processTask.getUserIds(), Long.class);
+            for (Long userId : userIds) {
+                if (LoginContextHolder.getContext().getUserId().equals(userId)) {
+                    taskIds.add(processTask.getProcessTaskId());
+                }
+            }
+        }
+        return taskIds;
+    }
+
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> LoginStart(ActivitiProcessTaskParam param) {

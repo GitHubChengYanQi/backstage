@@ -107,14 +107,14 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositions entity = getEntity(param);
         this.save(entity);
 
-        StorehousePositions positions = new StorehousePositions();
-        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
-        positions.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        positions.setChildren(JSON.toJSONString(childrenMap.get("children")));
-        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("storehouse_positions_id", entity.getPid());
-        this.update(positions, QueryWrapper);
-        updateChildren(entity.getPid());
+//        StorehousePositions positions = new StorehousePositions();
+//        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
+//        positions.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+//        positions.setChildren(JSON.toJSONString(childrenMap.get("children")));
+//        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
+//        QueryWrapper.eq("storehouse_positions_id", entity.getPid());
+//        this.update(positions, QueryWrapper);
+//        updateChildren(entity.getPid());
     }
 
     /**
@@ -217,64 +217,64 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositions oldEntity = getOldEntity(param);
         StorehousePositions newEntity = getEntity(param);
 
-        if (!oldEntity.getPid().equals(newEntity.getPid())) {
-            List<StorehousePositions> storehousePositions = this.query().like("childrens", param.getStorehousePositionsId()).list();
-            for (StorehousePositions positions : storehousePositions) {
-
-                JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens());
-                JSONArray childrenJson = JSONUtil.parseArray(positions.getChildren());
-
-                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
-                List<Long> newChildrenList = new ArrayList<>();
-                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-                longs.remove(param.getStorehousePositionsId());
-
-                for (Long aLong : oldchildrenList) {
-                    if (aLong.equals(param.getStorehousePositionsId())) {
-                        newChildrenList.remove(aLong);
-                    }
-                }
-                positions.setChildren(JSON.toJSONString(newChildrenList));
-                positions.setChildrens(JSON.toJSONString(longs));
-                this.update(positions, new QueryWrapper<StorehousePositions>().in("storehouse_positions_id", positions.getStorehousePositionsId()));
-            }
-
-        }
-
-        if (ToolUtil.isNotEmpty(param.getPid())) {
-            StorehousePositions one = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).eq("display", 1).one();
-            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
-            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-            for (Long aLong : longs) {
-                if (param.getPid().equals(aLong)) {
-                    throw new ServiceException(500, "请勿循环添加");
-                }
-            }
-
-        }
-
-        // 更新当前节点，及下级
-        StorehousePositions storehousePositions = new StorehousePositions();
-        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
-        List<Long> childrens = childrenMap.get("childrens");
-
-        if (childrens.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
-            childrens.add(param.getStorehousePositionsId());
-        }
-
-        storehousePositions.setChildrens(JSON.toJSONString(childrens));
-        List<Long> children = childrenMap.get("children");
-
-        if (children.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
-            children.add(param.getStorehousePositionsId());
-        }
-
-        storehousePositions.setChildren(JSON.toJSONString(children));
-        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("storehouse_positions_id", param.getPid());
-        this.update(storehousePositions, QueryWrapper);
-
-        updateChildren(param.getPid());
+//        if (!oldEntity.getPid().equals(newEntity.getPid())) {
+//            List<StorehousePositions> storehousePositions = this.query().like("childrens", param.getStorehousePositionsId()).list();
+//            for (StorehousePositions positions : storehousePositions) {
+//
+//                JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens());
+//                JSONArray childrenJson = JSONUtil.parseArray(positions.getChildren());
+//
+//                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
+//                List<Long> newChildrenList = new ArrayList<>();
+//                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+//                longs.remove(param.getStorehousePositionsId());
+//
+//                for (Long aLong : oldchildrenList) {
+//                    if (aLong.equals(param.getStorehousePositionsId())) {
+//                        newChildrenList.remove(aLong);
+//                    }
+//                }
+//                positions.setChildren(JSON.toJSONString(newChildrenList));
+//                positions.setChildrens(JSON.toJSONString(longs));
+//                this.update(positions, new QueryWrapper<StorehousePositions>().in("storehouse_positions_id", positions.getStorehousePositionsId()));
+//            }
+//
+//        }
+//
+//        if (ToolUtil.isNotEmpty(param.getPid())) {
+//            StorehousePositions one = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).eq("display", 1).one();
+//            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
+//            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+//            for (Long aLong : longs) {
+//                if (param.getPid().equals(aLong)) {
+//                    throw new ServiceException(500, "请勿循环添加");
+//                }
+//            }
+//
+//        }
+//
+//        // 更新当前节点，及下级
+//        StorehousePositions storehousePositions = new StorehousePositions();
+//        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
+//        List<Long> childrens = childrenMap.get("childrens");
+//
+//        if (childrens.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
+//            childrens.add(param.getStorehousePositionsId());
+//        }
+//
+//        storehousePositions.setChildrens(JSON.toJSONString(childrens));
+//        List<Long> children = childrenMap.get("children");
+//
+//        if (children.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
+//            children.add(param.getStorehousePositionsId());
+//        }
+//
+//        storehousePositions.setChildren(JSON.toJSONString(children));
+//        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
+//        QueryWrapper.eq("storehouse_positions_id", param.getPid());
+//        this.update(storehousePositions, QueryWrapper);
+//
+//        updateChildren(param.getPid());
         //---------------------------------------------------------------------------------------------------------------------
 
 
