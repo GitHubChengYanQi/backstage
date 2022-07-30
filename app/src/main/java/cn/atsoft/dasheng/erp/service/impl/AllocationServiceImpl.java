@@ -168,7 +168,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 }});
             }
         } else {
-            throw new ServiceException(500, "请创建质检流程！");
+            throw new ServiceException(500, "请创建调拨流程！");
         }
         return entity;
     }
@@ -188,7 +188,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     public void createPickListsAndInStockOrder(Long allocationId) {
         Allocation allocation = this.getById(allocationId);
         List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type", "carry").list();
-        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type", "carry").list();
+//        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type","carry").list();
         List<Long> storehouseIds = new ArrayList<>();
         for (AllocationCart allocationCart : allocationCarts) {
             storehouseIds.add(allocationCart.getStorehouseId());
@@ -204,6 +204,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 InstockOrderParam instockOrderParam = new InstockOrderParam();
                 instockOrderParam.setSource("ALLOCATION");
                 instockOrderParam.setSourceId(allocationId);
+                instockOrderParam.setType("调拨入库");
                 List<InstockListParam> listParams = new ArrayList<>();
 
                 for (Long stockId : stockIds) {
