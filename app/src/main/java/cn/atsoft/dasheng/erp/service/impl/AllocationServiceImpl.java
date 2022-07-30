@@ -260,6 +260,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
                 }
                 if (details.size() > 0) {
+                    listsParam.setPickListsDetailParams(details);
                     productionPickListsService.add(listsParam);
                 }
             }
