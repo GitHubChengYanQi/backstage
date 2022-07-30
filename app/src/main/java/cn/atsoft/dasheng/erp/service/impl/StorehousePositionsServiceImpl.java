@@ -438,7 +438,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      */
     @Override
     public List<BrandResult> selectByBrand(Long skuId, Long brandId, Long storehouseId) {
-        List<ProductionPickListsCart> list = cartService.query().eq("status", 0).or().eq("status", 2).list();
+        List<ProductionPickListsCart> list = cartService.query().eq("status", 0).list();
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : list) {
             inkindIds.add(pickListsCart.getInkindId());
@@ -457,6 +457,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);
+        stockDetailsQueryWrapper.notIn("inkindId", inkindIds);//将已经备料的实物抛出
 
         List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);  //物料查询库存
 
