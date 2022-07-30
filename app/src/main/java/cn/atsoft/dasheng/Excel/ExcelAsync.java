@@ -370,10 +370,13 @@ public class ExcelAsync {
             asynTaskDetail.setTaskId(asynTask.getTaskId());
             asynTaskDetail.setType("产品导入");
 
+
             spuExcel.setLine(i + "");
             try {
                 Spu newSpu = new Spu();
+                newSpu.setName(spuExcel.getSpuName());
                 newSpu.setCoding(spuExcel.getSpuCoding());
+
                 Long classId = null;
                 for (SpuClassification spuClassification : spuClassList) {
                     if (spuClassification.getName().equals(spuExcel.getSpuClass())) {
@@ -389,7 +392,7 @@ public class ExcelAsync {
 
 
                 for (Spu spu : spuList) {
-                    if (newSpu.getClassId().equals(spu.getClassId()) && spu.getName().equals(spuExcel.getSpuName())) {
+                    if (newSpu.getSpuClassificationId().equals(spu.getSpuClassificationId()) && newSpu.getName().equals(spu.getName())) {
                         throw new ServiceException(500, "产品已存在");
                     }
                 }
@@ -427,10 +430,8 @@ public class ExcelAsync {
                     units.add(unit);
                     newSpu.setUnitId(unit.getUnitId());
                 }
-
-
                 newSpu.setCategoryId(cate.getCategoryId());
-                newSpu.setName(spuExcel.getSpuName());
+
 
 
                 if (spus.stream().noneMatch(p -> p.getName().equals(newSpu.getName()) && p.getClassId().equals(newSpu.getClassId()))) {
