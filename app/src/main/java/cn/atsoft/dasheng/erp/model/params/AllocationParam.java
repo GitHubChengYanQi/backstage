@@ -27,6 +27,10 @@ public class AllocationParam implements Serializable, BaseValidatingParam {
     private List<AllocationDetailParam> detailParams;
     private List<Long> userIds;
     private AllocationDetailParamJson jsonParam;
+    private Long toStorehousePositionsId;
+    private Long toStorehouseId;
+    private Long number;
+
 
     /**
      * 调拨id
