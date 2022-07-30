@@ -59,40 +59,28 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private AllocationDetailService allocationDetailService;
     @Autowired
     private AllocationCartService allocationCartService;
-
     @Autowired
     private ProductionPickListsService productionPickListsService;
-
     @Autowired
     private InstockOrderService instockOrderService;
-
     @Autowired
     private GetOrigin getOrigin;
-
     @Autowired
     private StockDetailsService stockDetailsService;
-
     @Autowired
     private AllocationLogService allocationLogService;
-
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
     @Autowired
     private CodingRulesService codingRulesService;
-
     @Autowired
     private ActivitiProcessService activitiProcessService;
-
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
-
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private DocumentsActionService documentsActionService;
-
-
-
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
