@@ -205,23 +205,43 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         this.updateById(entity);
 
 
+        /**
+         * 被调用类型  判断购物车和一些条件
+         */
+        boolean t = true;
+        if (ToolUtil.isNotEmpty(param.getType())) {
+            switch (param.getType()) {
+                case "调拨入库":
+                    t = false;
+                    break;
+            }
+        }
+
+
         List<Long> skuIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getListParams())) {
             for (InstockListParam instockRequest : param.getListParams()) {
                 skuIds.add(instockRequest.getSkuId());
             }
             for (InstockListParam instockRequest : param.getListParams()) {
+
                 if (ToolUtil.isNotEmpty(instockRequest)) {
-                    if (ToolUtil.isEmpty(instockRequest.getCartId())) {
-                        throw new ServiceException(500, "缺少购物车id");
+                    if (t) {    //是否判断购物车
+                        if (ToolUtil.isEmpty(instockRequest.getCartId())) {
+                            throw new ServiceException(500, "缺少购物车id");
+                        }
+                        ShopCart shopCart = shopCartService.getById(instockRequest.getCartId());
+                        if (ToolUtil.isEmpty(shopCart)) {
+                            throw new ServiceException(500, "购物车不存在");
+                        }
+                        if (shopCart.getStatus() == 99) {
+                            throw new ServiceException(500, "购物车已被操作");
+                        }
+                        if (ToolUtil.isEmpty(instockRequest.getCustomerId())) {
+                            throw new ServiceException(500, "请添加供应商");
+                        }
                     }
-                    ShopCart shopCart = shopCartService.getById(instockRequest.getCartId());
-                    if (ToolUtil.isEmpty(shopCart)) {
-                        throw new ServiceException(500, "购物车不存在");
-                    }
-                    if (shopCart.getStatus() == 99) {
-                        throw new ServiceException(500, "购物车已被操作");
-                    }
+
                     InstockList instockList = new InstockList();
                     instockList.setSkuId(instockRequest.getSkuId());
                     if (instockRequest.getNumber() < 0) {
@@ -232,9 +252,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     instockList.setInstockOrderId(entity.getInstockOrderId());
                     instockList.setInstockNumber(0L);
                     instockList.setBrandId(instockRequest.getBrandId());
-                    if (ToolUtil.isEmpty(instockRequest.getCustomerId())) {
-                        throw new ServiceException(500, "请添加供应商");
-                    }
                     instockList.setCustomerId(instockRequest.getCustomerId());
                     instockList.setLotNumber(instockRequest.getLotNumber());
                     instockList.setSerialNumber(instockRequest.getSerialNumber());
@@ -276,7 +293,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
             //发起审批流程
             if (ToolUtil.isEmpty(param.getModule())) {
-                param.setModule("");
+                param.setModule("createInstock");
             }
             ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.INSTOCK.name()).eq("status", 99).eq("module", param.getModule()).eq("display", 1).one();
 
