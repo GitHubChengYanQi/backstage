@@ -135,7 +135,9 @@ stage
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-
+        <if test="paramCondition.inkindId !=null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
