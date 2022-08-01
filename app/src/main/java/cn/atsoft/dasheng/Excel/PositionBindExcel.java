@@ -62,10 +62,32 @@ public class PositionBindExcel {
         /**
          * 调用异步
          */
-//        excelAsync.stockDetailAdd(excels);
+        excelAsync.stockDetailAdd(excels);
+        return ResponseData.success("ok");
+    }
+
+
+    @RequestMapping("/importPosition")
+    @ResponseBody
+    public ResponseData positionUploadExcel(@RequestParam("fileId") Long fileId) {
+
+        FileInfo fileInfo = fileInfoService.getById(fileId);
+        File excelFile = new File(fileInfo.getFilePath());
+
+        ExcelReader reader = ExcelUtil.getReader(excelFile);
+
+        reader.addHeaderAlias("库位", "position");
+        reader.addHeaderAlias("仓库", "storeHouse");
+
+        List<PositionBind> excels = reader.readAll(PositionBind.class);
+        /**
+         * 调用异步
+         */
+
         excelAsync.positionAdd(excels);
         return ResponseData.success("ok");
     }
+
 
     @RequestMapping(value = "/positionTemp", method = RequestMethod.GET)
     public void positionTemp(HttpServletResponse response) {
