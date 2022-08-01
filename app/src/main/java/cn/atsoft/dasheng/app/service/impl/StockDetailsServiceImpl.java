@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.MaintenanceLogService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
@@ -26,6 +27,8 @@ import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -71,6 +74,10 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private InkindService inkindService;
     @Autowired
     private MaintenanceLogService maintenanceLogService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private StepsService stepsService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -333,17 +340,17 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
     @Override
-    public List<StockDetailsResult> getStockNumberBySkuId(Long skuId,Long storehouseId) {
+    public List<StockDetailsResult> getStockNumberBySkuId(Long skuId, Long storehouseId) {
         List<StockDetails> details = this.query().eq("storehouse_id", storehouseId).eq("sku_id", skuId).list();
         List<StockDetails> totalList = new ArrayList<>();
         List<ProductionPickListsCart> carts = pickListsCartService.query().eq("display", 1).eq("status", 0).list();
-        List<Long> inkindIds =new ArrayList<>();
+        List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart cart : carts) {
             inkindIds.add(cart.getInkindId());
         }
 
         for (Long inkindId : inkindIds) {
-            details.removeIf(i->i.getInkindId().equals(inkindId));
+            details.removeIf(i -> i.getInkindId().equals(inkindId));
         }
         details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
@@ -356,7 +363,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                     }}).ifPresent(totalList::add);
                 }
         );
-        List<StockDetailsResult> results =totalList.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(totalList,StockDetailsResult.class);
+        List<StockDetailsResult> results = totalList.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(totalList, StockDetailsResult.class);
         this.format(results);
         return results;
     }
@@ -408,6 +415,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<Long> brandIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
         List<Long> inkindIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
         for (StockDetailsResult datum : data) {
             stoIds.add(datum.getStorehouseId());
             customerIds.add(datum.getCustomerId());
@@ -415,19 +424,29 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             pIds.add(datum.getStorehousePositionsId());
             skuIds.add(datum.getSkuId());
             inkindIds.add(datum.getInkindId());
+            userIds.add(datum.getCreateUser());
         }
-        List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogService.lastLogByInkindIds(inkindIds);
 
+        List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogService.lastLogByInkindIds(inkindIds);
         List<CustomerResult> results = customerService.getResults(customerIds);
         List<StorehousePositionsResult> positions = positionsService.details(pIds);
         List<StorehouseResult> storehouseResults = storehouseService.getDetails(stoIds);
         List<BrandResult> brandList = brandService.getBrandResults(brandIds);
         List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
 
         for (StockDetailsResult datum : data) {
+            for (User user : userList) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    user.setAvatar(stepsService.imgUrl(user.getUserId().toString()));
+                    datum.setUser(user);
+                    break;
+                }
+            }
+
             for (MaintenanceLogResult maintenanceLogResult : maintenanceLogResults) {
-                if (datum.getInkindId().equals(maintenanceLogResult.getInkindId())){
+                if (datum.getInkindId().equals(maintenanceLogResult.getInkindId())) {
                     datum.setMaintenanceLogResult(maintenanceLogResult);
                 }
             }

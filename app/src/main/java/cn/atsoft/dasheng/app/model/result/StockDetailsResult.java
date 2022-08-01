@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -42,6 +43,7 @@ public class StockDetailsResult implements Serializable {
     private InkindResult inkindResult;
     private CustomerResult customerResult;
     private StorehousePositionsResult positionsResult;
+    private User user;
     /**
      * 库位id
      */
