@@ -579,7 +579,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public StockDetails getInkind(StockDetailsParam param) {
-        List<OrCodeBind> list = orCodeBindService.query().eq("source", "item").likeLeft("qr_code_id", param.getInkind()).eq("display", 1).list();
+//        List<Long> ids = this.baseMapper.getInkindIds(param);
+        List<OrCodeBind> list = orCodeBindService.query().eq("source", "item").likeLeft("substr( qr_code_id, length( qr_code_id )- 5, 6 )", param.getInkind()).eq("display", 1).list();
         List<Long> inkindIds = new ArrayList<>();
         for (OrCodeBind bind : list) {
             inkindIds.add(bind.getFormId());

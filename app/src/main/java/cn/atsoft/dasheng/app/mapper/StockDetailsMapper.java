@@ -63,4 +63,6 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
 
     Integer getNumberByStock(@Param("skuId") Long skuId, @Param("brandId") Long brandId, @Param("positionId") Long positionId);
 
+    List<Long> getInkindIds(@Param("paramCondition") StockDetailsParam param);
+
 }

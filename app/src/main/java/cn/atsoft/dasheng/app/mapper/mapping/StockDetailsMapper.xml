@@ -101,9 +101,10 @@ stage
         <if test="paramCondition.storageTime !=null">
             and storage_time like CONCAT('%',#{paramCondition.storageTime},'%')
         </if>
-        <if test="paramCondition.qrCodeid">
+        <if test="paramCondition.qrCodeid != null ">
             and inkind_id in (
-                select form_id from qr_bind_code where qr_code_id = #{paramCondition.qrCodeid}
+            select form_id from qr_bind_code where display = 1 and SUBSTRING(qr_code_id, -6) and source = 'item' like
+            CONCAT('%',#{paramCondition.qrCodeid},'%')
             )
         </if>
         <if test="paramCondition.storehouseId != null">
@@ -223,7 +224,17 @@ stage
 
     </select>
 
-    <select id="getNumberByStock" resultType="integer" parameterType="long">
+    <select id="getInkindIds" resultType="Long" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+        select form_id
+        from qr_code_bind where display = 1 and source = 'item'
+        <if test="paramCondition.inkind != null ">
+            and SUBSTRING(qr_code_id, -6) like CONCAT('%',#{paramCondition.inkind})
+        </if>
+
+    </select>
+
+    <select id="getNumberByStock" resultType="integer"
+            parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select sum(number) as number
         from daoxin_erp_stock_details where display = 1
         <if test="skuId != null ">
