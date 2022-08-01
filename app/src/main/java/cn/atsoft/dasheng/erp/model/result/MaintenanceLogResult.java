@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,9 @@ public class MaintenanceLogResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    @ApiModelProperty("")
+    private UserResult userResult;
 
     @ApiModelProperty("")
     private Long maintenanceLogId;
