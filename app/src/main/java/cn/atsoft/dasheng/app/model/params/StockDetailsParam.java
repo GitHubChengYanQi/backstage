@@ -25,6 +25,7 @@ import java.util.List;
 public class StockDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    private List<Long> inkindIds;
     private String inkind;
     private Integer stage;
     private String iname;
@@ -52,6 +53,8 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     //物料ids
     @ApiModelProperty("物料ids")
     private List<Long> skuIds;
+
+    private Long  maintenanceId;
 
     private Long customerId;
     /**

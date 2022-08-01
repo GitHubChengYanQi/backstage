@@ -135,6 +135,13 @@ stage
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
+        <if test="paramCondition.inkindIds != null and  paramCondition.inkindIds.size>0">
+            and inkind_id in
+            <foreach collection="paramCondition.inkindIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
         <if test="paramCondition.inkindId !=null">
             and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
         </if>

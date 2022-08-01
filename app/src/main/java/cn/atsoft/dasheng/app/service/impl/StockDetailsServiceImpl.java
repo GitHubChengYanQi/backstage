@@ -13,10 +13,11 @@ import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Inkind;
+import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.InkindService;
-import cn.atsoft.dasheng.erp.service.MaintenanceLogService;
+import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.form.service.StepsService;
@@ -164,10 +165,36 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
 
     public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
+
+
+        if (ToolUtil.isNotEmpty(param.getMaintenanceId())) {
+            List<Long> inkindIds = getMaintenanceInkindIds(param.getMaintenanceId());
+            param.setInkindIds(inkindIds);
+        }
+
+
         Page<StockDetailsResult> pageContext = getPageContext();
         IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
+
+
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 需要养护的实物
+     *
+     * @param maintenanceId
+     * @return
+     */
+    private List<Long> getMaintenanceInkindIds(Long maintenanceId) {
+        Maintenance maintenance = maintenanceService.getById(maintenanceId);
+        List<StockDetails> stockDetails = maintenanceService.needMaintenanceByRequirement(maintenance);
+        List<Long> inkindIds = new ArrayList<>();
+        for (StockDetails stockDetail : stockDetails) {
+            inkindIds.add(stockDetail.getInkindId());
+        }
+        return inkindIds;
     }
 
     @Override

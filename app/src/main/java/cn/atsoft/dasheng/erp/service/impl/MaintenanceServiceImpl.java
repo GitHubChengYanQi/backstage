@@ -248,6 +248,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Override
     public List<StockDetails> needMaintenanceByRequirement(Maintenance param) {
+
         List<Long> skuIds = new ArrayList<>();
         List<Long> inkindIds = new ArrayList<>();
         List<MaintenanceAndInventorySelectParam> maintenanceAndInventorySelectParams = JSON.parseArray(param.getSelectParams(), MaintenanceAndInventorySelectParam.class);
@@ -267,6 +268,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         }
         inkindIds = inkindIds.stream().distinct().collect(Collectors.toList());
 
+
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
         List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
         if (ToolUtil.isNotEmpty(param.getNearMaintenance())) {
@@ -278,7 +280,6 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 }
             }
         }
-
 
         //根据此条件去库存查询需要养护的实物
         return inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).list();
