@@ -289,7 +289,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     @Override
     public List<Maintenance> findTaskByTime() {
         Long userId = LoginContextHolder.getContext().getUserId();
-        List<Maintenance> list = this.query().eq("display", 1).eq("user_id", userId).ne("status", 99).apply(" now() between start_time and end_time").list();
+        List<Maintenance> list = this.query().eq("display", 1).eq("user_id", userId).ne("status", 99).apply(" now() >  start_time ").list();
         list.addAll(this.query().eq("display", 1).eq("user_id", userId).eq("status", 98).list());
         List<Maintenance> totalList = new ArrayList<>();
         list.parallelStream().collect(Collectors.groupingBy(item -> item.getMaintenanceId(), Collectors.toList())).forEach(
@@ -323,24 +323,16 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         if (ToolUtil.isNotEmpty(maintenanceParam) && maintenanceParam.getStatus().equals(0)) {
             List<Maintenance> maintenances = this.findTaskByTime();
             for (Maintenance maintenance : maintenances) {
-                if (maintenance.getMaintenanceId().equals(maintenanceParam.getMaintenanceId()) && updateDetail(maintenance) && maintenance.getStatus().equals(0)) {
-                    maintenanceParam.setStatus(99);
-                } else {
-                    maintenanceParam.setStatus(98);
+                if (maintenance.getMaintenanceId().equals(maintenanceParam.getMaintenanceId())) {
+                    updateDetail(maintenance);
                 }
             }
 
-        } else { //如果是从合并任务查看界面进入  则筛选出 符合条件的任务  更改这些任务状态为开始  并更新物料列表
-            List<Maintenance> maintenances = this.findTaskByTime();
-            for (Maintenance entity : maintenances) {
-                if (entity.getStatus().equals(0)) {
-                    entity.setStatus(98);
-                    if (updateDetail(entity)) {
-                        entity.setStatus(99);
-                    }
-                }
-            }
+        } else if (ToolUtil.isNotEmpty(maintenanceParam) && maintenanceParam.getStatus().equals(98))  {
+            updateDetail(maintenanceParam);
+
         }
+
     }
 
     @Override
