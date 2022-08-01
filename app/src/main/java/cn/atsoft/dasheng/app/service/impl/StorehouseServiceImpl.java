@@ -86,11 +86,11 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
             return null;
         }
         StorehouseResult storehouseResult = new StorehouseResult();
-
         ToolUtil.copyProperties(storehouse, storehouseResult);
-
         return storehouseResult;
     }
+
+
 
     private Serializable getKey(StorehouseParam param) {
         return param.getStorehouseId();

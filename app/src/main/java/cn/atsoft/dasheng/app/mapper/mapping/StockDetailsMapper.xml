@@ -101,6 +101,11 @@ stage
         <if test="paramCondition.storageTime !=null">
             and storage_time like CONCAT('%',#{paramCondition.storageTime},'%')
         </if>
+        <if test="paramCondition.qrCodeid">
+            and inkind_id in (
+                select form_id from qr_bind_code where qr_code_id = #{paramCondition.qrCodeid}
+            )
+        </if>
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
