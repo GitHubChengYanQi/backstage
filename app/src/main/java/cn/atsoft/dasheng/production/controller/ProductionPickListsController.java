@@ -10,6 +10,10 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.pojo.ProcessType;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
@@ -80,6 +84,9 @@ public class ProductionPickListsController extends BaseController {
 
     @Autowired
     private InventoryService inventoryService;
+
+    @Autowired
+    private ActivitiProcessTaskService processTaskService;
 
     /**
      * 新增接口
@@ -275,19 +282,23 @@ public class ProductionPickListsController extends BaseController {
     }
 
     /**
-     * 查询列表
+     * 领料中心
      *
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    @RequestMapping(value = "/selfList", method = RequestMethod.POST)
+    @RequestMapping(value = "/selfPickTasks", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ProductionPickListsResult> selfList(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
-        if (ToolUtil.isEmpty(productionPickListsParam)) {
-            productionPickListsParam = new ProductionPickListsParam();
+    public PageInfo<ActivitiProcessTaskResult> selfPickTasks(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+
+
+        if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
+            activitiProcessTaskParam = new ActivitiProcessTaskParam();
         }
-        productionPickListsParam.setUserId(LoginContextHolder.getContext().getUserId());
-        return this.productionPickListsService.findPageBySpec(productionPickListsParam);
+        activitiProcessTaskParam.setUserId(LoginContextHolder.getContext().getUserId());
+        activitiProcessTaskParam.setType(ProcessType.OUTSTOCK.name());
+        return processTaskService.selfPickTasks(activitiProcessTaskParam);
+
     }
 
     @RequestMapping(value = "/createOutStockOrder", method = RequestMethod.POST)

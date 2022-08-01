@@ -322,7 +322,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             userIds.add(result.getCreateUser());
 
         }
-
+        List<UserResult> userResults = userService.getUserResultsByIds(userIds);
         List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.resultsByPickListsIds(pickListsIds);
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {
@@ -330,13 +330,16 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         List<StorehousePositionsBind> positionsBinds = skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
-
         for (ProductionPickListsResult result : results) {
+            result.setCanOperate(false);
             List<Long> listsSkuIds = new ArrayList<>();
             List<Long> listsPositionIds = new ArrayList<>();
             Integer numberCount = 0;
             Integer receivedCount = 0;
             for (ProductionPickListsDetailResult detailResult : detailResults) {
+                if (detailResult.getStockNumber()>0) {
+                    result.setCanOperate(true);
+                }
                 listsSkuIds.add(detailResult.getSkuId());
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
                     numberCount += detailResult.getNumber();
@@ -352,6 +355,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             result.setPositionCount(listsPositionIds.stream().distinct().collect(Collectors.toList()).size());
             result.setNumberCount(numberCount);
             result.setReceivedCount(receivedCount);
+            for (UserResult userResult : userResults) {
+                if (result.getCreateUser().equals(result.getUserId())){
+                    result.setCreateUserResult(userResult);
+                }
+                if (result.getUserId().equals(result.getUserId())){
+                    result.setUserResult(userResult);
+                }
+            }
         }
 
 

@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.MaintenanceLogService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -61,6 +62,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     private MobileService mobileService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+
+    @Autowired
+    private MaintenanceLogService maintenanceLogService;
 
 
     @Override
