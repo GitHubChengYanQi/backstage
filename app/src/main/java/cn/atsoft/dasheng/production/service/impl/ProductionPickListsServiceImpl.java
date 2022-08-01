@@ -330,13 +330,16 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         List<StorehousePositionsBind> positionsBinds = skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
-
         for (ProductionPickListsResult result : results) {
+            result.setCanOperate(false);
             List<Long> listsSkuIds = new ArrayList<>();
             List<Long> listsPositionIds = new ArrayList<>();
             Integer numberCount = 0;
             Integer receivedCount = 0;
             for (ProductionPickListsDetailResult detailResult : detailResults) {
+                if (detailResult.getStockNumber()>0) {
+                    result.setCanOperate(true);
+                }
                 listsSkuIds.add(detailResult.getSkuId());
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
                     numberCount += detailResult.getNumber();

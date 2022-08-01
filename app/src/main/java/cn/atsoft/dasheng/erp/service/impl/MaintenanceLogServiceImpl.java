@@ -1,12 +1,9 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -16,9 +13,9 @@ import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.orCode.model.result.StoreHousePositionsRequest;
-import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
-import cn.hutool.core.date.DateUtil;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,11 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
 
 /**
  * <p>
@@ -68,6 +60,8 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     private InkindService inkindService;
     @Autowired
     private MaintenanceCycleService maintenanceCycleService;
+    @Autowired
+    private UserService userService;
 
 
     @Override
@@ -79,7 +73,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         List<MaintenanceDetail> maintenanceDetails = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getMaintenanceId())) {
             Maintenance maintenance = maintenanceService.getById(param.getMaintenanceId());
-            maintenanceDetails = maintenanceDetailService.query().eq("maintenance_id", param.getMaintenanceId()).eq("status", 0).eq("display",1).list();
+            maintenanceDetails = maintenanceDetailService.query().eq("maintenance_id", param.getMaintenanceId()).eq("status", 0).eq("display", 1).list();
             stockDetails = maintenanceService.needMaintenanceByRequirement(maintenance);
             maintenanceDetailService.updateBatchById(maintenanceDetails);
             /**
@@ -94,11 +88,11 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
             List<Maintenance> maintenances = taskAndDetailByTime.getMaintenances();
             maintenanceDetails.addAll(taskAndDetailByTime.getMaintenanceDetails());
             for (Maintenance maintenance : maintenances) {
-                stockDetails .addAll(maintenanceService.needMaintenanceByRequirement(maintenance));
+                stockDetails.addAll(maintenanceService.needMaintenanceByRequirement(maintenance));
             }
             /**
              * 判断任务是否完成
-            */
+             */
             if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
                 maintenanceService.updateStatus(param.getMaintenanceId());
             }
@@ -114,7 +108,6 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
             maintenanceService.updateStatus(param.getMaintenanceId());
         }
-
 
 
 //        List<MaintenanceDetail> details = new ArrayList<>();
@@ -194,19 +187,19 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
                     logs.add(log);
                 }
             }
-            List<Inkind> inkinds =inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
+            List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
             for (Inkind inkind : inkinds) {
                 skuIds.add(inkind.getSkuId());
             }
-            List<MaintenanceCycle> cycles =skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
+            List<MaintenanceCycle> cycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
             //实物添加下次养护时间
             for (Inkind inkind : inkinds) {
                 for (MaintenanceCycle cycle : cycles) {
-                    if (inkind.getSkuId().equals(cycle.getSkuId())){
+                    if (inkind.getSkuId().equals(cycle.getSkuId())) {
                         Calendar calendar = Calendar.getInstance();
                         if (ToolUtil.isNotEmpty(inkind.getLastMaintenanceTime())) {
                             calendar.setTime(inkind.getLastMaintenanceTime());
-                        }else {
+                        } else {
                             calendar.setTime(new Date());
                         }
                         calendar.add(Calendar.DATE, cycle.getMaintenancePeriod());
@@ -248,6 +241,28 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         return this.baseMapper.customList(param);
     }
 
+    @Override
+    public List<MaintenanceLogResult> lastLogByInkindIds(List<Long> inkindIds) {
+        List<MaintenanceLog> maintenanceLogs = inkindIds.size() == 0 ? new ArrayList<>() : this.query().in("inkind_id", inkindIds).eq("display", 1).groupBy("inkind_id").orderByDesc("create_time").list();
+        List<MaintenanceLogResult> maintenanceLogResults = BeanUtil.copyToList(maintenanceLogs, MaintenanceLogResult.class);
+        this.format(maintenanceLogResults);
+        return maintenanceLogResults;
+    }
+
+    private void format(List<MaintenanceLogResult> data){
+        List<Long> userIds = new ArrayList<>();
+        for (MaintenanceLogResult datum : data) {
+            userIds.add(datum.getCreateUser());
+        }
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+        for (MaintenanceLogResult datum : data) {
+            for (UserResult userResult : userResultsByIds) {
+                if (datum.getCreateUser().equals(userResult.getUserId())){
+                    datum.setUserResult(userResult);
+                }
+            }
+        }
+    }
     @Override
     public PageInfo<MaintenanceLogResult> findPageBySpec(MaintenanceLogParam param) {
         Page<MaintenanceLogResult> pageContext = getPageContext();

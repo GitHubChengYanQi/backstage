@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.InkindService;
+import cn.atsoft.dasheng.erp.service.MaintenanceLogService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -68,6 +69,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private OrCodeBindService orCodeBindService;
     @Autowired
     private InkindService inkindService;
+    @Autowired
+    private MaintenanceLogService maintenanceLogService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -402,13 +405,17 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<Long> customerIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
+        List<Long> inkindIds = new ArrayList<>();
         for (StockDetailsResult datum : data) {
             stoIds.add(datum.getStorehouseId());
             customerIds.add(datum.getCustomerId());
             brandIds.add(datum.getBrandId());
             pIds.add(datum.getStorehousePositionsId());
             skuIds.add(datum.getSkuId());
+            inkindIds.add(datum.getInkindId());
         }
+        List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogService.lastLogByInkindIds(inkindIds);
+
         List<CustomerResult> results = customerService.getResults(customerIds);
 
         List<StorehousePositions> positions = pIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", pIds).list();
@@ -426,6 +433,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<Brand> brandList = brandService.list(brandQueryWrapper);
         List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
         for (StockDetailsResult datum : data) {
+            for (MaintenanceLogResult maintenanceLogResult : maintenanceLogResults) {
+                if (datum.getInkindId().equals(maintenanceLogResult.getInkindId())){
+                    datum.setMaintenanceLogResult(maintenanceLogResult);
+                }
+            }
             for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
                 if (datum.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     datum.setSkuResult(skuSimpleResult);

@@ -58,6 +58,8 @@ public interface MaintenanceLogService extends IService<MaintenanceLog> {
      */
     List<MaintenanceLogResult> findListBySpec(MaintenanceLogParam param);
 
+    List<MaintenanceLogResult> lastLogByInkindIds(List<Long> inkindIds);
+
     /**
      * 查询分页数据，Specification模式
      *
