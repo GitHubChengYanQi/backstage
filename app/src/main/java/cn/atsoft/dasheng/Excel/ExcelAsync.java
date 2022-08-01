@@ -6,9 +6,11 @@ import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.Excel.pojo.SpuExcel;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -73,6 +75,8 @@ public class ExcelAsync {
     private OrCodeService codeService;
     @Autowired
     private StorehousePositionsBindService positionsBindService;
+    @Autowired
+    private StorehouseService storehouseService;
 
 
     protected static final Logger logger = LoggerFactory.getLogger(ExcelAsync.class);
@@ -433,7 +437,6 @@ public class ExcelAsync {
                 newSpu.setCategoryId(cate.getCategoryId());
 
 
-
                 if (spus.stream().noneMatch(p -> p.getName().equals(newSpu.getName()) && p.getClassId().equals(newSpu.getClassId()))) {
                     spus.add(newSpu);
                     spuList.add(newSpu);
@@ -457,7 +460,7 @@ public class ExcelAsync {
 
 
     @Async
-    public void positionAdd(List<PositionBind> excels) {
+    public void stockDetailAdd(List<PositionBind> excels) {
 
         List<String> strands = new ArrayList<>();
 
@@ -575,4 +578,107 @@ public class ExcelAsync {
     }
 
 
+    @Async
+    public void positionAdd(List<PositionBind> excels) {
+
+        List<Storehouse> storehouses = storehouseService.query().eq("display", 1).list();   //所有仓库
+        List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
+
+        AsynTask asynTask = new AsynTask();
+        asynTask.setAllCount(excels.size());
+        asynTask.setType("库位导入");
+        asynTask.setStatus(0);
+        taskService.save(asynTask);
+
+        int i = 0;
+        List<AsynTaskDetail> asynTaskDetails = new ArrayList<>();
+        for (PositionBind excel : excels) {
+
+            AsynTaskDetail asynTaskDetail = new AsynTaskDetail();
+            asynTaskDetail.setTaskId(asynTask.getTaskId());
+            asynTaskDetail.setType("库位导入");
+
+            i++;
+            asynTask.setCount(i);   //修改任务状态
+            taskService.updateById(asynTask);
+
+            try {
+                if (ToolUtil.isEmpty(excel.getStoreHouse())) {
+                    throw new ServiceException(500, "缺少仓库");
+                }
+                if (ToolUtil.isEmpty(excel.getPosition())) {
+                    throw new ServiceException(500, "缺少库位");
+                }
+
+                /**
+                 * 仓库
+                 */
+                Storehouse storehouse = null;
+                for (Storehouse house : storehouses) {
+                    if (excel.getStoreHouse().equals(house.getName())) {
+                        storehouse = house;
+                        break;
+                    }
+                }
+
+                if (ToolUtil.isEmpty(storehouse)) {
+                    storehouse = new Storehouse();
+                    storehouse.setName(excel.getStoreHouse());
+                    storehouseService.save(storehouse);
+                    storehouses.add(storehouse);
+                }
+
+
+                /**
+                 * 库位
+                 */
+                Long pid = 0L;
+                for (String position : excel.getPosition().split("/")) {
+                    StorehousePositions comparison = comparison(position, pid, storehouse.getStorehouseId(), positions);
+                    pid = comparison.getStorehousePositionsId();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                excel.setError(e.getMessage());
+                asynTaskDetail.setStatus(50);
+                asynTaskDetail.setContentJson(JSON.toJSONString(excel));
+                asynTaskDetails.add(asynTaskDetail);
+                logger.error("写入异常:" + "第" + excel.getLine() + "行" + excel + "错误" + e);   //错误异常
+            }
+
+        }
+        asynTaskDetailService.saveBatch(asynTaskDetails);
+        asynTask.setStatus(99);
+        taskService.updateById(asynTask);
+    }
+
+    /**
+     * 比对
+     *
+     * @param position
+     * @param positions
+     */
+    private StorehousePositions comparison(String position, Long pid, Long houseId, List<StorehousePositions> positions) {
+
+
+        /**
+         * 数据有此库位
+         */
+        for (StorehousePositions storehousePosition : positions) {
+            if (position.equals(storehousePosition.getName())) {
+                return storehousePosition;
+            }
+        }
+
+        /**
+         * 无此库位 需要新建
+         */
+        StorehousePositions newPosition = new StorehousePositions();
+        newPosition.setName(position);
+        newPosition.setPid(pid);
+        newPosition.setStorehouseId(houseId);
+        positionsService.save(newPosition);
+        positions.add(newPosition);
+        return newPosition;
+    }
 }

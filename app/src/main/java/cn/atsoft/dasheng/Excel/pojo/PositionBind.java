@@ -23,6 +23,8 @@ public class PositionBind {
     private String position;     //库位
 
     private String brand;      //品牌
+
+    private String storeHouse;  //仓库
     //----------------------------------------------------------
     private Long skuId;
 
