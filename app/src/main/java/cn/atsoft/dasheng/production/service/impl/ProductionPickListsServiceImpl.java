@@ -322,7 +322,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             userIds.add(result.getCreateUser());
 
         }
-
+        List<UserResult> userResults = userService.getUserResultsByIds(userIds);
         List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.resultsByPickListsIds(pickListsIds);
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {
@@ -355,6 +355,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             result.setPositionCount(listsPositionIds.stream().distinct().collect(Collectors.toList()).size());
             result.setNumberCount(numberCount);
             result.setReceivedCount(receivedCount);
+            for (UserResult userResult : userResults) {
+                if (result.getCreateUser().equals(result.getUserId())){
+                    result.setCreateUserResult(userResult);
+                }
+                if (result.getUserId().equals(result.getUserId())){
+                    result.setUserResult(userResult);
+                }
+            }
         }
 
 

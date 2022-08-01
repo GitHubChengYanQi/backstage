@@ -46,6 +46,8 @@ public interface ActivitiProcessTaskMapper extends BaseMapper<ActivitiProcessTas
      */
     Page<ActivitiProcessTaskResult> customPageList(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 
+    Page<ActivitiProcessTaskResult> selfPickListsTasks(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
+
     /**
      * 获取分页map列表
      *

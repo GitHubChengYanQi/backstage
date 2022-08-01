@@ -1383,7 +1383,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attributeIds.add(valuesRequest.getAttributeId());
             }
         }
-        List<MaintenanceCycle> maintenanceCycles = maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<MaintenanceCycle> maintenanceCycles =skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         List<PurchaseListing> purchaseListings = skuIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().select("sku_id , sum(apply_number) as num").in("sku_id", skuIds).eq("status", 0).eq("display", 1).groupBy("sku_id").list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
