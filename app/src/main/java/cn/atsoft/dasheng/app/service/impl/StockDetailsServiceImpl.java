@@ -127,10 +127,12 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<StorehousePositions> positions = positionsService.list();
         List<StorehouseResult> storehouseResultList = storehouseService.getDetails(houseIds);
-        for (StockDetailsResult detailsResult : detailsResults) {
 
+
+        for (StockDetailsResult detailsResult : detailsResults) {
             StorehousePositionsResult serviceDetail = positionsService.getDetail(detailsResult.getStorehousePositionsId(), positions);
             detailsResult.setPositionsResult(serviceDetail);
+
             for (StorehouseResult storehouseResult : storehouseResultList) {
                 if (storehouseResult.getStorehouseId().equals(detailsResult.getStorehouseId())) {
                     detailsResult.setStorehouseResult(storehouseResult);
@@ -402,6 +404,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<Long> customerIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
+
         for (StockDetailsResult datum : data) {
             stoIds.add(datum.getStorehouseId());
             customerIds.add(datum.getCustomerId());
@@ -409,23 +412,16 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             pIds.add(datum.getStorehousePositionsId());
             skuIds.add(datum.getSkuId());
         }
+
         List<CustomerResult> results = customerService.getResults(customerIds);
-
-        List<StorehousePositions> positions = pIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", pIds).list();
-
-        List<StorehouseResult> storehouseResults = stoIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehouseService.listByIds(stoIds), StorehouseResult.class);
-        QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
-        if (!stoIds.isEmpty()) {
-            storehouseQueryWrapper.in("storehouse_id", stoIds);
-        }
-
-        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        if (!brandIds.isEmpty()) {
-            brandQueryWrapper.in("brand_id", brandIds);
-        }
-        List<Brand> brandList = brandService.list(brandQueryWrapper);
+        List<StorehousePositionsResult> positions = positionsService.details(pIds);
+        List<StorehouseResult> storehouseResults = storehouseService.getDetails(stoIds);
+        List<BrandResult> brandList = brandService.getBrandResults(brandIds);
         List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
+
+
         for (StockDetailsResult datum : data) {
+
             for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
                 if (datum.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     datum.setSkuResult(skuSimpleResult);
@@ -441,11 +437,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
 
             if (ToolUtil.isNotEmpty(positions)) {
-                for (StorehousePositions position : positions) {
+                for (StorehousePositionsResult position : positions) {
                     if (datum.getStorehousePositionsId() != null && position.getStorehousePositionsId().equals(datum.getStorehousePositionsId())) {
-                        StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-                        ToolUtil.copyProperties(position, storehousePositionsResult);
-                        datum.setStorehousePositionsResult(storehousePositionsResult);
+                        datum.setStorehousePositionsResult(position);
                         break;
                     }
                 }
@@ -459,11 +453,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
 
             if (!brandList.isEmpty()) {
-                for (Brand brand : brandList) {
+                for (BrandResult brand : brandList) {
                     if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
-                        BrandResult brandResult = new BrandResult();
-                        ToolUtil.copyProperties(brand, brandResult);
-                        datum.setBrandResult(brandResult);
+                        datum.setBrandResult(brand);
                         break;
                     }
                 }
