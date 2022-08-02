@@ -110,6 +110,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private AnomalyBindService anomalyBindService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private AnomalyDetailService anomalyDetailService;
 
 
     @Transactional
@@ -365,6 +367,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @return
      */
     private boolean isNormal(AnomalyParam param) {
+        inventoryDetailService.jurisdiction(param.getFormId());   //判断盘点操作权限
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             deleteBind(param.getAnomalyId()); //删除绑定数据
             return true;
@@ -515,7 +518,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     @Override
     public void dealWithError(AnomalyParam param) {
-        param.setStatus(90);  //异常物料已被操作
+
+        //        param.setStatus(90);  //异常物料已被操作
+
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
         detailService.allowEdit(oldEntity);

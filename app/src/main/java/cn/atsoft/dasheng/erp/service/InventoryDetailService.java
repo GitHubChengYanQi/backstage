@@ -56,6 +56,8 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
 
     void complete(Long inventoryId);
 
+    void jurisdiction(Long inventoryId);
+
     /**
      * 更新
      *
