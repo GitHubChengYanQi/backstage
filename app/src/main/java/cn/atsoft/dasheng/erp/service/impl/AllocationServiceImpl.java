@@ -273,7 +273,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
          */
         if (allocation.getType().equals("transfer")) {
             for (AllocationCart allocationCart : allocationCarts) {
-                List<StorehousePositionsBind> list = storehousePositionsBindService.query().eq("sku_id", allocationCart.getSkuId()).eq("storehouse_positions_id", allocationCart.getStorehousePositionsId()).list();
+                List<StorehousePositionsBind> list = storehousePositionsBindService.query().eq("sku_id", allocationCart.getSkuId()).eq("position_id", allocationCart.getStorehousePositionsId()).list();
                 if (ToolUtil.isNotEmpty(list)) {
                     for (StorehousePositionsBind storehousePositionsBind : list) {
                         storehousePositionsBind.setDisplay(0);
