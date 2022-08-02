@@ -79,6 +79,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
     PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param);
 
 
+    PageInfo<ActivitiProcessTaskResult> selfPickTasks(ActivitiProcessTaskParam param);
+
     ActivitiProcessTaskResult detail(Long id);
 
     PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param);

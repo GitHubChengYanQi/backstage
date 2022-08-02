@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
-import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -36,7 +35,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -168,6 +166,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public PageInfo<ActivitiProcessTaskResult> selfPickTasks(ActivitiProcessTaskParam param) {
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.selfPickListsTasks(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
