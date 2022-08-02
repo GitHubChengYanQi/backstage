@@ -103,8 +103,8 @@ stage
         </if>
         <if test="paramCondition.qrCodeid != null ">
             and inkind_id in (
-            select form_id from qr_bind_code where display = 1 and SUBSTRING(qr_code_id, -6) and source = 'item' like
-            CONCAT('%',#{paramCondition.qrCodeid},'%')
+            select form_id from qr_code_bind where display = 1 and SUBSTRING(qr_code_id, -6) like
+            CONCAT('%',#{paramCondition.qrCodeid},'%') and source = 'item'
             )
         </if>
         <if test="paramCondition.storehouseId != null">

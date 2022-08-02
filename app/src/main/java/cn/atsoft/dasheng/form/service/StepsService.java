@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 
 import cn.atsoft.dasheng.form.model.params.StepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.UserList;
 import cn.atsoft.dasheng.form.pojo.ViewUpdate;
 import cn.atsoft.dasheng.production.model.params.ProcessRouteParam;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -36,4 +37,6 @@ public interface StepsService extends IService<ActivitiSteps> {
     void headPortrait(ActivitiStepsResult stepResult);
 
     String imgUrl(String userId);
+
+    List<UserList> userLists();
 }

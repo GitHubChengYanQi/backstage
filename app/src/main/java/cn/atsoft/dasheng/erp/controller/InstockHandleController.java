@@ -120,7 +120,6 @@ public class InstockHandleController extends BaseController {
     public ResponseData listByInstockOrderId(@RequestParam Long instockOrderId) {
         List<InstockHandle> instockHandles = this.instockHandleService.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
         List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
-
         List<InstockHandleResult> detailTotalList = new ArrayList<>();
 
         instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId() + "_" + item.getType() + "_" + item.getCustomerId(), Collectors.toList())).forEach(

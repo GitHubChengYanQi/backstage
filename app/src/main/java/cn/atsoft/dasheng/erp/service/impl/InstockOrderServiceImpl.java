@@ -692,8 +692,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Transactional
     public List<Long> inStock(InstockOrderParam param) {
 
-        inventoryService.staticState();  //静态盘点判断
+        
 
+        inventoryService.staticState();  //静态盘点判断
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         List<InstockHandle> instockHandles = new ArrayList<>();
 
