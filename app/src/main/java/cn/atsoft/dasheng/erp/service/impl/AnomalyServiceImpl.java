@@ -110,6 +110,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private AnomalyBindService anomalyBindService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private AnomalyDetailService anomalyDetailService;
 
 
     @Transactional
@@ -516,7 +518,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     @Override
     public void dealWithError(AnomalyParam param) {
-        param.setStatus(90);  //异常物料已被操作
+
+        //        param.setStatus(90);  //异常物料已被操作
+
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
         detailService.allowEdit(oldEntity);
