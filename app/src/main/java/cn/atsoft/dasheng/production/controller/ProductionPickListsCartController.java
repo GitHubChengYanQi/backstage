@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -52,6 +53,7 @@ public class ProductionPickListsCartController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
         if (ToolUtil.isEmpty(productionPickListsCartParam.getTaskId())) {
             throw new ServiceException(500, "缺少任务id");
