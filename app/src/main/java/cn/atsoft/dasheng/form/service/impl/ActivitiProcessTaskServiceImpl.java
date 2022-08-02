@@ -341,7 +341,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
      * @param rule
      * @return
      */
-    private boolean startHaveME(AuditRule rule, LoginContext loginContext) {
+    @Override
+    public boolean startHaveME(AuditRule rule, LoginContext loginContext) {
         LoginUser user = loginContext.getUser();
         List<Long> depts = loginContext.getDeptDataScope();
         if (ToolUtil.isEmpty(user.getId())) {

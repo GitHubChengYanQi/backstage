@@ -33,6 +33,8 @@ import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
+import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
+import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.AuditMessageType;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
@@ -692,7 +694,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Transactional
     public List<Long> inStock(InstockOrderParam param) {
 
-        
+        boolean operat = activitiProcessLogService.canOperat(ProcessType.INSTOCK.name(), ProcessModuleEnum.createInstock.name(), InStockActionEnum.performInstock.name());
+        if (!operat) {
+            throw new ServiceException(500, "你没有入库权限");
+        }
 
         inventoryService.staticState();  //静态盘点判断
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();

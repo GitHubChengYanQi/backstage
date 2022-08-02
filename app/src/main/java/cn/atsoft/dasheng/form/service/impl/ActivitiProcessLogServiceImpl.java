@@ -1480,8 +1480,17 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return stepIds;
     }
 
+    /**
+     * 是否邮操作权限
+     *
+     * @param type
+     * @param module
+     * @param action
+     * @return
+     */
 
-    private boolean canOperat(String type, String module, String action) {
+    @Override
+    public boolean canOperat(String type, String module, String action) {
 
         ActivitiProcess process = processService.query().eq("type", type).eq("module", module).eq("status", 99).one();
         if (ToolUtil.isEmpty(process)) {
@@ -1499,10 +1508,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
-            if (ToolUtil.isNotEmpty(rule)) {
-                if (ToolUtil.isNotEmpty(rule.getType()) && rule.getType().toString().equals(action)) {
-                    if (haveME(rule, LoginContextHolder.getContext().getUserId())) {
-                        return true;
+            if (ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getActionStatuses())) {
+                for (ActionStatus actionStatus : rule.getActionStatuses()) {
+                    if (actionStatus.getAction().equals(action)) {
+                        return activitiProcessTaskService.startHaveME(rule, LoginContextHolder.getContext());
                     }
                 }
             }

@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.service.impl.AllocationServiceImpl;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -272,5 +273,11 @@ public class taskController extends BaseController {
             }
         }
         return null;
+    }
+
+    @RequestMapping(value = "/canOperat", method = RequestMethod.POST)
+    public ResponseData canOperat(@RequestBody ActivitiProcessParam activitiProcessParam) {
+        boolean b = logService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
+        return ResponseData.success(b);
     }
 }
