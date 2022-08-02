@@ -78,6 +78,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private UserService userService;
     @Autowired
     private StepsService stepsService;
+    @Autowired
+    private OrCodeBindService codeBindService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -452,7 +454,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             inkindIds.add(datum.getInkindId());
             userIds.add(datum.getCreateUser());
         }
-
+        List<OrCodeBind> codeBinds = inkindIds.size() == 0 ? new ArrayList<>() : codeBindService.query().in("form_id", inkindIds).list();
         List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogService.lastLogByInkindIds(inkindIds);
         List<CustomerResult> results = customerService.getResults(customerIds);
         List<StorehousePositionsResult> positions = positionsService.details(pIds);
@@ -463,6 +465,14 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
 
         for (StockDetailsResult datum : data) {
+
+            for (OrCodeBind codeBind : codeBinds) {
+                if (codeBind.getFormId().equals(datum.getInkindId())) {
+                    datum.setQrCodeId(codeBind.getOrCodeId());
+                    break;
+                }
+            }
+
             for (User user : userList) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     user.setAvatar(stepsService.imgUrl(user.getUserId().toString()));
@@ -542,6 +552,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 storeHousePositionIds.add(stockDetailExcel.getStorehousePositionsId());
             }
         }
+
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
@@ -579,7 +590,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public StockDetails getInkind(StockDetailsParam param) {
-        List<OrCodeBind> list = orCodeBindService.query().eq("source", "item").likeLeft("qr_code_id", param.getInkind()).eq("display", 1).list();
+//        List<Long> ids = this.baseMapper.getInkindIds(param);
+        List<OrCodeBind> list = orCodeBindService.query().eq("source", "item").likeLeft("substr( qr_code_id, length( qr_code_id )- 5, 6 )", param.getInkind()).eq("display", 1).list();
         List<Long> inkindIds = new ArrayList<>();
         for (OrCodeBind bind : list) {
             inkindIds.add(bind.getFormId());

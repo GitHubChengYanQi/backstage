@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -119,7 +120,6 @@ public class InstockHandleController extends BaseController {
     public ResponseData listByInstockOrderId(@RequestParam Long instockOrderId) {
         List<InstockHandle> instockHandles = this.instockHandleService.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
         List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
-
         List<InstockHandleResult> detailTotalList = new ArrayList<>();
 
         instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId() + "_" + item.getType() + "_" + item.getCustomerId(), Collectors.toList())).forEach(
@@ -134,10 +134,12 @@ public class InstockHandleController extends BaseController {
                 }
         );
 
-
-        this.instockHandleService.format(detailTotalList);
-
-        return ResponseData.success(detailTotalList);
+        /**
+         * 排序
+         */
+        List<InstockHandleResult> collect = detailTotalList.stream().sorted(Comparator.comparing(InstockHandleResult::getSkuId).reversed()).collect(Collectors.toList());
+        this.instockHandleService.format(collect);
+        return ResponseData.success(collect);
     }
 
 }
