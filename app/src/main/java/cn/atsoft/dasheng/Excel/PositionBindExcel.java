@@ -48,13 +48,10 @@ public class PositionBindExcel {
         File excelFile = new File(fileInfo.getFilePath());
 
         ExcelReader reader = ExcelUtil.getReader(excelFile);
-        reader.addHeaderAlias("分类", "spuClass");
         reader.addHeaderAlias("物料编码", "strand");
-        reader.addHeaderAlias("产品", "item");
-        reader.addHeaderAlias("型号", "spuName");
         reader.addHeaderAlias("库位", "position");
         reader.addHeaderAlias("库存余额", "stockNumber");
-        reader.addHeaderAlias("上级库位", "supperPosition");
+
         reader.addHeaderAlias("品牌", "brand");
         reader.addHeaderAlias("仓库", "storeHouse");
 
