@@ -337,7 +337,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             Integer numberCount = 0;
             Integer receivedCount = 0;
             for (ProductionPickListsDetailResult detailResult : detailResults) {
-                if (detailResult.getStockNumber()>0) {
+                if (detailResult.getStockNumber() > 0) {
                     result.setCanOperate(true);
                 }
                 listsSkuIds.add(detailResult.getSkuId());
@@ -356,10 +356,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             result.setNumberCount(numberCount);
             result.setReceivedCount(receivedCount);
             for (UserResult userResult : userResults) {
-                if (result.getCreateUser().equals(result.getUserId())){
+                if (result.getCreateUser().equals(result.getUserId())) {
                     result.setCreateUserResult(userResult);
                 }
-                if (result.getUserId().equals(result.getUserId())){
+                if (result.getUserId().equals(result.getUserId())) {
                     result.setUserResult(userResult);
                 }
             }
@@ -993,68 +993,69 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).list();
         for (ProductionPickListsCartParam pickListsCartParam : param.getCartsParams()) {
 
-
-            /**
-             * 判读申请中没有指定品牌的数据
-             * 将申请单详情中不包含的品牌拿出来
-             */
-            for (ProductionPickListsCart listsCart : listsCarts) {
-                if (ToolUtil.isEmpty(listsCart.getBrandId())) {
-                    listsCart.setBrandId(0L);
-                }
-                if (pickListsCartParam.getNumber() > 0) {
-                    /**
-                     * 处理出库数量对应购物车
-                     * 如部分出库 数量与购物车不符 会拆分购物车
-                     * 原购物车  更改剩余领料数量
-                     * 创建新购物车记录  存放出库数量
-                     */
-                    if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(pickListsCartParam.getBrandId()) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
-                        int num = pickListsCartParam.getNumber();
-                        int lastNum = num;
-                        num -= listsCart.getNumber();
-                        if (num >= 0) {
-                            listsCart.setDisplay(0);
-                            listsCart.setStatus(99);
-                            pickListsCartParam.setNumber(pickListsCartParam.getNumber() - listsCart.getNumber());
-                            for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
-                                if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
-                                    if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
-                                        pickListsDetail.setReceivedNumber(pickListsDetail.getReceivedNumber() + listsCart.getNumber());
-                                    } else {
-                                        pickListsDetail.setReceivedNumber(lastNum);
-                                    }
-                                    if (Objects.equals(pickListsDetail.getNumber(), pickListsDetail.getReceivedNumber())) {
-                                        pickListsDetail.setStatus(99);
+            for (Long brandId : pickListsCartParam.getBrandIds()) {
+                /**
+                 * 判读申请中没有指定品牌的数据
+                 * 将申请单详情中不包含的品牌拿出来
+                 */
+                for (ProductionPickListsCart listsCart : listsCarts) {
+                    if (ToolUtil.isEmpty(listsCart.getBrandId())) {
+                        listsCart.setBrandId(0L);
+                    }
+                    if (pickListsCartParam.getNumber() > 0) {
+                        /**
+                         * 处理出库数量对应购物车
+                         * 如部分出库 数量与购物车不符 会拆分购物车
+                         * 原购物车  更改剩余领料数量
+                         * 创建新购物车记录  存放出库数量
+                         */
+                        if (listsCart.getSkuId().equals(pickListsCartParam.getSkuId()) && listsCart.getBrandId().equals(brandId) && listsCart.getStatus() == 0 && listsCart.getStorehouseId().equals(pickListsCartParam.getStorehouseId())) {
+                            int num = pickListsCartParam.getNumber();
+                            int lastNum = num;
+                            num -= listsCart.getNumber();
+                            if (num >= 0) {
+                                listsCart.setDisplay(0);
+                                listsCart.setStatus(99);
+                                pickListsCartParam.setNumber(pickListsCartParam.getNumber() - listsCart.getNumber());
+                                for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+                                    if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
+                                        if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
+                                            pickListsDetail.setReceivedNumber(pickListsDetail.getReceivedNumber() + listsCart.getNumber());
+                                        } else {
+                                            pickListsDetail.setReceivedNumber(lastNum);
+                                        }
+                                        if (Objects.equals(pickListsDetail.getNumber(), pickListsDetail.getReceivedNumber())) {
+                                            pickListsDetail.setStatus(99);
+                                        }
                                     }
                                 }
-                            }
-                        } else {
-                            listsCart.setNumber(listsCart.getNumber() - lastNum);
-                            ProductionPickListsCart newCart = new ProductionPickListsCart();
-                            ToolUtil.copyProperties(listsCart, newCart);
-                            newCart.setPickListsCart(null);
-                            newCart.setStatus(99);
-                            newCart.setDisplay(0);
-                            newCart.setNumber(lastNum);
-                            newCarts.add(newCart);
-                            for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
-                                if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
-                                    if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
-                                        pickListsDetail.setReceivedNumber(pickListsDetail.getReceivedNumber() + lastNum);
-                                    } else {
-                                        pickListsDetail.setReceivedNumber(lastNum);
-                                    }
-                                    if (Objects.equals(pickListsDetail.getNumber(), pickListsDetail.getReceivedNumber())) {
-                                        pickListsDetail.setStatus(99);
+                            } else {
+                                listsCart.setNumber(listsCart.getNumber() - lastNum);
+                                ProductionPickListsCart newCart = new ProductionPickListsCart();
+                                ToolUtil.copyProperties(listsCart, newCart);
+                                newCart.setPickListsCart(null);
+                                newCart.setStatus(99);
+                                newCart.setDisplay(0);
+                                newCart.setNumber(lastNum);
+                                newCarts.add(newCart);
+                                for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+                                    if (listsCart.getPickListsDetailId().equals(pickListsDetail.getPickListsDetailId())) {
+                                        if (ToolUtil.isNotEmpty(pickListsDetail.getReceivedNumber())) {
+                                            pickListsDetail.setReceivedNumber(pickListsDetail.getReceivedNumber() + lastNum);
+                                        } else {
+                                            pickListsDetail.setReceivedNumber(lastNum);
+                                        }
+                                        if (Objects.equals(pickListsDetail.getNumber(), pickListsDetail.getReceivedNumber())) {
+                                            pickListsDetail.setStatus(99);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+
+
                 }
-
-
             }
         }
 

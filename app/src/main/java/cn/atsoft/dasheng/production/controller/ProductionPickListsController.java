@@ -303,6 +303,7 @@ public class ProductionPickListsController extends BaseController {
 
     @RequestMapping(value = "/createOutStockOrder", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public ResponseData createOutStockOrder(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
         inventoryService.staticState();
         if (ToolUtil.isEmpty(productionPickListsParam)) {
@@ -355,6 +356,7 @@ public class ProductionPickListsController extends BaseController {
 
     @RequestMapping(value = "/listByCode", method = RequestMethod.GET)
     @ApiOperation("详情")
+    @Permission
     public ResponseData listByUser(@RequestParam String code) {
 
         return ResponseData.success(productionPickListsService.listByCode(code));
