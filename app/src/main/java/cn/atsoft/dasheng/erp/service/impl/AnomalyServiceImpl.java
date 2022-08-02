@@ -365,6 +365,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @return
      */
     private boolean isNormal(AnomalyParam param) {
+        inventoryDetailService.jurisdiction(param.getFormId());   //判断盘点操作权限
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             deleteBind(param.getAnomalyId()); //删除绑定数据
             return true;

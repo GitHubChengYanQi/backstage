@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -422,6 +423,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     @Override
     public void complete(Long inventoryId) {
 
+        jurisdiction(inventoryId);   //判断权限
+
         List<InventoryStock> inventoryStocks = inventoryStockService.query().eq("inventory_id", inventoryId).eq("display", 1).list();
         Inventory inventory = inventoryService.getById(inventoryId);
 
@@ -474,6 +477,32 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1, LoginContextHolder.getContext().getUserId());
     }
 
+    /**
+     * 盘点操作权限
+     *
+     * @param inventoryId
+     */
+    @Override
+    public void jurisdiction(Long inventoryId) {
+        List<Long> userIds = new ArrayList<>();
+        Inventory inventory = inventoryService.getById(inventoryId);
+        if (ToolUtil.isNotEmpty(inventory.getParticipants())) {
+            userIds.addAll(JSON.parseArray(inventory.getParticipants(), Long.class));
+        }
+        userIds.add(inventory.getUserId());
+
+        boolean t = true;
+        Long id = LoginContextHolder.getContext().getUserId();
+        for (Long userId : userIds) {
+            if (userId.equals(id)) {
+                t = false;
+                break;
+            }
+        }
+        if (t) {
+            throw new ServiceException(500, "你没有盘点资格");
+        }
+    }
 
     @Override
     public void update(InventoryDetailParam param) {
