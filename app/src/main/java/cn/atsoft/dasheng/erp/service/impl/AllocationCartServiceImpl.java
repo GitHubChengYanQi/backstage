@@ -56,6 +56,27 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
 
     @Override
     public void add(AllocationCartParam param){
+
+        Long allocationId = param.getAllocationId();
+        Long skuId = param.getSkuId();
+        Long brandId = param.getBrandId();
+        Long storehouseId = param.getStorehouseId();
+        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("allocation_id", allocationId).eq("display", 1).eq("status", 0).list();
+
+
+        for (AllocationDetail allocationDetail : allocationDetails) {
+            if ((allocationDetail.getHaveBrand().equals(1) && allocationDetail.getBrandId().equals(brandId)) && allocationDetail.getSkuId().equals(skuId) && allocationDetail.getStorehouseId().equals(storehouseId) ){
+                param.setAllocationDetailId(allocationDetail.getAllocationDetailId());
+            }
+        }
+        if (ToolUtil.isEmpty(param.getAllocationDetailId())){
+            for (AllocationDetail allocationDetail : allocationDetails) {
+                if (allocationDetail.getHaveBrand().equals(0)  && allocationDetail.getSkuId().equals(skuId) && allocationDetail.getStorehouseId().equals(storehouseId) ){
+                    param.setAllocationDetailId(allocationDetail.getAllocationDetailId());
+                }
+            }
+        }
+
         AllocationCart entity = getEntity(param);
         entity.setType("carry");
         this.save(entity);
