@@ -59,6 +59,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
@@ -476,7 +477,19 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     pickListsDetailParams.add(detailParam);
                 }
             }
-            param.setPickListsDetailParams(pickListsDetailParams);
+            List<ProductionPickListsDetailParam> totalList = new ArrayList<>();
+            pickListsDetailParams.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                    (id, transfer) -> {
+                        transfer.stream().reduce((a, b) -> new ProductionPickListsDetailParam() {{
+                            setNumber(a.getNumber() + b.getNumber());
+                            setSkuId(a.getSkuId());
+                            setBrandId(a.getBrandId());
+                            setStorehouseId(a.getStorehouseId());
+                        }}).ifPresent(totalList::add);
+                    }
+            );
+
+            param.setPickListsDetailParams(totalList);
         }
 
         /**

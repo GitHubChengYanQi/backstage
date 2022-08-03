@@ -777,8 +777,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             for (AnomalyDetailResult detail : anomalyDetailResults) {
                 if (datum.getAnomalyId().equals(detail.getAnomalyId())) {
                     otherNum = otherNum + detail.getNumber();
+                    detailResults.add(detail);
                 }
-                detailResults.add(detail);
             }
             datum.setDetails(detailResults);
             datum.setOtherNumber(otherNum);
