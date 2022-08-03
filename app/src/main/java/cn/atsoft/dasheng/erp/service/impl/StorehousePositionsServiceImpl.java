@@ -790,6 +790,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         for (PositionLoop child : childs) {
             loop(child, allPositionLoop);
         }
+
         childs.clear();
         for (PositionLoop loop : allPositionLoop) {
             if (loop.getPid() == 0 && ToolUtil.isNotEmpty(loop.getLoops())) {

@@ -297,7 +297,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     @Override
     public Long update(ShopCartParam param) {
 
-
         ShopCart oldEntity = getOldEntity(param);
         ShopCart newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
