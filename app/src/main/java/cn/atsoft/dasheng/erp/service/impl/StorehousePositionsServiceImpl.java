@@ -47,6 +47,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import oshi.jna.platform.mac.SystemB;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -457,7 +458,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);
-        if (inkindIds.size()>0){
+        if (inkindIds.size() > 0) {
             stockDetailsQueryWrapper.notIn("inkind_id", inkindIds);//将已经备料的实物抛出
         }
 
@@ -782,6 +783,10 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             for (PositionLoop loop : allPositionLoop) {
                 if (loop.getKey().equals(positionId)) {
                     childs.add(loop);
+
+                    if (loop.getPid() == 0) {
+                        loop.setB(true);
+                    }
                     break;
                 }
             }
@@ -793,10 +798,11 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         childs.clear();
         for (PositionLoop loop : allPositionLoop) {
-            if (loop.getPid() == 0 && ToolUtil.isNotEmpty(loop.getLoops())) {
+            if (loop.isB() && loop.getPid() == 0) {
                 childs.add(loop);
             }
         }
+
         return childs;
     }
 
@@ -804,7 +810,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private void loop(PositionLoop child, List<PositionLoop> positions) {
         for (PositionLoop position : positions) {
             if (position.getKey().equals(child.getPid())) {
-
+                position.setB(true);
                 if (ToolUtil.isEmpty(position.getLoops())) {
                     position.setLoops(new ArrayList<>());
                 }

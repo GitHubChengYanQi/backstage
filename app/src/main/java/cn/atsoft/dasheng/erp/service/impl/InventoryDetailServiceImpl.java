@@ -494,7 +494,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         boolean t = true;
         Long id = LoginContextHolder.getContext().getUserId();
         for (Long userId : userIds) {
-            if (userId.equals(id)) {
+            if (ToolUtil.isNotEmpty(userId) && userId.equals(id)) {
                 t = false;
                 break;
             }

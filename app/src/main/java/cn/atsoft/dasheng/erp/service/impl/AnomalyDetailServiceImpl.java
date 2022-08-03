@@ -187,7 +187,12 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         LoginUser user = LoginContextHolder.getContext().getUser();
         ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
         activitiProcessTaskParam.setTaskName(user.getName() + "转交的异常处理");
-        activitiProcessTaskParam.setUserIds(detail.getUserId().toString());
+
+        String jsonString = JSON.toJSONString(new ArrayList<Long>() {{
+            add(detail.getUserId());
+        }});
+
+        activitiProcessTaskParam.setUserIds(jsonString);
         activitiProcessTaskParam.setFormId(detail.getAnomalyId());
         activitiProcessTaskParam.setProcessId(processTask.getProcessId());
         activitiProcessTaskParam.setType("ErrorForWard");
