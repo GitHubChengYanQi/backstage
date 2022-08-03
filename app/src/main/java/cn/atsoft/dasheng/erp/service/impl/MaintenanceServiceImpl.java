@@ -137,6 +137,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private StepsService stepsService;
     @Autowired
     private InkindService inkindService;
+    @Autowired
+    private RemarksService remarksService;
 
     @Override
 
@@ -203,10 +205,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());
-                messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.ADD);
-                    setRemarksParam(remarksParam);
-                }});
+                remarksService.addByMQ(remarksParam);
             }
         } else {
             throw new ServiceException(500, "请创建质检流程！");
