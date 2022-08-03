@@ -251,10 +251,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());
-                messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.ADD);
-                    setRemarksParam(remarksParam);
-                }});
+
             }
 
         } else {
@@ -337,7 +334,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             Integer numberCount = 0;
             Integer receivedCount = 0;
             for (ProductionPickListsDetailResult detailResult : detailResults) {
-                if (detailResult.getStockNumber() > 0) {
+                if (result.getPickListsId().equals(detailResult.getPickListsId()) && detailResult.getStockNumber() > 0) {
                     result.setCanOperate(true);
                 }
                 listsSkuIds.add(detailResult.getSkuId());

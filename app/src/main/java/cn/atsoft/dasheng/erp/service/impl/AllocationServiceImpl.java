@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
+import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
@@ -91,6 +92,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Autowired
     private InkindService inkindService;
 
+    @Autowired
+    private RemarksService remarksService;
+
 
     @Override
     public Allocation add(AllocationParam param) {
@@ -151,10 +155,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());
-                messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.ADD);
-                    setRemarksParam(remarksParam);
-                }});
+                remarksService.addByMQ(remarksParam);
             }
         } else {
             throw new ServiceException(500, "请创建调拨流程！");
@@ -209,7 +210,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             ToolUtil.copyProperties(allocationCart, listsDetailParam);
                             details.add(listsDetailParam);
                             InstockListParam instockListParam = new InstockListParam();
-                            ToolUtil.copyProperties(listsDetailParam, instockListParam);
+                            ToolUtil.copyProperties(allocationCart, instockListParam);
+                            instockListParam.setCartId(allocationCart.getAllocationCartId());
                             instockListParam.setStoreHouseId(allocation.getStorehouseId());
                             listParams.add(instockListParam);
                             allocationCart.setStatus(98);
@@ -249,7 +251,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             ToolUtil.copyProperties(allocationCart, listsDetailParam);
                             details.add(listsDetailParam);
                             InstockListParam instockListParam = new InstockListParam();
-                            ToolUtil.copyProperties(listsDetailParam, instockListParam);
+                            ToolUtil.copyProperties(allocationCart, instockListParam);
+                            instockListParam.setCartId(allocationCart.getAllocationCartId());
                             listParams.add(instockListParam);
                             allocationCart.setStatus(98);
                         }
