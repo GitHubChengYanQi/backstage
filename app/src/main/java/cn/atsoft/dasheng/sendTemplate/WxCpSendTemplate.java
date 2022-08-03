@@ -180,8 +180,8 @@ public class WxCpSendTemplate {
                 messageEntity.setMaxTimes(2);
                 Message message = new Message();
                 message.setTime(new DateTime());
-                message.setTitle(markDownTemplate.getItems());
-                message.setContent(markDownTemplate.getDescription());
+                message.setTitle(markDownTemplate.getTitle());
+                message.setContent(markDownTemplate.getItems());
                 message.setType(markDownTemplate.getType());
                 message.setUserId(userId);
                 message.setSort(0L);
