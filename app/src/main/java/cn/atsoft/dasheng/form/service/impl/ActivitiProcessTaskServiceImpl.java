@@ -374,6 +374,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Override
     public Long getTaskIdByFormId(Long formId) {
         ActivitiProcessTask task = ToolUtil.isEmpty(formId) ? new ActivitiProcessTask() : this.query().eq("form_id", formId).one();
+        if (ToolUtil.isEmpty(task)) {
+            return null;
+        }
         return task.getProcessTaskId();
     }
 
