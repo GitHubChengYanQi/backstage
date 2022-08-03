@@ -112,14 +112,12 @@ public class ProductionPickListsResult implements Serializable {
     /**
      * 来源
      */
-    @JSONField(serialize = false)
     @ApiModelProperty("来源")
     private String source;
 
     /**
      * 来源id
      */
-    @JSONField(serialize = false)
     @ApiModelProperty("来源id")
 
     private Long sourceId;

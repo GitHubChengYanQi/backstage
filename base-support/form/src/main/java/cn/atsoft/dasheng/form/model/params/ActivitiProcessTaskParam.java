@@ -34,6 +34,9 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     @ApiModelProperty("")
     private Long processTaskId;
 
+    private Long sourceId;
+    private String source;
+
     @ApiModelProperty("")
     private Long processId;
 

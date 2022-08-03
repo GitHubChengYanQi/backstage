@@ -102,6 +102,17 @@ public class AllocationCartController extends BaseController {
         }
         return this.allocationCartService.findPageBySpec(allocationCartParam);
     }
+/**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-07-25
+     */
+    @RequestMapping(value = "/resultsByAllocationId", method = RequestMethod.GET)
+    @ApiOperation("查看分派列表")
+    public ResponseData list(@RequestParam(required = false) Long id) {
+        return ResponseData.success(this.allocationCartService.resultsByAllocationId(id));
+    }
 
 
 

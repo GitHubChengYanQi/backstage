@@ -26,7 +26,7 @@ import java.util.List;
 public class ProductionPickListsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private Long taskId;
     private List<ProductionPickListsDetailParam> pickListsDetailParams;
     private List<ProductionPickListsCartParam> cartsParams;
     private List<Long> pickListsIds;
