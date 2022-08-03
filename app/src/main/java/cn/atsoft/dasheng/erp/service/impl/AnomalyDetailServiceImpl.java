@@ -119,9 +119,6 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         if (ToolUtil.isNotEmpty(anomaly)) {
             skuMessage = skuService.skuMessage(anomaly.getSkuId());
         }
-        if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {  //转交
-            pushPeople(param.getUserId(), oldEntity.getAnomalyId());
-        }
         if (ToolUtil.isNotEmpty(param.getAnomalyOrderId())) {
             ActivitiProcessTask task = taskService.getByFormId(param.getAnomalyOrderId());
             if (ToolUtil.isNotEmpty(task)) {
@@ -153,7 +150,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                  */
                 shopCartService.addDynamic(param.getAnomalyOrderId(), skuMessage);
 
-                if (ToolUtil.isNotEmpty(param.getUserId()) && oldEntity.getStauts() == 0) {
+                if (ToolUtil.isNotEmpty(param.getUserId())) {
                     if (LoginContextHolder.getContext().getUserId().equals(param.getUserId())) {
                         throw new ServiceException(500, "不可转交自己");
                     }
