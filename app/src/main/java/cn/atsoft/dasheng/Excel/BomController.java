@@ -123,54 +123,55 @@ public class BomController {
                         Sku detailSku = skuService.query().eq("standard", bom.getStrand()).eq("display", 1).one();
 
                         if (ToolUtil.isEmpty(detailSku)) {    //没有sku添加
-                            detailSku = new Sku();
-                            detailSku.setSkuName(bom.getSkuName());
-                            detailSku.setSpecifications(bom.getSpc());
-                            detailSku.setStandard(bom.getStrand());
-                            /**
-                             * 批量
-                             */
-                            if (ToolUtil.isNotEmpty(bom.getBatch()) && bom.getBatch().equals("是")) {
-                                detailSku.setBatch(1);
-                            }
-                            /**
-                             * 单位
-                             */
-                            Long unitId;
-                            Unit unit = unitService.query().eq("unit_name", bom.getUnit()).eq("display", 1).one();
-                            if (ToolUtil.isEmpty(unit)) {
-                                Unit newUnit = new Unit();
-                                newUnit.setUnitName(bom.getUnit());
-                                unitService.save(newUnit);
-                                unitId = newUnit.getUnitId();
-                            } else {
-                                unitId = unit.getUnitId();
-                            }
-                            /**
-                             * 分类
-                             */
-                            SpuClassification classification = classificationService.query().eq("name", bom.getSpuClass()).eq("display", 1).one();
-                            if (ToolUtil.isEmpty(classification)) {
-                                throw new ServiceException(500, sheetName + "物料下的" + bom.getStrand() + "分类不存在");
-                            }
-                            Spu spu = spuService.query().eq("name", bom.getSpuName()).eq("display", 1).one();
-                            if (ToolUtil.isNotEmpty(spu)) {
-                                detailSku.setSpuId(spu.getSpuId());
-                            } else {
-                                Category category = new Category();
-                                category.setCategoryName(bom.getSpuName());
-                                categoryService.save(category);
-
-                                spu = new Spu();
-                                spu.setName(bom.getSpuName());
-                                spu.setUnitId(unitId);
-                                spu.setSpuClassificationId(classification.getSpuClassificationId());
-                                spu.setCategoryId(category.getCategoryId());
-                                spuService.save(spu);
-                                detailSku.setSpuId(spu.getSpuId());
-                            }
-                            skuService.save(detailSku);
-                            detail.setSkuId(detailSku.getSkuId());
+                            throw new ServiceException(500, "第" + bom.getLine() + "行  没有此物料");
+//                            detailSku = new Sku();
+//                            detailSku.setSkuName(bom.getSkuName());
+//                            detailSku.setSpecifications(bom.getSpc());
+//                            detailSku.setStandard(bom.getStrand());
+//                            /**
+//                             * 批量
+//                             */
+//                            if (ToolUtil.isNotEmpty(bom.getBatch()) && bom.getBatch().equals("是")) {
+//                                detailSku.setBatch(1);
+//                            }
+//                            /**
+//                             * 单位
+//                             */
+//                            Long unitId;
+//                            Unit unit = unitService.query().eq("unit_name", bom.getUnit()).eq("display", 1).one();
+//                            if (ToolUtil.isEmpty(unit)) {
+//                                Unit newUnit = new Unit();
+//                                newUnit.setUnitName(bom.getUnit());
+//                                unitService.save(newUnit);
+//                                unitId = newUnit.getUnitId();
+//                            } else {
+//                                unitId = unit.getUnitId();
+//                            }
+//                            /**
+//                             * 分类
+//                             */
+//                            SpuClassification classification = classificationService.query().eq("name", bom.getSpuClass()).eq("display", 1).one();
+//                            if (ToolUtil.isEmpty(classification)) {
+//                                throw new ServiceException(500, sheetName + "物料下的" + bom.getStrand() + "分类不存在");
+//                            }
+//                            Spu spu = spuService.query().eq("name", bom.getSpuName()).eq("display", 1).one();
+//                            if (ToolUtil.isNotEmpty(spu)) {
+//                                detailSku.setSpuId(spu.getSpuId());
+//                            } else {
+//                                Category category = new Category();
+//                                category.setCategoryName(bom.getSpuName());
+//                                categoryService.save(category);
+//
+//                                spu = new Spu();
+//                                spu.setName(bom.getSpuName());
+//                                spu.setUnitId(unitId);
+//                                spu.setSpuClassificationId(classification.getSpuClassificationId());
+//                                spu.setCategoryId(category.getCategoryId());
+//                                spuService.save(spu);
+//                                detailSku.setSpuId(spu.getSpuId());
+//                            }
+//                            skuService.save(detailSku);
+//                            detail.setSkuId(detailSku.getSkuId());
                         } else {
                             detail.setSkuId(detailSku.getSkuId());
                         }
