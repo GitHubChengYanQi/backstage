@@ -123,7 +123,7 @@ public class BomController {
                         Sku detailSku = skuService.query().eq("standard", bom.getStrand()).eq("display", 1).one();
 
                         if (ToolUtil.isEmpty(detailSku)) {    //没有sku添加
-                            throw new ServiceException(500, "第" + bom.getLine() + "行  没有此物料");
+                            throw new ServiceException(500, sheetName + "bom下" + "的   " + bom.getStrand() + " 物料不存在");
 //                            detailSku = new Sku();
 //                            detailSku.setSkuName(bom.getSkuName());
 //                            detailSku.setSpecifications(bom.getSpc());
