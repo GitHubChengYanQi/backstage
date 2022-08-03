@@ -51,6 +51,8 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -160,6 +162,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private InventoryService inventoryService;
     @Autowired
     private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private ProductionPickListsService pickListsService;
 
 
     @Override
@@ -1295,29 +1299,56 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @return
      */
     @Override
-    public Object document(Long inStockId) {
-        List<Anomaly> anomalies = anomalyService.query().eq("form_id", inStockId).eq("display", 1).list();
-        List<Long> anomalyOrderIds = new ArrayList<>();
-        for (Anomaly anomaly : anomalies) {
-            anomalyOrderIds.add(anomaly.getOrderId());
+    public Object document(Long id, String type) {
+        switch (type) {
+            case "INSTOCK":
+            case "Stocktaking":
+                List<Anomaly> anomalies = anomalyService.query().eq("form_id", id).eq("display", 1).list();
+                List<Long> anomalyOrderIds = new ArrayList<>();
+                for (Anomaly anomaly : anomalies) {
+                    anomalyOrderIds.add(anomaly.getOrderId());
+                }
+                List<ActivitiProcessTask> processTasks = anomalyOrderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.
+                        query().in("form_id", anomalyOrderIds).list();
+                List<ActivitiProcessTaskResult> results = BeanUtil.copyToList(processTasks, ActivitiProcessTaskResult.class);
+                activitiProcessTaskService.format(results);
+                for (ActivitiProcessTaskResult result : results) {
+                    User user = result.getUser();
+                    if (ToolUtil.isNotEmpty(user)) {
+                        String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+                        user.setAvatar(imgUrl);
+                    }
+                    result.setUser(user);
+                }
+                return results;
+
+            case "ERROR":
+                List<Anomaly> anomalyList = anomalyService.query().eq("order_id", id).eq("display", 1).list();
+                List<Long> orderIds = new ArrayList<>();
+                for (Anomaly anomaly : anomalyList) {
+                    orderIds.add(anomaly.getFormId());
+                }
+
+                ProductionPickLists pickLists = pickListsService.query().eq("source_id", id).eq("display", 1).one();
+                if (ToolUtil.isNotEmpty(pickLists)) {
+                    orderIds.add(pickLists.getPickListsId());
+                }
+
+                List<ActivitiProcessTask> processTaskList = orderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.query().in("form_id", orderIds).list();
+                List<ActivitiProcessTaskResult> taskResults = BeanUtil.copyToList(processTaskList, ActivitiProcessTaskResult.class);
+                activitiProcessTaskService.format(taskResults);
+                for (ActivitiProcessTaskResult result : taskResults) {
+                    User user = result.getUser();
+                    if (ToolUtil.isNotEmpty(user)) {
+                        String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+                        user.setAvatar(imgUrl);
+                    }
+                    result.setUser(user);
+                }
+                return taskResults;
         }
 
-        List<ActivitiProcessTask> processTasks = anomalyOrderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.
-                query().in("form_id", anomalyOrderIds).list();
-
-        List<ActivitiProcessTaskResult> results = BeanUtil.copyToList(processTasks, ActivitiProcessTaskResult.class);
-        activitiProcessTaskService.format(results);
-
-        for (ActivitiProcessTaskResult result : results) {
-            User user = result.getUser();
-            if (ToolUtil.isNotEmpty(user)) {
-                String imgUrl = stepsService.imgUrl(user.getUserId().toString());
-                user.setAvatar(imgUrl);
-            }
-            result.setUser(user);
-        }
-
-        return results;
+        return null;
     }
 
     /**
