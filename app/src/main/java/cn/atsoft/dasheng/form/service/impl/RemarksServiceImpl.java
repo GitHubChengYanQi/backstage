@@ -224,14 +224,17 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     public void addByMQ(RemarksParam remarksParam) {
         Remarks entity = this.getEntity(remarksParam);
         this.save(entity);
-
-        if (ToolUtil.isNotEmpty(remarksParam.getUserIds())) {
-            String[] split = remarksParam.getUserIds().split(",");
-            List<Long> userIds = new ArrayList<>();
-            for (String s : split) {
-                userIds.add(Long.valueOf(s));
+        try {
+            if (ToolUtil.isNotEmpty(remarksParam.getUserIds())) {
+                String[] split = remarksParam.getUserIds().split(",");
+                List<Long> userIds = new ArrayList<>();
+                for (String s : split) {
+                    userIds.add(Long.valueOf(s));
+                }
+                pushPeople(userIds, remarksParam.getTaskId(), entity);
             }
-            pushPeople(userIds, remarksParam.getTaskId(), entity);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

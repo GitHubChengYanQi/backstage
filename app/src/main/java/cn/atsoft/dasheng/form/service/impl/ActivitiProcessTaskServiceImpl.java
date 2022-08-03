@@ -224,12 +224,15 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<ActivitiProcessTask> processTasks = this.query().eq("display", 1).isNotNull("user_ids").ne("status", 99).list();
 
         for (ActivitiProcessTask processTask : processTasks) {
-
-            List<Long> userIds = JSON.parseArray(processTask.getUserIds(), Long.class);
-            for (Long userId : userIds) {
-                if (LoginContextHolder.getContext().getUserId().equals(userId)) {
-                    taskIds.add(processTask.getProcessTaskId());
+            try {
+                List<Long> userIds = JSON.parseArray(processTask.getUserIds(), Long.class);
+                for (Long userId : userIds) {
+                    if (LoginContextHolder.getContext().getUserId().equals(userId)) {
+                        taskIds.add(processTask.getProcessTaskId());
+                    }
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
         return taskIds;
