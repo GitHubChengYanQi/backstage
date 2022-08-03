@@ -588,10 +588,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         for (InventoryStock inventoryStock : condition) {
             if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
                             && i.getBrandId().equals(inventoryStock.getBrandId())
-                            && i.getPositionId().equals(inventoryStock.getPositionId())
-                            && i.getCustomerId().equals(inventoryStock.getCustomerId()
-                    )
-            )) {
+                            && i.getPositionId().equals(inventoryStock.getPositionId()))
+            ) {
                 all.add(inventoryStock);
             }
         }

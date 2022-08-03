@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -71,6 +72,9 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
 
     private Boolean openBom = false;
     private Boolean openPosition = false;
+
+    private String sort;
+    private Map<String, String> sortMap;
     /**
      * 是否查询仓库
      */
