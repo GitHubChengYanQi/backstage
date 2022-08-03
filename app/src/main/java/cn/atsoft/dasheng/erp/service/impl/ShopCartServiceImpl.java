@@ -207,15 +207,18 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             return;
         }
         Long taskId = taskService.getTaskIdByFormId(fromId);
-        RemarksParam remarksParam = new RemarksParam();
-        remarksParam.setTaskId(taskId);
-        remarksParam.setType("dynamic");
-        remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
-        remarksParam.setContent(content);
+        if (ToolUtil.isNotEmpty(taskId)) {
+            RemarksParam remarksParam = new RemarksParam();
+            remarksParam.setTaskId(taskId);
+            remarksParam.setType("dynamic");
+            remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
+            remarksParam.setContent(content);
 
-        Remarks entity = new Remarks();
-        ToolUtil.copyProperties(remarksParam, entity);
-        remarksService.save(entity);
+            Remarks entity = new Remarks();
+            ToolUtil.copyProperties(remarksParam, entity);
+            remarksService.save(entity);
+        }
+
 
         /**
          * 消息队列获取不到当前人  不用这个了
