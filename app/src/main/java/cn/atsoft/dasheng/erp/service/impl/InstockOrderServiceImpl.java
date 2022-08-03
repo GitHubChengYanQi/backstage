@@ -389,10 +389,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());
-                messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.ADD);
-                    setRemarksParam(remarksParam);
-                }});
+                remarksService.addByMQ(remarksParam);
             }
             /**
              * 添加动态记录

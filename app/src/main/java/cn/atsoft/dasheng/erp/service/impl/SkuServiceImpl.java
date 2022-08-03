@@ -1383,7 +1383,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attributeIds.add(valuesRequest.getAttributeId());
             }
         }
-
+        List<MaintenanceCycle> maintenanceCycles =skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         List<PurchaseListing> purchaseListings = skuIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().select("sku_id , sum(apply_number) as num").in("sku_id", skuIds).eq("status", 0).eq("display", 1).groupBy("sku_id").list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
@@ -1470,7 +1470,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         );
 
         for (SkuResult skuResult : param) {
-
+            for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
+                if (skuResult.getSkuId().equals(maintenanceCycle.getSkuId())){
+                    skuResult.setMaintenancePeriod(maintenanceCycle.getMaintenancePeriod());
+                }
+            }
             List<BrandResult> brandResultList = new ArrayList<>();
             List<Long> allBrandIds = brandMapIds.get(skuResult.getSkuId());
             if (ToolUtil.isNotEmpty(allBrandIds)) {

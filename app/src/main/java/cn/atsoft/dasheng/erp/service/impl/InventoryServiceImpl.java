@@ -752,10 +752,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());
-                messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.ADD);
-                    setRemarksParam(remarksParam);
-                }});
+                remarksService.addByMQ(remarksParam);
             }
         } else {
             throw new ServiceException(500, "请先设置或启用盘点流程");
