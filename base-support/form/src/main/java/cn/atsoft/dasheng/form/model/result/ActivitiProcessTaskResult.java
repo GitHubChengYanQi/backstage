@@ -57,6 +57,8 @@ public class ActivitiProcessTaskResult implements Serializable {
     private String cause;
 
     private Long formId;
+    private String source;
+    private Long sourceId;
 
     private String url;
 
