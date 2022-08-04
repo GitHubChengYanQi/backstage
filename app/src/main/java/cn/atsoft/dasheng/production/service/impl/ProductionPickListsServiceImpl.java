@@ -167,7 +167,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ActivitiProcessLogService processLogService;
 
     @Autowired
-    private ActivitiStepsService stepsService;
+    private ActivitiStepsService activitiStepsService;
+    @Autowired
+    private StepsService stepsService;
     @Autowired
     private RoleService roleService;
     @Autowired
@@ -354,9 +356,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             result.setReceivedCount(receivedCount);
             for (UserResult userResult : userResults) {
                 if (result.getCreateUser().equals(result.getUserId())) {
+                    userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     result.setCreateUserResult(userResult);
                 }
-                if (result.getUserId().equals(result.getUserId())) {
+                if (result.getUserId().equals(result.getCreateUser())) {
                     result.setUserResult(userResult);
                 }
             }
@@ -616,11 +619,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public void sendPersonPick(ProductionPickListsParam param) {
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("领料通知");
-            setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ReceiptsDetail?id="+param.getTaskId());
+            setUrl(mobileService.getMobileConfig().getUrl() + "/#/ReceiptsDetail?id="+param.getTaskId());
             setDescription("库管那里有新的物料待领取");
             setFunction(MarkDownTemplateTypeEnum.pickSend);
             setType(0);
-            setUserIds(Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+            setUserId(LoginContextHolder.getContext().getUserId());
+            setCreateUser(LoginContextHolder.getContext().getUserId());
+            setSource("processTask");
+            setSourceId(param.getTaskId());
+            setUserIds(Arrays.stream(param.getUserIds().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
         }});
         if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
             for (Long pickListsId : param.getPickListsIds()) {
@@ -782,7 +789,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 通过流程取出结构  组合成map
          */
-        List<ActivitiSteps> activitiSteps = processIds.size() == 0 ? new ArrayList<>() : stepsService.query().in("process_id", processIds).list();
+        List<ActivitiSteps> activitiSteps = processIds.size() == 0 ? new ArrayList<>() : activitiStepsService.query().in("process_id", processIds).list();
         for (ActivitiSteps activitiStep : activitiSteps) {
             List<ActivitiSteps> steps = stepMaps.get(activitiStep.getProcessId());
             if (ToolUtil.isEmpty(steps)) {
