@@ -204,6 +204,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
             setCreateTime(now());
             setTaskId(taskId);
             setCreateUser(LoginContextHolder.getContext().getUserId());
+            setUserId(LoginContextHolder.getContext().getUserId());
             setUserIds(new ArrayList<Long>() {{
                 add(detail.getUserId());
             }});
