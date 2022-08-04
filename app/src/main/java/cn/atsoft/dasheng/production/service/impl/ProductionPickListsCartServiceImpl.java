@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseSimpleResult;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
@@ -13,8 +14,6 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Inkind;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.ShopCartService;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -802,5 +801,15 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
         }
         return results;
+    }
+    @Override
+    public List<StockDetailsResult> getCartInkindByLists(ProductionPickListsCartParam param){
+
+
+        List<ProductionPickListsCart> list = this.query().eq("pick_lists_Id", param.getPickListsId()).eq("brand_id", param.getBrandId()).eq("sku_id", param.getSkuId()).eq("display",1).eq("status",0).list();
+
+        List<StockDetailsResult> stockDetailsResults = BeanUtil.copyToList(list, StockDetailsResult.class);
+        stockDetailsService.format(stockDetailsResults);
+        return  stockDetailsResults;
     }
 }

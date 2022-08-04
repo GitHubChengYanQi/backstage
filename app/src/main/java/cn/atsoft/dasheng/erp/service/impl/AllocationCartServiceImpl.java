@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.entity.AllocationDetail;
 import cn.atsoft.dasheng.erp.mapper.AllocationCartMapper;
 import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationCartResult;
+import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import  cn.atsoft.dasheng.erp.service.AllocationCartService;
@@ -145,6 +146,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
         this.format(results);
         return results;
     }
+
 
     public void format(List<AllocationCartResult> results){
 
