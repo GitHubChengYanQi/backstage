@@ -660,7 +660,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         if (ToolUtil.isEmpty(userId)) {
             return null;
         }
-       WxuserInfo infoList = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").last("limit 1").one();
+        WxuserInfo infoList = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").last("limit 1").one();
         if (ToolUtil.isNotEmpty(infoList)) {
             UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", infoList.getMemberId()).eq("source", "wxCp").one();
             if (ToolUtil.isNotEmpty(userInfo)) {
@@ -671,9 +671,13 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
     }
 
     @Override
-    public List<UserList> userLists() {
+    public List<UserList> userLists(String userName) {
         List<UserList> userLists = new ArrayList<>();
-        List<User> users = userService.list();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(userName)) {
+            queryWrapper.like("name", userName);
+        }
+        List<User> users = userService.list(queryWrapper);
         for (User user : users) {
             String imgUrl = this.imgUrl(user.getUserId().toString());
             userLists.add(new UserList(user.getUserId(), user.getName(), imgUrl));

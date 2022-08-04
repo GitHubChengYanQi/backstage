@@ -22,7 +22,6 @@ import java.util.List;
 public interface StepsService extends IService<ActivitiSteps> {
 
 
-
     Long add(StepsParam param);
 
     Long addProcessRoute(ProcessRouteParam param);
@@ -38,5 +37,5 @@ public interface StepsService extends IService<ActivitiSteps> {
 
     String imgUrl(String userId);
 
-    List<UserList> userLists();
+    List<UserList> userLists(String userName);
 }

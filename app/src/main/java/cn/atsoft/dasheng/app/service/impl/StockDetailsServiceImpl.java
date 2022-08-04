@@ -228,7 +228,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
             List<StockDetails> details = this.query().in("sku_id", skuIds).in("brand_id", brandIds).list();
             for (ListingPlan plan : plans) {
-                Long stockNumber = 0L;
+                long stockNumber = 0L;
                 for (StockDetails detail : details) {
                     if (plan.getSkuId().equals(detail.getSkuId()) && plan.getBrandId().equals(detail.getBrandId())) {
                         stockNumber = stockNumber + detail.getNumber();
