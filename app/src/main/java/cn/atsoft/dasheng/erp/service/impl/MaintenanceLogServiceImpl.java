@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -62,6 +63,8 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     private MaintenanceCycleService maintenanceCycleService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private StepsService stepsService;
 
 
     @Override
@@ -258,6 +261,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         for (MaintenanceLogResult datum : data) {
             for (UserResult userResult : userResultsByIds) {
                 if (datum.getCreateUser().equals(userResult.getUserId())){
+                    userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     datum.setUserResult(userResult);
                 }
             }

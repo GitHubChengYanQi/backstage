@@ -623,6 +623,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             setDescription("库管那里有新的物料待领取");
             setFunction(MarkDownTemplateTypeEnum.pickSend);
             setType(0);
+            setUserId(LoginContextHolder.getContext().getUserId());
+            setCreateUser(LoginContextHolder.getContext().getUserId());
             setSource("processTask");
             setSourceId(param.getTaskId());
             setUserIds(Arrays.stream(param.getUserIds().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
