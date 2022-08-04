@@ -167,7 +167,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ActivitiProcessLogService processLogService;
 
     @Autowired
-    private ActivitiStepsService stepsService;
+    private ActivitiStepsService activitiStepsService;
+    @Autowired
+    private StepsService stepsService;
     @Autowired
     private RoleService roleService;
     @Autowired
@@ -354,9 +356,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             result.setReceivedCount(receivedCount);
             for (UserResult userResult : userResults) {
                 if (result.getCreateUser().equals(result.getUserId())) {
+                    userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     result.setCreateUserResult(userResult);
                 }
-                if (result.getUserId().equals(result.getUserId())) {
+                if (result.getUserId().equals(result.getCreateUser())) {
                     result.setUserResult(userResult);
                 }
             }
@@ -782,7 +785,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 通过流程取出结构  组合成map
          */
-        List<ActivitiSteps> activitiSteps = processIds.size() == 0 ? new ArrayList<>() : stepsService.query().in("process_id", processIds).list();
+        List<ActivitiSteps> activitiSteps = processIds.size() == 0 ? new ArrayList<>() : activitiStepsService.query().in("process_id", processIds).list();
         for (ActivitiSteps activitiStep : activitiSteps) {
             List<ActivitiSteps> steps = stepMaps.get(activitiStep.getProcessId());
             if (ToolUtil.isEmpty(steps)) {
