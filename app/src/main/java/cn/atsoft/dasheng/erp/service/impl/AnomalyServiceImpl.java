@@ -320,6 +320,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
         if (t) {   //添加异常信息
             List<Inkind> inkinds = new ArrayList<>();
+
+            long inkindNum = 0L;
             for (AnomalyDetailParam detailParam : param.getDetailParams()) {
                 AnomalyDetail detail = new AnomalyDetail();
                 ToolUtil.copyProperties(detailParam, detail);
@@ -343,6 +345,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 inkind.setInkindId(detailParam.getInkindId());
                 inkind.setNumber(detailParam.getNumber());
                 inkinds.add(inkind);
+                inkindNum = inkindNum + detailParam.getNumber();
+            }
+            if (inkindNum > param.getRealNumber()) {
+                throw new ServiceException(500, "异常数量不能大于盘点数量");
             }
             inkindService.updateBatchById(inkinds);
         }
