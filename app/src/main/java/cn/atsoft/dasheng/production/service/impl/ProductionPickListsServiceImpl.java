@@ -619,11 +619,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public void sendPersonPick(ProductionPickListsParam param) {
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("领料通知");
-            setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ReceiptsDetail?id="+param.getTaskId());
+            setUrl(mobileService.getMobileConfig().getUrl() + "/#/ReceiptsDetail?id="+param.getTaskId());
             setDescription("库管那里有新的物料待领取");
             setFunction(MarkDownTemplateTypeEnum.pickSend);
             setType(0);
-            setUserIds(Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+            setSource("processTask");
+            setSourceId(param.getTaskId());
+            setUserIds(Arrays.stream(param.getUserIds().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
         }});
         if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
             for (Long pickListsId : param.getPickListsIds()) {
