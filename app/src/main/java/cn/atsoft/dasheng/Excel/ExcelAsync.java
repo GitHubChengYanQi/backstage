@@ -4,14 +4,8 @@ import cn.atsoft.dasheng.Excel.pojo.PositionBind;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelItem;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.Excel.pojo.SpuExcel;
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.entity.Storehouse;
-import cn.atsoft.dasheng.app.entity.Unit;
-import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
-import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -77,6 +71,8 @@ public class ExcelAsync {
     private StorehousePositionsBindService positionsBindService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private CustomerService customerService;
 
 
     protected static final Logger logger = LoggerFactory.getLogger(ExcelAsync.class);
@@ -471,6 +467,7 @@ public class ExcelAsync {
         List<StorehousePositionsBind> positionsBinds = bindService.query().eq("display", 1).list();
         List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
         List<Brand> brands = brandService.list();
+        List<Customer> customers = customerService.query().eq("display", 1).eq("supply", 1).list();
         List<StockDetails> stockDetailsList = new ArrayList<>();
 
 
@@ -504,33 +501,30 @@ public class ExcelAsync {
                     throw new ServiceException(500, "当前物料不存在");
                 }
                 //  品牌-------------------------------------------------------------
-                if (ToolUtil.isEmpty(excel.getBrand())) {
-                    throw new ServiceException(500, "缺少品牌");
-                }
                 Brand brand = null;
                 brand = positionsBindService.judgeBrand(excel.getBrand(), brands);
                 if (ToolUtil.isEmpty(brand)) {
                     brand = new Brand();
-                    brand.setBrandName(excel.getBrand());
+                    brand.setBrandId(0L);
                 }
-                //上级库位-------------------------------------------------------------
-                StorehousePositions supper = positionsBindService.getPosition(excel.getSupperPosition(), positions);
-                if (ToolUtil.isEmpty(supper)) {
-                    throw new ServiceException(500, "没有上级库位");
+                for (Customer customer : customers) {
+                    if (customer.getCustomerName().equals(excel.getCustomer())) {
+                        excel.setCustomerId(customer.getCustomerId());
+                        break;
+                    }
                 }
+                if (ToolUtil.isEmpty(excel.getCustomerId())) {
+                    throw new ServiceException(500, "无此供应商");
+                }
+                //库位-------------------------------------------------------------
                 if (ToolUtil.isEmpty(excel.getPosition())) {
-                    excel.setPositionId(supper.getStorehousePositionsId());
+                    throw new ServiceException(500, "请填写库位");
                 } else {
                     StorehousePositions position = positionsBindService.getPosition(excel.getPosition(), positions);    //库位
                     if (ToolUtil.isEmpty(position)) {
-                        StorehousePositions end = new StorehousePositions();
-                        end.setName(excel.getPosition());
-                        end.setPid(supper.getStorehousePositionsId());
-                        end.setStorehouseId(supper.getStorehouseId());
-                        positionsService.save(end);
-                        positions.add(end);
-                        excel.setPositionId(end.getStorehousePositionsId());
+                        throw new ServiceException(500, "没有当前库位");
                     } else {
+                        excel.setStorehouseId(position.getStorehouseId());
                         excel.setPositionId(position.getStorehousePositionsId());
                     }
                 }
@@ -546,15 +540,15 @@ public class ExcelAsync {
 
                 if (ToolUtil.isNotEmpty(excel.getStockNumber()) && excel.getStockNumber() > 0) {
                     //库存
-                    InkindQrcode inkindQrcode = codeService.ExcelBind(excel.getSkuId(), Long.valueOf(excel.getStockNumber()), brand.getBrandId());
+                    InkindQrcode inkindQrcode = codeService.ExcelBind(excel.getSkuId(), Long.valueOf(excel.getStockNumber()), brand.getBrandId(), excel.getCustomerId(), excel.getPositionId());
                     StockDetails stockDetails = new StockDetails();
                     stockDetails.setSkuId(excel.getSkuId());
                     stockDetails.setNumber(Long.valueOf(excel.getStockNumber()));
                     stockDetails.setBrandId(brand.getBrandId());
-                    stockDetails.setStorehouseId(supper.getStorehouseId());
+                    stockDetails.setStorehouseId(excel.getStorehouseId());
                     stockDetails.setStorehousePositionsId(excel.getPositionId());
+                    stockDetails.setCustomerId(excel.getCustomerId());
                     stockDetails.setInkindId(inkindQrcode.getInkindId());
-                    stockDetails.setQrCodeId(inkindQrcode.getQrCodeId());
                     stockDetailsList.add(stockDetails);
                 }
 

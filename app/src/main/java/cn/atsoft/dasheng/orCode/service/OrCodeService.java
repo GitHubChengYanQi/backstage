@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
 import cn.atsoft.dasheng.orCode.pojo.InkindQrcode;
 import com.baomidou.mybatisplus.extension.service.IService;
+
 import java.util.List;
 import java.util.Map;
 
@@ -157,6 +158,7 @@ public interface OrCodeService extends IService<OrCode> {
      */
 
     void batchOutStockByCode(InKindRequest inKindRequest);
+
     /**
      * 批量增加二维码
      *
@@ -165,7 +167,7 @@ public interface OrCodeService extends IService<OrCode> {
     void batchAdd(OrCodeParam param);
 
 
-    Map<String,Object> inkindDetail(Long qrcodeId);
+    Map<String, Object> inkindDetail(Long qrcodeId);
 
     /**
      * @return
@@ -187,11 +189,12 @@ public interface OrCodeService extends IService<OrCode> {
 
     /**
      * 批量自动生成二维码绑定
+     *
      * @param batchAutomatic
      * @return
      */
     List<AutomaticBindResult> batchAutomaticBinding(BatchAutomatic batchAutomatic);
 
 
-    InkindQrcode ExcelBind(Long skuId, Long number, Long brandId);
+    InkindQrcode ExcelBind(Long skuId, Long number, Long brandId, Long customerId, Long positionId);
 }

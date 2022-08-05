@@ -27,7 +27,11 @@ public class PositionBind {
     private String storeHouse;  //仓库
 
     private String customer; //供应商
+
+    private Long customerId;
     // ----------------------------------------------------------
+    private Long storehouseId;
+
     private Long skuId;
 
     private Long positionId;

@@ -51,9 +51,9 @@ public class PositionBindExcel {
         reader.addHeaderAlias("物料编码", "strand");
         reader.addHeaderAlias("库位", "position");
         reader.addHeaderAlias("库存余额", "stockNumber");
-
+        reader.addHeaderAlias("供应商", "customer");
         reader.addHeaderAlias("品牌", "brand");
-        reader.addHeaderAlias("仓库", "storeHouse");
+
 
         List<PositionBind> excels = reader.readAll(PositionBind.class);
         /**
@@ -89,10 +89,10 @@ public class PositionBindExcel {
     @RequestMapping(value = "/positionTemp", method = RequestMethod.GET)
     public void positionTemp(HttpServletResponse response) {
 
-        String[] header = {"物料编码", "分类", "产品", "型号", "库存余额", "上级库位", "库位", "品牌"};
+        String[] header = {"物料编码", "品牌", "供应商", "库位", "库存余额"};
 
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet hssfSheet = workbook.createSheet("库位绑定模板");
+        HSSFSheet hssfSheet = workbook.createSheet("库存导入");
         HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet, 300);
         HSSFRow titleRow = sheet.createRow(0);
         HSSFCell ti = titleRow.createCell(0);
