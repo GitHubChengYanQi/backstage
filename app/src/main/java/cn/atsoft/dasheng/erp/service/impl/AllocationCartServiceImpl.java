@@ -65,18 +65,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
         List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("allocation_id", allocationId).eq("display", 1).eq("status", 0).list();
 
 
-        for (AllocationDetail allocationDetail : allocationDetails) {
-            if ((allocationDetail.getHaveBrand().equals(1) && allocationDetail.getBrandId().equals(brandId)) && allocationDetail.getSkuId().equals(skuId) && allocationDetail.getStorehouseId().equals(storehouseId) ){
-                param.setAllocationDetailId(allocationDetail.getAllocationDetailId());
-            }
-        }
-        if (ToolUtil.isEmpty(param.getAllocationDetailId())){
-            for (AllocationDetail allocationDetail : allocationDetails) {
-                if (allocationDetail.getHaveBrand().equals(0)  && allocationDetail.getSkuId().equals(skuId) && allocationDetail.getStorehouseId().equals(storehouseId) ){
-                    param.setAllocationDetailId(allocationDetail.getAllocationDetailId());
-                }
-            }
-        }
+
 
         AllocationCart entity = getEntity(param);
         entity.setType("carry");
@@ -91,6 +80,18 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
         List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("status",0).list();
         List<AllocationCart> entityList = new ArrayList<>();
         for (AllocationCartParam allocationCartParam : param.getAllocationCartParams()) {
+            for (AllocationDetail allocationDetail : allocationDetails) {
+                if ((allocationDetail.getHaveBrand().equals(1) && allocationDetail.getBrandId().equals(allocationCartParam.getBrandId())) && allocationDetail.getSkuId().equals(allocationCartParam.getSkuId()) && allocationDetail.getStorehouseId().equals(allocationCartParam.getStorehouseId()) ){
+                    param.setAllocationDetailId(allocationDetail.getAllocationDetailId());
+                }
+            }
+            if (ToolUtil.isEmpty(param.getAllocationDetailId())){
+                for (AllocationDetail allocationDetail : allocationDetails) {
+                    if (allocationDetail.getHaveBrand().equals(0)  && allocationDetail.getSkuId().equals(allocationCartParam.getSkuId()) && allocationDetail.getStorehouseId().equals(allocationCartParam.getStorehouseId()) ){
+                        param.setAllocationDetailId(allocationDetail.getAllocationDetailId());
+                    }
+                }
+            }
             AllocationCart entity = this.getEntity(allocationCartParam);
             entity.setAllocationId(param.getAllocationId());
             entity.setType("carry");

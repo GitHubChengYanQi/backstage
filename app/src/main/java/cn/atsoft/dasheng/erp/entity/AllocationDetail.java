@@ -39,6 +39,9 @@ public class AllocationDetail implements Serializable {
     @TableField("have_brand")
     private Integer haveBrand;
 
+    @TableField("carry_number")
+    private Integer carryNumber;
+
     /**
      * 仓库库位id
      */
@@ -254,6 +257,14 @@ public class AllocationDetail implements Serializable {
 
     public void setHaveBrand(Integer haveBrand) {
         this.haveBrand = haveBrand;
+    }
+
+    public Integer getCarryNumber() {
+        return carryNumber;
+    }
+
+    public void setCarryNumber(Integer carryNumber) {
+        this.carryNumber = carryNumber;
     }
 
     @Override

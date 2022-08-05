@@ -25,6 +25,7 @@ public class AllocationParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<AllocationDetailParam> detailParams;
+    private List<AllocationCartParam> cartParams;
     private List<Long> userIds;
     private AllocationDetailParamJson jsonParam;
     private Long toStorehousePositionsId;

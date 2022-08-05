@@ -1642,7 +1642,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
                         for (ActionStatus actionStatus : actionStatuses) {
                             if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)) {
-                                allocationService.createPickListsAndInStockOrder(task.getFormId());
+//                                allocationService.createPickListsAndInStockOrder(task.getFormId());
                                 continue;
                             }
                         }

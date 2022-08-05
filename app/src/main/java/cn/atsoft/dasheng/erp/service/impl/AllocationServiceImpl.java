@@ -18,16 +18,11 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
-import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
-import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
@@ -42,8 +37,6 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -91,6 +84,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
     @Autowired
     private RemarksService remarksService;
+
+    @Autowired
+    private ShopCartService shopCartService;
 
 
     @Override
@@ -157,6 +153,14 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         } else {
             throw new ServiceException(500, "请创建调拨流程！");
         }
+        /**
+         * 删除购物车
+         */
+        List<ShopCart> shopCarts = shopCartService.query().eq("create_user", LoginContextHolder.getContext().getUserId()).eq("type", "allocation").eq("display", 1).list();
+        for (ShopCart shopCart : shopCarts) {
+            shopCart.setDisplay(0);
+        }
+        shopCartService.updateBatchById(shopCarts);
         return entity;
     }
 
@@ -420,5 +424,37 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
+    @Override
+    public void createOrder(AllocationParam param){
+        if (ToolUtil.isEmpty(param.getUserId()) ) {
+            throw new ServiceException(500,"请填写负责人");
+        }
+        if (ToolUtil.isEmpty(param.getAllocationId())){
+            throw new ServiceException(500,"请选择单据");
+        }
+        Allocation allocation = new Allocation();
+        allocation.setAllocationId(param.getAllocationId());
+        allocation.setUserId(param.getUserId());
+        this.updateById(allocation);
+        List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status",0).list();
+        List<AllocationCart> carts = allocationCartService.query().eq("display", 1).eq("status", 0).eq("type", "carry").list();
+        for (AllocationDetail detail : details) {
+            for (AllocationCart cart : carts) {
+                cart.setDisplay(0);
+                cart.setStatus(98);
+                if (cart.getAllocationDetailId().equals(detail.getAllocationDetailId())){
+                    detail.setCarryNumber(detail.getCarryNumber()+cart.getNumber());
+                    if (detail.getCarryNumber().equals(detail.getNumber())){
+                        detail.setStatus(98);
+                    }
+                }
+            }
+        }
+        allocationCartService.updateBatchById(carts);
+        this.createPickListsAndInStockOrder(param.getAllocationId());
+        details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
+        if (details.stream().noneMatch(i->i.getStatus().equals(0))) {
+            checkCart(allocation.getAllocationId());
+        }
+    }
 }
