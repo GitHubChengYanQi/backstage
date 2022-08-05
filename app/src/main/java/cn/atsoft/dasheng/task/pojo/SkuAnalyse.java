@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.task.pojo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 /**
@@ -7,8 +8,17 @@ import lombok.Data;
  */
 @Data
 public class SkuAnalyse {
-    private Long skuId;
     private String className;
+
+    private Long number;
+
+    @JSONField(serialize = false)
+    private Long skuId;
+
+    @JSONField(serialize = false)
     private Long spuId;
+
+    @JSONField(serialize = false)
     private Long spuClassId;
+
 }

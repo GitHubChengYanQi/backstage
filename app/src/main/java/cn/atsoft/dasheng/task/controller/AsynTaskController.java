@@ -87,8 +87,8 @@ public class AsynTaskController extends BaseController {
 
     @RequestMapping(value = "/spectaculars", method = RequestMethod.POST)
     public ResponseData spectaculars() {
-        asynTaskService.spectaculars();
-        return ResponseData.success();
+        Object spectaculars = asynTaskService.spectaculars();
+        return ResponseData.success(spectaculars);
     }
 
 

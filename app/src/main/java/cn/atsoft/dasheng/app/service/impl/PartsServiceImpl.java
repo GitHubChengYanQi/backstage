@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
+import cn.atsoft.dasheng.app.pojo.AllBomParam;
+import cn.atsoft.dasheng.app.pojo.AsyncMethod;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -66,6 +68,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     private SpuService spuService;
     @Autowired
     private PartsService partsService;
+    @Autowired
+    private AsyncMethod asyncMethod;
 
     @Override
     public Parts add(PartsParam partsParam) {
@@ -165,6 +169,21 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     }
 
+    /**
+     * 开始分析
+     */
+    @Override
+    public void startAnalyse() {
+        
+        //先取最顶级物料
+        List<Long> topSkuId = this.baseMapper.getTopSkuId();
+        for (Long skuId : topSkuId) {
+            List<AllBomParam.SkuNumberParam> skuNumberParams = new ArrayList<>();
+            skuNumberParams.add(new AllBomParam.SkuNumberParam(skuId, 1L, false));
+            AllBomParam allBomParam = new AllBomParam(skuNumberParams);
+            asyncMethod.task(null, skuNumberParams, allBomParam, "报表物料分析");
+        }
+    }
 
     private void judge(PartsParam partsParam) {
         List<Long> skuIds = new ArrayList<>();
@@ -344,7 +363,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         this.updateById(release);
     }
-
 
 
     @Override
@@ -695,7 +713,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
             datum.setParts(detailResults);
-
 
 
             List<PartsResult> partsResults = new ArrayList<>();

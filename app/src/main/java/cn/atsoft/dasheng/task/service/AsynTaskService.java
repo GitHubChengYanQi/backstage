@@ -64,7 +64,7 @@ public interface AsynTaskService extends IService<AsynTask> {
      * @author song
      * @Date 2022-04-01
      */
-     PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param);
+    PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param);
 
-    void spectaculars();
+    Object spectaculars();
 }

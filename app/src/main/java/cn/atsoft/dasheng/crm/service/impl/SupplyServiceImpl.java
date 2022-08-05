@@ -274,7 +274,8 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     /**
      * 查询供应商
-      * @param skuId
+     *
+     * @param skuId
      * @return
      */
     @Override
@@ -396,7 +397,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         for (SupplyResult supplyResult : supplyResults) {
 
             for (BrandResult brandResult : brandResults) {
-                if (supplyResult.getBrandId().equals(brandResult.getBrandId())) {
+                if (ToolUtil.isNotEmpty(supplyResult.getBrandId()) && supplyResult.getBrandId().equals(brandResult.getBrandId())) {
                     supplyResult.setBrandResult(brandResult);
                     break;
                 }

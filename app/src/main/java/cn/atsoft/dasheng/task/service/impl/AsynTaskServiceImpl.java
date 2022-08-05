@@ -21,10 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -74,9 +71,13 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         return PageFactory.createPageInfo(page);
     }
 
+
+
+
+
     @Override
-    public void spectaculars() {
-        List<AsynTask> asynTasks = this.query().eq("type", "物料分析").eq("display", 1).list();
+    public Object spectaculars() {
+        List<AsynTask> asynTasks = this.query().eq("type", "报表物料分析").eq("display", 1).list();
         List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
         format(asynTaskResults);
 
@@ -94,6 +95,7 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         /**
          * 通过 物料取出分类
          */
+        Map<String, List<SkuAnalyse>> skuMap = new HashMap<>();
         for (String skuName : map.keySet()) {
             List<AnalysisResult> analysisResults = map.get(skuName);
             List<Long> skuIds = new ArrayList<>();
@@ -104,15 +106,41 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
              * 分类叠加 取最小
              */
             List<SkuAnalyse> skuAnalyses = this.baseMapper.skuAnalyseList(skuIds);
+            Map<String, Long> spuClassNum = new HashMap<>();
+
             for (SkuAnalyse skuAnalyse : skuAnalyses) {
                 for (AnalysisResult analysisResult : analysisResults) {
                     if (skuAnalyse.getSkuId().equals(analysisResult.getSkuId())) {
-                        
+
+                        analysisResult.setProduceMix(analysisResult.getStockNumber() / analysisResult.getDemandNumber());  //可生产数量
+                        Long number = spuClassNum.get(skuAnalyse.getClassName());
+
+
+                        if (ToolUtil.isEmpty(number)) {
+                            spuClassNum.put(skuAnalyse.getClassName(), analysisResult.getProduceMix());
+                        } else {
+                            if (number >= analysisResult.getProduceMix()) {
+                                spuClassNum.put(skuAnalyse.getClassName(), analysisResult.getProduceMix());
+                            }
+                        }
+                        break;
                     }
                 }
             }
-        }
 
+
+            List<SkuAnalyse> skuAnalyseList = new ArrayList<>();
+            for (String s : spuClassNum.keySet()) {
+                SkuAnalyse skuAnalyse = new SkuAnalyse();
+                skuAnalyse.setClassName(s);
+                skuAnalyse.setNumber(spuClassNum.get(s));
+                skuAnalyseList.add(skuAnalyse);
+            }
+
+            skuMap.put(skuName, skuAnalyseList);
+
+        }
+        return skuMap;
     }
 
     private Serializable getKey(AsynTaskParam param) {
@@ -137,7 +165,6 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         for (AsynTaskResult datum : data) {
             AllBomResult allBomResult = JSON.parseObject(datum.getContent(), AllBomResult.class);
             datum.setAllBomResult(allBomResult);
-            break;
         }
     }
 }
