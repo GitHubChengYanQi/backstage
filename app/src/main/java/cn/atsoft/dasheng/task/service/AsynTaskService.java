@@ -66,4 +66,5 @@ public interface AsynTaskService extends IService<AsynTask> {
      */
      PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param);
 
+    void spectaculars();
 }

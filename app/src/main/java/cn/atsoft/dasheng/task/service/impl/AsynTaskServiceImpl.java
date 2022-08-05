@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.mapper.AsynTaskMapper;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
 import cn.atsoft.dasheng.task.model.result.AsynTaskResult;
+import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
 import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.bean.BeanUtil;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,15 +74,16 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         return PageFactory.createPageInfo(page);
     }
 
-
+    @Override
     public void spectaculars() {
-
         List<AsynTask> asynTasks = this.query().eq("type", "物料分析").eq("display", 1).list();
         List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
         format(asynTaskResults);
 
+        /**
+         * 先从异步里 取出被分析的物料
+         */
         Map<String, List<AnalysisResult>> map = new HashMap<>();
-
         for (AsynTaskResult asynTaskResult : asynTaskResults) {
             AllBomResult allBomResult = asynTaskResult.getAllBomResult();
             List<AllBomResult.View> view = allBomResult.getView();
@@ -88,14 +91,26 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
             List<AnalysisResult> owe = allBomResult.getOwe();
             map.put(skuView.getName(), owe);
         }
-
+        /**
+         * 通过 物料取出分类
+         */
         for (String skuName : map.keySet()) {
-
             List<AnalysisResult> analysisResults = map.get(skuName);
+            List<Long> skuIds = new ArrayList<>();
             for (AnalysisResult analysisResult : analysisResults) {
-                
+                skuIds.add(analysisResult.getSkuId());
             }
-
+            /**
+             * 分类叠加 取最小
+             */
+            List<SkuAnalyse> skuAnalyses = this.baseMapper.skuAnalyseList(skuIds);
+            for (SkuAnalyse skuAnalyse : skuAnalyses) {
+                for (AnalysisResult analysisResult : analysisResults) {
+                    if (skuAnalyse.getSkuId().equals(analysisResult.getSkuId())) {
+                        
+                    }
+                }
+            }
         }
 
     }

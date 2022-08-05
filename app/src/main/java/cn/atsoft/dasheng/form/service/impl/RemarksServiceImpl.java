@@ -69,6 +69,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     private StepsService appStepService;
     @Autowired
     private ShopCartService shopCartService;
+    @Autowired
+    private StepsService stepsService;
 
     @Override
     public void add(Long logId, String note) {
@@ -160,6 +162,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         for (RemarksResult datum : data) {
             for (User user : userList) {
                 if (ToolUtil.isNotEmpty(datum.getCreateUser()) && user.getUserId().equals(datum.getCreateUser())) {
+                    String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+                    user.setAvatar(imgUrl);
                     datum.setUser(user);
                     break;
                 }

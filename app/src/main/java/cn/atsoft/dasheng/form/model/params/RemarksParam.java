@@ -28,6 +28,8 @@ public class RemarksParam implements Serializable, BaseValidatingParam {
     private Long pid;
 
     private String source;
+
+    private List<String> types;
     /**
      * 备注id
      */

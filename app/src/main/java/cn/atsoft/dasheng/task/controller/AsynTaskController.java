@@ -85,6 +85,12 @@ public class AsynTaskController extends BaseController {
         return this.asynTaskService.findPageBySpec(asynTaskParam);
     }
 
+    @RequestMapping(value = "/spectaculars", method = RequestMethod.POST)
+    public ResponseData spectaculars() {
+        asynTaskService.spectaculars();
+        return ResponseData.success();
+    }
+
 
 }
 
