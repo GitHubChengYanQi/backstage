@@ -341,6 +341,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     setTimes(0);
                     setMaxTimes(1);
                 }});
+                entity.setStatus(99L);
+                this.updateById(entity);
             }
 
 

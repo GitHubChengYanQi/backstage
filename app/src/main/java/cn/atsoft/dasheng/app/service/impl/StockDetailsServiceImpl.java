@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
@@ -227,7 +228,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
             List<StockDetails> details = this.query().in("sku_id", skuIds).in("brand_id", brandIds).list();
             for (ListingPlan plan : plans) {
-                Long stockNumber = 0L;
+                long stockNumber = 0L;
                 for (StockDetails detail : details) {
                     if (plan.getSkuId().equals(detail.getSkuId()) && plan.getBrandId().equals(detail.getBrandId())) {
                         stockNumber = stockNumber + detail.getNumber();
@@ -242,16 +243,20 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
     public void splitInKind(Long inKind) {
 
-        StockDetails stockDetails = this.query().eq("inkind_id", inKind).one();   //库存有当前实物 无需操作
-        if (ToolUtil.isNotEmpty(stockDetails)) {
-            return;
+        Inkind inkindResult = inkindService.getById(inKind);
+        Sku sku = skuService.getById(inkindResult.getSkuId());
+        if (ToolUtil.isEmpty(sku.getBatch())||sku.getBatch()==0) {
+            StockDetails stockDetails = this.query().eq("inkind_id", inKind).one();   //库存有当前实物 无需操作
+            if (ToolUtil.isNotEmpty(stockDetails)) {
+                return;
+            }
         }
+
+
 
         /**
          * 把之前实物数量拆开  入一个新的实物
          */
-
-        Inkind inkindResult = inkindService.getById(inKind);
         StockDetails details = new StockDetails();
         details.setSkuId(inkindResult.getSkuId());
         details.setBrandId(inkindResult.getBrandId());
