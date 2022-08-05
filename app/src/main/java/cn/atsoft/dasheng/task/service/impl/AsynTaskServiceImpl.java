@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.task.service.impl;
 
 
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
+import cn.atsoft.dasheng.app.pojo.AnalysisResult;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
@@ -10,14 +11,18 @@ import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
 import cn.atsoft.dasheng.task.model.result.AsynTaskResult;
 import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -65,6 +70,34 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         IPage<AsynTaskResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+
+    public void spectaculars() {
+
+        List<AsynTask> asynTasks = this.query().eq("type", "物料分析").eq("display", 1).list();
+        List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
+        format(asynTaskResults);
+
+        Map<String, List<AnalysisResult>> map = new HashMap<>();
+
+        for (AsynTaskResult asynTaskResult : asynTaskResults) {
+            AllBomResult allBomResult = asynTaskResult.getAllBomResult();
+            List<AllBomResult.View> view = allBomResult.getView();
+            AllBomResult.View skuView = view.get(0);
+            List<AnalysisResult> owe = allBomResult.getOwe();
+            map.put(skuView.getName(), owe);
+        }
+
+        for (String skuName : map.keySet()) {
+
+            List<AnalysisResult> analysisResults = map.get(skuName);
+            for (AnalysisResult analysisResult : analysisResults) {
+                
+            }
+
+        }
+
     }
 
     private Serializable getKey(AsynTaskParam param) {
