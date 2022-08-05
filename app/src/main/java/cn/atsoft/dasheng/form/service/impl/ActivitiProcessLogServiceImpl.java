@@ -521,6 +521,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         }
                     }
                 }
+                instockOrderService.checkAllocationDone(processTask);
                 break;
             case "ERROR":
                 List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();

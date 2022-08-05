@@ -9,10 +9,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.AllocationMapper;
-import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
-import cn.atsoft.dasheng.erp.model.params.AllocationParam;
-import cn.atsoft.dasheng.erp.model.params.InstockListParam;
-import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
+import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.AllocationCartResult;
 import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AllocationResult;
@@ -242,6 +239,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 for (Long stockId : stockIds) {
                     InstockOrderParam instockOrderParam = new InstockOrderParam();
                     instockOrderParam.setSource("ALLOCATION");
+                    instockOrderParam.setType("调拨入库");
                     instockOrderParam.setSourceId(allocationId);
                     List<InstockListParam> listParams = new ArrayList<>();
                     for (AllocationCart allocationCart : allocationCarts) {
@@ -285,8 +283,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 }
             }
         }
-
-
     }
 
     void format() {
@@ -318,7 +314,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
      * @param param
      */
     @Override
-    public void transferInStorehouse(AllocationDetailParam param) {
+    public void transferInStorehouse(AllocationCartParam param) {
 
         Long skuId = param.getSkuId();
         Long brandId = param.getBrandId();
@@ -365,6 +361,17 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             }
         }
 
+        if (ToolUtil.isNotEmpty(param.getAllocationId())) {
+            Allocation allocation = this.getById(param.getAllocationCartId());
+            AllocationCart cart = allocationCartService.getById(param.getAllocationCartId());
+            cart.setStatus(99);
+            allocationCartService.updateById(cart);
+            List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).list();
+            if (carts.stream().allMatch(i->i.getStatus().equals(99))) {
+                DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
+                activitiProcessLogService.checkAction(allocation.getAllocationId(), "ALLOCATION", action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
+            }
+        }
 
         stockDetailsService.updateBatchById(stockDetails);
         allocationLogService.saveBatch(allocationLogs);

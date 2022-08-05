@@ -143,4 +143,6 @@ public interface InstockOrderService extends IService<InstockOrder> {
     void setList(List<InstockOrderResult> data);
 
     void format(List<InstockOrderResult> data);
+
+    void checkAllocationDone(ActivitiProcessTask processTask);
 }

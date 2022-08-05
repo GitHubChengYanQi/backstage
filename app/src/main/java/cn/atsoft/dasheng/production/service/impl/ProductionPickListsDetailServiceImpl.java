@@ -183,6 +183,12 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     cartResultList.add(cartResult);
                 }
             }
+            if (cartResultList.stream().anyMatch(i->i.getStatus().equals(0))) {
+                result.setCanPick(true);
+            }else {
+                result.setCanPick(false);
+
+            }
             result.setCartResults(cartResultList);
         }
 

@@ -328,19 +328,22 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             skuIds.add(detailResult.getSkuId());
         }
         List<StorehousePositionsBind> positionsBinds = skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
-
         for (ProductionPickListsResult result : results) {
+
             result.setCanOperate(false);
             List<Long> listsSkuIds = new ArrayList<>();
             List<Long> listsPositionIds = new ArrayList<>();
             Integer numberCount = 0;
             Integer receivedCount = 0;
+            List<Boolean> canPickBooleans = new ArrayList<>();
+
             for (ProductionPickListsDetailResult detailResult : detailResults) {
-                if (result.getPickListsId().equals(detailResult.getPickListsId()) && detailResult.getStockNumber() > 0) {
-                    result.setCanOperate(true);
-                }
                 listsSkuIds.add(detailResult.getSkuId());
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
+                    if ( detailResult.getStockNumber() > 0) {
+                        result.setCanOperate(true);
+                    }
+                    canPickBooleans.add(detailResult.getCanPick());
                     numberCount += detailResult.getNumber();
                     receivedCount += detailResult.getReceivedNumber();
                     for (StorehousePositionsBind positionsBind : positionsBinds) {
@@ -350,6 +353,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     }
                 }
             }
+            /**
+             * 是否可以领料
+             */
+            if(result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().allMatch(i->i)){
+                result.setCanPick(true);
+            }else if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().noneMatch(i->i)){
+                result.setCanPick(false);
+            }
+
             result.setSkuCount(listsSkuIds.stream().distinct().collect(Collectors.toList()).size());
             result.setPositionCount(listsPositionIds.stream().distinct().collect(Collectors.toList()).size());
             result.setNumberCount(numberCount);

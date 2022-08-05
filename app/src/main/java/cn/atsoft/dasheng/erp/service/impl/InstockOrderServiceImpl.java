@@ -12,7 +12,6 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
-import cn.atsoft.dasheng.erp.controller.AnnouncementsController;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
@@ -27,12 +26,10 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
-import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
-import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.*;
@@ -41,9 +38,7 @@ import cn.atsoft.dasheng.message.enmu.MicroServiceType;
 import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
-import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
-import cn.atsoft.dasheng.message.service.AuditMessageService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -55,8 +50,6 @@ import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
-import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -68,9 +61,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -164,6 +155,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private ProductionPickListsService pickListsService;
+    @Autowired
+    private AllocationService allocationService;
+    @Autowired
+    private AllocationDetailService allocationDetailService;
+    @Autowired
+    private AllocationCartService allocationCartService;
 
 
     @Override
@@ -1693,6 +1690,36 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
             }
             datum.setAnnouncementsList(announcementsList);
+        }
+    }
+
+    /**
+     * 审批流完成检查上级单据如果是调拨 进入此方法
+     * 完成上级调拨任务
+     * @param processTask
+     */
+    @Override
+   public void checkAllocationDone(ActivitiProcessTask processTask){
+        String source = processTask.getSource();
+        String sourceId = processTask.getSourceId();
+
+        if (source.equals("ALLOCATION")){
+            List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", sourceId).list();
+            List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", sourceId).list();
+            Allocation allocation = allocationService.getById(sourceId);
+            List<InstockList> instockLists = instockListService.query().eq("instock_order_id", processTask.getFormId()).list();
+            for (InstockList instockList : instockLists) {
+                for (AllocationCart cart : carts) {
+                    if (instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getNumber().equals(Long.valueOf(cart.getNumber())) && instockList.getStoreHouseId().equals(cart.getStorehouseId())){
+                        cart.setStatus(99);
+                    }
+                }
+            }
+            if (carts.stream().allMatch(i->i.getStatus().equals(99))){
+                allocation.setStatus(99L);
+                allocationService.updateById(allocation);
+            }
+            allocationCartService.updateBatchById(carts);
         }
     }
 }

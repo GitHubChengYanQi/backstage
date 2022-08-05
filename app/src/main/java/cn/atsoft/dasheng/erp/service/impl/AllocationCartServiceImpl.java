@@ -148,6 +148,12 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
     }
 
 
+
+
+
+
+
+
     public void format(List<AllocationCartResult> results){
 
         List<Long> skuIds = new ArrayList<>();
