@@ -111,6 +111,23 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         return PageFactory.createPageInfo(page);
     }
 
+    /**
+     * 个人动态
+     *
+     * @param param
+     * @return
+     */
+    @Override
+    public PageInfo<RemarksResult> personalDynamic(RemarksParam param) {
+        param.setCreateUser(LoginContextHolder.getContext().getUserId());
+        param.setType("dynamic");
+        Page<RemarksResult> pageContext = getPageContext();
+        IPage<RemarksResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+
     private Serializable getKey(RemarksParam param) {
         return param.getRemarksId();
     }
@@ -233,7 +250,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
                 }
                 pushPeople(userIds, remarksParam.getTaskId(), entity);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
