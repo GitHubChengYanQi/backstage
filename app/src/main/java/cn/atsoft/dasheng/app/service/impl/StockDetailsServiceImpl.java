@@ -28,8 +28,11 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
+import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -81,6 +84,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private StepsService stepsService;
     @Autowired
     private OrCodeBindService codeBindService;
+    @Autowired
+    private AsynTaskService asynTaskService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -240,18 +245,109 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     }
 
+    /**
+     * 库存报表
+     */
+    @Override
+    public void startAnalyse() {
+
+        List<StockDetails> stockDetails = this.query().eq("display", 3).list();
+        List<StockDetailsResult> detailsResults = BeanUtil.copyToList(stockDetails, StockDetailsResult.class);
+
+        List<Long> skuIds = new ArrayList<>();
+        for (StockDetailsResult detailsResult : detailsResults) {
+            skuIds.add(detailsResult.getSkuId());
+        }
+        List<SkuAnalyse> skuAnalyseList = asynTaskService.skuAnalyses(skuIds);
+
+        for (StockDetailsResult detailsResult : detailsResults) {
+            for (SkuAnalyse skuAnalyse : skuAnalyseList) {
+                if (detailsResult.getSkuId().equals(skuAnalyse.getSkuId())) {
+                    detailsResult.setSpuClassName(skuAnalyse.getClassName());
+                    break;
+                }
+            }
+        }
+        Date nowDate = new Date();
+        for (StockDetailsResult detailsResult : detailsResults) {
+            boolean b = false;
+            int amount = 30;
+            b = isMonth(detailsResult.getCreateTime(), nowDate, amount);
+            if (b) {         //满足一个月内
+                detailsResult.setMonth(amount + "天");
+            } else {        //不满足一个月
+                amount = 90;
+                b = isMonth(detailsResult.getCreateTime(), nowDate, amount);
+                if (b) {    //满足3个月内
+                    detailsResult.setMonth(amount + "天");
+                } else {    //不满足3个月内
+                    amount = 180;
+                    b = isMonth(detailsResult.getCreateTime(), nowDate, amount);
+                    if (b) {    //满足6个月内
+                        detailsResult.setMonth(amount + "天");
+                    } else {    //不满足6个月内
+                        detailsResult.setMonth("长期呆滞");
+                    }
+                }
+            }
+        }
+
+
+        for (StockDetailsResult detailsResult : detailsResults) {
+            String month = detailsResult.getMonth();
+            System.err.println(month);
+        }
+
+        List<StockDetailsResult> totalList = new ArrayList<>();
+        detailsResults.parallelStream().collect(Collectors.groupingBy(item -> item.getMonth() + item.getSpuClassName(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetailsResult() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+
+
+        for (StockDetailsResult stockDetailsResult : totalList) {
+            switch (stockDetailsResult.getMonth()) {
+                case "30天":
+
+                    break;
+                case "60天":
+
+                    break;
+                case "90天":
+
+                    break;
+
+                default:
+            }
+        }
+    }
+
+    private boolean isMonth(Date date, Date nowDate, int amount) {
+        Calendar oneC = Calendar.getInstance();
+        oneC.setTimeInMillis(date.getTime());
+        oneC.add(Calendar.DATE, amount);
+        Date amountMonth = new Date(oneC.getTimeInMillis());
+        System.err.println("入库时间" + new DateTime(date));
+        System.err.println("入库时间" + amount + "天后的时间" + new DateTime(amountMonth));
+        System.err.println("当前时间" + new DateTime(nowDate));
+        return amountMonth.after(nowDate);
+    }
+
+
     @Override
     public void splitInKind(Long inKind) {
 
         Inkind inkindResult = inkindService.getById(inKind);
         Sku sku = skuService.getById(inkindResult.getSkuId());
-        if (ToolUtil.isEmpty(sku.getBatch())||sku.getBatch()==0) {
+        if (ToolUtil.isEmpty(sku.getBatch()) || sku.getBatch() == 0) {
             StockDetails stockDetails = this.query().eq("inkind_id", inKind).one();   //库存有当前实物 无需操作
             if (ToolUtil.isNotEmpty(stockDetails)) {
                 return;
             }
         }
-
 
 
         /**
@@ -351,6 +447,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             stockSkuBrand.setNumber(stockDetail.getNum());
             stockSkuBrands.add(stockSkuBrand);
         }
+
 
         return stockSkuBrands;
     }

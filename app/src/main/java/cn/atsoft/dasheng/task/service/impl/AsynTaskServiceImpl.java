@@ -72,9 +72,6 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
     }
 
 
-
-
-
     @Override
     public Object spectaculars() {
         List<AsynTask> asynTasks = this.query().eq("type", "报表物料分析").eq("display", 1).list();
@@ -105,7 +102,7 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
             /**
              * 分类叠加 取最小
              */
-            List<SkuAnalyse> skuAnalyses = this.baseMapper.skuAnalyseList(skuIds);
+            List<SkuAnalyse> skuAnalyses = skuAnalyses(skuIds);
             Map<String, Long> spuClassNum = new HashMap<>();
 
             for (SkuAnalyse skuAnalyse : skuAnalyses) {
@@ -141,6 +138,17 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
 
         }
         return skuMap;
+    }
+
+    /**
+     * 异步 sku查询分类
+     *
+     * @param skuIds
+     * @return
+     */
+    @Override
+    public List<SkuAnalyse> skuAnalyses(List<Long> skuIds) {
+        return this.baseMapper.skuAnalyseList(skuIds);
     }
 
     private Serializable getKey(AsynTaskParam param) {
