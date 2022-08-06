@@ -85,7 +85,8 @@ public interface StockDetailsService extends IService<StockDetails> {
      */
     List<Long> backSkuByStoreHouse(Long id);
 
-    void startAnalyse();
+
+    void statement();
 
     void splitInKind(Long inKind);
 

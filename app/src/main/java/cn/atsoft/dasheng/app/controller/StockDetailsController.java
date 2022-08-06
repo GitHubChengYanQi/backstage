@@ -88,7 +88,7 @@ public class StockDetailsController extends BaseController {
      */
     @RequestMapping(value = "/startAnalyse", method = RequestMethod.GET)
     public ResponseData startAnalyse() {
-        this.stockDetailsService.startAnalyse();
+        this.stockDetailsService.statement();
         return ResponseData.success();
     }
 

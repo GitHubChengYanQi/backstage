@@ -69,5 +69,7 @@ public interface AsynTaskService extends IService<AsynTask> {
 
     Object spectaculars();
 
+    Object stockSpectaculars();
+
     List<SkuAnalyse> skuAnalyses(List<Long> skuIds);
 }

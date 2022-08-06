@@ -85,12 +85,27 @@ public class AsynTaskController extends BaseController {
         return this.asynTaskService.findPageBySpec(asynTaskParam);
     }
 
+    /**
+     * 物料分析轮播
+     *
+     * @return
+     */
     @RequestMapping(value = "/spectaculars", method = RequestMethod.POST)
     public ResponseData spectaculars() {
         Object spectaculars = asynTaskService.spectaculars();
         return ResponseData.success(spectaculars);
     }
 
+    /**
+     * 库存轮播
+     *
+     * @return
+     */
+    @RequestMapping(value = "/stockSpectaculars", method = RequestMethod.POST)
+    public ResponseData stockSpectaculars() {
+        Object spectaculars = asynTaskService.stockSpectaculars();
+        return ResponseData.success(spectaculars);
+    }
 
 }
 

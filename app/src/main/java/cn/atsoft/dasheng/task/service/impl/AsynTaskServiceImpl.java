@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.task.service.impl;
 
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.app.pojo.AnalysisResult;
+import cn.atsoft.dasheng.app.pojo.StockStatement;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
@@ -133,11 +134,24 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
                 skuAnalyse.setNumber(spuClassNum.get(s));
                 skuAnalyseList.add(skuAnalyse);
             }
-
             skuMap.put(skuName, skuAnalyseList);
-
         }
         return skuMap;
+    }
+
+
+    @Override
+    public Object stockSpectaculars() {
+
+        List<AsynTask> asynTasks = this.query().eq("type", "库存报表").last("limit 1").list();
+        List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
+        format(asynTaskResults);
+
+        if (ToolUtil.isNotEmpty(asynTaskResults)) {
+            AsynTaskResult asynTaskResult = asynTaskResults.get(0);
+            return asynTaskResult.getStockStatements();
+        }
+        return null;
     }
 
     /**
@@ -170,9 +184,19 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
     }
 
     private void format(List<AsynTaskResult> data) {
+
         for (AsynTaskResult datum : data) {
-            AllBomResult allBomResult = JSON.parseObject(datum.getContent(), AllBomResult.class);
-            datum.setAllBomResult(allBomResult);
+            if (ToolUtil.isNotEmpty(datum.getType()) && (datum.getType().equals("物料分析") || datum.getType().equals("报表物料分析"))) {   //物料分析或者报表
+                AllBomResult allBomResult = JSON.parseObject(datum.getContent(), AllBomResult.class);
+                datum.setAllBomResult(allBomResult);
+            }
+
+            if (ToolUtil.isNotEmpty(datum.getType()) && datum.getType().equals("库存报表")) {
+                List<StockStatement> stockStatements = JSON.parseArray(datum.getContent(), StockStatement.class);           //库存报表
+                datum.setStockStatements(stockStatements);
+            }
+
         }
+
     }
 }
