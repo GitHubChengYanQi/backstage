@@ -33,6 +33,7 @@ public class AddAction {
         public List<QualityActionEnum> qualityActionEnums;
 
         public List<MaintenanceActionEnum> maintenanceActionEnums;
+
         public List<StocktakingEnum> stocktakingEnums;
         public List<AllocationActionEnum> allocationActionEnums;
 

@@ -122,23 +122,27 @@ public class AsynTaskDetailServiceImpl extends ServiceImpl<AsynTaskDetailMapper,
     private void format(List<AsynTaskDetailResult> data) {
 
         for (AsynTaskDetailResult datum : data) {
+
             if (datum.getType().equals("物料导入")) {
                 SkuExcelItem result = JSON.parseObject(datum.getContentJson(), SkuExcelItem.class);
                 datum.setSkuExcelItem(result);
-                datum.setContentJson(null);
             }
 
             if (datum.getType().equals("产品导入")) {
                 SpuExcel spuExcel = JSON.parseObject(datum.getContentJson(), SpuExcel.class);
                 datum.setSpuExcel(spuExcel);
-                datum.setContentJson(null);
             }
 
             if (datum.getType().equals("库存导入")) {
                 PositionBind positionBind = JSON.parseObject(datum.getContentJson(), PositionBind.class);
                 datum.setPositionBind(positionBind);
-                datum.setContentJson(null);
             }
+
+            if (datum.getType().equals("库位导入")) {
+                PositionBind positionBind = JSON.parseObject(datum.getContentJson(), PositionBind.class);
+                datum.setPositionBind(positionBind);
+            }
+            datum.setContentJson(null);
         }
     }
 }

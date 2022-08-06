@@ -4,12 +4,8 @@ import cn.atsoft.dasheng.Excel.pojo.PositionBind;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelItem;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.Excel.pojo.SpuExcel;
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.entity.Unit;
-import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -73,6 +69,10 @@ public class ExcelAsync {
     private OrCodeService codeService;
     @Autowired
     private StorehousePositionsBindService positionsBindService;
+    @Autowired
+    private StorehouseService storehouseService;
+    @Autowired
+    private CustomerService customerService;
 
 
     protected static final Logger logger = LoggerFactory.getLogger(ExcelAsync.class);
@@ -146,6 +146,7 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(skuExcelItem.getClassItem())) {
                     throw new ServiceException(500, "产品不存在");
                 }
+
                 skuExcelItem.setClassItem(skuExcelItem.getClassItem().replaceAll(" ", ""));
                 Long categoryId = null;
                 for (Category category : categories) {
@@ -180,6 +181,9 @@ public class ExcelAsync {
 
                 //物料编码-------------------------------------------------------------------------------------------------
                 if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
+                    if (ToolUtil.isEmpty(codingRules)) {
+                        throw new ServiceException(500, "  自动生成编码 未检测到编码规则 ,请检查 编码规则");
+                    }
                     String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), newItem.getSpuId());
                     backCoding = backCoding.replace("${skuClass}", ToolUtil.isEmpty(spuClass.getCodingClass()) ? "" : spuClass.getCodingClass());
                     newSku.setStandard(backCoding);
@@ -348,9 +352,12 @@ public class ExcelAsync {
         asynTask.setStatus(0);
         asynTask.setAllCount(spuExcels.size());
 
+        /**
+         * 先去重
+         */
+
+
         taskService.save(asynTask);
-
-
         List<Spu> spus = new ArrayList<>();
         List<AsynTaskDetail> asynTaskDetails = new ArrayList<>();
         int i = 0;
@@ -363,10 +370,13 @@ public class ExcelAsync {
             asynTaskDetail.setTaskId(asynTask.getTaskId());
             asynTaskDetail.setType("产品导入");
 
+
             spuExcel.setLine(i + "");
             try {
                 Spu newSpu = new Spu();
+                newSpu.setName(spuExcel.getSpuName());
                 newSpu.setCoding(spuExcel.getSpuCoding());
+
                 Long classId = null;
                 for (SpuClassification spuClassification : spuClassList) {
                     if (spuClassification.getName().equals(spuExcel.getSpuClass())) {
@@ -378,16 +388,15 @@ public class ExcelAsync {
                     throw new ServiceException(500, "产品分类不存在");
                 }
 
+                newSpu.setSpuClassificationId(classId);
+
+
                 for (Spu spu : spuList) {
-                    if (ToolUtil.isNotEmpty(spu.getCoding()) && spu.getCoding().equals(spuExcel.getSpuCoding())) {
-                        throw new ServiceException(500, "产品编码已存在");
+                    if (newSpu.getSpuClassificationId().equals(spu.getSpuClassificationId()) && newSpu.getName().equals(spu.getName())) {
+                        throw new ServiceException(500, "产品已存在");
                     }
                 }
-                for (Spu spu : spuList) {
-                    if (spuExcel.getSpuName().equals(spu.getName())&&spu.getSpuClassificationId().equals(classId)) {
-                        throw new ServiceException(500, "产品名称已存在");
-                    }
-                }
+
                 //------------------------------------------------------------------------------
                 Category cate = null;
                 for (Category category : categoryList) {
@@ -396,36 +405,46 @@ public class ExcelAsync {
                         break;
                     }
                 }
+
+                if (ToolUtil.isEmpty(cate)) {
+                    cate = new Category();
+                    cate.setCategoryName(spuExcel.getSpuName());
+                    categoryService.save(cate);
+                    categoryList.add(cate);
+                }
+
+                if (ToolUtil.isEmpty(spuExcel.getUnit()) || spuExcel.getUnit().equals("")) {
+                    throw new ServiceException(500, "缺少单位");
+                }
                 for (Unit unit : units) {
                     if (unit.getUnitName().equals(spuExcel.getUnit())) {
                         newSpu.setUnitId(unit.getUnitId());
                         break;
                     }
                 }
+
                 if (ToolUtil.isEmpty(newSpu.getUnitId())) {
                     Unit unit = new Unit();
                     unit.setUnitName(spuExcel.getUnit());
                     unitService.save(unit);
+                    units.add(unit);
                     newSpu.setUnitId(unit.getUnitId());
                 }
-
-                if (ToolUtil.isEmpty(cate)) {
-                    cate = new Category();
-                    cate.setCategoryName(spuExcel.getSpuName());
-                    categoryService.save(cate);
-                }
                 newSpu.setCategoryId(cate.getCategoryId());
-                newSpu.setName(spuExcel.getSpuName());
-                newSpu.setSpuClassificationId(classId);
-                spus.add(newSpu);
+
+
+                if (spus.stream().noneMatch(p -> p.getName().equals(newSpu.getName()) && p.getClassId().equals(newSpu.getClassId()))) {
+                    spus.add(newSpu);
+                    spuList.add(newSpu);
+                }
                 asynTaskDetail.setStatus(99);
+
             } catch (Exception e) {
                 asynTaskDetail.setStatus(50);
                 spuExcel.setError(e.getMessage());
-                e.printStackTrace();
-            } finally {
                 asynTaskDetail.setContentJson(JSON.toJSONString(spuExcel));
                 asynTaskDetails.add(asynTaskDetail);
+                e.printStackTrace();
             }
 
         }
@@ -437,7 +456,7 @@ public class ExcelAsync {
 
 
     @Async
-    public void positionAdd(List<PositionBind> excels) {
+    public void stockDetailAdd(List<PositionBind> excels) {
 
         List<String> strands = new ArrayList<>();
 
@@ -448,6 +467,7 @@ public class ExcelAsync {
         List<StorehousePositionsBind> positionsBinds = bindService.query().eq("display", 1).list();
         List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
         List<Brand> brands = brandService.list();
+        List<Customer> customers = customerService.query().eq("display", 1).eq("supply", 1).list();
         List<StockDetails> stockDetailsList = new ArrayList<>();
 
 
@@ -481,33 +501,30 @@ public class ExcelAsync {
                     throw new ServiceException(500, "当前物料不存在");
                 }
                 //  品牌-------------------------------------------------------------
-                if (ToolUtil.isEmpty(excel.getBrand())) {
-                    throw new ServiceException(500, "缺少品牌");
-                }
                 Brand brand = null;
                 brand = positionsBindService.judgeBrand(excel.getBrand(), brands);
                 if (ToolUtil.isEmpty(brand)) {
                     brand = new Brand();
-                    brand.setBrandName(excel.getBrand());
+                    brand.setBrandId(0L);
                 }
-                //上级库位-------------------------------------------------------------
-                StorehousePositions supper = positionsBindService.getPosition(excel.getSupperPosition(), positions);
-                if (ToolUtil.isEmpty(supper)) {
-                    throw new ServiceException(500, "没有上级库位");
+                for (Customer customer : customers) {
+                    if (customer.getCustomerName().equals(excel.getCustomer())) {
+                        excel.setCustomerId(customer.getCustomerId());
+                        break;
+                    }
                 }
+                if (ToolUtil.isEmpty(excel.getCustomerId())) {
+                    throw new ServiceException(500, "无此供应商");
+                }
+                //库位-------------------------------------------------------------
                 if (ToolUtil.isEmpty(excel.getPosition())) {
-                    excel.setPositionId(supper.getStorehousePositionsId());
+                    throw new ServiceException(500, "请填写库位");
                 } else {
                     StorehousePositions position = positionsBindService.getPosition(excel.getPosition(), positions);    //库位
                     if (ToolUtil.isEmpty(position)) {
-                        StorehousePositions end = new StorehousePositions();
-                        end.setName(excel.getPosition());
-                        end.setPid(supper.getStorehousePositionsId());
-                        end.setStorehouseId(supper.getStorehouseId());
-                        positionsService.save(end);
-                        positions.add(end);
-                        excel.setPositionId(end.getStorehousePositionsId());
+                        throw new ServiceException(500, "没有当前库位");
                     } else {
+                        excel.setStorehouseId(position.getStorehouseId());
                         excel.setPositionId(position.getStorehousePositionsId());
                     }
                 }
@@ -523,27 +540,28 @@ public class ExcelAsync {
 
                 if (ToolUtil.isNotEmpty(excel.getStockNumber()) && excel.getStockNumber() > 0) {
                     //库存
-                    InkindQrcode inkindQrcode = codeService.ExcelBind(excel.getSkuId(), Long.valueOf(excel.getStockNumber()), brand.getBrandId());
+                    InkindQrcode inkindQrcode = codeService.ExcelBind(excel.getSkuId(), Long.valueOf(excel.getStockNumber()), brand.getBrandId(), excel.getCustomerId(), excel.getPositionId());
                     StockDetails stockDetails = new StockDetails();
                     stockDetails.setSkuId(excel.getSkuId());
                     stockDetails.setNumber(Long.valueOf(excel.getStockNumber()));
                     stockDetails.setBrandId(brand.getBrandId());
-                    stockDetails.setStorehouseId(supper.getStorehouseId());
+                    stockDetails.setStorehouseId(excel.getStorehouseId());
                     stockDetails.setStorehousePositionsId(excel.getPositionId());
+                    stockDetails.setCustomerId(excel.getCustomerId());
                     stockDetails.setInkindId(inkindQrcode.getInkindId());
-                    stockDetails.setQrCodeId(inkindQrcode.getQrCodeId());
                     stockDetailsList.add(stockDetails);
                 }
 
                 asynTaskDetail.setStatus(99);
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.error(excel.getLine() + "------->" + e);
                 excel.setError(e.getMessage());
                 asynTaskDetail.setStatus(50);
-            } finally {
                 asynTaskDetail.setContentJson(JSON.toJSONString(excel));
                 asynTaskDetails.add(asynTaskDetail);
             }
+
         }
 
         asynTask.setStatus(99);
@@ -554,4 +572,107 @@ public class ExcelAsync {
     }
 
 
+    @Async
+    public void positionAdd(List<PositionBind> excels) {
+
+        List<Storehouse> storehouses = storehouseService.query().eq("display", 1).list();   //所有仓库
+        List<StorehousePositions> positions = positionsService.query().eq("display", 1).list();
+
+        AsynTask asynTask = new AsynTask();
+        asynTask.setAllCount(excels.size());
+        asynTask.setType("库位导入");
+        asynTask.setStatus(0);
+        taskService.save(asynTask);
+
+        int i = 0;
+        List<AsynTaskDetail> asynTaskDetails = new ArrayList<>();
+        for (PositionBind excel : excels) {
+
+            AsynTaskDetail asynTaskDetail = new AsynTaskDetail();
+            asynTaskDetail.setTaskId(asynTask.getTaskId());
+            asynTaskDetail.setType("库位导入");
+
+            i++;
+            asynTask.setCount(i);   //修改任务状态
+            taskService.updateById(asynTask);
+
+            try {
+                if (ToolUtil.isEmpty(excel.getStoreHouse())) {
+                    throw new ServiceException(500, "缺少仓库");
+                }
+                if (ToolUtil.isEmpty(excel.getPosition())) {
+                    throw new ServiceException(500, "缺少库位");
+                }
+
+                /**
+                 * 仓库
+                 */
+                Storehouse storehouse = null;
+                for (Storehouse house : storehouses) {
+                    if (excel.getStoreHouse().equals(house.getName())) {
+                        storehouse = house;
+                        break;
+                    }
+                }
+
+                if (ToolUtil.isEmpty(storehouse)) {
+                    storehouse = new Storehouse();
+                    storehouse.setName(excel.getStoreHouse());
+                    storehouseService.save(storehouse);
+                    storehouses.add(storehouse);
+                }
+
+
+                /**
+                 * 库位
+                 */
+                Long pid = 0L;
+                for (String position : excel.getPosition().split("/")) {
+                    StorehousePositions comparison = comparison(position, pid, storehouse.getStorehouseId(), positions);
+                    pid = comparison.getStorehousePositionsId();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                excel.setError(e.getMessage());
+                asynTaskDetail.setStatus(50);
+                asynTaskDetail.setContentJson(JSON.toJSONString(excel));
+                asynTaskDetails.add(asynTaskDetail);
+                logger.error("写入异常:" + "第" + excel.getLine() + "行" + excel + "错误" + e);   //错误异常
+            }
+
+        }
+        asynTaskDetailService.saveBatch(asynTaskDetails);
+        asynTask.setStatus(99);
+        taskService.updateById(asynTask);
+    }
+
+    /**
+     * 比对
+     *
+     * @param position
+     * @param positions
+     */
+    private StorehousePositions comparison(String position, Long pid, Long houseId, List<StorehousePositions> positions) {
+
+
+        /**
+         * 数据有此库位
+         */
+        for (StorehousePositions storehousePosition : positions) {
+            if (position.equals(storehousePosition.getName())) {
+                return storehousePosition;
+            }
+        }
+
+        /**
+         * 无此库位 需要新建
+         */
+        StorehousePositions newPosition = new StorehousePositions();
+        newPosition.setName(position);
+        newPosition.setPid(pid);
+        newPosition.setStorehouseId(houseId);
+        positionsService.save(newPosition);
+        positions.add(newPosition);
+        return newPosition;
+    }
 }

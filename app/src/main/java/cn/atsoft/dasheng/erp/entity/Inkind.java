@@ -30,6 +30,9 @@ public class Inkind implements Serializable {
     @TableField("pid")
     private Long pid;
 
+    @TableField("position_id")
+    private Long positionId;
+
     @TableField("batch_number")
     private String batchNumber;
 

@@ -924,29 +924,29 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public List<SkuResult> findListBySpec(SkuParam param) {
-        if (param.getSkuIds() != null) {
-            if (param.getSkuIds().size() == 0) {
-                return null;
-            }
-        }
-        List<Long> spuIds = null;
-        if (ToolUtil.isNotEmpty(param.getSpuClass())) {
-            spuIds = new ArrayList<>();
-            List<SpuClassification> classifications = spuClassificationService.query().eq("pid", param.getSpuClass()).eq("display", 1).list();
-            List<Long> classIds = new ArrayList<>();
-            for (SpuClassification classification : classifications) {
-                classIds.add(classification.getSpuClassificationId());
-            }
-            List<Spu> spuList = classIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_classification_id", classIds).eq("display", 1).list();
-            for (Spu spu : spuList) {
-                spuIds.add(spu.getSpuId());
-            }
-            if (ToolUtil.isEmpty(spuList)) {
-                spuIds.add(0L);
-            }
-        } else {
-            spuIds = new ArrayList<>();
-        }
+//        if (param.getSkuIds() != null) {
+//            if (param.getSkuIds().size() == 0) {
+//                return null;
+//            }
+//        }
+//        List<Long> spuIds = null;
+//        if (ToolUtil.isNotEmpty(param.getSpuClass())) {
+//            spuIds = new ArrayList<>();
+//            List<SpuClassification> classifications = spuClassificationService.query().eq("pid", param.getSpuClass()).eq("display", 1).list();
+//            List<Long> classIds = new ArrayList<>();
+//            for (SpuClassification classification : classifications) {
+//                classIds.add(classification.getSpuClassificationId());
+//            }
+//            List<Spu> spuList = classIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_classification_id", classIds).eq("display", 1).list();
+//            for (Spu spu : spuList) {
+//                spuIds.add(spu.getSpuId());
+//            }
+//            if (ToolUtil.isEmpty(spuList)) {
+//                spuIds.add(0L);
+//            }
+//        } else {
+//            spuIds = new ArrayList<>();
+//        }
         List<SkuResult> skuResults = this.baseMapper.customList(param);
         format(skuResults);
         return skuResults;
