@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
@@ -141,6 +142,7 @@ public class ActivitiProcessTaskController extends BaseController {
     }
 
 
+
     @RequestMapping(value = "/auditList", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ActivitiProcessTaskResult> auditList(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
@@ -160,6 +162,9 @@ public class ActivitiProcessTaskController extends BaseController {
         }
         return this.activitiProcessTaskService.LoginStart(activitiProcessTaskParam);
     }
+
+
+
 }
 
 

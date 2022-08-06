@@ -54,6 +54,31 @@
             source AS "source",
             source_id AS "source_id"
     </sql>
+    <sql id="Left_Join_Column_List">
+        activiti_process_task.process_task_id
+        AS "processTaskId",
+	    activiti_process_task.form_id AS "formId",
+	    activiti_process_task.type AS "type",
+	    activiti_process_task.remark AS "remark",
+	    activiti_process_task.cause AS "cause",
+        activiti_process_task.user_id AS "userId",
+        activiti_process_task.main_task_id AS "mainTaskId",
+        activiti_process_task.pid AS "pid",
+        activiti_process_task.theme AS "theme",
+        activiti_process_task.origin AS "origin",
+	    activiti_process_task.user_ids AS "userIds",
+	    activiti_process_task.STATUS AS "status",
+	    activiti_process_task.deptIds AS "deptIds",
+	    activiti_process_task.task_name AS "taskName",
+	    activiti_process_task.process_id AS "processId",
+	    activiti_process_task.display AS "display",
+	    activiti_process_task.create_user AS "createUser",
+	    activiti_process_task.update_user AS "updateUser",
+	    activiti_process_task.create_time AS "createTime",
+	    activiti_process_task.update_time AS "updateTime",
+        activiti_process_task.source AS "source",
+        activiti_process_task.source_id AS "source_id"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
@@ -103,6 +128,21 @@
             </otherwise>
         </choose>
     </select>
+    <select id="selfPickListsTasks" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+        select
+        <include refid="Left_Join_Column_List"/>
+        from activiti_process_task
+        LEFT JOIN daoxin_production_pick_lists on activiti_process_task.form_id = daoxin_production_pick_lists.pick_lists_id
+        where 1 = 1 and activiti_process_task.display = 1
+        <if test="paramCondition.userId != null and paramCondition.userId != ''">
+            and daoxin_production_pick_lists.user_id = #{paramCondition.userId}
+        </if>
+          <if test="paramCondition.type != null and paramCondition.type != ''">
+            and activiti_process_task.type = #{paramCondition.type}
+        </if>
+
+    </select>
 
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
@@ -138,12 +178,22 @@
                 #{state}
             </foreach>
         </if>
+        <if test="paramCondition.timeOutTaskIds !=null and paramCondition.timeOutTaskIds.size>0 ">
+            and process_task_id in
+            <foreach collection="paramCondition.timeOutTaskIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+        </if>
         <if test="paramCondition.skuName != null">
             and (form_id in (
             select instock_order_id from daoxin_erp_instock_order where coding like
             CONCAT('%',#{paramCondition.skuName},'%')
             union
             select order_id from daoxin_anomaly_order where coding like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select pick_lists_id from daoxin_production_pick_lists where coding like
+            CONCAT('%',#{paramCondition.skuName},'%')
             ) or task_name like CONCAT('%',#{paramCondition.skuName},'%'))
         </if>
 

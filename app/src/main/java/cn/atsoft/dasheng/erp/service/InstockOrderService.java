@@ -47,7 +47,6 @@ public interface InstockOrderService extends IService<InstockOrder> {
     void checkNumberFalse(Long id, Integer status);
 
 
-
     /**
      * 删除
      *
@@ -122,11 +121,9 @@ public interface InstockOrderService extends IService<InstockOrder> {
     void freeInStockByPositions(FreeInStockParam stockParam);
 
 
-
-
     void addInStockRecord(List<InstockListParam> instockListParams, String source);
 
-    Object document(Long inStockId);
+    Object document(Long inStockId, String type);
 
     Stock judgeStockExist(Inkind inkind, List<Stock> stocks);
 

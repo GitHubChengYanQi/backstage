@@ -93,7 +93,7 @@ public class StorehousePositionsController extends BaseController {
 
     @RequestMapping(value = "/selectByBrand", method = RequestMethod.POST)
     public ResponseData selectByBrand(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        List<BrandResult> resultList = this.storehousePositionsService.selectByBrand(storehousePositionsParam.getSkuId(),storehousePositionsParam.getBrandId());
+        List<BrandResult> resultList = this.storehousePositionsService.selectByBrand(storehousePositionsParam.getSkuId(), storehousePositionsParam.getBrandId(), storehousePositionsParam.getStorehouseId());
         return ResponseData.success(resultList);
     }
 
@@ -109,7 +109,10 @@ public class StorehousePositionsController extends BaseController {
         if (ToolUtil.isEmpty(storehousePositionsParam)) {
             storehousePositionsParam = new StorehousePositionsParam();
         }
-        List<PositionLoop> positionLoops = this.storehousePositionsService.treeViewByName(storehousePositionsParam.getName());
+        List<PositionLoop> positionLoops = this.storehousePositionsService.treeViewByName(storehousePositionsParam.getName(), storehousePositionsParam.getStorehouseId());
+        if (ToolUtil.isNotEmpty(storehousePositionsParam.getSkuId())) {
+            storehousePositionsService.positionFormat(positionLoops, storehousePositionsParam.getSkuId());
+        }
         return ResponseData.success(positionLoops);
     }
 
@@ -137,7 +140,6 @@ public class StorehousePositionsController extends BaseController {
     @BussinessLog(value = "修改仓库库位表", key = "name", dict = StorehousePositionsParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-
         this.storehousePositionsService.update(storehousePositionsParam);
         return ResponseData.success();
     }

@@ -21,6 +21,9 @@ public class SkuSimpleResult {
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long skuId;
 
+    private Integer maintenancePeriod;
+
+
     private String skuName;
 
     private List<SkuJson> skuJsons;

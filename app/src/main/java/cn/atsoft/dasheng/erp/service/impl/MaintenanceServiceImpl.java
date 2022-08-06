@@ -26,9 +26,12 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
+import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -132,6 +135,10 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Autowired
     private StepsService stepsService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private RemarksService remarksService;
 
     @Override
 
@@ -181,6 +188,25 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+            if (ToolUtil.isNotEmpty(param.getUserIds())) {
+                /**
+                 * 评论
+                 */
+                RemarksParam remarksParam = new RemarksParam();
+                remarksParam.setTaskId(taskId);
+                remarksParam.setType("remark");
+                StringBuffer userIdStr = new StringBuffer();
+                for (Long userId : param.getUserIds()) {
+                    userIdStr.append(userId).append(",");
+                }
+                String userStrtoString = userIdStr.toString();
+                if (userIdStr.length() > 1) {
+                    userStrtoString = userStrtoString.substring(0, userStrtoString.length() - 1);
+                }
+                remarksParam.setUserIds(userStrtoString);
+                remarksParam.setContent(param.getRemark());
+                remarksService.addByMQ(remarksParam);
+            }
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
@@ -221,6 +247,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Override
     public List<StockDetails> needMaintenanceByRequirement(Maintenance param) {
+
         List<Long> skuIds = new ArrayList<>();
         List<Long> inkindIds = new ArrayList<>();
         List<MaintenanceAndInventorySelectParam> maintenanceAndInventorySelectParams = JSON.parseArray(param.getSelectParams(), MaintenanceAndInventorySelectParam.class);
@@ -240,18 +267,14 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         }
         inkindIds = inkindIds.stream().distinct().collect(Collectors.toList());
 
+
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
-        List<MaintenanceLog> logs = skuIds.size() == 0 ? new ArrayList<>() : maintenanceLogService.query().in("sku_id", skuIds).list();
-        for (MaintenanceLog log : logs) {
-            for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
-                if (log.getSkuId().equals(maintenanceCycle.getSkuId())) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(log.getCreateTime());
-                    calendar.add(Calendar.DATE, (maintenanceCycle.getMaintenancePeriod() - param.getNearMaintenance()));
-                    String maintenance = DateUtil.format(calendar.getTime(), "yyyy-MM-dd");
-                    String now = DateUtil.format(DateUtil.date(), "yyyy-MM-dd");
-                    if (!maintenance.equals(now)) {
-                        inkindIds.remove(log.getInkindId());
+        List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
+        if (ToolUtil.isNotEmpty(param.getNearMaintenance())) {
+            for (Inkind inkind : inkinds) {
+                for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
+                    if (inkind.getSkuId().equals(maintenanceCycle.getSkuId()) && ToolUtil.isNotEmpty(inkind.getLastMaintenanceTime()) && param.getNearMaintenance().getTime() < inkind.getLastMaintenanceTime().getTime()) {
+                        inkindIds.remove(inkind.getInkindId());
                     }
                 }
             }
@@ -265,7 +288,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     @Override
     public List<Maintenance> findTaskByTime() {
         Long userId = LoginContextHolder.getContext().getUserId();
-        List<Maintenance> list = this.query().eq("display", 1).eq("user_id", userId).ne("status", 99).apply(" now() between start_time and end_time").list();
+        List<Maintenance> list = this.query().eq("display", 1).eq("user_id", userId).ne("status", 99).apply(" now() >  start_time ").list();
         list.addAll(this.query().eq("display", 1).eq("user_id", userId).eq("status", 98).list());
         List<Maintenance> totalList = new ArrayList<>();
         list.parallelStream().collect(Collectors.groupingBy(item -> item.getMaintenanceId(), Collectors.toList())).forEach(
@@ -299,24 +322,16 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         if (ToolUtil.isNotEmpty(maintenanceParam) && maintenanceParam.getStatus().equals(0)) {
             List<Maintenance> maintenances = this.findTaskByTime();
             for (Maintenance maintenance : maintenances) {
-                if (maintenance.getMaintenanceId().equals(maintenanceParam.getMaintenanceId()) && updateDetail(maintenance) && maintenance.getStatus().equals(0)) {
-                    maintenanceParam.setStatus(99);
-                } else {
-                    maintenanceParam.setStatus(98);
+                if (maintenance.getMaintenanceId().equals(maintenanceParam.getMaintenanceId())) {
+                    updateDetail(maintenance);
                 }
             }
 
-        } else { //如果是从合并任务查看界面进入  则筛选出 符合条件的任务  更改这些任务状态为开始  并更新物料列表
-            List<Maintenance> maintenances = this.findTaskByTime();
-            for (Maintenance entity : maintenances) {
-                if (entity.getStatus().equals(0)) {
-                    entity.setStatus(98);
-                    if (updateDetail(entity)) {
-                        entity.setStatus(99);
-                    }
-                }
-            }
+        } else if (ToolUtil.isNotEmpty(maintenanceParam) && maintenanceParam.getStatus().equals(98)) {
+            updateDetail(maintenanceParam);
+
         }
+
     }
 
     @Override
@@ -376,115 +391,55 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Override
     public void format(List<MaintenanceResult> param) {
-        List<Long> materialIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
 
-        List<Long> brandIds = new ArrayList<>();
-
-        List<Long> positionsIds = new ArrayList<>();
-
-        List<Long> bomIds = new ArrayList<>();
-
-        List<Long> spuClassificationIds = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
+
+        List<Long> userIds = new ArrayList<>();
+
         for (MaintenanceResult maintenanceResult : param) {
             ids.add(maintenanceResult.getMaintenanceId());
             if (ToolUtil.isNotEmpty(maintenanceResult.getSelectParams())) {
                 List<MaintenanceAndInventorySelectParam> selectParams = JSON.parseArray(maintenanceResult.getSelectParams(), MaintenanceAndInventorySelectParam.class);
                 for (MaintenanceAndInventorySelectParam selectParam : selectParams) {
-                    if (ToolUtil.isNotEmpty(selectParam.getBrandIds())) {
-                        brandIds.addAll(selectParam.getBrandIds());
-                    }
-                    if (ToolUtil.isNotEmpty(selectParam.getMaterialIds())) {
-                        materialIds.addAll(selectParam.getMaterialIds());
-                    }
-                    if (ToolUtil.isNotEmpty(selectParam.getStorehousePositionsIds())) {
-                        positionsIds.addAll(selectParam.getStorehousePositionsIds());
-                    }
-                    if (ToolUtil.isNotEmpty(selectParam.getPartsIds())) {
-                        bomIds.addAll(selectParam.getPartsIds());
-                    }
-                    if (ToolUtil.isNotEmpty(selectParam.getSpuClassificationIds())) {
-                        spuClassificationIds.addAll(selectParam.getSpuClassificationIds());
-                    }
+                    skuIds.add(selectParam.getSkuId());
                 }
             }
+            userIds.add(maintenanceResult.getUserId());
         }
-        List<SkuSimpleResult> skuSimpleResults = bomIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(bomIds);
-        List<StorehousePositionsResult> positionsResults = positionsIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.getDetails(positionsIds);
-        List<MaterialResult> materials = materialIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(materialService.listByIds(materialIds), MaterialResult.class);
-        List<SpuClassificationResult> spuClassifications = spuClassificationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(spuClassificationService.listByIds(spuClassificationIds), SpuClassificationResult.class);
-        List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
+        List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
 
+        List<UserResult> userResults = userService.getUserResultsByIds(userIds);
 
         List<MaintenanceDetail> maintenanceDetails = ids.size() == 0 ? new ArrayList<>() : maintenanceDetailService.query().in("maintenance_id", ids).list();
 
         for (MaintenanceResult maintenanceResult : param) {
+            for (UserResult userResult : userResults) {
+                if (maintenanceResult.getUserId().equals(userResult.getUserId())) {
+                    userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
+                    maintenanceResult.setUserResult(userResult);
+                }
+                if (userResult.getUserId().equals(maintenanceResult.getCreateUser())) {
+                    userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
+                    maintenanceResult.setCreateUserResult(userResult);
+                }
+            }
             if (ToolUtil.isNotEmpty(maintenanceResult.getSelectParams())) {
-                List<SkuSimpleResult> skuSimpleResults1 = new ArrayList<>();
-                List<StorehousePositionsResult> positionsResults1 = new ArrayList<>();
-                List<MaterialResult> materials1 = new ArrayList<>();
-                List<SpuClassificationResult> spuClassificationsice1 = new ArrayList<>();
-                List<BrandResult> brandResults1 = new ArrayList<>();
+
                 List<MaintenanceAndInventorySelectParam> selectParams = JSON.parseArray(maintenanceResult.getSelectParams(), MaintenanceAndInventorySelectParam.class);
                 for (MaintenanceAndInventorySelectParam selectParam : selectParams) {
-                    if (ToolUtil.isNotEmpty(selectParam.getBrandIds())) {
-                        for (Long brandId : selectParam.getBrandIds()) {
-                            for (BrandResult brandResult : brandResults) {
-                                if (brandResult.getBrandId().equals(brandId)) {
-                                    brandResults1.add(brandResult);
-                                }
-                            }
+                    for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                        if (skuSimpleResult.getSkuId().equals(selectParam.getSkuId())) {
+                            selectParam.setSkuResult(skuSimpleResult);
                         }
                     }
-                    if (ToolUtil.isNotEmpty(selectParam.getMaterialIds())) {
-                        for (Long materialId : selectParam.getMaterialIds()) {
-                            for (MaterialResult material : materials) {
-                                if (material.getMaterialId().equals(materialId)) {
-                                    materials1.add(material);
-                                }
-                            }
-                        }
-
-                    }
-                    if (ToolUtil.isNotEmpty(selectParam.getStorehousePositionsIds())) {
-                        for (Long positionId : selectParam.getStorehousePositionsIds()) {
-                            for (StorehousePositionsResult positionsResult : positionsResults) {
-                                if (positionsResult.getStorehousePositionsId().equals(positionId)) {
-                                    positionsResults1.add(positionsResult);
-                                }
-                            }
-                        }
-                    }
-                    if (ToolUtil.isNotEmpty(selectParam.getPartsIds())) {
-                        for (Long bomId : selectParam.getPartsIds()) {
-                            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                                if (skuSimpleResult.getSkuId().equals(bomId)) {
-                                    skuSimpleResults1.add(skuSimpleResult);
-                                }
-                            }
-                        }
-                    }
-                    if (ToolUtil.isNotEmpty(selectParam.getSpuClassificationIds())) {
-                        for (Long spuClassId : selectParam.getSpuClassificationIds()) {
-                            for (SpuClassificationResult spuClassification : spuClassifications) {
-                                if (spuClassification.getSpuClassificationId().equals(spuClassId)) {
-                                    spuClassificationsice1.add(spuClassification);
-                                }
-                            }
-                        }
-                    }
-                    selectParam.setBrandResults(brandResults1);
-                    selectParam.setMaterialResults(materials1);
-                    selectParam.setPartsResults(skuSimpleResults1);
-                    selectParam.setSpuClassificationResults(spuClassificationsice1);
-                    selectParam.setStorehousePositionsResults(positionsResults1);
                 }
                 maintenanceResult.setSelectParamResults(selectParams);
             }
 
 
             List<Long> storehousePositionsIds = new ArrayList<>();
-            List<Long> skuIds = new ArrayList<>();
+            skuIds = new ArrayList<>();
             Integer num = 0;
             Integer doneNumber = 0;
             for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
@@ -631,6 +586,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         statusMap.put(50L, "拒绝");
         MaintenanceResult maintenanceResult = new MaintenanceResult();
         ToolUtil.copyProperties(maintenance, maintenanceResult);
+        this.format(new ArrayList<MaintenanceResult>(){{
+            add(maintenanceResult);
+        }});
         List<Long> userIds = new ArrayList<>();
         userIds.add(maintenanceResult.getCreateUser());
         userIds.add(maintenanceResult.getUserId());
@@ -642,173 +600,10 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             }
             maintenanceResult.setEnclosureUrl(enclosureUrl);
         }
-        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
-        for (UserResult userResultsById : userResultsByIds) {
-            if(userResultsById.getUserId().equals(maintenanceResult.getUserId())){
-                userResultsById.setAvatar(stepsService.imgUrl(userResultsById.getUserId().toString()));
-                maintenanceResult.setUserResult(userResultsById);
-            }
-            if (userResultsById.getUserId().equals(maintenanceResult.getCreateUser())){
-                userResultsById.setAvatar(stepsService.imgUrl(userResultsById.getUserId().toString()));
-                maintenanceResult.setCreateUserResult(userResultsById);
-            }
-        }
-
-        List<Long> materialIds = new ArrayList<>();
-
-        List<Long> brandIds = new ArrayList<>();
-
-        List<Long> positionsIds = new ArrayList<>();
-
-        List<Long> bomIds = new ArrayList<>();
-
-        List<Long> spuClassificationIds = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
-        List<Long> spuIds = new ArrayList<>();
-
-        ids.add(maintenanceResult.getMaintenanceId());
-        if (ToolUtil.isNotEmpty(maintenanceResult.getSelectParams())) {
-            List<MaintenanceAndInventorySelectParam> selectParams = JSON.parseArray(maintenanceResult.getSelectParams(), MaintenanceAndInventorySelectParam.class);
-            for (MaintenanceAndInventorySelectParam selectParam : selectParams) {
-                if (ToolUtil.isNotEmpty(selectParam.getBrandIds())) {
-                    brandIds.addAll(selectParam.getBrandIds());
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getMaterialIds())) {
-                    materialIds.addAll(selectParam.getMaterialIds());
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getStorehousePositionsIds())) {
-                    positionsIds.addAll(selectParam.getStorehousePositionsIds());
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getPartsIds())) {
-                    bomIds.addAll(selectParam.getPartsIds());
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getSpuClassificationIds())) {
-                    spuClassificationIds.addAll(selectParam.getSpuClassificationIds());
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getSkuIds())) {
-                    bomIds.addAll(selectParam.getSkuIds());
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getSpuIds())) {
-                    spuIds.addAll(selectParam.getSpuIds());
-                }
-            }
-        }
-
-
-        List<SkuSimpleResult> skuSimpleResults = bomIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(bomIds);
-        List<StorehousePositionsResult> positionsResults = positionsIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.getDetails(positionsIds);
-        List<MaterialResult> materials = materialIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(materialService.listByIds(materialIds), MaterialResult.class);
-        List<SpuClassificationResult> spuClassifications = spuClassificationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(spuClassificationService.listByIds(spuClassificationIds), SpuClassificationResult.class);
-        List<BrandResult> brandResultsList = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
-        List<SpuResult> spuResults = spuIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(spuService.listByIds(spuIds), SpuResult.class);
-        if (ToolUtil.isNotEmpty(maintenanceResult.getSelectParams())) {
-            List<MaintenanceAndInventorySelectParam> selectParams = JSON.parseArray(maintenanceResult.getSelectParams(), MaintenanceAndInventorySelectParam.class);
-            for (MaintenanceAndInventorySelectParam selectParam : selectParams) {
-                List<SkuSimpleResult> bomResults = new ArrayList<>();
-                List<StorehousePositionsResult> positionsResults1 = new ArrayList<>();
-                List<MaterialResult> materialsResults = new ArrayList<>();
-                List<SpuClassificationResult> spuClassificationResults = new ArrayList<>();
-                List<BrandResult> brandResults = new ArrayList<>();
-                List<SkuSimpleResult> skuResults = new ArrayList<>();
-                List<SpuResult> spuResults1 = new ArrayList<>();
-                if (ToolUtil.isNotEmpty(selectParam.getBrandIds())) {
-                    for (Long brandId : selectParam.getBrandIds()) {
-                        for (BrandResult brandResult : brandResultsList) {
-                            if (brandResult.getBrandId().equals(brandId)) {
-                                brandResults.add(brandResult);
-                            }
-                        }
-                    }
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getMaterialIds())) {
-                    for (Long materialId : selectParam.getMaterialIds()) {
-                        for (MaterialResult material : materials) {
-                            if (material.getMaterialId().equals(materialId)) {
-                                materialsResults.add(material);
-                            }
-                        }
-                    }
-
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getSpuIds())) {
-                    for (Long spuId : selectParam.getSpuIds()) {
-                        for (SpuResult spu : spuResults) {
-                            if (spu.getSpuId().equals(spuId)) {
-                                spuResults1.add(spu);
-                            }
-                        }
-                    }
-
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getStorehousePositionsIds())) {
-                    for (Long positionId : selectParam.getStorehousePositionsIds()) {
-                        for (StorehousePositionsResult positionsResult : positionsResults) {
-                            if (positionsResult.getStorehousePositionsId().equals(positionId)) {
-                                positionsResults1.add(positionsResult);
-                            }
-                        }
-                    }
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getPartsIds())) {
-                    for (Long bomId : selectParam.getPartsIds()) {
-                        for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                            if (skuSimpleResult.getSkuId().equals(bomId)) {
-                                bomResults.add(skuSimpleResult);
-                            }
-                        }
-                    }
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getSkuIds())) {
-                    for (Long skuId : selectParam.getSkuIds()) {
-                        for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                            if (skuSimpleResult.getSkuId().equals(skuId)) {
-                                skuResults.add(skuSimpleResult);
-                            }
-                        }
-                    }
-                }
-                if (ToolUtil.isNotEmpty(selectParam.getSpuClassificationIds())) {
-                    for (Long spuClassId : selectParam.getSpuClassificationIds()) {
-                        for (SpuClassificationResult spuClassification : spuClassifications) {
-                            if (spuClassification.getSpuClassificationId().equals(spuClassId)) {
-                                spuClassificationResults.add(spuClassification);
-                            }
-                        }
-                    }
-                }
-                selectParam.setBrandResults(brandResults);
-                selectParam.setMaterialResults(materialsResults);
-                selectParam.setPartsResults(bomResults);
-                selectParam.setSpuClassificationResults(spuClassificationResults);
-                selectParam.setStorehousePositionsResults(positionsResults1);
-                selectParam.setSpuResults(spuResults1);
-                selectParam.setSkuResults(skuResults);
-            }
-            maintenanceResult.setSelectParamResults(selectParams);
-            maintenanceResult.setStatusName(statusMap.get((long) maintenanceResult.getStatus()));
-            List<StorehousePositionsResult> details = this.getDetails(id);
-            if (details.size() == 0) {
-                this.updateStatus(maintenanceResult.getMaintenanceId());
-            }
-            List<MaintenanceDetail> maintenanceDetails = maintenanceDetailService.query().eq("display", 1).eq("maintenance_id", id).list();
-            List<Long> storehousePositionsIds = new ArrayList<>();
-            List<Long> skuIds = new ArrayList<>();
-            Integer num = 0;
-            Integer doneNumber = 0;
-            for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
-                if (maintenanceDetail.getMaintenanceId().equals(maintenanceResult.getMaintenanceId())) {
-                    storehousePositionsIds.add(maintenanceDetail.getStorehousePositionsId());
-                    skuIds.add(maintenanceDetail.getSkuId());
-                    num += maintenanceDetail.getNumber();
-                    doneNumber += maintenanceDetail.getDoneNumber();
-                }
-            }
-            skuIds = skuIds.stream().distinct().collect(Collectors.toList());
-            storehousePositionsIds = storehousePositionsIds.stream().distinct().collect(Collectors.toList());
-            maintenanceResult.setNumberCount(num);
-            maintenanceResult.setSkuCount(skuIds.size());
-            maintenanceResult.setPositionCount(storehousePositionsIds.size());
-            maintenanceResult.setDoneNumberCount(doneNumber);
+        maintenanceResult.setStatusName(statusMap.get((long) maintenanceResult.getStatus()));
+        List<StorehousePositionsResult> details = this.getDetails(id);
+        if (details.size() == 0) {
+            this.updateStatus(maintenanceResult.getMaintenanceId());
         }
         if (ToolUtil.isNotEmpty(maintenanceResult.getNotice())) {
             List<Long> collect = Arrays.asList(maintenanceResult.getNotice().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
@@ -845,8 +640,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         for (StockDetails details : detailTotalList) {
             for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
                 if (details.getBrandId().equals(maintenanceDetail.getBrandId()) && details.getSkuId().equals(maintenanceDetail.getSkuId()) && details.getStorehousePositionsId().equals(maintenanceDetail.getStorehousePositionsId())) {
-                    if (maintenanceDetail.getDisplay() == 1 && maintenanceDetail.getNumber()!= Math.toIntExact(details.getNumber())) {
-                        if (maintenanceDetail.getNumber()<details.getNumber()){
+                    if (maintenanceDetail.getDisplay() == 1 && maintenanceDetail.getNumber() != Math.toIntExact(details.getNumber())) {
+                        if (maintenanceDetail.getNumber() < details.getNumber()) {
                             maintenanceDetail.setStatus(0);
                         }
                         maintenanceDetail.setNumber(Math.toIntExact(details.getNumber()));
@@ -862,6 +657,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 ToolUtil.copyProperties(stockDetail, maintenanceDetail);
                 maintenanceDetail.setMaintenanceId(maintenance.getMaintenanceId());
                 maintenanceDetails.add(maintenanceDetail);
+            }
+        }
+        for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
+            if (stockDetails.stream().noneMatch(i -> i.getSkuId().equals(maintenanceDetail.getSkuId()) && i.getBrandId().equals(maintenanceDetail.getBrandId()) && i.getStorehousePositionsId().equals(maintenanceDetail.getStorehousePositionsId()))) {
+                maintenanceDetail.setDisplay(0);
             }
         }
         maintenanceDetailService.saveOrUpdateBatch(maintenanceDetails);

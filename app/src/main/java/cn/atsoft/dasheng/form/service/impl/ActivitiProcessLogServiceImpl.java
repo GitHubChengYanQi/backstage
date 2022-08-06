@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
-import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
-import cn.atsoft.dasheng.action.Enum.InstockErrorActionEnum;
-import cn.atsoft.dasheng.action.Enum.QualityActionEnum;
-import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
+import cn.atsoft.dasheng.action.Enum.*;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -128,7 +125,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private InventoryService inventoryService;
     @Autowired
     private AllocationService allocationService;
-
+    @Autowired
+    private ActivitiProcessService processService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -510,13 +508,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 //如果来源存的是流程任务的id
                                 ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
                                 List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
-                                if (list.stream().allMatch(i->i.getStatus().equals(99))){
+                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
                                     checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
                                 }
-                            }else {
-                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.query().eq("type",themeAndOrigin.getSource()).eq("form_id",themeAndOrigin.getSourceId()).one();
+                            } else {
+                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.query().eq("type", themeAndOrigin.getSource()).eq("form_id", themeAndOrigin.getSourceId()).one();
                                 List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
-                                if (list.stream().allMatch(i->i.getStatus().equals(99))){
+                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
                                     checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
                                 }
                             }
@@ -1483,6 +1481,47 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     /**
+     * 是否邮操作权限
+     *
+     * @param type
+     * @param module
+     * @param action
+     * @return
+     */
+
+    @Override
+    public boolean canOperat(String type, String module, String action) {
+
+        ActivitiProcess process = processService.query().eq("type", type).eq("module", module).eq("status", 99).one();
+        if (ToolUtil.isEmpty(process)) {
+            throw new ServiceException(500, "没有流程");
+        }
+        List<ActivitiSteps> steps = stepsService.query().eq("process_id", process.getProcessId()).list();
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiSteps step : steps) {
+            stepIds.add(step.getSetpsId());
+        }
+
+        List<ActivitiAudit> audits = auditService.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", stepIds);
+        }});
+
+        for (ActivitiAudit audit : audits) {
+            AuditRule rule = audit.getRule();
+            if (ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getActionStatuses())) {
+                for (ActionStatus actionStatus : rule.getActionStatuses()) {
+                    if (actionStatus.getAction().equals(action)) {
+                        return activitiProcessTaskService.startHaveME(rule, LoginContextHolder.getContext());
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
      * 查出当前下关于用户所有步骤
      *
      * @param type
@@ -1524,7 +1563,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 }
             }
         }
-
         return false;
     }
 
@@ -1599,7 +1637,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "ALLOCATION":
                 for (ActivitiProcessLog processLog : audit) {
                     if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
-                        allocationService.createPickListsAndInStockOrder(task.getFormId());
+                        List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+                        DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
+                        for (ActionStatus actionStatus : actionStatuses) {
+                            if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)) {
+                                allocationService.createPickListsAndInStockOrder(task.getFormId());
+                                continue;
+                            }
+                        }
+
                     }
                 }
                 break;

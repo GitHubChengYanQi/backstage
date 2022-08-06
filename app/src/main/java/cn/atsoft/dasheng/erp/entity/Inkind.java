@@ -24,6 +24,9 @@ public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("position_id")
+    private Long positionId;
+
     @TableField("pid")
     private Long pid;
 
@@ -38,6 +41,9 @@ public class Inkind implements Serializable {
 
     @TableField("production_time")
     private Date productionTime;
+
+    @TableField("last_maintenance_time")
+    private Date lastMaintenanceTime;
 
     /**
      * 供应商
@@ -303,6 +309,14 @@ public class Inkind implements Serializable {
 
     public void setPid(Long pid) {
         this.pid = pid;
+    }
+
+    public Date getLastMaintenanceTime() {
+        return lastMaintenanceTime;
+    }
+
+    public void setLastMaintenanceTime(Date lastMaintenanceTime) {
+        this.lastMaintenanceTime = lastMaintenanceTime;
     }
 
     @Override

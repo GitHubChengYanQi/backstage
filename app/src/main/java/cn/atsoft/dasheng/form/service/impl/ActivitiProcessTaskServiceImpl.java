@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
-import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -13,11 +12,7 @@ import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
-import cn.atsoft.dasheng.erp.service.AnomalyService;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.MaintenanceService;
-import cn.atsoft.dasheng.erp.service.InventoryService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -34,12 +29,12 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -88,7 +83,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Autowired
     private GetOrigin getOrigin;
     @Autowired
-    private StepsService stepsService;
+    private AllocationService allocationService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -176,6 +171,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     }
 
     @Override
+    public PageInfo<ActivitiProcessTaskResult> selfPickTasks(ActivitiProcessTaskParam param) {
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.selfPickListsTasks(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+    @Override
     public ActivitiProcessTaskResult detail(Long id) {
         ActivitiProcessTask processTask = this.getById(id);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
@@ -189,15 +192,30 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param) {
-
-        List<Long> taskId = getTaskId();    //查看权限
-        if (ToolUtil.isEmpty(taskId)) {
-            taskId = new ArrayList<>();
-            taskId.add(0L);
-        }
-        param.setTaskIds(taskId);
+        List<Long> taskIds = new ArrayList<>();
+        taskIds.add(0L);
+        taskIds.addAll(getTaskId());    //查看节点权限
+        // 参与人权限
+        taskIds.addAll(getTaskIdsByUserIds());
+        param.setTaskIds(taskIds);
         Long userId = LoginContextHolder.getContext().getUserId();
         param.setUserIds(userId.toString());
+
+        /**
+         * 超期筛选
+         */
+        if (ToolUtil.isNotEmpty(param.getOutTime())) {
+            List<Long> timeOutTaskIds = new ArrayList<>();
+            switch (param.getOutTime()) {
+                case "yes":
+                    timeOutTaskIds.addAll(inventoryService.timeOut(true));
+                    break;
+                case "no":
+                    inventoryService.timeOut(false);
+                    break;
+            }
+            param.setTimeOutTaskIds(timeOutTaskIds);
+        }
 
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
@@ -206,6 +224,26 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return PageFactory.createPageInfo(page);
 
     }
+
+    private List<Long> getTaskIdsByUserIds() {
+        List<Long> taskIds = new ArrayList<>();
+        List<ActivitiProcessTask> processTasks = this.query().eq("display", 1).isNotNull("user_ids").ne("status", 99).list();
+
+        for (ActivitiProcessTask processTask : processTasks) {
+            try {
+                List<Long> userIds = JSON.parseArray(processTask.getUserIds(), Long.class);
+                for (Long userId : userIds) {
+                    if (LoginContextHolder.getContext().getUserId().equals(userId)) {
+                        taskIds.add(processTask.getProcessTaskId());
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return taskIds;
+    }
+
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> LoginStart(ActivitiProcessTaskParam param) {
@@ -312,7 +350,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
      * @param rule
      * @return
      */
-    private boolean startHaveME(AuditRule rule, LoginContext loginContext) {
+    @Override
+    public boolean startHaveME(AuditRule rule, LoginContext loginContext) {
         LoginUser user = loginContext.getUser();
         List<Long> depts = loginContext.getDeptDataScope();
         if (ToolUtil.isEmpty(user.getId())) {
@@ -344,6 +383,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Override
     public Long getTaskIdByFormId(Long formId) {
         ActivitiProcessTask task = ToolUtil.isEmpty(formId) ? new ActivitiProcessTask() : this.query().eq("form_id", formId).one();
+        if (ToolUtil.isEmpty(task)) {
+            return null;
+        }
         return task.getProcessTaskId();
     }
 
@@ -356,6 +398,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> inventoryIds = new ArrayList<>();
         List<Long> anomalyIds = new ArrayList<>();
         List<Long> maintenanceIds = new ArrayList<>();
+        List<Long> allocationIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
@@ -375,6 +418,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     break;
                 case "MAINTENANCE":
                     maintenanceIds.add(datum.getFormId());
+                    break;
+                case "ALLOCATION":
+                    allocationIds.add(datum.getFormId());
                     break;
 
             }
@@ -411,6 +457,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<InventoryResult> inventoryResults = BeanUtil.copyToList(inventories, InventoryResult.class, new CopyOptions());
         inventoryService.format(inventoryResults);
 
+        List<AllocationResult> allocationResults = allocationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(allocationService.listByIds(allocationIds), AllocationResult.class);
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
 
@@ -461,7 +508,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             for (AnomalyResult anomalyResult : anomalyResults) {
                 if (datum.getType().equals("ErrorForWard") && datum.getFormId().equals(anomalyResult.getAnomalyId())) {
                     datum.setReceipts(anomalyResult);
-
                 }
             }
             for (MaintenanceResult maintenanceResult : maintenanceResults) {
@@ -471,17 +517,25 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     datum.setReceipts(maintenanceResult);
                 }
             }
+            for (AllocationResult allocationResult : allocationResults) {
+                if (datum.getType().equals("ALLOCATION") && datum.getFormId().equals(allocationResult.getAllocationId())) {
+                    String statusName = statusMap.get(allocationResult.getStatus());
+                    allocationResult.setStatusName(statusName);
+                    datum.setReceipts(allocationResult);
+                }
+            }
         }
 
     }
+
     @Override
-    public Map<String,String> getSendData(Long taskId) {
+    public Map<String, String> getSendData(Long taskId) {
         ActivitiProcessTask processTask = this.getById(taskId);
         Long processId = processTask.getProcessId();
         ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
         String modelName = ProcessType.getNameByEnum(activitiProcess.getType());
-        Map<String,String> result = new HashMap<>();
-        result.put("function",modelName);
+        Map<String, String> result = new HashMap<>();
+        result.put("function", modelName);
         String coding = "";
         List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
         try {
@@ -521,9 +575,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     InstockOrderResult instockOrderResult = BeanUtil.copyProperties(instockOrderService.getById(processTask.getFormId()), InstockOrderResult.class);
                     instockOrderService.formatDetail(instockOrderResult);
                     for (InstockListResult instockListResult : instockOrderResult.getInstockListResults()) {
-                        skuSimpleResults.add(BeanUtil.copyProperties(instockListResult.getSkuResult(),SkuSimpleResult.class));
+                        skuSimpleResults.add(BeanUtil.copyProperties(instockListResult.getSkuResult(), SkuSimpleResult.class));
                     }
-                    coding  = instockOrderResult.getCoding();
+                    coding = instockOrderResult.getCoding();
                     break;
                 case "ERROR":
                     AnomalyOrderResult orderResult = anomalyOrderService.detail(processTask.getFormId());
@@ -541,21 +595,21 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     for (ProductionPickListsDetailResult detailResult : pickListsRestult.getDetailResults()) {
                         skuSimpleResults.add(detailResult.getSkuResult());
                     }
-                    coding  = pickListsRestult.getCoding();
+                    coding = pickListsRestult.getCoding();
                     break;
                 case "MAINTENANCE":
                     MaintenanceResult maintenanceResult = maintenanceService.detail(processTask.getFormId());
                     for (MaintenanceDetailResult maintenanceDetailResult : maintenanceResult.getMaintenanceDetailResults()) {
                         skuSimpleResults.add(maintenanceDetailResult.getSkuResult());
                     }
-                    coding  = maintenanceResult.getCoding();
+                    coding = maintenanceResult.getCoding();
                     break;
                 case "Stocktaking":
                     InventoryResult inventoryResult = inventoryService.detail(processTask.getFormId());
                     for (InventoryDetailResult detailResult : inventoryResult.getDetailResults()) {
                         skuSimpleResults.add(BeanUtil.copyProperties(detailResult.getSkuResult(), SkuSimpleResult.class));
                     }
-                    coding  = inventoryResult.getCoding();
+                    coding = inventoryResult.getCoding();
 
                     break;
 
@@ -577,20 +631,24 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 stringBuffer.append(skuSimpleResult.getSpecifications());
             }
             stringBuffer.append(",");
-            if (stringBuffer.length()>28){
+            if (stringBuffer.length() > 28) {
                 break;
             }
         }
         String string = stringBuffer.toString();
-         string = string.substring(0,string.length()-1);
-        if(string.length()>27){
-            string= string+".....";
+        if (string.length() > 0) {
+            string = string.substring(0, string.length() - 1);
+        }
+        if (string.length() > 27) {
+            string = string + ".....";
         }
 
 
-
-        result.put("description",string);
-        result.put("coding",coding);
+        result.put("description", string);
+        result.put("coding", coding);
+        if (ToolUtil.isNotEmpty(processTask.getTaskName())) {
+            result.put("items", processTask.getTaskName());
+        }
         return result;
     }
 

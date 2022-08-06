@@ -6,23 +6,15 @@ import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
-import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
-import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
-import cn.atsoft.dasheng.erp.model.result.MaintenanceResult;
-import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
-import cn.atsoft.dasheng.erp.service.AnomalyService;
-import cn.atsoft.dasheng.erp.model.result.InventoryResult;
+import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
-import cn.atsoft.dasheng.erp.service.InventoryDetailService;
-import cn.atsoft.dasheng.erp.service.InventoryService;
-import cn.atsoft.dasheng.erp.service.MaintenanceService;
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.impl.AllocationServiceImpl;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -105,6 +97,8 @@ public class taskController extends BaseController {
     private AnomalyService anomalyService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private AllocationService allocationService;
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -202,6 +196,10 @@ public class taskController extends BaseController {
                     InventoryResult inventoryResult = inventoryService.detail(taskResult.getFormId());
                     taskResult.setReceipts(inventoryResult);
                     break;
+                case "ALLOCATION":
+                    AllocationResult allocationResult = allocationService.detail(taskResult.getFormId());
+                    taskResult.setReceipts(allocationResult);
+                    break;
 
             }
         } catch (Exception e) {
@@ -275,5 +273,11 @@ public class taskController extends BaseController {
             }
         }
         return null;
+    }
+
+    @RequestMapping(value = "/canOperat", method = RequestMethod.POST)
+    public ResponseData canOperat(@RequestBody ActivitiProcessParam activitiProcessParam) {
+        boolean b = logService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
+        return ResponseData.success(b);
     }
 }

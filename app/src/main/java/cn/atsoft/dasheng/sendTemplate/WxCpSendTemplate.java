@@ -180,8 +180,8 @@ public class WxCpSendTemplate {
                 messageEntity.setMaxTimes(2);
                 Message message = new Message();
                 message.setTime(new DateTime());
-                message.setTitle(markDownTemplate.getItems());
-                message.setContent(markDownTemplate.getDescription());
+                message.setTitle(markDownTemplate.getTitle());
+                message.setContent(markDownTemplate.getItems());
                 message.setType(markDownTemplate.getType());
                 message.setUserId(userId);
                 message.setSort(0L);
@@ -205,13 +205,8 @@ public class WxCpSendTemplate {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("**").append(markDownTemplate1.getTitle()).append("**").append("\n\n");
 
-        if (ToolUtil.isNotEmpty(markDownTemplate1.getCoding())) {
-            String string = markDownTemplate1.getItems() + markDownTemplate1.getCoding();
-            if (string.length() > 13) {
-                string = string.substring(0, 13);
-                string += "......";
-            }
-            stringBuffer.append(string).append("\n\n");
+        if (ToolUtil.isNotEmpty(markDownTemplate1.getItems())) {
+            stringBuffer.append(markDownTemplate1.getItems()).append("\n\n");
         }
         if (ToolUtil.isNotEmpty(markDownTemplate1.getDescription())) {
             stringBuffer.append(markDownTemplate1.getDescription()).append("\n\n").append("\n\n");
@@ -234,6 +229,8 @@ public class WxCpSendTemplate {
             Map<String, String> data = new HashMap<>();
             if (ToolUtil.isNotEmpty(markDownTemplate.getTaskId())) {
                 data = activitiProcessTaskService.getSendData(markDownTemplate.getTaskId());
+                ToolUtil.isNotEmpty(data.get("items"));
+                markDownTemplate.setItems(data.get("items"));
             }
             switch (markDownTemplate.getFunction()) {
                 case audit:

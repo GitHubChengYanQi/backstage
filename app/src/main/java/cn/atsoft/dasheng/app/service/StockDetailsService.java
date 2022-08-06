@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -84,6 +85,13 @@ public interface StockDetailsService extends IService<StockDetails> {
      */
     List<Long> backSkuByStoreHouse(Long id);
 
+
+    void statement();
+
+    void splitInKind(Long inKind);
+
+    List<StockDetailsResult> inkindList(Long skuId);
+
     /**
      * 返回当前仓库下所有数据
      *
@@ -103,6 +111,8 @@ public interface StockDetailsService extends IService<StockDetails> {
     List<StockSkuBrand> stockSkuBrands();
 
     Integer getNumberByStock(Long skuId, Long brandId, Long positionId);
+
+    List<StockDetailsResult> getStockNumberBySkuId(Long skuId,Long storehouseId);
 
     List<StockSkuBrand> stockSku();
 

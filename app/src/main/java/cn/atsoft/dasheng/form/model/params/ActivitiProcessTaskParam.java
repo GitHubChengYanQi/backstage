@@ -27,11 +27,15 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private static final long serialVersionUID = 1L;
 
+    private String outTime;
+
     private List<String> types;
 
     private String auditType;
 
     private List<Long> taskIds = new ArrayList<>();
+
+    private List<Long> timeOutTaskIds;
 
     private Long setpsId;
 

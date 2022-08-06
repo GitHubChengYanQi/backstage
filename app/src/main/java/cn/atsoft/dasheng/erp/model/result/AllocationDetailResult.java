@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
@@ -20,10 +22,19 @@ import java.util.List;
 public class AllocationDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private SkuSimpleResult skuResult;
+    private BrandResult brandResult;
+    private StorehousePositionsResult positionsResult;
+    private StorehousePositionsResult toPositionsResult;
+    private StorehouseResult storehouseResult;
+    private StorehouseResult toStorehouseResult;
 
     @ApiModelProperty("")
     private Long allocationDetailId;
+
+    private String params;
+
+    private Integer haveBrand;
 
     /**
      * 调拨id
@@ -48,6 +59,11 @@ public class AllocationDetailResult implements Serializable {
      */
     @ApiModelProperty("仓库id")
     private Long storehouseId;
+    /**
+     * 仓库id
+     */
+    @ApiModelProperty("状态")
+    private Integer status;
 
     @ApiModelProperty("")
     private Long brandId;

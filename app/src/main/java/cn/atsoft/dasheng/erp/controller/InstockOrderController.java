@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
@@ -54,6 +55,7 @@ public class InstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody InstockOrderParam instockOrderParam) {
         InstockOrder instockOrder = this.instockOrderService.add(instockOrderParam);
         return ResponseData.success(instockOrder);
@@ -81,8 +83,11 @@ public class InstockOrderController extends BaseController {
     }
 
     @RequestMapping(value = "/document", method = RequestMethod.GET)
-    public ResponseData document(@RequestParam("id") Long id) {
-        Object document = this.instockOrderService.document(id);
+    public ResponseData document(@RequestParam("id") Long id, String type) {
+        if (ToolUtil.isEmpty(id) || ToolUtil.isEmpty(type)) {
+            throw new ServiceException(500, "缺少参数");
+        }
+        Object document = this.instockOrderService.document(id, type);
         return ResponseData.success(document);
     }
 
@@ -127,6 +132,7 @@ public class InstockOrderController extends BaseController {
      * @Date 2021-10-06
      */
     @RequestMapping(value = "/inStockByOrder", method = RequestMethod.POST)
+    @Permission
     public ResponseData inStockByOrder(@Valid @RequestBody InstockOrderParam param) {
         List<Long> inkindIds = this.instockOrderService.inStock(param);
         return ResponseData.success(inkindIds);

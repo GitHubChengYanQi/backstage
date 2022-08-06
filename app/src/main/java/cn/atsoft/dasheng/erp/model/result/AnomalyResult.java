@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.pojo.CheckNumber;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
@@ -29,6 +30,8 @@ import java.util.List;
 public class AnomalyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private StorehousePositionsResult positionsResult;
 
     private List<CheckNumber> checkNumbers;
 

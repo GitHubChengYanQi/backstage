@@ -62,4 +62,6 @@ public interface PartsMapper extends BaseMapper<Parts> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") PartsParam paramCondition);
 
+
+    List<Long> getTopSkuId();
 }

@@ -32,7 +32,8 @@ import java.util.Map;
 @Data
 @ApiModel
 public class ProductionPickListsResult implements Serializable {
-
+    @ApiModelProperty("是否有物料可以操作")
+    private Boolean canOperate;
     private static final long serialVersionUID = 1L;
     @ApiModelProperty("任务")
     private ProductionTaskResult productionTaskResult;
@@ -111,14 +112,12 @@ public class ProductionPickListsResult implements Serializable {
     /**
      * 来源
      */
-    @JSONField(serialize = false)
     @ApiModelProperty("来源")
     private String source;
 
     /**
      * 来源id
      */
-    @JSONField(serialize = false)
     @ApiModelProperty("来源id")
 
     private Long sourceId;

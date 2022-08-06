@@ -336,6 +336,12 @@
         <if test="paramCondition.maxNum != null">
             and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
         </if>
+        <if test="paramCondition.sortMap != null and paramCondition.sortMap.size>0">
+            order by
+            <foreach collection="paramCondition.sortMap" item="value" index="key" separator=",">
+                ${key} ${value}
+            </foreach>
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">

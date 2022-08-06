@@ -10,6 +10,7 @@
         <result column="brand_id" property="brandId"/>
         <result column="customer_id" property="customerId"/>
         <result column="status" property="status"/>
+        <result column="allocation_json" property="allocationJson"/>
         <result column="number" property="number"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
@@ -24,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">form_id
-    AS "formId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId",
+    AS "formId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId",allocation_json AS "allocationJson",
         cart_id
         AS "cartId", type AS "type", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", status AS "status", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
@@ -240,6 +241,9 @@
         from daoxin_shop_cart where 1 = 1 and display = 1
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user = #{paramCondition.createUser}
         </if>
   </select>
 </mapper>

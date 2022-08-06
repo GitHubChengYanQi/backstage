@@ -1,17 +1,24 @@
 package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.pojo.ProcessType;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
@@ -25,6 +32,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.service.ProductionTaskService;
 import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.CharsetUtil;
@@ -74,6 +82,12 @@ public class ProductionPickListsController extends BaseController {
     @Autowired
     private RedisSendCheck redisSendCheck;
 
+    @Autowired
+    private InventoryService inventoryService;
+
+    @Autowired
+    private ActivitiProcessTaskService processTaskService;
+
     /**
      * 新增接口
      *
@@ -82,23 +96,25 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody ProductionPickListsParam productionPickListsParam) {
         this.productionPickListsService.warning(productionPickListsParam);
         ProductionPickLists pickLists = this.productionPickListsService.add(productionPickListsParam);
         return ResponseData.success(pickLists);
     }
-     /**
-         * 生成code
-         *
-         * @author Captain_Jazz
-         * @Date 2022-03-25
-         */
-        @RequestMapping(value = "/createCode", method = RequestMethod.POST)
-        @ApiOperation("新增")
-        public ResponseData createCode(@RequestBody ProductionPickListsParam productionPickListsParam) {
-            String code = this.productionPickListsService.createCode(productionPickListsParam);
-            return ResponseData.success(code);
-        }
+
+    /**
+     * 生成code
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/createCode", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData createCode(@RequestBody ProductionPickListsParam productionPickListsParam) {
+        String code = this.productionPickListsService.createCode(productionPickListsParam);
+        return ResponseData.success(code);
+    }
 
 
     @RequestMapping(value = "/abortCode", method = RequestMethod.GET)
@@ -225,9 +241,7 @@ public class ProductionPickListsController extends BaseController {
         result.setProductionTaskResults(productionTaskResults);
         result.setCartResults(pickListsCartResults);
 //         JSON.toJSONString(result);
-        String toJSONString =JSON.toJSONString(result,JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.DisableCircularReferenceDetect.getMask());
-
-
+        String toJSONString = JSON.toJSONString(result, JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.DisableCircularReferenceDetect.getMask());
 
 
         byte[] gzip = ZipUtil.gzip(toJSONString, CharsetUtil.UTF_8);
@@ -268,34 +282,40 @@ public class ProductionPickListsController extends BaseController {
     }
 
     /**
-     * 查询列表
+     * 领料中心
      *
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    @RequestMapping(value = "/selfList", method = RequestMethod.POST)
+    @RequestMapping(value = "/selfPickTasks", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ProductionPickListsResult> selfList(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
-        if (ToolUtil.isEmpty(productionPickListsParam)) {
-            productionPickListsParam = new ProductionPickListsParam();
+    public PageInfo<ActivitiProcessTaskResult> selfPickTasks(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+
+
+        if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
+            activitiProcessTaskParam = new ActivitiProcessTaskParam();
         }
-        productionPickListsParam.setUserId(LoginContextHolder.getContext().getUserId());
-        return this.productionPickListsService.findPageBySpec(productionPickListsParam);
+        activitiProcessTaskParam.setUserId(LoginContextHolder.getContext().getUserId());
+        activitiProcessTaskParam.setType(ProcessType.OUTSTOCK.name());
+        return processTaskService.selfPickTasks(activitiProcessTaskParam);
+
     }
 
     @RequestMapping(value = "/createOutStockOrder", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public ResponseData createOutStockOrder(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+        inventoryService.staticState();
         if (ToolUtil.isEmpty(productionPickListsParam)) {
             productionPickListsParam = new ProductionPickListsParam();
         }
-
-        String code = this.productionPickListsService.outStock(productionPickListsParam);
+        List<Object> list = redisSendCheck.getList(productionPickListsParam.getCode());
+        List<ProductionPickListsCartParam> productionPickListsCartParams = BeanUtil.copyToList(list, ProductionPickListsCartParam.class);
+        productionPickListsParam.setCartsParams(productionPickListsCartParams);
+        this.productionPickListsService.outStock(productionPickListsParam);
         redisSendCheck.deleteList(productionPickListsParam.getCode());
-        return ResponseData.success(code);
+        return ResponseData.success();
     }
-
-
 
 
     @RequestMapping(value = "/createOutStockOrderBySku", method = RequestMethod.POST)
@@ -318,7 +338,7 @@ public class ProductionPickListsController extends BaseController {
         ProductionPickListsResult result = new ProductionPickListsResult();
         if (ToolUtil.isEmpty(detail)) {
             return ResponseData.success(result);
-        }else {
+        } else {
             ToolUtil.copyProperties(detail, result);
             productionPickListsService.formatStatus99(new ArrayList<ProductionPickListsResult>() {{
                 add(result);
@@ -326,14 +346,17 @@ public class ProductionPickListsController extends BaseController {
         }
         return ResponseData.success(result);
     }
+
     @RequestMapping(value = "/listByUser", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData listByUser(@RequestBody ProductionPickListsParam productionPickListsParam) {
         List<Map<String, Object>> maps = productionPickListsService.listByUser(productionPickListsParam);
         return ResponseData.success(maps);
     }
- @RequestMapping(value = "/listByCode", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/listByCode", method = RequestMethod.GET)
     @ApiOperation("详情")
+    @Permission
     public ResponseData listByUser(@RequestParam String code) {
 
         return ResponseData.success(productionPickListsService.listByCode(code));

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.action.Enum.InstockErrorActionEnum;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -33,8 +34,12 @@ import cn.atsoft.dasheng.message.entity.AuditEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
+import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
+import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -53,9 +58,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
@@ -123,6 +127,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private InventoryStockService inventoryStockService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private ProductionPickListsCartService listsCartService;
+    @Autowired
+    private ProductionPickListsDetailService listsDetailService;
+    @Autowired
+    private StorehousePositionsService positionsService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     @Transactional
@@ -163,8 +175,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
             anomalyIds.add(anomaly.getAnomalyId());
         }
+
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
-        if (entity.getType().equals("Stocktaking")) {   //更新盘点处理状态
+        if (entity.getType().equals("Stocktaking") || entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
             inventoryStockService.updateStatus(anomalyIds);
         }
         /**
@@ -316,19 +329,22 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
         }
 
+
         AnomalyOrder entity = getEntity(param);
         this.save(entity);
-        List<Anomaly> anomalies = new ArrayList<>();
+
         List<Long> ids = new ArrayList<>();
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
             ids.add(anomalyParam.getAnomalyId());
-            Anomaly anomaly = new Anomaly();
-            anomaly.setStatus(98);
-            ToolUtil.copyProperties(anomalyParam, anomaly);
-            anomaly.setOrderId(entity.getOrderId());
-            anomalies.add(anomaly);
         }
-        anomalyService.updateBatchById(anomalies);    //更新异常单据状态
+        List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.query().in("anomaly_id", ids).isNull("order_id").eq("display", 1).list();
+        for (Anomaly anomaly : anomalyList) {
+            anomaly.setOrderId(entity.getOrderId());
+            anomaly.setStatus(98);
+        }
+
+        inventoryStockService.updateStatus(ids);
+        anomalyService.updateBatchById(anomalyList);    //更新异常单据状态
         /**
          * 更新购物车状态
          */
@@ -433,34 +449,85 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         param.setUserId(LoginContextHolder.getContext().getUserId());
 
         List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+
         for (AnomalyResult anomalyResult : anomalyResults) {
 
+            /**
+             * 有核实的数量 才走判断
+             */
             //核实数量 修改库存数
             if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
                 int size = checkNumbers.size();
                 CheckNumber checkNumber = checkNumbers.get(size - 1);
                 inventoryService.updateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getCustomerId(), anomalyResult.getPositionId(), Long.valueOf(checkNumber.getNumber()));
-
             }
-            //TODO
+
+
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
+                stockDetailsService.splitInKind(detail.getInkindId());   //拆分 库存中的实物
                 if (detail.getStauts() == 2) {  //报损 创建出库单
                     ProductionPickListsDetailParam detailParam = new ProductionPickListsDetailParam();
                     detailParam.setBrandId(anomalyResult.getBrandId());
                     detailParam.setSkuId(anomalyResult.getSkuId());
                     detailParam.setNumber(Math.toIntExact(detail.getNumber()));
                     detailParam.setStorehousePositionsId(anomalyResult.getPositionId());
-                    detailParam.setReceivedNumber(Math.toIntExact(detail.getNumber()));
+                    detailParam.setReceivedNumber(0);
+                    detailParam.setInkindId(detail.getInkindId());
                     pickListsDetailParams.add(detailParam);
                 }
             }
-            param.setPickListsDetailParams(pickListsDetailParams);
-        }
-        if (pickListsDetailParams.size() > 0) {   //调用出库申请
-            pickListsService.add(param);
+            List<ProductionPickListsDetailParam> totalList = new ArrayList<>();
+            pickListsDetailParams.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                    (id, transfer) -> {
+                        transfer.stream().reduce((a, b) -> new ProductionPickListsDetailParam() {{
+                            setNumber(a.getNumber() + b.getNumber());
+                            setSkuId(a.getSkuId());
+                            setBrandId(a.getBrandId());
+                            setStorehouseId(a.getStorehouseId());
+                        }}).ifPresent(totalList::add);
+                    }
+            );
+
+            param.setPickListsDetailParams(totalList);
         }
 
+        /**
+         * 直接调用出库申请 并且添加到购物车
+         */
+        if (pickListsDetailParams.size() > 0) {
+            ProductionPickLists productionPickLists = pickListsService.add(param);
+
+            Long pickListsId = productionPickLists.getPickListsId();
+            //添加带领购物车
+            List<ProductionPickListsDetail> pickListsDetails = listsDetailService.query().eq("pick_lists_id", pickListsId).list();
+            List<ProductionPickListsCartParam> cartParams = new ArrayList<>();
+
+            for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+                ProductionPickListsCartParam cartParam = new ProductionPickListsCartParam();
+                cartParam.setSkuId(pickListsDetail.getSkuId());
+                cartParam.setBrandId(pickListsDetail.getBrandId());
+                cartParam.setPickListsId(pickListsDetail.getPickListsId());
+                cartParam.setPickListsDetailId(pickListsDetail.getPickListsDetailId());
+                cartParam.setNumber(pickListsDetail.getNumber());
+                cartParam.setType("frmLoss");
+                cartParam.setInkindId(pickListsDetail.getInkindId());
+                cartParam.setStorehousePositionsId(pickListsDetail.getStorehousePositionsId());
+                StorehousePositions positions = positionsService.getById(pickListsDetail.getStorehousePositionsId());
+                cartParam.setStorehouseId(positions.getStorehouseId());
+                cartParams.add(cartParam);
+            }
+
+
+            List<StockDetails> stockDetails = stockDetailsService.fundStockDetailByCart(new ProductionPickListsCartParam() {{
+                setProductionPickListsCartParams(cartParams);
+            }});
+
+            listsCartService.add(new ProductionPickListsCartParam() {{
+                setProductionPickListsCartParams(cartParams);
+            }}, stockDetails);
+
+        }
     }
 
     /**
@@ -720,15 +787,27 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
 
         for (AnomalyOrderResult datum : data) {
-
+            Set<Long> positionNum = new HashSet<>();
+            Set<Long> skuIds = new HashSet<>();
             List<AnomalyResult> anomalyResultList = new ArrayList<>();
-
+            int handle = 0;
             for (AnomalyResult anomalyResult : anomalyResults) {
                 if (datum.getOrderId().equals(anomalyResult.getOrderId())) {
+                    if (ToolUtil.isNotEmpty(anomalyResult.getPositionId())) {   //涉及库位数量
+                        positionNum.add(anomalyResult.getPositionId());
+                    }
+                    skuIds.add(anomalyResult.getSkuId());                     //涉及物料种类
                     anomalyResultList.add(anomalyResult);
+                    if ((anomalyResult.getStatus() != 98 && anomalyResult.getStatus() != 0) || anomalyResult.getStatus() == 90) {
+                        handle = handle + 1;
+                    }
                 }
             }
+            datum.setSkuNumber(skuIds.size());
             datum.setAnomalyResults(anomalyResultList);
+            datum.setHandle(handle);
+            datum.setTotal(anomalyResultList.size());
+            datum.setPositionNum(positionNum.size());
         }
 
     }

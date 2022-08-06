@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
@@ -96,4 +97,6 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
     List<Long> getCartInkindIds(ProductionPickListsCartParam productionPickListsCartParam);
 
     List<PickListsStorehouseResult> listPickListsStorehouse(ProductionPickListsParam param);
+
+    List<StockDetailsResult> getCartInkindByLists(ProductionPickListsCartParam param);
 }

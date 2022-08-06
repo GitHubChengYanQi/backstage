@@ -11,6 +11,7 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="last_maintenance_id" property="lastMaintenanceTime"/>
         <result column="display" property="display"/>
         <result column="spu_id" property="spuId"/>
         <result column="deptId" property="deptId"/>
@@ -25,13 +26,14 @@
         <result column="serial_number" property="serialNumber"/>
         <result column="production_time" property="productionTime"/>
         <result column="pid" property="pid"/>
+        <result column="position_id" property="positionId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">number
-    AS "number",source AS "source", source_id AS "sourceId",customer_id AS "customerId",batch_number AS "batchNumber",serial_number AS "serialNumber",production_time AS "productionTime",
+    AS "number",source AS "source", last_maintenance_id AS lastMaintenanceTime,source_id AS "sourceId",customer_id AS "customerId",batch_number AS "batchNumber",serial_number AS "serialNumber",production_time AS "productionTime",
 spu_id
-    AS "spuId", cost_price AS "costPrice" , selling_price AS "sellingPrice" ,brand_id AS "brandId",pid AS "pid",
+    AS "spuId", cost_price AS "costPrice" , selling_price AS "sellingPrice" ,brand_id AS "brandId",pid AS "pid",position_id AS "positionId",
         inkind_id
         AS "inkindId", type AS "type", sku_id AS "skuId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>

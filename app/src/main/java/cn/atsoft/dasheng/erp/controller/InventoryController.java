@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
@@ -60,6 +61,7 @@ public class InventoryController extends BaseController {
 
     @RequestMapping(value = "/InventoryApply", method = RequestMethod.POST)
     @ApiOperation("盘点申请")
+    @Permission
     public ResponseData InventoryApply(@RequestBody InventoryParam inventoryParam) {
         Inventory inventory = this.inventoryService.InventoryApply(inventoryParam);
         return ResponseData.success(inventory);
@@ -95,15 +97,22 @@ public class InventoryController extends BaseController {
     }
 
 
-
-
-
     @RequestMapping(value = "/conditionGetOne", method = RequestMethod.POST)
     public ResponseData conditionGetOne(@RequestBody InventoryDetailParam detailParam) {
         InventoryDetailResult result = this.inventoryService.conditionGetOne(detailParam);
         return ResponseData.success(result);
     }
 
+
+    /**
+     * 盘点超时
+     * @return
+     */
+    @RequestMapping(value = "/timeOut", method = RequestMethod.GET)
+    public ResponseData timeOut( ) {
+
+        return ResponseData.success();
+    }
 //
 //    /**
 //     * 编辑接口
@@ -132,7 +141,6 @@ public class InventoryController extends BaseController {
         this.inventoryService.inventory(inventoryRequest);
         return ResponseData.success();
     }
-
 
 
     @RequestMapping(value = "/listByTime", method = RequestMethod.GET)

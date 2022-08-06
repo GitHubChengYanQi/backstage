@@ -88,17 +88,14 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     @Override
 
     public void delete(CodingRulesParam param) {
-        param.setDisplay(0);
-        this.updateById(this.getEntity(param));
+        this.removeById(this.getEntity(param));
     }
 
     @Override
     @Transactional
 
     public void update(CodingRulesParam param) {
-
         updateDefault(param.getCodingRulesId());
-
         if (ToolUtil.isNotEmpty(param.getCodings())) {
             String codingRules = "";
             if (param.getCodings().size() == 0) {

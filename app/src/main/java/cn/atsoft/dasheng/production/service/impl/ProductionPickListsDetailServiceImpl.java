@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsDetailMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
@@ -109,8 +110,9 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
             }
             detailIds.add(result.getPickListsDetailId());
         }
+        List<Long> lockedInkindIds = this.getLockedInkindIds();
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
-        List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : lockedInkindIds.size() == 0 ? stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id",lockedInkindIds).eq("display", 1).list();
         List<ProductionPickListsCartResult> cartResults = pickListsCartService.listByListsDetailIds(detailIds);
         for (StockDetails skus : stockSkus) {
             if (ToolUtil.isEmpty(skus.getBrandId())) {
@@ -129,7 +131,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                 }
         );
         List<StockDetails> anyBrand = new ArrayList<>();
-        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId()+"", Collectors.toList())).forEach(
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "", Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setSkuId(a.getSkuId());
@@ -184,6 +186,15 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
             result.setCartResults(cartResultList);
         }
 
+    }
+
+    public List<Long> getLockedInkindIds() {
+        List<ProductionPickListsCart> list = pickListsCartService.query().eq("status", 0).eq("display", 1).list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (ProductionPickListsCart pickListsCart : list) {
+            inkindIds.add(pickListsCart.getInkindId());
+        }
+        return inkindIds;
     }
 
     @Override

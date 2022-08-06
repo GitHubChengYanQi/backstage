@@ -23,10 +23,14 @@ import java.util.List;
 public class AllocationDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private Long positionId;
 
     @ApiModelProperty("")
     private Long allocationDetailId;
+    private Long allocationCartId;
+    private String params;
+    private Integer haveBrand;
+
 
     /**
      * 调拨id

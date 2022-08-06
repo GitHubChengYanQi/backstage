@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.service;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
@@ -8,6 +9,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -77,12 +79,16 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
     PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param);
 
 
+    PageInfo<ActivitiProcessTaskResult> selfPickTasks(ActivitiProcessTaskParam param);
+
     ActivitiProcessTaskResult detail(Long id);
 
     PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param);
 
 
     PageInfo<ActivitiProcessTaskResult> LoginStart(ActivitiProcessTaskParam param);
+
+    boolean startHaveME(AuditRule rule, LoginContext loginContext);
 
     Long getTaskIdByFormId(Long formId);
 

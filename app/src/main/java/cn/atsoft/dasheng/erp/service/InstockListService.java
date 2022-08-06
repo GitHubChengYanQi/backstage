@@ -66,6 +66,8 @@ public interface InstockListService extends IService<InstockList> {
      */
     PageInfo<InstockListResult> findPageBySpec(InstockListParam param);
 
+    InstockListResult detail(Long id);
+
     /**
      * 批量扫码入库
      *

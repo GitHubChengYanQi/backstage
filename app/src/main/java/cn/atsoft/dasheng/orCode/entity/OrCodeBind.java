@@ -24,6 +24,7 @@ import java.io.Serializable;
 public class OrCodeBind implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     /**
      * 类型
      */

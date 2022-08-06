@@ -47,6 +47,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import oshi.jna.platform.mac.SystemB;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -107,14 +108,14 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositions entity = getEntity(param);
         this.save(entity);
 
-        StorehousePositions positions = new StorehousePositions();
-        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
-        positions.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        positions.setChildren(JSON.toJSONString(childrenMap.get("children")));
-        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("storehouse_positions_id", entity.getPid());
-        this.update(positions, QueryWrapper);
-        updateChildren(entity.getPid());
+//        StorehousePositions positions = new StorehousePositions();
+//        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
+//        positions.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+//        positions.setChildren(JSON.toJSONString(childrenMap.get("children")));
+//        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
+//        QueryWrapper.eq("storehouse_positions_id", entity.getPid());
+//        this.update(positions, QueryWrapper);
+//        updateChildren(entity.getPid());
     }
 
     /**
@@ -217,64 +218,64 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositions oldEntity = getOldEntity(param);
         StorehousePositions newEntity = getEntity(param);
 
-        if (!oldEntity.getPid().equals(newEntity.getPid())) {
-            List<StorehousePositions> storehousePositions = this.query().like("childrens", param.getStorehousePositionsId()).list();
-            for (StorehousePositions positions : storehousePositions) {
-
-                JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens());
-                JSONArray childrenJson = JSONUtil.parseArray(positions.getChildren());
-
-                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
-                List<Long> newChildrenList = new ArrayList<>();
-                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-                longs.remove(param.getStorehousePositionsId());
-
-                for (Long aLong : oldchildrenList) {
-                    if (aLong.equals(param.getStorehousePositionsId())) {
-                        newChildrenList.remove(aLong);
-                    }
-                }
-                positions.setChildren(JSON.toJSONString(newChildrenList));
-                positions.setChildrens(JSON.toJSONString(longs));
-                this.update(positions, new QueryWrapper<StorehousePositions>().in("storehouse_positions_id", positions.getStorehousePositionsId()));
-            }
-
-        }
-
-        if (ToolUtil.isNotEmpty(param.getPid())) {
-            StorehousePositions one = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).eq("display", 1).one();
-            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
-            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-            for (Long aLong : longs) {
-                if (param.getPid().equals(aLong)) {
-                    throw new ServiceException(500, "请勿循环添加");
-                }
-            }
-
-        }
-
-        // 更新当前节点，及下级
-        StorehousePositions storehousePositions = new StorehousePositions();
-        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
-        List<Long> childrens = childrenMap.get("childrens");
-
-        if (childrens.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
-            childrens.add(param.getStorehousePositionsId());
-        }
-
-        storehousePositions.setChildrens(JSON.toJSONString(childrens));
-        List<Long> children = childrenMap.get("children");
-
-        if (children.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
-            children.add(param.getStorehousePositionsId());
-        }
-
-        storehousePositions.setChildren(JSON.toJSONString(children));
-        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("storehouse_positions_id", param.getPid());
-        this.update(storehousePositions, QueryWrapper);
-
-        updateChildren(param.getPid());
+//        if (!oldEntity.getPid().equals(newEntity.getPid())) {
+//            List<StorehousePositions> storehousePositions = this.query().like("childrens", param.getStorehousePositionsId()).list();
+//            for (StorehousePositions positions : storehousePositions) {
+//
+//                JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens());
+//                JSONArray childrenJson = JSONUtil.parseArray(positions.getChildren());
+//
+//                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
+//                List<Long> newChildrenList = new ArrayList<>();
+//                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+//                longs.remove(param.getStorehousePositionsId());
+//
+//                for (Long aLong : oldchildrenList) {
+//                    if (aLong.equals(param.getStorehousePositionsId())) {
+//                        newChildrenList.remove(aLong);
+//                    }
+//                }
+//                positions.setChildren(JSON.toJSONString(newChildrenList));
+//                positions.setChildrens(JSON.toJSONString(longs));
+//                this.update(positions, new QueryWrapper<StorehousePositions>().in("storehouse_positions_id", positions.getStorehousePositionsId()));
+//            }
+//
+//        }
+//
+//        if (ToolUtil.isNotEmpty(param.getPid())) {
+//            StorehousePositions one = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).eq("display", 1).one();
+//            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
+//            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+//            for (Long aLong : longs) {
+//                if (param.getPid().equals(aLong)) {
+//                    throw new ServiceException(500, "请勿循环添加");
+//                }
+//            }
+//
+//        }
+//
+//        // 更新当前节点，及下级
+//        StorehousePositions storehousePositions = new StorehousePositions();
+//        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
+//        List<Long> childrens = childrenMap.get("childrens");
+//
+//        if (childrens.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
+//            childrens.add(param.getStorehousePositionsId());
+//        }
+//
+//        storehousePositions.setChildrens(JSON.toJSONString(childrens));
+//        List<Long> children = childrenMap.get("children");
+//
+//        if (children.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
+//            children.add(param.getStorehousePositionsId());
+//        }
+//
+//        storehousePositions.setChildren(JSON.toJSONString(children));
+//        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
+//        QueryWrapper.eq("storehouse_positions_id", param.getPid());
+//        this.update(storehousePositions, QueryWrapper);
+//
+//        updateChildren(param.getPid());
         //---------------------------------------------------------------------------------------------------------------------
 
 
@@ -437,8 +438,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * @return
      */
     @Override
-    public List<BrandResult> selectByBrand(Long skuId, Long brandId) {
-        List<ProductionPickListsCart> list = cartService.query().eq("status", 0).or().eq("status", 2).list();
+    public List<BrandResult> selectByBrand(Long skuId, Long brandId, Long storehouseId) {
+        List<ProductionPickListsCart> list = cartService.query().eq("status", 0).list();
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : list) {
             inkindIds.add(pickListsCart.getInkindId());
@@ -451,12 +452,15 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         if (ToolUtil.isNotEmpty(brandId)) {
             stockDetailsQueryWrapper.eq("brand_id", brandId);
         }
+        if (ToolUtil.isNotEmpty(storehouseId)) {
+            stockDetailsQueryWrapper.eq("storehouse_id", storehouseId);
+        }
 
-//        if (inkindIds.size()>0) {
-//            stockDetailsQueryWrapper.notIn("inkind_id", inkindIds);
-//        }
         stockDetailsQueryWrapper.gt("number", 0);
         stockDetailsQueryWrapper.eq("display", 1);
+        if (inkindIds.size() > 0) {
+            stockDetailsQueryWrapper.notIn("inkind_id", inkindIds);//将已经备料的实物抛出
+        }
 
         List<StockDetails> stockDetails = stockDetailsService.list(stockDetailsQueryWrapper);  //物料查询库存
 
@@ -742,8 +746,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<PositionLoop> treeViewByName(String name) {
-        List<StorehousePositions> positions = this.query().eq("display", 1).list();
+    public List<PositionLoop> treeViewByName(String name, Long houseId) {
+        QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
+        if (ToolUtil.isNotEmpty(houseId)) {
+            queryWrapper.eq("storehouse_id", houseId);
+        }
+        List<StorehousePositions> positions = this.list(queryWrapper);
         List<Long> positionIds = new ArrayList<>();
         for (StorehousePositions position : positions) {
             if (ToolUtil.isEmpty(name)) {
@@ -763,29 +772,37 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             PositionLoop loop = new PositionLoop();
             loop.setTitle(positionsResult.getName());
             loop.setKey(positionsResult.getStorehousePositionsId());
+            loop.setStoreHouseId(positionsResult.getStorehouseId());
             loop.setPid(positionsResult.getPid());
             allPositionLoop.add(loop);
         }
+
         //需要的下级库位
         List<PositionLoop> childs = new ArrayList<>();
         for (Long positionId : positionIds) {
             for (PositionLoop loop : allPositionLoop) {
                 if (loop.getKey().equals(positionId)) {
                     childs.add(loop);
+
+                    if (loop.getPid() == 0) {
+                        loop.setB(true);
+                    }
                     break;
                 }
             }
-
         }
+
         for (PositionLoop child : childs) {
             loop(child, allPositionLoop);
         }
+
         childs.clear();
         for (PositionLoop loop : allPositionLoop) {
-            if (loop.getPid() == 0 && ToolUtil.isNotEmpty(loop.getLoops())) {
+            if (loop.isB() && loop.getPid() == 0) {
                 childs.add(loop);
             }
         }
+
         return childs;
     }
 
@@ -793,7 +810,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private void loop(PositionLoop child, List<PositionLoop> positions) {
         for (PositionLoop position : positions) {
             if (position.getKey().equals(child.getPid())) {
-
+                position.setB(true);
                 if (ToolUtil.isEmpty(position.getLoops())) {
                     position.setLoops(new ArrayList<>());
                 }
@@ -805,6 +822,31 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
     }
 
+    @Override
+    public void positionFormat(List<PositionLoop> positionLoops, Long skuId) {
+        for (PositionLoop positionLoop : positionLoops) {
+            if (ToolUtil.isNotEmpty(positionLoop.getLoops())) {
+                positionFormat(positionLoop.getLoops(), skuId);
+            } else {
+                loopFormat(positionLoop, skuId);   //最下级
+            }
+        }
+    }
+
+    private void loopFormat(PositionLoop positionLoop, Long skuId) {
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
+        queryWrapper.eq("sku_id", skuId);
+        queryWrapper.eq("storehouse_positions_id", positionLoop.getKey());
+        queryWrapper.select("sum(number) as num ");
+        queryWrapper.groupBy("sku_id", "storehouse_positions_id");
+        StockDetails stockDetails = stockDetailsService.getOne(queryWrapper);
+
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+            positionLoop.setSkuId(skuId);
+            positionLoop.setNum(stockDetails.getNum());
+        }
+    }
 
     /**
      * 通过库位查询skuId
@@ -840,7 +882,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         for (StorehousePositions storehousePositions : positions) {
             if (storehousePositions.getPid().equals(position.getStorehousePositionsId())) {
-
                 positionIds.addAll(loopChild(storehousePositions, positions));
             }
         }

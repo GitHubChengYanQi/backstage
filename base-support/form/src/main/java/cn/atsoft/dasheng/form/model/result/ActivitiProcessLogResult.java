@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.model.result;
 
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,6 +27,7 @@ public class ActivitiProcessLogResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JSONField(serialize = false)
     private ActivitiStepsResult stepsResult;
 
     private User user;
@@ -51,12 +53,14 @@ public class ActivitiProcessLogResult implements Serializable {
      * 流程Id
      */
     @ApiModelProperty("流程Id")
+    @JSONField(serialize = false)
     private Long peocessId;
 
     /**
      * 步骤Id
      */
     @ApiModelProperty("步骤Id")
+    @JSONField(serialize = false)
     private Long setpsId;
 
     /**
@@ -69,19 +73,24 @@ public class ActivitiProcessLogResult implements Serializable {
      * 删除状态
      */
     @ApiModelProperty("删除状态")
+    @JSONField(serialize = false)
     private Integer display;
 
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
+
+    @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

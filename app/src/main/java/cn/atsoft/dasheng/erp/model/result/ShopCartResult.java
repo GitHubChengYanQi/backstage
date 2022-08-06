@@ -35,6 +35,8 @@ public class ShopCartResult implements Serializable {
 
     private String storehousePositionsId;
 
+    private String allocationJson;
+
     private Long storehouseId;
 
     private List<StorehousePositionsResult> storehousePositions;

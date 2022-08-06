@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
@@ -40,6 +42,8 @@ public class ProductionPickListsCartController extends BaseController {
     private ProductionPickListsCartService productionPickListsCartService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private InventoryService inventoryService;
 
     /**
      * 新增接口
@@ -49,10 +53,12 @@ public class ProductionPickListsCartController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
         if (ToolUtil.isEmpty(productionPickListsCartParam.getTaskId())) {
             throw new ServiceException(500, "缺少任务id");
         }
+        inventoryService.staticState();
         if (!productionPickListsCartParam.getWarning()) {
 
             boolean warning = productionPickListsCartService.warning(productionPickListsCartParam);
@@ -210,6 +216,19 @@ public class ProductionPickListsCartController extends BaseController {
         }
         return ResponseData.success(this.productionPickListsCartService.listPickListsStorehouse(param));
     }
+    /* 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/getCartInkindByLists", method = RequestMethod.POST)
+    public ResponseData getCartInkindByLists(@RequestBody(required = false) ProductionPickListsCartParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new ProductionPickListsCartParam();
+        }
+        return ResponseData.success(this.productionPickListsCartService.getCartInkindByLists(param));
+    }
+
 
 
 }

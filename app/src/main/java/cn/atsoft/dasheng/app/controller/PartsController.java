@@ -107,6 +107,17 @@ public class PartsController extends BaseController {
     }
 
     /**
+     * 最顶级物料
+     *
+     * @return
+     */
+    @RequestMapping(value = "/startAnalyse", method = RequestMethod.GET)
+    public ResponseData startAnalyse() {
+        this.partsService.startAnalyse();
+        return ResponseData.success();
+    }
+
+    /**
      * 删除接口
      *
      * @author song

@@ -43,6 +43,8 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -56,7 +58,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.bouncycastle.tsp.TSPUtil;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
@@ -138,6 +142,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private OrCodeService orCodeService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private ProductionPickListsCartService listsCartService;
 
     @Override
     @Transactional
@@ -207,24 +213,16 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         Inventory entity = getEntity(param);
         this.save(entity);
 
-//        if (ToolUtil.isEmpty(param.getDetailParams())) {
-//            throw new ServiceException(500, "物料不存在");
-//        }
-
         List<InventoryStock> inventoryStocks = BeanUtil.copyToList(param.getStockParams(), InventoryStock.class);
         for (InventoryStock inventoryStock : inventoryStocks) {
+            if (ToolUtil.isEmpty(inventoryStock.getCustomerId())) {
+                inventoryStock.setCustomerId(0L);
+            }
             inventoryStock.setInventoryId(entity.getInventoryTaskId());
-            inventoryStock.setRealNumber(inventoryStock.getNumber());
+//            inventoryStock.setRealNumber(inventoryStock.getNumber());
         }
         inventoryStockService.saveBatch(inventoryStocks);
-//        List<InventoryDetail> inventoryDetails = BeanUtil.copyToList(param.getDetailParams(), InventoryDetail.class, new CopyOptions());
-//        for (InventoryDetail inventoryDetail : inventoryDetails) {
-//            inventoryDetail.setInventoryId(entity.getInventoryTaskId());
-//            inventoryDetail.setRealNumber(inventoryDetail.getNumber());
-//        }
-//        inventoryDetailService.saveBatch(inventoryDetails);
         param.setCreateUser(entity.getCreateUser());
-
         List<ShopCart> shopCarts = shopCartService.query()
                 .eq("type", AnomalyType.timelyInventory.name())
                 .eq("create_user", LoginContextHolder.getContext().getUserId())
@@ -245,7 +243,60 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         anomalyOrderParam.setAnomalyParams(anomalyParams);
         anomalyOrderService.add(anomalyOrderParam);
         shopCartService.updateBatchById(shopCarts);
+
+        /**
+         * 同步盘点任务的物料
+         */
+        List<InventoryResult> inventoryResults = this.listByTime();
+        List<Long> inventoryIds = new ArrayList<>();
+        for (InventoryResult inventoryResult : inventoryResults) {
+            inventoryIds.add(inventoryResult.getInventoryTaskId());
+        }
+
+        List<InventoryStock> stockList = inventoryStockService.query().in("inventory_id", inventoryIds)
+                .eq("display", 1)
+                .ne("lock_status", 99)
+                .list();
+
+
+        for (InventoryStock time : inventoryStocks) {
+            updateInventoryStock(time, stockList);
+        }
+
+        inventoryStockService.updateBatchById(stockList);
+
     }
+
+    /**
+     * 比对 盘点任务的 物料 进行同步
+     *
+     * @param time
+     * @param tasks
+     */
+    private void updateInventoryStock(InventoryStock time, List<InventoryStock> tasks) {
+        for (InventoryStock task : tasks) {
+            if (time.getSkuId().equals(task.getSkuId())
+                    && time.getBrandId().equals(task.getBrandId())
+                    && time.getCustomerId().equals(task.getCustomerId())
+                    && time.getPositionId().equals(task.getPositionId())
+            ) {
+
+                task.setStatus(time.getStatus());
+                task.setAnomalyId(time.getAnomalyId());
+                task.setDisplay(1);
+                task.setRealNumber(time.getRealNumber());
+
+                if (time.getStatus() == 1) {   //正常物料    清楚异常id
+                    task.setAnomalyId(0L);
+                }
+                if (time.getStatus() == -1) {
+                    task.setLockStatus(99);
+                }
+
+            }
+        }
+    }
+
 
     /**
      * 静态限制
@@ -257,6 +308,28 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             if (ToolUtil.isNotEmpty(inventoryResult.getMode()) && inventoryResult.getMode().equals("staticState")) {   //如果 有静态  抛出异常 不可操作
                 throw new ServiceException(500, "仓库正在盘点中，盘点结束后可继续执行任务");
             }
+        }
+    }
+
+    /**
+     * 静态开始时间  退回所有备料购物车
+     */
+    @Scheduled(cron = "0 */15 * * * ?")
+    public void darkDiskUpdateCart() {
+        System.err.println("静态盘点定时任务-----------(锁库)----------->" + new DateTime());
+        DateTime dateTime = new DateTime();
+        Integer count = this.query().eq("mode", "staticState")
+                .eq("begin_time", dateTime)
+                .eq("display", 1)
+                .count();
+        if (count > 0) {
+            QueryWrapper<ProductionPickListsCart> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("display", 1);
+            queryWrapper.ne("type", "frmLoss");
+            queryWrapper.eq("status", 0);
+            ProductionPickListsCart pickListsCart = new ProductionPickListsCart();
+            pickListsCart.setDisplay(0);
+            listsCartService.update(pickListsCart, queryWrapper);
         }
     }
 
@@ -385,7 +458,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
-
         if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {    //产品
             List<Sku> skus = skuService.query().in("spu_id", detailParam.getSpuIds()).eq("display", 1).list();
             queryWrapper.in("sku_id", new ArrayList<Long>() {{
@@ -435,6 +507,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             InventoryStock inventoryStock = new InventoryStock();
             inventoryStock.setSkuId(stockDetail.getSkuId());
             inventoryStock.setBrandId(stockDetail.getBrandId());
+            inventoryStock.setCustomerId(stockDetail.getCustomerId());
             inventoryStock.setPositionId(stockDetail.getStorehousePositionsId());
             inventoryStock.setInkindId(stockDetail.getInkindId());
             details.add(inventoryStock);
@@ -514,9 +587,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<InventoryStock> condition = condition(inventoryDetailParam);
         for (InventoryStock inventoryStock : condition) {
             if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
-                    && i.getBrandId().equals(inventoryStock.getBrandId())
-                    && i.getPositionId().equals(inventoryStock.getPositionId())
-            )) {
+                            && i.getBrandId().equals(inventoryStock.getBrandId())
+                            && i.getPositionId().equals(inventoryStock.getPositionId()))
+            ) {
                 all.add(inventoryStock);
             }
         }
@@ -524,6 +597,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         inventoryStockService.format(inventoryStockResults);
         return inventoryStockResults;
     }
+
 
     private List<StorehousePositionsResult> positionsResultList(List<StockDetails> stockDetails) {
         if (ToolUtil.isEmpty(stockDetails)) {
@@ -638,7 +712,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "的盘点任务");
             activitiProcessTaskParam.setQTaskId(param.getInventoryTaskId());
-            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setUserIds(param.getParticipants());
             activitiProcessTaskParam.setFormId(param.getInventoryTaskId());
             activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
@@ -677,10 +752,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 }
                 remarksParam.setUserIds(userStrtoString);
                 remarksParam.setContent(param.getRemark());
-                messageProducer.remarksServiceDo(new RemarksEntity() {{
-                    setOperationType(OperationType.ADD);
-                    setRemarksParam(remarksParam);
-                }});
+                remarksService.addByMQ(remarksParam);
             }
         } else {
             throw new ServiceException(500, "请先设置或启用盘点流程");
@@ -1126,6 +1198,38 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
 
     /**
+     * 盘点超时
+     */
+    @Override
+    public List<Long> timeOut(boolean timeOut) {
+        DateTime dateTime = new DateTime();
+        QueryWrapper<Inventory> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
+        if (timeOut) {
+            queryWrapper.ne("status", 99);
+            queryWrapper.lt("end_time", dateTime);
+        } else {
+            queryWrapper.ge("end_time", dateTime);
+        }
+
+        List<Inventory> inventories = this.list(queryWrapper);
+        List<Long> fromIds = new ArrayList<>();
+        for (Inventory inventory : inventories) {
+            fromIds.add(inventory.getInventoryTaskId());
+        }
+        List<ActivitiProcessTask> activitiProcessTasks = fromIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.query()
+                .eq("display", 1)
+                .in("form_id", fromIds)
+                .select("process_task_id AS processTaskId ").list();
+
+        List<Long> taskIds = new ArrayList<>();
+        for (ActivitiProcessTask activitiProcessTask : activitiProcessTasks) {
+            taskIds.add(activitiProcessTask.getProcessTaskId());
+        }
+        return taskIds;
+    }
+
+    /**
      * 盘点入库
      *
      * @param skuId
@@ -1261,7 +1365,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
-        List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
+//        List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
 
         for (InventoryResult datum : data) {
 

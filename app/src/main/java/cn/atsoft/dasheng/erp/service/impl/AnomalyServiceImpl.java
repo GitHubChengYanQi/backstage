@@ -7,11 +7,9 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.AnomalyMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
@@ -22,20 +20,13 @@ import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.CheckNumber;
 import cn.atsoft.dasheng.erp.pojo.PositionNum;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
-import cn.atsoft.dasheng.form.model.params.RemarksParam;
-import cn.atsoft.dasheng.form.service.*;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.RemarksEntity;
+import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
-import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -52,8 +43,6 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 
 
 /**
@@ -108,6 +97,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private InventoryStockService inventoryStockService;
     @Autowired
     private AnomalyBindService anomalyBindService;
+    @Autowired
+    private StorehousePositionsService positionsService;
+    @Autowired
+    private AnomalyDetailService anomalyDetailService;
 
 
     @Transactional
@@ -128,7 +121,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 param.setType(param.getAnomalyType().toString());
                 break;
             case StocktakingError:  //盘点:
-            case allStocktaking:    //合并盘点
                 boolean normal = isNormal(param);  //判断有无异常件  没有异常件 不执行以下代码 直接退出
                 if (normal) {
                     updateInventory(param);   //盘点详情 修改成正常状态
@@ -325,17 +317,16 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             }
         } else {
             inventoryStockService.updateInventoryStatus(param, -1);
-//            updateInventoryStatus(param, -1);   //修改盘点状态
         }
         if (t) {   //添加异常信息
+            List<Inkind> inkinds = new ArrayList<>();
+
+            long inkindNum = 0L;
             for (AnomalyDetailParam detailParam : param.getDetailParams()) {
                 AnomalyDetail detail = new AnomalyDetail();
                 ToolUtil.copyProperties(detailParam, detail);
                 detail.setAnomalyId(param.getAnomalyId());
-                detail.setInkindId(param.getInkind());
-                if (ToolUtil.isNotEmpty(detailParam.getPidInKind())) {
-                    detail.setInkindId(detailParam.getPidInKind());
-                }
+                detail.setInkindId(detailParam.getInkindId());
                 if (ToolUtil.isNotEmpty(detailParam.getNoticeIds())) {
                     String json = JSON.toJSONString(detailParam.getNoticeIds());
                     detail.setRemark(json);
@@ -350,7 +341,16 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 anomalyBind.setAnomalyId(param.getAnomalyId());
                 anomalyBindService.save(anomalyBind);
 
+                Inkind inkind = new Inkind();
+                inkind.setInkindId(detailParam.getInkindId());
+                inkind.setNumber(detailParam.getNumber());
+                inkinds.add(inkind);
+                inkindNum = inkindNum + detailParam.getNumber();
             }
+            if (inkindNum > param.getRealNumber()) {
+                throw new ServiceException(500, "异常数量不能大于盘点数量");
+            }
+            inkindService.updateBatchById(inkinds);
         }
         return t;
     }
@@ -362,11 +362,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @return
      */
     private boolean isNormal(AnomalyParam param) {
+        inventoryDetailService.jurisdiction(param.getFormId());
+        //判断盘点操作权限
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             deleteBind(param.getAnomalyId()); //删除绑定数据
             return true;
         }
-
         return false;
     }
 
@@ -460,6 +461,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         deleteBind(param.getAnomalyId());   //删除绑定数据
 
+
+        for (AnomalyType value : AnomalyType.values()) {
+            if (value.getName().equals(oldEntity.getType())) {
+                param.setAnomalyType(value);
+            }
+        }
         boolean b = addDetails(param);
         if (b) {    //添加购物车
 
@@ -493,14 +500,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     @Override
     public void deleteBind(Long anomalyId) {
-
-        if (ToolUtil.isNotEmpty(anomalyId)) {
-            Anomaly anomaly = this.getById(anomalyId);
-            anomaly.setDisplay(0);
-            this.updateById(anomaly);
-        }
-
-
         detailService.remove(new QueryWrapper<AnomalyDetail>() {{
             eq("anomaly_id", anomalyId);
         }});
@@ -515,6 +514,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     @Override
     public void dealWithError(AnomalyParam param) {
+
+        //        param.setStatus(90);  //异常物料已被操作
 
         Anomaly oldEntity = getOldEntity(param);
         Anomaly newEntity = getEntity(param);
@@ -687,11 +688,17 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         User user = ToolUtil.isEmpty(result.getCreateUser()) ? new User() : userService.getById(result.getCreateUser());
         result.setUser(user);
 
+        StorehousePositions storehousePositions = ToolUtil.isEmpty(result.getPositionId()) ? new StorehousePositions() : positionsService.getById(result.getPositionId());
+        StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+        ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
+
         if (ToolUtil.isNotEmpty(skuSimpleResults)) {
             result.setSkuResult(skuSimpleResults.get(0));
         }
         result.setBrand(brand);
         result.setCustomer(customer);
+        result.setPositionsResult(storehousePositionsResult);
+
 
         //返回附件图片等
         if (ToolUtil.isNotEmpty(result.getEnclosure())) {
@@ -724,11 +731,13 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         List<Long> brandIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
         for (AnomalyResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             customerIds.add(datum.getCustomerId());
             ids.add(datum.getAnomalyId());
+            positionIds.add(datum.getPositionId());
         }
 
         List<SkuSimpleResult> skuSimpleResultList = skuService.simpleFormatSkuResult(skuIds);
@@ -736,9 +745,17 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
         List<AnomalyDetailResult> anomalyDetailResults = BeanUtil.copyToList(details, AnomalyDetailResult.class, new CopyOptions());
-
+        List<StorehousePositionsResult> positionsResults = positionsService.details(positionIds);
 
         for (AnomalyResult datum : data) {
+
+            for (StorehousePositionsResult positionsResult : positionsResults) {
+                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
+                    datum.setPositionsResult(positionsResult);
+                    break;
+                }
+            }
+
             for (SkuSimpleResult skuResult : skuSimpleResultList) {
                 if (skuResult.getSkuId().equals(datum.getSkuId())) {
                     datum.setSkuResult(skuResult);
@@ -766,8 +783,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             for (AnomalyDetailResult detail : anomalyDetailResults) {
                 if (datum.getAnomalyId().equals(detail.getAnomalyId())) {
                     otherNum = otherNum + detail.getNumber();
+                    detailResults.add(detail);
                 }
-                detailResults.add(detail);
             }
             datum.setDetails(detailResults);
             datum.setOtherNumber(otherNum);

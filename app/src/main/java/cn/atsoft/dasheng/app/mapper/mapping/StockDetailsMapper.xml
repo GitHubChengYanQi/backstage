@@ -101,6 +101,12 @@ stage
         <if test="paramCondition.storageTime !=null">
             and storage_time like CONCAT('%',#{paramCondition.storageTime},'%')
         </if>
+        <if test="paramCondition.qrCodeid != null ">
+            and inkind_id in (
+            select form_id from qr_code_bind where display = 1 and SUBSTRING(qr_code_id, -6) like
+            CONCAT('%',#{paramCondition.qrCodeid},'%') and source = 'item'
+            )
+        </if>
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
@@ -130,7 +136,16 @@ stage
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
+        <if test="paramCondition.inkindIds != null and  paramCondition.inkindIds.size>0">
+            and inkind_id in
+            <foreach collection="paramCondition.inkindIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
 
+        <if test="paramCondition.inkindId !=null">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
@@ -209,7 +224,17 @@ stage
 
     </select>
 
-    <select id="getNumberByStock" resultType="integer" parameterType="long">
+    <select id="getInkindIds" resultType="Long" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+        select form_id
+        from qr_code_bind where display = 1 and source = 'item'
+        <if test="paramCondition.inkind != null ">
+            and SUBSTRING(qr_code_id, -6) like CONCAT('%',#{paramCondition.inkind})
+        </if>
+
+    </select>
+
+    <select id="getNumberByStock" resultType="integer"
+            parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select sum(number) as number
         from daoxin_erp_stock_details where display = 1
         <if test="skuId != null ">

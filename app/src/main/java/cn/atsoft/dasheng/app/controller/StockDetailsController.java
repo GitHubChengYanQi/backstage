@@ -75,6 +75,34 @@ public class StockDetailsController extends BaseController {
         return ResponseData.success(number);
     }
 
+    @RequestMapping(value = "/splitInKind", method = RequestMethod.POST)
+    public ResponseData splitInKind(@RequestBody StockDetailsParam stockDetailsParam) {
+        this.stockDetailsService.splitInKind(stockDetailsParam.getInkindId());
+        return ResponseData.success();
+    }
+
+    /**
+     * 库存报表
+     *
+     * @return
+     */
+    @RequestMapping(value = "/startAnalyse", method = RequestMethod.GET)
+    public ResponseData startAnalyse() {
+        this.stockDetailsService.statement();
+        return ResponseData.success();
+    }
+
+    /**
+     * 库存物料详细信息
+     *
+     * @param stockDetailsParam
+     * @return
+     */
+    @RequestMapping(value = "/inkindList", method = RequestMethod.POST)
+    public ResponseData inkindList(@RequestBody StockDetailsParam stockDetailsParam) {
+        this.stockDetailsService.inkindList(stockDetailsParam.getSkuId());
+        return ResponseData.success();
+    }
 
     /**
      * 查看详情接口
@@ -120,6 +148,7 @@ public class StockDetailsController extends BaseController {
         StockDetails detail = this.stockDetailsService.getInkind(stockDetailsParam);
         return ResponseData.success(detail);
     }
+
     /**
      * 返回sku
      *
@@ -133,7 +162,22 @@ public class StockDetailsController extends BaseController {
         List<Long> longs = this.stockDetailsService.backSkuByStoreHouse(id);
         return ResponseData.success(longs);
     }
- /**
+
+    /**
+     * 根据skuId返回仓库
+     *
+     * @author
+     * @Date 2021-07-15
+     */
+    @RequestMapping(value = "/getStockNumberBySkuId", method = RequestMethod.GET)
+    @ApiOperation("编辑")
+    public ResponseData getStockNumberBySkuId(@RequestParam Long skuId, @RequestParam Long storehouseId) {
+
+        List<StockDetailsResult> stockNumberBySkuId = this.stockDetailsService.getStockNumberBySkuId(skuId, storehouseId);
+        return ResponseData.success(stockNumberBySkuId);
+    }
+
+    /**
      * 返回sku
      *
      * @author
@@ -142,10 +186,10 @@ public class StockDetailsController extends BaseController {
     @RequestMapping(value = "/getStockAndNumberBySkuId", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData getStockAndNumberBySkuId(@RequestBody StockDetailsParam stockDetailsParam) {
-        List<StockDetails> list = this.stockDetailsService.query().eq("display", 1).eq("stage", 1).eq("sku_id", stockDetailsParam.getSkuId()).ne("storehouse_id",stockDetailsParam.getStorehouseId()).list();
+        List<StockDetails> list = this.stockDetailsService.query().eq("display", 1).eq("stage", 1).eq("sku_id", stockDetailsParam.getSkuId()).ne("storehouse_id", stockDetailsParam.getStorehouseId()).list();
 
         List<StockDetails> totalList = new ArrayList<>();
-        list.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() +"_"+item.getStorehouseId(), Collectors.toList())).forEach(
+        list.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getStorehouseId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new StockDetails() {{
                         setSkuId(a.getSkuId());
@@ -160,10 +204,10 @@ public class StockDetailsController extends BaseController {
             storehouseIds.add(storeHouseAndSkuNumber.getStorehouseId());
         }
 
-        List<StorehouseResult> storehouseResults =storehouseIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehouseService.listByIds(storehouseIds), StorehouseResult.class);
+        List<StorehouseResult> storehouseResults = storehouseIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehouseService.listByIds(storehouseIds), StorehouseResult.class);
         for (StoreHouseAndSkuNumber storeHouseAndSkuNumber : storeHouseAndSkuNumbers) {
             for (StorehouseResult storehouseResult : storehouseResults) {
-                if (storeHouseAndSkuNumber.getStorehouseId().equals(storehouseResult.getStorehouseId())){
+                if (storeHouseAndSkuNumber.getStorehouseId().equals(storehouseResult.getStorehouseId())) {
                     storeHouseAndSkuNumber.setStorehouseResult(storehouseResult);
                     break;
                 }

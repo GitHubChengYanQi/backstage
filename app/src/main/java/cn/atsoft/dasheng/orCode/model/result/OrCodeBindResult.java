@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.orCode.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 二维码绑定
@@ -20,6 +24,7 @@ public class OrCodeBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long num;
     /**
      * 类型
      */

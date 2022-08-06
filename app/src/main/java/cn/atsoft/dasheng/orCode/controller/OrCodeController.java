@@ -428,12 +428,12 @@ public class OrCodeController extends BaseController {
                                 QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
                                 inkindResult.setTaskDetail(detail);
                                 break;
-                            case "入库":
-                            case "自由入库":
-                            case "盘点入库":
+                            default:
                                 Map<String, Object> inkindDetail = orCodeService.inkindDetail(inkindResult.getInkindId());
                                 inkindResult.setInkindDetail(inkindDetail);
                                 break;
+
+
                         }
                     }
                     inkindBack.setInkindResult(inkindResult);

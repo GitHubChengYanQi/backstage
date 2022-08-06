@@ -18,10 +18,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.pojo.AppointUser;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.ProcessParam;
-import cn.atsoft.dasheng.form.pojo.ViewUpdate;
+import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProcessRoute;
@@ -663,13 +660,29 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         if (ToolUtil.isEmpty(userId)) {
             return null;
         }
-        List<WxuserInfo> infoList = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").list();
+        WxuserInfo infoList = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").last("limit 1").one();
         if (ToolUtil.isNotEmpty(infoList)) {
-            WxuserInfo wxuserInfo = infoList.get(0);
-            UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", wxuserInfo.getMemberId()).eq("source", "wxCp").one();
-            return userInfo.getAvatar();
+            UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", infoList.getMemberId()).eq("source", "wxCp").one();
+            if (ToolUtil.isNotEmpty(userInfo)) {
+                return userInfo.getAvatar();
+            }
         }
         return null;
+    }
+
+    @Override
+    public List<UserList> userLists(String userName) {
+        List<UserList> userLists = new ArrayList<>();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(userName)) {
+            queryWrapper.like("name", userName);
+        }
+        List<User> users = userService.list(queryWrapper);
+        for (User user : users) {
+            String imgUrl = this.imgUrl(user.getUserId().toString());
+            userLists.add(new UserList(user.getUserId(), user.getName(), imgUrl));
+        }
+        return userLists;
     }
 }
 

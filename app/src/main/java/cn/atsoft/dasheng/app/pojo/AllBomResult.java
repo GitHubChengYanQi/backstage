@@ -9,7 +9,9 @@ import java.util.List;
 
 @Data
 public class AllBomResult {
+
     private List<BomOrder> result;
+
     private List<AnalysisResult> owe;
 
     private List<View> view;

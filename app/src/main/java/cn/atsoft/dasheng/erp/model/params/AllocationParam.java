@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.erp.model.request.AllocationDetailParamJson;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,12 +25,21 @@ public class AllocationParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<AllocationDetailParam> detailParams;
+    private List<Long> userIds;
+    private AllocationDetailParamJson jsonParam;
+    private Long toStorehousePositionsId;
+    private Long toStorehouseId;
+    private Long number;
+
 
     /**
      * 调拨id
      */
     @ApiModelProperty("调拨id")
     private Long allocationId;
+
+
+    private Long storeHousePositionsId;
 
     /**
      * 编码
@@ -121,11 +131,13 @@ public class AllocationParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("来源Json字符串")
     private String origin;
 
+    private Integer allocationType;
+
     /**
      * 库间调拨  仓库调拨
      */
     @ApiModelProperty("库间调拨  仓库调拨")
-    private Integer type;
+    private String type;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

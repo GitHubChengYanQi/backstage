@@ -68,6 +68,8 @@ public interface RemarksService extends IService<Remarks> {
     PageInfo<RemarksResult> findPageBySpec(RemarksParam param);
 
 
+    PageInfo<RemarksResult> personalDynamic(RemarksParam param);
+
     void addNote(AuditParam auditParam);
 
     /**

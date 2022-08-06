@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -101,42 +103,44 @@ public class InstockHandleController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InstockHandleResult> list(@RequestBody(required = false) InstockHandleParam instockHandleParam) {
-        if(ToolUtil.isEmpty(instockHandleParam)){
+        if (ToolUtil.isEmpty(instockHandleParam)) {
             instockHandleParam = new InstockHandleParam();
         }
         return this.instockHandleService.findPageBySpec(instockHandleParam);
     }
+
     /**
-         * 查询列表
-         *
-         * @author song
-         * @Date 2022-07-08
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-07-08
+     */
+    @RequestMapping(value = "/listByInstockOrderId", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public ResponseData listByInstockOrderId(@RequestParam Long instockOrderId) {
+        List<InstockHandle> instockHandles = this.instockHandleService.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
+        List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
+        List<InstockHandleResult> detailTotalList = new ArrayList<>();
+
+        instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId() + "_" + item.getType() + "_" + item.getCustomerId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockHandleResult() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setBrandId(a.getBrandId());
+                        setType(a.getType());
+                        setCustomerId(a.getCustomerId());
+                    }}).ifPresent(detailTotalList::add);
+                }
+        );
+
+        /**
+         * 排序
          */
-        @RequestMapping(value = "/listByInstockOrderId", method = RequestMethod.GET)
-        @ApiOperation("列表")
-        public ResponseData listByInstockOrderId(@RequestParam Long instockOrderId) {
-            List<InstockHandle> instockHandles = this.instockHandleService.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
-            List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
-
-            List<InstockHandleResult> detailTotalList = new ArrayList<>();
-
-            instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId()+"_"+item.getType(), Collectors.toList())).forEach(
-                    (id, transfer) -> {
-                        transfer.stream().reduce((a, b) -> new InstockHandleResult() {{
-                            setNumber(a.getNumber() + b.getNumber());
-                            setSkuId(a.getSkuId());
-                            setBrandId(a.getBrandId());
-                            setType(a.getType());
-                        }}).ifPresent(detailTotalList::add);
-                    }
-            );
-
-
-
-            this.instockHandleService.format(detailTotalList);
-
-            return ResponseData.success(detailTotalList) ;
-        }
+        List<InstockHandleResult> collect = detailTotalList.stream().sorted(Comparator.comparing(InstockHandleResult::getSkuId).reversed()).collect(Collectors.toList());
+        this.instockHandleService.format(collect);
+        return ResponseData.success(collect);
+    }
 
 }
 

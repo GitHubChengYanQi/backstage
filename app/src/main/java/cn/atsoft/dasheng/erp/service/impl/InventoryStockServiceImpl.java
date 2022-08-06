@@ -6,15 +6,13 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Inventory;
-import cn.atsoft.dasheng.erp.entity.InventoryDetail;
-import cn.atsoft.dasheng.erp.entity.InventoryStock;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InventoryStockMapper;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.params.InventoryStockParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.SkuBind;
 import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
 import cn.atsoft.dasheng.erp.service.*;
@@ -23,6 +21,7 @@ import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -58,6 +57,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private InventoryDetailService inventoryDetailService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private AnomalyDetailService anomalyDetailService;
+    @Autowired
+    private AnomalyService anomalyService;
+    @Autowired
+    private ShopCartService shopCartService;
 
 
     @Override
@@ -109,6 +114,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                         && i.getPositionId().equals(inventoryStock.getPositionId())
                 )) {
                     inventoryStock.setInventoryId(detailParam.getInventoryId());
+                    inventoryStock.setDetailId(detailParam.getDetailId());
                     all.add(inventoryStock);
                 }
             }
@@ -126,23 +132,33 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         List<InventoryStock> all = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
 
-        List<InventoryResult> inventoryResults = inventoryService.listByTime();
-        List<Long> inventoryIds = new ArrayList<>();
+        List<InventoryResult> inventoryResults = inventoryService.listByTime();    //满足现在时间段的任务
         inventoryResults.removeIf(i -> i.getStatus() == 99);  //找出符合当前时间段 并且未完成 的盘点任务
 
+        boolean b = false;    //判断当前任务时间是否满足 同步
         for (InventoryResult inventoryResult : inventoryResults) {
-            inventoryIds.add(inventoryResult.getInventoryTaskId());
+            if (inventoryResult.getInventoryTaskId().equals(inventoryId)) {
+                b = true;
+                break;
+            }
+        }
+        if (b) {
+            List<Long> inventoryIds = new ArrayList<>();
+            for (InventoryResult inventoryResult : inventoryResults) {
+                inventoryIds.add(inventoryResult.getInventoryTaskId());
+            }
+
+            List<InventoryStock> inventoryStocks = inventoryIds.size() == 0 ? new ArrayList<>() : this.query()  //找出 当前时间段 执行过程中的物料
+                    .in("inventory_id", inventoryIds)
+                    .eq("display", 1).ne("status", 0)
+                    .list();
+
+            for (InventoryStock inventoryStock : all) {
+                updateList(inventoryStock, inventoryStocks);
+            }
+            this.updateBatchById(all);
         }
 
-        List<InventoryStock> inventoryStocks = inventoryIds.size() == 0 ? new ArrayList<>() : this.query()  //找出 当前时间段 执行过程中的物料
-                .in("inventory_id", inventoryIds)
-                .eq("display", 1).ne("status", 0)
-                .list();
-
-        for (InventoryStock inventoryStock : all) {
-            updateList(inventoryStock, inventoryStocks);
-        }
-        this.updateBatchById(all);
     }
 
     /**
@@ -196,6 +212,9 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
      */
     @Override
     public Map<String, Integer> speedProgress(Long inventoryId) {
+
+        Inventory inventory = inventoryService.getById(inventoryId);
+
         List<InventoryStock> inventoryStocks = this.query().eq("inventory_id", inventoryId).eq("display", 1).list();
         int size = inventoryStocks.size();
         int operation = 0;
@@ -208,9 +227,22 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             }
             positionIds.add(inventoryStock.getPositionId());
             skuIds.add(inventoryStock.getSkuId());
-            if (inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99) {
-                shopCartNum = shopCartNum + 1;
+
+            if (ToolUtil.isNotEmpty(inventory.getMethod()) && inventory.getMethod().equals("OpenDisc")) {
+                if (inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99) {
+                    shopCartNum = shopCartNum + 1;
+                }
+            } else if (
+                    inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99 &&
+                            inventoryStock.getAnomalyId() != null && inventoryStock.getAnomalyId() != 0) {
+                Integer count = anomalyDetailService.query()
+                        .eq("anomaly_id", inventoryStock.getAnomalyId())
+                        .eq("display", 1).count();
+                if (count > 0) {
+                    shopCartNum = shopCartNum + 1;
+                }
             }
+
         }
 
         Map<String, Integer> map = new HashMap<>();
@@ -221,6 +253,10 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         map.put("shopCartNum", shopCartNum);
         return map;
     }
+
+
+
+
 
     /**
      * 组合结构
@@ -315,10 +351,17 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         List<InventoryStock> inventoryStocks = ids.size() == 0 ? new ArrayList<>() :
                 this.query().in("anomaly_id", ids)
                         .eq("display", 1).list();
+
+        Set<Long> inventoryIds = new HashSet<>();
         for (InventoryStock inventoryStock : inventoryStocks) {
             inventoryStock.setLockStatus(99);
+            inventoryIds.add(inventoryStock.getInventoryId());
         }
         this.updateBatchById(inventoryStocks);
+
+        for (Long inventoryId : inventoryIds) {    //添加动态
+            shopCartService.addDynamic(inventoryId, "提交了异常描述");
+        }
     }
 
     @Override
@@ -342,23 +385,25 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             queryWrapper.eq("brand_id", param.getBrandId());
         }
         queryWrapper.eq("position_id", param.getPositionId());
+        queryWrapper.ne("lock_status", 99);
 
 
         List<InventoryStock> inventoryStocks = this.list(queryWrapper);
         List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
 
-        for (InventoryStock inventoryStock : inventoryStocks) {    //保留之前记录
-            if (inventoryStock.getLockStatus() == 99) {
+        for (InventoryStock inventoryStock : inventoryStocks) {
+            //保留之前记录
+            if (inventoryStock.getLockStatus() == 99) {                                                             //普通盘点
                 throw new ServiceException(500, "当前状态不可更改");
             }
             inventoryStock.setStatus(status);
             inventoryStock.setAnomalyId(param.getAnomalyId());
-            inventoryStock.setLockStatus(0);
             inventoryStock.setDisplay(1);
             inventoryStock.setRealNumber(param.getRealNumber());
             if (status == 1) {   //正常物料    清楚异常id
                 inventoryStock.setAnomalyId(0L);
             }
+
         }
 
         for (InventoryStock inventoryStock : stockList) {
@@ -368,6 +413,21 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         this.updateBatchById(inventoryStocks);
         this.saveBatch(stockList);
+
+
+        //添加动态
+        String skuMessage = skuService.skuMessage(param.getSkuId());
+        String content = "";
+        if (status == 2) {
+            content = "暂存了" + skuMessage + "的盘点结果";
+        } else {
+            content = "对" + skuMessage + "进行了盘点";
+        }
+        Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
+        for (Long inventoryId : inventoryIdsSet) {
+            shopCartService.addDynamic(inventoryId, content);
+        }
+
     }
 
 
@@ -410,17 +470,19 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
-
+        List<Long> anomalyIds = new ArrayList<>();
 
         for (InventoryStockResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             positionIds.add(datum.getPositionId());
+            anomalyIds.add(datum.getAnomalyId());
         }
-
+        List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<StorehousePositionsResult> positionsResults = positionsService.details(positionIds);
+
         positionsService.format(positionsResults);
 
         for (InventoryStockResult datum : data) {
@@ -452,6 +514,14 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                     break;
                 }
             }
+
+            int errorNum = 0;
+            for (AnomalyDetail anomalyDetail : anomalyDetails) {
+                if (ToolUtil.isNotEmpty(datum.getAnomalyId()) && datum.getAnomalyId().equals(anomalyDetail.getAnomalyId())) {
+                    errorNum = errorNum + 1;
+                }
+            }
+            datum.setErrorNum(errorNum);
 
         }
 

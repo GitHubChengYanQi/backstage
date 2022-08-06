@@ -97,7 +97,8 @@
             parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="sku_join_column"/>from
-        daoxin_erp_parts right join (SELECT sku_id FROM goods_sku where display = 1 ) as goods_sku on daoxin_erp_parts.sku_id = goods_sku.sku_id
+        daoxin_erp_parts right join (SELECT sku_id FROM goods_sku where display = 1 ) as goods_sku on
+        daoxin_erp_parts.sku_id = goods_sku.sku_id
         where 1 = 1
         <if test="paramCondition.partsId != null">
             and daoxin_erp_parts.parts_id like CONCAT('%',#{paramCondition.partsId},'%')
@@ -257,4 +258,12 @@
     </select>
 
 
+    <select id="getTopSkuId" resultType="Long">
+        SELECT sku_id
+        FROM daoxin_erp_parts
+        WHERE sku_id NOT IN (SELECT sku_id FROM daoxin_erp_parts_detail)
+          AND type = 1
+          AND STATUS = 99
+          and display = 1
+  </select>
 </mapper>

@@ -5,10 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
-import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
-import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
-import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -203,6 +200,18 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         IPage<InstockListResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public InstockListResult detail(Long id) {
+        InstockList instockList = this.getById(id);
+        InstockListResult instockListResult = new InstockListResult();
+        ToolUtil.copyProperties(instockList, instockListResult);
+        format(new ArrayList<InstockListResult>() {{
+            add(instockListResult);
+        }});
+
+        return instockListResult;
     }
 
     @Override

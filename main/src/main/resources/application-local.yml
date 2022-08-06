@@ -66,11 +66,7 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual
-    prefix: jazz
-
-
-
-
+    prefix: jazzasdadsads
 
 # 邮件发送（改为自己的账号）
 mail:

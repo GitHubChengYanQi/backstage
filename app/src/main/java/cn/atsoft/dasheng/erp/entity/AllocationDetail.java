@@ -36,6 +36,9 @@ public class AllocationDetail implements Serializable {
     @TableField("number")
     private Integer number;
 
+    @TableField("have_brand")
+    private Integer haveBrand;
+
     /**
      * 仓库库位id
      */
@@ -50,6 +53,9 @@ public class AllocationDetail implements Serializable {
 
     @TableField("brand_id")
     private Long brandId;
+
+    @TableField("status")
+    private Integer status;
 
     /**
      * 创建者
@@ -99,9 +105,23 @@ public class AllocationDetail implements Serializable {
     @TableField("to_storehouse_id")
     private Long toStorehouseId;
 
+    /**
+     * 调拨目标位置仓库id
+     */
+    @TableField("params")
+    private String params;
+
 
     public Long getAllocationDetailId() {
         return allocationDetailId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public void setAllocationDetailId(Long allocationDetailId) {
@@ -218,6 +238,22 @@ public class AllocationDetail implements Serializable {
 
     public void setToStorehouseId(Long toStorehouseId) {
         this.toStorehouseId = toStorehouseId;
+    }
+
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
+    }
+
+    public Integer getHaveBrand() {
+        return haveBrand;
+    }
+
+    public void setHaveBrand(Integer haveBrand) {
+        this.haveBrand = haveBrand;
     }
 
     @Override

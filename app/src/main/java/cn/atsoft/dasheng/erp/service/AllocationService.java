@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Allocation;
+import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -24,7 +25,9 @@ public interface AllocationService extends IService<Allocation> {
      * @author Captain_Jazz
      * @Date 2022-07-13
      */
-    void add(AllocationParam param);
+    Allocation add(AllocationParam param);
+
+    void checkCart(Long allocation);
 
     void createPickListsAndInStockOrder(Long allocationId);
 
@@ -35,6 +38,10 @@ public interface AllocationService extends IService<Allocation> {
      * @Date 2022-07-13
      */
     void delete(AllocationParam param);
+
+    AllocationResult detail(Long allocationId);
+
+    void transferInStorehouse(AllocationDetailParam param);
 
     /**
      * 更新
