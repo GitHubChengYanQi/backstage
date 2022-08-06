@@ -180,7 +180,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Override
     public void createPickListsAndInStockOrder(Long allocationId) {
         Allocation allocation = this.getById(allocationId);
-        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type", "carry").eq("status",98).list();
+        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type", "carry").eq("status", 98).list();
 //        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type","carry").list();
         List<Long> storehouseIds = new ArrayList<>();
         for (AllocationCart allocationCart : allocationCarts) {
@@ -326,7 +326,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         Long brandId = param.getBrandId();
         Integer number = param.getNumber();
         Long storehousePositionsId = param.getStorehousePositionsId();
-        List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuId).eq("brand_id", brandId).eq("sorehouse_positions_id", storehousePositionsId).eq("display", 1).list();
+        List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuId).eq("brand_id", brandId).eq("storehouse_positions_id", storehousePositionsId).eq("display", 1).list();
         List<AllocationLog> allocationLogs = new ArrayList<>();
 
         if (number > 0) {
@@ -373,7 +373,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             cart.setStatus(99);
             allocationCartService.updateById(cart);
             List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).list();
-            if (carts.stream().allMatch(i->i.getStatus().equals(99))) {
+            if (carts.stream().allMatch(i -> i.getStatus().equals(99))) {
                 DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
                 activitiProcessLogService.checkAction(allocation.getAllocationId(), "ALLOCATION", action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
             }
@@ -426,36 +426,45 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public void createOrder(AllocationParam param){
-        if (ToolUtil.isEmpty(param.getUserId()) ) {
-            throw new ServiceException(500,"请填写负责人");
+    public void createOrder(AllocationParam param) {
+        if (ToolUtil.isEmpty(param.getUserId())) {
+            throw new ServiceException(500, "请填写负责人");
         }
-        if (ToolUtil.isEmpty(param.getAllocationId())){
-            throw new ServiceException(500,"请选择单据");
+        if (ToolUtil.isEmpty(param.getAllocationId())) {
+            throw new ServiceException(500, "请选择单据");
         }
         Allocation allocation = new Allocation();
         allocation.setAllocationId(param.getAllocationId());
         allocation.setUserId(param.getUserId());
         this.updateById(allocation);
-        List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status",0).list();
+        List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status", 0).list();
         List<AllocationCart> carts = allocationCartService.query().eq("display", 1).eq("status", 0).eq("type", "carry").list();
-        for (AllocationDetail detail : details) {
-            for (AllocationCart cart : carts) {
-                cart.setStatus(98);
-                if (cart.getAllocationDetailId().equals(detail.getAllocationDetailId())){
-                    detail.setCarryNumber(detail.getCarryNumber()+cart.getNumber());
-                    if (detail.getCarryNumber().equals(detail.getNumber())){
+
+
+
+        for (AllocationCart cart : carts) {
+            cart.setStatus(98);
+            int num = cart.getNumber();
+            for (AllocationDetail detail : details) {
+                if (num>0){
+                    if (!detail.getStatus().equals(98)&&detail.getSkuId().equals(cart.getSkuId()) && num-(detail.getNumber()-detail.getCarryNumber())>=0) {
+                        detail.setCarryNumber(detail.getNumber());
                         detail.setStatus(98);
+                    }else if ( num-(detail.getNumber()-detail.getCarryNumber())<0){
+                        detail.setCarryNumber(detail.getCarryNumber()+num);
                     }
+                    num-=(detail.getNumber()-detail.getCarryNumber());
                 }
             }
+
         }
         allocationDetailService.updateBatchById(details);
         allocationCartService.updateBatchById(carts);
         this.createPickListsAndInStockOrder(param.getAllocationId());
         details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
-        if (details.stream().noneMatch(i->i.getStatus().equals(0))) {
+        if (details.stream().noneMatch(i -> i.getStatus().equals(0))) {
             checkCart(allocation.getAllocationId());
         }
     }
