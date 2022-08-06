@@ -69,6 +69,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     private StepsService appStepService;
     @Autowired
     private ShopCartService shopCartService;
+    @Autowired
+    private StepsService stepsService;
 
     @Override
     public void add(Long logId, String note) {
@@ -111,6 +113,23 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         return PageFactory.createPageInfo(page);
     }
 
+    /**
+     * 个人动态
+     *
+     * @param param
+     * @return
+     */
+    @Override
+    public PageInfo<RemarksResult> personalDynamic(RemarksParam param) {
+        param.setCreateUser(LoginContextHolder.getContext().getUserId());
+        param.setType("dynamic");
+        Page<RemarksResult> pageContext = getPageContext();
+        IPage<RemarksResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+
     private Serializable getKey(RemarksParam param) {
         return param.getRemarksId();
     }
@@ -143,6 +162,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         for (RemarksResult datum : data) {
             for (User user : userList) {
                 if (ToolUtil.isNotEmpty(datum.getCreateUser()) && user.getUserId().equals(datum.getCreateUser())) {
+                    String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+                    user.setAvatar(imgUrl);
                     datum.setUser(user);
                     break;
                 }
@@ -233,7 +254,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
                 }
                 pushPeople(userIds, remarksParam.getTaskId(), entity);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.controller;
 
 
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.pojo.UserList;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -23,6 +24,9 @@ public class UserController extends BaseController {
 
     @RequestMapping(value = "/userList", method = RequestMethod.POST)
     public ResponseData userList(@RequestBody(required = false) User user) {
+        if (ToolUtil.isEmpty(user)) {
+            user = new User();
+        }
         List<UserList> userLists = stepsService.userLists(user.getName());
         return ResponseData.success(userLists);
     }

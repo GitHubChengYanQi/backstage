@@ -44,6 +44,8 @@ public class StockDetailsResult implements Serializable {
     private CustomerResult customerResult;
     private StorehousePositionsResult positionsResult;
     private User user;
+    private String spuClassName;
+    private String month;
     /**
      * 库位id
      */

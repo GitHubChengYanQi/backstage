@@ -34,7 +34,7 @@ public class AsyncMethod {
     private static final Log log = LogFactory.getLog(AsyncMethod.class);
 
     @Async
-    public void task(List<Long> ids, List<AllBomParam.SkuNumberParam> noSort, AllBomParam param) {
+    public void task(List<Long> ids, List<AllBomParam.SkuNumberParam> noSort, AllBomParam param,String type) {
 
         /**
          *调用组合方法
@@ -67,7 +67,7 @@ public class AsyncMethod {
 
         AsynTask asynTask = new AsynTask();
         asynTask.setAllCount(allSkus.size());
-        asynTask.setType("物料分析");
+        asynTask.setType(type);
         asynTask.setStatus(0);
         taskService.save(asynTask);
 

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,18 +32,21 @@ public class RemarksResult implements Serializable {
 
     private User user;
 
+    @JSONField(serialize = false)
     private Long sourceId;
 
+    @JSONField(serialize = false)
     private String source;
 
 
-
+    @JSONField(serialize = false)
     private Long pid;
     /**
      * 备注id
      */
     @ApiModelProperty("备注id")
     private Long remarksId;
+
 
     @ApiModelProperty("")
     private Long logId;
@@ -71,13 +75,17 @@ public class RemarksResult implements Serializable {
     private Long createUser;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
+
     @ApiModelProperty("父ID顺序数组")
+    @JSONField(serialize = false)
     private List<String> pidValue;
 }

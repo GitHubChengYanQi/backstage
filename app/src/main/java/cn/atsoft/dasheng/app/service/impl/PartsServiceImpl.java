@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
+import cn.atsoft.dasheng.app.pojo.AllBomParam;
+import cn.atsoft.dasheng.app.pojo.AsyncMethod;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -28,8 +30,11 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.task.entity.AsynTask;
+import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
@@ -39,6 +44,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -66,6 +72,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     private SpuService spuService;
     @Autowired
     private PartsService partsService;
+    @Autowired
+    private AsyncMethod asyncMethod;
+    @Autowired
+    private AsynTaskService asynTaskService;
 
     @Override
     public Parts add(PartsParam partsParam) {
@@ -165,6 +175,28 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     }
 
+    /**
+     * 开始分析
+     */
+    @Override
+    @Scheduled(cron = "0 0 2 * * ?")   //每日凌晨两点
+    public void startAnalyse() {
+        System.err.println("定时任务-------> 物料分析:" + new DateTime());
+        QueryWrapper<AsynTask> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("type", "报表物料分析");
+        asynTaskService.remove(queryWrapper);
+        //先取最顶级物料
+        List<Long> topSkuId = this.baseMapper.getTopSkuId();
+        /**
+         * 调用异步物料分析
+         */
+        for (Long skuId : topSkuId) {
+            List<AllBomParam.SkuNumberParam> skuNumberParams = new ArrayList<>();
+            skuNumberParams.add(new AllBomParam.SkuNumberParam(skuId, 1L, false));
+            AllBomParam allBomParam = new AllBomParam(skuNumberParams);
+            asyncMethod.task(null, skuNumberParams, allBomParam, "报表物料分析");
+        }
+    }
 
     private void judge(PartsParam partsParam) {
         List<Long> skuIds = new ArrayList<>();
@@ -344,7 +376,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         this.updateById(release);
     }
-
 
 
     @Override
@@ -695,7 +726,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
             datum.setParts(detailResults);
-
 
 
             List<PartsResult> partsResults = new ArrayList<>();
