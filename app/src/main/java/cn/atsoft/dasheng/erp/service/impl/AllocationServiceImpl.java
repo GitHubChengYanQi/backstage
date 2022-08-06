@@ -33,10 +33,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -178,13 +180,13 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Override
     public void createPickListsAndInStockOrder(Long allocationId) {
         Allocation allocation = this.getById(allocationId);
-        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type", "carry").list();
+        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type", "carry").eq("status",98).list();
 //        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type","carry").list();
         List<Long> storehouseIds = new ArrayList<>();
         for (AllocationCart allocationCart : allocationCarts) {
             storehouseIds.add(allocationCart.getStorehouseId());
         }
-
+        storehouseIds = storehouseIds.stream().distinct().collect(Collectors.toList());
         if (allocation.getType().equals("allocation")) {
             if (allocation.getAllocationType() == 1) {
                 List<Long> stockIds = new ArrayList<>();
@@ -440,7 +442,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         List<AllocationCart> carts = allocationCartService.query().eq("display", 1).eq("status", 0).eq("type", "carry").list();
         for (AllocationDetail detail : details) {
             for (AllocationCart cart : carts) {
-                cart.setDisplay(0);
                 cart.setStatus(98);
                 if (cart.getAllocationDetailId().equals(detail.getAllocationDetailId())){
                     detail.setCarryNumber(detail.getCarryNumber()+cart.getNumber());
@@ -450,6 +451,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 }
             }
         }
+        allocationDetailService.updateBatchById(details);
         allocationCartService.updateBatchById(carts);
         this.createPickListsAndInStockOrder(param.getAllocationId());
         details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
