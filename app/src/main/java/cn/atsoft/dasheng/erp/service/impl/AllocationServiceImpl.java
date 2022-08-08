@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -366,6 +367,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                         inkindService.save(inkind);
                         StockDetails stockDetailEntity = new StockDetails();
                         stockDetailEntity.setInkindId(inkind.getInkindId());
+                        stockDetailEntity.setSkuId(param.getSkuId());
                         stockDetailEntity.setStorehouseId(param.getToStorehouseId());
                         stockDetailEntity.setStorehousePositionsId(param.getToStorehousePositionsId());
                         stockDetailEntity.setNumber((long) kickNum);
@@ -503,13 +505,14 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             int num = cart.getNumber();
             for (AllocationDetail detail : details) {
                 if (num > 0) {
-                    if (!detail.getStatus().equals(98) && detail.getSkuId().equals(cart.getSkuId()) && num - (detail.getNumber() - detail.getCarryNumber()) >= 0) {
-                        detail.setCarryNumber(detail.getNumber());
-                        detail.setStatus(98);
-                    } else if (num - (detail.getNumber() - detail.getCarryNumber()) < 0) {
-                        detail.setCarryNumber(detail.getCarryNumber() + num);
+                    if (cart.getAllocationDetailId().equals(detail.getAllocationDetailId())) {
+                        detail.setCarryNumber(detail.getCarryNumber()+num);
+                        if (Objects.equals(detail.getCarryNumber(), detail.getNumber())){
+                            detail.setStatus(98);
+                        }
+                        num -= (detail.getNumber() - detail.getCarryNumber());
+
                     }
-                    num -= (detail.getNumber() - detail.getCarryNumber());
                 }
             }
 
