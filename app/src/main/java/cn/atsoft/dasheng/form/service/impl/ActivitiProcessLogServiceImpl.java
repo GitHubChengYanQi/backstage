@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static cn.atsoft.dasheng.form.pojo.ProcessType.ALLOCATION;
+
 
 /**
  * <p>
@@ -339,7 +341,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          */
         audit = this.getAudit(taskId);
         //TODO 写一个判断如果下步为动作时 执行动作
-        startAction(audit, task);
+//        startAction(audit, task);
 
         /**
          * TODO 更新单据状态
@@ -499,28 +501,42 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 break;
 
             case "INSTOCK":
-                InstockOrder instockOrderByid = instockOrderService.getById(processTask.getFormId());
-                if (ToolUtil.isNotEmpty(instockOrderByid.getOrigin())) {
-                    origin = getOrigin.getOrigin(JSON.parseObject(instockOrderByid.getOrigin(), ThemeAndOrigin.class));
-                    if (ToolUtil.isNotEmpty(origin.getParent())) {
-                        for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
-                            if (themeAndOrigin.getSource().equals("processTask")) {
-                                //如果来源存的是流程任务的id
-                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
-                                List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
-                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
-                                    checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
-                                }
-                            } else {
-                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.query().eq("type", themeAndOrigin.getSource()).eq("form_id", themeAndOrigin.getSourceId()).one();
-                                List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
-                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
-                                    checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
-                                }
-                            }
-                        }
+                InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
+                if (ToolUtil.isNotEmpty(processTask.getSource())){
+                    switch(processTask.getSource()){
+                        /**
+                         * 如果说 入库单来源是调拨  那么 需要检查调拨 任务是否完成
+                         */
+                        case "ALLOCATION":
+                            List<InstockList> instockLists = instockListService.query().eq("instock_order_id", instockOrder.getInstockOrderId()).eq("display", 1).list();
+                            allocationService.checkCartDone(processTask.getFormId(),instockLists);
+                            break;
+                        default:
+
                     }
                 }
+//                if (ToolUtil.isNotEmpty(instockOrderByid.getOrigin())) {
+//                    origin = getOrigin.getOrigin(JSON.parseObject(instockOrderByid.getOrigin(), ThemeAndOrigin.class));
+//                    if (ToolUtil.isNotEmpty(origin.getParent())) {
+//                        for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
+//                            if (themeAndOrigin.getSource().equals("processTask")) {
+//                                //如果来源存的是流程任务的id
+//                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
+//                                List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
+//                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
+//                                    checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
+//                                }
+//                            }
+//                            else {
+//                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.query().eq("type", themeAndOrigin.getSource()).eq("form_id", themeAndOrigin.getSourceId()).one();
+//                                List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
+//                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
+//                                    checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
                 instockOrderService.checkAllocationDone(processTask);
                 break;
             case "ERROR":
@@ -1642,7 +1658,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
                         for (ActionStatus actionStatus : actionStatuses) {
                             if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)) {
-//                                allocationService.createPickListsAndInStockOrder(task.getFormId());
+                                allocationService.createPickListsAndInStockOrder(task.getFormId());
                                 continue;
                             }
                         }

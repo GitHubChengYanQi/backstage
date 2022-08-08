@@ -249,6 +249,7 @@ public class WxCpSendTemplate {
                         enumName = enumName.replace("${userName}", user.getName());
                         markDownTemplate.setTitle(enumName);
                     }
+                    break;
                 case done:
                 case action:
                     try {

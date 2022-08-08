@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Allocation;
 import cn.atsoft.dasheng.erp.entity.AllocationCart;
+import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationParam;
@@ -78,4 +79,6 @@ public interface AllocationService extends IService<Allocation> {
      PageInfo<AllocationResult> findPageBySpec(AllocationParam param);
 
     void createOrder(AllocationParam param);
+
+    void checkCartDone(Long allocationId, List<InstockList> listing);
 }

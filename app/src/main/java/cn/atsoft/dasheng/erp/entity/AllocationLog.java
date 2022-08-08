@@ -35,6 +35,7 @@ public class AllocationLog implements Serializable {
 
     @TableField("allocation_detail_id")
     private Long allocationDetailId;
+
     @TableField("inkind_id")
     private Long inKindId;
 

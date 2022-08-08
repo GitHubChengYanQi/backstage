@@ -26,7 +26,7 @@ public class AllocationCartResult implements Serializable {
     private StorehouseResult storehouseResult;
     private StorehouseResult toStorehouseResult;
     private static final long serialVersionUID = 1L;
-
+    private Integer doneNumber;
 
     @ApiModelProperty("")
     private Long allocationCartId;
