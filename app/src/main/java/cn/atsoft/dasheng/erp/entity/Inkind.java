@@ -24,6 +24,9 @@ public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("anomaly")
+    private Integer anomaly;
+
     @TableField("position_id")
     private Long positionId;
 
@@ -314,6 +317,14 @@ public class Inkind implements Serializable {
 
     public void setLastMaintenanceTime(Date lastMaintenanceTime) {
         this.lastMaintenanceTime = lastMaintenanceTime;
+    }
+
+    public Integer getAnomaly() {
+        return anomaly;
+    }
+
+    public void setAnomaly(Integer anomaly) {
+        this.anomaly = anomaly;
     }
 
     @Override

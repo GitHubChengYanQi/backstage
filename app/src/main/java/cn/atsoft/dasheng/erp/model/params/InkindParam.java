@@ -27,6 +27,8 @@ public class InkindParam extends AbstractDictMap implements Serializable, BaseVa
 
     private static final long serialVersionUID = 1L;
 
+    private Integer anomaly;
+
     private Long positionId;
 
     private Long pid;

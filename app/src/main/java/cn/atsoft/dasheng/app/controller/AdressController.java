@@ -55,7 +55,6 @@ public class AdressController extends BaseController {
     @ApiOperation("新增")
     @Permission
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
-
         Adress adress = this.adressService.add(adressParam);
         return ResponseData.success(adress);
     }

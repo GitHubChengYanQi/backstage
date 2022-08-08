@@ -341,6 +341,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 anomalyBind.setAnomalyId(param.getAnomalyId());
                 anomalyBindService.save(anomalyBind);
 
+
                 Inkind inkind = new Inkind();
                 inkind.setInkindId(detailParam.getInkindId());
                 inkind.setNumber(detailParam.getNumber());

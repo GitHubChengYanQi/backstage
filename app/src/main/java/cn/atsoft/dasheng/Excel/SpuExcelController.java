@@ -61,12 +61,10 @@ public class SpuExcelController {
         reader.addHeaderAlias("单位", "unit");
 
         List<SpuExcel> spuExcels = reader.readAll(SpuExcel.class);
-
         /**
          * 调用异步方法
          */
         excelAsync.spuAdd(spuExcels);
-
         return ResponseData.success("ok");
     }
 
@@ -115,7 +113,6 @@ public class SpuExcelController {
         //这后面可以设置导出Excel的名称
         response.setHeader("Content-disposition", "attachment;filename=spuTemp.xls");
 
-
         try {
             //刷新缓冲
             response.flushBuffer();
@@ -124,7 +121,6 @@ public class SpuExcelController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 }

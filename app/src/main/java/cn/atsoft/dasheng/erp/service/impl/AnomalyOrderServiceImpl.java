@@ -152,6 +152,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         AnomalyOrder entity = getEntity(param);
         this.save(entity);
+
+
         List<Anomaly> anomalies = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
@@ -167,6 +169,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
         //判断是否提交过
         List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(ids);
+        List<AnomalyDetail> anomalyDetails = ids.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", ids).eq("display", 1).isNotNull("inkind_id").list();
 
         List<Long> anomalyIds = new ArrayList<>();
         for (Anomaly anomaly : anomalyList) {
@@ -175,8 +178,16 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }
             anomalyIds.add(anomaly.getAnomalyId());
         }
-
+        /**
+         * 取实物 标记为异常
+         */
+        List<Long> inkindIds = new ArrayList<>();
+        for (AnomalyDetail anomalyDetail : anomalyDetails) {
+            inkindIds.add(anomalyDetail.getInkindId());
+        }
+        inkindService.updateAnomalyInKind(inkindIds);
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
+
         if (entity.getType().equals("Stocktaking") || entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
             inventoryStockService.updateStatus(anomalyIds);
         }
