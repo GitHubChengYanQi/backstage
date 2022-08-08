@@ -136,6 +136,28 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         return inkindResult;
     }
 
+    /**
+     * 异常实物获取skuId
+     *
+     * @param inkindIds
+     * @return
+     */
+    @Override
+    public List<Long> anomalySku(List<Long> inkindIds) {
+        if (ToolUtil.isEmpty(inkindIds)) {
+            return new ArrayList<>();
+        }
+        List<Inkind> inkinds = this.query().in("inkind_id", inkindIds).eq("anomaly", 1).list();
+        if (ToolUtil.isEmpty(inkinds)) {
+            return new ArrayList<>();
+        }
+        List<Long> skuIds = new ArrayList<>();
+        for (Inkind inkind : inkinds) {
+            skuIds.add(inkind.getSkuId());
+        }
+        return skuIds;
+    }
+
 //    @Override
 //    public List<InkindResult> details (InkindParam param){
 //        param.getInkindIds();

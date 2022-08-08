@@ -72,6 +72,8 @@ public interface InkindService extends IService<Inkind> {
     InkindResult backInKindgetById(Long id);
 
 
+    List<Long> anomalySku(List<Long> inkindIds);
+
     List<InkindResult> getInKinds(List<Long> inKindIds);
 
 
