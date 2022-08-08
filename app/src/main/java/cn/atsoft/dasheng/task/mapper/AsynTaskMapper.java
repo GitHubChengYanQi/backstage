@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.task.mapper;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
 import cn.atsoft.dasheng.task.model.result.AsynTaskResult;
+import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -52,5 +53,7 @@ public interface AsynTaskMapper extends BaseMapper<AsynTask> {
      * @Date 2022-04-01
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") AsynTaskParam paramCondition);
+
+    List<SkuAnalyse> skuAnalyseList(@Param("skuIds") List<Long> skuIds);
 
 }

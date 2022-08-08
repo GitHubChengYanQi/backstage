@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.task.model.result;
 
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
+import cn.atsoft.dasheng.app.pojo.StockStatement;
 import lombok.Data;
 
 import java.util.Date;
@@ -27,6 +28,8 @@ public class AsynTaskResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private AllBomResult allBomResult;
+
+    private List<StockStatement> stockStatements;
 
     private SkuExcelResult skuExcelResult;
 

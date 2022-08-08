@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
 import cn.atsoft.dasheng.task.model.result.AsynTaskResult;
+import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,11 @@ public interface AsynTaskService extends IService<AsynTask> {
      * @author song
      * @Date 2022-04-01
      */
-     PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param);
+    PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param);
 
+    Object spectaculars();
+
+    Object stockSpectaculars();
+
+    List<SkuAnalyse> skuAnalyses(List<Long> skuIds);
 }

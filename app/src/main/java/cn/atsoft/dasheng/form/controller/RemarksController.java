@@ -68,6 +68,14 @@ public class RemarksController extends BaseController {
         return this.remarksService.findPageBySpec(remarksParam);
     }
 
+    @RequestMapping(value = "/personalDynamic", method = RequestMethod.POST)
+    @ApiOperation("个人动态")
+    public PageInfo<RemarksResult> personalDynamic(@RequestBody(required = false) RemarksParam remarksParam) {
+        if (ToolUtil.isEmpty(remarksParam)) {
+            remarksParam = new RemarksParam();
+        }
+        return this.remarksService.personalDynamic(remarksParam);
+    }
 
     /**
      * 查询审核

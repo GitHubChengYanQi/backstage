@@ -82,6 +82,17 @@ public class StockDetailsController extends BaseController {
     }
 
     /**
+     * 库存报表
+     *
+     * @return
+     */
+    @RequestMapping(value = "/startAnalyse", method = RequestMethod.GET)
+    public ResponseData startAnalyse() {
+        this.stockDetailsService.statement();
+        return ResponseData.success();
+    }
+
+    /**
      * 库存物料详细信息
      *
      * @param stockDetailsParam
@@ -151,6 +162,7 @@ public class StockDetailsController extends BaseController {
         List<Long> longs = this.stockDetailsService.backSkuByStoreHouse(id);
         return ResponseData.success(longs);
     }
+
     /**
      * 根据skuId返回仓库
      *
@@ -159,12 +171,13 @@ public class StockDetailsController extends BaseController {
      */
     @RequestMapping(value = "/getStockNumberBySkuId", method = RequestMethod.GET)
     @ApiOperation("编辑")
-    public ResponseData getStockNumberBySkuId(@RequestParam Long skuId,@RequestParam Long storehouseId) {
+    public ResponseData getStockNumberBySkuId(@RequestParam Long skuId, @RequestParam Long storehouseId) {
 
-        List<StockDetailsResult> stockNumberBySkuId = this.stockDetailsService.getStockNumberBySkuId(skuId,storehouseId);
+        List<StockDetailsResult> stockNumberBySkuId = this.stockDetailsService.getStockNumberBySkuId(skuId, storehouseId);
         return ResponseData.success(stockNumberBySkuId);
     }
- /**
+
+    /**
      * 返回sku
      *
      * @author

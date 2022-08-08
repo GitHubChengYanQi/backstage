@@ -51,7 +51,7 @@ public class AllBomController {
                 List<SkuResult> skuResults = skuService.formatSkuResult(new ArrayList<Long>() {{
                     add(skuId.getSkuId());
                 }});
-                throw new ServiceException(500, skuResults.get(0).getSpuResult().getName()+skuResults.get(0).getSkuName() + "没有bom");
+                throw new ServiceException(500, skuResults.get(0).getSpuResult().getName() + skuResults.get(0).getSkuName() + "没有bom");
             }
             if (!skuId.getFixed()) {
                 ids.add(skuId.getSkuId());
@@ -61,19 +61,13 @@ public class AllBomController {
         }
 
 
-
         /**
          * 调用 异步
          */
-        asyncMethod.task(ids,noSort, param);
+        asyncMethod.task(ids, noSort, param, "物料分析");
 
         return ResponseData.success("ok");
     }
-
-
-
-
-
 
 
 }

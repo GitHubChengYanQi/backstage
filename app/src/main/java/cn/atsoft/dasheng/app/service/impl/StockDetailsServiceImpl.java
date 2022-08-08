@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
+import cn.atsoft.dasheng.app.pojo.StockStatement;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -28,13 +29,20 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.task.entity.AsynTask;
+import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
+import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.date.DateTime;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -81,6 +89,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private StepsService stepsService;
     @Autowired
     private OrCodeBindService codeBindService;
+
+    @Autowired
+    private StatementAsync statementAsync;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -240,18 +251,27 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     }
 
+    /**
+     * 库存报表方法
+     */
+    @Override
+    @Scheduled(cron = "0 0 1 * * ?")   //每日凌晨一点执行
+    public void statement() {
+        statementAsync.startAnalyse();
+    }
+
+
     @Override
     public void splitInKind(Long inKind) {
 
         Inkind inkindResult = inkindService.getById(inKind);
         Sku sku = skuService.getById(inkindResult.getSkuId());
-        if (ToolUtil.isEmpty(sku.getBatch())||sku.getBatch()==0) {
+        if (ToolUtil.isEmpty(sku.getBatch()) || sku.getBatch() == 0) {
             StockDetails stockDetails = this.query().eq("inkind_id", inKind).one();   //库存有当前实物 无需操作
             if (ToolUtil.isNotEmpty(stockDetails)) {
                 return;
             }
         }
-
 
 
         /**
@@ -351,6 +371,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             stockSkuBrand.setNumber(stockDetail.getNum());
             stockSkuBrands.add(stockSkuBrand);
         }
+
 
         return stockSkuBrands;
     }
