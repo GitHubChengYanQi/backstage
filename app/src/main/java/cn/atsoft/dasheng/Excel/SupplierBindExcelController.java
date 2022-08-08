@@ -77,20 +77,23 @@ public class SupplierBindExcelController {
                     throw new ServiceException(500, "物料不存在");
                 }
                 //--------------------------------------品牌-------------------------------------
-                Long brandId = null;
-                for (Brand brand : brandList) {
-                    if (brand.getBrandName().equals(supplierBind.getBrand())) {
+                Long brandId = 0L;
+                if (ToolUtil.isNotEmpty(supplierBind.getBrand())) {
+                    for (Brand brand : brandList) {
+                        if (brand.getBrandName().equals(supplierBind.getBrand())) {
+                            brandId = brand.getBrandId();
+                            break;
+                        }
+                    }
+                    if (ToolUtil.isEmpty(brandId)) {
+                        Brand brand = new Brand();
+                        brand.setBrandName(supplierBind.getBrand());
+                        brandService.save(brand);
                         brandId = brand.getBrandId();
-                        break;
+                        brandList.add(brand);
                     }
                 }
-                if (ToolUtil.isEmpty(brandId)) {
-                    Brand brand = new Brand();
-                    brand.setBrandName(supplierBind.getBrand());
-                    brandService.save(brand);
-                    brandId = brand.getBrandId();
-                    brandList.add(brand);
-                }
+
                 //---------------------------------供应商-------------------------------------
                 Long customerId = null;
                 for (Customer customer : supply) {
