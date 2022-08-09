@@ -25,6 +25,7 @@ public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Long> skuIds;
 
     /**
      * 清单详情id

@@ -1014,7 +1014,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     for (ErpPartsDetail partsDetail : partsDetails) {
                         skuIds.add(partsDetail.getSkuId());
                     }
-
                     break;
             }
         }
@@ -1715,6 +1714,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SkuRequest skuRequest = new SkuRequest();
         skuRequest.setTree(tree);
         skuResult.setSkuTree(skuRequest);
+
+        this.format(new ArrayList<SkuResult>() {{
+            add(skuResult);
+        }});
+
         return skuResult;
     }
 
