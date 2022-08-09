@@ -119,8 +119,8 @@ public class MessageController extends BaseController {
     }
     @RequestMapping(value = "/getViewCount", method = RequestMethod.GET)
     @ApiOperation("查询登陆人未读消息数量")
-    public Integer getViewCount() {
-        return this.messageService.getViewCount();
+    public ResponseData getViewCount() {
+        return ResponseData.success(this.messageService.getViewCount());
     }
 }
 

@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -57,6 +58,8 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
     private StorehouseService storehouseService;
     @Autowired
     private AllocationDetailService allocationDetailService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public void add(AllocationCartParam param) {
@@ -79,7 +82,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
             throw new ServiceException(500, "请填写您要分派的信息");
         }
         List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", param.getAllocationId()).eq("display",1).eq("status",0).list();
-        List<AllocationCart> allocationCarts = this.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).list();
+        List<AllocationCart> allocationCarts = this.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("type","carry").list();
 
 
 
@@ -153,8 +156,6 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
 
         }
         this.saveBatch(entityList);
-
-
     }
 
     @Override
@@ -207,7 +208,6 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
 
 
     public void format(List<AllocationCartResult> results) {
-
         List<Long> skuIds = new ArrayList<>();
         List<Long> storehouseId = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
@@ -236,6 +236,15 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<StorehousePositionsResult> positionsResults = positionIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehousePositionsService.listByIds(positionIds), StorehousePositionsResult.class);
         for (AllocationCartResult result : results) {
+            if (result.getType().equals("hope")){
+                List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", result.getSkuId()).eq("brand_id", result.getBrandId()).eq("display", 1).list();
+                int number = 0;
+                for (StockDetails stockDetail : stockDetails) {
+                    number+=stockDetail.getNumber();
+                }
+                result.setStockDetailCount(number);
+
+            }
             for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
                 if (result.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     result.setSkuResult(skuSimpleResult);

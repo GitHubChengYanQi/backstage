@@ -310,7 +310,7 @@ public class ProductionPickListsController extends BaseController {
         if (ToolUtil.isEmpty(productionPickListsParam)) {
             productionPickListsParam = new ProductionPickListsParam();
         }
-        List<Object> list = redisSendCheck.getList(productionPickListsParam.getCode());
+        List<Object> list = redisSendCheck.getList(RedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
         List<ProductionPickListsCartParam> productionPickListsCartParams = BeanUtil.copyToList(list, ProductionPickListsCartParam.class);
         productionPickListsParam.setCartsParams(productionPickListsCartParams);
         this.productionPickListsService.outStock(productionPickListsParam);
@@ -320,9 +320,9 @@ public class ProductionPickListsController extends BaseController {
     }
     @RequestMapping(value = "/checkCode", method = RequestMethod.GET)
     @ApiOperation("列表")
-    public Boolean checkCode(@RequestParam String code) {
+    public ResponseData checkCode(@RequestParam String code) {
         Object object = redisSendCheck.getObject(RedisTemplatePrefixEnum.LLJCM.getValue() + code);
-        return ToolUtil.isNotEmpty(object) && object.equals((LoginContextHolder.getContext().getUserId()));
+        return ResponseData.success(ToolUtil.isNotEmpty(object) && object.equals((LoginContextHolder.getContext().getUserId())));
     }
 
 
