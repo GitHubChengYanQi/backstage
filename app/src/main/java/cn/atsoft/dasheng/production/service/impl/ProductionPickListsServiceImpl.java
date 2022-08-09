@@ -44,6 +44,7 @@ import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
+import cn.atsoft.dasheng.sendTemplate.pojo.RedisTemplatePrefixEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
@@ -283,12 +284,17 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     @Override
     public String createCode(ProductionPickListsParam param) {
         String code = String.valueOf(RandomUtil.randomLong(1000, 9999));
-        List<Object> list = redisSendCheck.getList(code);
+        String pickCode = RedisTemplatePrefixEnum.LLM.getValue()+ code ;
+        String checkCode = RedisTemplatePrefixEnum.LLJCM.getValue()+ code;
+
+
+        List<Object> list = redisSendCheck.getList(pickCode);
         param.getCartsParams();
         List<Object> objects = BeanUtil.copyToList(param.getCartsParams(), Object.class);
         if (ToolUtil.isEmpty(list)) {
-            redisSendCheck.pushList(code, objects, 1000L * 60L * 10L);
-            return code;
+            redisSendCheck.pushList(pickCode, objects, 1000L * 60L * 10L);
+            redisSendCheck.pushObject(checkCode,LoginContextHolder.getContext().getUserId(), 1000L * 60L * 10L);
+            return pickCode;
         }
         return createCode(param);
     }
@@ -1006,7 +1012,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 出库数据处理会更新此状态
          * 如子表全部数据 更新状态为完成  主表在最后更新数据
          */
-        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).list();
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 98).list();
         for (ProductionPickListsCartParam pickListsCartParam : param.getCartsParams()) {
 
             for (Long brandId : pickListsCartParam.getBrandIds()) {

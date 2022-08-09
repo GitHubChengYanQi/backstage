@@ -171,6 +171,11 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.assign.name()).eq("display", 1).one();
         activitiProcessLogService.checkAction(allocation, "ALLOCATION", action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
     }
+    @Override
+    public void checkCarry(Long allocation) {
+        DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
+        activitiProcessLogService.checkAction(allocation, "ALLOCATION", action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
+    }
 
     /**
      * 创建出库单
@@ -198,6 +203,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 instockOrderParam.setSource("ALLOCATION");
                 instockOrderParam.setSourceId(allocationId);
                 instockOrderParam.setType("调拨入库");
+                instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
                 List<InstockListParam> listParams = new ArrayList<>();
 
                 for (Long stockId : stockIds) {
@@ -247,6 +253,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     instockOrderParam.setSource("ALLOCATION");
                     instockOrderParam.setType("调拨入库");
                     instockOrderParam.setSourceId(allocationId);
+                    instockOrderParam.setStoreHouseId(stockId);
                     List<InstockListParam> listParams = new ArrayList<>();
                     for (AllocationCart allocationCart : allocationCarts) {
                         if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isEmpty(allocationCart.getStorehousePositionsId())) {
@@ -255,8 +262,10 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             ToolUtil.copyProperties(allocationCart, listsDetailParam);
                             details.add(listsDetailParam);
                             InstockListParam instockListParam = new InstockListParam();
+                            instockListParam.setStoreHouseId(stockId);
                             ToolUtil.copyProperties(allocationCart, instockListParam);
                             instockListParam.setCartId(allocationCart.getAllocationCartId());
+                            instockListParam.setStoreHouseId(allocation.getStorehouseId());
                             listParams.add(instockListParam);
                             allocationCart.setStatus(98);
                         }
@@ -389,7 +398,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
              */
             number = param.getNumber();
             for (AllocationCart cart : carts) {
-//                number -= (cart.getNumber() - cart.getDoneNumber());
                 if (number > 0) {
                     if (ToolUtil.isNotEmpty(cart.getStorehousePositionsId())) {
                         if (allocation.getAllocationType().equals(1) && param.getSkuId().equals(cart.getSkuId()) && param.getBrandId().equals(cart.getBrandId()) && param.getStorehousePositionsId().equals(cart.getStorehousePositionsId()) && cart.getStatus().equals(98)) {
@@ -401,7 +409,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             } else {
                                 cart.setDoneNumber(cart.getDoneNumber()+lastNumber);
                             }
-//                            cart.setDoneNumber(number);
                             cart.setStatus(99);
                         } else if (allocation.getAllocationType().equals(2) && param.getSkuId().equals(cart.getSkuId()) && param.getBrandId().equals(cart.getBrandId()) && param.getToStorehousePositionsId().equals(cart.getStorehousePositionsId()) && cart.getStatus().equals(98)) {
                             int lastNumber = number;
@@ -432,7 +439,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 for (AllocationDetail allocationDetail : details) {
                     allocationDetail.setStatus(99);
                 }
-                this.checkCart(param.getAllocationId());
+                this.checkCarry(param.getAllocationId());
             }
         }
 
@@ -566,7 +573,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             for (AllocationDetail allocationDetail : allocationDetails) {
                 allocationDetail.setStatus(99);
             }
-            this.checkCart(allocationId);
+            this.checkCarry(allocationId);
         }
         allocationCartService.updateBatchById(allocationCarts);
         allocationDetailService.updateBatchById(allocationDetails);

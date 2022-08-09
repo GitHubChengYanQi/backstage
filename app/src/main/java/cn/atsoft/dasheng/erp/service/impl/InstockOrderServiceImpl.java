@@ -1706,22 +1706,39 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         String sourceId = processTask.getSourceId();
 
         if (source.equals("ALLOCATION")){
-            List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", sourceId).list();
-            List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", sourceId).list();
             Allocation allocation = allocationService.getById(sourceId);
             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", processTask.getFormId()).list();
+            List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocation.getAllocationId()).list();
+            List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocation.getAllocationId()).list();
             for (InstockList instockList : instockLists) {
-                for (AllocationCart cart : carts) {
-                    if (instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getNumber().equals(Long.valueOf(cart.getNumber())) && instockList.getStoreHouseId().equals(cart.getStorehouseId())){
+                for (AllocationCart cart : allocationCarts) {
+                    if (
+                            instockList.getBrandId().equals(cart.getBrandId()) &&
+                            instockList.getSkuId().equals(cart.getSkuId()) &&
+                            instockList.getNumber().equals(Long.valueOf(cart.getNumber())) &&
+                            instockList.getStoreHouseId().equals(cart.getStorehouseId()))
+                    {
                         cart.setStatus(99);
                     }
                 }
             }
-            if (carts.stream().allMatch(i->i.getStatus().equals(99))){
-                allocation.setStatus(99L);
-                allocationService.updateById(allocation);
+
+            int detailCount = 0;
+            int cartCount = 0;
+
+            for (AllocationCart allocationCart : allocationCarts) {
+                cartCount += allocationCart.getNumber();
             }
-            allocationCartService.updateBatchById(carts);
+            for (AllocationDetail allocationDetail : allocationDetails) {
+                detailCount += allocationDetail.getNumber();
+            }
+            if (allocationCarts.stream().allMatch(i -> i.getStatus().equals(99)) && detailCount == cartCount && detailCount > 0) {
+                for (AllocationDetail allocationDetail : allocationDetails) {
+                    allocationDetail.setStatus(99);
+                }
+                this.allocationService.checkCarry(allocation.getAllocationId());
+            }
+            allocationCartService.updateBatchById(allocationCarts);
         }
     }
 }

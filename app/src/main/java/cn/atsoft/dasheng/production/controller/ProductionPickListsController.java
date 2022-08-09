@@ -32,6 +32,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.service.ProductionTaskService;
 import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
+import cn.atsoft.dasheng.sendTemplate.pojo.RedisTemplatePrefixEnum;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.convert.Convert;
@@ -313,8 +314,16 @@ public class ProductionPickListsController extends BaseController {
         List<ProductionPickListsCartParam> productionPickListsCartParams = BeanUtil.copyToList(list, ProductionPickListsCartParam.class);
         productionPickListsParam.setCartsParams(productionPickListsCartParams);
         this.productionPickListsService.outStock(productionPickListsParam);
-        redisSendCheck.deleteList(productionPickListsParam.getCode());
+        redisSendCheck.deleteListOrObject(RedisTemplatePrefixEnum.LLM.getValue() + productionPickListsParam.getCode());
+        redisSendCheck.deleteListOrObject(RedisTemplatePrefixEnum.LLJCM.getValue() + productionPickListsParam.getCode());
         return ResponseData.success();
+    }
+    @RequestMapping(value = "/checkCode", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    @Permission
+    public Boolean checkCode(@RequestParam String code) {
+        Object object = redisSendCheck.getObject(RedisTemplatePrefixEnum.LLJCM.getValue() + code);
+        return ToolUtil.isNotEmpty(object) && object.equals((LoginContextHolder.getContext().getUserId()));
     }
 
 
