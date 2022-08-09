@@ -112,7 +112,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
             int number = allocationCartParam.getNumber();
             for (AllocationDetail allocationDetail : allocationDetails) {
                 if (number > 0) {
-                    if ((allocationDetail.getHaveBrand().equals(1) && allocationDetail.getBrandId().equals(allocationCartParam.getBrandId()) && allocationDetail.getSkuId().equals(allocationCartParam.getSkuId())) || (allocationDetail.getHaveBrand().equals(0) && allocationDetail.getSkuId().equals(allocationCartParam.getSkuId()))) {
+                    if ((allocationDetail.getNumber()>0 &&allocationDetail.getHaveBrand().equals(1) && allocationDetail.getBrandId().equals(allocationCartParam.getBrandId()) && allocationDetail.getSkuId().equals(allocationCartParam.getSkuId())) || (allocationDetail.getNumber()>0 &&allocationDetail.getHaveBrand().equals(0) && allocationDetail.getSkuId().equals(allocationCartParam.getSkuId()))) {
                         if (ToolUtil.isNotEmpty(allocationCartParam.getStorehousePositionsId()) && allocationDetail.getStorehousePositionsId().equals(allocationCartParam.getStorehousePositionsId())) {
                             continue;
                         }
@@ -133,6 +133,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
                             entity.setStorehouseId(allocationCartParam.getStorehouseId());
                             entity.setType("carry");
                             entityList.add(entity);
+                            allocationDetail.setNumber(0);
                         } else {
                             AllocationCart entity = new AllocationCart();
                             entity.setNumber(lastNumber);
@@ -147,6 +148,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
                             if (ToolUtil.isNotEmpty(allocationCartParam.getStorehousePositionsId())) {
                                 entity.setStorehousePositionsId(allocationCartParam.getStorehousePositionsId());
                             }
+                            allocationDetail.setNumber(allocationDetail.getNumber()-lastNumber);
                             entityList.add(entity);
                         }
 
@@ -155,6 +157,25 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
             }
 
         }
+        if (entityList.size()==0){
+            throw new ServiceException(500,"对不起没有找到符合条件的物料信息");
+        }
+        int entityNumberCount = 0 ;
+        int paramNumberCount = 0;
+        for (AllocationCartParam allocationCartParam : param.getAllocationCartParams()) {
+            paramNumberCount += allocationCartParam.getNumber();
+        }
+
+
+        for (AllocationCart allocationCart : entityList) {
+            entityNumberCount+=allocationCart.getNumber();
+        }
+        if (entityNumberCount!=paramNumberCount){
+            throw new ServiceException(500,"选中的物料有部分数量不满足,请从新选择");
+        }
+
+
+
         this.saveBatch(entityList);
     }
 

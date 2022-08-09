@@ -365,6 +365,24 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
     }
 
+    @Override
+    public void editEnclosure(SkuParam param) {
+        if (ToolUtil.isEmpty(param.getSkuId())) {
+            throw new ServiceException(500,"请传入物料id");
+        }
+        Long skuId = param.getSkuId();
+        Sku sku = this.getById(skuId);
+
+        String enclosure = ToolUtil.isNotEmpty(param.getEnclosure()) ? param.getEnclosure() : null;
+        String drawing = ToolUtil.isNotEmpty(param.getDrawing()) ? param.getDrawing() : null;
+        String images = ToolUtil.isNotEmpty(param.getImages()) ? param.getImages() : null;
+        sku.setDrawing(drawing);
+        sku.setImages(images);
+        sku.setEnclosure(enclosure);
+
+        this.updateById(sku);
+    }
+
 
     @Override
     public List<SkuResult> getSkuByMd5(SkuParam param) {
@@ -901,11 +919,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (ToolUtil.isNotEmpty(param.getMaintenancePeriod())) {
             MaintenanceCycle maintenanceCycle = maintenanceCycleService.query().eq("sku_id", newEntity.getSkuId()).eq("display", 1).one();
             if (ToolUtil.isNotEmpty(maintenanceCycle)) {
-                if(param.getMaintenancePeriod()!=maintenanceCycle.getMaintenancePeriod()){
+                if (param.getMaintenancePeriod() != maintenanceCycle.getMaintenancePeriod()) {
                     maintenanceCycle.setMaintenancePeriod(param.getMaintenancePeriod());
                     maintenanceCycleService.updateById(maintenanceCycle);
                 }
-            }else {
+            } else {
                 maintenanceCycle = new MaintenanceCycle();
                 maintenanceCycle.setSkuId(newEntity.getSkuId());
                 maintenanceCycle.setMaintenancePeriod(param.getMaintenancePeriod());
@@ -1383,7 +1401,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attributeIds.add(valuesRequest.getAttributeId());
             }
         }
-        List<MaintenanceCycle> maintenanceCycles =skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
+        List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         List<PurchaseListing> purchaseListings = skuIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().select("sku_id , sum(apply_number) as num").in("sku_id", skuIds).eq("status", 0).eq("display", 1).groupBy("sku_id").list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
@@ -1471,7 +1489,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         for (SkuResult skuResult : param) {
             for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
-                if (skuResult.getSkuId().equals(maintenanceCycle.getSkuId())){
+                if (skuResult.getSkuId().equals(maintenanceCycle.getSkuId())) {
                     skuResult.setMaintenancePeriod(maintenanceCycle.getMaintenancePeriod());
                 }
             }

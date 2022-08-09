@@ -139,6 +139,19 @@ public class SkuController extends BaseController {
         this.skuService.update(skuParam);
         return ResponseData.success();
     }
+    /**
+     * 编辑接口
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/editEnclosure", method = RequestMethod.POST)
+    @BussinessLog(value = "修改/上传 sku附件", key = "name", dict = SkuParam.class)
+    @ApiOperation("编辑")
+    public ResponseData editEnclosure(@RequestBody SkuParam skuParam) {
+        this.skuService.editEnclosure(skuParam);
+        return ResponseData.success();
+    }
 
     /**
      * 合并sku接口

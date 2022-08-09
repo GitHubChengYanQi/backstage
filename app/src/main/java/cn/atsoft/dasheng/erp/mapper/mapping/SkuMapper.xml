@@ -19,6 +19,7 @@
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
         <result column="remarks" property="remarks"/>
+        <result column="enclosure" property="enclosure"/>
         <result column="type" property="type"/>
         <result column="coding" property="coding"/>
         <result column="batch" property="batch"/>
@@ -31,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">type
-    AS "type",images AS "images",maintenance_period AS "maintenancePeriod",drawing AS "drawing",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId", add_method AS "addMethod" ,
+    AS "type",enclosure AS "enclosure",images AS "images",maintenance_period AS "maintenancePeriod",drawing AS "drawing",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId", add_method AS "addMethod" ,
         sku_id
         AS "skuId",batch AS "batch", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>

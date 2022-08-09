@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.action.Enum.AllocationActionEnum;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -27,12 +29,16 @@ import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -89,6 +95,14 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
     @Autowired
     private ShopCartService shopCartService;
+
+    @Autowired
+    private StorehouseService storehouseService;
+
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private StepsService stepsService;
 
 
     @Override
@@ -158,11 +172,11 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         /**
          * 删除购物车
          */
-        List<ShopCart> shopCarts = shopCartService.query().eq("create_user", LoginContextHolder.getContext().getUserId()).eq("type", "allocation").eq("display", 1).list();
-        for (ShopCart shopCart : shopCarts) {
-            shopCart.setDisplay(0);
-        }
-        shopCartService.updateBatchById(shopCarts);
+//        List<ShopCart> shopCarts = shopCartService.query().eq("create_user", LoginContextHolder.getContext().getUserId()).eq("type", "allocation").eq("display", 1).list();
+//        for (ShopCart shopCart : shopCarts) {
+//            shopCart.setDisplay(0);
+//        }
+//        shopCartService.updateBatchById(shopCarts);
         return entity;
     }
 
@@ -361,6 +375,13 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         result.setDetailResults(allocationDetailResults);
         List<AllocationCartResult> allocationCartResults = allocationCartService.resultsByAllocationId(allocationId);
         result.setAllocationCartResults(allocationCartResults);
+        result.setStorehouseResult(storehouseService.getDetail(allocation.getStorehouseId()));
+        if (ToolUtil.isNotEmpty(result.getUserId())) {
+            User user = userService.getById(result.getUserId());
+            String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+            UserResult userResult = BeanUtil.copyProperties(user, UserResult.class);
+            userResult.setAvatar(imgUrl);
+        }
         return result;
 
     }
@@ -373,6 +394,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
      * @param param
      */
     @Override
+    @Transactional
     public void transferInStorehouse(AllocationCartParam param) {
 
         Long skuId = param.getSkuId();
@@ -384,7 +406,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         List<AllocationLog> allocationLogs = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getAllocationId())) {
             Allocation allocation = this.getById(param.getAllocationId());
-            List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("type", "carry").list();
+            List<AllocationCart> allCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("type", "carry").list();
             List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).list();
             List<AllocationCart> allocationCarts = new ArrayList<>();
             if(allocation.getAllocationType().equals(1)){
@@ -411,13 +433,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                           allocationLogs.add(allocationLog);
                           stockDetail.setStorehousePositionsId(param.getToStorehousePositionsId());
                           stockDetailsService.updateById(stockDetail);
-//                        for (AllocationCart allocationCart : allocationCarts) {
-//                            if (stockDetail.getSkuId().equals(allocationCart.getSkuId()) && stockDetail.getStorehousePositionsId().equals(allocationCart.getStorehousePositionsId())) {
-//                                allocationCart.setDoneNumber((int) (allocationCart.getDoneNumber() + stockDetail.getNumber()));
-//                            }
-//                        }
                       } else {
-                          AllocationLog allocationLog = new AllocationLog();
+                          //拆分实物创建新的实物
                           Inkind inkind = new Inkind();
                           stockDetail.setNumber(stockDetail.getNumber() - kickNum);
                           ToolUtil.copyProperties(stockDetail, inkind);
@@ -425,6 +442,19 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                           inkind.setSource("inkind");
                           inkind.setSourceId(stockDetail.getInkindId());
                           inkindService.save(inkind);
+                          //添加调拨记录
+                          AllocationLog allocationLog = new AllocationLog();
+                          allocationLog.setInKindId(inkind.getInkindId());
+                          allocationLog.setNumber(kickNum);
+                          allocationLog.setSkuId(inkind.getSkuId());
+                          allocationLog.setBrandId(inkind.getBrandId());
+                          allocationLog.setStorehousePositionsId(param.getStorehousePositionsId());
+                          allocationLog.setStorehouseId(param.getStorehouseId());
+                          allocationLog.setToStorehouseId(param.getToStorehouseId());
+                          allocationLog.setAllocationId(param.getAllocationId());  //song
+                          allocationLog.setToStorehousePositionsId(param.getToStorehousePositionsId());
+                          allocationLogs.add(allocationLog);
+                          //因是创建实物  故创建库存
                           StockDetails stockDetailEntity = new StockDetails();
                           stockDetailEntity.setInkindId(inkind.getInkindId());
                           stockDetailEntity.setSkuId(param.getSkuId());
@@ -434,11 +464,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                           stockDetailEntity.setBrandId(stockDetail.getBrandId());
                           stockDetailsService.save(stockDetailEntity);
                           stockDetailsService.updateById(stockDetail);
-//                        for (AllocationCart allocationCart : allocationCarts) {
-//                            if (stockDetail.getSkuId().equals(allocationCart.getSkuId()) && stockDetail.getStorehousePositionsId().equals(allocationCart.getStorehousePositionsId())) {
-//                                allocationCart.setDoneNumber(kickNum);
-//                            }
-//                        }
                       }
                   }
               }
@@ -448,7 +473,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                * 处理 carts DoneNumber
                */
               number = param.getNumber();
-              for (AllocationCart cart : carts) {
+              for (AllocationCart cart : allCarts) {
                   if (number > 0) {
                       if (ToolUtil.isNotEmpty(cart.getStorehousePositionsId())) {
                           if (allocation.getAllocationType().equals(1) && param.getSkuId().equals(cart.getSkuId()) && param.getBrandId().equals(cart.getBrandId()) && param.getStorehousePositionsId().equals(cart.getStorehousePositionsId()) && cart.getStatus().equals(98)) {
@@ -475,7 +500,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                   }
 
               }
-              allocationCartService.updateBatchById(carts);
+              allocationCartService.updateBatchById(allCarts);
 
 
               int detailCount = 0;
@@ -483,10 +508,10 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                   detailCount += detail.getNumber();
               }
               int cartCount = 0;
-              for (AllocationCart cart : carts) {
+              for (AllocationCart cart : allCarts) {
                   cartCount += cart.getNumber();
               }
-              if (carts.stream().allMatch(i -> i.getStatus().equals(99)) && detailCount == cartCount && detailCount > 0) {
+              if (allCarts.stream().allMatch(i -> i.getStatus().equals(99)) && detailCount == cartCount && detailCount > 0) {
                   for (AllocationDetail allocationDetail : details) {
                       allocationDetail.setStatus(99);
                   }

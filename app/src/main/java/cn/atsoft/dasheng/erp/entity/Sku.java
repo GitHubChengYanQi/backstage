@@ -33,6 +33,9 @@ public class Sku implements Serializable {
     @TableField("file_id")
     private String fileId;
 
+    @TableField("enclosure")
+    private String enclosure;
+
     @TableField("images")
     private String images;
 
@@ -104,6 +107,14 @@ public class Sku implements Serializable {
 
     public String getSpecifications() {
         return specifications;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
     }
 
     public void setSpecifications(String specifications) {
