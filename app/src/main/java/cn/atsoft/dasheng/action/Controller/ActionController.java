@@ -91,7 +91,7 @@ public class ActionController {
                     }
                 }
                 break;
-            case INSTOCKERROR:
+            case ERROR:
                 for (AddAction.Action action : actions) {
                     int i = 0;
                     for (InstockErrorActionEnum instockErrorActionEnum : action.instockErrorActionEnums) {

@@ -142,10 +142,21 @@ stage
                 #{state}
             </foreach>
         </if>
-
         <if test="paramCondition.inkindId !=null">
             and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
         </if>
+        <choose>
+            <when test="paramCondition.status != null and paramCondition.status == -1">
+                and inkind_id in (
+                select inkind_id from goods_inkind where anomaly = 1
+                )
+            </when>
+            <when test="paramCondition.status != null and paramCondition.status == 99">
+                and inkind_id in (
+                select inkind_id from goods_inkind where anomaly = 0
+                )
+            </when>
+        </choose>
     </select>
 
     <select id="customPageMapList" resultType="map"

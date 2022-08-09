@@ -151,10 +151,6 @@ public class SkuExportExcel extends BaseController {
                 attributeAndValuesStr = sb.substring(0, sb.length() - 1);
             }
 
-
-
-
-
             coding.setCellValue(codingStr);
             classes.setCellValue(classesStr);
             spuName.setCellValue(spuNameStr);

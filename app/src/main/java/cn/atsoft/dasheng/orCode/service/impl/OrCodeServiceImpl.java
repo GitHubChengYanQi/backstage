@@ -1112,7 +1112,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     }
 
     @Override
-    public InkindQrcode ExcelBind(Long skuId, Long number, Long brandId) {
+    public InkindQrcode ExcelBind(Long skuId, Long number, Long brandId, Long customerId, Long positionId) {
 
         OrCode orCode = new OrCode();
         orCode.setType("item");
@@ -1122,6 +1122,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         InkindParam inkindParam = new InkindParam();
         inkindParam.setSkuId(skuId);
         inkindParam.setType("0");
+        inkindParam.setCustomerId(customerId);
+        inkindParam.setPositionId(positionId);
         inkindParam.setNumber(number);
         inkindParam.setBrandId(brandId);
         inkindParam.setSource("excel");

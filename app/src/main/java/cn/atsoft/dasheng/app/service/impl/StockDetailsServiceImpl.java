@@ -180,7 +180,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
 
 
-//        if (ToolUtil.isNotEmpty(param.getMaintenanceId())) {
+//       if (ToolUtil.isNotEmpty(param.getMaintenanceId())) {
 //            List<Long> inkindIds = getMaintenanceInkindIds(param.getMaintenanceId());
 //            param.setInkindIds(inkindIds);
 //        }
