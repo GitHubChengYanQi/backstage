@@ -69,4 +69,5 @@ public interface MessageService extends IService<Message> {
      */
      PageInfo<MessageResult> findPageBySpec(MessageParam param, DataScope dataScope );
 
+    Integer getViewCount();
 }

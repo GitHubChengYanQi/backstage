@@ -117,6 +117,11 @@ public class MessageController extends BaseController {
         }
         return this.messageService.findPageBySpec(messageParam, null);
     }
+    @RequestMapping(value = "/getViewCount", method = RequestMethod.GET)
+    @ApiOperation("查询登陆人未读消息数量")
+    public Integer getViewCount() {
+        return this.messageService.getViewCount();
+    }
 }
 
 
