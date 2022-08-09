@@ -59,6 +59,9 @@ public class ErpPartsDetailController extends BaseController {
         return ResponseData.success();
     }
 
+
+
+
     /**
      * 删除接口
      *
@@ -87,6 +90,16 @@ public class ErpPartsDetailController extends BaseController {
 
         return ResponseData.success(result);
     }
+
+
+
+    @RequestMapping(value = "/bomList", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData bomList(@RequestBody ErpPartsDetailParam erpPartsDetailParam) {
+        List<ErpPartsDetailResult> detailResults = this.erpPartsDetailService.bomList(erpPartsDetailParam);
+        return ResponseData.success(detailResults);
+    }
+
 
     /**
      * 查询列表

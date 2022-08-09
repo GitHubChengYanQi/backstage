@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,6 +32,7 @@ public class ErpPartsDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<BackSku> backSkus;
+
     private SpuResult spuResult;
 
     private PartsResult partsResult;
@@ -79,43 +81,51 @@ public class ErpPartsDetailResult implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long createUser;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false)
     private Integer display;
 
     /**
      * 部门编号
      */
     @ApiModelProperty("部门编号")
+    @JSONField(serialize = false)
     private Long deptId;
 
     /**
      * 备注
      */
     @ApiModelProperty("备注")
+    @JSONField(serialize = false)
     private String note;
     @ApiModelProperty("父ID顺序数组")
+    @JSONField(serialize = false)
     private List<String> pidValue;
 }

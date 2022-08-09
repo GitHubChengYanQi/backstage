@@ -86,6 +86,8 @@ public interface PartsService extends IService<Parts> {
 
     PartsResult getBOM(Long partId);
 
+    List<ErpPartsDetailResult> recursiveDetails(Long partId);
+
     List<ErpPartsDetailResult> backDetails(Long skuId, Long partsId, String type);
 
     List<ErpPartsDetailResult> oldBackDetails(Long skuId, Long partsId);
