@@ -320,7 +320,6 @@ public class ProductionPickListsController extends BaseController {
     }
     @RequestMapping(value = "/checkCode", method = RequestMethod.GET)
     @ApiOperation("列表")
-    @Permission
     public Boolean checkCode(@RequestParam String code) {
         Object object = redisSendCheck.getObject(RedisTemplatePrefixEnum.LLJCM.getValue() + code);
         return ToolUtil.isNotEmpty(object) && object.equals((LoginContextHolder.getContext().getUserId()));

@@ -294,7 +294,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         if (ToolUtil.isEmpty(list)) {
             redisSendCheck.pushList(pickCode, objects, 1000L * 60L * 10L);
             redisSendCheck.pushObject(checkCode,LoginContextHolder.getContext().getUserId(), 1000L * 60L * 10L);
-            return pickCode;
+            return code;
         }
         return createCode(param);
     }
