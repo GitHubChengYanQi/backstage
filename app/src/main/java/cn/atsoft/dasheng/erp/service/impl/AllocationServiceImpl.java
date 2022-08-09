@@ -486,7 +486,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
               for (AllocationCart cart : carts) {
                   cartCount += cart.getNumber();
               }
-              if (allocationCarts.stream().allMatch(i -> i.getStatus().equals(99)) && detailCount == cartCount && detailCount > 0) {
+              if (carts.stream().allMatch(i -> i.getStatus().equals(99)) && detailCount == cartCount && detailCount > 0) {
                   for (AllocationDetail allocationDetail : details) {
                       allocationDetail.setStatus(99);
                   }
