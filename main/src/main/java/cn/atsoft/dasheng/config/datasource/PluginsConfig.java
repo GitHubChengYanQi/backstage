@@ -3,11 +3,12 @@ package cn.atsoft.dasheng.config.datasource;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.core.metadata.CustomMetaObjectHandler;
+import cn.atsoft.dasheng.modular.dynamic.entity.Dynamic;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.factory.IConstantFactory;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestUser;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.alibaba.fastjson.JSON;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
 import org.mybatis.spring.annotation.MapperScan;
@@ -51,6 +52,7 @@ public class PluginsConfig {
                 }
             }
 
+
             @Override
             public void insertFill(MetaObject metaObject) {
                 Object delFlag = null;
@@ -86,12 +88,12 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
+
                 Object userId = null;
                 try {
                     userId = getFieldValByName(getUserIdFieldName(), metaObject);
                     IConstantFactory iConstantFactory = new ConstantFactory();
                     Long deptId1 = iConstantFactory.getDeptId((Long) userId);
-
                     if (userId != null) {
                         setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
                     }
@@ -99,9 +101,14 @@ public class PluginsConfig {
                     //没有此字段，则不处理
                 }
                 try {
-                    setFieldValByName(getUpdateTimeFieldName(),null, metaObject);
+                    setFieldValByName(getUpdateTimeFieldName(), null, metaObject);
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
+                }
+                try{
+                    printDynamic(metaObject,LoginContextHolder.getContext().getUser(),1 );
+                }catch (Exception e){
+
                 }
             }
 
@@ -123,13 +130,13 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
+
                 Object userId = null;
                 try {
                     userId = getFieldValByName(getUserIdFieldName(), metaObject);
                     if (!(metaObject.getOriginalObject() instanceof User) && !(metaObject.getOriginalObject() instanceof RestUser)) {
                         IConstantFactory iConstantFactory = new ConstantFactory();
                         Long deptId1 = iConstantFactory.getDeptId((Long) userId);
-
                         if (userId != null) {
                             setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
                         }
@@ -138,8 +145,39 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
+                try{
+                    printDynamic(metaObject,LoginContextHolder.getContext().getUser(),2 );
+                }catch (Exception e){
+
+                }
             }
         };
     }
+
+    public void printDynamic(MetaObject object, LoginUser loginUser, Integer type) {
+        if (type.equals(1)){
+            for (String simpleName : WHITE_LIST) {
+                if (simpleName.equals(object.getOriginalObject().getClass().getSimpleName())){
+                    System.err.println(loginUser.getName()+"_"+"添加了"+"_"+object.getOriginalObject().getClass().getSimpleName()+"_"+ JSON.toJSONString(object.getOriginalObject()));
+                    Dynamic dynamic = new Dynamic();
+                    dynamic.setAfter(JSON.toJSONString(object.getOriginalObject()));
+                    dynamic.setType(type.toString());
+                }
+            }
+
+        }else if (type.equals(2)){
+            for (String simpleName : WHITE_LIST) {
+                if (simpleName.equals(object.getOriginalObject().getClass().getSimpleName())){
+                    System.err.println(loginUser.getName()+"_"+"操作了"+"_"+object.getOriginalObject().getClass().getSimpleName());
+                }
+            }
+
+        }
+    }
+
+    static final String[] WHITE_LIST={
+        "Sku", "ActivitiProcessTask","OperationLog"
+    };
+
 
 }

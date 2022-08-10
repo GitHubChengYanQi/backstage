@@ -1,0 +1,85 @@
+package cn.atsoft.dasheng.modular.dynamic.service.impl;
+
+
+import cn.atsoft.dasheng.base.pojo.page.PageFactory;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.modular.dynamic.entity.Dynamic;
+import cn.atsoft.dasheng.modular.dynamic.mapper.DynamicMapper;
+import cn.atsoft.dasheng.modular.dynamic.model.params.DynamicParam;
+import cn.atsoft.dasheng.modular.dynamic.model.result.DynamicResult;
+import  cn.atsoft.dasheng.modular.dynamic.service.DynamicService;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * <p>
+ *  服务实现类
+ * </p>
+ *
+ * @author Captain_Jazz
+ * @since 2022-08-10
+ */
+@Service
+public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> implements DynamicService {
+
+    @Override
+    public void add(DynamicParam param){
+        Dynamic entity = getEntity(param);
+        this.save(entity);
+    }
+
+    @Override
+    public void delete(DynamicParam param){
+        this.removeById(getKey(param));
+    }
+
+    @Override
+    public void update(DynamicParam param){
+        Dynamic oldEntity = getOldEntity(param);
+        Dynamic newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+    }
+
+    @Override
+    public DynamicResult findBySpec(DynamicParam param){
+        return null;
+    }
+
+    @Override
+    public List<DynamicResult> findListBySpec(DynamicParam param){
+        return null;
+    }
+
+    @Override
+    public PageInfo<DynamicResult> findPageBySpec(DynamicParam param){
+        Page<DynamicResult> pageContext = getPageContext();
+        IPage<DynamicResult> page = this.baseMapper.customPageList(pageContext, param);
+        return PageFactory.createPageInfo(page);
+    }
+
+    private Serializable getKey(DynamicParam param){
+        return param.getDynamicId();
+    }
+
+    private Page<DynamicResult> getPageContext() {
+        return PageFactory.defaultPage();
+    }
+
+    private Dynamic getOldEntity(DynamicParam param) {
+        return this.getById(getKey(param));
+    }
+
+    private Dynamic getEntity(DynamicParam param) {
+        Dynamic entity = new Dynamic();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
+}
