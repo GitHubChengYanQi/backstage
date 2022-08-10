@@ -376,9 +376,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         String enclosure = ToolUtil.isNotEmpty(param.getEnclosure()) ? param.getEnclosure() : null;
         String drawing = ToolUtil.isNotEmpty(param.getDrawing()) ? param.getDrawing() : null;
         String images = ToolUtil.isNotEmpty(param.getImages()) ? param.getImages() : null;
+        String filedId = ToolUtil.isNotEmpty(param.getFileId()) ? param.getFileId() : null;
         sku.setDrawing(drawing);
         sku.setImages(images);
         sku.setEnclosure(enclosure);
+        sku.setFileId(filedId);
 
         this.updateById(sku);
     }
@@ -1629,6 +1631,33 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 filedUrls.add(mediaUrl);
             }
             skuResult.setFiledUrls(filedUrls);
+        }
+        if (ToolUtil.isNotEmpty(skuResult.getDrawing())) {
+            List<Long> filedIds = Arrays.asList(skuResult.getDrawing().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<String> filedUrls = new ArrayList<>();
+            for (Long filedId : filedIds) {
+                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                filedUrls.add(mediaUrl);
+            }
+            skuResult.setDrawingUrls(filedUrls);
+        }
+        if (ToolUtil.isNotEmpty(skuResult.getEnclosure())) {
+            List<Long> enclosure = Arrays.asList(skuResult.getEnclosure().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<String> filedUrls = new ArrayList<>();
+            for (Long filedId : enclosure) {
+                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                filedUrls.add(mediaUrl);
+            }
+            skuResult.setEnclosureUrls(filedUrls);
+        }
+        if (ToolUtil.isNotEmpty(skuResult.getImages())) {
+            List<Long> enclosure = Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<String> filedUrls = new ArrayList<>();
+            for (Long filedId : enclosure) {
+                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                filedUrls.add(mediaUrl);
+            }
+            skuResult.setImgUrls(filedUrls);
         }
         if (ToolUtil.isEmpty(sku)) {
             return new SkuResult();

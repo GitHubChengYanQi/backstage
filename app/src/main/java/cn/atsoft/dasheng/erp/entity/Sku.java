@@ -30,16 +30,16 @@ public class Sku implements Serializable {
     @TableField("quality_plan_id")
     private Long qualityPlanId;
 
-    @TableField("file_id")
+    @TableField(value ="file_id" ,fill = FieldFill.UPDATE)
     private String fileId;
 
-    @TableField("enclosure")
+    @TableField(value ="enclosure",fill = FieldFill.UPDATE)
     private String enclosure;
 
-    @TableField("images")
+    @TableField(value ="images",fill = FieldFill.UPDATE)
     private String images;
 
-    @TableField("drawing")
+    @TableField(value ="drawing",fill = FieldFill.UPDATE)
     private String drawing;
     /**
      * 批量

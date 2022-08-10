@@ -1711,24 +1711,46 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", processTask.getFormId()).list();
             List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("type", "carry").eq("allocation_id", allocation.getAllocationId()).list();
             List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocation.getAllocationId()).list();
-            for (InstockList instockList : instockLists) {
-                int number = Math.toIntExact(instockList.getNumber());
-                for (AllocationCart cart : allocationCarts) {
-                    if (number > 0) {
-                        if (cart.getStatus().equals(98) && ToolUtil.isEmpty(cart.getStorehousePositionsId()) && instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getStoreHouseId().equals(cart.getStorehouseId())) {
-                            int lastNumber = number;
-                            number = number - (cart.getNumber() - cart.getDoneNumber());
-                            if (number >= 0) {
-                                cart.setDoneNumber(cart.getNumber());
-                                cart.setStatus(99);
-                            } else {
-                                cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
-                            }
-                        }
-                    }
+//           if (allocation.getType().equals("")&&allocation.getAllocationType().equals(1)){
+//               for (InstockList instockList : instockLists) {
+//                   int number = Math.toIntExact(instockList.getNumber());
+//                   for (AllocationCart cart : allocationCarts) {
+//                       if (number > 0) {
+//                           if (cart.getStatus().equals(98) && ToolUtil.isEmpty(cart.getStorehousePositionsId()) && instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getStoreHouseId().equals(cart.getStorehouseId())) {
+//                               int lastNumber = number;
+//                               number = number - (cart.getNumber() - cart.getDoneNumber());
+//                               if (number >= 0) {
+//                                   cart.setDoneNumber(cart.getNumber());
+//                                   cart.setStatus(99);
+//                               } else {
+//                                   cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
+//                               }
+//                           }
+//                       }
+//
+//                   }
+//               }
+//           }else
+//               if(allocation.getType().equals("allocation")&&allocation.getAllocationType().equals(2)){
+               for (InstockList instockList : instockLists) {
+                   int number = Math.toIntExact(instockList.getNumber());
+                   for (AllocationCart cart : allocationCarts) {
+                       if (number > 0) {
+                           if (cart.getStatus().equals(98) && !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getStoreHouseId().equals(cart.getStorehouseId())) {
+                               int lastNumber = number;
+                               number = number - (cart.getNumber() - cart.getDoneNumber());
+                               if (number >= 0) {
+                                   cart.setDoneNumber(cart.getNumber());
+                                   cart.setStatus(99);
+                               } else {
+                                   cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
+                               }
+                           }
+                       }
 
-                }
-            }
+                   }
+               }
+//           }
             int detailCount = 0;
             int cartCount = 0;
 
