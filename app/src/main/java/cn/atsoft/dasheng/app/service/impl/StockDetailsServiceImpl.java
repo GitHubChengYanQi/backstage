@@ -416,10 +416,16 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
     @Override
     public List<StockDetailsResult> getStockNumberBySkuId(StockDetailsParam param) {
-        if (ToolUtil.isEmpty(param.getSkuId()) || ToolUtil.isEmpty(param.getBrandIds()) || param.getBrandIds().size() == 0) {
+        if (ToolUtil.isEmpty(param.getSkuId())) {
             return new ArrayList<>();
         }
-        List<StockDetails> details = this.query().in("brand_id", param.getBrandIds()).eq("sku_id", param.getSkuId()).list();
+        List<StockDetails> details = new ArrayList<>();
+        if (ToolUtil.isEmpty(param.getBrandIds()) || param.getBrandIds().size() == 0){
+            details = this.query().eq("sku_id", param.getSkuId()).eq("display",1).list();
+
+        }else {
+            details = this.query().in("brand_id", param.getBrandIds()).eq("sku_id", param.getSkuId()).eq("display",1).list();
+        }
         List<StockDetails> totalList = new ArrayList<>();
         List<ProductionPickListsCart> carts = pickListsCartService.query().eq("display", 1).eq("status", 0).list();
         List<Long> inkindIds = new ArrayList<>();
