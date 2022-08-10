@@ -171,9 +171,9 @@ public class StockDetailsController extends BaseController {
      */
     @RequestMapping(value = "/getStockNumberBySkuId", method = RequestMethod.GET)
     @ApiOperation("编辑")
-    public ResponseData getStockNumberBySkuId(@RequestParam Long skuId, @RequestParam Long storehouseId) {
+    public ResponseData getStockNumberBySkuId(@RequestParam Long skuId, @RequestParam List<Long> brandIds) {
 
-        List<StockDetailsResult> stockNumberBySkuId = this.stockDetailsService.getStockNumberBySkuId(skuId, storehouseId);
+        List<StockDetailsResult> stockNumberBySkuId = this.stockDetailsService.getStockNumberBySkuId(skuId, brandIds);
         return ResponseData.success(stockNumberBySkuId);
     }
 
