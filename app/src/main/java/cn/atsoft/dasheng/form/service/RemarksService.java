@@ -92,4 +92,5 @@ public interface RemarksService extends IService<Remarks> {
     List<RemarksResult> getComments(Long taskId);
 
 
+    void addDynamic(String content);
 }

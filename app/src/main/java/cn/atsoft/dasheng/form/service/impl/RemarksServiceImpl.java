@@ -6,7 +6,6 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
-import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.service.ShopCartService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
@@ -25,10 +24,8 @@ import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -359,5 +356,17 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
                 datum.setPhotoId(substring);
             }
         }
+    }
+
+    @Override
+    public void addDynamic(String content){
+        RemarksParam remarksParam = new RemarksParam();
+        remarksParam.setTaskId(0L);
+        remarksParam.setType("dynamic");
+        remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
+        remarksParam.setContent(content);
+        Remarks entity = this.getEntity(remarksParam);
+        ToolUtil.copyProperties(remarksParam, entity);
+        this.save(entity);
     }
 }
