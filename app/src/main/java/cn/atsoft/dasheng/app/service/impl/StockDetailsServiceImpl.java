@@ -5,7 +5,6 @@ import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
-import cn.atsoft.dasheng.app.pojo.StockStatement;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -29,19 +28,13 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.atsoft.dasheng.task.entity.AsynTask;
-import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
-import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.core.date.DateTime;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -396,6 +389,37 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
     public List<StockDetailsResult> getStockNumberBySkuId(Long skuId, Long storehouseId) {
         List<StockDetails> details = this.query().eq("storehouse_id", storehouseId).eq("sku_id", skuId).list();
+        List<StockDetails> totalList = new ArrayList<>();
+        List<ProductionPickListsCart> carts = pickListsCartService.query().eq("display", 1).eq("status", 0).list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (ProductionPickListsCart cart : carts) {
+            inkindIds.add(cart.getInkindId());
+        }
+
+        for (Long inkindId : inkindIds) {
+            details.removeIf(i -> i.getInkindId().equals(inkindId));
+        }
+        details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                        setBrandId(a.getBrandId());
+                        setStorehouseId(a.getStorehouseId());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+        List<StockDetailsResult> results = totalList.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(totalList, StockDetailsResult.class);
+        this.format(results);
+        return results;
+    }
+    @Override
+    public List<StockDetailsResult> getStockNumberBySkuId(StockDetailsParam param) {
+        if (ToolUtil.isEmpty(param.getSkuId()) || ToolUtil.isEmpty(param.getBrandIds()) || param.getBrandIds().size() == 0) {
+            return new ArrayList<>();
+        }
+        List<StockDetails> details = this.query().in("brand_id", param.getBrandIds()).eq("sku_id", param.getSkuId()).list();
         List<StockDetails> totalList = new ArrayList<>();
         List<ProductionPickListsCart> carts = pickListsCartService.query().eq("display", 1).eq("status", 0).list();
         List<Long> inkindIds = new ArrayList<>();

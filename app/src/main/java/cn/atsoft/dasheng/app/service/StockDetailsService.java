@@ -114,6 +114,8 @@ public interface StockDetailsService extends IService<StockDetails> {
 
     List<StockDetailsResult> getStockNumberBySkuId(Long skuId,Long storehouseId);
 
+    List<StockDetailsResult> getStockNumberBySkuId(StockDetailsParam stockDetailsParam);
+
     List<StockSkuBrand> stockSku();
 
     void format(List<StockDetailsResult> data);
