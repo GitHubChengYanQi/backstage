@@ -34,6 +34,8 @@ import java.util.Map;
 public class ProductionPickListsResult implements Serializable {
     @ApiModelProperty("是否有物料可以操作")
     private Boolean canOperate;
+    @ApiModelProperty("是否可领料")
+    private Boolean canPick;
     private static final long serialVersionUID = 1L;
     @ApiModelProperty("任务")
     private ProductionTaskResult productionTaskResult;

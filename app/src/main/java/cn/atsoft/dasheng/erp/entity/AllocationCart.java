@@ -39,6 +39,10 @@ public class AllocationCart implements Serializable {
     @TableField("number")
     private Integer number;
 
+
+    @TableField("done_number")
+    private Integer doneNumber;
+
     @TableField("type")
     private String type;
 
@@ -251,6 +255,14 @@ public class AllocationCart implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Integer getDoneNumber() {
+        return doneNumber;
+    }
+
+    public void setDoneNumber(Integer doneNumber) {
+        this.doneNumber = doneNumber;
     }
 
     @Override

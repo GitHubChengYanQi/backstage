@@ -542,7 +542,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     public List<ProductionPickListsDetailResult> getSelfCartsByLists(Long pickListsId) {
 
         if (BeanUtil.isNotEmpty(pickListsId)) {
-            List<ProductionPickListsDetail> listsDetails = pickListsDetailService.query().eq("pick_lists_id", pickListsId).eq("status", 0).eq("display", 1).list();
+            List<ProductionPickListsDetail> listsDetails = pickListsDetailService.query().eq("pick_lists_id", pickListsId).ne("status", 99).eq("display", 1).list();
             List<ProductionPickListsDetailResult> pickListsDetailResults = BeanUtil.copyToList(listsDetails, ProductionPickListsDetailResult.class);
             pickListsDetailService.format(pickListsDetailResults);
             return pickListsDetailResults;

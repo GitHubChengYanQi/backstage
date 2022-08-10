@@ -44,6 +44,7 @@ import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
+import cn.atsoft.dasheng.sendTemplate.pojo.RedisTemplatePrefixEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
@@ -283,11 +284,16 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     @Override
     public String createCode(ProductionPickListsParam param) {
         String code = String.valueOf(RandomUtil.randomLong(1000, 9999));
-        List<Object> list = redisSendCheck.getList(code);
+        String pickCode = RedisTemplatePrefixEnum.LLM.getValue()+ code ;
+        String checkCode = RedisTemplatePrefixEnum.LLJCM.getValue()+ code;
+
+
+        List<Object> list = redisSendCheck.getList(pickCode);
         param.getCartsParams();
         List<Object> objects = BeanUtil.copyToList(param.getCartsParams(), Object.class);
         if (ToolUtil.isEmpty(list)) {
-            redisSendCheck.pushList(code, objects, 1000L * 60L * 10L);
+            redisSendCheck.pushList(pickCode, objects, 1000L * 60L * 10L);
+            redisSendCheck.pushObject(checkCode,LoginContextHolder.getContext().getUserId(), 1000L * 60L * 10L);
             return code;
         }
         return createCode(param);
@@ -328,19 +334,22 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             skuIds.add(detailResult.getSkuId());
         }
         List<StorehousePositionsBind> positionsBinds = skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
-
         for (ProductionPickListsResult result : results) {
+
             result.setCanOperate(false);
             List<Long> listsSkuIds = new ArrayList<>();
             List<Long> listsPositionIds = new ArrayList<>();
             Integer numberCount = 0;
             Integer receivedCount = 0;
+            List<Boolean> canPickBooleans = new ArrayList<>();
+
             for (ProductionPickListsDetailResult detailResult : detailResults) {
-                if (result.getPickListsId().equals(detailResult.getPickListsId()) && detailResult.getStockNumber() > 0) {
-                    result.setCanOperate(true);
-                }
                 listsSkuIds.add(detailResult.getSkuId());
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
+                    if ( detailResult.getStockNumber() > 0) {
+                        result.setCanOperate(true);
+                    }
+                    canPickBooleans.add(detailResult.getCanPick());
                     numberCount += detailResult.getNumber();
                     receivedCount += detailResult.getReceivedNumber();
                     for (StorehousePositionsBind positionsBind : positionsBinds) {
@@ -350,6 +359,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     }
                 }
             }
+            /**
+             * 是否可以领料
+             */
+            if(result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().allMatch(i->i)){
+                result.setCanPick(true);
+            }else if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().noneMatch(i->i)){
+                result.setCanPick(false);
+            }
+
             result.setSkuCount(listsSkuIds.stream().distinct().collect(Collectors.toList()).size());
             result.setPositionCount(listsPositionIds.stream().distinct().collect(Collectors.toList()).size());
             result.setNumberCount(numberCount);
@@ -1658,7 +1676,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Override
     public List<ProductionPickListsCartResult> listByCode(String code) {
-        List<Object> list = redisSendCheck.getList(code);
+        List<Object> list = redisSendCheck.getList(RedisTemplatePrefixEnum.LLM.getValue()+code);
         if (ToolUtil.isEmpty(list)) {
             throw new ServiceException(500, "领料码已失效");
         }

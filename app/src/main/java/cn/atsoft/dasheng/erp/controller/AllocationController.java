@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Allocation;
 import cn.atsoft.dasheng.erp.entity.AllocationCart;
+import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationResult;
@@ -54,22 +55,7 @@ public class AllocationController extends BaseController {
     @RequestMapping(value = "/checkCart", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData checkCart(@RequestBody AllocationParam allocationParam) {
-        if (ToolUtil.isEmpty(allocationParam.getUserId()) ) {
-            throw new ServiceException(500,"请填写负责人");
-        }
-        if (ToolUtil.isEmpty(allocationParam.getAllocationId())){
-            throw new ServiceException(500,"请选择单据");
-        }
-        Allocation allocation = new Allocation();
-        allocation.setAllocationId(allocationParam.getAllocationId());
-        allocation.setUserId(allocationParam.getUserId());
-        allocationService.updateById(allocation);
-
-        if (ToolUtil.isNotEmpty(allocationParam.getDetailParams())) {
-            List<AllocationCart> allocationCarts = BeanUtil.copyToList(allocationParam.getDetailParams(), AllocationCart.class);
-            allocationCartService.saveBatch(allocationCarts);
-        }
-        this.allocationService.checkCart(allocationParam.getAllocationId());
+        this.allocationService.createOrder(allocationParam);
         return ResponseData.success();
     }
 
@@ -95,7 +81,7 @@ public class AllocationController extends BaseController {
      */
     @RequestMapping(value = "/transferInStorehouse", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData transferInStorehouse(@RequestBody AllocationDetailParam allocationParam) {
+    public ResponseData transferInStorehouse(@RequestBody AllocationCartParam allocationParam) {
 
         this.allocationService.transferInStorehouse(allocationParam);
         return ResponseData.success();
