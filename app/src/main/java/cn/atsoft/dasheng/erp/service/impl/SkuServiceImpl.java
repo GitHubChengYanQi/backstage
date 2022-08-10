@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.form.model.params.StepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -132,6 +133,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private MaintenanceCycleService maintenanceCycleService;
     @Autowired
     private InkindService inkindService;
+    @Autowired
+    private RemarksService remarksService;
 
 
     @Transactional
@@ -374,7 +377,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         Long skuId = param.getSkuId();
         Sku sku = this.getById(skuId);
-
         String enclosure = ToolUtil.isNotEmpty(param.getEnclosure()) ? param.getEnclosure() : null;
         String drawing = ToolUtil.isNotEmpty(param.getDrawing()) ? param.getDrawing() : null;
         String images = ToolUtil.isNotEmpty(param.getImages()) ? param.getImages() : null;
@@ -383,7 +385,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         sku.setImages(images);
         sku.setEnclosure(enclosure);
         sku.setFileId(filedId);
-
+        remarksService.addDynamic("操作更改了物料附件等文件信息");
         this.updateById(sku);
     }
 
