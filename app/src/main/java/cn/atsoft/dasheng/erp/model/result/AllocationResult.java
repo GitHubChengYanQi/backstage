@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
@@ -20,9 +22,11 @@ import java.util.List;
 public class AllocationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    List<AllocationDetailResult> detailResults;
-    List<AllocationCartResult> allocationCartResults;
+    private List<AllocationDetailResult> detailResults;
+    private List<AllocationCartResult> allocationCartResults;
+    private StorehouseResult storehouseResult;
     private String statusName;
+    private UserResult userResult;
 
     /**
      * 调拨id

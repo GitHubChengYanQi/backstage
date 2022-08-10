@@ -508,7 +508,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
 
             for (MaintenanceLogResult maintenanceLogResult : maintenanceLogResults) {
-                if (datum.getInkindId().equals(maintenanceLogResult.getInkindId())) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(maintenanceLogResult.getInkindId())) {
                     datum.setMaintenanceLogResult(maintenanceLogResult);
                 }
             }

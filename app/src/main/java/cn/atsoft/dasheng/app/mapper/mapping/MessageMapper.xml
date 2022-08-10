@@ -71,4 +71,5 @@
         from daoxin_message where display = 1
     </select>
 
+
 </mapper>

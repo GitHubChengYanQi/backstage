@@ -30,13 +30,16 @@ public class Sku implements Serializable {
     @TableField("quality_plan_id")
     private Long qualityPlanId;
 
-    @TableField("file_id")
+    @TableField(value ="file_id" ,fill = FieldFill.UPDATE)
     private String fileId;
 
-    @TableField("images")
+    @TableField(value ="enclosure",fill = FieldFill.UPDATE)
+    private String enclosure;
+
+    @TableField(value ="images",fill = FieldFill.UPDATE)
     private String images;
 
-    @TableField("drawing")
+    @TableField(value ="drawing",fill = FieldFill.UPDATE)
     private String drawing;
     /**
      * 批量
@@ -104,6 +107,14 @@ public class Sku implements Serializable {
 
     public String getSpecifications() {
         return specifications;
+    }
+
+    public String getEnclosure() {
+        return enclosure;
+    }
+
+    public void setEnclosure(String enclosure) {
+        this.enclosure = enclosure;
     }
 
     public void setSpecifications(String specifications) {

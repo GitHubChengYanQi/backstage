@@ -69,6 +69,8 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private Integer timeWithin; //查询条件(几天内)
     private String startTime;
     private String endTime;
+    private String enclosure;
+
     private List<Long> anomalySkuIds; //异常的物料
     private Boolean openBom = false;
     private Boolean openPosition = false;

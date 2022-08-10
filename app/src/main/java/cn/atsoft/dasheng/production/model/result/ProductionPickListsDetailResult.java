@@ -47,6 +47,7 @@ public class ProductionPickListsDetailResult implements Serializable {
     private List<ProductionPickListsCartResult> cartResults;
     private Map<String,String> brandResult;
     private ProductionPickListsResult pickListsResult;
+    private Boolean canPick;
     /**
      * 子表id
      */

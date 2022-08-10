@@ -75,6 +75,13 @@ public class SkuResult implements Serializable {
     private Integer inventoryStatus;
     private Long anomalyId;
     private Long inventoryStockId;
+    private String images;
+    private List<String> imagesUrls;
+    private String drawing;
+    private List<String> drawingUrls;
+    private String enclosure;
+    private List<String> enclosureUrls;
+
     /**
      * 预购数量
      */
@@ -113,10 +120,7 @@ public class SkuResult implements Serializable {
     @ApiModelProperty("执行标准")
     private String standard;
 
-    @ApiModelProperty("图片")
-    private String images;
 
-    private String drawing;
 
     /**
      * spu id

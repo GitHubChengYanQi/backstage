@@ -35,6 +35,8 @@ public interface SkuService extends IService<Sku> {
      */
     Map<String, Sku> add(SkuParam param);
 
+    void editEnclosure(SkuParam param);
+
     List<SkuResult> getSkuByMd5(SkuParam param);
 
     @Transactional
