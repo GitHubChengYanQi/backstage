@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.config.datasource;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.core.metadata.CustomMetaObjectHandler;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.modular.dynamic.entity.Dynamic;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.factory.IConstantFactory;
@@ -105,9 +106,9 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
-                try{
-                    printDynamic(metaObject,LoginContextHolder.getContext().getUser(),1 );
-                }catch (Exception e){
+                try {
+                    printDynamic(metaObject, LoginContextHolder.getContext().getUser(), 1);
+                } catch (Exception e) {
 
                 }
             }
@@ -145,9 +146,9 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
-                try{
-                    printDynamic(metaObject,LoginContextHolder.getContext().getUser(),2 );
-                }catch (Exception e){
+                try {
+                    printDynamic(metaObject, LoginContextHolder.getContext().getUser(), 2);
+                } catch (Exception e) {
 
                 }
             }
@@ -155,29 +156,54 @@ public class PluginsConfig {
     }
 
     public void printDynamic(MetaObject object, LoginUser loginUser, Integer type) {
-        if (type.equals(1)){
+        if (type.equals(1)) {
             for (String simpleName : WHITE_LIST) {
-                if (simpleName.equals(object.getOriginalObject().getClass().getSimpleName())){
-                    System.err.println(loginUser.getName()+"_"+"添加了"+"_"+object.getOriginalObject().getClass().getSimpleName()+"_"+ JSON.toJSONString(object.getOriginalObject()));
+                if (simpleName.equals(object.getOriginalObject().getClass().getSimpleName())) {
+                    System.err.println(loginUser.getName() + "_" + "添加了" + "_" + object.getOriginalObject().getClass().getSimpleName() + "_" + JSON.toJSONString(object.getOriginalObject()));
                     Dynamic dynamic = new Dynamic();
                     dynamic.setAfter(JSON.toJSONString(object.getOriginalObject()));
                     dynamic.setType(type.toString());
+
                 }
             }
 
-        }else if (type.equals(2)){
+        } else if (type.equals(2)) {
             for (String simpleName : WHITE_LIST) {
-                if (simpleName.equals(object.getOriginalObject().getClass().getSimpleName())){
-                    System.err.println(loginUser.getName()+"_"+"操作了"+"_"+object.getOriginalObject().getClass().getSimpleName());
+                if (simpleName.equals(object.getOriginalObject().getClass().getSimpleName())) {
+                    System.err.println(loginUser.getName() + "_" + "操作了" + "_" + object.getOriginalObject().getClass().getSimpleName());
                 }
             }
 
         }
     }
 
-    static final String[] WHITE_LIST={
-        "Sku", "ActivitiProcessTask","OperationLog"
+    static final String[] WHITE_LIST = {
+            "Sku", "ActivitiProcessTask","ActivitiProcessLog", "OperationLog"
     };
 
-
+    void formatEntity(MetaObject object, Dynamic dynamic) {
+        switch (object.getOriginalObject().getClass().getSimpleName()) {
+            case "Sku":
+                if (ToolUtil.isNotEmpty(object.getValue("skuId"))) {
+                    dynamic.setSkuId((Long) object.getValue("skuId"));
+                }
+                if (ToolUtil.isNotEmpty(object.getValue("spuId"))) {
+                    dynamic.setSkuId((Long) object.getValue("spuId"));
+                }
+                dynamic.setSourceId((Long)object.getValue("skuId"));
+                break;
+            case "ActivitiProcessTask" :
+                if (ToolUtil.isNotEmpty(object.getValue("processTaskId"))){
+                    dynamic.setTaskId((Long) object.getValue("processTaskId"));
+                }
+                dynamic.setSourceId((Long) object.getValue("processTaskId"));
+                break;
+            case "ActivitiProcessLog" :
+                if (ToolUtil.isNotEmpty(object.getValue("taskId"))){
+                    dynamic.setTaskId((Long) object.getValue("taskId"));
+                }
+                dynamic.setSourceId((Long) object.getValue("acitvitiProcessLog"));
+        }
+        dynamic.setSource(object.getOriginalObject().getClass().getSimpleName());
+    }
 }
