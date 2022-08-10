@@ -278,6 +278,13 @@
             </foreach>
         </if>
 
+        <if test="paramCondition.anomalySkuIds != null  and paramCondition.anomalySkuIds.size > 0 ">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.anomalySkuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
         <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
             and goods_sku.sku_id not in
             <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
@@ -456,12 +463,21 @@
             and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
+
         <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
             and goods_sku.sku_id in
             <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
                 #{state}
             </foreach>
         </if>
+
+        <if test="paramCondition.anomalySkuIds != null  and paramCondition.anomalySkuIds.size > 0 ">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.anomalySkuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
         <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
             and goods_sku.sku_id not in
             <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">

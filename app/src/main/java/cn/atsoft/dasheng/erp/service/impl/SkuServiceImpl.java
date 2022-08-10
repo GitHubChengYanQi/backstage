@@ -130,6 +130,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private ProductionPickListsCartService pickListsCartService;
     @Autowired
     private MaintenanceCycleService maintenanceCycleService;
+    @Autowired
+    private InkindService inkindService;
 
 
     @Transactional
@@ -998,6 +1000,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         /**
+         * 异常件查询
+         */
+        if (ToolUtil.isNotEmpty(param.getStatus()) && param.getStatus() == -1) {
+            List<StockDetails> stock = stockDetailsService.getStock();
+            List<Long> inkindIds = new ArrayList<>();
+            for (StockDetails details : stock) {
+                inkindIds.add(details.getInkindId());
+            }
+            List<Long> skuIds = inkindService.anomalySku(inkindIds);
+            param.setAnomalySkuIds(skuIds);
+        }
+
+        /**
          * 查询这个物料的bom
          */
         if (ToolUtil.isNotEmpty(param.getPartsSkuId())) {
@@ -1019,7 +1034,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     for (ErpPartsDetail partsDetail : partsDetails) {
                         skuIds.add(partsDetail.getSkuId());
                     }
-
                     break;
             }
         }
@@ -1747,6 +1761,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SkuRequest skuRequest = new SkuRequest();
         skuRequest.setTree(tree);
         skuResult.setSkuTree(skuRequest);
+
+        this.format(new ArrayList<SkuResult>() {{
+            add(skuResult);
+        }});
+
         return skuResult;
     }
 

@@ -317,6 +317,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             }
         } else {
             inventoryStockService.updateInventoryStatus(param, -1);
+            addInventoryRecord(param, -1); //添加记录
         }
         if (t) {   //添加异常信息
             List<Inkind> inkinds = new ArrayList<>();
@@ -340,6 +341,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 anomalyBind.setDetailId(detail.getDetailId());
                 anomalyBind.setAnomalyId(param.getAnomalyId());
                 anomalyBindService.save(anomalyBind);
+
 
                 Inkind inkind = new Inkind();
                 inkind.setInkindId(detailParam.getInkindId());
@@ -366,9 +368,32 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         //判断盘点操作权限
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             deleteBind(param.getAnomalyId()); //删除绑定数据
+            addInventoryRecord(param, 1);            //添加记录
             return true;
         }
         return false;
+    }
+
+    /**
+     * 盘点记录
+     *
+     * @param param
+     * @param status
+     */
+    private void addInventoryRecord(AnomalyParam param, int status) {
+        InstockLogDetail instockLogDetail = new InstockLogDetail();
+        instockLogDetail.setSkuId(param.getSkuId());
+        if (status == 1) {
+            instockLogDetail.setType("normal");
+        } else if (status == -1) {
+            instockLogDetail.setType("error");
+        }
+        instockLogDetail.setBrandId(param.getBrandId());
+        instockLogDetail.setCustomerId(param.getCustomerId());
+        instockLogDetail.setSource("inventory");
+        instockLogDetail.setSourceId(param.getFormId());
+        instockLogDetail.setStorehousePositionsId(param.getPositionId());
+
     }
 
     /**

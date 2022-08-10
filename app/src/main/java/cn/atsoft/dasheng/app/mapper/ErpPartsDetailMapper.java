@@ -53,4 +53,10 @@ public interface ErpPartsDetailMapper extends BaseMapper<ErpPartsDetail> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ErpPartsDetailParam paramCondition);
 
+
+    Page<ErpPartsDetailResult> pageBomList(@Param("page") Page page, @Param("paramCondition") ErpPartsDetailParam paramCondition);
+
+
+
+
 }

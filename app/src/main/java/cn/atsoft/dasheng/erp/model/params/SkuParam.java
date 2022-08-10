@@ -71,11 +71,14 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String endTime;
     private String enclosure;
 
+    private List<Long> anomalySkuIds; //异常的物料
     private Boolean openBom = false;
     private Boolean openPosition = false;
 
     private String sort;
     private Map<String, String> sortMap;
+
+    private Long status;
     /**
      * 是否查询仓库
      */

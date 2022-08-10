@@ -34,13 +34,7 @@
         <if test="paramCondition.partsDetailId != null">
             and parts_detail_id like CONCAT('%',#{paramCondition.partsDetailId},'%')
         </if>
-        <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
-            and attribute like CONCAT('%',#{paramCondition.attribute},'%')
-        </if>
-        <if test="paramCondition.pid != null">
-            and pid like CONCAT('%',#{paramCondition.pid},'%')
-        </if>
-        <if test="paramCondition.number != null">
+      <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
@@ -54,6 +48,9 @@
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.partsId != null">
+            and parts_id = #{paramCondition.partsId}
         </if>
     </select>
 
@@ -155,4 +152,50 @@
         </if>
     </select>
 
+
+    <select id="pageBomList" resultType="cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam">
+
+        SELECT daoxin_erp_parts_detail.parts_id as partId,
+        daoxin_erp_parts_detail.number as number,
+        goods_sku.sku_id as skuId,
+        daoxin_erp_parts_detail.create_time as createTime
+        FROM daoxin_erp_parts_detail
+        RIGHT JOIN (SELECT * FROM goods_sku WHERE display = 1) AS goods_sku
+        ON goods_sku.sku_id = daoxin_erp_parts_detail.sku_id
+        where 1=1
+        <if test="paramCondition.partsId != null">
+            and partsId = #{paramCondition.partsId}
+        </if>
+        <if test="paramCondition.skuIds != null and paramCondition.skuIds.size > 0">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.skuIds" separator="," index="index" item="state" close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
+    </select>
+
+    <select id=" allBomList" resultType="cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam">
+
+        SELECT daoxin_erp_parts_detail.parts_id as partId,
+        daoxin_erp_parts_detail.number as number,
+        goods_sku.sku_id as skuId,
+        daoxin_erp_parts_detail.create_time as createTime
+        FROM daoxin_erp_parts_detail
+        RIGHT JOIN (SELECT * FROM goods_sku WHERE display = 1) AS goods_sku
+        ON goods_sku.sku_id = daoxin_erp_parts_detail.sku_id
+        where 1=1
+        <if test="paramCondition.partsId != null">
+            and partsId = #{paramCondition.partsId}
+        </if>
+        <if test="paramCondition.skuIds != null and paramCondition.skuIds.size > 0">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.skuIds" separator="," index="index" item="state" close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
+    </select>
 </mapper>

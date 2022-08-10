@@ -25,6 +25,7 @@ import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
+import cn.hutool.log.Log;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -107,6 +108,19 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         return PageFactory.createPageInfo(page);
     }
 
+    /**
+     * 修改异常实物
+     */
+    @Override
+    public void updateAnomalyInKind(List<Long> inKindIds) {
+        Inkind inkind = new Inkind();
+        inkind.setAnomaly(1);
+
+        QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("inkind_id", inKindIds);
+        this.update(inkind, queryWrapper);
+    }
+
     @Override
     public InkindResult backInKindgetById(Long id) {
         Inkind inkind = this.getById(id);
@@ -120,6 +134,28 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setBrand(brand);
         inkindResult.setBackSku(backSku);
         return inkindResult;
+    }
+
+    /**
+     * 异常实物获取skuId
+     *
+     * @param inkindIds
+     * @return
+     */
+    @Override
+    public List<Long> anomalySku(List<Long> inkindIds) {
+        if (ToolUtil.isEmpty(inkindIds)) {
+            return new ArrayList<>();
+        }
+        List<Inkind> inkinds = this.query().in("inkind_id", inkindIds).eq("anomaly", 1).list();
+        if (ToolUtil.isEmpty(inkinds)) {
+            return new ArrayList<>();
+        }
+        List<Long> skuIds = new ArrayList<>();
+        for (Inkind inkind : inkinds) {
+            skuIds.add(inkind.getSkuId());
+        }
+        return skuIds;
     }
 
 //    @Override
@@ -302,9 +338,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             templete = templete.replace("${number}", param.getNumber().toString());
         }
         if (templete.contains("${brand}")) {
-            if (ToolUtil.isEmpty(param.getBrandResult()) ||ToolUtil.isEmpty(param.getBrandResult().getBrandName())) {
-                templete = templete.replace("${brand}","");
-            }else {
+            if (ToolUtil.isEmpty(param.getBrandResult()) || ToolUtil.isEmpty(param.getBrandResult().getBrandName())) {
+                templete = templete.replace("${brand}", "");
+            } else {
                 templete = templete.replace("${brand}", param.getBrandResult().getBrandName());
             }
         }

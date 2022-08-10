@@ -85,10 +85,12 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         Map<String, List<AnalysisResult>> map = new HashMap<>();
         for (AsynTaskResult asynTaskResult : asynTaskResults) {
             AllBomResult allBomResult = asynTaskResult.getAllBomResult();
-            List<AllBomResult.View> view = allBomResult.getView();
-            AllBomResult.View skuView = view.get(0);
-            List<AnalysisResult> owe = allBomResult.getOwe();
-            map.put(skuView.getName(), owe);
+            if (ToolUtil.isNotEmpty(allBomResult)) {
+                List<AllBomResult.View> view = allBomResult.getView();
+                AllBomResult.View skuView = view.get(0);
+                List<AnalysisResult> owe = allBomResult.getOwe();
+                map.put(skuView.getName(), owe);
+            }
         }
         /**
          * 通过 物料取出分类

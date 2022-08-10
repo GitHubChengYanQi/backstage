@@ -399,6 +399,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public PageInfo<PartsResult> findPageBySpec(PartsParam param) {
         Page<PartsResult> pageContext = getPageContext();
+        param.setStatus(99);
+        param.setDisplay(1);
         IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
         pageFormat(page.getRecords());
         return PageFactory.createPageInfo(page);
@@ -453,7 +455,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      * @param partId
      * @return
      */
-    private List<ErpPartsDetailResult> recursiveDetails(Long partId) {
+    @Override
+    public List<ErpPartsDetailResult> recursiveDetails(Long partId) {
 
         List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", partId).list();
         if (ToolUtil.isNotEmpty(details)) {

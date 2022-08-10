@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
@@ -35,6 +37,8 @@ import java.util.List;
 public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper, ErpPartsDetail> implements ErpPartsDetailService {
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private PartsService partsService;
 
 
     @Override
@@ -71,8 +75,39 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
     public PageInfo<ErpPartsDetailResult> findPageBySpec(ErpPartsDetailParam param) {
         Page<ErpPartsDetailResult> pageContext = getPageContext();
         IPage<ErpPartsDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
+    @Override
+    public List<ErpPartsDetailResult> bomList(ErpPartsDetailParam param) {
+        List<ErpPartsDetailResult> detailResults = null;
+        if (ToolUtil.isNotEmpty(param.getSkuId())) {   //当前bom所有下级
+            detailResults = recursiveDetails(param.getSkuId());
+        } else {      //当前bom 下一级
+            detailResults = this.baseMapper.customList(param);
+        }
+        format(detailResults);
+        return detailResults;
+    }
+
+
+    private List<ErpPartsDetailResult> recursiveDetails(Long skuId) {
+
+        List<ErpPartsDetailResult> list = new ArrayList<>();
+        Parts parts = partsService.query().eq("sku_id", skuId).eq("status", 99).eq("display", 1).one();
+
+        if (ToolUtil.isNotEmpty(parts)) {
+            List<ErpPartsDetail> partsDetails = this.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
+            List<ErpPartsDetailResult> detailResults = BeanUtil.copyToList(partsDetails, ErpPartsDetailResult.class);
+            list.addAll(detailResults);
+            for (ErpPartsDetailResult detailResult : detailResults) {
+                list.addAll(recursiveDetails(detailResult.getSkuId()));
+            }
+        }
+        return list;
+    }
+
 
     private Serializable getKey(ErpPartsDetailParam param) {
         return param.getPartsDetailId();
@@ -114,8 +149,26 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
                 }
             }
         }
-
         return detailResults;
     }
 
+
+    private void format(List<ErpPartsDetailResult> data) {
+        List<Long> skuIds = new ArrayList<>();
+        for (ErpPartsDetailResult datum : data) {
+            skuIds.add(datum.getSkuId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+
+        for (ErpPartsDetailResult datum : data) {
+
+            for (SkuResult skuResult : skuResults) {
+                if (datum.getSkuId().equals(skuResult.getSkuId())) {
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+    }
 }

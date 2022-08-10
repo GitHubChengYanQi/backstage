@@ -30,6 +30,7 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private Integer stage;
     private String iname;
     private String pname;
+    private Integer status;
     @ApiModelProperty("库位id")
     private Long storehouseId;
     List<Long> brandIds;
@@ -54,7 +55,7 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("物料ids")
     private List<Long> skuIds;
 
-    private Long  maintenanceId;
+    private Long maintenanceId;
 
     private Long customerId;
     /**

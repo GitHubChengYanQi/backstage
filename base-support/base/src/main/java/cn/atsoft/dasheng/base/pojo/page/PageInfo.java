@@ -47,6 +47,6 @@ public class PageInfo<T> {
     private long pageSize;
 
     @ApiModelProperty("搜索")
-    private List<Object> search;
+    private Object search;
 
 }

@@ -826,7 +826,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 比对结构
          */
         for (ActivitiProcessTask processTask : processTasks) {
-            boolean judgeNode = judgeNode(logMap.get(processTask.getProcessTaskId()), stepMaps);
+            List<ActivitiProcessLog> logs = logMap.get(processTask.getProcessTaskId());
+            if (ToolUtil.isEmpty(logs)) {
+                logs = new ArrayList<>();
+            }
+            boolean judgeNode = judgeNode(logs, stepMaps);
             if (judgeNode) {
                 executed.add(processTask);
             } else {
