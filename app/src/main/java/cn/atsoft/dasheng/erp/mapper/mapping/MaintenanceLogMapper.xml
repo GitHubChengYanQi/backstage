@@ -5,24 +5,20 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.MaintenanceLog">
         <id column="maintenance_log_id" property="maintenanceLogId" />
-        <result column ="maintenance_detail_id" property="maintenanceDetailId" />
-        <result column="maintenance_id" property="maintenanceId" />
-        <result column="inkind_id" property="inkindId" />
-        <result column="enclosure" property="enclosure" />
-        <result column="sku_id" property="skuId" />
-        <result column="brand_id" property="brandId" />
-        <result column="number" property="number" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
         <result column="update_user" property="updateUser" />
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="maintenance_detail_id" property="maintenanceDetailId" />
+        <result column="maintenance_id" property="maintenanceId" />
+        <result column="enclosure" property="enclosure" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        maintenance_log_id AS "maintenanceLogId",enclosure AS "enclosure",maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        maintenance_log_id AS "maintenanceLogId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", enclosure AS "enclosure"
     </sql>
 
 
@@ -32,18 +28,6 @@
         from daoxin_erp_maintenance_log where 1 = 1
             <if test="paramCondition.maintenanceLogId != null">
                 and maintenance_log_id like CONCAT('%',#{paramCondition.maintenanceLogId},'%')
-            </if>
-            <if test="paramCondition.inkindId != null">
-                and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
-            </if>
-            <if test="paramCondition.skuId != null">
-                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-            </if>
-            <if test="paramCondition.number != null">
-                and number like CONCAT('%',#{paramCondition.number},'%')
             </if>
             <if test="paramCondition.createUser != null">
                 and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -63,18 +47,6 @@
             <if test="paramCondition.deptId != null">
                 and deptId like CONCAT('%',#{paramCondition.deptId},'%')
             </if>
-            <if test="paramCondition.skuIds != null and paramCondition.skuIds.size > 0">
-                and sku_id in
-                <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
-                    #{state}
-                </foreach>
-            </if>
-        <if test="paramCondition.brandIds != null and paramCondition.brandIds.size > 0">
-                and brand_id in
-                <foreach collection="paramCondition.brandIds" index="index" item="state" separator="," close=")" open="(">
-                    #{state}
-                </foreach>
-            </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam">
@@ -83,18 +55,6 @@
         from daoxin_erp_maintenance_log where 1 = 1
                 <if test="paramCondition.maintenanceLogId != null">
                         and maintenance_log_id like CONCAT('%',#{paramCondition.maintenanceLogId},'%')
-                </if>
-                <if test="paramCondition.inkindId != null">
-                        and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -114,7 +74,6 @@
                 <if test="paramCondition.deptId != null">
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
-
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult" parameterType="cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam">
@@ -123,18 +82,6 @@
         from daoxin_erp_maintenance_log where 1 = 1
                 <if test="paramCondition.maintenanceLogId != null">
                         and maintenance_log_id like CONCAT('%',#{paramCondition.maintenanceLogId},'%')
-                </if>
-                <if test="paramCondition.inkindId != null">
-                        and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -162,18 +109,6 @@
         from daoxin_erp_maintenance_log where 1 = 1
                 <if test="paramCondition.maintenanceLogId != null">
                         and maintenance_log_id like CONCAT('%',#{paramCondition.maintenanceLogId},'%')
-                </if>
-                <if test="paramCondition.inkindId != null">
-                        and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')
