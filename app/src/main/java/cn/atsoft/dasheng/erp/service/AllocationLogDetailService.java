@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.AllocationLog;
-import cn.atsoft.dasheng.erp.model.params.AllocationLogParam;
-import cn.atsoft.dasheng.erp.model.result.AllocationLogResult;
+import cn.atsoft.dasheng.erp.entity.AllocationLogDetail;
+import cn.atsoft.dasheng.erp.model.params.AllocationLogDetailParam;
+import cn.atsoft.dasheng.erp.model.result.AllocationLogDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author Captain_Jazz
  * @since 2022-08-11
  */
-public interface AllocationLogService extends IService<AllocationLog> {
+public interface AllocationLogDetailService extends IService<AllocationLogDetail> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface AllocationLogService extends IService<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    void add(AllocationLogParam param);
+    void add(AllocationLogDetailParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface AllocationLogService extends IService<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    void delete(AllocationLogParam param);
+    void delete(AllocationLogDetailParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface AllocationLogService extends IService<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    void update(AllocationLogParam param);
+    void update(AllocationLogDetailParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface AllocationLogService extends IService<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    AllocationLogResult findBySpec(AllocationLogParam param);
+    AllocationLogDetailResult findBySpec(AllocationLogDetailParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface AllocationLogService extends IService<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    List<AllocationLogResult> findListBySpec(AllocationLogParam param);
+    List<AllocationLogDetailResult> findListBySpec(AllocationLogDetailParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface AllocationLogService extends IService<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-     PageInfo<AllocationLogResult> findPageBySpec(AllocationLogParam param);
+     PageInfo<AllocationLogDetailResult> findPageBySpec(AllocationLogDetailParam param);
 
 }

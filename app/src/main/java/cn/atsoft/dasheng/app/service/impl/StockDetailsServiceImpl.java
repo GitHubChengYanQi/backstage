@@ -72,7 +72,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Autowired
     private InkindService inkindService;
     @Autowired
-    private MaintenanceLogService maintenanceLogService;
+    private MaintenanceLogDetailService maintenanceLogDetailService;
     @Autowired
     private MaintenanceService maintenanceService;
     @Autowired
@@ -622,7 +622,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             userIds.add(datum.getCreateUser());
         }
         List<OrCodeBind> codeBinds = inkindIds.size() == 0 ? new ArrayList<>() : codeBindService.query().in("form_id", inkindIds).list();
-        List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogService.lastLogByInkindIds(inkindIds);
+        List<MaintenanceLogDetailResult> maintenanceLogDetailResults = maintenanceLogDetailService.lastLogByInkindIds(inkindIds);
         List<CustomerResult> results = customerService.getResults(customerIds);
         List<StorehousePositionsResult> positions = positionsService.details(pIds);
         List<StorehouseResult> storehouseResults = storehouseService.getDetails(stoIds);
@@ -648,9 +648,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 }
             }
 
-            for (MaintenanceLogResult maintenanceLogResult : maintenanceLogResults) {
-                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(maintenanceLogResult.getInkindId())) {
-                    datum.setMaintenanceLogResult(maintenanceLogResult);
+            for (MaintenanceLogDetailResult maintenanceLogDetailResult : maintenanceLogDetailResults) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(maintenanceLogDetailResult.getInkindId())) {
+                    datum.setMaintenanceLogDetailResult(maintenanceLogDetailResult);
                 }
             }
             for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {

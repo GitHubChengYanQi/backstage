@@ -17,7 +17,7 @@ import java.util.Map;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-06-28
+ * @since 2022-08-11
  */
 public interface MaintenanceLogMapper extends BaseMapper<MaintenanceLog> {
 
@@ -25,7 +25,7 @@ public interface MaintenanceLogMapper extends BaseMapper<MaintenanceLog> {
      * 获取列表
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     List<MaintenanceLogResult> customList(@Param("paramCondition") MaintenanceLogParam paramCondition);
 
@@ -33,7 +33,7 @@ public interface MaintenanceLogMapper extends BaseMapper<MaintenanceLog> {
      * 获取map列表
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") MaintenanceLogParam paramCondition);
 
@@ -41,7 +41,7 @@ public interface MaintenanceLogMapper extends BaseMapper<MaintenanceLog> {
      * 获取分页实体列表
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     Page<MaintenanceLogResult> customPageList(@Param("page") Page page, @Param("paramCondition") MaintenanceLogParam paramCondition);
 
@@ -49,7 +49,7 @@ public interface MaintenanceLogMapper extends BaseMapper<MaintenanceLog> {
      * 获取分页map列表
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") MaintenanceLogParam paramCondition);
 

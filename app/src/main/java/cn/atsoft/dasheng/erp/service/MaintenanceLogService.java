@@ -14,7 +14,7 @@ import java.util.List;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-06-28
+ * @since 2022-08-11
  */
 public interface MaintenanceLogService extends IService<MaintenanceLog> {
 
@@ -22,7 +22,7 @@ public interface MaintenanceLogService extends IService<MaintenanceLog> {
      * 新增
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     void add(MaintenanceLogParam param);
 
@@ -30,7 +30,7 @@ public interface MaintenanceLogService extends IService<MaintenanceLog> {
      * 删除
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     void delete(MaintenanceLogParam param);
 
@@ -38,7 +38,7 @@ public interface MaintenanceLogService extends IService<MaintenanceLog> {
      * 更新
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     void update(MaintenanceLogParam param);
 
@@ -46,7 +46,7 @@ public interface MaintenanceLogService extends IService<MaintenanceLog> {
      * 查询单条数据，Specification模式
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     MaintenanceLogResult findBySpec(MaintenanceLogParam param);
 
@@ -54,17 +54,15 @@ public interface MaintenanceLogService extends IService<MaintenanceLog> {
      * 查询列表，Specification模式
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     List<MaintenanceLogResult> findListBySpec(MaintenanceLogParam param);
-
-    List<MaintenanceLogResult> lastLogByInkindIds(List<Long> inkindIds);
 
     /**
      * 查询分页数据，Specification模式
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
      PageInfo<MaintenanceLogResult> findPageBySpec(MaintenanceLogParam param);
 

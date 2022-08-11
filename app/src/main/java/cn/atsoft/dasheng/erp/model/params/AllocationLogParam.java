@@ -16,7 +16,7 @@ import java.util.List;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-07-25
+ * @since 2022-08-11
  */
 @Data
 @ApiModel
@@ -24,7 +24,7 @@ public class AllocationLogParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    private String coding;
     /**
      * 调拨logid
      */
@@ -39,27 +39,6 @@ public class AllocationLogParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("")
     private Long allocationDetailId;
-
-    @ApiModelProperty("")
-    private Long skuId;
-
-    @ApiModelProperty("")
-    private Integer number;
-
-    /**
-     * 仓库库位id
-     */
-    @ApiModelProperty("仓库库位id")
-    private Long storehousePositionsId;
-
-    /**
-     * 仓库id
-     */
-    @ApiModelProperty("仓库id")
-    private Long storehouseId;
-
-    @ApiModelProperty("")
-    private Long brandId;
 
     /**
      * 创建者
@@ -96,18 +75,6 @@ public class AllocationLogParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
-
-    /**
-     * 调拨目标位置仓库库位id
-     */
-    @ApiModelProperty("调拨目标位置仓库库位id")
-    private Long toStorehousePositionsId;
-
-    /**
-     * 调拨目标位置仓库id
-     */
-    @ApiModelProperty("调拨目标位置仓库id")
-    private Long toStorehouseId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

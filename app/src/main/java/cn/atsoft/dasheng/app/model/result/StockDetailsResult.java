@@ -27,7 +27,7 @@ import java.util.List;
 @ApiModel
 public class StockDetailsResult implements Serializable {
 
-    private MaintenanceLogResult maintenanceLogResult;
+    private MaintenanceLogDetailResult maintenanceLogDetailResult;
     private StorehousePositionsResult storehousePositionsResult;
     private static final long serialVersionUID = 1L;
     private Long storehouseId;

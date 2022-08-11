@@ -1,10 +1,10 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.MaintenanceLog;
-import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
-import cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult;
-import cn.atsoft.dasheng.erp.service.MaintenanceLogService;
+import cn.atsoft.dasheng.erp.entity.AllocationLogDetail;
+import cn.atsoft.dasheng.erp.model.params.AllocationLogDetailParam;
+import cn.atsoft.dasheng.erp.model.result.AllocationLogDetailResult;
+import cn.atsoft.dasheng.erp.service.AllocationLogDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -19,18 +19,18 @@ import java.util.Map;
 
 
 /**
- * 养护记录控制器
+ * 控制器
  *
  * @author Captain_Jazz
- * @Date 2022-08-11 13:42:31
+ * @Date 2022-08-11 16:41:36
  */
 @RestController
-@RequestMapping("/maintenanceLog")
-@Api(tags = "养护记录")
-public class MaintenanceLogController extends BaseController {
+@RequestMapping("/allocationLogDetail")
+@Api(tags = "")
+public class AllocationLogDetailController extends BaseController {
 
     @Autowired
-    private MaintenanceLogService maintenanceLogService;
+    private AllocationLogDetailService allocationLogDetailService;
 
     /**
      * 新增接口
@@ -40,8 +40,8 @@ public class MaintenanceLogController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody MaintenanceLogParam maintenanceLogParam) {
-        this.maintenanceLogService.add(maintenanceLogParam);
+    public ResponseData addItem(@RequestBody AllocationLogDetailParam allocationLogDetailParam) {
+        this.allocationLogDetailService.add(allocationLogDetailParam);
         return ResponseData.success();
     }
 
@@ -53,9 +53,9 @@ public class MaintenanceLogController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody MaintenanceLogParam maintenanceLogParam) {
+    public ResponseData update(@RequestBody AllocationLogDetailParam allocationLogDetailParam) {
 
-        this.maintenanceLogService.update(maintenanceLogParam);
+        this.allocationLogDetailService.update(allocationLogDetailParam);
         return ResponseData.success();
     }
 
@@ -67,8 +67,8 @@ public class MaintenanceLogController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody MaintenanceLogParam maintenanceLogParam)  {
-        this.maintenanceLogService.delete(maintenanceLogParam);
+    public ResponseData delete(@RequestBody AllocationLogDetailParam allocationLogDetailParam)  {
+        this.allocationLogDetailService.delete(allocationLogDetailParam);
         return ResponseData.success();
     }
 
@@ -80,9 +80,9 @@ public class MaintenanceLogController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<MaintenanceLogResult> detail(@RequestBody MaintenanceLogParam maintenanceLogParam) {
-        MaintenanceLog detail = this.maintenanceLogService.getById(maintenanceLogParam.getMaintenanceLogId());
-        MaintenanceLogResult result = new MaintenanceLogResult();
+    public ResponseData<AllocationLogDetailResult> detail(@RequestBody AllocationLogDetailParam allocationLogDetailParam) {
+        AllocationLogDetail detail = this.allocationLogDetailService.getById(allocationLogDetailParam.getAllocationLogDetailId());
+        AllocationLogDetailResult result = new AllocationLogDetailResult();
         ToolUtil.copyProperties(detail, result);
 
         return ResponseData.success(result);
@@ -96,11 +96,11 @@ public class MaintenanceLogController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MaintenanceLogResult> list(@RequestBody(required = false) MaintenanceLogParam maintenanceLogParam) {
-        if(ToolUtil.isEmpty(maintenanceLogParam)){
-            maintenanceLogParam = new MaintenanceLogParam();
+    public PageInfo<AllocationLogDetailResult> list(@RequestBody(required = false) AllocationLogDetailParam allocationLogDetailParam) {
+        if(ToolUtil.isEmpty(allocationLogDetailParam)){
+            allocationLogDetailParam = new AllocationLogDetailParam();
         }
-        return this.maintenanceLogService.findPageBySpec(maintenanceLogParam);
+        return this.allocationLogDetailService.findPageBySpec(allocationLogDetailParam);
     }
 
 

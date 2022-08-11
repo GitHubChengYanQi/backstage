@@ -1,8 +1,8 @@
 package cn.atsoft.dasheng.erp.mapper;
 
-import cn.atsoft.dasheng.erp.entity.AllocationLog;
-import cn.atsoft.dasheng.erp.model.params.AllocationLogParam;
-import cn.atsoft.dasheng.erp.model.result.AllocationLogResult;
+import cn.atsoft.dasheng.erp.entity.AllocationLogDetail;
+import cn.atsoft.dasheng.erp.model.params.AllocationLogDetailParam;
+import cn.atsoft.dasheng.erp.model.result.AllocationLogDetailResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,7 +19,7 @@ import java.util.Map;
  * @author Captain_Jazz
  * @since 2022-08-11
  */
-public interface AllocationLogMapper extends BaseMapper<AllocationLog> {
+public interface AllocationLogDetailMapper extends BaseMapper<AllocationLogDetail> {
 
     /**
      * 获取列表
@@ -27,7 +27,7 @@ public interface AllocationLogMapper extends BaseMapper<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    List<AllocationLogResult> customList(@Param("paramCondition") AllocationLogParam paramCondition);
+    List<AllocationLogDetailResult> customList(@Param("paramCondition") AllocationLogDetailParam paramCondition);
 
     /**
      * 获取map列表
@@ -35,7 +35,7 @@ public interface AllocationLogMapper extends BaseMapper<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    List<Map<String, Object>> customMapList(@Param("paramCondition") AllocationLogParam paramCondition);
+    List<Map<String, Object>> customMapList(@Param("paramCondition") AllocationLogDetailParam paramCondition);
 
     /**
      * 获取分页实体列表
@@ -43,7 +43,7 @@ public interface AllocationLogMapper extends BaseMapper<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    Page<AllocationLogResult> customPageList(@Param("page") Page page, @Param("paramCondition") AllocationLogParam paramCondition);
+    Page<AllocationLogDetailResult> customPageList(@Param("page") Page page, @Param("paramCondition") AllocationLogDetailParam paramCondition);
 
     /**
      * 获取分页map列表
@@ -51,6 +51,6 @@ public interface AllocationLogMapper extends BaseMapper<AllocationLog> {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") AllocationLogParam paramCondition);
+    Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") AllocationLogDetailParam paramCondition);
 
 }

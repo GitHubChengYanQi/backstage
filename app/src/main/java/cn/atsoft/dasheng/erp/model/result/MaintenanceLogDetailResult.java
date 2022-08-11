@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -16,25 +17,34 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class AllocationLogResult implements Serializable {
+public class MaintenanceLogDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private String coding;
-    /**
-     * 调拨logid
-     */
-    @ApiModelProperty("调拨logid")
-    private Long allocationLogId;
-
-    /**
-     * 调拨id
-     */
-    @ApiModelProperty("调拨id")
-    private Long allocationId;
+    private UserResult userResult;
 
     @ApiModelProperty("")
-    private Long allocationDetailId;
+    private Long maintenanceLogDetailId;
+
+    @ApiModelProperty("")
+    private Long maintenanceLogId;
+
+    @ApiModelProperty("")
+    private Long inkindId;
+
+    @ApiModelProperty("")
+    private Long skuId;
+
+    /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
+     * 数量
+     */
+    @ApiModelProperty("数量")
+    private Integer number;
 
     /**
      * 创建者
@@ -43,16 +53,16 @@ public class AllocationLogResult implements Serializable {
     private Long createUser;
 
     /**
-     * 修改者
-     */
-    @ApiModelProperty(hidden = true)
-    private Long updateUser;
-
-    /**
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
     private Date createTime;
+
+    /**
+     * 修改者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
 
     /**
      * 修改时间
@@ -71,6 +81,18 @@ public class AllocationLogResult implements Serializable {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
+
+    @ApiModelProperty("")
+    private Long maintenanceDetailId;
+
+    @ApiModelProperty("")
+    private Long maintenanceId;
+
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

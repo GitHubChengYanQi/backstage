@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 /**
  * <p>
- * 养护记录
+ *
  * </p>
  *
  * @author Captain_Jazz
@@ -20,18 +21,35 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class MaintenanceLogParam implements Serializable, BaseValidatingParam {
+public class MaintenanceLogDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
     private List<MaintenanceLogDetailParam> maintenanceLogDetailParams;
-
-    private String coding;
     private Long storehousePositionsId;
 
+    @ApiModelProperty("")
+    private Long maintenanceLogDetailId;
 
     @ApiModelProperty("")
     private Long maintenanceLogId;
+
+    @ApiModelProperty("")
+    private Long inkindId;
+
+    @ApiModelProperty("")
+    private Long skuId;
+
+    /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
+     * 数量
+     */
+    @ApiModelProperty("数量")
+    private Integer number;
 
     /**
      * 创建者

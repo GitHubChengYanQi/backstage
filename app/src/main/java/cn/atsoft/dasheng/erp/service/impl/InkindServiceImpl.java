@@ -64,9 +64,6 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     @Autowired
     private OrCodeBindService orCodeBindService;
 
-    @Autowired
-    private MaintenanceLogService maintenanceLogService;
-
 
     @Override
     public Long add(InkindParam param) {
