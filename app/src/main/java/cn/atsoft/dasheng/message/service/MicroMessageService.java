@@ -4,6 +4,9 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.dynamic.entity.Dynamic;
+import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
+import cn.atsoft.dasheng.dynamic.service.DynamicService;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
@@ -55,6 +58,9 @@ public class MicroMessageService {
 
     @Autowired
     private MaintenanceService maintenanceService;
+
+    @Autowired
+    private DynamicService dynamicService;
 
 
     public void microServiceDo(MicroServiceEntity microServiceEntity) {
@@ -144,6 +150,13 @@ public class MicroMessageService {
                     case SAVEDETAILS:
                        Maintenance maintenance = (Maintenance) microServiceEntity.getObject();
                         maintenanceService.saveDetails(maintenance);
+                        break;
+                }
+            case DYNAMIC:
+                switch (microServiceEntity.getOperationType()){
+                    case SAVE:
+                        DynamicParam dynamic = JSON.parseObject(microServiceEntity.getObject().toString(),DynamicParam.class) ;
+                        dynamicService.add(dynamic);
                         break;
                 }
             default:

@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.modular.dynamic.service;
+package cn.atsoft.dasheng.dynamic.service;
 
+import cn.atsoft.dasheng.dynamic.entity.Dynamic;
+import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
+import cn.atsoft.dasheng.dynamic.model.result.DynamicResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.modular.dynamic.entity.Dynamic;
-import cn.atsoft.dasheng.modular.dynamic.model.params.DynamicParam;
-import cn.atsoft.dasheng.modular.dynamic.model.result.DynamicResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

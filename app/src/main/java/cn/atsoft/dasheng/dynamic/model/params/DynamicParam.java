@@ -1,11 +1,15 @@
-package cn.atsoft.dasheng.modular.dynamic.model.result;
+package cn.atsoft.dasheng.dynamic.model.params;
 
 import lombok.Data;
-import java.util.Date;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
+
 /**
  * <p>
  * 
@@ -16,10 +20,17 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DynamicResult implements Serializable {
+public class DynamicParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty("用户id")
+    private Long userId;
+    /**
+     * 实物id
+     */
+    @ApiModelProperty("实物id")
+    private Long inkindId;
 
     /**
      * 商机动态id
@@ -122,6 +133,13 @@ public class DynamicResult implements Serializable {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

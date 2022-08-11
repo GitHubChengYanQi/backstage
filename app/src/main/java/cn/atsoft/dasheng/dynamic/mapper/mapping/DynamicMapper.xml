@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.modular.dynamic.mapper.DynamicMapper">
+<mapper namespace="cn.atsoft.dasheng.dynamic.mapper.DynamicMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.modular.dynamic.entity.Dynamic">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.dynamic.entity.Dynamic">
         <id column="dynamic_id" property="dynamicId" />
         <result column="content" property="content" />
+        <result column="user_id" property="userId" />
         <result column="after" property="after" />
         <result column="type" property="type" />
-        <result column="befor" property="befor" />
+        <result column="before" property="before" />
         <result column="source" property="source" />
         <result column="source_id" property="sourceId" />
         <result column="sku_id" property="skuId" />
         <result column="spu_id" property="spuId" />
+        <result column="inkind_id" property="inkindId" />
         <result column="task_id" property="taskId" />
         <result column="storehouse_id" property="storehouseId" />
         <result column="storehouse_positions_id" property="storehousePositionsId" />
@@ -26,11 +28,11 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        dynamic_id AS "dynamicId", content AS "content", after AS "after", type AS "type", befor AS "befor", source AS "source", source_id AS "sourceId", sku_id AS "skuId", spu_id AS "spuId", task_id AS "taskId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        dynamic_id AS "dynamicId",user_id AS "userId", content AS "content", after AS "after", type AS "type", before AS "before", source AS "source", source_id AS "sourceId", sku_id AS "skuId", spu_id AS "spuId", task_id AS "taskId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.modular.dynamic.model.result.DynamicResult" parameterType="cn.atsoft.dasheng.modular.dynamic.model.params.DynamicParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.dynamic.model.result.DynamicResult" parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
         select
         <include refid="Base_Column_List"/>
         from dynamic where 1 = 1
@@ -46,8 +48,8 @@
             <if test="paramCondition.type != null and paramCondition.type != ''">
                 and type like CONCAT('%',#{paramCondition.type},'%')
             </if>
-            <if test="paramCondition.befor != null and paramCondition.befor != ''">
-                and befor like CONCAT('%',#{paramCondition.befor},'%')
+            <if test="paramCondition.before != null and paramCondition.before != ''">
+                and before like CONCAT('%',#{paramCondition.before},'%')
             </if>
             <if test="paramCondition.source != null and paramCondition.source != ''">
                 and source like CONCAT('%',#{paramCondition.source},'%')
@@ -90,7 +92,7 @@
             </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.modular.dynamic.model.params.DynamicParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
         select
         <include refid="Base_Column_List"/>
         from dynamic where 1 = 1
@@ -106,8 +108,8 @@
                 <if test="paramCondition.type != null and paramCondition.type != ''">
                         and type like CONCAT('%',#{paramCondition.type},'%')
                 </if>
-                <if test="paramCondition.befor != null and paramCondition.befor != ''">
-                        and befor like CONCAT('%',#{paramCondition.befor},'%')
+                <if test="paramCondition.before != null and paramCondition.before != ''">
+                        and before like CONCAT('%',#{paramCondition.before},'%')
                 </if>
                 <if test="paramCondition.source != null and paramCondition.source != ''">
                         and source like CONCAT('%',#{paramCondition.source},'%')
@@ -150,7 +152,7 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.modular.dynamic.model.result.DynamicResult" parameterType="cn.atsoft.dasheng.modular.dynamic.model.params.DynamicParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.dynamic.model.result.DynamicResult" parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
         select
         <include refid="Base_Column_List"/>
         from dynamic where 1 = 1
@@ -166,8 +168,8 @@
                 <if test="paramCondition.type != null and paramCondition.type != ''">
                         and type like CONCAT('%',#{paramCondition.type},'%')
                 </if>
-                <if test="paramCondition.befor != null and paramCondition.befor != ''">
-                        and befor like CONCAT('%',#{paramCondition.befor},'%')
+                <if test="paramCondition.before != null and paramCondition.before != ''">
+                        and before like CONCAT('%',#{paramCondition.before},'%')
                 </if>
                 <if test="paramCondition.source != null and paramCondition.source != ''">
                         and source like CONCAT('%',#{paramCondition.source},'%')
@@ -210,7 +212,7 @@
                 </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.modular.dynamic.model.params.DynamicParam">
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
         select
         <include refid="Base_Column_List"/>
         from dynamic where 1 = 1
@@ -226,8 +228,8 @@
                 <if test="paramCondition.type != null and paramCondition.type != ''">
                         and type like CONCAT('%',#{paramCondition.type},'%')
                 </if>
-                <if test="paramCondition.befor != null and paramCondition.befor != ''">
-                        and befor like CONCAT('%',#{paramCondition.befor},'%')
+                <if test="paramCondition.before != null and paramCondition.before != ''">
+                        and before like CONCAT('%',#{paramCondition.before},'%')
                 </if>
                 <if test="paramCondition.source != null and paramCondition.source != ''">
                         and source like CONCAT('%',#{paramCondition.source},'%')

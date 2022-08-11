@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.modular.dynamic.mapper;
+package cn.atsoft.dasheng.dynamic.mapper;
 
-import cn.atsoft.dasheng.modular.dynamic.entity.Dynamic;
-import cn.atsoft.dasheng.modular.dynamic.model.params.DynamicParam;
-import cn.atsoft.dasheng.modular.dynamic.model.result.DynamicResult;
+import cn.atsoft.dasheng.dynamic.entity.Dynamic;
+import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
+import cn.atsoft.dasheng.dynamic.model.result.DynamicResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

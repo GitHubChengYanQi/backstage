@@ -1,15 +1,11 @@
-package cn.atsoft.dasheng.modular.dynamic.model.params;
+package cn.atsoft.dasheng.dynamic.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
  * 
@@ -20,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DynamicParam implements Serializable, BaseValidatingParam {
+public class DynamicResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,6 +26,18 @@ public class DynamicParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("商机动态id")
     private Long dynamicId;
+
+    /**
+     * 用户id
+     */
+    @ApiModelProperty("用户id")
+    private Long userId;
+
+    /**
+     * 实物id
+     */
+    @ApiModelProperty("实物id")
+    private Long inkindId;
 
     /**
      * 内容
@@ -50,7 +58,7 @@ public class DynamicParam implements Serializable, BaseValidatingParam {
      * 更改之前数据
      */
     @ApiModelProperty("更改之前数据")
-    private String befor;
+    private String before;
 
     /**
      * 来源
@@ -126,13 +134,6 @@ public class DynamicParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

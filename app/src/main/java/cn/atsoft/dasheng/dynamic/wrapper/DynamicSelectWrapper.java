@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.modular.dynamic.wrapper;
+package cn.atsoft.dasheng.dynamic.wrapper;
 
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.hutool.core.convert.Convert;

@@ -1,13 +1,13 @@
-package cn.atsoft.dasheng.modular.dynamic.service.impl;
+package cn.atsoft.dasheng.dynamic.service.impl;
 
 
+import cn.atsoft.dasheng.dynamic.model.result.DynamicResult;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.modular.dynamic.entity.Dynamic;
-import cn.atsoft.dasheng.modular.dynamic.mapper.DynamicMapper;
-import cn.atsoft.dasheng.modular.dynamic.model.params.DynamicParam;
-import cn.atsoft.dasheng.modular.dynamic.model.result.DynamicResult;
-import  cn.atsoft.dasheng.modular.dynamic.service.DynamicService;
+import cn.atsoft.dasheng.dynamic.entity.Dynamic;
+import cn.atsoft.dasheng.dynamic.mapper.DynamicMapper;
+import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
+import cn.atsoft.dasheng.dynamic.service.DynamicService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.modular.dynamic.entity;
+package cn.atsoft.dasheng.dynamic.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -32,6 +32,17 @@ public class Dynamic implements Serializable {
      */
     @TableField("content")
     private String content;
+    /**
+     * 用户id
+     */
+    @TableField("user_id")
+    private Long userId;
+
+    /**
+     * 实物id
+     */
+    @TableField("inkind_id")
+    private Long inkindId;
 
     /**
      * 更改之后数据
@@ -45,8 +56,8 @@ public class Dynamic implements Serializable {
     /**
      * 更改之前数据
      */
-    @TableField("befor")
-    private String befor;
+    @TableField("before")
+    private String before;
 
     /**
      * 来源
@@ -156,12 +167,12 @@ public class Dynamic implements Serializable {
         this.type = type;
     }
 
-    public String getBefor() {
-        return befor;
+    public String getBefore() {
+        return before;
     }
 
-    public void setBefor(String befor) {
-        this.befor = befor;
+    public void setBefore(String before) {
+        this.before = before;
     }
 
     public String getSource() {
@@ -268,6 +279,22 @@ public class Dynamic implements Serializable {
         this.deptId = deptId;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getInkindId() {
+        return inkindId;
+    }
+
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
+    }
+
     @Override
     public String toString() {
         return "Dynamic{" +
@@ -275,11 +302,13 @@ public class Dynamic implements Serializable {
         ", content=" + content +
         ", after=" + after +
         ", type=" + type +
-        ", befor=" + befor +
+        ", before=" + before +
         ", source=" + source +
+        ", userId=" + userId +
         ", sourceId=" + sourceId +
         ", skuId=" + skuId +
         ", spuId=" + spuId +
+        ", inkindId=" + inkindId +
         ", taskId=" + taskId +
         ", storehouseId=" + storehouseId +
         ", storehousePositionsId=" + storehousePositionsId +
