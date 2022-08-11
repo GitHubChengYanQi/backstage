@@ -101,6 +101,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private StorehousePositionsService positionsService;
     @Autowired
     private AnomalyDetailService anomalyDetailService;
+    @Autowired
+    private InstockLogDetailService logDetailService;
 
 
     @Transactional
@@ -381,6 +383,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @param status
      */
     private void addInventoryRecord(AnomalyParam param, int status) {
+
+        QueryWrapper<InstockLogDetail> queryWrapper = new QueryWrapper<>();    //先删除之前记录
+        queryWrapper.eq("sku_id", param.getSkuId());
+        queryWrapper.eq("brand_id", param.getBrandId());
+        queryWrapper.eq("storehouse_positions_id", param.getPositionId());
+        queryWrapper.eq("source", "inventory");
+        queryWrapper.eq("source_id", param.getFormId());
+        logDetailService.remove(queryWrapper);
+
         InstockLogDetail instockLogDetail = new InstockLogDetail();
         instockLogDetail.setSkuId(param.getSkuId());
         if (status == 1) {
@@ -391,9 +402,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         instockLogDetail.setBrandId(param.getBrandId());
         instockLogDetail.setCustomerId(param.getCustomerId());
         instockLogDetail.setSource("inventory");
+        instockLogDetail.setNumber(param.getRealNumber());
         instockLogDetail.setSourceId(param.getFormId());
         instockLogDetail.setStorehousePositionsId(param.getPositionId());
-
+        logDetailService.save(instockLogDetail);
     }
 
     /**
@@ -473,6 +485,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public Anomaly update(AnomalyParam param) {
         Anomaly oldEntity = getOldEntity(param);
         param.setType(oldEntity.getType());
+        param.setFormId(oldEntity.getFormId());
+
 
         if (ToolUtil.isNotEmpty(oldEntity.getOrderId())) {
             AnomalyOrder anomalyOrder = anomalyOrderService.getById(oldEntity.getOrderId());
@@ -488,7 +502,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
 
         for (AnomalyType value : AnomalyType.values()) {
-            if (value.getName().equals(oldEntity.getType())) {
+            if (value.name().equals(oldEntity.getType())) {
                 param.setAnomalyType(value);
             }
         }

@@ -213,6 +213,13 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
+        <if test="paramCondition.statusList != null and paramCondition.statusList.size > 0 ">
+            and status in
+            <foreach collection="paramCondition.statusList" open="(" close=")" item="state" index="index" separator=",">
+                #{state}
+            </foreach>
+        </if>
+
         <if test="paramCondition.skuName">
             and sku_id in (
             select sku_id from goods_sku where display = 1 and sku_name like CONCAT('%',#{paramCondition.skuName},'%')

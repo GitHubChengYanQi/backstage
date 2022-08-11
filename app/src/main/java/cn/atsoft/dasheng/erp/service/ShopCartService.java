@@ -57,6 +57,8 @@ public interface ShopCartService extends IService<ShopCart> {
 
     List<ShopCartResult> applyList(ShopCartParam param);
 
+    void clearAllocationShopCart();
+
     /**
      * 查询单条数据，Specification模式
      *

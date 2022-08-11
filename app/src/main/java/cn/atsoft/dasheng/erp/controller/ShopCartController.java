@@ -116,6 +116,12 @@ public class ShopCartController extends BaseController {
         List<ShopCartResult> shopCartResults = this.shopCartService.applyList(shopCartParam);
         return ResponseData.success(shopCartResults);
     }
+    @RequestMapping(value = "/clearAllocationShopCart", method = RequestMethod.GET)
+    public ResponseData clearAllocationShopCart() {
+
+        this.shopCartService.clearAllocationShopCart();
+        return ResponseData.success();
+    }
 
     /**
      * 删除接口

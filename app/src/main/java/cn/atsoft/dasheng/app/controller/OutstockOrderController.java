@@ -14,7 +14,11 @@ import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
+import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +44,8 @@ public class OutstockOrderController extends BaseController {
 
     @Autowired
     private OutstockOrderService outstockOrderService;
+    @Autowired
+    private OutstockListingService outstockListingService;
 
     /**
      * 新增接口
@@ -156,6 +163,25 @@ public class OutstockOrderController extends BaseController {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
             return this.outstockOrderService.findPageBySpec(outstockOrderParam, dataScope);
         }
+    }
+    /**
+     * 查询列表
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    @RequestMapping(value = "/getOutStockListByPickListsId", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public List<OutstockListingResult> list(@RequestParam Long pickListsId) {
+        List<OutstockOrder> list = this.outstockOrderService.query().eq("source", "pickLists").eq("source_id", pickListsId).list();
+        List<Long> orderIds = new ArrayList<>();
+        for (OutstockOrder outstockOrder : list) {
+            orderIds.add(outstockOrder.getOutstockOrderId());
+        }
+        List<OutstockListing> listings = outstockListingService.query().in("outstock_order_id", orderIds).eq("display", 1).list();
+        List<OutstockListingResult> outstockListingResults = BeanUtil.copyToList(listings, OutstockListingResult.class);
+        outstockListingService.format(outstockListingResults);
+        return outstockListingResults;
     }
 
 

@@ -25,9 +25,6 @@ import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
-import cn.atsoft.dasheng.message.config.DirectQueueConfig;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
@@ -383,7 +380,18 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         format(shopCartResults);
         return shopCartResults;
     }
+    @Override
+    public void clearAllocationShopCart(){
+        Long userId = LoginContextHolder.getContext().getUserId();
 
+        List<ShopCart> shopCarts = this.query().eq("display", 1).eq("status", 0).eq("create_user", userId).eq("type","allocation").list();
+        for (ShopCart shopCart : shopCarts) {
+            shopCart.setDisplay(0);
+        }
+        this.updateBatchById(shopCarts);
+
+
+    }
 
     @Override
     public ShopCartResult findBySpec(ShopCartParam param) {
