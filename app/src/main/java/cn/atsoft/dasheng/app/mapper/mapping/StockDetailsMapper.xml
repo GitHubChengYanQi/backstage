@@ -271,4 +271,22 @@ stage
 
         </trim>
     </select>
+
+    <select id="stockInKindList" resultType="cn.atsoft.dasheng.app.model.result.StockDetailsResult">
+        SELECT daoxin_erp_stock_details.sku_id    as skuId,
+               daoxin_erp_stock_details.inkind_id as inkindId,
+               daoxin_erp_stock_details.number    as num,
+               goods_sku.spu_id                   as spuId,
+               goods_spu.spu_classification_id    as spuClassificationId,
+               goods_inkind.anomaly               as anomaly
+        FROM daoxin_erp_stock_details
+                 LEFT JOIN goods_sku ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
+                 LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
+                 LEFT JOIN goods_inkind on daoxin_erp_stock_details.inkind_id = goods_inkind.inkind_id
+
+        WHERE daoxin_erp_stock_details.number > 0
+
+
+    </select>
+
 </mapper>

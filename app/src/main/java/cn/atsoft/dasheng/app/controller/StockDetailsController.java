@@ -89,6 +89,13 @@ public class StockDetailsController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/detailed", method = RequestMethod.GET)
+    public ResponseData detailed() {
+        List<SpuClassDetail> spuClassDetails = this.stockDetailsService.detailed();
+        return ResponseData.success(spuClassDetails);
+    }
+
+
     /**
      * 库存物料详细信息
      *
@@ -100,6 +107,8 @@ public class StockDetailsController extends BaseController {
         this.stockDetailsService.inkindList(stockDetailsParam.getSkuId());
         return ResponseData.success();
     }
+
+
 
 
     /**

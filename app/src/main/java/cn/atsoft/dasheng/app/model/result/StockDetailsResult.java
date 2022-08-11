@@ -46,6 +46,9 @@ public class StockDetailsResult implements Serializable {
     private User user;
     private String spuClassName;
     private String month;
+    private Long num;
+    private Long spuClassificationId;
+    private Integer anomaly;
     /**
      * 库位id
      */
