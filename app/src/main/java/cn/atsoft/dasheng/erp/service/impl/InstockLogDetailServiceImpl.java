@@ -229,7 +229,8 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
         return results;
     }
 
-    private void format(List<InstockLogDetailResult> results) {
+    @Override
+    public void format(List<InstockLogDetailResult> results) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> instockOrderId = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();

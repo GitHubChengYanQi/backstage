@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.pojo.StockCensus;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -165,6 +166,69 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
         }
         return detailsResults;
+    }
+
+    @Override
+    public List<StockCensus> stockCensus() {
+        List<StockCensus> stockCensuses = new ArrayList<>();
+
+        List<StockDetails> stock = this.getStock();
+        Set<Long> skuIds = new HashSet<>();
+        List<Long> inkindIds = new ArrayList<>();
+        long count = 0L;
+        for (StockDetails details : stock) {
+            skuIds.add(details.getSkuId());
+            count = count + details.getNumber();
+            inkindIds.add(details.getInkindId());
+        }
+
+        //库存所有类
+        StockCensus allSku = new StockCensus();
+        allSku.setName("skuNumber");
+        allSku.setNumber((long) skuIds.size());
+        stockCensuses.add(allSku);
+
+        //库存数
+        StockCensus stockCount = new StockCensus();
+        stockCount.setName("stockCount");
+        stockCount.setNumber(count);
+        stockCensuses.add(stockCount);
+
+        List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
+
+        long normal = 0L;
+        long error = 0L;
+        Set<Long> normalSkuNum = new HashSet<>();
+        Set<Long> errorSkuNum = new HashSet<>();
+        for (Inkind inkind : inkinds) {
+            for (StockDetails details : stock) {
+                if (details.getInkindId().equals(inkind.getInkindId())) {
+                    if (inkind.getAnomaly() == 0) {
+                        normalSkuNum.add(inkind.getSkuId());
+                        normal++;
+                    } else {
+                        errorSkuNum.add(inkind.getSkuId());
+                        error++;
+                    }
+                }
+
+            }
+        }
+        //正常数
+        StockCensus normalCount = new StockCensus();
+        normalCount.setName("normal");
+        normalCount.setNumber(normal);
+        normalCount.setTypeNum((long)normalSkuNum.size());
+        stockCensuses.add(normalCount);
+
+        //异常数
+        StockCensus errorCount = new StockCensus();
+        errorCount.setName("error");
+        errorCount.setNumber(error);
+        errorCount.setTypeNum((long)errorSkuNum.size());
+        stockCensuses.add(errorCount);
+
+        return stockCensuses;
     }
 
 
@@ -414,17 +478,18 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         this.format(results);
         return results;
     }
+
     @Override
     public List<StockDetailsResult> getStockNumberBySkuId(StockDetailsParam param) {
         if (ToolUtil.isEmpty(param.getSkuId())) {
             return new ArrayList<>();
         }
         List<StockDetails> details = new ArrayList<>();
-        if (ToolUtil.isEmpty(param.getBrandIds()) || param.getBrandIds().size() == 0){
-            details = this.query().eq("sku_id", param.getSkuId()).eq("display",1).list();
+        if (ToolUtil.isEmpty(param.getBrandIds()) || param.getBrandIds().size() == 0) {
+            details = this.query().eq("sku_id", param.getSkuId()).eq("display", 1).list();
 
-        }else {
-            details = this.query().in("brand_id", param.getBrandIds()).eq("sku_id", param.getSkuId()).eq("display",1).list();
+        } else {
+            details = this.query().in("brand_id", param.getBrandIds()).eq("sku_id", param.getSkuId()).eq("display", 1).list();
         }
         List<StockDetails> totalList = new ArrayList<>();
         List<ProductionPickListsCart> carts = pickListsCartService.query().eq("display", 1).eq("status", 0).list();

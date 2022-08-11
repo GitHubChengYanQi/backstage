@@ -223,23 +223,34 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         entity.setCoding(encoding);
         this.save(entity);
 
-        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
-            List<ApplyDetails> applyDetails = param.getApplyDetails();
-
-            List<OutstockListing> outstockListings = new ArrayList<>();
-            for (ApplyDetails applyDetail : applyDetails) {
+//        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
+//            List<ApplyDetails> applyDetails = param.getApplyDetails();
+//
+//            List<OutstockListing> outstockListings = new ArrayList<>();
+//            for (ApplyDetails applyDetail : applyDetails) {
+//                OutstockListing outstockListing = new OutstockListing();
+//                if (ToolUtil.isNotEmpty(applyDetail.getBrandId())) {
+//                    outstockListing.setBrandId(applyDetail.getBrandId());
+//                }
+//                outstockListing.setSkuId(applyDetail.getSkuId());
+//                outstockListing.setNumber(applyDetail.getNumber());
+//                outstockListing.setDelivery(applyDetail.getNumber());
+//                outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
+//                outstockListings.add(outstockListing);
+//            }
+//
+//            outstockListingService.saveBatch(outstockListings);
+//        }
+        List<OutstockListing> listings = new ArrayList<>();
+        if(ToolUtil.isNotEmpty(param.getListingParams())){
+            for (OutstockListingParam listingParam : param.getListingParams()) {
                 OutstockListing outstockListing = new OutstockListing();
-                if (ToolUtil.isNotEmpty(applyDetail.getBrandId())) {
-                    outstockListing.setBrandId(applyDetail.getBrandId());
-                }
-                outstockListing.setSkuId(applyDetail.getSkuId());
-                outstockListing.setNumber(applyDetail.getNumber());
-                outstockListing.setDelivery(applyDetail.getNumber());
+                ToolUtil.copyProperties(listingParam,outstockListing);
                 outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
-                outstockListings.add(outstockListing);
+                listings.add(outstockListing);
             }
+            outstockListingService.saveBatch(listings);
 
-            outstockListingService.saveBatch(outstockListings);
         }
 
         BackCodeRequest backCodeRequest = new BackCodeRequest();
@@ -343,7 +354,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         Map<Long, Long> longLongMap = this.outStockByLists(listings);
 
 
-        addOutStockRecord(listings, "自由出库记录");
+//        addOutStockRecord(listings, "出库记录");
         return longLongMap;
     }
     public Map<Long,Long>  outStockByLists(List<OutstockListingParam> listings){

@@ -30,6 +30,8 @@ public interface InstockReceiptService extends IService<InstockReceipt> {
 
     void addReceipt(InstockOrderParam param, List<InstockLogDetail> instockLogDetails);
 
+    InstockReceiptResult detail(Long receiptId);
+
     /**
      * 删除
      *

@@ -987,29 +987,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 //            userIds.add(pickList.getUserId());
 //        }
 //
-//        List<ProductionPickCode> code = pickCodeService.query().eq("code", param.getCode()).list();
-//        userIds = userIds.stream().distinct().collect(Collectors.toList());
-//        for (Long userId : userIds) {
-//            if (code.stream().noneMatch(i->i.getUserId().equals(userId))) {
-//                throw new ServiceException(500,"提交的数据与领料码不完全匹配");
-//            }
-//        }
-//        List<ProductionPickCodeBind> codeBinds = new ArrayList<>();
-//        for (ProductionPickCode productionPickCode : code) {
-//            for (ProductionPickListsDetailParam pickListsDetailParam : param.getPickListsDetailParams()) {
-//               if (pickListsDetailParam.getPickListsId().equals(productionPickCode.getPickListsId())){
-//                   ProductionPickCodeBind productionPickCodeBind = new ProductionPickCodeBind();
-//                   productionPickCodeBind.setPickCodeId(productionPickCode.getPickCodeId());
-//                   productionPickCodeBind.setPickListsId(pickListsDetailParam.getPickListsId());
-//                   productionPickCodeBind.setSkuId(pickListsDetailParam.getSkuId());
-//                   productionPickCodeBind.setNumber(pickListsDetailParam.getNumber());
-//                   codeBinds.add(productionPickCodeBind);
-//               }
-//            }
-//        }
-//
-//
-//        codeBindService.saveBatch(codeBinds);
         List<ProductionPickListsCart> newCarts = new ArrayList<>();
         /**
          * 取出出库申请子表 未完成状态数据
@@ -1088,7 +1065,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
         Map<Long, Long> oldAndNewInkindIds = new HashMap<>();
         /**
-         * 创建入库记录
+         * 创建出库记录
          */
         stockIds = stockIds.stream().distinct().collect(Collectors.toList());
         for (Long stockId : stockIds) {
@@ -1143,6 +1120,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 outstockOrder.setListingParams(listings);
                 outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
                 outstockOrder.setSource("pickLists");
+                outstockOrder.setSourceId(pickListsIds.get(0));
                 Map<Long, Long> longLongMap = outstockOrderService.outBoundByLists(listings);
                 oldAndNewInkindIds.putAll(longLongMap);
             }
