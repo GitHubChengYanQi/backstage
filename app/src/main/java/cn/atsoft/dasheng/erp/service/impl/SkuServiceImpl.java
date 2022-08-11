@@ -1426,7 +1426,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
                 .list();
-        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).eq("display", 1).list();
+        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).list();
         List<Long> unitIds = new ArrayList<>();
         List<Long> spuClassId = new ArrayList<>();
         Map<Long, UnitResult> unitMaps = new HashMap<>();
