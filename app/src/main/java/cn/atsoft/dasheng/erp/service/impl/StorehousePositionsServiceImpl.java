@@ -989,6 +989,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             if (skuGroup.contains("sku")) {
                 StringBuilder all = new StringBuilder();
                 List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+                skuResults.removeIf(i->i.getDisplay().equals(0));
                 int i = 0;
                 for (SkuResult skuResult : skuResults) {
                     StringBuilder group = new StringBuilder(m.group(0));
