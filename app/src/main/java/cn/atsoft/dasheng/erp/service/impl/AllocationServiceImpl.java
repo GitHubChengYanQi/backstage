@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.DocumentsAction;
+import cn.atsoft.dasheng.form.entity.DocumentsStatus;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
@@ -41,9 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -103,6 +102,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private UserService userService;
     @Autowired
     private StepsService stepsService;
+    @Autowired
+    private DocumentStatusService statusService;
 
 
     @Override
@@ -367,6 +368,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
     @Override
     public AllocationResult detail(Long allocationId) {
+
         Allocation allocation = this.getById(allocationId);
         AllocationResult result = BeanUtil.copyProperties(allocation, AllocationResult.class);
         List<AllocationDetailResult> allocationDetailResults = allocationDetailService.resultsByAllocationId(allocationId);
@@ -380,6 +382,17 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             UserResult userResult = BeanUtil.copyProperties(user, UserResult.class);
             userResult.setAvatar(imgUrl);
         }
+
+        Map<Long, String> statusMap = new HashMap<>();
+        List<DocumentsStatus> statuses = statusService.list();
+        statusMap.put(0L, "开始");
+        statusMap.put(99L, "完成");
+        statusMap.put(50L, "拒绝");
+        for (DocumentsStatus status : statuses) {
+            statusMap.put(status.getDocumentsStatusId(), status.getName());
+        }
+        String statusName = statusMap.get(result.getStatus());
+        result.setStatusName(statusName);
         return result;
 
     }
@@ -401,6 +414,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         Long storehousePositionsId = param.getStorehousePositionsId();
         Long toStorehousePositionsId = param.getToStorehousePositionsId();
         List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuId).eq("brand_id", brandId).eq("storehouse_positions_id", storehousePositionsId).eq("display", 1).list();
+        if (stockDetails.size() == 0){
+            throw new ServiceException(500,"库存数量不足 无法调用");
+        }
         List<AllocationLog> allocationLogs = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getAllocationId())) {
             Allocation allocation = this.getById(param.getAllocationId());
@@ -420,7 +436,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     if (number > 0) {
                         number = Math.toIntExact(number - stockDetail.getNumber());
                         if (number >= 0) {
-                            number = Math.toIntExact(number - stockDetail.getNumber());
                             AllocationLog allocationLog = new AllocationLog();
                             allocationLog.setInKindId(stockDetail.getInkindId());
                             allocationLog.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
@@ -544,6 +559,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             cart.setStatus(99);
                         } else {
                             cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
+                            break;
                         }
                         cart.setStatus(99);
                     } else if (allocation.getAllocationType().equals(2) && param.getSkuId().equals(cart.getSkuId()) && param.getBrandId().equals(cart.getBrandId()) && param.getToStorehousePositionsId().equals(cart.getStorehousePositionsId()) && cart.getStatus().equals(98)) {
@@ -554,6 +570,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             cart.setStatus(99);
                         } else {
                             cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
+                            break;
                         }
                     }
                 }
