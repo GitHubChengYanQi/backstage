@@ -635,7 +635,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         allocation.setUserId(param.getUserId());
         this.updateById(allocation);
         List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status", 0).list();
-        List<AllocationCart> carts = allocationCartService.query().eq("display", 1).eq("status", 0).eq("type", "carry").list();
+        List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("status", 0).eq("type", "carry").list();
 
 
         for (AllocationCart cart : carts) {
