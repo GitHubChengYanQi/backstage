@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.action.Enum.AllocationActionEnum;
 import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -199,9 +198,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
      * @param allocationId
      */
     @Override
-    public void createPickListsAndInStockOrder(Long allocationId) {
+    public void createPickListsAndInStockOrder(Long allocationId, List<AllocationCart> allocationCarts) {
         Allocation allocation = this.getById(allocationId);
-        List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("allocation_id", allocationId).eq("type", "carry").eq("status", 98).list();
+
 
 
         if (allocation.getType().equals("allocation")) {
@@ -657,7 +656,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         }
         allocationDetailService.updateBatchById(details);
         allocationCartService.updateBatchById(carts);
-        this.createPickListsAndInStockOrder(param.getAllocationId());
+        this.createPickListsAndInStockOrder(param.getAllocationId(),carts);
         details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
         if (details.stream().noneMatch(i -> i.getStatus().equals(0))) {
             checkCart(allocation.getAllocationId());
