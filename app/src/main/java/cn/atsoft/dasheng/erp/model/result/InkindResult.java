@@ -29,6 +29,10 @@ public class InkindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private SkuSimpleResult skuSimpleResult;
+
+    private StorehousePositionsResult positionsResult;
+
     private Integer anomaly;
 
     private Long positionId;
@@ -60,8 +64,6 @@ public class InkindResult implements Serializable {
     private Long number;
 
     private Map<String, Object> inkindDetail;
-
-    private StorehousePositionsResult positionsResult;
 
     private PrintTemplateResult printTemplateResult;
 

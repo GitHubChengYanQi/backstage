@@ -193,7 +193,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             return new ArrayList<>();
         }
 
-        return BeanUtil.copyToList(positions, StorehousePositionsResult.class);
+        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class);
+        format(positionsResults);
+        return positionsResults;
     }
 
     @Override
