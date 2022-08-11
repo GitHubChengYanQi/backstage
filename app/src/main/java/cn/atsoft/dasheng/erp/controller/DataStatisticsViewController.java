@@ -88,10 +88,12 @@ public class DataStatisticsViewController extends BaseController {
         Integer instockCount = instockReceiptService.query().eq("display", 1).count();
         Integer outstockCont = outstockOrderService.query().eq("display", 1).count();
         Integer maintenanceCount = maintenanceLogService.query().eq("display", 1).count();
+        Integer inventoryCount = inventoryService.query().eq("display", 1).count();
         Map<String, Object> result = new HashMap<>();
         result.put("instockCount", instockCount);
         result.put("outstockCont", outstockCont);
         result.put("maintenanceCount", maintenanceCount);
+        result.put("inventoryCount", inventoryCount);
 
         return ResponseData.success(result);
     }
