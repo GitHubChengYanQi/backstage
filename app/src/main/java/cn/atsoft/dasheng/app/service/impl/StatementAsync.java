@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -28,7 +25,6 @@ public class StatementAsync {
     private AsynTaskService asynTaskService;
     @Autowired
     private StockDetailsService stockDetailsService;
-
 
 
     /**
@@ -96,6 +92,9 @@ public class StatementAsync {
                         setNumber(a.getNumber() + b.getNumber());
                         setMonth(a.getMonth());
                         setSpuClassName(a.getSpuClassName());
+                        setSkuIds(new HashSet<Long>() {{
+                            add(a.getSkuId());
+                        }});
                     }}).ifPresent(totalList::add);
                 }
         );
@@ -117,16 +116,21 @@ public class StatementAsync {
                 default:
                     stockStatement.setMonth(stockDetailsResult.getMonth());
             }
+
             stockStatement.setName(stockDetailsResult.getSpuClassName());
             stockStatement.setValue(stockDetailsResult.getNumber());
+            stockStatement.setNum((long) stockDetailsResult.getSkuIds().size());
             stockStatements.add(stockStatement);
         }
         AsynTask asynTask = new AsynTask();
         asynTask.setType("库存报表");
+        asynTask.setAllCount(1);
+        asynTask.setCount(1);
         asynTask.setContent(JSON.toJSONString(stockStatements));
         asynTaskService.save(asynTask);
 
     }
+
     private boolean isMonth(Date date, Date nowDate, int amount) {
         Calendar oneC = Calendar.getInstance();
         oneC.setTimeInMillis(date.getTime());

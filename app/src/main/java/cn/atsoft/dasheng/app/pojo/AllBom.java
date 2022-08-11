@@ -136,6 +136,7 @@ public class AllBom {
                         analysisResult.setLackNumber(number);
                         analysisResult.setStrand(skuResult.getStandard());
                         analysisResult.setSpecifications(skuResult.getSpecifications());
+                        analysisResult.setSpuClass(skuResult.getSpuResult().getSpuClassificationResult().getName());
                         analysisResults.add(analysisResult);
                         break;
                     }
