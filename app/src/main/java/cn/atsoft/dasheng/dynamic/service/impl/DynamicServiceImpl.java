@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.dynamic.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.dynamic.model.result.DynamicResult;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -9,6 +10,7 @@ import cn.atsoft.dasheng.dynamic.mapper.DynamicMapper;
 import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
 import cn.atsoft.dasheng.dynamic.service.DynamicService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -56,6 +58,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     public List<DynamicResult> findListBySpec(DynamicParam param){
         return null;
     }
+
 
     @Override
     public PageInfo<DynamicResult> findPageBySpec(DynamicParam param){

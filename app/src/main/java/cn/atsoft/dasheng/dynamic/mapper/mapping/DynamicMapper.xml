@@ -166,19 +166,22 @@
                         and after like CONCAT('%',#{paramCondition.after},'%')
                 </if>
                 <if test="paramCondition.type != null and paramCondition.type != ''">
-                        and type like CONCAT('%',#{paramCondition.type},'%')
+                        and type = #{paramCondition.type}
                 </if>
                 <if test="paramCondition.before != null and paramCondition.before != ''">
                         and before like CONCAT('%',#{paramCondition.before},'%')
                 </if>
                 <if test="paramCondition.source != null and paramCondition.source != ''">
-                        and source like CONCAT('%',#{paramCondition.source},'%')
+                        and source = #{paramCondition.source}
                 </if>
                 <if test="paramCondition.sourceId != null">
                         and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
                 </if>
                 <if test="paramCondition.skuId != null">
                         and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id = #{paramCondition.userId}
                 </if>
                 <if test="paramCondition.spuId != null">
                         and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
@@ -193,10 +196,10 @@
                         and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                        and create_user = #{paramCondition.createUser}
                 </if>
                 <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                        and update_user = #{paramCondition.updateUser}
                 </if>
                 <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
                         and create_time like CONCAT('%',#{paramCondition.createTime},'%')
