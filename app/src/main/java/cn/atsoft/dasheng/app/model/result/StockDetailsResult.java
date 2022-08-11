@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -49,6 +50,7 @@ public class StockDetailsResult implements Serializable {
     private Long num;
     private Long spuClassificationId;
     private Integer anomaly;
+    private Set<Long> skuIds;
     /**
      * 库位id
      */

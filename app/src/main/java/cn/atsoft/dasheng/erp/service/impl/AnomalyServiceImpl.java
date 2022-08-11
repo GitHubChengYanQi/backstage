@@ -31,6 +31,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -171,6 +172,56 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             shopCartService.add(shopCartParam);
         }
         return entity;
+    }
+
+
+    @Override
+    public Map<Integer, Integer> anomalyCensus(AnomalyParam param) {
+
+        List<AnomalyResult> anomalyResults = this.baseMapper.customList(param);
+        Map<Integer, Integer> map = new HashMap<>();
+
+        map.put(1, 0);
+        map.put(2, 0);
+        map.put(3, 0);
+        map.put(4, 0);
+        map.put(5, 0);
+        map.put(6, 0);
+        map.put(7, 0);
+        map.put(8, 0);
+        map.put(9, 0);
+        map.put(10, 0);
+        map.put(11, 0);
+        map.put(12, 0);
+
+        for (AnomalyResult anomalyResult : anomalyResults) {
+            DateTime dateTime = new DateTime(anomalyResult.getCreateTime());
+            int month = dateTime.month();
+            Integer num = map.get(month);
+            num++;
+            map.put(month, num);
+        }
+
+        return map;
+    }
+
+    @Override
+    public Map<Integer, List<AnomalyResult>> detailed(AnomalyParam param) {
+        Map<Integer, List<AnomalyResult>> map = new HashMap<>();
+        List<AnomalyResult> anomalyResults = this.baseMapper.customList(param);
+        this.format(anomalyResults);
+
+        for (AnomalyResult anomalyResult : anomalyResults) {
+            DateTime dateTime = new DateTime(anomalyResult.getCreateTime());
+            int month = dateTime.month();
+            List<AnomalyResult> results = map.get(month);
+            if (ToolUtil.isEmpty(results)) {
+                results = new ArrayList<>();
+            }
+            results.add(anomalyResult);
+            map.put(month, results);
+        }
+        return map;
     }
 
 
@@ -764,7 +815,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     }
 
     @Override
-    public void format(List<AnomalyResult> data) {
+    public void  format(List<AnomalyResult> data) {
 
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();

@@ -4,6 +4,8 @@ import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
+
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -27,7 +29,15 @@ import java.util.Map;
 @ApiModel
 public class InkindResult implements Serializable {
 
+    private User user;
+
+    private MaintenanceLogResult maintenanceLogResult;
+
     private static final long serialVersionUID = 1L;
+
+    private SkuSimpleResult skuSimpleResult;
+
+    private StorehousePositionsResult positionsResult;
 
     private Integer anomaly;
 
@@ -60,8 +70,6 @@ public class InkindResult implements Serializable {
     private Long number;
 
     private Map<String, Object> inkindDetail;
-
-    private StorehousePositionsResult positionsResult;
 
     private PrintTemplateResult printTemplateResult;
 

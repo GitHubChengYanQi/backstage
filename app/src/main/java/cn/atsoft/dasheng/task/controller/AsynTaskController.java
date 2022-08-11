@@ -71,6 +71,18 @@ public class AsynTaskController extends BaseController {
         return ResponseData.success(result);
     }
 
+
+    /**
+     * 物料分析详情明细
+     *
+     * @return
+     */
+    @RequestMapping(value = "/BomDetailed", method = RequestMethod.POST)
+    public ResponseData BomDetailed() {
+        Object spectaculars = asynTaskService.BomDetailed();
+        return ResponseData.success(spectaculars);
+    }
+
     /**
      * 查询列表
      *

@@ -115,6 +115,7 @@ public class AsyncMethod {
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(skuId.getSkuId())) {
                     AllBomResult.View view = new AllBomResult.View();
+                    view.setSpuClass(skuResult.getSpuResult().getSpuClassificationResult().getName());
                     view.setFixed(skuId.getFixed());
                     if (ToolUtil.isEmpty(skuResult.getSpecifications())) {
                         view.setName(skuResult.getSpuResult().getName() + " / " + skuResult.getSkuName());

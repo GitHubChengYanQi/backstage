@@ -9,15 +9,16 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.mapper.InkindMapper;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
-import cn.atsoft.dasheng.erp.model.result.BackSku;
-import cn.atsoft.dasheng.erp.model.result.InkindResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.MaintenanceLogService;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
@@ -25,6 +26,8 @@ import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.log.Log;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -63,6 +66,14 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     private MobileService mobileService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private MaintenanceLogService maintenanceLogService;
+    @Autowired
+    private StorehousePositionsService positionsService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private StepsService stepsService;
 
 
     @Override
@@ -102,6 +113,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     public PageInfo<InkindResult> findPageBySpec(InkindParam param) {
         Page<InkindResult> pageContext = getPageContext();
         IPage<InkindResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -392,5 +404,56 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         return entity;
     }
 
+    private void format(List<InkindResult> data) {
+
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        List<Long> inkindIds = new ArrayList<>();
+        for (InkindResult datum : data) {
+            skuIds.add(datum.getSkuId());
+            positionIds.add(datum.getPositionId());
+            userIds.add(datum.getCreateUser());
+        }
+
+        List<SkuSimpleResult> simpleResults = skuService.simpleFormatSkuResult(skuIds);
+        List<StorehousePositionsResult> positionsResultList = positionsService.details(positionIds);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogService.lastLogByInkindIds(inkindIds);
+
+        for (InkindResult datum : data) {
+
+            for (SkuSimpleResult simpleResult : simpleResults) {
+                if (datum.getSkuId().equals(simpleResult.getSkuId())) {
+                    datum.setSkuSimpleResult(simpleResult);
+                    break;
+                }
+            }
+
+            for (StorehousePositionsResult storehousePositionsResult : positionsResultList) {
+                if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(storehousePositionsResult.getStorehousePositionsId())) {
+                    datum.setPositionsResult(storehousePositionsResult);
+                    break;
+                }
+            }
+
+            for (MaintenanceLogResult maintenanceLogResult : maintenanceLogResults) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(maintenanceLogResult.getInkindId())) {
+                    datum.setMaintenanceLogResult(maintenanceLogResult);
+                    break;
+                }
+            }
+
+            for (User user : userList) {
+                if (datum.getCreateUser().equals(user.getUserId())) {
+                    String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+                    user.setAvatar(imgUrl);
+                    datum.setUser(user);
+                    break;
+                }
+            }
+        }
+
+    }
 
 }
