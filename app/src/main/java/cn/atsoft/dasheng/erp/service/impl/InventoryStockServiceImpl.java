@@ -19,6 +19,8 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -63,6 +66,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private AnomalyService anomalyService;
     @Autowired
     private ShopCartService shopCartService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private StepsService stepsService;
+    @Autowired
+    private InstockHandleService instockHandleService;
 
 
     @Override
@@ -255,7 +264,50 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     }
 
 
+    @Override
+    public Map<String, Object> orderDetail(Long instockOrderId) {
 
+        List<InstockHandle> instockHandles = this.instockHandleService.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
+        List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
+        List<InstockHandleResult> detailTotalList = new ArrayList<>();
+
+        instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId() + "_" + item.getType() + "_" + item.getCustomerId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockHandleResult() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setBrandId(a.getBrandId());
+                        setType(a.getType());
+                        setCustomerId(a.getCustomerId());
+                    }}).ifPresent(detailTotalList::add);
+                }
+        );
+
+        /**
+         * 排序
+         */
+        List<InstockHandleResult> collect = detailTotalList.stream().sorted(Comparator.comparing(InstockHandleResult::getSkuId).reversed()).collect(Collectors.toList());
+        this.instockHandleService.format(collect);
+
+        Map<String, Object> map = new HashMap<>();
+
+        for (InstockHandleResult instockHandleResult : collect) {
+            map.put("${供方公司名称}", instockHandleResult.getCustomerResult().getCustomerName());
+            map.put("${产品名称}", instockHandleResult.getSkuResult().getSpuResult().getName());
+            map.put("${型号规格}", instockHandleResult.getSkuResult().getSkuName());
+
+            if (ToolUtil.isEmpty(instockHandleResult.getBrandResult())) {
+                BrandResult brandResult = new BrandResult();
+                brandResult.setBrandName("无品牌");
+                instockHandleResult.setBrandResult(brandResult);
+            }
+            map.put("${品牌}", instockHandleResult.getBrandResult().getBrandName());
+            map.put("${数量}", instockHandleResult.getNumber());
+        }
+
+        return map;
+
+    }
 
 
     /**
@@ -471,13 +523,18 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         List<Long> brandIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
         List<Long> anomalyIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
 
         for (InventoryStockResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             positionIds.add(datum.getPositionId());
             anomalyIds.add(datum.getAnomalyId());
+            userIds.add(datum.getUpdateUser());
         }
+
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
@@ -523,6 +580,15 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             }
             datum.setErrorNum(errorNum);
 
+
+            for (User user : userList) {    //这个地方取修改人  取最后执行的人   当做记录
+                if (ToolUtil.isNotEmpty(datum.getUpdateUser()) && datum.getUpdateUser().equals(user.getUserId())) {
+                    String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+                    user.setAvatar(imgUrl);
+                    datum.setUser(user);
+                    break;
+                }
+            }
         }
 
     }

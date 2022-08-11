@@ -485,6 +485,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public Anomaly update(AnomalyParam param) {
         Anomaly oldEntity = getOldEntity(param);
         param.setType(oldEntity.getType());
+        param.setFormId(oldEntity.getFormId());
+
 
         if (ToolUtil.isNotEmpty(oldEntity.getOrderId())) {
             AnomalyOrder anomalyOrder = anomalyOrderService.getById(oldEntity.getOrderId());
@@ -500,7 +502,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
 
         for (AnomalyType value : AnomalyType.values()) {
-            if (value.getName().equals(oldEntity.getType())) {
+            if (value.name().equals(oldEntity.getType())) {
                 param.setAnomalyType(value);
             }
         }

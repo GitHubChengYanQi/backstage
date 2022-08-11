@@ -60,6 +60,8 @@ public interface InventoryStockService extends IService<InventoryStock> {
 
     Map<String, Integer> speedProgress(Long inventoryId);
 
+    Map<String, Object>  orderDetail(Long instockOrderId);
+
     List<StorehousePositionsResult> positionsResultList(List<InventoryStockResult> detailResults);
 
     void updateStatus(List<Long> ids);
