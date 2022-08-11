@@ -113,7 +113,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
             for (AllocationDetail allocationDetail : allocationDetails) {
                 if (number > 0) {
                     if ((allocationDetail.getNumber()>0 &&allocationDetail.getHaveBrand().equals(1) && allocationDetail.getBrandId().equals(allocationCartParam.getBrandId()) && allocationDetail.getSkuId().equals(allocationCartParam.getSkuId())) || (allocationDetail.getNumber()>0 &&allocationDetail.getHaveBrand().equals(0) && allocationDetail.getSkuId().equals(allocationCartParam.getSkuId()))) {
-                        if (ToolUtil.isNotEmpty(allocationCartParam.getStorehousePositionsId()) && allocationDetail.getStorehousePositionsId().equals(allocationCartParam.getStorehousePositionsId())) {
+                        if (ToolUtil.isNotEmpty(allocationCartParam.getStorehousePositionsId()) &&ToolUtil.isNotEmpty(allocationDetail.getStorehousePositionsId()) && allocationDetail.getStorehousePositionsId().equals(allocationCartParam.getStorehousePositionsId())) {
                             continue;
                         }
                         int lastNumber = number;
