@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.erp.model.result;
 
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -13,7 +12,7 @@ import java.util.List;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-06-28
+ * @since 2022-08-11
  */
 @Data
 @ApiModel
@@ -21,39 +20,9 @@ public class MaintenanceLogResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
-    @ApiModelProperty("")
-    private UserResult userResult;
-
+    private String coding;
     @ApiModelProperty("")
     private Long maintenanceLogId;
-
-    @ApiModelProperty("")
-    private Long maintenanceDetailId;
-
-    @ApiModelProperty("")
-    private Long maintenanceId;
-
-
-    @ApiModelProperty("")
-    private Long inkindId;
-
-    @ApiModelProperty("")
-    private Long skuId;
-
-    private String enclosure;
-
-    /**
-     * 品牌id
-     */
-    @ApiModelProperty("品牌id")
-    private Long brandId;
-
-    /**
-     * 数量
-     */
-    @ApiModelProperty("数量")
-    private Integer number;
 
     /**
      * 创建者
@@ -90,6 +59,18 @@ public class MaintenanceLogResult implements Serializable {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
+
+    @ApiModelProperty("")
+    private Long maintenanceDetailId;
+
+    @ApiModelProperty("")
+    private Long maintenanceId;
+
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

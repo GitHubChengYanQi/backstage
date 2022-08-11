@@ -7,25 +7,18 @@
         <id column="allocation_log_id" property="allocationLogId" />
         <result column="allocation_id" property="allocationId" />
         <result column="allocation_detail_id" property="allocationDetailId" />
-        <result column="sku_id" property="skuId" />
-        <result column="number" property="number" />
-        <result column="storehouse_positions_id" property="storehousePositionsId" />
-        <result column="storehouse_id" property="storehouseId" />
-        <result column="brand_id" property="brandId" />
-        <result column="inkind_id" property="inKindId" />
+        <result column="coding" property="coding" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
-        <result column="to_storehouse_positions_id" property="toStorehousePositionsId" />
-        <result column="to_storehouse_id" property="toStorehouseId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        allocation_log_id AS "allocationLogId", inkind_id AS "inkindId",allocation_id AS "allocationId", allocation_detail_id AS "allocationDetailId", sku_id AS "skuId", number AS "number", storehouse_positions_id AS "storehousePositionsId", storehouse_id AS "storehouseId", brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", to_storehouse_positions_id AS "toStorehousePositionsId", to_storehouse_id AS "toStorehouseId"
+        allocation_log_id AS "allocationLogId",coding AS "coding", allocation_id AS "allocationId", allocation_detail_id AS "allocationDetailId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 

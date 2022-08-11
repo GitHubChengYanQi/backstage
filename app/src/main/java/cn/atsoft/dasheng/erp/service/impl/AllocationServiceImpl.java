@@ -34,6 +34,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -70,6 +71,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private StockDetailsService stockDetailsService;
     @Autowired
     private AllocationLogService allocationLogService;
+    @Autowired
+    private AllocationLogDetailService allocationLogDetailService;
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
     @Autowired
@@ -417,7 +420,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         if (stockDetails.size() == 0){
             throw new ServiceException(500,"库存数量不足 无法调用");
         }
-        List<AllocationLog> allocationLogs = new ArrayList<>();
+        List<AllocationLogDetail> allocationLogDetails = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getAllocationId())) {
             Allocation allocation = this.getById(param.getAllocationId());
             List<AllocationCart> allCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("type", "carry").list();
@@ -436,15 +439,15 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     if (number > 0) {
                         number = Math.toIntExact(number - stockDetail.getNumber());
                         if (number >= 0) {
-                            AllocationLog allocationLog = new AllocationLog();
-                            allocationLog.setInKindId(stockDetail.getInkindId());
-                            allocationLog.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
-                            allocationLog.setToStorehousePositionsId(param.getToStorehousePositionsId());
-                            allocationLog.setSkuId(stockDetail.getSkuId());
-                            allocationLog.setBrandId(stockDetail.getBrandId());
-                            allocationLog.setAllocationId(param.getAllocationId());  //song
-                            allocationLog.setNumber(Math.toIntExact(stockDetail.getNumber()));
-                            allocationLogs.add(allocationLog);
+                            AllocationLogDetail allocationLogDetail = new AllocationLogDetail();
+                            allocationLogDetail.setInkindId(stockDetail.getInkindId());
+                            allocationLogDetail.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
+                            allocationLogDetail.setToStorehousePositionsId(param.getToStorehousePositionsId());
+                            allocationLogDetail.setSkuId(stockDetail.getSkuId());
+                            allocationLogDetail.setBrandId(stockDetail.getBrandId());
+                            allocationLogDetail.setAllocationId(param.getAllocationId());  //song
+                            allocationLogDetail.setNumber(Math.toIntExact(stockDetail.getNumber()));
+                            allocationLogDetails.add(allocationLogDetail);
                             stockDetail.setStorehousePositionsId(param.getToStorehousePositionsId());
                             stockDetailsService.updateById(stockDetail);
                             this.checkCartNumber(param,allCarts,allocation, Math.toIntExact(stockDetail.getNumber()));
@@ -458,17 +461,17 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             inkind.setSourceId(stockDetail.getInkindId());
                             inkindService.save(inkind);
                             //添加调拨记录
-                            AllocationLog allocationLog = new AllocationLog();
-                            allocationLog.setInKindId(inkind.getInkindId());
-                            allocationLog.setNumber(kickNum);
-                            allocationLog.setSkuId(inkind.getSkuId());
-                            allocationLog.setBrandId(inkind.getBrandId());
-                            allocationLog.setStorehousePositionsId(param.getStorehousePositionsId());
-                            allocationLog.setStorehouseId(param.getStorehouseId());
-                            allocationLog.setToStorehouseId(param.getToStorehouseId());
-                            allocationLog.setAllocationId(param.getAllocationId());  //song
-                            allocationLog.setToStorehousePositionsId(param.getToStorehousePositionsId());
-                            allocationLogs.add(allocationLog);
+                            AllocationLogDetail allocationLogDetail = new AllocationLogDetail();
+                            allocationLogDetail.setInkindId(inkind.getInkindId());
+                            allocationLogDetail.setNumber(kickNum);
+                            allocationLogDetail.setSkuId(inkind.getSkuId());
+                            allocationLogDetail.setBrandId(inkind.getBrandId());
+                            allocationLogDetail.setStorehousePositionsId(param.getStorehousePositionsId());
+                            allocationLogDetail.setStorehouseId(param.getStorehouseId());
+                            allocationLogDetail.setToStorehouseId(param.getToStorehouseId());
+                            allocationLogDetail.setAllocationId(param.getAllocationId());  //song
+                            allocationLogDetail.setToStorehousePositionsId(param.getToStorehousePositionsId());
+                            allocationLogDetails.add(allocationLogDetail);
                             //因是创建实物  故创建库存
                             StockDetails stockDetailEntity = new StockDetails();
                             stockDetailEntity.setInkindId(inkind.getInkindId());
@@ -480,7 +483,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             stockDetailsService.save(stockDetailEntity);
                             stockDetailsService.updateById(stockDetail);
                             this.checkCartNumber(param,allCarts,allocation,kickNum);
-
                         }
                     }
                 }
@@ -538,7 +540,15 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         }
 
         stockDetailsService.updateBatchById(stockDetails);
-        allocationLogService.saveBatch(allocationLogs);
+        AllocationLog allocationLog = new AllocationLog();
+        allocationLog.setAllocationId(param.getAllocationId());
+        String code = RandomUtil.randomString(5);
+        allocationLog.setCoding(code);
+        allocationLogService.save(allocationLog);
+        for (AllocationLogDetail allocationLogDetail : allocationLogDetails) {
+            allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
+        }
+        allocationLogDetailService.saveBatch(allocationLogDetails);
 
     }
 
