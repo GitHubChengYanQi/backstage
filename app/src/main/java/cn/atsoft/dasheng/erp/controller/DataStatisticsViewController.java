@@ -1,24 +1,28 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
+import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
-import cn.atsoft.dasheng.erp.entity.InstockReceipt;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
-import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
+import cn.atsoft.dasheng.erp.model.params.*;
+import cn.atsoft.dasheng.erp.model.result.AllocationLogResult;
+import cn.atsoft.dasheng.erp.model.result.InstockReceiptResult;
+import cn.atsoft.dasheng.erp.model.result.InventoryResult;
+import cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
-import com.sun.jna.platform.win32.WinDef;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -46,6 +50,10 @@ public class DataStatisticsViewController extends BaseController {
     private MaintenanceService maintenanceService;
 
 
+    @Autowired
+    private AllocationLogService allocationLogService;
+
+
     @RequestMapping(value = "/taskCountView", method = RequestMethod.GET)
     @ApiOperation("新增")
     public ResponseData taskCountView() {
@@ -68,7 +76,11 @@ public class DataStatisticsViewController extends BaseController {
         for (ActivitiProcessTask maintenanceTask : maintenanceTasks) {
             maintenanceIds.add(maintenanceTask.getFormId());
         }
-        List<Maintenance> maintenances = maintenanceIds.size() == 0 ? new ArrayList<>() : maintenanceService.listByIds(maintenanceIds);
+        List<Maintenance> maintenances = maintenanceIds.size() == 0 ? new ArrayList<>() : new ArrayList<>();
+
+
+
+
         for (Maintenance maintenance : maintenances) {
             if (maintenance.getEndTime().getTime() < DateUtil.date().getTime()) {
                 overdueCount += 1;
@@ -89,14 +101,45 @@ public class DataStatisticsViewController extends BaseController {
         Integer outstockCont = outstockOrderService.query().eq("display", 1).count();
         Integer maintenanceCount = maintenanceLogService.query().eq("display", 1).count();
         Integer inventoryCount = inventoryService.query().eq("display", 1).count();
+        Integer allocationCount = allocationLogService.query().eq("display", 1).count();
         Map<String, Object> result = new HashMap<>();
         result.put("instockCount", instockCount);
         result.put("outstockCont", outstockCont);
         result.put("maintenanceCount", maintenanceCount);
         result.put("inventoryCount", inventoryCount);
-
+        result.put("allocationCount", allocationCount);
         return ResponseData.success(result);
     }
+
+    @RequestMapping(value = "/billPageList", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public PageInfo<Object> billPageList(@RequestBody DataStatisticsViewParam param) {
+        PageInfo<Object> result = new PageInfo<>();
+        switch (param.getType()){
+            case "instockLog":
+                PageInfo<InstockReceiptResult> pageBySpec = instockReceiptService.findPageBySpec(new InstockReceiptParam());
+                ToolUtil.copyProperties(pageBySpec,result);
+                break;
+            case "maintenanceLog":
+                PageInfo<MaintenanceLogResult> pageBySpec1 = maintenanceLogService.findPageBySpec(new MaintenanceLogParam());
+                ToolUtil.copyProperties(pageBySpec1,result);
+                break;
+                case "outstockLog":
+                PageInfo<OutstockOrderResult> pageBySpec2 = outstockOrderService.findPageBySpec(new OutstockOrderParam(),null);
+                ToolUtil.copyProperties(pageBySpec2,result);
+                break;
+            case "inventoryLog":
+                PageInfo<InventoryResult> pageBySpec3 = inventoryService.findPageBySpec(new InventoryParam());
+                ToolUtil.copyProperties(pageBySpec3,result);
+                break;
+                case "allocationLog":
+                PageInfo<AllocationLogResult> pageBySpec4 = allocationLogService.findPageBySpec(new AllocationLogParam());
+                ToolUtil.copyProperties(pageBySpec4,result);
+                break;
+        }
+        return result;
+    }
+
 
 
 }

@@ -23,7 +23,8 @@ public class MaintenanceLog implements Serializable {
 
       @TableId(value = "maintenance_log_id", type = IdType.ID_WORKER)
     private Long maintenanceLogId;
-
+    @TableField("coding")
+      private String coding;
     /**
      * 创建者
      */
@@ -153,12 +154,21 @@ public class MaintenanceLog implements Serializable {
         this.enclosure = enclosure;
     }
 
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
     @Override
     public String toString() {
         return "MaintenanceLog{" +
         "maintenanceLogId=" + maintenanceLogId +
         ", createUser=" + createUser +
         ", createTime=" + createTime +
+        ", coding=" + coding +
         ", updateUser=" + updateUser +
         ", updateTime=" + updateTime +
         ", display=" + display +

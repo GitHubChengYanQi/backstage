@@ -26,6 +26,7 @@ public class MaintenanceLogParam implements Serializable, BaseValidatingParam {
 
     private List<MaintenanceLogDetailParam> maintenanceLogDetailParams;
 
+    private String coding;
     private Long storehousePositionsId;
 
 

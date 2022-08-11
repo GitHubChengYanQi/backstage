@@ -1,10 +1,10 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.AllocationLog;
-import cn.atsoft.dasheng.erp.model.params.AllocationLogParam;
-import cn.atsoft.dasheng.erp.model.result.AllocationLogResult;
-import cn.atsoft.dasheng.erp.service.AllocationLogService;
+import cn.atsoft.dasheng.erp.entity.AllocationLogDetail;
+import cn.atsoft.dasheng.erp.model.params.AllocationLogDetailParam;
+import cn.atsoft.dasheng.erp.model.result.AllocationLogDetailResult;
+import cn.atsoft.dasheng.erp.service.AllocationLogDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -25,12 +25,12 @@ import java.util.Map;
  * @Date 2022-08-11 16:41:36
  */
 @RestController
-@RequestMapping("/allocationLog")
+@RequestMapping("/allocationLogDetail")
 @Api(tags = "")
-public class AllocationLogController extends BaseController {
+public class AllocationLogDetailController extends BaseController {
 
     @Autowired
-    private AllocationLogService allocationLogService;
+    private AllocationLogDetailService allocationLogDetailService;
 
     /**
      * 新增接口
@@ -40,8 +40,8 @@ public class AllocationLogController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody AllocationLogParam allocationLogParam) {
-        this.allocationLogService.add(allocationLogParam);
+    public ResponseData addItem(@RequestBody AllocationLogDetailParam allocationLogDetailParam) {
+        this.allocationLogDetailService.add(allocationLogDetailParam);
         return ResponseData.success();
     }
 
@@ -53,9 +53,9 @@ public class AllocationLogController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody AllocationLogParam allocationLogParam) {
+    public ResponseData update(@RequestBody AllocationLogDetailParam allocationLogDetailParam) {
 
-        this.allocationLogService.update(allocationLogParam);
+        this.allocationLogDetailService.update(allocationLogDetailParam);
         return ResponseData.success();
     }
 
@@ -67,8 +67,8 @@ public class AllocationLogController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AllocationLogParam allocationLogParam)  {
-        this.allocationLogService.delete(allocationLogParam);
+    public ResponseData delete(@RequestBody AllocationLogDetailParam allocationLogDetailParam)  {
+        this.allocationLogDetailService.delete(allocationLogDetailParam);
         return ResponseData.success();
     }
 
@@ -80,9 +80,9 @@ public class AllocationLogController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AllocationLogResult> detail(@RequestBody AllocationLogParam allocationLogParam) {
-        AllocationLog detail = this.allocationLogService.getById(allocationLogParam.getAllocationLogId());
-        AllocationLogResult result = new AllocationLogResult();
+    public ResponseData<AllocationLogDetailResult> detail(@RequestBody AllocationLogDetailParam allocationLogDetailParam) {
+        AllocationLogDetail detail = this.allocationLogDetailService.getById(allocationLogDetailParam.getAllocationLogDetailId());
+        AllocationLogDetailResult result = new AllocationLogDetailResult();
         ToolUtil.copyProperties(detail, result);
 
         return ResponseData.success(result);
@@ -96,11 +96,11 @@ public class AllocationLogController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<AllocationLogResult> list(@RequestBody(required = false) AllocationLogParam allocationLogParam) {
-        if(ToolUtil.isEmpty(allocationLogParam)){
-            allocationLogParam = new AllocationLogParam();
+    public PageInfo<AllocationLogDetailResult> list(@RequestBody(required = false) AllocationLogDetailParam allocationLogDetailParam) {
+        if(ToolUtil.isEmpty(allocationLogDetailParam)){
+            allocationLogDetailParam = new AllocationLogDetailParam();
         }
-        return this.allocationLogService.findPageBySpec(allocationLogParam);
+        return this.allocationLogDetailService.findPageBySpec(allocationLogDetailParam);
     }
 
 

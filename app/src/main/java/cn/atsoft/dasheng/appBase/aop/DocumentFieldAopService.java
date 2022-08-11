@@ -82,8 +82,10 @@ public class DocumentFieldAopService {
             } else if (obj instanceof PageInfo) {
                 PageInfo pageInfo = (PageInfo) obj;
                 List data = pageInfo.getData();
-                for (Object datum : data) {
-                    this.filterField(datum, type);
+                if (ToolUtil.isNotEmpty(data)) {
+                    for (Object datum : data) {
+                        this.filterField(datum, type);
+                    }
                 }
             } else {
                 Class objClass = obj.getClass();
