@@ -1,10 +1,8 @@
 package cn.atsoft.dasheng.orCode.model.result;
 
-import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data

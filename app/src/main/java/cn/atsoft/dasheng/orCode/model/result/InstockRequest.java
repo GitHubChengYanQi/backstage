@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.orCode.model.result;
 
-import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import lombok.Data;
 

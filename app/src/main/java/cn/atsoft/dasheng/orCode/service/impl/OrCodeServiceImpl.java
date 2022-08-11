@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.orCode.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
@@ -16,9 +15,7 @@ import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
@@ -37,7 +34,6 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +45,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.LongFunction;
 
 /**
  * <p>
@@ -91,8 +86,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private StockService stockService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private InstockService instockService;
+
     @Autowired
     private OutstockService outstockService;
     @Autowired
@@ -812,12 +806,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
                     instockOrderResult.setInstockListResults(instockListResults);
 
-                    InstockParam instockParam = new InstockParam();
-                    instockParam.setInstockOrderId(instockOrder.getInstockOrderId());
-                    PageInfo<InstockResult> instockResultPageInfo = instockService.findPageBySpec(instockParam, null);
-                    List<InstockResult> instockResults = instockResultPageInfo.getData();
-
-                    instockOrderResult.setInstockResults(instockResults);
 
                     cn.atsoft.dasheng.orCode.model.result.InstockRequest instockRequest = new InstockRequest();
                     instockRequest.setType("instock");
