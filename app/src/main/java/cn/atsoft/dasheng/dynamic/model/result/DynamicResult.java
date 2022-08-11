@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.dynamic.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,13 +20,15 @@ import java.util.List;
 public class DynamicResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private UserResult userResult;
 
     /**
      * 商机动态id
      */
     @ApiModelProperty("商机动态id")
     private Long dynamicId;
+
+    private String sourceName;
 
     /**
      * 用户id

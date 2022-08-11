@@ -10,13 +10,17 @@ import cn.atsoft.dasheng.dynamic.mapper.DynamicMapper;
 import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
 import cn.atsoft.dasheng.dynamic.service.DynamicService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +33,11 @@ import java.util.List;
  */
 @Service
 public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> implements DynamicService {
+    @Autowired
+    private UserService userService;
+
+
+
 
     @Override
     public void add(DynamicParam param){
@@ -64,9 +73,56 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     public PageInfo<DynamicResult> findPageBySpec(DynamicParam param){
         Page<DynamicResult> pageContext = getPageContext();
         IPage<DynamicResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+    private void format(List<DynamicResult> data){
+        List<Long> userIds = new ArrayList<>();
+        for (DynamicResult datum : data) {
+            userIds.add(datum.getUserId());
+        }
 
+
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+        for (DynamicResult datum : data) {
+            if (datum.getType().equals("1")) {
+                datum.setType("添加");
+            } else if (datum.getType().equals("2")) {
+                datum.setType("更新");
+            }
+
+            for (UserResult userResultsById : userResultsByIds) {
+                if (userResultsById.getUserId().equals(datum.getUserId())){
+                    datum.setUserResult(userResultsById);
+                    break;
+                }
+            }
+            switch (datum.getSource()){
+                case "Sku":
+                    datum.setSourceName("物料");
+                    break;
+                case "ActivitiProcessTask":
+                    datum.setSourceName("任务");
+                    break;
+                case "ActivitiProcessLog":
+                    datum.setSourceName("流程");
+                    break;
+                case "OperationLog":
+                    datum.setSourceName("操作日志");
+                    break;
+                default:
+                    break;
+            }
+
+
+
+
+
+        }
+
+
+
+    }
     private Serializable getKey(DynamicParam param){
         return param.getDynamicId();
     }

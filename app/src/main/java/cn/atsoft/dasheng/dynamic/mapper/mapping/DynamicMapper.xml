@@ -25,10 +25,11 @@
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
     </resultMap>
-
+<!--    , after AS "after"-->
+<!--    before AS "before",-->
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        dynamic_id AS "dynamicId",user_id AS "userId", content AS "content", after AS "after", type AS "type", before AS "before", source AS "source", source_id AS "sourceId", sku_id AS "skuId", spu_id AS "spuId", task_id AS "taskId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        dynamic_id AS "dynamicId",user_id AS "userId", content AS "content", type AS "type", source AS "source", source_id AS "sourceId", sku_id AS "skuId", spu_id AS "spuId", task_id AS "taskId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 

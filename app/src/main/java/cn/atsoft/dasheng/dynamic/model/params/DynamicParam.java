@@ -57,7 +57,7 @@ public class DynamicParam implements Serializable, BaseValidatingParam {
      * 更改之前数据
      */
     @ApiModelProperty("更改之前数据")
-    private String befor;
+    private String before;
 
     /**
      * 来源

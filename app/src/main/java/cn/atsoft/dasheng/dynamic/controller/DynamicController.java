@@ -57,7 +57,7 @@ public class DynamicController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    @Permission
+//    @Permission
     public PageInfo<DynamicResult> list(@RequestBody(required = false) DynamicParam dynamicParam) {
         if(ToolUtil.isEmpty(dynamicParam)){
             dynamicParam = new DynamicParam();
@@ -73,7 +73,7 @@ public class DynamicController extends BaseController {
      */
     @RequestMapping(value = "/lsitBySelf", method = RequestMethod.POST)
     @ApiOperation("列表")
-    @Permission
+//    @Permission
     public PageInfo<DynamicResult> lsitBySelf(@RequestBody(required = false) DynamicParam dynamicParam) {
         if(ToolUtil.isEmpty(dynamicParam)){
             dynamicParam = new DynamicParam();
@@ -90,7 +90,7 @@ public class DynamicController extends BaseController {
      */
     @RequestMapping(value = "/ListByUser", method = RequestMethod.POST)
     @ApiOperation("列表")
-    @Permission
+//    @Permission
     public PageInfo<DynamicResult> ListByUser(@RequestBody(required = false) DynamicParam dynamicParam) {
         if(ToolUtil.isEmpty(dynamicParam)){
             dynamicParam = new DynamicParam();
