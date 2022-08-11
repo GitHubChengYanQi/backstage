@@ -469,6 +469,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             }
         }
 
+        inventory.setComplete(99);
+        inventoryService.updateById(inventory);
 
         /**
          * 流程

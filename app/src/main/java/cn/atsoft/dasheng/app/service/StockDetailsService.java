@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service;
 
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
+import cn.atsoft.dasheng.app.pojo.StockCensus;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.StockDetails;
@@ -68,6 +69,8 @@ public interface StockDetailsService extends IService<StockDetails> {
     List<StockDetails> getStock();
 
     List<StockDetailsResult> getDetailsBySkuId(Long id);
+
+    List<StockCensus> stockCensus();
 
     /**
      * 查询分页数据，Specification模式

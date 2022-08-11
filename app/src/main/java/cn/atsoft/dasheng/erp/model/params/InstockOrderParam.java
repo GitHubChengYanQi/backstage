@@ -1,11 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
-import cn.atsoft.dasheng.app.entity.Instock;
-import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
-import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -14,7 +10,6 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 

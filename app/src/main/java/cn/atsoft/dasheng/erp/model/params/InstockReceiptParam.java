@@ -4,7 +4,6 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,71 +12,42 @@ import java.util.List;
 
 /**
  * <p>
- *
+ * 入库记录单
  * </p>
  *
- * @author Captain_Jazz
- * @since 2022-04-14
+ * @author song
+ * @since 2022-08-11
  */
 @Data
 @ApiModel
-public class InstockLogDetailParam implements Serializable, BaseValidatingParam {
+public class InstockReceiptParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
+    /**
+     * 物品编号
+     */
+    @ApiModelProperty("物品编号")
     private Long receiptId;
 
-    @ApiModelProperty("")
-    private Long instockLogDetailId;
-
-    @ApiModelProperty("")
-    private Long instockLogId;
-
-    private String source;
-    private Long sourceId;
     /**
-     * 实物id
+     * 编码
      */
-    @ApiModelProperty("实物id")
-    private Long inkindId;
+    @ApiModelProperty("编码")
+    private String coding;
 
     /**
-     * sku_id
+     * 入库单
      */
-    @ApiModelProperty("sku_id")
-    private Long skuId;
-
-    /**
-     * 品牌id
-     */
-    @ApiModelProperty("品牌id")
-    private Long brandId;
-
-    /**
-     * 数量
-     */
-    @ApiModelProperty("数量")
-    private Long number;
-
-    /**
-     * 入库单id
-     */
-    @ApiModelProperty("入库单id")
+    @ApiModelProperty("入库单")
     private Long instockOrderId;
 
-
     /**
-     * 地点id
+     * 审批人
      */
-    @ApiModelProperty("地点id")
-    private Long storehouseId;
-
-    /**
-     * 仓库库位id
-     */
-    @ApiModelProperty("仓库库位id")
-    private Long storehousePositionsId;
+    @ApiModelProperty("审批人")
+    private String auditPerson;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;

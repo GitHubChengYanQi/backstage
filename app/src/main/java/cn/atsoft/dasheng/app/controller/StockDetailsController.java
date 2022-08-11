@@ -5,10 +5,7 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.request.StoreHouseAndSkuNumber;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.pojo.AllBom;
-import cn.atsoft.dasheng.app.pojo.AllBomParam;
-import cn.atsoft.dasheng.app.pojo.AllBomResult;
-import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
+import cn.atsoft.dasheng.app.pojo.*;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
@@ -103,6 +100,19 @@ public class StockDetailsController extends BaseController {
         this.stockDetailsService.inkindList(stockDetailsParam.getSkuId());
         return ResponseData.success();
     }
+
+
+    /**
+     * 库存统计 饼形图
+     *
+     * @return
+     */
+    @RequestMapping(value = "/stockCensus", method = RequestMethod.GET)
+    public ResponseData stockCensus() {
+        List<StockCensus> stockCensuses = this.stockDetailsService.stockCensus();
+        return ResponseData.success(stockCensuses);
+    }
+
 
     /**
      * 查看详情接口
