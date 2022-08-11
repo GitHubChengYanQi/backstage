@@ -1649,24 +1649,24 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return audit;
     }
 
-    private void startAction(List<ActivitiProcessLog> audit, ActivitiProcessTask task) {
-        switch (task.getType()) {
-            case "ALLOCATION":
-                for (ActivitiProcessLog processLog : audit) {
-                    if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
-                        List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
-                        DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
-                        for (ActionStatus actionStatus : actionStatuses) {
-                            if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)) {
-                                allocationService.createPickListsAndInStockOrder(task.getFormId());
-                                continue;
-                            }
-                        }
-
-                    }
-                }
-                break;
-        }
-    }
+//    private void startAction(List<ActivitiProcessLog> audit, ActivitiProcessTask task) {
+//        switch (task.getType()) {
+//            case "ALLOCATION":
+//                for (ActivitiProcessLog processLog : audit) {
+//                    if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
+//                        List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+//                        DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
+//                        for (ActionStatus actionStatus : actionStatuses) {
+//                            if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)) {
+//                                allocationService.createPickListsAndInStockOrder(task.getFormId());
+//                                continue;
+//                            }
+//                        }
+//
+//                    }
+//                }
+//                break;
+//        }
+//    }
 
 }
