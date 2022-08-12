@@ -1,20 +1,28 @@
 package cn.atsoft.dasheng.config.datasource;
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.core.metadata.CustomMetaObjectHandler;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
+import cn.atsoft.dasheng.dynamic.entity.Dynamic;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.factory.IConstantFactory;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestUser;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.alibaba.fastjson.JSON;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
+
+import static cn.atsoft.dasheng.message.enmu.MicroServiceType.DYNAMIC;
 
 /**
  * mp的插件拓展和资源扫描
@@ -22,6 +30,8 @@ import java.util.Date;
 @Configuration
 @MapperScan(basePackages = {"cn.atsoft.**.mapper"})
 public class PluginsConfig {
+    @Autowired
+    private MessageProducer messageProducer;
 
     /**
      * 拓展核心包中的字段包装器
@@ -50,6 +60,7 @@ public class PluginsConfig {
                     return -100L;
                 }
             }
+
 
             @Override
             public void insertFill(MetaObject metaObject) {
@@ -86,12 +97,12 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
+
                 Object userId = null;
                 try {
                     userId = getFieldValByName(getUserIdFieldName(), metaObject);
                     IConstantFactory iConstantFactory = new ConstantFactory();
                     Long deptId1 = iConstantFactory.getDeptId((Long) userId);
-
                     if (userId != null) {
                         setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
                     }
@@ -99,9 +110,14 @@ public class PluginsConfig {
                     //没有此字段，则不处理
                 }
                 try {
-                    setFieldValByName(getUpdateTimeFieldName(),null, metaObject);
+                    setFieldValByName(getUpdateTimeFieldName(), null, metaObject);
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
+                }
+                try {
+                    printDynamic(metaObject, (Long) userId, 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -123,13 +139,13 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
+
                 Object userId = null;
                 try {
                     userId = getFieldValByName(getUserIdFieldName(), metaObject);
                     if (!(metaObject.getOriginalObject() instanceof User) && !(metaObject.getOriginalObject() instanceof RestUser)) {
                         IConstantFactory iConstantFactory = new ConstantFactory();
                         Long deptId1 = iConstantFactory.getDeptId((Long) userId);
-
                         if (userId != null) {
                             setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
                         }
@@ -138,8 +154,75 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
+                try {
+                    printDynamic(metaObject, (Long) userId, 2);
+                } catch (Exception e) {
+
+
+                }
             }
         };
     }
 
+    public void printDynamic(MetaObject object, Long userId, Integer type) {
+        for (String simpleName : WHITE_LIST) {
+            if (simpleName.equals(object.getOriginalObject().getClass().getSimpleName()) && (!userId.equals(-100L) || ToolUtil.isNotEmpty(userId))) {
+                DynamicParam dynamic = new DynamicParam();
+                dynamic.setAfter(JSON.toJSONString(object.getOriginalObject()));
+                dynamic.setType(type.toString());
+                dynamic.setUserId(userId);
+                this.formatDynamic(object, dynamic);
+                messageProducer.microService(new MicroServiceEntity() {{
+                    setType(DYNAMIC);
+                    setObject(dynamic);
+                    setOperationType(OperationType.SAVE);
+                    setMaxTimes(2);
+                    setTimes(1);
+                    ;
+                }});
+            }
+        }
+
+
+    }
+
+    static final String[] WHITE_LIST = {
+            "Sku",
+            "ActivitiProcessTask",
+            "ActivitiProcessLog",
+            "OperationLog",
+    };
+    public enum WHITE_LIST {
+            Sku,
+            ActivitiProcessTask,
+            ActivitiProcessLog,
+            OperationLog
+    };
+
+    private void formatDynamic(MetaObject object, DynamicParam dynamic) {
+        switch (object.getOriginalObject().getClass().getSimpleName()) {
+            case "Sku":
+                if (ToolUtil.isNotEmpty(object.getValue("skuId"))) {
+                    dynamic.setSkuId((Long) object.getValue("skuId"));
+                }
+                if (ToolUtil.isNotEmpty(object.getValue("spuId"))) {
+                    dynamic.setSkuId((Long) object.getValue("spuId"));
+                }
+                dynamic.setSourceId((Long) object.getValue("skuId"));
+                break;
+            case "ActivitiProcessTask":
+                if (ToolUtil.isNotEmpty(object.getValue("processTaskId"))) {
+                    dynamic.setTaskId((Long) object.getValue("processTaskId"));
+                }
+                dynamic.setSourceId((Long) object.getValue("processTaskId"));
+                break;
+            case "ActivitiProcessLog":
+                if (ToolUtil.isNotEmpty(object.getValue("taskId"))) {
+                    dynamic.setTaskId((Long) object.getValue("taskId"));
+                }
+                dynamic.setSourceId((Long) object.getValue("acitvitiProcessLog"));
+                break;
+        }
+        dynamic.setSource(object.getOriginalObject().getClass().getSimpleName());
+    }
 }

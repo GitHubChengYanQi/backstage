@@ -13,11 +13,8 @@ import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.mapper.InkindMapper;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.service.InkindService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.MaintenanceLogService;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -67,7 +64,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     @Autowired
     private OrCodeBindService orCodeBindService;
     @Autowired
-    private MaintenanceLogService maintenanceLogService;
+    private MaintenanceLogDetailService maintenanceLogDetailService;
     @Autowired
     private StorehousePositionsService positionsService;
     @Autowired
@@ -419,7 +416,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         List<SkuSimpleResult> simpleResults = skuService.simpleFormatSkuResult(skuIds);
         List<StorehousePositionsResult> positionsResultList = positionsService.details(positionIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-        List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogService.lastLogByInkindIds(inkindIds);
+        List<MaintenanceLogDetailResult> maintenanceLogDetailResults = maintenanceLogDetailService.lastLogByInkindIds(inkindIds);
 
         for (InkindResult datum : data) {
 
@@ -437,9 +434,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
                 }
             }
 
-            for (MaintenanceLogResult maintenanceLogResult : maintenanceLogResults) {
-                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(maintenanceLogResult.getInkindId())) {
-                    datum.setMaintenanceLogResult(maintenanceLogResult);
+            for (MaintenanceLogDetailResult maintenanceLogDetailResult : maintenanceLogDetailResults) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(maintenanceLogDetailResult.getInkindId())) {
+                    datum.setMaintenanceLogResult(maintenanceLogDetailResult);
                     break;
                 }
             }

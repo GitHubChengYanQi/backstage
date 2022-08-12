@@ -22,7 +22,7 @@ import java.util.Map;
  * 养护记录控制器
  *
  * @author Captain_Jazz
- * @Date 2022-06-28 09:41:30
+ * @Date 2022-08-11 13:42:31
  */
 @RestController
 @RequestMapping("/maintenanceLog")
@@ -36,7 +36,7 @@ public class MaintenanceLogController extends BaseController {
      * 新增接口
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -49,7 +49,7 @@ public class MaintenanceLogController extends BaseController {
      * 编辑接口
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
@@ -59,24 +59,24 @@ public class MaintenanceLogController extends BaseController {
         return ResponseData.success();
     }
 
-//    /**
-//     * 删除接口
-//     *
-//     * @author Captain_Jazz
-//     * @Date 2022-06-28
-//     */
-//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-//    @ApiOperation("删除")
-//    public ResponseData delete(@RequestBody MaintenanceLogParam maintenanceLogParam)  {
-//        this.maintenanceLogService.delete(maintenanceLogParam);
-//        return ResponseData.success();
-//    }
+    /**
+     * 删除接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-08-11
+     */
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData delete(@RequestBody MaintenanceLogParam maintenanceLogParam)  {
+        this.maintenanceLogService.delete(maintenanceLogParam);
+        return ResponseData.success();
+    }
 
     /**
      * 查看详情接口
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
@@ -92,7 +92,7 @@ public class MaintenanceLogController extends BaseController {
      * 查询列表
      *
      * @author Captain_Jazz
-     * @Date 2022-06-28
+     * @Date 2022-08-11
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")

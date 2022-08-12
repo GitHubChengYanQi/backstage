@@ -682,7 +682,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             String qrCode = qrCodeCreateService.createQrCode(codeId.toString());
             templete = templete.replace("${qrCode}", qrCode);
         }
-        if (templete.contains("${bind}")) {
+        if (templete.contains("${bind}") || templete.contains("${{物料编码}}") || templete.contains("${{产品名称}}") ||  templete.contains("${{型号}}") ||  templete.contains("${{规格}}") ) {
             List<StorehousePositionsBind> binds = storehousePositionsBindService.query().eq("position_id", param.getStorehousePositionsId()).list();
             List<Long> skuIds = new ArrayList<>();
             for (StorehousePositionsBind bind : binds) {
@@ -695,6 +695,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 String name1 = skuResult.getStandard();
                 stringBuffer.append(name1).append("/").append(name).append("<br/>");
             }
+
             templete = templete.replace("${bind}", stringBuffer.toString());
         }
         if (templete.contains("${name}")) {
@@ -711,6 +712,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         for (StorehousePositionsBind storehousePositionsBind : storehousePositionsBinds) {
             skuIds.add(storehousePositionsBind.getSkuId());
         }
+        /**
+         * 替换中文
+         */
         templete = replace(templete, skuIds);
         templete = templete.replaceAll("\\n", "");
 
@@ -1021,7 +1025,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                         }
                     }
 
-                    all.append(group);
+                     all.append(group);
                 }
                 String toString = all.toString();
                 String group = m.group(0);
