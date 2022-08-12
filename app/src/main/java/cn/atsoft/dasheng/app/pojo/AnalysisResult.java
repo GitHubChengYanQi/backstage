@@ -9,6 +9,7 @@ public class AnalysisResult {
     private String SpuName;
     private String skuName;
     private String specifications;
+    private String spuClass;
     private Long produceMix;   //生产数
     private Long lackNumber;  //缺料数
     private Long demandNumber; //需求数

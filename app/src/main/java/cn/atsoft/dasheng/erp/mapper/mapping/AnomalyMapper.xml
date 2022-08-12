@@ -45,7 +45,7 @@ position_id AS "positionId",
             parameterType="cn.atsoft.dasheng.erp.model.params.AnomalyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_anomaly where 1 = 1
+        from daoxin_anomaly where 1 = 1 and display = 1
         <if test="paramCondition.anomalyId != null">
             and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>
@@ -106,6 +106,10 @@ position_id AS "positionId",
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
+        <if test=" paramCondition.beginTime != null and paramCondition.beginTime != '' ">
+            AND Year(create_time) = #{paramCondition.beginTime}
+        </if>
+
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.AnomalyParam">

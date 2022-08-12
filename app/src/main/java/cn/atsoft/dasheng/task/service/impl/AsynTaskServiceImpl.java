@@ -55,6 +55,18 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
     }
 
     @Override
+    public List<AsynTaskResult> BomDetailed() {
+        List<AsynTask> asynTasks = this.query().eq("type", "报表物料分析").list();
+        List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
+
+        for (AsynTaskResult asynTask : asynTaskResults) {
+            AllBomResult allBomResult = JSON.parseObject(asynTask.getContent(), AllBomResult.class);
+            asynTask.setAllBomResult(allBomResult);
+        }
+        return asynTaskResults;
+    }
+
+    @Override
     public AsynTaskResult findBySpec(AsynTaskParam param) {
         return null;
     }

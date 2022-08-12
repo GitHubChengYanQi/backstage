@@ -130,6 +130,9 @@ public class taskController extends BaseController {
             throw new ServiceException(500, "缺少taskId");
         }
         ActivitiProcessTask processTask = taskService.getById(taskId);
+        if (ToolUtil.isEmpty(processTask)) {
+            return ResponseData.success();
+        }
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(processTask, taskResult);
 
