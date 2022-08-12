@@ -697,11 +697,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
          */
         if (ToolUtil.isNotEmpty(stockDetails)) {
 
-            Stock stock = stockService.getById(stockDetails.getStockId());
-            StockResult stockResult = new StockResult();
-            if (ToolUtil.isNotEmpty(stock)) {
-                ToolUtil.copyProperties(stock, stockResult);
-            }
 
 
             Storehouse storehouse = storehouseService.getById(stockDetails.getStorehouseId());
@@ -713,7 +708,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
 
 
-            result.put("stock", stockResult);
             result.put("storehouse", storehouseResult);
             result.put("stockDetails", stockDetails);
             result.put("storehousePositions", storehousePositionsResult);
