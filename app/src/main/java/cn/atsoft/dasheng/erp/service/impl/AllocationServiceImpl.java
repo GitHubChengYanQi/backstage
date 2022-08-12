@@ -176,11 +176,11 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         /**
          * 删除购物车
          */
-//        List<ShopCart> shopCarts = shopCartService.query().eq("create_user", LoginContextHolder.getContext().getUserId()).eq("type", "allocation").eq("display", 1).list();
-//        for (ShopCart shopCart : shopCarts) {
-//            shopCart.setDisplay(0);
-//        }
-//        shopCartService.updateBatchById(shopCarts);
+        List<ShopCart> shopCarts = shopCartService.query().eq("create_user", LoginContextHolder.getContext().getUserId()).eq("type", "allocation").eq("display", 1).list();
+        for (ShopCart shopCart : shopCarts) {
+            shopCart.setDisplay(0);
+        }
+        shopCartService.updateBatchById(shopCarts);
         shopCartService.addDynamic(entity.getAllocationId(), "发起了调拨申请");
         return entity;
     }
