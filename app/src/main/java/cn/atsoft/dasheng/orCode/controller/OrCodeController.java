@@ -73,7 +73,6 @@ public class OrCodeController extends BaseController {
     private UserService userService;
     @Autowired
     private InstockListService instockListService;
-
     @Autowired
     private OutstockListingService outstockListingService;
     @Autowired

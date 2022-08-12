@@ -456,4 +456,26 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
 
     }
 
+    @Override
+    public void resultFormat(List<InkindResult> data) {
+
+        List<Long> inkindIds = new ArrayList<>();
+        for (InkindResult datum : data) {
+            inkindIds.add(datum.getInkindId());
+        }
+
+        List<OrCodeBind> orCodeBinds = inkindIds.size() == 0 ? new ArrayList<>() : orCodeBindService.query().in("form_id", inkindIds).eq("display", 1).list();
+
+        for (InkindResult datum : data) {
+            for (OrCodeBind orCodeBind : orCodeBinds) {
+                if (datum.getInkindId().equals(orCodeBind.getFormId())) {
+                    datum.setQrcode(orCodeBind.getOrCodeId());
+                    break;
+                }
+            }
+        }
+
+    }
+
+
 }

@@ -683,6 +683,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         Inkind inkind = inkindService.getById(inkindId);
         InkindResult inkindResult = new InkindResult();
         ToolUtil.copyProperties(inkind, inkindResult);
+        inkindService.resultFormat(new ArrayList<InkindResult>() {{
+            add(inkindResult);
+        }});
 
         Brand brand = ToolUtil.isEmpty(inkindResult.getBrandId()) ? new Brand() : brandService.getById(inkindResult.getBrandId());
         Customer customer = ToolUtil.isEmpty(inkindResult.getCustomerId()) ? new Customer() : customerService.getById(inkindResult.getCustomerId());
@@ -694,11 +697,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
          */
         if (ToolUtil.isNotEmpty(stockDetails)) {
 
-            Stock stock = stockService.getById(stockDetails.getStockId());
-            StockResult stockResult = new StockResult();
-            if (ToolUtil.isNotEmpty(stock)) {
-                ToolUtil.copyProperties(stock, stockResult);
-            }
 
 
             Storehouse storehouse = storehouseService.getById(stockDetails.getStorehouseId());
@@ -710,7 +708,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
 
 
-            result.put("stock", stockResult);
             result.put("storehouse", storehouseResult);
             result.put("stockDetails", stockDetails);
             result.put("storehousePositions", storehousePositionsResult);
