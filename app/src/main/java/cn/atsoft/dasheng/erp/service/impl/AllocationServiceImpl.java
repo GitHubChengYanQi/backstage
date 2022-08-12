@@ -108,6 +108,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private DocumentStatusService statusService;
 
 
+
     @Override
     public Allocation add(AllocationParam param) {
         if (ToolUtil.isEmpty(param.getCoding())) {
@@ -180,6 +181,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 //            shopCart.setDisplay(0);
 //        }
 //        shopCartService.updateBatchById(shopCarts);
+        shopCartService.addDynamic(entity.getAllocationId(), "发起了调拨申请");
         return entity;
     }
 
@@ -203,9 +205,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Override
     public void createPickListsAndInStockOrder(Long allocationId, List<AllocationCart> allocationCarts) {
         Allocation allocation = this.getById(allocationId);
-
-
-
         if (allocation.getType().equals("allocation")) {
             if (allocation.getAllocationType() == 1) {
                 List<Long> stockIds = new ArrayList<>();
@@ -357,6 +356,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 }
             }
         }
+        shopCartService.addDynamic(allocation.getAllocationId(), "指派了调拨物料");
+
     }
 
     void format() {
@@ -383,6 +384,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             String imgUrl = stepsService.imgUrl(user.getUserId().toString());
             UserResult userResult = BeanUtil.copyProperties(user, UserResult.class);
             userResult.setAvatar(imgUrl);
+            result.setUserResult(userResult);
         }
 
         Map<Long, String> statusMap = new HashMap<>();
@@ -548,6 +550,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
         }
         allocationLogDetailService.saveBatch(allocationLogDetails);
+        shopCartService.addDynamic(param.getAllocationId(), "库内调拨了物料");
 
     }
 
@@ -639,10 +642,12 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         if (ToolUtil.isEmpty(param.getAllocationId())) {
             throw new ServiceException(500, "请选择单据");
         }
-        Allocation allocation = new Allocation();
-        allocation.setAllocationId(param.getAllocationId());
-        allocation.setUserId(param.getUserId());
-        this.updateById(allocation);
+        Allocation allocation = this.getById(param.getAllocationId());
+        if (ToolUtil.isEmpty(allocation.getUserId())) {
+            allocation.setUserId(param.getUserId());
+            this.updateById(allocation);
+
+        }
         List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status", 0).list();
         List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("status", 0).eq("type", "carry").list();
 
