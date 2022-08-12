@@ -31,7 +31,9 @@ public class InkindResult implements Serializable {
 
     private User user;
 
-    private MaintenanceLogResult maintenanceLogResult;
+    private Long qrcode;
+
+    private MaintenanceLogDetailResult maintenanceLogResult;
 
     private static final long serialVersionUID = 1L;
 

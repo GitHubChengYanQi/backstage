@@ -683,6 +683,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         Inkind inkind = inkindService.getById(inkindId);
         InkindResult inkindResult = new InkindResult();
         ToolUtil.copyProperties(inkind, inkindResult);
+        inkindService.resultFormat(new ArrayList<InkindResult>() {{
+            add(inkindResult);
+        }});
 
         Brand brand = ToolUtil.isEmpty(inkindResult.getBrandId()) ? new Brand() : brandService.getById(inkindResult.getBrandId());
         Customer customer = ToolUtil.isEmpty(inkindResult.getCustomerId()) ? new Customer() : customerService.getById(inkindResult.getCustomerId());
