@@ -119,6 +119,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
      */
     @Override
     public void updateAnomalyInKind(List<Long> inKindIds) {
+        if (ToolUtil.isEmpty(inKindIds) || inKindIds.size() == 0) {
+            return;
+        }
         Inkind inkind = new Inkind();
         inkind.setAnomaly(1);
 
