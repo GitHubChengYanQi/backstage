@@ -16,10 +16,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import com.alibaba.fastjson.JSON;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STJc;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STVerticalJc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,44 +73,62 @@ public class OrderReplace {
 
     public void replaceInTable(XWPFDocument doc) {
 
-        XWPFTable table = doc.getTableArray(0);
-        for (int i = 0; i < table.getRows().size(); i++) {
-            XWPFTableRow row = table.getRow(i);
-        }
 
+//        for (int i = 0; i < doc.getTables().size(); i++) {
 
-    }
+        XWPFTable xwpfTable = doc.getTableArray(0);   //表
 
-
-    public void copy(XWPFTable table, XWPFTableRow sourceRow, int rowIndex) {
-        //在表格指定位置新增一行
-        XWPFTableRow targetRow = table.insertNewTableRow(rowIndex);
-        //复制行属性
-        targetRow.getCtRow().setTrPr(sourceRow.getCtRow().getTrPr());
-        List<XWPFTableCell> cellList = sourceRow.getTableCells();
-        if (null == cellList) {
-            return;
-        }
-        //复制列及其属性和内容
-        XWPFTableCell targetCell = null;
-        for (XWPFTableCell sourceCell : cellList) {
-            targetCell = targetRow.addNewTableCell();
-            //列属性
-            targetCell.getCTTc().setTcPr(sourceCell.getCTTc().getTcPr());
-            //段落属性
-            if (sourceCell.getParagraphs() != null && sourceCell.getParagraphs().size() > 0) {
-                targetCell.getParagraphs().get(0).getCTP().setPPr(sourceCell.getParagraphs().get(0).getCTP().getPPr());
-                if (sourceCell.getParagraphs().get(0).getRuns() != null && sourceCell.getParagraphs().get(0).getRuns().size() > 0) {
-                    XWPFRun cellR = targetCell.getParagraphs().get(0).createRun();
-                    cellR.setText(sourceCell.getText());
-                    cellR.setBold(sourceCell.getParagraphs().get(0).getRuns().get(0).isBold());
-                } else {
-                    targetCell.setText(sourceCell.getText());
-                }
-            } else {
-                targetCell.setText(sourceCell.getText());
+        int size = xwpfTable.getRows().size();
+        for (int i = 0; i < xwpfTable.getRows().size(); i++) {   //表格里循环 行
+            if (i == size) {
+                break;
             }
+
+
+            XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
+
+            List<XWPFTableCell> tableCells = row.getTableCells();
+            int size1 = tableCells.size();
+
+            for (int i1 = 0; i1 < size1; i1++) {
+                String text = row.getCell(i1).getText();
+                XWPFTableRow newRow = xwpfTable.createRow();
+                newRow.getCell(0).setText(text);
+                setTableLocation(xwpfTable, "center");
+            }
+
+//            String text = row.getCell(0).getText();
+//            XWPFTableRow newRow = xwpfTable.createRow();            //创建新航
+//            newRow.getCell(0).setText(text);
+//            setTableLocation(xwpfTable, "center");
+
         }
+
+
+        //   }
+
+
     }
+
+    /**
+     * 设置表格位置
+     *
+     * @param xwpfTable
+     * @param location  整个表格居中center,left居左，right居右，both两端对齐
+     */
+    public static void setTableLocation(XWPFTable xwpfTable, String location) {
+
+        XWPFTableRow xwpfTableRow = xwpfTable.insertNewTableRow(2);  //新行
+
+
+        CTTbl cttbl = xwpfTable.getCTTbl();
+        CTTblPr tblpr = cttbl.getTblPr() == null ? cttbl.addNewTblPr() : cttbl.getTblPr();
+        CTJc cTJc = tblpr.addNewJc();
+
+
+
+        cTJc.setVal(STJc.Enum.forString(location));
+    }
+
 
 }
