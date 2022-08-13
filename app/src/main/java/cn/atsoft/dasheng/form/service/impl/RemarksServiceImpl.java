@@ -227,18 +227,17 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         if (ToolUtil.isNotEmpty(processTask)) {
             shopCartService.addDynamic(processTask.getFormId(), "添加了评论");
         }
-
-
-        if (ToolUtil.isNotEmpty(auditParam.getUserIds())) {
-            String[] split = auditParam.getUserIds().split(",");
-            List<Long> userIds = new ArrayList<>();
-            for (String s : split) {
-                userIds.add(Long.valueOf(s));
-            }
-            userIds.add(processTask.getCreateUser());
-            userIds = userIds.stream().distinct().collect(Collectors.toList());
-            pushPeople(userIds, auditParam.getTaskId(), remarks);
+        if (ToolUtil.isEmpty(auditParam.getUserIds())) {
+            auditParam.setUserIds(processTask.getCreateUser().toString());
         }
+        String[] split = auditParam.getUserIds().split(",");
+        List<Long> userIds = new ArrayList<>();
+        for (String s : split) {
+            userIds.add(Long.valueOf(s));
+        }
+        userIds.add(processTask.getCreateUser());
+        userIds = userIds.stream().distinct().collect(Collectors.toList());
+        pushPeople(userIds, auditParam.getTaskId(), remarks);
     }
 
     @Override
@@ -362,7 +361,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     }
 
     @Override
-    public void addDynamic(String content){
+    public void addDynamic(String content) {
         RemarksParam remarksParam = new RemarksParam();
         remarksParam.setTaskId(0L);
         remarksParam.setType("dynamic");
