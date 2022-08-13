@@ -67,20 +67,5 @@ public class TestUpload {
     }
 
 
-    public ResponseData test() throws WxErrorException {
 
-
-        WxCpMessage wxCpMessage = new WxCpMessage();
-        wxCpMessage.setToUser("9a95a561fa96d4a7af2ad653e9a5e9d4|ChengYanqi|XuYiNing|RenYiTaiYu");
-        wxCpMessage.setMsgType("template_card");
-        TaskCardButton taskCardButton = new TaskCardButton();
-        taskCardButton.setKey("ok");
-        taskCardButton.setName("同意");
-//        wxCpMessage.setTaskButtons(new );
-
-
-        wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
-
-        return ResponseData.success();
-    }
 }
