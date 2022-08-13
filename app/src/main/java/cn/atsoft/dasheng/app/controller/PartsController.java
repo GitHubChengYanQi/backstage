@@ -163,7 +163,8 @@ public class PartsController extends BaseController {
         ToolUtil.copyProperties(detail, result);
 
         QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
-        erpPartsDetailQueryWrapper.in("parts_id", detail.getPartsId());
+        erpPartsDetailQueryWrapper.eq("parts_id", detail.getPartsId());
+        erpPartsDetailQueryWrapper.eq("display", 1);
         List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.list(erpPartsDetailQueryWrapper);
         List<ErpPartsDetailResult> erpPartsDetailParams = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
