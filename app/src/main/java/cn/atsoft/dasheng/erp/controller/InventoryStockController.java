@@ -132,6 +132,27 @@ public class InventoryStockController extends BaseController {
     }
 
 
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-07-15
+     */
+    @RequestMapping(value = "/historyList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<InventoryStockResult> historyList(@RequestBody(required = false) InventoryStockParam inventoryStockParam) {
+        if (ToolUtil.isEmpty(inventoryStockParam)) {
+            inventoryStockParam = new InventoryStockParam();
+        }
+        inventoryStockParam.setStatusList(new ArrayList<Integer>() {{
+            add(1);
+            add(99);
+            add(-1);
+        }});
+        return this.inventoryStockService.findPageBySpec(inventoryStockParam);
+    }
+
+
 }
 
 

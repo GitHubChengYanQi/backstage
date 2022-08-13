@@ -587,8 +587,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<InventoryStock> condition = condition(inventoryDetailParam);
         for (InventoryStock inventoryStock : condition) {
             if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
-                            && i.getBrandId().equals(inventoryStock.getBrandId())
-                            && i.getPositionId().equals(inventoryStock.getPositionId()))
+                    && i.getBrandId().equals(inventoryStock.getBrandId())
+                    && i.getPositionId().equals(inventoryStock.getPositionId()))
             ) {
                 all.add(inventoryStock);
             }
@@ -784,7 +784,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         if (ToolUtil.isNotEmpty(inventoryResult.getParticipants())) {   //参与人员
             List<Long> userIds = JSON.parseArray(inventoryResult.getParticipants(), Long.class);
-            List<User> users = userService.listByIds(userIds);
+            List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
             for (User user : users) {
                 String imgUrl = stepsService.imgUrl(user.getUserId().toString());
                 user.setAvatar(imgUrl);

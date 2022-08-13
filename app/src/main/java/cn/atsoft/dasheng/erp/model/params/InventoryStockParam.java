@@ -25,6 +25,8 @@ public class InventoryStockParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Integer> statusList;
+
     private String positionSort;
 
     private String skuName;

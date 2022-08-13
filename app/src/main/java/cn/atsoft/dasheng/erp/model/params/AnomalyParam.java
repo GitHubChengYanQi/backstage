@@ -28,6 +28,7 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer beginTime;
 
     private Long inventoryId;
 

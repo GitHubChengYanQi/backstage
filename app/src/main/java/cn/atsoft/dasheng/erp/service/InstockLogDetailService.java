@@ -72,5 +72,7 @@ public interface InstockLogDetailService extends IService<InstockLogDetail> {
 
     List<InstockLogDetailResult> resultsByLogIds(List<Long> logIds);
 
+    void format(List<InstockLogDetailResult> results);
+
     List<InstockLogDetailResult> getOutStockLogs(InstockLogDetailParam param);
 }

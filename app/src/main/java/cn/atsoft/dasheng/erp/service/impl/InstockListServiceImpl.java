@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.*;
@@ -18,7 +17,6 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
-import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -30,10 +28,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -45,8 +41,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, InstockList> implements InstockListService {
-    @Autowired
-    private InstockService instockService;
+
     @Autowired
     private StockService stockService;
     @Autowired
@@ -94,17 +89,6 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
 
-            InstockParam instockParam = new InstockParam();
-            instockParam.setState(1);
-            instockParam.setBrandId(newEntity.getBrandId());
-            instockParam.setSkuId(newEntity.getSkuId());
-            instockParam.setStoreHouseId(newEntity.getStoreHouseId());
-            instockParam.setCostPrice(newEntity.getCostPrice());
-            instockParam.setSellingPrice(newEntity.getSellingPrice());
-            instockParam.setNumber(param.getNum());
-            instockParam.setInstockOrderId(newEntity.getInstockOrderId());
-            instockParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
-            instockService.add(instockParam);
 
             Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, newEntity.getStoreHouseId())
                     .and(i -> i.eq(Stock::getSkuId, newEntity.getSkuId()))
@@ -253,7 +237,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockId = newStock.getStockId();
         }
         List<StockDetails> stockDetailsList = new ArrayList<>();
-        List<Instock> instocks = new ArrayList<>();
+
         for (InstockListRequest request : param.getRequests()) {
 
             Inkind inkind = request.getInkind();
@@ -272,19 +256,10 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             Long inkindId = getInkindId(request.getCodeId());
             stockDetail.setInkindId(inkindId);
             stockDetailsList.add(stockDetail);
-            //入库明细
-            Instock instock = new Instock();
-            instock.setState(1);
-            instock.setBrandId(request.getInkind().getBrandId());
-            instock.setSkuId(request.getInkind().getSkuId());
-            instock.setStoreHouseId(param.getStoreHouseId());
-            instock.setNumber(request.getInkind().getNumber());
-            instock.setInstockOrderId(instockList.getInstockOrderId());
-            instock.setStorehousePositionsId(param.getStorehousePositionsId());
-            instocks.add(instock);
+
         }
         stockDetailsService.saveBatch(stockDetailsList);
-        instockService.saveBatch(instocks);
+
         //修改入库单状态
         updateOrderState(param.getInstockOrderId());
     }

@@ -162,16 +162,19 @@ public class UcMemberController extends BaseController {
                         openUserInfo = new OpenUserInfo();
                     }
                     Long memberId = openUserInfo.getMemberId();
-                    WxuserInfo wxuserInfo = ToolUtil.isEmpty(memberId) ? new WxuserInfo() : wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").one();
-                    if (ToolUtil.isEmpty(wxuserInfo)) {
-                        wxuserInfo = new WxuserInfo();
+                    if (ToolUtil.isNotEmpty(memberId)) {
+                        WxuserInfo wxuserInfo =  wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").one();
+                        if (ToolUtil.isNotEmpty(wxuserInfo)) {
+                            User user = userService.getById(wxuserInfo.getUserId());
+                            if (ToolUtil.isNotEmpty(user)) {
+                                String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+                                user.setAvatar(imgUrl);
+                                users.add(user);
+                            }
+                        }
                     }
-                    User user = ToolUtil.isEmpty(wxuserInfo.getUserId()) ? new User() : userService.getById(wxuserInfo.getUserId());
-                    String imgUrl = appStepService.imgUrl(user.getUserId().toString());
-                    user.setAvatar(imgUrl);
-                    users.add(user);
                 }
-            } catch (WxErrorException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

@@ -118,6 +118,7 @@ public class InstockHandleController extends BaseController {
     @RequestMapping(value = "/listByInstockOrderId", method = RequestMethod.GET)
     @ApiOperation("列表")
     public ResponseData listByInstockOrderId(@RequestParam Long instockOrderId) {
+
         List<InstockHandle> instockHandles = this.instockHandleService.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
         List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
         List<InstockHandleResult> detailTotalList = new ArrayList<>();

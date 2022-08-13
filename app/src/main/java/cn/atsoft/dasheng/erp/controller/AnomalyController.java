@@ -65,9 +65,22 @@ public class AnomalyController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody AnomalyParam anomalyParam) {
-
-        Anomaly update = this.anomalyService.update(anomalyParam);
+         Anomaly update = this.anomalyService.update(anomalyParam);
         return ResponseData.success(update);
+    }
+
+
+    @RequestMapping(value = "/anomalyCensus", method = RequestMethod.POST)
+    public ResponseData anomalyCensus(@RequestBody AnomalyParam anomalyParam) {
+        Map<Integer, Integer> map = anomalyService.anomalyCensus(anomalyParam);
+        return ResponseData.success(map);
+    }
+
+
+    @RequestMapping(value = "/detailed", method = RequestMethod.POST)
+    public ResponseData detailed(@RequestBody AnomalyParam anomalyParam) {
+        Map<Integer, List<AnomalyResult>> detailed = anomalyService.detailed(anomalyParam);
+        return ResponseData.success(detailed);
     }
 
     /**

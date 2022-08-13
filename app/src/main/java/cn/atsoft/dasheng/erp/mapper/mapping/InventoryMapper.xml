@@ -24,11 +24,12 @@
         <result column="coding" property="coding"/>
         <result column="status" property="status"/>
         <result column="position_id" property="positionId"/>
+        <result column="complete" property="complete"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">participants
-    AS "participants",user_id AS "userId",coding AS "coding",status AS "status",  position_id AS "positionId",
+    AS "participants",user_id AS "userId",coding AS "coding",status AS "status",  position_id AS "positionId",complete AS "complete",
         notice
         AS "notice",end_time AS "endTime", begin_time AS "beginTime",mode AS "mode",method as "method",
         inventory_task_id
@@ -134,6 +135,9 @@
         </if>
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.complete != null and paramCondition.complete">
+            and complete = #{paramCondition.complete}
         </if>
     </select>
 

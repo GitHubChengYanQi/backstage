@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -34,6 +35,8 @@ public class InventoryStockResult implements Serializable {
     private BrandResult brandResult;
 
     private StorehousePositionsResult positionsResult;
+
+    private User User;
 
     @ApiModelProperty("")
     private Long inventoryStockId;

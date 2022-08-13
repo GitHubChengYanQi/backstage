@@ -24,6 +24,12 @@ public class InstockLogDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 单据id
+     */
+    @TableField("receipt_id")
+    private Long receiptId;
+
     @TableId(value = "instock_log_detail_id", type = IdType.ID_WORKER)
     private Long instockLogDetailId;
 
@@ -83,7 +89,7 @@ public class InstockLogDetail implements Serializable {
     @TableField("storehouse_id")
     private Long storehouseId;
 
-  /**
+    /**
      * 出售价格
      */
     @TableField("source")
@@ -131,6 +137,13 @@ public class InstockLogDetail implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Long getReceiptId() {
+        return receiptId;
+    }
+
+    public void setReceiptId(Long receiptId) {
+        this.receiptId = receiptId;
+    }
 
     public Long getInstockLogDetailId() {
         return instockLogDetailId;

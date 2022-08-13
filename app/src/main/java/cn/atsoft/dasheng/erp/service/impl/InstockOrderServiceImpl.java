@@ -161,6 +161,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private AllocationDetailService allocationDetailService;
     @Autowired
     private AllocationCartService allocationCartService;
+    @Autowired
+    private InstockReceiptService instockReceiptService;
 
 
     @Override
@@ -176,6 +178,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 throw new ServiceException(500, "请配置入库单据自动生成编码规则");
             }
         }
+
 
         /**
          * 附件
@@ -698,8 +701,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (!operat) {
             throw new ServiceException(500, "你没有入库权限");
         }
-
         inventoryService.staticState();  //静态盘点判断
+
+
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         List<InstockHandle> instockHandles = new ArrayList<>();
 
@@ -728,6 +732,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
             updateStatus(listParam);
         }
+
+        /**
+         * 生成入库单
+         */
+        instockReceiptService.addReceipt(param, instockLogDetails);
         /**
          *
          * 添加入库处理结果
@@ -1701,11 +1710,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      */
     @Override
     public void checkAllocationDone(ActivitiProcessTask processTask) {
-        String source = processTask.getSource();
-        String sourceId = processTask.getSourceId();
-
-        if (source.equals("ALLOCATION")) {
-            Allocation allocation = allocationService.getById(sourceId);
+        if ( ToolUtil.isNotEmpty(processTask.getSource()) && ToolUtil.isNotEmpty(processTask.getSourceId()) && processTask.getSource().equals("ALLOCATION")) {
+            Allocation allocation = allocationService.getById(processTask.getSourceId());
             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", processTask.getFormId()).list();
             List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("type", "carry").eq("allocation_id", allocation.getAllocationId()).list();
             List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("display", 1).eq("allocation_id", allocation.getAllocationId()).list();
@@ -1730,24 +1736,24 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //               }
 //           }else
 //               if(allocation.getType().equals("allocation")&&allocation.getAllocationType().equals(2)){
-               for (InstockList instockList : instockLists) {
-                   int number = Math.toIntExact(instockList.getNumber());
-                   for (AllocationCart cart : allocationCarts) {
-                       if (number > 0) {
-                           if (cart.getStatus().equals(98) && !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getStoreHouseId().equals(cart.getStorehouseId())) {
-                               int lastNumber = number;
-                               number = number - (cart.getNumber() - cart.getDoneNumber());
-                               if (number >= 0) {
-                                   cart.setDoneNumber(cart.getNumber());
-                                   cart.setStatus(99);
-                               } else {
-                                   cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
-                               }
-                           }
-                       }
+            for (InstockList instockList : instockLists) {
+                int number = Math.toIntExact(instockList.getNumber());
+                for (AllocationCart cart : allocationCarts) {
+                    if (number > 0) {
+                        if (cart.getStatus().equals(98) && !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getStoreHouseId().equals(cart.getStorehouseId())) {
+                            int lastNumber = number;
+                            number = number - (cart.getNumber() - cart.getDoneNumber());
+                            if (number >= 0) {
+                                cart.setDoneNumber(cart.getNumber());
+                                cart.setStatus(99);
+                            } else {
+                                cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
+                            }
+                        }
+                    }
 
-                   }
-               }
+                }
+            }
 //           }
             int detailCount = 0;
             int cartCount = 0;

@@ -43,6 +43,8 @@ public interface AsynTaskService extends IService<AsynTask> {
      */
     void update(AsynTaskParam param);
 
+    List<AsynTaskResult> BomDetailed();
+
     /**
      * 查询单条数据，Specification模式
      *

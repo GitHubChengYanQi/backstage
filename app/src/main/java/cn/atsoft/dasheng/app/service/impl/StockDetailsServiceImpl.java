@@ -4,8 +4,9 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.pojo.SpuClassDetail;
+import cn.atsoft.dasheng.app.pojo.StockCensus;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
-import cn.atsoft.dasheng.app.pojo.StockStatement;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -13,10 +14,7 @@ import cn.atsoft.dasheng.app.mapper.StockDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.Inkind;
-import cn.atsoft.dasheng.erp.entity.Maintenance;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.service.StepsService;
@@ -29,19 +27,13 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.atsoft.dasheng.task.entity.AsynTask;
-import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
-import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.core.date.DateTime;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -80,7 +72,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Autowired
     private InkindService inkindService;
     @Autowired
-    private MaintenanceLogService maintenanceLogService;
+    private MaintenanceLogDetailService maintenanceLogDetailService;
     @Autowired
     private MaintenanceService maintenanceService;
     @Autowired
@@ -89,9 +81,10 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private StepsService stepsService;
     @Autowired
     private OrCodeBindService codeBindService;
-
     @Autowired
     private StatementAsync statementAsync;
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -172,6 +165,128 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
         }
         return detailsResults;
+    }
+
+    @Override
+    public List<SpuClassDetail> detailed() {
+
+        List<StockDetailsResult> detailsResults = this.baseMapper.stockInKindList();
+        Map<Long, List<StockDetailsResult>> map = new HashMap<>();
+
+        for (StockDetailsResult detailsResult : detailsResults) {
+            List<StockDetailsResult> results = map.get(detailsResult.getSpuClassificationId());
+            if (ToolUtil.isEmpty(results)) {
+                results = new ArrayList<>();
+            }
+            results.add(detailsResult);
+            map.put(detailsResult.getSpuClassificationId(), results);
+        }
+
+        List<SpuClassDetail> spuClassDetails = new ArrayList<>();
+        for (Long spuClassId : map.keySet()) {
+            List<StockDetailsResult> stockDetailsResults = map.get(spuClassId);
+            SpuClassification spuClassification = spuClassificationService.getById(spuClassId);
+            SpuClassDetail spuClassDetail = new SpuClassDetail();
+            spuClassDetail.setSpuClass(spuClassification.getName());
+
+            Set<Long> num = new HashSet<>();
+            long count = 0;
+            Set<Long> normalNum = new HashSet<>();
+            Set<Long> errorNum = new HashSet<>();
+            long normalCount = 0;
+            long errorCount = 0;
+
+            List<Long> errorInkindIds = new ArrayList<>();
+            for (StockDetailsResult stockDetailsResult : stockDetailsResults) {
+                num.add(stockDetailsResult.getSkuId());
+                count = count + stockDetailsResult.getNum();
+                if (stockDetailsResult.getAnomaly() == 0) {
+                    normalNum.add(stockDetailsResult.getSkuId());
+                    normalCount = normalCount + stockDetailsResult.getNum();
+                } else {
+                    errorNum.add(stockDetailsResult.getSkuId());
+                    errorCount = errorCount + stockDetailsResult.getNum();
+                    errorInkindIds.add(stockDetailsResult.getInkindId());
+                }
+            }
+            spuClassDetail.setNum((long) num.size());
+            spuClassDetail.setCount(count);
+            spuClassDetail.setNormalNum((long) normalNum.size());
+            spuClassDetail.setNormalCount(normalCount);
+            spuClassDetail.setErrorNum((long) errorNum.size());
+            spuClassDetail.setErrorCount(errorCount);
+            spuClassDetail.setErrorInkindIds(errorInkindIds);
+            spuClassDetails.add(spuClassDetail);
+        }
+        return spuClassDetails;
+    }
+
+    /**
+     * 库存统计 轮播图
+     *
+     * @return
+     */
+    @Override
+    public List<StockCensus> stockCensus() {
+        List<StockCensus> stockCensuses = new ArrayList<>();
+
+        List<StockDetails> stock = this.getStock();
+        Set<Long> skuIds = new HashSet<>();
+        List<Long> inkindIds = new ArrayList<>();
+        long count = 0L;
+        for (StockDetails details : stock) {
+            skuIds.add(details.getSkuId());
+            count = count + details.getNumber();
+            inkindIds.add(details.getInkindId());
+        }
+
+        //库存所有类
+        StockCensus allSku = new StockCensus();
+        allSku.setName("skuNumber");
+        allSku.setNumber((long) skuIds.size());
+        stockCensuses.add(allSku);
+
+        //库存数
+        StockCensus stockCount = new StockCensus();
+        stockCount.setName("stockCount");
+        stockCount.setNumber(count);
+        stockCensuses.add(stockCount);
+
+        List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
+
+        long normal = 0L;
+        long error = 0L;
+        Set<Long> normalSkuNum = new HashSet<>();
+        Set<Long> errorSkuNum = new HashSet<>();
+        for (Inkind inkind : inkinds) {
+            for (StockDetails details : stock) {
+                if (details.getInkindId().equals(inkind.getInkindId())) {
+                    if (inkind.getAnomaly() == 0) {
+                        normalSkuNum.add(inkind.getSkuId());
+                        normal = normal+details.getNumber();
+                    } else {
+                        errorSkuNum.add(inkind.getSkuId());
+                        error = error+details.getNumber();
+                    }
+                }
+
+            }
+        }
+        //正常数
+        StockCensus normalCount = new StockCensus();
+        normalCount.setName("normal");
+        normalCount.setNumber(normal);
+        normalCount.setTypeNum((long) normalSkuNum.size());
+        stockCensuses.add(normalCount);
+
+        //异常数
+        StockCensus errorCount = new StockCensus();
+        errorCount.setName("error");
+        errorCount.setNumber(error);
+        errorCount.setTypeNum((long) errorSkuNum.size());
+        stockCensuses.add(errorCount);
+
+        return stockCensuses;
     }
 
 
@@ -378,24 +493,50 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public Integer getNumberByStock(Long skuId, Long brandId, Long positionId) {
-
         return this.baseMapper.getNumberByStock(skuId, brandId, positionId);
-//        StockDetails details = this.query().select("sum(number) as num ")
-//                .eq("sku_id", skuId)
-//                .eq("brand_id", brandId)
-//                .eq("storehouse_positions_id", positionId)
-//                .groupBy("sku_id", "brand_id", "storehouse_positions_id")
-//                .eq("display", 1)
-//                .one();
-//        if (ToolUtil.isNotEmpty(details)) {
-//            return Math.toIntExact(details.getNum());
-//        }
-//        return 0;
     }
 
     @Override
     public List<StockDetailsResult> getStockNumberBySkuId(Long skuId, Long storehouseId) {
         List<StockDetails> details = this.query().eq("storehouse_id", storehouseId).eq("sku_id", skuId).list();
+        List<StockDetails> totalList = new ArrayList<>();
+        List<ProductionPickListsCart> carts = pickListsCartService.query().eq("display", 1).eq("status", 0).list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (ProductionPickListsCart cart : carts) {
+            inkindIds.add(cart.getInkindId());
+        }
+
+        for (Long inkindId : inkindIds) {
+            details.removeIf(i -> i.getInkindId().equals(inkindId));
+        }
+        details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                        setBrandId(a.getBrandId());
+                        setStorehouseId(a.getStorehouseId());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+        List<StockDetailsResult> results = totalList.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(totalList, StockDetailsResult.class);
+        this.format(results);
+        return results;
+    }
+
+    @Override
+    public List<StockDetailsResult> getStockNumberBySkuId(StockDetailsParam param) {
+        if (ToolUtil.isEmpty(param.getSkuId())) {
+            return new ArrayList<>();
+        }
+        List<StockDetails> details = new ArrayList<>();
+        if (ToolUtil.isEmpty(param.getBrandIds()) || param.getBrandIds().size() == 0) {
+            details = this.query().eq("sku_id", param.getSkuId()).eq("display", 1).list();
+
+        } else {
+            details = this.query().in("brand_id", param.getBrandIds()).eq("sku_id", param.getSkuId()).eq("display", 1).list();
+        }
         List<StockDetails> totalList = new ArrayList<>();
         List<ProductionPickListsCart> carts = pickListsCartService.query().eq("display", 1).eq("status", 0).list();
         List<Long> inkindIds = new ArrayList<>();
@@ -481,7 +622,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             userIds.add(datum.getCreateUser());
         }
         List<OrCodeBind> codeBinds = inkindIds.size() == 0 ? new ArrayList<>() : codeBindService.query().in("form_id", inkindIds).list();
-        List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogService.lastLogByInkindIds(inkindIds);
+        List<MaintenanceLogDetailResult> maintenanceLogDetailResults = maintenanceLogDetailService.lastLogByInkindIds(inkindIds);
         List<CustomerResult> results = customerService.getResults(customerIds);
         List<StorehousePositionsResult> positions = positionsService.details(pIds);
         List<StorehouseResult> storehouseResults = storehouseService.getDetails(stoIds);
@@ -507,9 +648,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 }
             }
 
-            for (MaintenanceLogResult maintenanceLogResult : maintenanceLogResults) {
-                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(maintenanceLogResult.getInkindId())) {
-                    datum.setMaintenanceLogResult(maintenanceLogResult);
+            for (MaintenanceLogDetailResult maintenanceLogDetailResult : maintenanceLogDetailResults) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(maintenanceLogDetailResult.getInkindId())) {
+                    datum.setMaintenanceLogDetailResult(maintenanceLogDetailResult);
                 }
             }
             for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {

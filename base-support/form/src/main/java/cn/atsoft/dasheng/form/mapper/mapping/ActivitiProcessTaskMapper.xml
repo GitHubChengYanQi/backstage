@@ -55,7 +55,9 @@
             source_id AS "source_id"
     </sql>
     <sql id="Left_Join_Column_List">
-        activiti_process_task.process_task_id
+        activiti_process_task
+        .
+        process_task_id
         AS "processTaskId",
 	    activiti_process_task.form_id AS "formId",
 	    activiti_process_task.type AS "type",
@@ -133,12 +135,13 @@
         select
         <include refid="Left_Join_Column_List"/>
         from activiti_process_task
-        LEFT JOIN daoxin_production_pick_lists on activiti_process_task.form_id = daoxin_production_pick_lists.pick_lists_id
+        LEFT JOIN daoxin_production_pick_lists on activiti_process_task.form_id =
+        daoxin_production_pick_lists.pick_lists_id
         where 1 = 1 and activiti_process_task.display = 1
         <if test="paramCondition.userId != null and paramCondition.userId != ''">
             and daoxin_production_pick_lists.user_id = #{paramCondition.userId}
         </if>
-          <if test="paramCondition.type != null and paramCondition.type != ''">
+        <if test="paramCondition.type != null and paramCondition.type != ''">
             and activiti_process_task.type = #{paramCondition.type}
         </if>
 
@@ -191,6 +194,8 @@
             CONCAT('%',#{paramCondition.skuName},'%')
             union
             select order_id from daoxin_anomaly_order where coding like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select inventory_task_id from daoxin_erp_inventory where coding like CONCAT('%',#{paramCondition.skuName},'%')
             union
             select pick_lists_id from daoxin_production_pick_lists where coding like
             CONCAT('%',#{paramCondition.skuName},'%')
