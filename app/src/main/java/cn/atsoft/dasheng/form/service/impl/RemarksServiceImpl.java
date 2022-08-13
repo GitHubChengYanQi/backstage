@@ -225,19 +225,40 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
          */
         ActivitiProcessTask processTask = taskService.getById(auditParam.getTaskId());
         if (ToolUtil.isNotEmpty(processTask)) {
-            shopCartService.addDynamic(processTask.getFormId(), "添加了评论");
+            shopCartService.addDynamic(processTask.getFormId(), "发布了评论");
         }
+
+        wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+            setFunction(MarkDownTemplateTypeEnum.toPerson);
+            setType(2);
+            setItems("收到评论");
+            setDescription(LoginContextHolder.getContext().getUser().getName()+"发布了评论");
+            setCreateTime(remarks.getCreateTime());
+            setTaskId(processTask.getProcessTaskId());
+            setDescription(remarks.getContent());
+            setSource("processTask");
+            setSourceId(processTask.getProcessTaskId());
+            setUserId(remarks.getCreateUser());
+            setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + processTask.getProcessTaskId());
+            setUserIds(new ArrayList<Long>(){{
+                add(processTask.getCreateUser());
+            }});
+            setCreateUser(remarks.getCreateUser());
+
+        }});
+
+
         if (ToolUtil.isEmpty(auditParam.getUserIds())) {
-            auditParam.setUserIds(processTask.getCreateUser().toString());
+            String[] split = auditParam.getUserIds().split(",");
+            List<Long> userIds = new ArrayList<>();
+            for (String s : split) {
+                userIds.add(Long.valueOf(s));
+            }
+            userIds.add(processTask.getCreateUser());
+            userIds = userIds.stream().distinct().collect(Collectors.toList());
+            pushPeople(userIds, auditParam.getTaskId(), remarks);
         }
-        String[] split = auditParam.getUserIds().split(",");
-        List<Long> userIds = new ArrayList<>();
-        for (String s : split) {
-            userIds.add(Long.valueOf(s));
-        }
-        userIds.add(processTask.getCreateUser());
-        userIds = userIds.stream().distinct().collect(Collectors.toList());
-        pushPeople(userIds, auditParam.getTaskId(), remarks);
+
     }
 
     @Override
