@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -234,6 +235,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
             }
+            userIds.add(processTask.getCreateUser());
+            userIds = userIds.stream().distinct().collect(Collectors.toList());
             pushPeople(userIds, auditParam.getTaskId(), remarks);
         }
     }
