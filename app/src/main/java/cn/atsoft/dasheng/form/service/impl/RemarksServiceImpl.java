@@ -248,7 +248,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         }});
 
 
-        if (ToolUtil.isEmpty(auditParam.getUserIds())) {
+        if (ToolUtil.isNotEmpty(auditParam.getUserIds())) {
             String[] split = auditParam.getUserIds().split(",");
             List<Long> userIds = new ArrayList<>();
             for (String s : split) {
