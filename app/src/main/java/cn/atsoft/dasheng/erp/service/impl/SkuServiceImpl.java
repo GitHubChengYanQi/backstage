@@ -662,7 +662,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
         List<ErpPartsDetail> partsDetailList =skuIds.size() == 0 ? new ArrayList<>() : partsDetailService.query().in("sku_id", skuIds).eq("display",1).list();
-        List<Parts> partList =skuIds.size() == 0 ? new ArrayList<>() : partsService.lambdaQuery().in(Parts::getSkuId, skuIds).and(i -> i.eq(Parts::getDisplay, 1)).list();
+        List<Long>partsIds = new ArrayList<>();
+        for (ErpPartsDetail erpPartsDetail : partsDetailList) {
+            partsIds.add(erpPartsDetail.getPartsId());
+        }
+        List<Parts> parts =partsIds.size() == 0 ? new ArrayList<>() : partsService.listByIds(partsIds);
+        for (Parts part : parts) {
+            if (!part.getStatus().equals(99) || part.getDisplay().equals(0)){
+                parts.removeIf(i->i.getPartsId().equals(part.getPartsId()));
+            }
+        }
+        List<Parts> partList =skuIds.size() == 0 ? new ArrayList<>() : partsService.lambdaQuery().in(Parts::getSkuId, skuIds).and(i -> i.eq(Parts::getDisplay, 1)).and(i -> i.eq(Parts::getStatus, 99)).list();
         if (ToolUtil.isNotEmpty(partsDetailList) || ToolUtil.isNotEmpty(partList)) {
             throw new ServiceException(500, "清单中有此物品数据,删除终止");
         }
