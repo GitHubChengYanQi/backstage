@@ -5,10 +5,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
@@ -66,6 +63,8 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     private UserService userService;
     @Autowired
     private ActivitiStepsService activitiStepsService;
+    @Autowired
+    private ActivitiProcessTaskService taskService;
 
     @Override
     @Transactional
@@ -187,6 +186,14 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
             }
 
         }
+        if (ToolUtil.isNotEmpty(taskId)) {
+            ActivitiProcessTask processTask = taskService.getById(taskId);
+            if (ToolUtil.isNotEmpty(processTask) && ToolUtil.isNotEmpty(processTask.getUserIds())) {
+                userIds.addAll(JSON.parseArray(processTask.getUserIds(), Long.class));
+            }
+        }
+
+
         return userIds;
     }
 
@@ -207,6 +214,7 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
     public void power(ActivitiProcess activitiProcess) {
         ActivitiSteps startSteps = activitiStepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
@@ -229,6 +237,7 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
         }
         return false;
     }
+
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
 
