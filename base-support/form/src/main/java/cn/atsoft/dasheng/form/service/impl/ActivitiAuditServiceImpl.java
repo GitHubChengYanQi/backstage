@@ -169,7 +169,8 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     @Override
     public List<Long> getUserIds(Long taskId) {
         List<Long> userIds = new ArrayList<>();
-
+        Long userId = LoginContextHolder.getContext().getUserId();
+        List<Long> depts = LoginContextHolder.getContext().getDeptDataScope();
         List<ActivitiProcessLog> processLogs = ToolUtil.isEmpty(taskId) ? new ArrayList<>() : processLogService.query().eq("task_id", taskId).list();
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : processLogs) {
@@ -180,6 +181,15 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
             AuditRule rule = activitiAudit.getRule();
 
             for (AuditRule.Rule ruleRule : rule.getRules()) {
+
+                if (ToolUtil.isNotEmpty(ruleRule.getDeptPositions())) {
+                    for (Long dept : depts) {
+                        if (ruleRule.getDeptPositions().stream().anyMatch(i -> i.getKey().equals(dept.toString()))) {
+                            userIds.add(userId);
+                        }
+                    }
+                }
+
                 for (AppointUser appointUser : ruleRule.getAppointUsers()) {
                     userIds.add(Long.valueOf(appointUser.getKey()));
                 }
