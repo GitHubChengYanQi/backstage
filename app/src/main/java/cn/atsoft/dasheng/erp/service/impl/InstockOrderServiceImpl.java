@@ -801,6 +801,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             inkind.setSourceId(listParam.getInstockListId());
             inkind.setType("1");
             inkind.setBrandId(listParam.getBrandId());
+            inkind.setPositionId(listParam.getStorehousePositionsId());
             inkinds.add(inkind);
 
             OrCode orCode = new OrCode();    //创建二维码
@@ -921,6 +922,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @return
      */
     private Long createInKind(InstockListParam param) {
+
+        if (ToolUtil.isEmpty(param.getStorehousePositionsId())) {
+            throw new ServiceException(500, "库位不能为空");
+        }
+
         Inkind inkind = new Inkind();
         inkind.setNumber(param.getNumber());
         inkind.setSkuId(param.getSkuId());
@@ -928,9 +934,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         inkind.setSource("入库");
         inkind.setLastMaintenanceTime(new DateTime());
         inkind.setSourceId(param.getInstockListId());
+        inkind.setPositionId(param.getStorehousePositionsId());
         inkind.setType("1");
         inkind.setLastMaintenanceTime(new DateTime());
         inkind.setBrandId(param.getBrandId());
+
         inkindService.save(inkind);
 
         OrCode orCode = new OrCode();
