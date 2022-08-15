@@ -88,25 +88,25 @@ public class OrderReplace {
             XWPFTableRow newRow = xwpfTable.createRow();        //创建新行
 
 
-
             for (XWPFTableCell tableCell : row.getTableCells()) {
                 String text = tableCell.getText();
 
-                XWPFTableCell cell = newRow.createCell();//创建新列
+                XWPFTableCell cell = newRow.addNewTableCell();  //创建新列
+//                XWPFTableCell cell = newRow.createCell();
 
-                cell.getParagraphs().get(0).getCTP().setPPr(tableCell.getParagraphs().get(0).getCTP().getPPr());
-                if (tableCell.getParagraphs().get(0).getRuns() != null && tableCell.getParagraphs().get(0).getRuns().size() > 0) {
-                    XWPFRun cellR = cell.getParagraphs().get(0).createRun();
-                    cellR.setText(text);
-                    cellR.setBold(tableCell.getParagraphs().get(0).getRuns().get(0).isBold());
-                } else {
-                    cell.setText(tableCell.getText());
-                }
+//                cell.getParagraphs().get(0).getCTP().setPPr(tableCell.getParagraphs().get(0).getCTP().getPPr());
+//                if (tableCell.getParagraphs().get(0).getRuns() != null && tableCell.getParagraphs().get(0).getRuns().size() > 0) {
+//                    XWPFRun cellR = cell.getParagraphs().get(0).createRun();
+//                    cellR.setText(text);
+//                    cellR.setBold(tableCell.getParagraphs().get(0).getRuns().get(0).isBold());
+//                } else {
+                cell.setText(text);
+//                }
             }
-            setTableLocation(xwpfTable, "center");
         }
-
+        setTableLocation(xwpfTable, "center");
     }
+
     /**
      * 设置表格位置
      *
@@ -114,9 +114,6 @@ public class OrderReplace {
      * @param location  整个表格居中center,left居左，right居右，both两端对齐
      */
     public static void setTableLocation(XWPFTable xwpfTable, String location) {
-
-        XWPFTableRow xwpfTableRow = xwpfTable.insertNewTableRow(2);  //新行
-
 
         CTTbl cttbl = xwpfTable.getCTTbl();
         CTTblPr tblpr = cttbl.getTblPr() == null ? cttbl.addNewTblPr() : cttbl.getTblPr();
