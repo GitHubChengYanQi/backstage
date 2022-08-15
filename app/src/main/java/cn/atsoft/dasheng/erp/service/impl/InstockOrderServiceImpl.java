@@ -311,7 +311,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库申请");
             activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
-            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setUserId(entity.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
             if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {
@@ -1710,7 +1710,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      */
     @Override
     public void checkAllocationDone(ActivitiProcessTask processTask) {
-        if ( ToolUtil.isNotEmpty(processTask.getSource()) && ToolUtil.isNotEmpty(processTask.getSourceId()) && processTask.getSource().equals("ALLOCATION")) {
+        if (ToolUtil.isNotEmpty(processTask.getSource()) && ToolUtil.isNotEmpty(processTask.getSourceId()) && processTask.getSource().equals("ALLOCATION")) {
             Allocation allocation = allocationService.getById(processTask.getSourceId());
             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", processTask.getFormId()).list();
             List<AllocationCart> allocationCarts = allocationCartService.query().eq("display", 1).eq("type", "carry").eq("allocation_id", allocation.getAllocationId()).list();
