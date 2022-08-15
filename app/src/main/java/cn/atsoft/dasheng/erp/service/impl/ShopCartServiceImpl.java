@@ -183,7 +183,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 //                    anomalyService.updateById(error);
 //                    instockList = instockListService.getById(error.getSourceId());
 //                    break;
-
+                default:
+                    throw new ServiceException(500,"错误");
             }
             if (instockList != null) {
                 instockList.setStatus(0L);
