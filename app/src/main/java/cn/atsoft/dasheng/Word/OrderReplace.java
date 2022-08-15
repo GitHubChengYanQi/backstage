@@ -84,32 +84,29 @@ public class OrderReplace {
                 break;
             }
 
-
             XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
+            XWPFTableRow newRow = xwpfTable.createRow();        //创建新行
 
-            List<XWPFTableCell> tableCells = row.getTableCells();
-            int size1 = tableCells.size();
 
-            for (int i1 = 0; i1 < size1; i1++) {
-                String text = row.getCell(i1).getText();
-                XWPFTableRow newRow = xwpfTable.createRow();
-                newRow.getCell(0).setText(text);
-                setTableLocation(xwpfTable, "center");
+
+            for (XWPFTableCell tableCell : row.getTableCells()) {
+                String text = tableCell.getText();
+
+                XWPFTableCell cell = newRow.createCell();//创建新列
+
+                cell.getParagraphs().get(0).getCTP().setPPr(tableCell.getParagraphs().get(0).getCTP().getPPr());
+                if (tableCell.getParagraphs().get(0).getRuns() != null && tableCell.getParagraphs().get(0).getRuns().size() > 0) {
+                    XWPFRun cellR = cell.getParagraphs().get(0).createRun();
+                    cellR.setText(text);
+                    cellR.setBold(tableCell.getParagraphs().get(0).getRuns().get(0).isBold());
+                } else {
+                    cell.setText(tableCell.getText());
+                }
             }
-
-//            String text = row.getCell(0).getText();
-//            XWPFTableRow newRow = xwpfTable.createRow();            //创建新航
-//            newRow.getCell(0).setText(text);
-//            setTableLocation(xwpfTable, "center");
-
+            setTableLocation(xwpfTable, "center");
         }
 
-
-        //   }
-
-
     }
-
     /**
      * 设置表格位置
      *
@@ -124,7 +121,6 @@ public class OrderReplace {
         CTTbl cttbl = xwpfTable.getCTTbl();
         CTTblPr tblpr = cttbl.getTblPr() == null ? cttbl.addNewTblPr() : cttbl.getTblPr();
         CTJc cTJc = tblpr.addNewJc();
-
 
 
         cTJc.setVal(STJc.Enum.forString(location));
