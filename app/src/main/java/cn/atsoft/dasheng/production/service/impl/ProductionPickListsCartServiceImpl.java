@@ -14,7 +14,9 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.ShopCartService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -89,6 +91,8 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     private ShopCartService shopCartService;
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private InkindService inkindService;
 
 
     @Override
@@ -116,8 +120,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             int number = productionPickListsCartParam.getNumber();
 
             if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
+                Inkind inkind = inkindService.getById(param.getInkindId());
                 ProductionPickListsCart entity = new ProductionPickListsCart();
                 entity.setPickListsId(productionPickListsCartParam.getPickListsId());
+                entity.setCustomerId(inkind.getCustomerId());
                 entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                 entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
                 entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());
@@ -148,6 +154,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                 entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());
                                 entity.setType(productionPickListsCartParam.getType());
                                 entity.setInkindId(stockDetail.getInkindId());
+                                entity.setCustomerId(stockDetail.getCustomerId());
                                 entitys.add(entity);
                             } else {
                                 ProductionPickListsCart entity = new ProductionPickListsCart();
@@ -162,6 +169,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                 entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                                 entity.setType(productionPickListsCartParam.getType());
                                 entity.setInkindId(stockDetail.getInkindId());
+                                entity.setCustomerId(stockDetail.getCustomerId());
                                 entitys.add(entity);
                             }
 

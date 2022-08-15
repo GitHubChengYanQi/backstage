@@ -25,6 +25,7 @@ import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
@@ -106,7 +107,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private StepsService stepsService;
     @Autowired
     private DocumentStatusService statusService;
-
 
 
     @Override
@@ -214,12 +214,12 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 stockIds = stockIds.stream().distinct().collect(Collectors.toList());
 
                 //入库单
-                InstockOrderParam instockOrderParam = new InstockOrderParam();
-                instockOrderParam.setSource("ALLOCATION");
-                instockOrderParam.setSourceId(allocationId);
-                instockOrderParam.setType("调拨入库");
-                instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
-                List<InstockListParam> listParams = new ArrayList<>();
+//                InstockOrderParam instockOrderParam = new InstockOrderParam();
+//                instockOrderParam.setSource("ALLOCATION");
+//                instockOrderParam.setSourceId(allocationId);
+//                instockOrderParam.setType("调拨入库");
+//                instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
+//                List<InstockListParam> listParams = new ArrayList<>();
 
                 for (Long stockId : stockIds) {
                     ProductionPickListsParam listsParam = new ProductionPickListsParam();
@@ -228,17 +228,20 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     listsParam.setSource("ALLOCATION");
                     listsParam.setSourceId(allocationId);
                     List<ProductionPickListsDetailParam> details = new ArrayList<>();
+                    List<AllocationCart> updateCart = new ArrayList<>();
                     for (AllocationCart allocationCart : allocationCarts) {
                         if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isEmpty(allocationCart.getStorehousePositionsId())) {
                             ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
                             ToolUtil.copyProperties(allocationCart, listsDetailParam);
+                            listsDetailParam.setStatus(0);
                             details.add(listsDetailParam);
-                            InstockListParam instockListParam = new InstockListParam();
-                            ToolUtil.copyProperties(allocationCart, instockListParam);
-                            instockListParam.setCartId(allocationCart.getAllocationCartId());
-                            instockListParam.setStoreHouseId(allocation.getStorehouseId());
-                            listParams.add(instockListParam);
+//                            InstockListParam instockListParam = new InstockListParam();
+//                            ToolUtil.copyProperties(allocationCart, instockListParam);
+//                            instockListParam.setCartId(allocationCart.getAllocationCartId());
+//                            instockListParam.setStoreHouseId(allocation.getStorehouseId());
+//                            listParams.add(instockListParam);
                             allocationCart.setStatus(98);
+                            updateCart.add(allocationCart);
                         }
                     }
                     if (details.size() > 0) {
@@ -253,45 +256,52 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                                 }
                         );
                         listsParam.setPickListsDetailParams(pickListsDetailParams);
-                        productionPickListsService.add(listsParam);
+                        ProductionPickLists pickLists = productionPickListsService.add(listsParam);
+                        for (AllocationCart allocationCart : updateCart) {
+                            //TODO setPickListsId 方便对应生成入库单时查找
+                            allocationCart.setPickListsId(pickLists.getPickListsId());
+                        }
+                        allocationCartService.updateBatchById(updateCart);
+
                     }
                 }
-                List<InstockListParam> instockListParams = new ArrayList<>();
-                listParams.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId() + "_" + i.getCustomerId(), Collectors.toList())).forEach(
-                        (id, transfer) -> {
-                            transfer.stream().reduce((a, b) -> new InstockListParam() {{
-                                setSkuId(a.getSkuId());
-                                setBrandId(a.getBrandId());
-                                setNumber(a.getNumber() + b.getNumber());
-                                setCustomerId(a.getCustomerId());
-                            }}).ifPresent(instockListParams::add);
-                        }
-                );
-                instockOrderParam.setListParams(instockListParams);
-                if (listParams.size() > 0) {
-                    instockOrderService.add(instockOrderParam);
-                }
+//                List<InstockListParam> instockListParams = new ArrayList<>();
+//                listParams.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId() + "_" + i.getCustomerId(), Collectors.toList())).forEach(
+//                        (id, transfer) -> {
+//                            transfer.stream().reduce((a, b) -> new InstockListParam() {{
+//                                setSkuId(a.getSkuId());
+//                                setBrandId(a.getBrandId());
+//                                setNumber(a.getNumber() + b.getNumber());
+//                                setCustomerId(a.getCustomerId());
+//                            }}).ifPresent(instockListParams::add);
+//                        }
+//                );
+//                instockOrderParam.setListParams(instockListParams);
+//                if (listParams.size() > 0) {
+//                    instockOrderService.add(instockOrderParam);
+//                }
             } else if (allocation.getAllocationType() == 2) {
                 List<Long> stockIds = new ArrayList<>();
                 for (AllocationCart allocationCart : allocationCarts) {
                     stockIds.add(allocationCart.getStorehouseId());
                 }
                 stockIds = stockIds.stream().distinct().collect(Collectors.toList());
-                ProductionPickListsParam listsParam = new ProductionPickListsParam();
-                listsParam.setPickListsName(allocation.getAllocationName());
-                listsParam.setUserId(allocation.getUserId());
-                listsParam.setSource("ALLOCATION");
-                listsParam.setSourceId(allocationId);
-                List<ProductionPickListsDetailParam> details = new ArrayList<>();
+//                ProductionPickListsParam listsParam = new ProductionPickListsParam();
+//                listsParam.setPickListsName(allocation.getAllocationName());
+//                listsParam.setUserId(allocation.getUserId());
+//                listsParam.setSource("ALLOCATION");
+//                listsParam.setSourceId(allocationId);
+//                List<ProductionPickListsDetailParam> details = new ArrayList<>();
                 //入库单
 
                 for (Long stockId : stockIds) {
-                    InstockOrderParam instockOrderParam = new InstockOrderParam();
-                    instockOrderParam.setSource("ALLOCATION");
-                    instockOrderParam.setType("调拨入库");
-                    instockOrderParam.setSourceId(allocationId);
-                    instockOrderParam.setStoreHouseId(stockId);
-                    List<InstockListParam> listParams = new ArrayList<>();
+                    ProductionPickListsParam listsParam = new ProductionPickListsParam();
+                    listsParam.setPickListsName(allocation.getAllocationName());
+                    listsParam.setUserId(allocation.getUserId());
+                    listsParam.setSource("ALLOCATION");
+                    listsParam.setSourceId(allocationId);
+                    List<ProductionPickListsDetailParam> details = new ArrayList<>();
+                    List<AllocationCart> updateCart = new ArrayList<>();
                     for (AllocationCart allocationCart : allocationCarts) {
                         if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isEmpty(allocationCart.getStorehousePositionsId())) {
                             ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
@@ -301,43 +311,64 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             InstockListParam instockListParam = new InstockListParam();
                             instockListParam.setStoreHouseId(stockId);
                             ToolUtil.copyProperties(allocationCart, instockListParam);
+                            instockListParam.setStatus(0L);
                             instockListParam.setCartId(allocationCart.getAllocationCartId());
                             instockListParam.setStoreHouseId(allocation.getStorehouseId());
-                            listParams.add(instockListParam);
+//                            listParams.add(instockListParam);
                             allocationCart.setStatus(98);
+                            updateCart.add(allocationCart);
+
                         }
                     }
-                    List<InstockListParam> instockListParams = new ArrayList<>();
-                    listParams.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId() + "_" + i.getCustomerId(), Collectors.toList())).forEach(
-                            (id, transfer) -> {
-                                transfer.stream().reduce((a, b) -> new InstockListParam() {{
-                                    setSkuId(a.getSkuId());
-                                    setBrandId(a.getBrandId());
-                                    setNumber(a.getNumber() + b.getNumber());
-                                    setCustomerId(a.getCustomerId());
-                                }}).ifPresent(instockListParams::add);
-                            }
-                    );
-                    instockOrderParam.setListParams(instockListParams);
-                    if (listParams.size() > 0) {
-                        instockOrderService.add(instockOrderParam);
+                    if (details.size() > 0) {
+                        List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+                        details.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId(), Collectors.toList())).forEach(
+                                (id, transfer) -> {
+                                    transfer.stream().reduce((a, b) -> new ProductionPickListsDetailParam() {{
+                                        setSkuId(a.getSkuId());
+                                        setBrandId(a.getBrandId());
+                                        setNumber(a.getNumber() + b.getNumber());
+                                    }}).ifPresent(pickListsDetailParams::add);
+                                }
+                        );
+                        listsParam.setPickListsDetailParams(pickListsDetailParams);
+                        ProductionPickLists pickLists = productionPickListsService.add(listsParam);
+                        for (AllocationCart cart : updateCart) {
+                            cart.setPickListsId(pickLists.getPickListsId());
+                        }
+                        allocationCartService.updateBatchById(updateCart);
                     }
+//                    List<InstockListParam> instockListParams = new ArrayList<>();
+//                    listParams.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId() + "_" + i.getCustomerId(), Collectors.toList())).forEach(
+//                            (id, transfer) -> {
+//                                transfer.stream().reduce((a, b) -> new InstockListParam() {{
+//                                    setSkuId(a.getSkuId());
+//                                    setBrandId(a.getBrandId());
+//                                    setNumber(a.getNumber() + b.getNumber());
+//                                    setCustomerId(a.getCustomerId());
+//                                }}).ifPresent(instockListParams::add);
+//                            }
+//                    );
+//                    instockOrderParam.setListParams(instockListParams);
+//                    if (listParams.size() > 0) {
+//                        instockOrderService.add(instockOrderParam);
+//                    }
 
                 }
-                if (details.size() > 0) {
-                    List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
-                    details.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId(), Collectors.toList())).forEach(
-                            (id, transfer) -> {
-                                transfer.stream().reduce((a, b) -> new ProductionPickListsDetailParam() {{
-                                    setSkuId(a.getSkuId());
-                                    setBrandId(a.getBrandId());
-                                    setNumber(a.getNumber() + b.getNumber());
-                                }}).ifPresent(pickListsDetailParams::add);
-                            }
-                    );
-                    listsParam.setPickListsDetailParams(pickListsDetailParams);
-                    productionPickListsService.add(listsParam);
-                }
+//                if (details.size() > 0) {
+//                    List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+//                    details.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId(), Collectors.toList())).forEach(
+//                            (id, transfer) -> {
+//                                transfer.stream().reduce((a, b) -> new ProductionPickListsDetailParam() {{
+//                                    setSkuId(a.getSkuId());
+//                                    setBrandId(a.getBrandId());
+//                                    setNumber(a.getNumber() + b.getNumber());
+//                                }}).ifPresent(pickListsDetailParams::add);
+//                            }
+//                    );
+//                    listsParam.setPickListsDetailParams(pickListsDetailParams);
+//                    productionPickListsService.add(listsParam);
+//                }
             }
 
         }
@@ -418,8 +449,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         Long storehousePositionsId = param.getStorehousePositionsId();
         Long toStorehousePositionsId = param.getToStorehousePositionsId();
         List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuId).eq("brand_id", brandId).eq("storehouse_positions_id", storehousePositionsId).eq("display", 1).list();
-        if (stockDetails.size() == 0){
-            throw new ServiceException(500,"库存数量不足 无法调用");
+        if (stockDetails.size() == 0) {
+            throw new ServiceException(500, "库存数量不足 无法调用");
         }
         List<AllocationLogDetail> allocationLogDetails = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getAllocationId())) {
@@ -451,7 +482,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             allocationLogDetails.add(allocationLogDetail);
                             stockDetail.setStorehousePositionsId(param.getToStorehousePositionsId());
                             stockDetailsService.updateById(stockDetail);
-                            this.checkCartNumber(param,allCarts,allocation, Math.toIntExact(stockDetail.getNumber()));
+                            this.checkCartNumber(param, allCarts, allocation, Math.toIntExact(stockDetail.getNumber()));
                         } else {
                             //拆分实物创建新的实物
                             Inkind inkind = new Inkind();
@@ -483,7 +514,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             stockDetailEntity.setBrandId(stockDetail.getBrandId());
                             stockDetailsService.save(stockDetailEntity);
                             stockDetailsService.updateById(stockDetail);
-                            this.checkCartNumber(param,allCarts,allocation,kickNum);
+                            this.checkCartNumber(param, allCarts, allocation, kickNum);
                         }
                     }
                 }
@@ -555,7 +586,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     }
 
 
-    private void checkCartNumber(AllocationCartParam param,List<AllocationCart> allCarts,Allocation allocation,Integer number){
+    private void checkCartNumber(AllocationCartParam param, List<AllocationCart> allCarts, Allocation allocation, Integer number) {
         /**
          * 处理 carts DoneNumber
          */
@@ -671,7 +702,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         }
         allocationDetailService.updateBatchById(details);
         allocationCartService.updateBatchById(carts);
-        this.createPickListsAndInStockOrder(param.getAllocationId(),carts);
+        this.createPickListsAndInStockOrder(param.getAllocationId(), carts);
         details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
         if (details.stream().noneMatch(i -> i.getStatus().equals(0))) {
             checkCart(allocation.getAllocationId());
@@ -696,7 +727,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             int number = Math.toIntExact(instockList.getNumber());
             for (AllocationCart allocationCart : allocationCarts) {
                 if (number > 0) {
-                    if (allocationCart.getStatus().equals(98) && instockList.getStoreHouseId().equals(allocationCart.getStorehouseId()) && instockList.getSkuId().equals(allocationCart.getSkuId())) {
+                    if (allocationCart.getStatus().equals(98) && instockList.getInstockOrderId().equals(allocationCart.getInstockOrderId()) && instockList.getSkuId().equals(allocationCart.getSkuId())) {
                         int lastNumber = number;
                         number -= (allocationCart.getNumber() - allocationCart.getDoneNumber());
                         if (number >= 0) {
