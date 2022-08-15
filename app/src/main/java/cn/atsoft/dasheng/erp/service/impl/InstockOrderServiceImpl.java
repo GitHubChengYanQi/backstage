@@ -1740,7 +1740,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 int number = Math.toIntExact(instockList.getNumber());
                 for (AllocationCart cart : allocationCarts) {
                     if (number > 0) {
-                        if (cart.getStatus().equals(98) && !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getStoreHouseId().equals(cart.getStorehouseId())) {
+                        if (cart.getStatus().equals(98) && cart.getInstockOrderId().equals(instockList.getInstockOrderId()) &&  !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getSkuId().equals(cart.getSkuId())) {
                             int lastNumber = number;
                             number = number - (cart.getNumber() - cart.getDoneNumber());
                             if (number >= 0) {

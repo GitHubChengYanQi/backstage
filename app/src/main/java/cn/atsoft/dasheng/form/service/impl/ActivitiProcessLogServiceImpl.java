@@ -9,6 +9,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
+import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.CheckInstock;
@@ -22,6 +24,8 @@ import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.production.service.impl.ProductionPickListsServiceImpl;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
@@ -31,6 +35,7 @@ import cn.atsoft.dasheng.purchase.service.*;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -43,6 +48,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.ProcessType.ALLOCATION;
 
@@ -129,6 +135,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private AllocationService allocationService;
     @Autowired
     private ActivitiProcessService processService;
+
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
+    @Autowired
+    private AllocationCartService allocationCartService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -502,14 +513,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
             case "INSTOCK":
                 InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
-                if (ToolUtil.isNotEmpty(processTask.getSource())){
-                    switch(processTask.getSource()){
+                if (ToolUtil.isNotEmpty(processTask.getSource())) {
+                    switch (processTask.getSource()) {
                         /**
                          * 如果说 入库单来源是调拨  那么 需要检查调拨 任务是否完成
                          */
                         case "ALLOCATION":
                             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", instockOrder.getInstockOrderId()).eq("display", 1).list();
-                            allocationService.checkCartDone(processTask.getFormId(),instockLists);
+                            allocationService.checkCartDone(processTask.getFormId(), instockLists);
+//                            instockOrderService.checkAllocationDone(processTask);
+
                             break;
                         default:
 
@@ -537,7 +550,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 //                        }
 //                    }
 //                }
-                instockOrderService.checkAllocationDone(processTask);
                 break;
             case "ERROR":
                 List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();
@@ -553,6 +565,44 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                 }
 
+                break;
+
+            case "OUTSTOCK":
+                ProductionPickLists pickLists = pickListsService.getById(processTask.getFormId());
+                if (ToolUtil.isNotEmpty(pickLists.getSource()) && pickLists.getSource().equals("ALLOCATION")) {
+                    /**
+                     * 如果来源是调拨单
+                     * 对应生成入库单
+                     */
+                    List<ProductionPickListsCart> pickListsCarts = pickListsCartService.query().eq("pick_lists_id", processTask.getFormId()).eq("status", 99).list();
+                    Allocation allocation = allocationService.getById(pickLists.getSourceId());
+                    List<AllocationCart> allocationCarts = allocationCartService.query().eq("allocation_id", allocation.getAllocationId()).eq("pick_lists_id", pickLists.getPickListsId()).eq("status", 98).list();
+
+                    List<InstockListParam> instockListParams = BeanUtil.copyToList(pickListsCarts, InstockListParam.class);
+                    for (InstockListParam instockListParam : instockListParams) {
+                        instockListParam.setStatus(0L);
+                    }
+                    InstockOrderParam instockOrderParam = new InstockOrderParam();
+
+                    instockOrderParam.setUserId(allocation.getUserId());
+
+                    switch (allocation.getAllocationType()) {
+                        case 1:
+                            instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
+                            break;
+                        case 2:
+                            instockOrderParam.setStoreHouseId(allocationCarts.get(0).getStorehouseId());
+                            break;
+                    }
+                    instockOrderParam.setType("调拨入库");
+                    instockOrderParam.setSource("PickLists");
+                    instockOrderParam.setSourceId(pickLists.getPickListsId());
+                    instockOrderParam.setListParams(instockListParams);
+                    InstockOrder addEntity = instockOrderService.add(instockOrderParam);
+                    for (AllocationCart allocationCart : allocationCarts) {
+                        allocationCart.setInstockOrderId(addEntity.getInstockOrderId());
+                    }
+                }
                 break;
         }
 
