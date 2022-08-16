@@ -90,6 +90,7 @@ public class RestUserMgrController extends BaseController {
      * @Date 2018/12/24 22:43
      */
     @RequestMapping("/getUserInfo")
+    @Permission
     public SuccessResponseData getUserInfo(@RequestParam("userId") Long userId) {
         if (ToolUtil.isEmpty(userId)) {
             throw new RequestEmptyException();
