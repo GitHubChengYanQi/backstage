@@ -142,6 +142,10 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     @Transactional
     public Object add(AnomalyOrderParam param) {
 
+        if (ToolUtil.isEmpty(param.getAnomalyParams()) && param.getAnomalyParams().size() == 0) {
+            throw new ServiceException(500, "没有异常件");
+        }
+
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "15").eq("state", 1).one();
             if (ToolUtil.isNotEmpty(codingRules)) {
@@ -158,6 +162,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         List<Anomaly> anomalies = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
+
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
             if (ToolUtil.isEmpty(anomalyParam.getAnomalyId())) {
                 throw new ServiceException(500, "缺少 异常id");
@@ -309,12 +314,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 }
                 if (message.equals("盘点")) {
                     Inventory inventory = inventoryService.getById(entity.getInstockOrderId());
-                    taskParticipantService.addTaskPerson(taskId, new ArrayList<Long>() {{
-                        add(inventory.getCreateUser());
-                    }});
+                    if (ToolUtil.isNotEmpty(inventory)) {
+                        taskParticipantService.addTaskPerson(taskId, new ArrayList<Long>() {{
+                            add(inventory.getCreateUser());
+                        }});
+                    }
                 }
             }
-            
+
 
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");
