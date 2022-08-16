@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.dynamic.controller;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.dynamic.model.result.DynamicResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.dynamic.entity.Dynamic;
@@ -41,7 +42,7 @@ public class DynamicController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<DynamicResult> detail(@RequestBody DynamicParam dynamicParam) {
+    public ResponseData detail(@RequestBody DynamicParam dynamicParam) {
         Dynamic detail = this.dynamicService.getById(dynamicParam.getDynamicId());
         DynamicResult result = new DynamicResult();
         ToolUtil.copyProperties(detail, result);
@@ -57,13 +58,15 @@ public class DynamicController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-//    @Permission
+    @Permission
     public PageInfo<DynamicResult> list(@RequestBody(required = false) DynamicParam dynamicParam) {
         if(ToolUtil.isEmpty(dynamicParam)){
             dynamicParam = new DynamicParam();
         }
         return this.dynamicService.findPageBySpec(dynamicParam);
     }
+
+
 
  /**
      * 查询列表
@@ -73,7 +76,6 @@ public class DynamicController extends BaseController {
      */
     @RequestMapping(value = "/lsitBySelf", method = RequestMethod.POST)
     @ApiOperation("列表")
-//    @Permission
     public PageInfo<DynamicResult> lsitBySelf(@RequestBody(required = false) DynamicParam dynamicParam) {
         if(ToolUtil.isEmpty(dynamicParam)){
             dynamicParam = new DynamicParam();
@@ -88,9 +90,9 @@ public class DynamicController extends BaseController {
      * @author Captain_Jazz
      * @Date 2022-08-10
      */
-    @RequestMapping(value = "/ListByUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/listByUser", method = RequestMethod.POST)
     @ApiOperation("列表")
-//    @Permission
+    @Permission
     public PageInfo<DynamicResult> ListByUser(@RequestBody(required = false) DynamicParam dynamicParam) {
         if(ToolUtil.isEmpty(dynamicParam)){
             dynamicParam = new DynamicParam();
