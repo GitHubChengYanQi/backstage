@@ -99,7 +99,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmIndustryResult> detail(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
+    public ResponseData detail(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
         CrmIndustry detail = this.crmIndustryService.getById(crmIndustryParam.getIndustryId());
         CrmIndustryResult result = new CrmIndustryResult();
         ToolUtil.copyProperties(detail, result);
@@ -142,7 +142,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
         industryQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.crmIndustryService.listMaps(industryQueryWrapper);
@@ -159,7 +159,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView() {
+    public ResponseData treeView() {
         List<Map<String, Object>> list = this.crmIndustryService.listMaps(new QueryWrapper<CrmIndustry>() {{
             orderByDesc("sort");
         }});

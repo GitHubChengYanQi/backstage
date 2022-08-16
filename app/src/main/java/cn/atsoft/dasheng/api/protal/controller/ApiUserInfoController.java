@@ -36,7 +36,7 @@ public class ApiUserInfoController {
     }
 
     @RequestMapping(value = "/getUser", method = RequestMethod.POST)
-    public ResponseData<List<Map<String,Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<Map<String, Object>> list = this.restUserService.listMaps();
         RestUserSelectWrapper restUserSelectWrapper = new RestUserSelectWrapper(list);
         List<Map<String, Object>> result = restUserSelectWrapper.wrap();

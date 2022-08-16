@@ -46,7 +46,7 @@ public class ApiGoodsController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<GoodsResult> detail(@RequestBody GoodsParam goodsParam) {
+    public ResponseData detail(@RequestBody GoodsParam goodsParam) {
         Goods detail = this.goodsService.getById(goodsParam.getGoodId());
         GoodsResult result = new GoodsResult();
         ToolUtil.copyProperties(detail, result);

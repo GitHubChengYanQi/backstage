@@ -83,7 +83,7 @@ public class ErpPartsDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ErpPartsDetailResult> detail(@RequestBody ErpPartsDetailParam erpPartsDetailParam) {
+    public ResponseData detail(@RequestBody ErpPartsDetailParam erpPartsDetailParam) {
         ErpPartsDetail detail = this.erpPartsDetailService.getById(erpPartsDetailParam.getPartsDetailId());
         ErpPartsDetailResult result = new ErpPartsDetailResult();
         ToolUtil.copyProperties(detail, result);

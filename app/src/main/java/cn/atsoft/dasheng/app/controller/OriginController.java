@@ -84,7 +84,7 @@ public class OriginController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OriginResult> detail(@RequestBody OriginParam originParam) {
+    public ResponseData detail(@RequestBody OriginParam originParam) {
         Origin detail = this.originService.getById(originParam.getOriginId());
         OriginResult result = new OriginResult();
         ToolUtil.copyProperties(detail, result);
@@ -116,7 +116,7 @@ public class OriginController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<Origin> originQueryWrapper = new QueryWrapper<>();
         originQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.originService.listMaps(originQueryWrapper);
@@ -133,7 +133,7 @@ public class OriginController extends BaseController {
      */
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OriginResult> batchDelete(@RequestBody BatchDeleteRequest batchDeleteRequest) {
+    public ResponseData batchDelete(@RequestBody BatchDeleteRequest batchDeleteRequest) {
            this.originService.batchDelete(batchDeleteRequest.getIds());
            return ResponseData.success();
     }

@@ -78,7 +78,7 @@ public class MessageController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<MessageResult> detail(@RequestBody MessageParam messageParam) {
+    public ResponseData detail(@RequestBody MessageParam messageParam) {
         Message detail = this.messageService.getById(messageParam.getMessageId());
         MessageResult result = new MessageResult();
         ToolUtil.copyProperties(detail, result);

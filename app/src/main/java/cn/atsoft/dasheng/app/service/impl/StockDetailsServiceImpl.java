@@ -292,7 +292,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
 
-    public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
+    public PageInfo findPageBySpec(StockDetailsParam param, DataScope dataScope) {
 
 
 //       if (ToolUtil.isNotEmpty(param.getMaintenanceId())) {

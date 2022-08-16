@@ -85,7 +85,7 @@ public class BrandController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<BrandResult> detail(@RequestBody BrandParam brandParam) {
+    public ResponseData detail(@RequestBody BrandParam brandParam) {
         Brand detail = this.brandService.getById(brandParam.getBrandId());
         BrandResult result = new BrandResult();
         ToolUtil.copyProperties(detail, result);
@@ -136,7 +136,7 @@ public class BrandController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) BrandParam brandParam) {
+    public ResponseData listSelect(@RequestBody(required = false) BrandParam brandParam) {
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.eq("display", 1);
         if (ToolUtil.isNotEmpty(brandParam)){

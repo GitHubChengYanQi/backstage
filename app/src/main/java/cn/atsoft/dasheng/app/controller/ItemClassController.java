@@ -78,7 +78,7 @@ public class ItemClassController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ItemClassResult> detail(@RequestBody ItemClassParam itemClassParam) {
+    public ResponseData detail(@RequestBody ItemClassParam itemClassParam) {
         ItemClass detail = this.itemClassService.getById(itemClassParam.getClassId());
         ItemClassResult result = new ItemClassResult();
         ToolUtil.copyProperties(detail, result);

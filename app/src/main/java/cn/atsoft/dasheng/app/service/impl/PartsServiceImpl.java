@@ -394,7 +394,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     @Override
-    public PageInfo<PartsResult> oldFindPageBySpec(PartsParam param) {
+    public PageInfo oldFindPageBySpec(PartsParam param) {
         Page<PartsResult> pageContext = getPageContext();
         IPage<PartsResult> page = this.baseMapper.oldCustomPageList(pageContext, param);
         format(page.getRecords());
@@ -402,7 +402,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     @Override
-    public PageInfo<PartsResult> findPageBySpec(PartsParam param) {
+    public PageInfo findPageBySpec(PartsParam param) {
         Page<PartsResult> pageContext = getPageContext();
         param.setStatus(99);
         param.setDisplay(1);
