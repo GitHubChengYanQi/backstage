@@ -205,6 +205,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Override
     public void createPickListsAndInStockOrder(Long allocationId, List<AllocationCart> allocationCarts) {
         Allocation allocation = this.getById(allocationId);
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", "ALLOCATION").eq("form_id", allocation.getAllocationId()).one();
         if (allocation.getType().equals("allocation")) {
             if (allocation.getAllocationType() == 1) {
                 List<Long> stockIds = new ArrayList<>();
@@ -225,8 +226,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     ProductionPickListsParam listsParam = new ProductionPickListsParam();
                     listsParam.setPickListsName(allocation.getAllocationName());
                     listsParam.setUserId(allocation.getUserId());
-                    listsParam.setSource("ALLOCATION");
-                    listsParam.setSourceId(allocationId);
+                    listsParam.setSource("processTask");
+                    listsParam.setSourceId(processTask.getProcessTaskId());
                     List<ProductionPickListsDetailParam> details = new ArrayList<>();
                     List<AllocationCart> updateCart = new ArrayList<>();
                     for (AllocationCart allocationCart : allocationCarts) {
@@ -235,11 +236,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             ToolUtil.copyProperties(allocationCart, listsDetailParam);
                             listsDetailParam.setStatus(0);
                             details.add(listsDetailParam);
-//                            InstockListParam instockListParam = new InstockListParam();
-//                            ToolUtil.copyProperties(allocationCart, instockListParam);
-//                            instockListParam.setCartId(allocationCart.getAllocationCartId());
-//                            instockListParam.setStoreHouseId(allocation.getStorehouseId());
-//                            listParams.add(instockListParam);
+
                             allocationCart.setStatus(98);
                             updateCart.add(allocationCart);
                         }
@@ -265,33 +262,14 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
                     }
                 }
-//                List<InstockListParam> instockListParams = new ArrayList<>();
-//                listParams.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId() + "_" + i.getCustomerId(), Collectors.toList())).forEach(
-//                        (id, transfer) -> {
-//                            transfer.stream().reduce((a, b) -> new InstockListParam() {{
-//                                setSkuId(a.getSkuId());
-//                                setBrandId(a.getBrandId());
-//                                setNumber(a.getNumber() + b.getNumber());
-//                                setCustomerId(a.getCustomerId());
-//                            }}).ifPresent(instockListParams::add);
-//                        }
-//                );
-//                instockOrderParam.setListParams(instockListParams);
-//                if (listParams.size() > 0) {
-//                    instockOrderService.add(instockOrderParam);
-//                }
+//
             } else if (allocation.getAllocationType() == 2) {
                 List<Long> stockIds = new ArrayList<>();
                 for (AllocationCart allocationCart : allocationCarts) {
                     stockIds.add(allocationCart.getStorehouseId());
                 }
                 stockIds = stockIds.stream().distinct().collect(Collectors.toList());
-//                ProductionPickListsParam listsParam = new ProductionPickListsParam();
-//                listsParam.setPickListsName(allocation.getAllocationName());
-//                listsParam.setUserId(allocation.getUserId());
-//                listsParam.setSource("ALLOCATION");
-//                listsParam.setSourceId(allocationId);
-//                List<ProductionPickListsDetailParam> details = new ArrayList<>();
+//
                 //入库单
 
                 for (Long stockId : stockIds) {
@@ -314,7 +292,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             instockListParam.setStatus(0L);
                             instockListParam.setCartId(allocationCart.getAllocationCartId());
                             instockListParam.setStoreHouseId(allocation.getStorehouseId());
-//                            listParams.add(instockListParam);
                             allocationCart.setStatus(98);
                             updateCart.add(allocationCart);
 
@@ -338,37 +315,10 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                         }
                         allocationCartService.updateBatchById(updateCart);
                     }
-//                    List<InstockListParam> instockListParams = new ArrayList<>();
-//                    listParams.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId() + "_" + i.getCustomerId(), Collectors.toList())).forEach(
-//                            (id, transfer) -> {
-//                                transfer.stream().reduce((a, b) -> new InstockListParam() {{
-//                                    setSkuId(a.getSkuId());
-//                                    setBrandId(a.getBrandId());
-//                                    setNumber(a.getNumber() + b.getNumber());
-//                                    setCustomerId(a.getCustomerId());
-//                                }}).ifPresent(instockListParams::add);
-//                            }
-//                    );
-//                    instockOrderParam.setListParams(instockListParams);
-//                    if (listParams.size() > 0) {
-//                        instockOrderService.add(instockOrderParam);
-//                    }
+
 
                 }
-//                if (details.size() > 0) {
-//                    List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
-//                    details.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId(), Collectors.toList())).forEach(
-//                            (id, transfer) -> {
-//                                transfer.stream().reduce((a, b) -> new ProductionPickListsDetailParam() {{
-//                                    setSkuId(a.getSkuId());
-//                                    setBrandId(a.getBrandId());
-//                                    setNumber(a.getNumber() + b.getNumber());
-//                                }}).ifPresent(pickListsDetailParams::add);
-//                            }
-//                    );
-//                    listsParam.setPickListsDetailParams(pickListsDetailParams);
-//                    productionPickListsService.add(listsParam);
-//                }
+
             }
 
         }
@@ -641,7 +591,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     }
 
     @Override
-    public PageInfo<AllocationResult> findPageBySpec(AllocationParam param) {
+    public PageInfo findPageBySpec(AllocationParam param) {
         Page<AllocationResult> pageContext = getPageContext();
         IPage<AllocationResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

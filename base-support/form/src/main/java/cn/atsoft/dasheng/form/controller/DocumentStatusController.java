@@ -88,7 +88,7 @@ public class DocumentStatusController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DocumentsStatusResult> detail(@RequestBody DocumentsStatusParam documentsStatusParam) {
+    public ResponseData detail(@RequestBody DocumentsStatusParam documentsStatusParam) {
         DocumentsStatus detail = this.documentStatusService.getById(documentsStatusParam.getDocumentsStatusId());
         DocumentsStatusResult result = new DocumentsStatusResult();
         ToolUtil.copyProperties(detail, result);
@@ -114,7 +114,7 @@ public class DocumentStatusController extends BaseController {
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect(DocumentsStatusParam statusParam) {
+    public ResponseData listSelect(DocumentsStatusParam statusParam) {
 
 
         QueryWrapper<DocumentsStatus> queryWrapper = new QueryWrapper<>();

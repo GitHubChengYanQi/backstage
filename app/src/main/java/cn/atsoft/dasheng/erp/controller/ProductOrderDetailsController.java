@@ -85,7 +85,7 @@ public class ProductOrderDetailsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductOrderDetailsResult> detail(@RequestBody ProductOrderDetailsParam productOrderDetailsParam) {
+    public ResponseData detail(@RequestBody ProductOrderDetailsParam productOrderDetailsParam) {
         ProductOrderDetails detail = this.productOrderDetailsService.getById(productOrderDetailsParam.getProductOrderDetailsId());
         ProductOrderDetailsResult result = new ProductOrderDetailsResult();
         ToolUtil.copyProperties(detail, result);

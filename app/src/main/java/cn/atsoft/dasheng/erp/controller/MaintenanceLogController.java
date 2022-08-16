@@ -80,7 +80,7 @@ public class MaintenanceLogController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<MaintenanceLogResult> detail(@RequestBody MaintenanceLogParam maintenanceLogParam) {
+    public ResponseData detail(@RequestBody MaintenanceLogParam maintenanceLogParam) {
         MaintenanceLog detail = this.maintenanceLogService.getById(maintenanceLogParam.getMaintenanceLogId());
         MaintenanceLogResult result = new MaintenanceLogResult();
         ToolUtil.copyProperties(detail, result);

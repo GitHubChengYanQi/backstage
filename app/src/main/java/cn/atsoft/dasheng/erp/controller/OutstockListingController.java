@@ -85,7 +85,7 @@ public class OutstockListingController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OutstockListingResult> detail(@RequestBody OutstockListingParam outstockListingParam) {
+    public ResponseData detail(@RequestBody OutstockListingParam outstockListingParam) {
         OutstockListing detail = this.outstockListingService.getById(outstockListingParam.getOutstockListingId());
         OutstockListingResult result = new OutstockListingResult();
         ToolUtil.copyProperties(detail, result);

@@ -88,7 +88,7 @@ public class QualityPlanDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityPlanDetailResult> detail(@RequestBody QualityPlanDetailParam qualityPlanDetailParam) {
+    public ResponseData detail(@RequestBody QualityPlanDetailParam qualityPlanDetailParam) {
         QualityPlanDetail detail = this.qualityPlanDetailService.getById(qualityPlanDetailParam.getPlanDetailId());
 
 

@@ -76,7 +76,7 @@ public class RepairDynamicController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<RepairDynamicResult> detail(@RequestBody RepairDynamicParam repairDynamicParam) {
+    public ResponseData detail(@RequestBody RepairDynamicParam repairDynamicParam) {
         RepairDynamic detail = this.repairDynamicService.getById(repairDynamicParam.getDynamicId());
         RepairDynamicResult result = new RepairDynamicResult();
         ToolUtil.copyProperties(detail, result);

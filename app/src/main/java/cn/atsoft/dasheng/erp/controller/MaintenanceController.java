@@ -100,7 +100,7 @@ public class MaintenanceController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<MaintenanceResult> detail(@RequestBody MaintenanceParam maintenanceParam) {
+    public ResponseData detail(@RequestBody MaintenanceParam maintenanceParam) {
         Maintenance detail = this.maintenanceService.getById(maintenanceParam.getMaintenanceId());
         MaintenanceResult result = new MaintenanceResult();
         ToolUtil.copyProperties(detail, result);
@@ -172,7 +172,7 @@ public class MaintenanceController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MaintenanceResult> list(@RequestBody(required = false) MaintenanceParam maintenanceParam) {
+    public PageInfo list(@RequestBody(required = false) MaintenanceParam maintenanceParam) {
         if(ToolUtil.isEmpty(maintenanceParam)){
             maintenanceParam = new MaintenanceParam();
         }

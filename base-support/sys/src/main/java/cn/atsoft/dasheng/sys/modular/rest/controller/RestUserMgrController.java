@@ -90,6 +90,7 @@ public class RestUserMgrController extends BaseController {
      * @Date 2018/12/24 22:43
      */
     @RequestMapping("/getUserInfo")
+    @Permission
     public SuccessResponseData getUserInfo(@RequestParam("userId") Long userId) {
         if (ToolUtil.isEmpty(userId)) {
             throw new RequestEmptyException();
@@ -295,7 +296,7 @@ public class RestUserMgrController extends BaseController {
 
     @RequestMapping(value = "/Select", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect(@RequestBody(required = false)RestUser user) {
+    public ResponseData listSelect(@RequestBody(required = false)RestUser user) {
         QueryWrapper<RestUser> userQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(user)){
             if (ToolUtil.isNotEmpty(user.getDeptId())){

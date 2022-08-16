@@ -80,7 +80,7 @@ public class QualityTaskBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityTaskBindResult> detail(@RequestBody QualityTaskBindParam qualityTaskBindParam) {
+    public ResponseData detail(@RequestBody QualityTaskBindParam qualityTaskBindParam) {
         QualityTaskBind detail = this.qualityTaskBindService.getById(qualityTaskBindParam.getBingId());
         QualityTaskBindResult result = new QualityTaskBindResult();
         ToolUtil.copyProperties(detail, result);

@@ -84,7 +84,7 @@ public class ContractClassController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ContractClassResult> detail(@RequestBody ContractClassParam contractClassParam) {
+    public ResponseData detail(@RequestBody ContractClassParam contractClassParam) {
         ContractClass detail = this.contractClassService.getById(contractClassParam.getContractClassId());
         ContractClassResult result = new ContractClassResult();
         ToolUtil.copyProperties(detail, result);
@@ -115,7 +115,7 @@ public class ContractClassController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<ContractClass> contractClassQueryWrapper = new QueryWrapper<>();
         contractClassQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.contractClassService.listMaps(contractClassQueryWrapper);

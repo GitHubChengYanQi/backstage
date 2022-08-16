@@ -89,7 +89,7 @@ public class InstockListController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InstockListResult> detail(@RequestBody InstockListParam instockListParam) {
+    public ResponseData detail(@RequestBody InstockListParam instockListParam) {
         InstockListResult result = this.instockListService.detail(instockListParam.getInstockListId());
         return ResponseData.success(result);
     }

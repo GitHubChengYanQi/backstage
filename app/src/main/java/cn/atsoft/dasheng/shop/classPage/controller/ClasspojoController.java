@@ -82,7 +82,7 @@ public class ClasspojoController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<ClassResult> detail(@RequestBody ClassParam classParam) {
+    public ResponseData detail(@RequestBody ClassParam classParam) {
         Classpojo detail = this.classService.getById(classParam.getClassId());
         ClassResult result = new ClassResult();
         ToolUtil.copyProperties(detail, result);

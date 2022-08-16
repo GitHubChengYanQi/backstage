@@ -80,7 +80,7 @@ public class ItemDataController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ItemDataResult> detail(@RequestBody ItemDataParam itemDataParam) {
+    public ResponseData detail(@RequestBody ItemDataParam itemDataParam) {
         ItemData detail = this.itemDataService.getById(itemDataParam.getItemsDataId());
         ItemDataResult result = new ItemDataResult();
         ToolUtil.copyProperties(detail, result);

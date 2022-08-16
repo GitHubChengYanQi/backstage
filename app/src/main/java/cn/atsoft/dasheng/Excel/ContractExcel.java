@@ -152,7 +152,7 @@ public class ContractExcel {
      * 返回表格
      */
     @RequestMapping(value = "/getWordTables", method = RequestMethod.GET)
-    public ResponseData<List<XWPFTable>> getWordTables(@RequestParam("fileId") Long fileId) {
+    public ResponseData getWordTables(@RequestParam("fileId") Long fileId) {
         FileInfo fileInfo = fileInfoService.getById(fileId);
         XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
         List<XWPFTable> documentTables = document.getTables();

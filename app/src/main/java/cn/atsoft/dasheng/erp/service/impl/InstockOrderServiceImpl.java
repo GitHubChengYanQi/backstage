@@ -540,7 +540,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
-    public PageInfo<InstockOrderResult> findPageBySpec(InstockOrderParam param) {
+    public PageInfo findPageBySpec(InstockOrderParam param) {
         Page<InstockOrderResult> pageContext = getPageContext();
         IPage<InstockOrderResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());

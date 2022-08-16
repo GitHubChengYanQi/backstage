@@ -848,7 +848,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     }
 
     @Override
-    public PageInfo<InventoryResult> findPageBySpec(InventoryParam param) {
+    public PageInfo findPageBySpec(InventoryParam param) {
         Page<InventoryResult> pageContext = getPageContext();
         IPage<InventoryResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());

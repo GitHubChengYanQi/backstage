@@ -69,7 +69,7 @@ public interface SpuService extends IService<Spu> {
      */
     PageInfo<SpuResult> findPageBySpec(SpuParam param);
 
-    ResponseData<SpuResult> detail (SpuParam spuParam);
+    ResponseData detail (SpuParam spuParam);
 
 
     void skuFormat(List<SkuResult> skuResults);

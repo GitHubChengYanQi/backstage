@@ -80,7 +80,7 @@ public class InquiryTaskDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InquiryTaskDetailResult> detail(@RequestBody InquiryTaskDetailParam inquiryTaskDetailParam) {
+    public ResponseData detail(@RequestBody InquiryTaskDetailParam inquiryTaskDetailParam) {
         InquiryTaskDetail detail = this.inquiryTaskDetailService.getById(inquiryTaskDetailParam.getInquiryDetailId());
         InquiryTaskDetailResult result = new InquiryTaskDetailResult();
         ToolUtil.copyProperties(detail, result);

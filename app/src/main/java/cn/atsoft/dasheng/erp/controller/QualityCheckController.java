@@ -100,7 +100,7 @@ public class QualityCheckController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityCheckResult> detail(@RequestBody QualityCheckParam qualityCheckParam) {
+    public ResponseData detail(@RequestBody QualityCheckParam qualityCheckParam) {
         QualityCheck detail = this.qualityCheckService.getById(qualityCheckParam.getQualityCheckId());
 
         if (ToolUtil.isNotEmpty(detail)){
@@ -160,7 +160,7 @@ public class QualityCheckController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) QualityCheckParam qualityCheckParam) {
+    public ResponseData listSelect(@RequestBody(required = false) QualityCheckParam qualityCheckParam) {
 
         QueryWrapper<QualityCheck> qualityCheckQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(qualityCheckParam)) {

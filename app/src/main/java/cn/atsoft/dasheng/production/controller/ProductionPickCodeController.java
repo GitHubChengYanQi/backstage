@@ -92,7 +92,7 @@ public class ProductionPickCodeController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickCodeResult> detail(@RequestBody ProductionPickCodeParam productionPickCodeParam) {
+    public ResponseData detail(@RequestBody ProductionPickCodeParam productionPickCodeParam) {
         ProductionPickCode detail = this.productionPickCodeService.getById(productionPickCodeParam.getPickCodeId());
         ProductionPickCodeResult result = new ProductionPickCodeResult();
         ToolUtil.copyProperties(detail, result);

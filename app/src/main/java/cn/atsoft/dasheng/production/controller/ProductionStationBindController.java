@@ -80,12 +80,11 @@ public class ProductionStationBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionStationBindResult> detail(@RequestBody ProductionStationBindParam productionStationBindParam) {
+    public ResponseData detail(@RequestBody ProductionStationBindParam productionStationBindParam) {
         ProductionStationBind detail = this.productionStationBindService.getById(productionStationBindParam.getProductionStationBindId());
         ProductionStationBindResult result = new ProductionStationBindResult();
         ToolUtil.copyProperties(detail, result);
 
-//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

@@ -87,7 +87,7 @@ public class ProductionStationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionStationResult> detail(@RequestBody ProductionStationParam productionStationParam) {
+    public ResponseData detail(@RequestBody ProductionStationParam productionStationParam) {
         ProductionStation productionStationServiceById = this.productionStationService.getById(productionStationParam.getProductionStationId());
         ProductionStationResult result = new ProductionStationResult();
         ToolUtil.copyProperties(productionStationServiceById,result);
@@ -121,7 +121,7 @@ public class ProductionStationController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) ProductionStationParam productionStationParam) {
+    public ResponseData listSelect(@RequestBody(required = false) ProductionStationParam productionStationParam) {
 
         QueryWrapper<ProductionStation> productionStationQueryWrapper = new QueryWrapper<>();
         productionStationQueryWrapper.in("display", 1);

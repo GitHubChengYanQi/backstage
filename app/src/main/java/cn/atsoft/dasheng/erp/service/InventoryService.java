@@ -98,9 +98,9 @@ public interface InventoryService extends IService<Inventory> {
      * @author Captain_Jazz
      * @Date 2021-12-27
      */
-    PageInfo<InventoryResult> findPageBySpec(InventoryParam param);
+    PageInfo findPageBySpec(InventoryParam param);
 
-    PageInfo<InventoryResult> pageList(InventoryParam param);
+    PageInfo pageList(InventoryParam param);
 
     /**
      * 扫码 盘点

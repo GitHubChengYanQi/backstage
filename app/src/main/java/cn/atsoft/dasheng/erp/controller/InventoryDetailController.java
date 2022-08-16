@@ -147,7 +147,7 @@ public class InventoryDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InventoryDetailResult> detail(@RequestBody InventoryDetailParam inventoryDetailParam) {
+    public ResponseData detail(@RequestBody InventoryDetailParam inventoryDetailParam) {
         InventoryDetail detail = this.inventoryDetailService.getById(inventoryDetailParam.getDetailId());
         InventoryDetailResult result = new InventoryDetailResult();
         ToolUtil.copyProperties(detail, result);

@@ -124,7 +124,7 @@ public class taskController extends BaseController {
 
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
-    public ResponseData<ActivitiProcessTaskResult> detail(@Param("taskId") Long taskId) {
+    public ResponseData detail(@Param("taskId") Long taskId) {
         //流程任务
         if (ToolUtil.isEmpty(taskId)) {
             throw new ServiceException(500, "缺少taskId");

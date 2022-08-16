@@ -104,7 +104,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     }
 
     @Override
-    public PageInfo<RemarksResult> findPageBySpec(RemarksParam param) {
+    public PageInfo findPageBySpec(RemarksParam param) {
         Page<RemarksResult> pageContext = getPageContext();
         IPage<RemarksResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
@@ -118,7 +118,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
      * @return
      */
     @Override
-    public PageInfo<RemarksResult> personalDynamic(RemarksParam param) {
+    public PageInfo personalDynamic(RemarksParam param) {
         param.setCreateUser(LoginContextHolder.getContext().getUserId());
         param.setType("dynamic");
         Page<RemarksResult> pageContext = getPageContext();

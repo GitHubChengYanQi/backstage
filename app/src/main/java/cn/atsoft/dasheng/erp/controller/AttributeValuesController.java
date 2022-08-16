@@ -89,7 +89,7 @@ public class AttributeValuesController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AttributeValuesResult> detail(@RequestBody AttributeValuesParam attributeValuesParam) {
+    public ResponseData detail(@RequestBody AttributeValuesParam attributeValuesParam) {
         AttributeValues detail = this.attributeValuesService.getById(attributeValuesParam.getAttributeValuesId());
         AttributeValuesResult result = new AttributeValuesResult();
         ToolUtil.copyProperties(detail, result);
@@ -117,7 +117,7 @@ public class AttributeValuesController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.GET)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect(Long attributeId) {
+    public ResponseData listSelect(Long attributeId) {
         QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
         attributeValuesQueryWrapper.in("attribute_id", attributeId);
         attributeValuesQueryWrapper.in("display", 1);

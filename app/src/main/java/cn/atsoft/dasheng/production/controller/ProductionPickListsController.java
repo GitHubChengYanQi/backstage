@@ -160,7 +160,7 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickListsResult> detail(@RequestBody ProductionPickListsParam productionPickListsParam) {
+    public ResponseData detail(@RequestBody ProductionPickListsParam productionPickListsParam) {
         ProductionPickLists detail = new ProductionPickLists();
         ProductionPickListsResult result = new ProductionPickListsResult();
         if (ToolUtil.isNotEmpty(productionPickListsParam.getPickListsId())) {
@@ -339,7 +339,7 @@ public class ProductionPickListsController extends BaseController {
 
     @RequestMapping(value = "/getByTask", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickListsResult> getByTask(@RequestBody ProductionPickListsParam productionPickListsParam) {
+    public ResponseData getByTask(@RequestBody ProductionPickListsParam productionPickListsParam) {
 
 
         ProductionPickLists detail = this.productionPickListsService.query().eq("source", "productionTask").eq("source_id", productionPickListsParam.getSourceId()).one();

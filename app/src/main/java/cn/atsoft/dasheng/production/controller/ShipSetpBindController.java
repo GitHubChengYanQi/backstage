@@ -80,7 +80,7 @@ public class ShipSetpBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ShipSetpBindResult> detail(@RequestBody ShipSetpBindParam shipSetpBindParam) {
+    public ResponseData detail(@RequestBody ShipSetpBindParam shipSetpBindParam) {
         ShipSetpBind detail = this.shipSetpBindService.getById(shipSetpBindParam.getShipSetpBindId());
         ShipSetpBindResult result = new ShipSetpBindResult();
         ToolUtil.copyProperties(detail, result);

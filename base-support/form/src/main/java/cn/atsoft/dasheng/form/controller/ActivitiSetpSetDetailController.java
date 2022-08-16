@@ -80,7 +80,7 @@ public class ActivitiSetpSetDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiSetpSetDetailResult> detail(@RequestBody ActivitiSetpSetDetailParam activitiSetpSetDetailParam) {
+    public ResponseData detail(@RequestBody ActivitiSetpSetDetailParam activitiSetpSetDetailParam) {
         ActivitiSetpSetDetail detail = this.activitiSetpSetDetailService.getById(activitiSetpSetDetailParam.getDetailId());
         ActivitiSetpSetDetailResult result = new ActivitiSetpSetDetailResult();
         ToolUtil.copyProperties(detail, result);

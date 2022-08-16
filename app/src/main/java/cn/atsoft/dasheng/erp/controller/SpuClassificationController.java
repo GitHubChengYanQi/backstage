@@ -92,7 +92,7 @@ public class SpuClassificationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SpuClassificationResult> detail(@RequestBody SpuClassificationParam spuClassificationParam) {
+    public ResponseData detail(@RequestBody SpuClassificationParam spuClassificationParam) {
         SpuClassification detail = this.spuClassificationService.getById(spuClassificationParam.getSpuClassificationId());
         SpuClassificationResult result = new SpuClassificationResult();
         ToolUtil.copyProperties(detail, result);
@@ -119,7 +119,7 @@ public class SpuClassificationController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
+    public ResponseData listSelect(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
         QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
 
         if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())) {
@@ -134,7 +134,7 @@ public class SpuClassificationController extends BaseController {
     }
 
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
-    public ResponseData<List<TreeNode>> treeView(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
+    public ResponseData treeView(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
         QueryWrapper<SpuClassification> spuClassificationQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(spuClassificationParam)) {
             if (ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())) {
