@@ -135,10 +135,16 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private StorehousePositionsService positionsService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private TaskParticipantService taskParticipantService;
 
     @Override
     @Transactional
     public Object add(AnomalyOrderParam param) {
+
+        if (ToolUtil.isEmpty(param.getAnomalyParams()) && param.getAnomalyParams().size() == 0) {
+            throw new ServiceException(500, "没有异常件");
+        }
 
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "15").eq("state", 1).one();
@@ -156,6 +162,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         List<Anomaly> anomalies = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
+
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
             if (ToolUtil.isEmpty(anomalyParam.getAnomalyId())) {
                 throw new ServiceException(500, "缺少 异常id");
@@ -269,14 +276,24 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         String module = "";
         String message = "";
+        Long pid = null;
+        ActivitiProcessTask processTask = null;
         switch (entity.getType()) {
             case "instock":
                 module = "INSTOCKERROR";
                 message = "入库";
+                processTask = activitiProcessTaskService.getByFormId(entity.getInstockOrderId());
+                if (ToolUtil.isNotEmpty(processTask)) {
+                    pid = processTask.getPid();
+                }
                 break;
             case "Stocktaking":
                 module = "StocktakingError";
                 message = "盘点";
+                processTask = activitiProcessTaskService.getByFormId(entity.getInstockOrderId());
+                if (ToolUtil.isNotEmpty(processTask)) {
+                    pid = processTask.getPid();
+                }
                 break;
             case "timelyInventory":
                 module = "StocktakingError";
@@ -293,11 +310,33 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             activitiProcessTaskParam.setTaskName(user.getName() + "发起的" + message + "异常 ");
             activitiProcessTaskParam.setQTaskId(entity.getOrderId());
             activitiProcessTaskParam.setUserId(entity.getCreateUser());
+            activitiProcessTaskParam.setPid(pid);
+            activitiProcessTaskParam.setMainTaskId(pid);
             activitiProcessTaskParam.setFormId(entity.getOrderId());
             activitiProcessTaskParam.setType(ProcessType.ERROR.getType());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            entity.setTaskId(taskId);
+            this.updateById(entity);
+            //判断流程是否有主单据发起人
+            if (taskParticipantService.MasterDocumentPromoter(activitiProcess.getProcessId())) {
+                if (message.equals("入库")) {
+                    InstockOrder instockOrder = instockOrderService.getById(entity.getInstockOrderId());
+                    taskParticipantService.addTaskPerson(taskId, new ArrayList<Long>() {{
+                        add(instockOrder.getCreateUser());
+                    }});
+                }
+                if (message.equals("盘点")) {
+                    Inventory inventory = inventoryService.getById(entity.getInstockOrderId());
+                    if (ToolUtil.isNotEmpty(inventory)) {
+                        taskParticipantService.addTaskPerson(taskId, new ArrayList<Long>() {{
+                            add(inventory.getCreateUser());
+                        }});
+                    }
+                }
+            }
+
+
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
@@ -308,7 +347,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         } else {
             throw new ServiceException(500, "请先设置流程");
         }
-
 
     }
 

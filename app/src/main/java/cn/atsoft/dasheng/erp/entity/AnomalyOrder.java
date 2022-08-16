@@ -24,6 +24,9 @@ public class AnomalyOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("task_id")
+    private Long taskId;
+
     @TableField("complete")
     private Integer complete;
 
@@ -157,6 +160,14 @@ public class AnomalyOrder implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     @Override

@@ -84,6 +84,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private GetOrigin getOrigin;
     @Autowired
     private AllocationService allocationService;
+    @Autowired
+    private TaskParticipantService taskParticipantService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -198,8 +200,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         // 参与人权限
         taskIds.addAll(getTaskIdsByUserIds());
         param.setTaskIds(taskIds);
-        Long userId = LoginContextHolder.getContext().getUserId();
-        param.setUserIds(userId.toString());
+//        Long userId = LoginContextHolder.getContext().getUserId();
+//        param.setUserIds(userId.toString());
 
         /**
          * 超期筛选
@@ -227,20 +229,28 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     private List<Long> getTaskIdsByUserIds() {
         List<Long> taskIds = new ArrayList<>();
-        List<ActivitiProcessTask> processTasks = this.query().eq("display", 1).isNotNull("user_ids").ne("status", 99).list();
+//        List<ActivitiProcessTask> processTasks = this.query().eq("display", 1).isNotNull("user_ids").ne("status", 99).list();
 
-        for (ActivitiProcessTask processTask : processTasks) {
-            try {
-                List<Long> userIds = JSON.parseArray(processTask.getUserIds(), Long.class);
-                for (Long userId : userIds) {
-                    if (LoginContextHolder.getContext().getUserId().equals(userId)) {
-                        taskIds.add(processTask.getProcessTaskId());
-                    }
-                }
-            }catch (Exception e){
-                e.printStackTrace();
+        Long loginUserId = LoginContextHolder.getContext().getUserId();
+        List<TaskParticipant> taskParticipants = taskParticipantService.list();
+        for (TaskParticipant taskParticipant : taskParticipants) {
+            if (loginUserId.equals(taskParticipant.getUserId())) {
+                taskIds.add(taskParticipant.getProcessTaskId());
             }
         }
+
+//        for (ActivitiProcessTask processTask : processTasks) {
+//            try {
+//                List<Long> userIds = JSON.parseArray(processTask.getUserIds(), Long.class);
+//                for (Long userId : userIds) {
+//                    if (LoginContextHolder.getContext().getUserId().equals(userId)) {
+//                        taskIds.add(processTask.getProcessTaskId());
+//                    }
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
         return taskIds;
     }
 

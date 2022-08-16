@@ -144,6 +144,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private OrCodeBindService orCodeBindService;
     @Autowired
     private ProductionPickListsCartService listsCartService;
+    @Autowired
+    private TaskParticipantService taskParticipantService;
 
     @Override
     @Transactional
@@ -174,8 +176,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         param.setInventoryTaskId(entity.getInventoryTaskId());
         param.setCreateUser(entity.getCreateUser());
-        submit(param);
-
+        Long taskId = submit(param);
+        entity.setTaskId(taskId);
+        this.updateById(entity);
 
         /**
          * 清空购物车
@@ -238,10 +241,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             anomalyParams.add(anomalyParam);
         }
 
-        AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
-        anomalyOrderParam.setType(AnomalyType.timelyInventory.name());
-        anomalyOrderParam.setAnomalyParams(anomalyParams);
-        anomalyOrderService.add(anomalyOrderParam);
+        if (ToolUtil.isNotEmpty(anomalyParams)) {
+            AnomalyOrderParam anomalyOrderParam = new AnomalyOrderParam();
+            anomalyOrderParam.setType(AnomalyType.timelyInventory.name());
+            anomalyOrderParam.setAnomalyParams(anomalyParams);
+            anomalyOrderService.add(anomalyOrderParam);
+        }
+
+
         shopCartService.updateBatchById(shopCarts);
 
         /**
@@ -705,7 +712,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      *
      * @param param
      */
-    private void submit(InventoryParam param) {
+    private Long submit(InventoryParam param) {
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", ReceiptsEnum.Stocktaking.name()).eq("status", 99).eq("module", ReceiptsEnum.Stocktaking.name()).one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             LoginUser user = LoginContextHolder.getContext().getUser();
@@ -718,6 +725,12 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+
+            //任务参与人
+            if (ToolUtil.isNotEmpty(param.getParticipants())) {
+                List<Long> userIds = JSON.parseArray(param.getParticipants(), Long.class);
+                taskParticipantService.addTaskPerson(taskId, userIds);
+            }
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
@@ -754,6 +767,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 remarksParam.setContent(param.getRemark());
                 remarksService.addByMQ(remarksParam);
             }
+            return taskId;
         } else {
             throw new ServiceException(500, "请先设置或启用盘点流程");
         }

@@ -211,11 +211,11 @@
                 #{state}
             </foreach>
         </if>
-        <if test="paramCondition.userIds !=null  and paramCondition.type == 'ERROR' ">
-            union
-            select
-            <include refid="Base_Column_List"/>
-            from activiti_process_task where user_ids = #{paramCondition.userIds} and display = 1
-        </if>
+<!--        <if test="paramCondition.userIds !=null  and paramCondition.type == 'ERROR' ">-->
+<!--            union-->
+<!--            select-->
+<!--            <include refid="Base_Column_List"/>-->
+<!--            from activiti_process_task where user_ids = #{paramCondition.userIds} and display = 1-->
+<!--        </if>-->
     </select>
 </mapper>

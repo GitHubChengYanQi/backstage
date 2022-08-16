@@ -26,6 +26,9 @@ public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("task_id")
+    private Long taskId;
+
     @TableField("push_people")
     private String pushPeople;
     /**
@@ -361,6 +364,14 @@ public class InstockOrder implements Serializable {
 
     public void setPushPeople(String pushPeople) {
         this.pushPeople = pushPeople;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     @Override
