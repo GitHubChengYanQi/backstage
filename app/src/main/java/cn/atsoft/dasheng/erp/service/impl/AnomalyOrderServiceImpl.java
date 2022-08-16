@@ -277,22 +277,22 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         String module = "";
         String message = "";
         Long pid = null;
-        ActivitiProcessTask processTask = null;
+
         switch (entity.getType()) {
             case "instock":
                 module = "INSTOCKERROR";
                 message = "入库";
-                processTask = activitiProcessTaskService.getByFormId(entity.getInstockOrderId());
-                if (ToolUtil.isNotEmpty(processTask)) {
-                    pid = processTask.getPid();
+                InstockOrder instockOrder = instockOrderService.getById(entity.getInstockOrderId());
+                if (ToolUtil.isNotEmpty(instockOrder)) {
+                    pid = instockOrder.getTaskId();
                 }
                 break;
             case "Stocktaking":
                 module = "StocktakingError";
                 message = "盘点";
-                processTask = activitiProcessTaskService.getByFormId(entity.getInstockOrderId());
-                if (ToolUtil.isNotEmpty(processTask)) {
-                    pid = processTask.getPid();
+                Inventory inventory = inventoryService.getById(entity.getInstockOrderId());
+                if (ToolUtil.isNotEmpty(inventory)) {
+                    pid = inventory.getTaskId();
                 }
                 break;
             case "timelyInventory":

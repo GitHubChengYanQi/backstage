@@ -454,7 +454,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         inventoryStockService.addList(param.getDetailParams());
         param.setInventoryTaskId(entity.getInventoryTaskId());
-        submit(param);
+        Long taskId = submit(param);
+        entity.setTaskId(taskId);
+        this.updateById(entity);
         return entity;
 
     }
