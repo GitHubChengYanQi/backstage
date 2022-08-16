@@ -194,29 +194,31 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param) {
-        List<Long> taskIds = new ArrayList<>();
-        taskIds.add(0L);
-        taskIds.addAll(getTaskId());    //查看节点权限
-        // 参与人权限
-        taskIds.addAll(getTaskIdsByUserIds());
-        param.setTaskIds(taskIds);
+
+        if (ToolUtil.isEmpty(param.getCreateUser())) {   //我发起的
+            List<Long> taskIds = new ArrayList<>();
+            taskIds.addAll(getTaskId());    //查看节点权限
+            // 参与人权限
+            taskIds.addAll(getTaskIdsByUserIds());
+            param.setTaskIds(taskIds);
 //        Long userId = LoginContextHolder.getContext().getUserId();
 //        param.setUserIds(userId.toString());
 
-        /**
-         * 超期筛选
-         */
-        if (ToolUtil.isNotEmpty(param.getOutTime())) {
-            List<Long> timeOutTaskIds = new ArrayList<>();
-            switch (param.getOutTime()) {
-                case "yes":
-                    timeOutTaskIds.addAll(inventoryService.timeOut(true));
-                    break;
-                case "no":
-                    inventoryService.timeOut(false);
-                    break;
+            /**
+             * 超期筛选
+             */
+            if (ToolUtil.isNotEmpty(param.getOutTime())) {
+                List<Long> timeOutTaskIds = new ArrayList<>();
+                switch (param.getOutTime()) {
+                    case "yes":
+                        timeOutTaskIds.addAll(inventoryService.timeOut(true));
+                        break;
+                    case "no":
+                        inventoryService.timeOut(false);
+                        break;
+                }
+                param.setTimeOutTaskIds(timeOutTaskIds);
             }
-            param.setTimeOutTaskIds(timeOutTaskIds);
         }
 
 

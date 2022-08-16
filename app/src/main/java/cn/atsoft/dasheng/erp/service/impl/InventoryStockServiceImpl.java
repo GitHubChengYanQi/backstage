@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -443,6 +444,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         List<InventoryStock> inventoryStocks = this.list(queryWrapper);
         List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
 
+
         for (InventoryStock inventoryStock : inventoryStocks) {
             //保留之前记录
             if (inventoryStock.getLockStatus() == 99) {                                                             //普通盘点
@@ -455,7 +457,6 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             if (status == 1) {   //正常物料    清楚异常id
                 inventoryStock.setAnomalyId(0L);
             }
-
         }
 
         for (InventoryStock inventoryStock : stockList) {
@@ -465,7 +466,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         this.updateBatchById(inventoryStocks);
         this.saveBatch(stockList);
-
+        anomalyService.addInventoryRecord(param, -1); //添加记录
 
         //添加动态
         String skuMessage = skuService.skuMessage(param.getSkuId());

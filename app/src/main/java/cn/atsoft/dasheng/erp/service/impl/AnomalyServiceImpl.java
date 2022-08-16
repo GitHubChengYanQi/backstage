@@ -433,7 +433,13 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @param param
      * @param status
      */
-    private void addInventoryRecord(AnomalyParam param, int status) {
+    @Override
+    public void addInventoryRecord(AnomalyParam param, int status) {
+
+        if (ToolUtil.isEmpty(param.getFormId())) {
+            Anomaly anomaly = this.getById(param.getAnomalyId());
+            param.setFormId(anomaly.getFormId());
+        }
 
         QueryWrapper<InstockLogDetail> queryWrapper = new QueryWrapper<>();    //先删除之前记录
         queryWrapper.eq("sku_id", param.getSkuId());
@@ -450,6 +456,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         } else if (status == -1) {
             instockLogDetail.setType("error");
         }
+
+//        Anomaly anomaly = this.getById(param.getAnomalyId());
+//        anomaly
+
         instockLogDetail.setBrandId(param.getBrandId());
         instockLogDetail.setCustomerId(param.getCustomerId());
         instockLogDetail.setSource("inventory");
@@ -815,7 +825,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     }
 
     @Override
-    public void  format(List<AnomalyResult> data) {
+    public void format(List<AnomalyResult> data) {
 
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
