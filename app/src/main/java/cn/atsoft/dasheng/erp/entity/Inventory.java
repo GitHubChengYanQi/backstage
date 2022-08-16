@@ -22,6 +22,8 @@ import java.io.Serializable;
 @TableName("daoxin_erp_inventory")
 public class Inventory implements Serializable {
 
+    @TableField("task_id")
+    private Long taskId;
 
     @TableField("complete")
     private Integer complete;
@@ -274,6 +276,14 @@ public class Inventory implements Serializable {
 
     public void setComplete(Integer complete) {
         this.complete = complete;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     @Override
