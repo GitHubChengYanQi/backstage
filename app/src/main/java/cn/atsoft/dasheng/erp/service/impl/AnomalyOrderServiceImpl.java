@@ -135,6 +135,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private StorehousePositionsService positionsService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private TaskParticipantService taskParticipantService;
 
     @Override
     @Transactional
@@ -296,8 +298,24 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             activitiProcessTaskParam.setFormId(entity.getOrderId());
             activitiProcessTaskParam.setType(ProcessType.ERROR.getType());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //判断流程是否有主单据发起人
+            if (taskParticipantService.MasterDocumentPromoter(activitiProcess.getProcessId())) {
+                if (message.equals("入库")) {
+                    InstockOrder instockOrder = instockOrderService.getById(entity.getInstockOrderId());
+                    taskParticipantService.addTaskPerson(taskId, new ArrayList<Long>() {{
+                        add(instockOrder.getCreateUser());
+                    }});
+                }
+                if (message.equals("盘点")) {
+                    Inventory inventory = inventoryService.getById(entity.getInstockOrderId());
+                    taskParticipantService.addTaskPerson(taskId, new ArrayList<Long>() {{
+                        add(inventory.getCreateUser());
+                    }});
+                }
+            }
+            
+
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);

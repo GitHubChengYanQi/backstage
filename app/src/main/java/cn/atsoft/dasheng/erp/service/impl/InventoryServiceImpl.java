@@ -144,6 +144,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private OrCodeBindService orCodeBindService;
     @Autowired
     private ProductionPickListsCartService listsCartService;
+    @Autowired
+    private TaskParticipantService taskParticipantService;
 
     @Override
     @Transactional
@@ -718,6 +720,11 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //任务参与人
+            if (ToolUtil.isNotEmpty(param.getParticipants())) {
+                List<Long> userIds = JSON.parseArray(param.getParticipants(), Long.class);
+                taskParticipantService.addTaskPerson(taskId, userIds);
+            }
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
