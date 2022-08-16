@@ -223,6 +223,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getPickListsId());
             activitiProcessTaskParam.setType("OUTSTOCK");
+            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask")) {
+                activitiProcessTaskParam.setPid(param.getSourceId());
+            }
+            if (ToolUtil.isNotEmpty(param.getMainTaskId())) {
+                activitiProcessTaskParam.setMainTaskId(param.getMainTaskId());
+            }
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             activitiProcessTaskParam.setSource(param.getSource());

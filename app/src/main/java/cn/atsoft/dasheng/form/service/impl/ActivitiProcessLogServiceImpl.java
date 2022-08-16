@@ -595,8 +595,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             break;
                     }
                     instockOrderParam.setType("调拨入库");
-                    instockOrderParam.setSource("PickLists");
-                    instockOrderParam.setSourceId(pickLists.getPickListsId());
+                    instockOrderParam.setSource("processTask");
+                    if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                        instockOrderParam.setMainTaskId(processTask.getMainTaskId());
+                    }
+                    instockOrderParam.setSourceId(processTask.getProcessTaskId());
+                    instockOrderParam.setPid(processTask.getProcessTaskId());
                     instockOrderParam.setListParams(instockListParams);
                     InstockOrder addEntity = instockOrderService.add(instockOrderParam);
                     for (AllocationCart allocationCart : allocationCarts) {
