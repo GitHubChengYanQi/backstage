@@ -467,6 +467,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
+
         if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {    //产品
             List<Sku> skus = skuService.query().in("spu_id", detailParam.getSpuIds()).eq("display", 1).list();
             queryWrapper.in("sku_id", new ArrayList<Long>() {{
@@ -588,12 +589,28 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             eq("create_user", LoginContextHolder.getContext().getUserId());
         }});
 
+
         List<Long> positionIds = positionsService.getEndChild(positionId);
         InventoryDetailParam inventoryDetailParam = new InventoryDetailParam();
         inventoryDetailParam.setPositionIds(positionIds);
 
+
         List<InventoryStock> all = new ArrayList<>();
-        List<InventoryStock> condition = condition(inventoryDetailParam);
+        List<InventoryStock> condition = condition(inventoryDetailParam);   //从库存中取物料
+        InventoryDetailParam detailParam = new InventoryDetailParam();
+        detailParam.setPositionIds(new ArrayList<Long>() {{
+            add(positionId);
+        }});
+
+        List<SkuBind> skuBinds = this.getSkuBinds(detailParam);  //从物料绑定取
+        for (SkuBind skuBind : skuBinds) {
+            InventoryStock inventoryStock = new InventoryStock();
+            inventoryStock.setSkuId(skuBind.getSkuId());
+            inventoryStock.setBrandId(skuBind.getBrandId());
+            inventoryStock.setPositionId(skuBind.getPositionId());
+            condition.add(inventoryStock);
+        }
+
         for (InventoryStock inventoryStock : condition) {
             if (all.stream().noneMatch(i -> i.getSkuId().equals(inventoryStock.getSkuId())
                     && i.getBrandId().equals(inventoryStock.getBrandId())
