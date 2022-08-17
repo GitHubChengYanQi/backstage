@@ -318,27 +318,27 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }
     }
 
-    /**
-     * 静态开始时间  退回所有备料购物车
-     */
-    @Scheduled(cron = "0 */15 * * * ?")
-    public void darkDiskUpdateCart() {
-        System.err.println("静态盘点定时任务-----------(锁库)----------->" + new DateTime());
-        DateTime dateTime = new DateTime();
-        Integer count = this.query().eq("mode", "staticState")
-                .eq("begin_time", dateTime)
-                .eq("display", 1)
-                .count();
-        if (count > 0) {
-            QueryWrapper<ProductionPickListsCart> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("display", 1);
-            queryWrapper.ne("type", "frmLoss");
-            queryWrapper.eq("status", 0);
-            ProductionPickListsCart pickListsCart = new ProductionPickListsCart();
-            pickListsCart.setDisplay(0);
-            listsCartService.update(pickListsCart, queryWrapper);
-        }
-    }
+//    /**
+//     * 静态开始时间  退回所有备料购物车
+//     */
+//    @Scheduled(cron = "0 */15 * * * ?")
+//    public void darkDiskUpdateCart() {
+//        System.err.println("静态盘点定时任务-----------(锁库)----------->" + new DateTime());
+//        DateTime dateTime = new DateTime();
+//        Integer count = this.query().eq("mode", "staticState")
+//                .eq("begin_time", dateTime)
+//                .eq("display", 1)
+//                .count();
+//        if (count > 0) {
+//            QueryWrapper<ProductionPickListsCart> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq("display", 1);
+//            queryWrapper.ne("type", "frmLoss");
+//            queryWrapper.eq("status", 0);
+//            ProductionPickListsCart pickListsCart = new ProductionPickListsCart();
+//            pickListsCart.setDisplay(0);
+//            listsCartService.update(pickListsCart, queryWrapper);
+//        }
+//    }
 
     /**
      * 条件盘点
