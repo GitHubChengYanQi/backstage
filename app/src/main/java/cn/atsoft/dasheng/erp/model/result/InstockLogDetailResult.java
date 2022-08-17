@@ -34,6 +34,7 @@ public class InstockLogDetailResult implements Serializable {
     private User user;
     private List<Long> inkindIds;
     private Long realNumber;
+    private Integer stockNumber;
     private Long receiptId;
 
     @ApiModelProperty("")
