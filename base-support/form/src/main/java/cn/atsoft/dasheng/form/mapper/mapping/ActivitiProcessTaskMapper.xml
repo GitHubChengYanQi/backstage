@@ -53,7 +53,7 @@
 	    create_time AS "createTime",
 	    update_time AS "updateTime",
             source AS "source",
-            source_id AS "source_id"
+            source_id AS "source_id",
             deptId AS "deptId"
     </sql>
     <sql id="Left_Join_Column_List">
@@ -81,7 +81,7 @@
 	    activiti_process_task.create_time AS "createTime",
 	    activiti_process_task.update_time AS "updateTime",
         activiti_process_task.source AS "source",
-        activiti_process_task.source_id AS "source_id"
+        activiti_process_task.source_id AS "source_id",
         activiti_process_task.deptId AS "deptId"
     </sql>
 
