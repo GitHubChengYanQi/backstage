@@ -419,6 +419,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
     @Override
     public void updateInventoryStatus(AnomalyParam param, int status) {
+
+
         QueryWrapper<InventoryStock> queryWrapper = new QueryWrapper<>();
         /**
          * 同一时间段   统一修改
@@ -444,6 +446,9 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         List<InventoryStock> inventoryStocks = this.list(queryWrapper);
         List<InventoryStock> stockList = BeanUtil.copyToList(inventoryStocks, InventoryStock.class, new CopyOptions());
 
+        if (ToolUtil.isEmpty(param.getFormId())) {    // formId 为空  : 及时盘点提交异常
+            anomalyService.addInventoryRecord(param, 0L, status);   //及时盘点添加记录
+        }
 
         for (InventoryStock inventoryStock : inventoryStocks) {
             //保留之前记录
@@ -455,7 +460,10 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             inventoryStock.setDisplay(1);
             inventoryStock.setRealNumber(param.getRealNumber());
             if (status == 1) {   //正常物料    清楚异常id
-                inventoryStock.setAnomalyId(0L);
+                inventoryStock.setAnomalyId(0L);    //添加盘点记录
+                anomalyService.addInventoryRecord(param, inventoryStock.getInventoryId(), status);
+            } else {
+                anomalyService.addInventoryRecord(param, inventoryStock.getInventoryId(), -1);
             }
         }
 
@@ -466,7 +474,6 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         this.updateBatchById(inventoryStocks);
         this.saveBatch(stockList);
-        anomalyService.addInventoryRecord(param, -1); //添加记录
 
         //添加动态
         String skuMessage = skuService.skuMessage(param.getSkuId());

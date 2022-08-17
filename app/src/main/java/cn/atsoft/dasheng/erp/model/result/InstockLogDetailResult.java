@@ -27,12 +27,13 @@ import java.util.List;
 public class InstockLogDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private Long anomalyId;
     private SkuSimpleResult skuResult;
     private Integer listNumber;
     private Customer customer;
     private User user;
     private List<Long> inkindIds;
-
+    private Long realNumber;
     private Long receiptId;
 
     @ApiModelProperty("")

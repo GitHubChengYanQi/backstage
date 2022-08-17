@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.AnomalyCustomerNum;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.CheckNumber;
 import cn.atsoft.dasheng.erp.pojo.PositionNum;
@@ -131,7 +132,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 }
                 break;
         }
-
+        /**
+         *
+         * 供应商符合数
+         */
+        if (ToolUtil.isNotEmpty(param.getCustomerNums())) {
+            String customerJSON = JSON.toJSONString(param.getCustomerNums());
+            param.setCustomerJson(customerJSON);
+        }
 
         param.setType(param.getAnomalyType().name());
         Anomaly entity = this.getEntity(param);
@@ -370,7 +378,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             }
         } else {
             inventoryStockService.updateInventoryStatus(param, -1);
-            addInventoryRecord(param, -1); //添加记录
         }
         if (t) {   //添加异常信息
             List<Inkind> inkinds = new ArrayList<>();
@@ -421,7 +428,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         //判断盘点操作权限
         if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
             deleteBind(param.getAnomalyId()); //删除绑定数据
-            addInventoryRecord(param, 1);            //添加记录
             return true;
         }
         return false;
@@ -434,7 +440,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @param status
      */
     @Override
-    public void addInventoryRecord(AnomalyParam param, int status) {
+    public void addInventoryRecord(AnomalyParam param, Long inventoryId, int status) {
 
         if (ToolUtil.isEmpty(param.getFormId())) {
             Anomaly anomaly = this.getById(param.getAnomalyId());
@@ -446,7 +452,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         queryWrapper.eq("brand_id", param.getBrandId());
         queryWrapper.eq("storehouse_positions_id", param.getPositionId());
         queryWrapper.eq("source", "inventory");
-        queryWrapper.eq("source_id", param.getFormId());
+        queryWrapper.eq("source_id", inventoryId);
         logDetailService.remove(queryWrapper);
 
         InstockLogDetail instockLogDetail = new InstockLogDetail();
@@ -463,8 +469,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         instockLogDetail.setBrandId(param.getBrandId());
         instockLogDetail.setCustomerId(param.getCustomerId());
         instockLogDetail.setSource("inventory");
-        instockLogDetail.setNumber(param.getRealNumber());
-        instockLogDetail.setSourceId(param.getFormId());
+        instockLogDetail.setRealNumber(param.getRealNumber());
+        instockLogDetail.setAnomalyId(param.getAnomalyId());
+        instockLogDetail.setSourceId(inventoryId);
         instockLogDetail.setStorehousePositionsId(param.getPositionId());
         logDetailService.save(instockLogDetail);
     }
@@ -548,6 +555,14 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         param.setType(oldEntity.getType());
         param.setFormId(oldEntity.getFormId());
 
+        /**
+         *
+         * 供应商符合数
+         */
+        if (ToolUtil.isNotEmpty(param.getCustomerNums())) {
+            String customerJSON = JSON.toJSONString(param.getCustomerNums());
+            param.setCustomerJson(customerJSON);
+        }
 
         if (ToolUtil.isNotEmpty(oldEntity.getOrderId())) {
             AnomalyOrder anomalyOrder = anomalyOrderService.getById(oldEntity.getOrderId());
@@ -615,9 +630,19 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Override
     public void dealWithError(AnomalyParam param) {
 
-        //        param.setStatus(90);  //异常物料已被操作
+
 
         Anomaly oldEntity = getOldEntity(param);
+
+        /**
+         *
+         * 供应商符合数
+         */
+        if (ToolUtil.isNotEmpty(param.getCustomerNums())) {
+            String customerJSON = JSON.toJSONString(param.getCustomerNums());
+            param.setCustomerJson(customerJSON);
+        }
+
         Anomaly newEntity = getEntity(param);
         detailService.allowEdit(oldEntity);
 
@@ -669,7 +694,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private boolean power(List<Long> userIds) {
         Long userId = LoginContextHolder.getContext().getUserId();
         for (Long id : userIds) {
-            if (id.equals(userId)) {
+            if (ToolUtil.isNotEmpty(id) && id.equals(userId)) {
                 return false;
             }
         }
@@ -776,6 +801,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             add(result.getSkuId());
         }});
 
+        if (ToolUtil.isNotEmpty(result.getCustomerJson())) {
+            List<AnomalyCustomerNum> customerNums = JSON.parseArray(result.getCustomerJson(), AnomalyCustomerNum.class);
+            result.setCustomerNums(customerNums);
+        }
 
         AnomalyOrder anomalyOrder = ToolUtil.isEmpty(result.getOrderId()) ? new AnomalyOrder() : anomalyOrderService.getById(result.getOrderId());
         AnomalyOrderResult anomalyOrderResult = new AnomalyOrderResult();
@@ -848,6 +877,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         List<StorehousePositionsResult> positionsResults = positionsService.details(positionIds);
 
         for (AnomalyResult datum : data) {
+
+            if (ToolUtil.isNotEmpty(datum.getCustomerJson())) {
+                List<AnomalyCustomerNum> customerNums = JSON.parseArray(datum.getCustomerJson(), AnomalyCustomerNum.class);
+                datum.setCustomerNums(customerNums);
+            }
 
             for (StorehousePositionsResult positionsResult : positionsResults) {
                 if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {

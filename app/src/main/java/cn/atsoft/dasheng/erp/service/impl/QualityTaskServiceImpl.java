@@ -130,7 +130,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private QualityTaskRefuseService refuseService;
     @Autowired
     private CustomerService customerService;
-
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired

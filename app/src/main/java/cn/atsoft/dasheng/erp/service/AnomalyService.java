@@ -38,7 +38,7 @@ public interface AnomalyService extends IService<Anomaly> {
 
     Map<Long, AnomalyResult> getMap(List<Long> ids);
 
-    void addInventoryRecord(AnomalyParam param, int status);
+    void addInventoryRecord(AnomalyParam param,Long inventoryId, int status);
 
     /**
      * 删除

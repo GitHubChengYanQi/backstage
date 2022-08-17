@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.pojo.AnomalyCustomerNum;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.CheckNumber;
 import cn.atsoft.dasheng.erp.service.*;
@@ -505,11 +506,19 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
              * 有核实的数量 才走判断
              */
             //核实数量 修改库存数
+
             if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
                 int size = checkNumbers.size();
                 CheckNumber checkNumber = checkNumbers.get(size - 1);
-                inventoryService.updateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getCustomerId(), anomalyResult.getPositionId(), Long.valueOf(checkNumber.getNumber()));
+                if (ToolUtil.isNotEmpty(anomalyResult.getCustomerNums())) {     //选择供应商需入库
+                    for (AnomalyCustomerNum customerNum : anomalyResult.getCustomerNums()) {
+                        inventoryService.inStockUpdateStock(anomalyResult.getSkuId(), anomalyResult.getBrandId(), customerNum.getCustomerId(), anomalyResult.getPositionId(), customerNum.getNum());
+                    }
+                } else {                                                        //需出库
+                    inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(),  Long.valueOf(checkNumber.getNumber()));
+                }
+
             }
 
 

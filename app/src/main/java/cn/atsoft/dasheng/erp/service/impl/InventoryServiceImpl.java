@@ -1169,16 +1169,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      *
      * @param skuId
      * @param brandId
-     * @param positionId
+     * @param
      * @param realNumber
      */
     @Override
-    public void updateStockDetail(Long skuId, Long brandId, Long customerId, Long positionId, Long realNumber) {
-        List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuId)
-                .eq("brand_id", brandId)
-                .eq("storehouse_positions_id", positionId)
-                .orderByAsc("create_time")
-                .eq("display", 1).list();
+    public void outUpdateStockDetail(Long skuId, Long brandId,Long realNumber) {
+
+        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sku_id", skuId);
+        queryWrapper.eq("brand_id", brandId);
+        queryWrapper.orderByAsc("create_time");
+        queryWrapper.eq("display", 1);
+        List<StockDetails> stockDetails = stockDetailsService.list(queryWrapper);
 
         long stockNum = 0;  // 计算当前物料库存数
         for (StockDetails stockDetail : stockDetails) {
@@ -1214,19 +1216,22 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     break;
                 }
             }
-        } else {
-            /**
-             * 需要进行入库
-             */
-            realNumber = realNumber - stockNum;  //需要入库的数量
-            Sku sku = skuService.getById(skuId);  //先判断是不是批量
-            if (sku.getBatch() == 1) {  //批量
-                instock(skuId, brandId, customerId, positionId, realNumber);
-            } else {
-                inStockBatch(skuId, brandId, customerId, positionId, realNumber);
-            }
         }
         stockDetailsService.updateBatchById(stockDetails);
+    }
+
+
+    @Override
+    public void inStockUpdateStock(Long skuId, Long brandId, Long customerId, Long positionId, Long realNumber) {
+        /**
+         * 需要进行入库
+         */
+        Sku sku = skuService.getById(skuId);  //先判断是不是批量
+        if (sku.getBatch() == 1) {  //批量
+            instock(skuId, brandId, customerId, positionId, realNumber);
+        } else {
+            inStockBatch(skuId, brandId, customerId, positionId, realNumber);
+        }
     }
 
 

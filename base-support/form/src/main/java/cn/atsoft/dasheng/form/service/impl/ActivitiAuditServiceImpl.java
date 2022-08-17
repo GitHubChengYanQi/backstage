@@ -63,8 +63,10 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     private UserService userService;
     @Autowired
     private ActivitiStepsService activitiStepsService;
+
     @Autowired
     private ActivitiProcessTaskService taskService;
+
 
     @Override
     @Transactional
@@ -182,17 +184,40 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
 
             for (AuditRule.Rule ruleRule : rule.getRules()) {
 
-                if (ToolUtil.isNotEmpty(ruleRule.getDeptPositions())) {
-                    for (Long dept : depts) {
-                        if (ruleRule.getDeptPositions().stream().anyMatch(i -> i.getKey().equals(dept.toString()))) {
-                            userIds.add(userId);
+                switch (ruleRule.getType()) {
+                    case AppointUsers:
+                        for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+                            userIds.add(Long.valueOf(appointUser.getKey()));
                         }
-                    }
+                        break;
+                    case AllPeople:
+                        List<Long> allUsersId = userService.getAllUsersId();
+                        userIds.addAll(allUsersId);
+                        break;
+                    case DeptPositions:
+                        for (DeptPosition deptPosition : ruleRule.getDeptPositions()) {
+                            List<Long> positionIds = new ArrayList<>();
+                            for (DeptPosition.Position position : deptPosition.getPositions()) {
+                                if (ToolUtil.isNotEmpty(position.getValue())) {
+                                    positionIds.add(Long.valueOf(position.getValue()));
+                                }
+                            }
+                            List<User> userByPositionAndDept = userService.getUserByPositionAndDept(Long.valueOf(deptPosition.getKey()), positionIds);
+                            for (User user : userByPositionAndDept) {
+                                userIds.add(user.getUserId());
+                            }
+                        }
+                        break;
+                    case MasterDocumentPromoter:    //主单据发起人
+                        if (ToolUtil.isNotEmpty(taskId)) {
+                            ActivitiProcessTask processTask = taskService.getById(taskId);
+                            if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                                ActivitiProcessTask mainTask = taskService.getById(processTask.getMainTaskId());
+                                userIds.add(mainTask.getCreateUser());
+                            }
+                        }
                 }
 
-                for (AppointUser appointUser : ruleRule.getAppointUsers()) {
-                    userIds.add(Long.valueOf(appointUser.getKey()));
-                }
             }
 
         }
