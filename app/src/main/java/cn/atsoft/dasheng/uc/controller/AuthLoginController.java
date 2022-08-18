@@ -302,13 +302,11 @@ public class AuthLoginController extends BaseController {
                 throw new InvalidKaptchaException();
             }
         }
-
-        //登录并创建token
-        String token = authService.login(username, password);
-        JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
-        Long userId = jwtPayLoad.getUserId();//userId
         try {
             UcJwtPayLoad ucJwtPayLoad = getPayLoad();
+            String token = authService.login(username, password);
+            JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
+            Long userId = jwtPayLoad.getUserId();//userId
             if (ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)) {
                 WxuserInfo wxuserInfo = new WxuserInfo();
                 wxuserInfo.setMemberId(ucJwtPayLoad.getUserId());
@@ -319,12 +317,16 @@ public class AuthLoginController extends BaseController {
                 wxuserInfoQueryWrapper.eq("source", "wxCp");
                 wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
             }
+            return ResponseData.success(token);
         } catch (Exception e) {
 
         }
-        return ResponseData.success(token);
-    }
+        //登录并创建token
+//        String token = authService.login(username, password);
+        return ResponseData.error("登录错误");
 
+
+    }
 
 
     @RequestMapping("/refreshToken")
