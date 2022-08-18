@@ -123,18 +123,23 @@ public class ActivitiStepsResult implements Serializable {
     @JSONField(serialize = false)
     @ApiModelProperty("删除状态")
     private Integer display;
+
     @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
+
     @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
     @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
-    @JSONField(serialize = false)
+
+
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+
     @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
