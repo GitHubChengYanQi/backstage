@@ -5,10 +5,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
@@ -66,6 +63,10 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     private UserService userService;
     @Autowired
     private ActivitiStepsService activitiStepsService;
+
+    @Autowired
+    private ActivitiProcessTaskService taskService;
+
 
     @Override
     @Transactional
@@ -170,7 +171,8 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     @Override
     public List<Long> getUserIds(Long taskId) {
         List<Long> userIds = new ArrayList<>();
-
+        Long userId = LoginContextHolder.getContext().getUserId();
+        List<Long> depts = LoginContextHolder.getContext().getDeptDataScope();
         List<ActivitiProcessLog> processLogs = ToolUtil.isEmpty(taskId) ? new ArrayList<>() : processLogService.query().eq("task_id", taskId).list();
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : processLogs) {
@@ -181,12 +183,52 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
             AuditRule rule = activitiAudit.getRule();
 
             for (AuditRule.Rule ruleRule : rule.getRules()) {
-                for (AppointUser appointUser : ruleRule.getAppointUsers()) {
-                    userIds.add(Long.valueOf(appointUser.getKey()));
+
+                switch (ruleRule.getType()) {
+                    case AppointUsers:
+                        for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+                            userIds.add(Long.valueOf(appointUser.getKey()));
+                        }
+                        break;
+                    case AllPeople:
+                        List<Long> allUsersId = userService.getAllUsersId();
+                        userIds.addAll(allUsersId);
+                        break;
+                    case DeptPositions:
+                        for (DeptPosition deptPosition : ruleRule.getDeptPositions()) {
+                            List<Long> positionIds = new ArrayList<>();
+                            for (DeptPosition.Position position : deptPosition.getPositions()) {
+                                if (ToolUtil.isNotEmpty(position.getValue())) {
+                                    positionIds.add(Long.valueOf(position.getValue()));
+                                }
+                            }
+                            List<User> userByPositionAndDept = userService.getUserByPositionAndDept(Long.valueOf(deptPosition.getKey()), positionIds);
+                            for (User user : userByPositionAndDept) {
+                                userIds.add(user.getUserId());
+                            }
+                        }
+                        break;
+                    case MasterDocumentPromoter:    //主单据发起人
+                        if (ToolUtil.isNotEmpty(taskId)) {
+                            ActivitiProcessTask processTask = taskService.getById(taskId);
+                            if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                                ActivitiProcessTask mainTask = taskService.getById(processTask.getMainTaskId());
+                                userIds.add(mainTask.getCreateUser());
+                            }
+                        }
                 }
+
             }
 
         }
+        if (ToolUtil.isNotEmpty(taskId)) {
+            ActivitiProcessTask processTask = taskService.getById(taskId);
+            if (ToolUtil.isNotEmpty(processTask) && ToolUtil.isNotEmpty(processTask.getUserIds())) {
+                userIds.addAll(JSON.parseArray(processTask.getUserIds(), Long.class));
+            }
+        }
+
+
         return userIds;
     }
 
@@ -207,6 +249,7 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
     public void power(ActivitiProcess activitiProcess) {
         ActivitiSteps startSteps = activitiStepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
@@ -229,6 +272,7 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
         }
         return false;
     }
+
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
 

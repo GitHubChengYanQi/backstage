@@ -11,7 +11,7 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
-        <result column="last_maintenance_id" property="lastMaintenanceTime"/>
+        <result column="last_maintenance_time" property="lastMaintenanceTime"/>
         <result column="display" property="display"/>
         <result column="spu_id" property="spuId"/>
         <result column="deptId" property="deptId"/>
@@ -32,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">number
-    AS "number",anomaly AS "anomaly", source AS "source", last_maintenance_id AS lastMaintenanceTime,source_id AS "sourceId",customer_id AS "customerId",batch_number AS "batchNumber",serial_number AS "serialNumber",production_time AS "productionTime",
+    AS "number",anomaly AS "anomaly", source AS "source", last_maintenance_time AS lastMaintenanceTime,source_id AS "sourceId",customer_id AS "customerId",batch_number AS "batchNumber",serial_number AS "serialNumber",production_time AS "productionTime",
 spu_id
     AS "spuId", cost_price AS "costPrice" , selling_price AS "sellingPrice" ,brand_id AS "brandId",pid AS "pid",position_id AS "positionId",
         inkind_id
@@ -138,6 +138,12 @@ spu_id
         </if>
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.inkindIds != null and paramCondition.inkindIds.size>0 ">
+            and inkind_id in
+            <foreach collection="paramCondition.inkindIds" separator="," index="index" item="state" close=")" open="(">
+                #{state}
+            </foreach>
         </if>
     </select>
 

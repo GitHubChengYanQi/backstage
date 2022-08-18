@@ -372,6 +372,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(parts)) {
             parts.setDisplay(0);
             this.updateById(parts);
+            List<ErpPartsDetail> partsDetails = erpPartsDetailService.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
+            for (ErpPartsDetail partsDetail : partsDetails) {
+                partsDetail.setDisplay(0);
+            }
+            erpPartsDetailService.updateBatchById(partsDetails);
         }
 
         this.updateById(release);

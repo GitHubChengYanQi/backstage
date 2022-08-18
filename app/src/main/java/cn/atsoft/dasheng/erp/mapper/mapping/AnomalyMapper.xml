@@ -30,12 +30,13 @@
         <result column="instock_number" property="instockNumber"/>
         <result column="check_number" property="checkNumber"/>
         <result column="position_id" property="positionId"/>
+        <result column="customer_json" property="customerJson"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">brand_id
     AS "brandId",customer_id AS"customerId",order_id AS "orderId",instock_number AS "instock_number", check_number AS "checkNumber",
-position_id AS "positionId",
+position_id AS "positionId",customer_json AS "customerJson",
         anomaly_id
         AS "anomalyId", type AS "type", form_id AS "formId", remark AS "remark", enclosure AS "enclosure", theme AS "theme", origin AS "origin", source AS "source", source_id AS "sourceId", sku_id AS "skuId", need_number AS "needNumber", real_number AS "realNumber", reason AS "reason", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
@@ -45,7 +46,7 @@ position_id AS "positionId",
             parameterType="cn.atsoft.dasheng.erp.model.params.AnomalyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_anomaly where 1 = 1
+        from daoxin_anomaly where 1 = 1 and display = 1
         <if test="paramCondition.anomalyId != null">
             and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>
@@ -106,6 +107,10 @@ position_id AS "positionId",
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
+        <if test=" paramCondition.beginTime != null and paramCondition.beginTime != '' ">
+            AND Year(create_time) = #{paramCondition.beginTime}
+        </if>
+
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.AnomalyParam">

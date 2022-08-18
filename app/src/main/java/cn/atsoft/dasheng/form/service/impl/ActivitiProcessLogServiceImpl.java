@@ -502,14 +502,14 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
             case "INSTOCK":
                 InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
-                if (ToolUtil.isNotEmpty(processTask.getSource())){
-                    switch(processTask.getSource()){
+                if (ToolUtil.isNotEmpty(processTask.getSource())) {
+                    switch (processTask.getSource()) {
                         /**
                          * 如果说 入库单来源是调拨  那么 需要检查调拨 任务是否完成
                          */
                         case "ALLOCATION":
                             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", instockOrder.getInstockOrderId()).eq("display", 1).list();
-                            allocationService.checkCartDone(processTask.getFormId(),instockLists);
+                            allocationService.checkCartDone(processTask.getFormId(), instockLists);
                             break;
                         default:
 
@@ -929,8 +929,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         LoginUser user = LoginContextHolder.getContext().getUser();
         Long userId = user.getId();
         List<Long> users = taskSend.selectUsers(starUser, taskId);
-        for (Long aLong : users) {
-            if (aLong.equals(userId)) {
+        for (Long id : users) {
+            if (ToolUtil.isNotEmpty(id) && id.equals(userId)) {
                 return true;
             }
         }
@@ -1649,24 +1649,24 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return audit;
     }
 
-    private void startAction(List<ActivitiProcessLog> audit, ActivitiProcessTask task) {
-        switch (task.getType()) {
-            case "ALLOCATION":
-                for (ActivitiProcessLog processLog : audit) {
-                    if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
-                        List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
-                        DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
-                        for (ActionStatus actionStatus : actionStatuses) {
-                            if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)) {
-                                allocationService.createPickListsAndInStockOrder(task.getFormId());
-                                continue;
-                            }
-                        }
-
-                    }
-                }
-                break;
-        }
-    }
+//    private void startAction(List<ActivitiProcessLog> audit, ActivitiProcessTask task) {
+//        switch (task.getType()) {
+//            case "ALLOCATION":
+//                for (ActivitiProcessLog processLog : audit) {
+//                    if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
+//                        List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+//                        DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
+//                        for (ActionStatus actionStatus : actionStatuses) {
+//                            if (actionStatus.getActionId().equals(action.getDocumentsActionId()) && actionStatus.getStatus().equals(0)) {
+//                                allocationService.createPickListsAndInStockOrder(task.getFormId());
+//                                continue;
+//                            }
+//                        }
+//
+//                    }
+//                }
+//                break;
+//        }
+//    }
 
 }

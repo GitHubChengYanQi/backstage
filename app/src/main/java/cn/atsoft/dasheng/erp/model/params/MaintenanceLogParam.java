@@ -16,49 +16,22 @@ import java.util.List;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-06-28
+ * @since 2022-08-11
  */
 @Data
 @ApiModel
 public class MaintenanceLogParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<Long> skuIds;
-    private List<Long> brandIds;
 
-    private List<MaintenanceLogParam> maintenanceLogParams;
+    private List<MaintenanceLogDetailParam> maintenanceLogDetailParams;
+
+    private String coding;
+    private Long storehousePositionsId;
+
 
     @ApiModelProperty("")
     private Long maintenanceLogId;
-
-    @ApiModelProperty("")
-    private Long maintenanceDetailId;
-
-    @ApiModelProperty("")
-    private Long maintenanceId;
-
-    private Long storehousePositionsId;
-
-    private String enclosure;
-
-
-    @ApiModelProperty("")
-    private Long inkindId;
-
-    @ApiModelProperty("")
-    private Long skuId;
-
-    /**
-     * 品牌id
-     */
-    @ApiModelProperty("品牌id")
-    private Long brandId;
-
-    /**
-     * 数量
-     */
-    @ApiModelProperty("数量")
-    private Integer number;
 
     /**
      * 创建者
@@ -95,6 +68,18 @@ public class MaintenanceLogParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
+
+    @ApiModelProperty("")
+    private Long maintenanceDetailId;
+
+    @ApiModelProperty("")
+    private Long maintenanceId;
+
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
+    private String enclosure;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

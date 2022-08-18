@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -27,7 +28,7 @@ import java.util.List;
 @ApiModel
 public class StockDetailsResult implements Serializable {
 
-    private MaintenanceLogResult maintenanceLogResult;
+    private MaintenanceLogDetailResult maintenanceLogDetailResult;
     private StorehousePositionsResult storehousePositionsResult;
     private static final long serialVersionUID = 1L;
     private Long storehouseId;
@@ -46,6 +47,10 @@ public class StockDetailsResult implements Serializable {
     private User user;
     private String spuClassName;
     private String month;
+    private Long num;
+    private Long spuClassificationId;
+    private Integer anomaly;
+    private Set<Long> skuIds;
     /**
      * 库位id
      */
@@ -107,14 +112,12 @@ public class StockDetailsResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
     private Long createUser;
 
     /**
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
     private Date createTime;
 
     /**
@@ -136,6 +139,7 @@ public class StockDetailsResult implements Serializable {
      */
     @ApiModelProperty("状态")
     @JSONField(serialize = false)
+
     private Integer display;
     @ApiModelProperty("父ID顺序数组")
     @JSONField(serialize = false)

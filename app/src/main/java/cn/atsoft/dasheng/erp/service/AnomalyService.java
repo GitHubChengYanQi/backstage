@@ -28,11 +28,17 @@ public interface AnomalyService extends IService<Anomaly> {
      */
     Anomaly add(AnomalyParam param);
 
+    Map<Integer, Integer> anomalyCensus(AnomalyParam param);
+
+    Map<Integer, List<AnomalyResult>> detailed(AnomalyParam param);
+
     AnomalyResult detail(Long id);
 
     Long temporary(AnomalyParam param);
 
     Map<Long, AnomalyResult> getMap(List<Long> ids);
+
+    void addInventoryRecord(AnomalyParam param,Long inventoryId, int status);
 
     /**
      * 删除

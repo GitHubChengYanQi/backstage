@@ -106,10 +106,11 @@ public class InventoryController extends BaseController {
 
     /**
      * 盘点超时
+     *
      * @return
      */
     @RequestMapping(value = "/timeOut", method = RequestMethod.GET)
-    public ResponseData timeOut( ) {
+    public ResponseData timeOut() {
 
         return ResponseData.success();
     }
@@ -219,6 +220,17 @@ public class InventoryController extends BaseController {
         if (ToolUtil.isEmpty(inventoryParam)) {
             inventoryParam = new InventoryParam();
         }
+        return this.inventoryService.findPageBySpec(inventoryParam);
+    }
+
+
+    @RequestMapping(value = "/listReceipt", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<InventoryResult> listReceipt(@RequestBody(required = false) InventoryParam inventoryParam) {
+        if (ToolUtil.isEmpty(inventoryParam)) {
+            inventoryParam = new InventoryParam();
+        }
+        inventoryParam.setComplete(99);
         return this.inventoryService.findPageBySpec(inventoryParam);
     }
 

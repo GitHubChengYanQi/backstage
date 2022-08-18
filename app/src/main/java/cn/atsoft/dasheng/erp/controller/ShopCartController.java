@@ -116,6 +116,26 @@ public class ShopCartController extends BaseController {
         List<ShopCartResult> shopCartResults = this.shopCartService.applyList(shopCartParam);
         return ResponseData.success(shopCartResults);
     }
+    @RequestMapping(value = "/clearAllocationShopCart", method = RequestMethod.GET)
+    public ResponseData clearAllocationShopCart() {
+
+        this.shopCartService.clearAllocationShopCart();
+        return ResponseData.success();
+    }
+
+
+    /**
+     * 编辑接口
+     *
+     * @author song
+     * @Date 2022-06-06
+     */
+    @RequestMapping(value = "/applyUpdate", method = RequestMethod.POST)
+    @ApiOperation("申请购物车编辑")
+    public ResponseData applyUpdate(@RequestBody ShopCartParam shopCartParam) {
+        Long id = this.shopCartService.applyUpdate(shopCartParam);
+        return ResponseData.success(id);
+    }
 
     /**
      * 删除接口

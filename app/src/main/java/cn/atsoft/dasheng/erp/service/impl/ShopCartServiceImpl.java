@@ -25,9 +25,6 @@ import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
-import cn.atsoft.dasheng.message.config.DirectQueueConfig;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
@@ -186,7 +183,8 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 //                    anomalyService.updateById(error);
 //                    instockList = instockListService.getById(error.getSourceId());
 //                    break;
-
+                default:
+                    throw new ServiceException(500,"错误");
             }
             if (instockList != null) {
                 instockList.setStatus(0L);
@@ -277,11 +275,17 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
 
     @Override
+    @Transactional
     public List<Long> delete(ShopCartParam param) {
+
+        Long userId = LoginContextHolder.getContext().getUserId();
 
         if (ToolUtil.isNotEmpty(param.getIds()) && param.getIds().size() > 0) {
             List<ShopCart> shopCarts = this.listByIds(param.getIds());
             for (ShopCart shopCart : shopCarts) {
+                if (!shopCart.getCreateUser().equals(userId)) {
+                    throw new ServiceException(500, "错误");
+                }
                 shopCart.setDisplay(0);
             }
             this.updateBatchById(shopCarts);
@@ -294,10 +298,28 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         return null;
     }
 
+    /**
+     * 购物车修改
+     *
+     * @param param
+     * @return
+     */
     @Override
     public Long update(ShopCartParam param) {
 
         ShopCart oldEntity = getOldEntity(param);
+        if (ToolUtil.isEmpty(oldEntity)) {
+            throw new ServiceException(500, "购物车不存在");
+        }
+        switch (oldEntity.getType()) {
+            case "outStock":
+            case "inStock":
+            case "stocktaking":
+            case "allocation":
+            case "curing":
+            case "directInStock":
+                throw new ServiceException(500, "购物车不可修改");
+        }
         ShopCart newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
 
@@ -309,6 +331,42 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         this.updateById(newEntity);
         return param.getCartId();
     }
+
+    /**
+     * 单据修改
+     *
+     * @param param
+     * @return
+     */
+    @Override
+    public Long applyUpdate(ShopCartParam param) {
+
+        ShopCart oldEntity = getOldEntity(param);
+        if (ToolUtil.isEmpty(oldEntity)) {
+            throw new ServiceException(500, "购物车不存在");
+        }
+        switch (oldEntity.getType()) {
+            case "outStock":
+            case "inStock":
+            case "stocktaking":
+            case "allocation":
+            case "curing":
+            case "directInStock":
+                Long userId = LoginContextHolder.getContext().getUserId();
+                if (!oldEntity.getCreateUser().equals(userId)) {
+                    throw new ServiceException(500, "不可修改他人申请");
+                }
+                break;
+            default:
+                throw new ServiceException(500, "购物车错误");
+        }
+        ShopCart newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+
+        this.updateById(newEntity);
+        return param.getCartId();
+    }
+
 
     @Override
     public List<ShopCartResult> allList(ShopCartParam param) {
@@ -328,6 +386,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 case Stocktaking:
                     Inventory inventory = inventoryService.getById(param.getSourceId());
                     formId = inventory.getInventoryTaskId();
+
                     break;
             }
             processTask = activitiProcessTaskService.getByFormId(formId);
@@ -384,6 +443,18 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         return shopCartResults;
     }
 
+    @Override
+    public void clearAllocationShopCart() {
+        Long userId = LoginContextHolder.getContext().getUserId();
+
+        List<ShopCart> shopCarts = this.query().eq("display", 1).eq("status", 0).eq("create_user", userId).eq("type", "allocation").list();
+        for (ShopCart shopCart : shopCarts) {
+            shopCart.setDisplay(0);
+        }
+        this.updateBatchById(shopCarts);
+
+
+    }
 
     @Override
     public ShopCartResult findBySpec(ShopCartParam param) {
@@ -493,7 +564,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                             positionsResultList.add(position);
                             positionNum.setPositionsResult(position);
                         }
-                        if(ToolUtil.isNotEmpty(positionNum.getToPositionId()) && positionNum.getToPositionId().equals(position.getStorehousePositionsId())){
+                        if (ToolUtil.isNotEmpty(positionNum.getToPositionId()) && positionNum.getToPositionId().equals(position.getStorehousePositionsId())) {
                             positionNum.setToPositionsResult(position);
                         }
 

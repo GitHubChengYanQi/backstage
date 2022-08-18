@@ -65,4 +65,5 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
 
     List<Long> getInkindIds(@Param("paramCondition") StockDetailsParam param);
 
+    List<StockDetailsResult> stockInKindList();
 }

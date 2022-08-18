@@ -249,6 +249,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     /**
      * 纯净查询
+     *
      * @param param
      * @return
      */
@@ -581,6 +582,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (ToolUtil.isEmpty(customerList)) {
             return new ArrayList<>();
         }
+
+        customerList.removeIf(i -> i.getDisplay() == 0);
+
         List<CustomerResult> results = new ArrayList<>();
         List<Long> levelIds = new ArrayList<>();
         List<Long> adressIds = new ArrayList<>();

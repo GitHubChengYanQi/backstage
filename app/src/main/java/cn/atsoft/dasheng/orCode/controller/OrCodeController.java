@@ -1,27 +1,17 @@
 package cn.atsoft.dasheng.orCode.controller;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.annotation.Excel;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
-import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
-import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
-import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
-import cn.atsoft.dasheng.orCode.model.params.OrCodeExcel;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
@@ -34,34 +24,18 @@ import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.orCode.service.impl.OrCodeServiceImpl;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.hutool.core.convert.Convert;
 import org.apache.ibatis.annotations.Param;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import cn.hutool.core.date.DateTime;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import javafx.scene.control.IndexedCell;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -99,8 +73,6 @@ public class OrCodeController extends BaseController {
     private UserService userService;
     @Autowired
     private InstockListService instockListService;
-    @Autowired
-    private InstockService instockService;
     @Autowired
     private OutstockListingService outstockListingService;
     @Autowired
@@ -355,13 +327,6 @@ public class OrCodeController extends BaseController {
                     List<InstockListResult> instockListResults = instockListResultPageInfo.getData();
 
                     instockOrderResult.setInstockListResults(instockListResults);
-
-                    InstockParam instockParam = new InstockParam();
-                    instockParam.setInstockOrderId(instockOrder.getInstockOrderId());
-                    PageInfo<InstockResult> instockResultPageInfo = instockService.findPageBySpec(instockParam, null);
-                    List<InstockResult> instockResults = instockResultPageInfo.getData();
-
-                    instockOrderResult.setInstockResults(instockResults);
 
                     InstockRequest instockRequest = new InstockRequest();
                     instockRequest.setType("instock");

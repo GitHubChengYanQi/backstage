@@ -14,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-06-28
+ * @since 2022-08-11
  */
 @TableName("daoxin_erp_maintenance_log")
 public class MaintenanceLog implements Serializable {
@@ -23,35 +23,8 @@ public class MaintenanceLog implements Serializable {
 
       @TableId(value = "maintenance_log_id", type = IdType.ID_WORKER)
     private Long maintenanceLogId;
-
-    @TableField("inkind_id")
-    private Long inkindId;
-
-    @TableField("sku_id")
-    private Long skuId;
-    @TableField("maintenance_detail_id")
-    private Long maintenanceDetailId;
-
-    @TableField("maintenance_id")
-    private Long maintenanceId;
-    /**
-     * 品牌id
-     */
-    @TableField("brand_id")
-    private Long brandId;
-
-    /**
-     * 附件
-     */
-    @TableField("enclosure")
-    private String enclosure;
-
-    /**
-     * 数量
-     */
-    @TableField("number")
-    private Integer number;
-
+    @TableField("coding")
+      private String coding;
     /**
      * 创建者
      */
@@ -88,6 +61,18 @@ public class MaintenanceLog implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    @TableField("maintenance_detail_id")
+    private Long maintenanceDetailId;
+
+    @TableField("maintenance_id")
+    private Long maintenanceId;
+
+    /**
+     * 附件
+     */
+    @TableField("enclosure")
+    private String enclosure;
+
 
     public Long getMaintenanceLogId() {
         return maintenanceLogId;
@@ -95,38 +80,6 @@ public class MaintenanceLog implements Serializable {
 
     public void setMaintenanceLogId(Long maintenanceLogId) {
         this.maintenanceLogId = maintenanceLogId;
-    }
-
-    public Long getInkindId() {
-        return inkindId;
-    }
-
-    public void setInkindId(Long inkindId) {
-        this.inkindId = inkindId;
-    }
-
-    public Long getSkuId() {
-        return skuId;
-    }
-
-    public void setSkuId(Long skuId) {
-        this.skuId = skuId;
-    }
-
-    public Long getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
     }
 
     public Long getCreateUser() {
@@ -201,20 +154,28 @@ public class MaintenanceLog implements Serializable {
         this.enclosure = enclosure;
     }
 
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
     @Override
     public String toString() {
         return "MaintenanceLog{" +
         "maintenanceLogId=" + maintenanceLogId +
-        ", inkindId=" + inkindId +
-        ", skuId=" + skuId +
-        ", brandId=" + brandId +
-        ", number=" + number +
         ", createUser=" + createUser +
         ", createTime=" + createTime +
+        ", coding=" + coding +
         ", updateUser=" + updateUser +
         ", updateTime=" + updateTime +
         ", display=" + display +
         ", deptId=" + deptId +
+        ", maintenanceDetailId=" + maintenanceDetailId +
+        ", maintenanceId=" + maintenanceId +
+        ", enclosure=" + enclosure +
         "}";
     }
 }

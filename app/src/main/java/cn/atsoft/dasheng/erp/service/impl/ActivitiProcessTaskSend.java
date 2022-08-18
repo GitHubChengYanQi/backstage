@@ -120,6 +120,10 @@ public class ActivitiProcessTaskSend {
                 case MasterDocumentPromoter:    //主单据发起人
                     if (ToolUtil.isNotEmpty(taskId)) {
                         ActivitiProcessTask processTask = processTaskService.getById(taskId);
+                        if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                            ActivitiProcessTask mainTask = processTaskService.getById(processTask.getMainTaskId());
+                            users.add(mainTask.getCreateUser());
+                        }
                         if (processTask.getType().equals("INSTOCKERROR")) {
                             AnomalyOrder anomalyOrder = anomalyOrderService.getById(processTask.getFormId());
                             InstockOrder instockOrder = instockOrderService.getById(anomalyOrder);
@@ -173,7 +177,7 @@ public class ActivitiProcessTaskSend {
                     this.completeSend(type, aboutSend);
                     break;
                 case status:
-                    auditMessageSend.statusSend(taskId,type ,users,url, createName);
+                    auditMessageSend.statusSend(taskId, type, users, url, createName);
                     break;
             }
 
@@ -253,8 +257,8 @@ public class ActivitiProcessTaskSend {
         User byId = userService.getById(task.getCreateUser());
         Map<String, String> map = new HashMap<>();
         map.put("taskId", taskId.toString());
-        map.put("type",task.getType());
-        map.put("formId",task.getFormId().toString());
+        map.put("type", task.getType());
+        map.put("formId", task.getFormId().toString());
 //        map.put("coding", qualityTask.getCoding());
         map.put("byIdName", byId.getName());
         String url = this.changeUrl(type, map, task);//组装url
@@ -270,7 +274,7 @@ public class ActivitiProcessTaskSend {
                 url = url + "/#/Receipts/ReceiptsDetail?" + "id=" + map.get("taskId");
                 break;
             case status:
-                url = url + "/#/Receipts/ReceiptsDetail?" +"type="+map.get("type")+"&formId="+ map.get("formId");
+                url = url + "/#/Receipts/ReceiptsDetail?" + "type=" + map.get("type") + "&formId=" + map.get("formId");
                 break;
 //                case quality_perform:
 //                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");

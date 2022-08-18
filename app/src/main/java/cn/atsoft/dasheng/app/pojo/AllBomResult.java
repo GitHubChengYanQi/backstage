@@ -26,5 +26,7 @@ public class AllBomResult {
         private Boolean fixed;
 
         private String name;
+
+        private String spuClass;
     }
 }

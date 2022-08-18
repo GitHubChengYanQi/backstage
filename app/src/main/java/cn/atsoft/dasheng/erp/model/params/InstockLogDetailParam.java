@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Captain_Jazz
@@ -24,6 +25,11 @@ public class InstockLogDetailParam implements Serializable, BaseValidatingParam 
 
     private static final long serialVersionUID = 1L;
 
+    private Long realNumber;
+
+    private Long anomalyId;
+
+    private Long receiptId;
 
     @ApiModelProperty("")
     private Long instockLogDetailId;

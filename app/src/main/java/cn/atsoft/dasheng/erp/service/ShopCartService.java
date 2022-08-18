@@ -49,6 +49,9 @@ public interface ShopCartService extends IService<ShopCart> {
      * @author song
      * @Date 2022-06-06
      */
+
+    Long applyUpdate(ShopCartParam param);
+
     Long update(ShopCartParam param);
 
     List<ShopCartResult> allList(ShopCartParam param);
@@ -56,6 +59,8 @@ public interface ShopCartService extends IService<ShopCart> {
     List<ShopCartResult> merge(Long inventoryId);
 
     List<ShopCartResult> applyList(ShopCartParam param);
+
+    void clearAllocationShopCart();
 
     /**
      * 查询单条数据，Specification模式
@@ -79,7 +84,7 @@ public interface ShopCartService extends IService<ShopCart> {
      * @author song
      * @Date 2022-06-06
      */
-     PageInfo<ShopCartResult> findPageBySpec(ShopCartParam param);
+    PageInfo<ShopCartResult> findPageBySpec(ShopCartParam param);
 
     void format(List<ShopCartResult> data);
 }

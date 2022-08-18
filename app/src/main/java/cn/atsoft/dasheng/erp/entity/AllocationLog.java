@@ -14,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author Captain_Jazz
- * @since 2022-07-25
+ * @since 2022-08-11
  */
 @TableName("daoxin_erp_allocation_log")
 public class AllocationLog implements Serializable {
@@ -35,30 +35,8 @@ public class AllocationLog implements Serializable {
 
     @TableField("allocation_detail_id")
     private Long allocationDetailId;
-
-    @TableField("inkind_id")
-    private Long inKindId;
-
-    @TableField("sku_id")
-    private Long skuId;
-
-    @TableField("number")
-    private Integer number;
-
-    /**
-     * 仓库库位id
-     */
-    @TableField("storehouse_positions_id")
-    private Long storehousePositionsId;
-
-    /**
-     * 仓库id
-     */
-    @TableField("storehouse_id")
-    private Long storehouseId;
-
-    @TableField("brand_id")
-    private Long brandId;
+    @TableField("coding")
+    private String coding;
 
     /**
      * 创建者
@@ -96,18 +74,6 @@ public class AllocationLog implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
-    /**
-     * 调拨目标位置仓库库位id
-     */
-    @TableField("to_storehouse_positions_id")
-    private Long toStorehousePositionsId;
-
-    /**
-     * 调拨目标位置仓库id
-     */
-    @TableField("to_storehouse_id")
-    private Long toStorehouseId;
-
 
     public Long getAllocationLogId() {
         return allocationLogId;
@@ -131,46 +97,6 @@ public class AllocationLog implements Serializable {
 
     public void setAllocationDetailId(Long allocationDetailId) {
         this.allocationDetailId = allocationDetailId;
-    }
-
-    public Long getSkuId() {
-        return skuId;
-    }
-
-    public void setSkuId(Long skuId) {
-        this.skuId = skuId;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
-    public Long getStorehousePositionsId() {
-        return storehousePositionsId;
-    }
-
-    public void setStorehousePositionsId(Long storehousePositionsId) {
-        this.storehousePositionsId = storehousePositionsId;
-    }
-
-    public Long getStorehouseId() {
-        return storehouseId;
-    }
-
-    public void setStorehouseId(Long storehouseId) {
-        this.storehouseId = storehouseId;
-    }
-
-    public Long getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
     }
 
     public Long getCreateUser() {
@@ -221,49 +147,27 @@ public class AllocationLog implements Serializable {
         this.deptId = deptId;
     }
 
-    public Long getToStorehousePositionsId() {
-        return toStorehousePositionsId;
+    public String getCoding() {
+        return coding;
     }
 
-    public void setToStorehousePositionsId(Long toStorehousePositionsId) {
-        this.toStorehousePositionsId = toStorehousePositionsId;
-    }
-
-    public Long getToStorehouseId() {
-        return toStorehouseId;
-    }
-
-    public void setToStorehouseId(Long toStorehouseId) {
-        this.toStorehouseId = toStorehouseId;
-    }
-
-    public Long getInKindId() {
-        return inKindId;
-    }
-
-    public void setInKindId(Long inKindId) {
-        this.inKindId = inKindId;
+    public void setCoding(String coding) {
+        this.coding = coding;
     }
 
     @Override
     public String toString() {
         return "AllocationLog{" +
         "allocationLogId=" + allocationLogId +
+        ",coding=" + coding +
         ", allocationId=" + allocationId +
         ", allocationDetailId=" + allocationDetailId +
-        ", skuId=" + skuId +
-        ", number=" + number +
-        ", storehousePositionsId=" + storehousePositionsId +
-        ", storehouseId=" + storehouseId +
-        ", brandId=" + brandId +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
         ", display=" + display +
         ", deptId=" + deptId +
-        ", toStorehousePositionsId=" + toStorehousePositionsId +
-        ", toStorehouseId=" + toStorehouseId +
         "}";
     }
 }

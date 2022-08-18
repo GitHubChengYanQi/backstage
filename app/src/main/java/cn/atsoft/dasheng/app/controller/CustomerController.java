@@ -115,22 +115,46 @@ public class CustomerController extends BaseController {
             Long customerId = customerParam.getCustomerId();
             CustomerResult detail = customerService.detail(customerId);
             return ResponseData.success(detail);
-        }else {
+        } else {
             CustomerResult customerResult = new CustomerResult();
             Customer customer = customerService.query().eq("status", 99).eq("display", 1).one();
-            if (ToolUtil.isNotEmpty(customer)){
+            if (ToolUtil.isNotEmpty(customer)) {
                 customerResult = customerService.detail(customer.getCustomerId());
-            }else {
+            } else {
                 Customer entity = new Customer();
                 entity.setStatus(99);
                 entity.setSupply(99);
                 this.customerService.save(entity);
-                ToolUtil.copyProperties(entity,customerResult);
+                ToolUtil.copyProperties(entity, customerResult);
             }
             return ResponseData.success(customerResult);
         }
 
     }
+
+    /**
+     * 查看详情接口
+     *
+     * @author
+     * @Date 2021-07-23
+     */
+    @RequestMapping(value = "/currentCompany", method = RequestMethod.GET)
+    @ApiOperation("当前公司")
+    public ResponseData<CustomerResult> currentCompany() {
+        CustomerResult customerResult = new CustomerResult();
+        Customer customer = customerService.query().eq("status", 99).eq("display", 1).one();
+        if (ToolUtil.isNotEmpty(customer)) {
+            customerResult = customerService.detail(customer.getCustomerId());
+        } else {
+            Customer entity = new Customer();
+            entity.setStatus(99);
+            entity.setSupply(99);
+            this.customerService.save(entity);
+            ToolUtil.copyProperties(entity, customerResult);
+        }
+        return ResponseData.success(customerResult);
+    }
+
 
     /**
      * 查询列表
@@ -148,7 +172,7 @@ public class CustomerController extends BaseController {
         }
 
 //        if (LoginContextHolder.getContext().isAdmin()) {
-            return this.customerService.findPageBySpec(null,customerParam);
+        return this.customerService.findPageBySpec(null, customerParam);
 //        }else{
 //            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
 //            PageInfo<CustomerResult> customer= customerService.findPageBySpec(dataScope,customerParam);
@@ -174,9 +198,9 @@ public class CustomerController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) CustomerParam customerParam) {
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
         queryWrapper.eq("display", 1);
-        if (ToolUtil.isNotEmpty(customerParam)){
-            if (ToolUtil.isNotEmpty(customerParam.getSupply())){
-                queryWrapper.eq("supply",customerParam.getSupply());
+        if (ToolUtil.isNotEmpty(customerParam)) {
+            if (ToolUtil.isNotEmpty(customerParam.getSupply())) {
+                queryWrapper.eq("supply", customerParam.getSupply());
             }
         }
 
@@ -209,7 +233,7 @@ public class CustomerController extends BaseController {
     public ResponseData updateChargePerson(@RequestBody CustomerParam customerParam) {
 
         if (customerParam.getCustomerId() == null) {
-            throw new ServiceException(500,"请选择你要的商机");
+            throw new ServiceException(500, "请选择你要的商机");
         }
         this.customerService.updateChargePerson(customerParam);
         return ResponseData.success();
