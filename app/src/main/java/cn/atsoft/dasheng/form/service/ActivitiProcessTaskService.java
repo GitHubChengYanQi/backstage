@@ -90,6 +90,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
 
     boolean startHaveME(AuditRule rule, LoginContext loginContext);
 
+    void setProcessUserIds(Long processId, Long taskId);
+
     Long getTaskIdByFormId(Long formId);
 
     void format(List<ActivitiProcessTaskResult> data);

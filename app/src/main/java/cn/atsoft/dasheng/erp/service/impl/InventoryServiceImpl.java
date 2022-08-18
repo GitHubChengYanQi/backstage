@@ -744,7 +744,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-
+            activitiProcessTaskService.setProcessUserIds(activitiProcess.getProcessId(), taskId);  //任务添加参与人
             //任务参与人
             if (ToolUtil.isNotEmpty(param.getParticipants())) {
                 List<Long> userIds = JSON.parseArray(param.getParticipants(), Long.class);
@@ -1173,7 +1173,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      * @param realNumber
      */
     @Override
-    public void outUpdateStockDetail(Long skuId, Long brandId,Long realNumber) {
+    public void outUpdateStockDetail(Long skuId, Long brandId, Long realNumber) {
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku_id", skuId);

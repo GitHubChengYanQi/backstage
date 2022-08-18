@@ -81,6 +81,35 @@
         activiti_process_task.source AS "source",
         activiti_process_task.source_id AS "source_id"
     </sql>
+    <sql id="auditColumn">
+        activiti_process_task
+        .
+        process_task_id
+        AS "processTaskId",
+	activiti_process_task.form_id AS "formId",
+	activiti_process_task.type AS "type",
+	activiti_process_task.remark AS "remark",
+	activiti_process_task.cause AS "cause",
+	activiti_process_task.user_id AS "userId",
+	activiti_process_task.main_task_id AS "mainTaskId",
+	activiti_process_task.pid AS "pid",
+	activiti_process_task.theme AS "theme",
+	activiti_process_task.origin AS "origin",
+	activiti_process_task.user_ids AS "userIds",
+	activiti_process_task.STATUS AS "status",
+	activiti_process_task.deptIds AS "deptIds",
+	activiti_process_task.task_name AS "taskName",
+	activiti_process_task.process_id AS "processId",
+	activiti_process_task.display AS "display",
+	activiti_process_task.create_user AS "createUser",
+	activiti_process_task.update_user AS "updateUser",
+	activiti_process_task.create_time AS "createTime",
+	activiti_process_task.update_time AS "updateTime",
+	activiti_process_task.source AS "source",
+	activiti_process_task.source_id AS "source_id" ,
+	daoxin_task_participant.user_id as "participantUser",
+	daoxin_task_participant.type as "participantType"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
@@ -158,61 +187,60 @@
     <select id="auditList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
         select
-        <include refid="Base_Column_List"/>
-        from activiti_process_task where 1 = 1 and display = 1
-        <!--        <if test="paramCondition.status != null ">-->
-        <!--            and status = #{paramCondition.status}-->
-        <!--        </if>-->
+        <include refid="auditColumn"/>
+        from activiti_process_task
+        LEFT JOIN daoxin_task_participant ON activiti_process_task.process_task_id =
+        daoxin_task_participant.process_task_id
+        where 1 = 1 and activiti_process_task.display = 1
         <if test="paramCondition.createUser != null ">
-            and create_user = #{paramCondition.createUser}
+            and activiti_process_task.create_user = #{paramCondition.createUser}
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type = #{paramCondition.type}
+            and activiti_process_task.type = #{paramCondition.type}
         </if>
         <if test="paramCondition.statusList !=null and paramCondition.statusList.size>0 ">
-            and status in
+            and activiti_process_task.status in
             <foreach collection="paramCondition.statusList" index="index" item="state" separator="," close=")" open="(">
                 #{state}
             </foreach>
         </if>
         <if test="paramCondition.types !=null and paramCondition.types.size>0 ">
-            and type in
+            and activiti_process_task.type in
             <foreach collection="paramCondition.types" index="index" item="state" separator="," close=")" open="(">
                 #{state}
             </foreach>
         </if>
         <if test="paramCondition.timeOutTaskIds !=null and paramCondition.timeOutTaskIds.size>0 ">
-            and process_task_id in
+            and activiti_process_task.process_task_id in
             <foreach collection="paramCondition.timeOutTaskIds" index="index" item="state" separator="," close=")"
                      open="(">
                 #{state}
             </foreach>
         </if>
         <if test="paramCondition.skuName != null">
-            and (form_id in (
+            and (activiti_process_task.form_id in (
             select instock_order_id from daoxin_erp_instock_order where coding like
             CONCAT('%',#{paramCondition.skuName},'%')
             union
             select order_id from daoxin_anomaly_order where coding like CONCAT('%',#{paramCondition.skuName},'%')
             union
-            select inventory_task_id from daoxin_erp_inventory where coding like CONCAT('%',#{paramCondition.skuName},'%')
+            select inventory_task_id from daoxin_erp_inventory where coding like
+            CONCAT('%',#{paramCondition.skuName},'%')
             union
             select pick_lists_id from daoxin_production_pick_lists where coding like
             CONCAT('%',#{paramCondition.skuName},'%')
             ) or task_name like CONCAT('%',#{paramCondition.skuName},'%'))
         </if>
-
         <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
-            and process_task_id in
+            and activiti_process_task.process_task_id in
             <foreach collection="paramCondition.taskIds" index="index" item="state" separator="," close=")" open="(">
                 #{state}
             </foreach>
         </if>
-<!--        <if test="paramCondition.userIds !=null  and paramCondition.type == 'ERROR' ">-->
-<!--            union-->
-<!--            select-->
-<!--            <include refid="Base_Column_List"/>-->
-<!--            from activiti_process_task where user_ids = #{paramCondition.userIds} and display = 1-->
-<!--        </if>-->
+        <if test="paramCondition.participantUser != null and paramCondition.participantUser != '' ">
+            and (daoxin_task_participant.user_id = #{paramCondition.participantUser}
+            or activiti_process_task.user_id = #{paramCondition.participantUser}
+            )
+        </if>
     </select>
 </mapper>

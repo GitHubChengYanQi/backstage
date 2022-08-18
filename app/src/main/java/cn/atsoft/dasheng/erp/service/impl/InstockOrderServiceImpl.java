@@ -311,7 +311,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库申请");
             activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
-            activitiProcessTaskParam.setUserId(entity.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
             if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {
@@ -324,6 +323,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             entity.setTaskId(taskId);
+            activitiProcessTaskService.setProcessUserIds(activitiProcess.getProcessId(), taskId); //任务添加参与人
             this.updateById(entity);
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");

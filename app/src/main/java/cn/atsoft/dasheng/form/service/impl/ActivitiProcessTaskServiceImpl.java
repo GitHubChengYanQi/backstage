@@ -87,6 +87,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Autowired
     private TaskParticipantService taskParticipantService;
 
+
     @Override
     public Long add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
@@ -195,32 +196,26 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Override
     public PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param) {
 
-        if (ToolUtil.isEmpty(param.getCreateUser())) {   //我发起的
-            List<Long> taskIds = new ArrayList<>();
-            taskIds.addAll(getTaskId());    //查看节点权限
-            // 参与人权限
-            taskIds.addAll(getTaskIdsByUserIds());
-            param.setTaskIds(taskIds);
-//        Long userId = LoginContextHolder.getContext().getUserId();
-//        param.setUserIds(userId.toString());
-
-            /**
-             * 超期筛选
-             */
-            if (ToolUtil.isNotEmpty(param.getOutTime())) {
-                List<Long> timeOutTaskIds = new ArrayList<>();
-                switch (param.getOutTime()) {
-                    case "yes":
-                        timeOutTaskIds.addAll(inventoryService.timeOut(true));
-                        break;
-                    case "no":
-                        inventoryService.timeOut(false);
-                        break;
-                }
-                param.setTimeOutTaskIds(timeOutTaskIds);
-            }
+        if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的
+            Long userId = LoginContextHolder.getContext().getUserId();
+            param.setParticipantUser(userId);  //参与人和负责人
         }
 
+        /**
+         * 超期筛选
+         */
+        if (ToolUtil.isNotEmpty(param.getOutTime())) {
+            List<Long> timeOutTaskIds = new ArrayList<>();
+            switch (param.getOutTime()) {
+                case "yes":
+                    timeOutTaskIds.addAll(inventoryService.timeOut(true));
+                    break;
+                case "no":
+                    inventoryService.timeOut(false);
+                    break;
+            }
+            param.setTimeOutTaskIds(timeOutTaskIds);
+        }
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
@@ -391,6 +386,68 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         return false;
     }
+
+    /**
+     * 获取流程 规则人员 并未任务添加参与人
+     *
+     * @param processId
+     * @param taskId
+     * @return
+     */
+    @Override
+    public void setProcessUserIds(Long processId, Long taskId) {
+
+        List<ActivitiSteps> activitiSteps = activitiStepsService.query().eq("process_id", processId).list();
+        List<Long> userIds = new ArrayList<>();
+
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            stepIds.add(activitiStep.getSetpsId());
+        }
+        List<ActivitiAudit> audits = auditService.query().in("setps_id", stepIds).list();
+
+
+        for (ActivitiAudit audit : audits) {
+            AuditRule rule = audit.getRule();
+            if (ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getRules())) {
+                for (AuditRule.Rule ruleRule : rule.getRules()) {
+                    switch (ruleRule.getType()) {
+                        case AppointUsers:
+                            for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+                                userIds.add(Long.valueOf(appointUser.getKey()));
+                            }
+                        case DeptPositions:
+                            for (DeptPosition deptPosition : ruleRule.getDeptPositions()) {
+                                List<Long> positionIds = new ArrayList<>();
+                                for (DeptPosition.Position position : deptPosition.getPositions()) {
+                                    if (ToolUtil.isNotEmpty(position.getValue())) {
+                                        positionIds.add(Long.valueOf(position.getValue()));
+                                    }
+                                }
+                                List<User> userByPositionAndDept = userService.getUserByPositionAndDept(Long.valueOf(deptPosition.getKey()), positionIds);
+                                for (User user : userByPositionAndDept) {
+                                    userIds.add(user.getUserId());
+                                }
+                            }
+                    }
+                }
+            }
+        }
+
+        List<TaskParticipant> taskParticipants = new ArrayList<>();
+
+        for (Long userId : userIds) {
+            TaskParticipant taskParticipant = new TaskParticipant();
+            taskParticipant.setUserId(userId);
+            taskParticipant.setProcessTaskId(taskId);
+            taskParticipant.setType("process");
+            taskParticipants.add(taskParticipant);
+        }
+
+        taskParticipantService.saveBatch(taskParticipants);
+
+    }
+
 
     @Override
     public Long getTaskIdByFormId(Long formId) {

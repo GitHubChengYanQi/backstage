@@ -318,6 +318,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             entity.setTaskId(taskId);
+            activitiProcessTaskService.setProcessUserIds(activitiProcess.getProcessId(), taskId); //任务添加参与人
             this.updateById(entity);
             //判断流程是否有主单据发起人
             if (taskParticipantService.MasterDocumentPromoter(activitiProcess.getProcessId())) {
@@ -516,7 +517,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                         inventoryService.inStockUpdateStock(anomalyResult.getSkuId(), anomalyResult.getBrandId(), customerNum.getCustomerId(), anomalyResult.getPositionId(), customerNum.getNum());
                     }
                 } else {                                                        //需出库
-                    inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(),  Long.valueOf(checkNumber.getNumber()));
+                    inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), Long.valueOf(checkNumber.getNumber()));
                 }
 
             }
