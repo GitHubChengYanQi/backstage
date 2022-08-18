@@ -11,9 +11,11 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.message.topic.TopicMessage;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import cn.atsoft.dasheng.sys.core.auth.AuthServiceImpl;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
+import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
 import cn.atsoft.dasheng.sys.core.exception.InvalidKaptchaException;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -39,6 +41,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.code.kaptcha.Constants;
 import io.swagger.annotations.Api;
@@ -53,6 +56,8 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeChatOpenRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +96,7 @@ public class AuthLoginController extends BaseController {
     @Autowired
     private SessionManager sessionManager;
 
+    protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
@@ -230,6 +236,7 @@ public class AuthLoginController extends BaseController {
             queryWrapper.eq("member_id", memberId);
             queryWrapper.in("source", "wxCp");
             queryWrapper.isNotNull("user_id");
+            queryWrapper.eq("display",1);
             queryWrapper.last("limit 1");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(queryWrapper);
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
@@ -307,7 +314,7 @@ public class AuthLoginController extends BaseController {
             String token = authService.login(username, password);
             JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
             Long userId = jwtPayLoad.getUserId();//userId
-            if (ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)) {
+            if (ToolUtil.isNotEmpty(ucJwtPayLoad.getType()) && ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)) {
                 WxuserInfo wxuserInfo = new WxuserInfo();
                 wxuserInfo.setMemberId(ucJwtPayLoad.getUserId());
                 wxuserInfo.setUserId(userId);
@@ -315,8 +322,10 @@ public class AuthLoginController extends BaseController {
                 QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
                 wxuserInfoQueryWrapper.eq("user_id", userId);
                 wxuserInfoQueryWrapper.eq("source", "wxCp");
+                wxuserInfoQueryWrapper.eq("display", 1);
                 wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
             }
+            logger.info("account"+username+"_"+"userId"+userId+"_"+"ucJwtPayLoad"+ JSON.toJSONString(ucJwtPayLoad));
             return ResponseData.success(token);
         } catch (Exception e) {
 
@@ -324,8 +333,35 @@ public class AuthLoginController extends BaseController {
         //登录并创建token
 //        String token = authService.login(username, password);
         return ResponseData.error("登录错误");
+    }
+    /**
+     * 企业微信退出 删除绑定关系
+     */
+    @RequestMapping(value = "/cpLogOut", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation("企业微信退出")
+    public ResponseData cpLogOut() {
 
+        try {
+            String token = TokenUtil.getToken();
+            JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
+            Long userId = jwtPayLoad.getUserId();//userId
+            if (ToolUtil.isNotEmpty(userId)) {
+                WxuserInfo wxuserInfo = new WxuserInfo();
+                wxuserInfo.setUserId(userId);
+                wxuserInfo.setDisplay(0);
+                QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+                wxuserInfoQueryWrapper.eq("user_id", userId);
+                wxuserInfoQueryWrapper.eq("source", "wxCp");
+                wxuserInfoQueryWrapper.eq("display", 1);
+                wxuserInfoService.update(wxuserInfo, wxuserInfoQueryWrapper);
+            }
+            logger.info("userId: "+userId+" 退出登录");
+            return ResponseData.success();
+        } catch (Exception e) {
 
+        }
+        return ResponseData.error("退出失败");
     }
 
 
