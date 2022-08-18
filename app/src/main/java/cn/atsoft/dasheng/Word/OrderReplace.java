@@ -83,29 +83,44 @@ public class OrderReplace {
             if (i == size) {
                 break;
             }
-
             XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
-            XWPFTableRow newRow = xwpfTable.createRow();        //创建新行
+            copy(xwpfTable, row, i + size );
+
+        }
+    }
 
 
-            for (XWPFTableCell tableCell : row.getTableCells()) {
-                String text = tableCell.getText();
-
-                XWPFTableCell cell = newRow.addNewTableCell();  //创建新列
-//                XWPFTableCell cell = newRow.createCell();
-
-//                cell.getParagraphs().get(0).getCTP().setPPr(tableCell.getParagraphs().get(0).getCTP().getPPr());
-//                if (tableCell.getParagraphs().get(0).getRuns() != null && tableCell.getParagraphs().get(0).getRuns().size() > 0) {
-//                    XWPFRun cellR = cell.getParagraphs().get(0).createRun();
-//                    cellR.setText(text);
-//                    cellR.setBold(tableCell.getParagraphs().get(0).getRuns().get(0).isBold());
-//                } else {
-                cell.setText(text);
-//                }
+    public void copy(XWPFTable table, XWPFTableRow sourceRow, int rowIndex) {
+        //在表格指定位置新增一行
+        XWPFTableRow targetRow = table.insertNewTableRow(rowIndex);
+        //复制行属性
+        targetRow.getCtRow().setTrPr(sourceRow.getCtRow().getTrPr());
+        List<XWPFTableCell> cellList = sourceRow.getTableCells();
+        if (null == cellList) {
+            return;
+        }
+        //复制列及其属性和内容
+        XWPFTableCell targetCell = null;
+        for (XWPFTableCell sourceCell : cellList) {
+            targetCell = targetRow.addNewTableCell();
+            //列属性
+            targetCell.getCTTc().setTcPr(sourceCell.getCTTc().getTcPr());
+            //段落属性
+            if (sourceCell.getParagraphs() != null && sourceCell.getParagraphs().size() > 0) {
+                targetCell.getParagraphs().get(0).getCTP().setPPr(sourceCell.getParagraphs().get(0).getCTP().getPPr());
+                if (sourceCell.getParagraphs().get(0).getRuns() != null && sourceCell.getParagraphs().get(0).getRuns().size() > 0) {
+                    XWPFRun cellR = targetCell.getParagraphs().get(0).createRun();
+                    cellR.setText(sourceCell.getText());
+                    cellR.setBold(sourceCell.getParagraphs().get(0).getRuns().get(0).isBold());
+                } else {
+                    targetCell.setText(sourceCell.getText());
+                }
+            } else {
+                targetCell.setText(sourceCell.getText());
             }
         }
-        setTableLocation(xwpfTable, "center");
     }
+
 
     /**
      * 设置表格位置
