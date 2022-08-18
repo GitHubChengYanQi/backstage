@@ -88,6 +88,23 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
     }
 
     @Override
+    public List<ProductionPickListsDetailResult> listStatus0ByPickLists(Long pickListsId) {
+        List<ProductionPickListsDetail> pickListsDetails = this.query().eq("pick_lists_id", pickListsId).eq("status", 0).eq("display", 1).list();
+        List<ProductionPickListsDetailResult> results = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class);
+        this.format(results);
+        return results;
+
+    }
+    @Override
+    public List<ProductionPickListsDetailResult> listStatus0ByPickLists(List<Long> pickListsIds) {
+        List<ProductionPickListsDetail> pickListsDetails =pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("status", 0).eq("display", 1).list();
+        List<ProductionPickListsDetailResult> results = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class);
+        this.format(results);
+        return results;
+
+    }
+
+    @Override
     public List<ProductionPickListsDetailResult> resultsByPickListsIds(List<Long> listsIds) {
         if (ToolUtil.isEmpty(listsIds) || listsIds.size() == 0) {
             return new ArrayList<>();
@@ -112,6 +129,8 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
         }
         List<Long> lockedInkindIds = this.getLockedInkindIds();
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
+
+        //TODO notin
         List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : lockedInkindIds.size() == 0 ? stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id",lockedInkindIds).eq("display", 1).list();
         List<ProductionPickListsCartResult> cartResults = pickListsCartService.listByListsDetailIds(detailIds);
         for (StockDetails skus : stockSkus) {
