@@ -114,11 +114,11 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
-                try {
-                    printDynamic(metaObject, (Long) userId, 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    printDynamic(metaObject, (Long) userId, 1);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
             }
 
             @Override
@@ -154,12 +154,12 @@ public class PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
-                try {
-                    printDynamic(metaObject, (Long) userId, 2);
-                } catch (Exception e) {
-
-
-                }
+//                try {
+//                    printDynamic(metaObject, (Long) userId, 2);
+//                } catch (Exception e) {
+//
+//
+//                }
             }
         };
     }
