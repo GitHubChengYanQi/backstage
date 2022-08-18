@@ -189,14 +189,12 @@ public class PluginsConfig {
     static final String[] WHITE_LIST = {
             "Sku",
             "ActivitiProcessTask",
-            "ActivitiProcessLog",
-            "OperationLog",
+            "ActivitiProcessLog"
     };
     public enum WHITE_LIST {
             Sku,
             ActivitiProcessTask,
-            ActivitiProcessLog,
-            OperationLog
+            ActivitiProcessLog
     };
 
     private void formatDynamic(MetaObject object, DynamicParam dynamic) {

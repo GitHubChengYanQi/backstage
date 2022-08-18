@@ -487,6 +487,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<ProductionPickLists> productionPickLists = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsIds);
         List<ProductionPickListsResult> productionPickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
+        pickListsService.taskFormat(productionPickListsResults);
         List<MaintenanceResult> maintenanceResults = maintenanceIds.size() == 0 ? new ArrayList<>() : maintenanceService.resultsByIds(maintenanceIds);
 
         List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
@@ -530,9 +531,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 if (datum.getType().equals("OUTSTOCK") && datum.getFormId().equals(productionPickListsResult.getPickListsId())) {
                     String statusName = statusMap.get(productionPickListsResult.getStatus());
                     productionPickListsResult.setStatusName(statusName);
-                    productionPickListsService.taskFormat(new ArrayList<ProductionPickListsResult>() {{
-                        add(productionPickListsResult);
-                    }});
                     datum.setReceipts(productionPickListsResult);
                     break;
                 }

@@ -693,13 +693,19 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
     @Override
     public List<StockDetails> getLockStockDetail() {
-        List<Long> inkindIds = new ArrayList<>();
-        List<ProductionPickListsCart> carts = this.query().eq("display", 1).list();
-        for (ProductionPickListsCart cart : carts) {
-            inkindIds.add(cart.getInkindId());
-        }
+        List<Long> inkindIds = this.baseMapper.lockInkind();
+
         List<StockDetails> stockDetails = inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
-        return stockDetails;
+        List<StockDetails> totalLockDetail = new ArrayList<>();
+        stockDetails.parallelStream().collect(Collectors.groupingBy(StockDetails::getSkuId, Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                    }}).ifPresent(totalLockDetail::add);
+                }
+        );
+        return totalLockDetail;
 
     }
 

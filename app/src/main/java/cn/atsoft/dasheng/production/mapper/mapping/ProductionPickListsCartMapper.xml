@@ -218,5 +218,10 @@
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
     </select>
+    <select id="lockInkind" resultType="Long" >
+        select
+        inkind_id AS inkindId
+        from daoxin_production_pick_lists_cart where 1 = 1 and display = 1
+    </select>
 
 </mapper>
