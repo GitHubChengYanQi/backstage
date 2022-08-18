@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.message.topic.TopicMessage;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import cn.atsoft.dasheng.sys.core.auth.AuthServiceImpl;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
@@ -39,6 +40,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.code.kaptcha.Constants;
 import io.swagger.annotations.Api;
@@ -53,6 +55,8 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeChatOpenRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +95,7 @@ public class AuthLoginController extends BaseController {
     @Autowired
     private SessionManager sessionManager;
 
+    protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
@@ -317,6 +322,7 @@ public class AuthLoginController extends BaseController {
                 wxuserInfoQueryWrapper.eq("source", "wxCp");
                 wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
             }
+            logger.info("account"+username+"_"+"userId"+userId+"_"+"ucJwtPayLoad"+ JSON.toJSONString(ucJwtPayLoad));
             return ResponseData.success(token);
         } catch (Exception e) {
 

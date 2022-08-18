@@ -344,11 +344,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             List<Boolean> canPickBooleans = new ArrayList<>();
 
             for (ProductionPickListsDetailResult detailResult : detailResults) {
-                listsSkuIds.add(detailResult.getSkuId());
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
                     if ( detailResult.getStockNumber() > 0) {
                         result.setCanOperate(true);
                     }
+                    listsSkuIds.add(detailResult.getSkuId());
                     canPickBooleans.add(detailResult.getCanPick());
                     numberCount += detailResult.getNumber();
                     receivedCount += detailResult.getReceivedNumber();
