@@ -1414,7 +1414,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     public void format(List<SkuResult> param) {
 
         List<Long> spuIds = new ArrayList<>();
-        List<Long> valuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
@@ -1425,13 +1424,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
             for (AttributeValues valuesRequest : valuesRequests) {
-                valuesIds.add(valuesRequest.getAttributeValuesId());
                 attributeIds.add(valuesRequest.getAttributeId());
             }
         }
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
 
-        List<PurchaseListing> purchaseListings = skuIds.size() == 0 ? new ArrayList<>() : purchaseListingService.query().select("sku_id , sum(apply_number) as num").in("sku_id", skuIds).eq("status", 0).eq("display", 1).groupBy("sku_id").list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
@@ -1480,7 +1477,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> brandIds = new ArrayList<>();
         for (SkuBrandBind bind : skuBrandBinds) {
             brandIds.add(bind.getBrandId());
-
             List<Long> list = brandMapIds.get(bind.getSkuId());
             if (ToolUtil.isEmpty(list)) {
                 list = new ArrayList<>();
@@ -1494,7 +1490,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 查询清单
          */
         List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
-        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
+//        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
         /**
          * 库存数
          */
@@ -1503,17 +1499,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 查询已占用库存数
          */
         List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
-        List<StockDetails> totalLockDetail = new ArrayList<>();
 
-
-        lockStockDetail.parallelStream().collect(Collectors.groupingBy(StockDetails::getSkuId, Collectors.toList())).forEach(
-                (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new StockDetails() {{
-                        setSkuId(a.getSkuId());
-                        setNumber(a.getNumber() + b.getNumber());
-                    }}).ifPresent(totalLockDetail::add);
-                }
-        );
 
         for (SkuResult skuResult : param) {
             for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
@@ -1544,39 +1530,30 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             //图片
 
-            List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.stream(skuResult.getImages().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<String> imageUrls = new ArrayList<>();
             for (Long imageid : imageids) {
                 imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
             }
             skuResult.setImgUrls(imageUrls);
-            for (StockDetails stockDetails : totalLockDetail) {
+            for (StockDetails stockDetails : lockStockDetail) {
                 if (stockDetails.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setLockStockDetailNumber(Math.toIntExact(stockDetails.getNumber()));
                 }
             }
 
-            /**
-             * 预购数量
-             */
-            for (PurchaseListing purchaseListing : purchaseListings) {
-                if (skuResult.getSkuId().equals(purchaseListing.getSkuId())) {
-                    skuResult.setPurchaseNumber(Math.toIntExact(purchaseListing.getNum()));
-                    break;
-                }
-            }
 
-            for (ActivitiProcess process : processes) {
-                if (process.getFormId().equals(skuResult.getSkuId())) {
-                    ActivitiProcessResult processResult = new ActivitiProcessResult();
-                    ToolUtil.copyProperties(process, processResult);
-                    skuResult.setProcessResult(processResult);
-                }
-            }
+
+//            for (ActivitiProcess process : processes) {
+//                if (process.getFormId().equals(skuResult.getSkuId())) {
+//                    ActivitiProcessResult processResult = new ActivitiProcessResult();
+//                    ToolUtil.copyProperties(process, processResult);
+//                    skuResult.setProcessResult(processResult);
+//                }
+//            }
             skuResult.setInBom(false);
 
             for (Parts part : parts) {
-
                 if (part.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setInBom(true);
                     skuResult.setPartsId(part.getPartsId());
