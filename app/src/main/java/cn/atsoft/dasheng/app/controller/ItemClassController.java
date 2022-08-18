@@ -95,7 +95,7 @@ public class ItemClassController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ItemClassResult> list(@RequestBody(required = false) ItemClassParam itemClassParam) {
+    public PageInfo list(@RequestBody(required = false) ItemClassParam itemClassParam) {
         if(ToolUtil.isEmpty(itemClassParam)){
             itemClassParam = new ItemClassParam();
         }

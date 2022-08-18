@@ -100,7 +100,7 @@ public class CrmCustomerLevelController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CrmCustomerLevelResult> list(@RequestBody(required = false) CrmCustomerLevelParam crmCustomerLevelParam) {
+    public PageInfo list(@RequestBody(required = false) CrmCustomerLevelParam crmCustomerLevelParam) {
         if(ToolUtil.isEmpty(crmCustomerLevelParam)){
             crmCustomerLevelParam = new CrmCustomerLevelParam();
         }

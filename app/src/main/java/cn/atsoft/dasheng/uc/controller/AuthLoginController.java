@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import cn.atsoft.dasheng.sys.core.auth.AuthServiceImpl;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
+import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
 import cn.atsoft.dasheng.sys.core.exception.InvalidKaptchaException;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -63,6 +64,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static cn.atsoft.dasheng.action.dict.InStockDictEnum.userId;
 import static cn.atsoft.dasheng.uc.utils.UserUtils.getPayLoad;
 
 @RestController
@@ -302,13 +304,11 @@ public class AuthLoginController extends BaseController {
                 throw new InvalidKaptchaException();
             }
         }
-
-        //登录并创建token
-        String token = authService.login(username, password);
-        JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
-        Long userId = jwtPayLoad.getUserId();//userId
         try {
             UcJwtPayLoad ucJwtPayLoad = getPayLoad();
+            String token = authService.login(username, password);
+            JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
+            Long userId = jwtPayLoad.getUserId();//userId
             if (ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)) {
                 WxuserInfo wxuserInfo = new WxuserInfo();
                 wxuserInfo.setMemberId(ucJwtPayLoad.getUserId());
@@ -319,10 +319,15 @@ public class AuthLoginController extends BaseController {
                 wxuserInfoQueryWrapper.eq("source", "wxCp");
                 wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
             }
+            return ResponseData.success(token);
         } catch (Exception e) {
 
         }
-        return ResponseData.success(token);
+        //登录并创建token
+//        String token = authService.login(username, password);
+        return ResponseData.error("登录错误");
+
+
     }
 
 

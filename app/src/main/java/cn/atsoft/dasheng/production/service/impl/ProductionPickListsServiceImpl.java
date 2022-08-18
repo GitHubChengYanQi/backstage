@@ -313,7 +313,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
 
     @Override
-    public PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param) {
+    public PageInfo findPageBySpec(ProductionPickListsParam param) {
         Page<ProductionPickListsResult> pageContext = getPageContext();
         IPage<ProductionPickListsResult> page = this.baseMapper.customPageList(pageContext, param);
         if (ToolUtil.isNotEmpty(page.getRecords())) {

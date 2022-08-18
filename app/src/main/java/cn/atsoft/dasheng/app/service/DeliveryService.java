@@ -66,7 +66,7 @@ public interface DeliveryService extends IService<Delivery> {
      * @author  
      * @Date 2021-08-20
      */
-     PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param, DataScope dataScope );
+     PageInfo findPageBySpec(DeliveryParam param, DataScope dataScope );
 
     /**
      * 增加发货详情

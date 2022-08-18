@@ -64,7 +64,7 @@ public interface ActivitiSetpSetService extends IService<ActivitiSetpSet> {
      * @author Sing
      * @Date 2021-11-10
      */
-     PageInfo<ActivitiSetpSetResult> findPageBySpec(ActivitiSetpSetParam param);
+     PageInfo findPageBySpec(ActivitiSetpSetParam param);
 
     List<ActivitiSetpSetResult> getResultByStepsId(List<Long> stepsIds);
 }

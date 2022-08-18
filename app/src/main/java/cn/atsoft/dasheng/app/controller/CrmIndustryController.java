@@ -118,7 +118,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CrmIndustryResult> list(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
+    public PageInfo list(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
         if (ToolUtil.isEmpty(crmIndustryParam)) {
             crmIndustryParam = new CrmIndustryParam();
         }

@@ -28,7 +28,7 @@ public class SelfEenterpriseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
 //    @Permission
-    public PageInfo<CustomerResult> list(@RequestBody(required = false) CustomerParam customerParam) {
+    public PageInfo list(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isEmpty(customerParam)) {
             customerParam = new CustomerParam();
         }

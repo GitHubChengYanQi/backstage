@@ -374,7 +374,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     }
 
     @Override
-    public PageInfo<ProductionPickListsCartResult> findPageBySpec(ProductionPickListsCartParam param) {
+    public PageInfo findPageBySpec(ProductionPickListsCartParam param) {
         Page<ProductionPickListsCartResult> pageContext = getPageContext();
         IPage<ProductionPickListsCartResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
@@ -389,6 +389,11 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         List<Long> detailIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         for (ProductionPickListsCartResult productionPickListsCartResult : param) {
+            if (ToolUtil.isNotEmpty(productionPickListsCartResult.getBrandIds())) {
+                for (Long brandId : productionPickListsCartResult.getBrandIds()) {
+                    brandIds.add(brandId);
+                }
+            }
             skuIds.add(productionPickListsCartResult.getSkuId());
             storehouseIds.add(productionPickListsCartResult.getStorehouseId());
             positionIds.add(productionPickListsCartResult.getStorehousePositionsId());
@@ -415,6 +420,21 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
 //        pickListsDetailService.format(pickListsDetailResults);
         for (ProductionPickListsCartResult productionPickListsCartResult : param) {
+            if (ToolUtil.isNotEmpty(productionPickListsCartResult.getBrandIds())) {
+                List<String> brandNames=new ArrayList<>();
+                for (Long brandId : productionPickListsCartResult.getBrandIds()) {
+                    for (BrandResult brandResult : brandResults) {
+                        if (brandResult.getBrandId().equals(brandId)) {
+                            brandNames.add(brandResult.getBrandName());
+                        }
+                        if(brandId.equals(0L)){
+                            brandNames.add("无品牌");
+                        }
+                    }
+                }
+                brandNames = brandNames.stream().distinct().collect(Collectors.toList());
+                productionPickListsCartResult.setBrandNames(brandNames);
+            }
             for (SkuSimpleResult skuResult : skuSimpleResults) {
                 if (productionPickListsCartResult.getSkuId().equals(skuResult.getSkuId())) {
                     productionPickListsCartResult.setSkuResult(skuResult);

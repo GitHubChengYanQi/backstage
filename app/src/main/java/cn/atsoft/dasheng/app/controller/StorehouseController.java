@@ -117,7 +117,7 @@ public class StorehouseController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<StorehouseResult> list(@RequestBody(required = false) StorehouseParam storehouseParam) {
+    public PageInfo list(@RequestBody(required = false) StorehouseParam storehouseParam) {
         if (ToolUtil.isEmpty(storehouseParam)) {
             storehouseParam = new StorehouseParam();
         }

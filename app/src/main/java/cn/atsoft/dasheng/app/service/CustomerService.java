@@ -28,7 +28,7 @@ public interface CustomerService extends IService<Customer> {
      */
     Customer add(CustomerParam param);
 
-    PageInfo<CustomerResult> pureList(CustomerParam param);
+    PageInfo pureList(CustomerParam param);
 
     Long addCustomer(CustomerParam param);
 
@@ -81,7 +81,7 @@ public interface CustomerService extends IService<Customer> {
      * @author
      * @Date 2021-07-23
      */
-    PageInfo<CustomerResult> findPageBySpec(DataScope dataScope, CustomerParam param);
+    PageInfo findPageBySpec(DataScope dataScope, CustomerParam param);
 
     /**
      * 批量删除

@@ -100,7 +100,7 @@ public class ItemBrandController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ItemBrandResult> list(@RequestBody(required = false) ItemBrandParam itemBrandParam) {
+    public PageInfo list(@RequestBody(required = false) ItemBrandParam itemBrandParam) {
         if (ToolUtil.isEmpty(itemBrandParam)) {
             itemBrandParam = new ItemBrandParam();
         }

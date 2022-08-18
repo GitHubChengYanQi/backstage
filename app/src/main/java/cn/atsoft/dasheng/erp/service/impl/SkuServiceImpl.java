@@ -987,7 +987,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     @Override
-    public PageInfo<SkuResult> findPageBySpec(SkuParam param) {
+    public PageInfo findPageBySpec(SkuParam param) {
         if (param.getSkuIds() != null) {
             if (param.getSkuIds().size() == 0) {
                 return null;
@@ -1002,7 +1002,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     @Override
-    public PageInfo<SkuResult> changePageBySpec(SkuParam param) {
+    public PageInfo changePageBySpec(SkuParam param) {
         /**
          * 库位条件查询
          */
@@ -1033,7 +1033,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
             Parts parts = partsService.query().eq("sku_id", param.getPartsSkuId()).eq("status", 99).eq("display", 1).one();
             if (ToolUtil.isEmpty(parts)) {
-                return new PageInfo<>();
+                return new PageInfo();
             }
             switch (param.getSelectBom()) {
                 case All:
@@ -1054,7 +1054,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Page<SkuResult> pageContext = getPageContext();
         selectFormat(param);  //查询格式化
         IPage<SkuResult> page = this.baseMapper.changeCustomPageList(new ArrayList<>(), pageContext, param);
-        PageInfo<SkuResult> pageInfo = PageFactory.createPageInfo(page);
+        PageInfo pageInfo = PageFactory.createPageInfo(page);
 
 
         if (param.getStockView()) {  //是否开启查询
@@ -1546,10 +1546,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<String> imageUrls = new ArrayList<>();
+            List<String> imgThumbUrls = new ArrayList<>();
             for (Long imageid : imageids) {
                 imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
+                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L,"image/resize,m_fill,h_200,w_200");
+                imgThumbUrls.add(imgThumbUrl);
+
             }
+
             skuResult.setImgUrls(imageUrls);
+            skuResult.setImgThumbUrls(imgThumbUrls);
+
             for (StockDetails stockDetails : totalLockDetail) {
                 if (stockDetails.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setLockStockDetailNumber(Math.toIntExact(stockDetails.getNumber()));
@@ -1679,11 +1686,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (ToolUtil.isNotEmpty(skuResult.getImages())) {
             List<Long> enclosure = Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<String> filedUrls = new ArrayList<>();
+            List<String> imgThumbUrls = new ArrayList<>();
             for (Long filedId : enclosure) {
                 String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                String imgThumbUrl = mediaService.getMediaUrlAddUseData(filedId, 0L,"image/resize,m_fill,h_200,w_200");
                 filedUrls.add(mediaUrl);
+                imgThumbUrls.add(imgThumbUrl);
             }
             skuResult.setImgUrls(filedUrls);
+            skuResult.setImgThumbUrls(imgThumbUrls);
         }
         if (ToolUtil.isEmpty(sku)) {
             return new SkuResult();

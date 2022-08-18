@@ -120,7 +120,7 @@ public class ApiRepairController {
             return ResponseData.success();
         } else {
             RepairParam repairParam = new RepairParam();
-            PageInfo<RepairResult> repairResult = repairService.findMyPageBySpec(repairParam);
+            PageInfo repairResult = repairService.findMyPageBySpec(repairParam);
             return ResponseData.success(repairResult);
 
         }
@@ -137,7 +137,7 @@ public class ApiRepairController {
         RepairParam repairParam = new RepairParam();
         repairParam.setCreateUser(userId);
         repairParam.setName(UserUtils.getUserId());
-        PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
+        PageInfo repairList = repairService.findPageBySpec(repairParam);
         return ResponseData.success(repairList);
     }
 
@@ -158,7 +158,7 @@ public class ApiRepairController {
         }
         if (permission) {
             RepairParam repairParam = new RepairParam();
-            PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
+            PageInfo repairList = repairService.findPageBySpec(repairParam);
             return ResponseData.success(repairList);
         } else {
             return ResponseData.success();
@@ -270,9 +270,9 @@ public class ApiRepairController {
         dispatchingParam.setName(userId);
         dispatchingParam.setState(0);
 
-        PageInfo<DispatchingResult> dispatchingList = dispatchingService.findPageBySpec(dispatchingParam);
+        PageInfo dispatchingList = dispatchingService.findPageBySpec(dispatchingParam);
         List<RepairResult> res = new ArrayList<>();
-        PageInfo<RepairResult> resList = new PageInfo<>();
+        PageInfo resList = new PageInfo<>();
 
         //公司id
         List<Long> companyIds = new ArrayList<>();

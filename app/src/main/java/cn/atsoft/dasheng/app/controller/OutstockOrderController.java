@@ -153,7 +153,7 @@ public class OutstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<OutstockOrderResult> list(@RequestBody(required = false) OutstockOrderParam outstockOrderParam) {
+    public PageInfo list(@RequestBody(required = false) OutstockOrderParam outstockOrderParam) {
         if (ToolUtil.isEmpty(outstockOrderParam)) {
             outstockOrderParam = new OutstockOrderParam();
         }

@@ -76,7 +76,7 @@ public interface DocumentsPermissionsService extends IService<DocumentsPermissio
      * @author 
      * @Date 2022-05-18
      */
-     PageInfo<DocumentsPermissionsResult> findPageBySpec(DocumentsPermissionsParam param);
+     PageInfo findPageBySpec(DocumentsPermissionsParam param);
 
     List<DocumentsPermissionsResult> getAllPermissions();
 }

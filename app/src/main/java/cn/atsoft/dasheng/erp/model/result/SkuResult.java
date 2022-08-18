@@ -39,6 +39,7 @@ public class SkuResult implements Serializable {
     private Boolean inSupply;
     private Integer maintenancePeriod;
     List<String> imgUrls;
+    List<String> imgThumbUrls;
     List<AttributeValuesResult> list;
     private List<SkuJson> skuJsons;
     private SpuResult spuResult;

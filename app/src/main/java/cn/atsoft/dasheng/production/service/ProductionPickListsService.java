@@ -73,7 +73,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param);
+    PageInfo findPageBySpec(ProductionPickListsParam param);
 
     void taskFormat(List<ProductionPickListsResult> results);
 

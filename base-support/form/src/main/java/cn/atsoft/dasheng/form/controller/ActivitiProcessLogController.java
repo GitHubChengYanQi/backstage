@@ -99,7 +99,7 @@ public class ActivitiProcessLogController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiProcessLogResult> list(@RequestBody(required = false) ActivitiProcessLogParam activitiProcessLogParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiProcessLogParam activitiProcessLogParam) {
         if (ToolUtil.isEmpty(activitiProcessLogParam)) {
             activitiProcessLogParam = new ActivitiProcessLogParam();
         }

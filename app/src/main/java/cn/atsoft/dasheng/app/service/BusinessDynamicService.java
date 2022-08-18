@@ -65,6 +65,6 @@ public interface BusinessDynamicService extends IService<BusinessDynamic> {
      * @author cheng
      * @Date 2021-08-10
      */
-     PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param, DataScope dataScope );
+     PageInfo findPageBySpec(BusinessDynamicParam param, DataScope dataScope );
 
 }

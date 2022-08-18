@@ -110,7 +110,7 @@ public class ItemsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<ItemsResult> list(@RequestBody(required = false) ItemsParam itemsParam) {
+    public PageInfo list(@RequestBody(required = false) ItemsParam itemsParam) {
         if (ToolUtil.isEmpty(itemsParam)) {
             itemsParam = new ItemsParam();
         }

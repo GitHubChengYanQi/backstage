@@ -75,7 +75,7 @@ public interface ContractService extends IService<Contract> {
      * @author
      * @Date 2021-07-21
      */
-    PageInfo<ContractResult> findPageBySpec(ContractParam param, DataScope dataScope);
+    PageInfo findPageBySpec(ContractParam param, DataScope dataScope);
 
     Set<ContractDetailSetRequest> pendingProductionPlan();
 

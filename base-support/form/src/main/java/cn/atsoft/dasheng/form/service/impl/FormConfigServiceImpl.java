@@ -58,7 +58,7 @@ public class FormConfigServiceImpl extends ServiceImpl<FormConfigMapper, FormCon
     }
 
     @Override
-    public PageInfo<FormConfigResult> findPageBySpec(FormConfigParam param){
+    public PageInfo findPageBySpec(FormConfigParam param){
         Page<FormConfigResult> pageContext = getPageContext();
         IPage<FormConfigResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
