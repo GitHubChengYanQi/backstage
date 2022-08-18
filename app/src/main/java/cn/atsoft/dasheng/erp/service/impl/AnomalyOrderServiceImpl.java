@@ -318,7 +318,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             entity.setTaskId(taskId);
-            activitiProcessTaskService.setProcessUserIds(activitiProcess.getProcessId(), taskId); //任务添加参与人
             this.updateById(entity);
             //判断流程是否有主单据发起人
             if (taskParticipantService.MasterDocumentPromoter(activitiProcess.getProcessId())) {

@@ -96,9 +96,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         entity.setOrigin(origin);
         this.updateById(entity);
 
-
+        this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
         return entity.getProcessTaskId();
-
     }
 
     @Override
@@ -222,33 +221,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
-    }
-
-    private List<Long> getTaskIdsByUserIds() {
-        List<Long> taskIds = new ArrayList<>();
-//        List<ActivitiProcessTask> processTasks = this.query().eq("display", 1).isNotNull("user_ids").ne("status", 99).list();
-
-        Long loginUserId = LoginContextHolder.getContext().getUserId();
-        List<TaskParticipant> taskParticipants = taskParticipantService.list();
-        for (TaskParticipant taskParticipant : taskParticipants) {
-            if (loginUserId.equals(taskParticipant.getUserId())) {
-                taskIds.add(taskParticipant.getProcessTaskId());
-            }
-        }
-
-//        for (ActivitiProcessTask processTask : processTasks) {
-//            try {
-//                List<Long> userIds = JSON.parseArray(processTask.getUserIds(), Long.class);
-//                for (Long userId : userIds) {
-//                    if (LoginContextHolder.getContext().getUserId().equals(userId)) {
-//                        taskIds.add(processTask.getProcessTaskId());
-//                    }
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-        return taskIds;
     }
 
 

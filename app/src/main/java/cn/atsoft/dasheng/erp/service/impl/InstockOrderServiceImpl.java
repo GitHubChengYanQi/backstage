@@ -323,7 +323,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             entity.setTaskId(taskId);
-            activitiProcessTaskService.setProcessUserIds(activitiProcess.getProcessId(), taskId); //任务添加参与人
             this.updateById(entity);
             //添加小铃铛
             wxCpSendTemplate.setSource("processTask");
