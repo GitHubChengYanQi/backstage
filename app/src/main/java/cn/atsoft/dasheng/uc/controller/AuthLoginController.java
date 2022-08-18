@@ -307,7 +307,7 @@ public class AuthLoginController extends BaseController {
             String token = authService.login(username, password);
             JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
             Long userId = jwtPayLoad.getUserId();//userId
-            if (ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)) {
+            if (ToolUtil.isNotEmpty(ucJwtPayLoad.getType()) && ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)) {
                 WxuserInfo wxuserInfo = new WxuserInfo();
                 wxuserInfo.setMemberId(ucJwtPayLoad.getUserId());
                 wxuserInfo.setUserId(userId);
@@ -324,8 +324,6 @@ public class AuthLoginController extends BaseController {
         //登录并创建token
 //        String token = authService.login(username, password);
         return ResponseData.error("登录错误");
-
-
     }
 
 
