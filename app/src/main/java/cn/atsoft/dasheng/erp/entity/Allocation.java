@@ -138,6 +138,14 @@ public class Allocation implements Serializable {
         return allocationId;
     }
 
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
     public void setAllocationId(Long allocationId) {
         this.allocationId = allocationId;
     }
@@ -274,13 +282,6 @@ public class Allocation implements Serializable {
         return origin;
     }
 
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
 
     public void setOrigin(String origin) {
         this.origin = origin;

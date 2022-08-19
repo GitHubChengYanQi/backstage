@@ -47,7 +47,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import oshi.jna.platform.mac.SystemB;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -1137,6 +1136,16 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         this.format(positionsResults);
         return positionsResults;
     }
+     @Override
+        public List<StorehousePositionsResult> resultsByIds(List<Long> ids) {
+            if (ToolUtil.isEmpty(ids)) {
+                return new ArrayList<>();
+            }
+         List<StorehousePositions> positions = this.query().in("storehouse_positions_id", ids).eq("display",1).list();
+         List<StorehousePositionsResult> results = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+
+            return results;
+        }
 
     private StorehousePositionsResult getSupper(StorehousePositionsResult result, List<StorehousePositionsResult> data) {
 
