@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.production.model.request.StoreHouseNameAndSkuNumber;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -48,6 +49,7 @@ public class ProductionPickListsDetailResult implements Serializable {
     private Map<String,String> brandResult;
     private ProductionPickListsResult pickListsResult;
     private Boolean canPick;
+    private List<String> positionNames;
     /**
      * 子表id
      */

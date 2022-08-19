@@ -9,7 +9,10 @@ import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.orCode.model.result.StoreHousePositionsRequest;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsDetailMapper;
@@ -54,6 +57,9 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
 
     @Autowired
     private SkuService skuService;
+
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
 
     @Override
     public void add(ProductionPickListsDetailParam param) {
@@ -146,6 +152,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                 skus.setBrandId(0L);
             }
         }
+        List<Long> positionIds= new ArrayList<>();
         List<StockDetails> totalList = new ArrayList<>();
         stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
                 (id, transfer) -> {
@@ -157,6 +164,11 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     }}).ifPresent(totalList::add);
                 }
         );
+        for (StockDetails stockDetails : totalList) {
+            positionIds.add(stockDetails.getStorehousePositionsId());
+        }
+        positionIds = positionIds.stream().distinct().collect(Collectors.toList());
+        List<StorehousePositionsResult> positionsResultList = storehousePositionsService.resultsByIds(positionIds);
         List<StockDetails> anyBrand = new ArrayList<>();
         stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "", Collectors.toList())).forEach(
                 (id, transfer) -> {
@@ -170,16 +182,23 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
 
         List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         for (ProductionPickListsDetailResult result : results) {
+            List<String> positionNames = new ArrayList<>();
             result.setIsMeet(false);
             if (!result.getBrandId().equals(0L)) {
                 for (StockDetails stockSkuTotal : totalList) {
                     if (result.getSkuId().equals(stockSkuTotal.getSkuId()) && result.getBrandId().equals(stockSkuTotal.getBrandId())) {
                         result.setStockNumber(Math.toIntExact(stockSkuTotal.getNumber()));
+                        for (StorehousePositionsResult positionsResult : positionsResultList) {
+                            if (stockSkuTotal.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())){
+                                positionNames.add(positionsResult.getName());
+                            }
+                        }
                         if (result.getNumber() <= stockSkuTotal.getNumber()) {
                             result.setIsMeet(true);
                         }
                     }
                 }
+
             } else {
                 for (StockDetails stockDetails : anyBrand) {
                     if (result.getSkuId().equals(stockDetails.getSkuId())) {
@@ -187,9 +206,18 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                         if (result.getNumber() <= stockDetails.getNumber()) {
                             result.setIsMeet(true);
                         }
+                        for (StorehousePositionsResult positionsResult : positionsResultList) {
+                            if (stockDetails.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())){
+                                positionNames.add(positionsResult.getName());
+                            }
+                        }
                     }
                 }
             }
+            //返回可备料仓库名称
+            positionNames = positionNames.stream().distinct().collect(Collectors.toList());
+            result.setPositionNames(positionNames);
+
             for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
                 if (result.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     result.setSkuResult(skuSimpleResult);
