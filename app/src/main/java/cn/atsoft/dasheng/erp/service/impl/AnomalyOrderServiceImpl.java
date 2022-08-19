@@ -257,6 +257,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         InstockHandle instockHandle = new InstockHandle();
         instockHandle.setSkuId(anomaly.getSkuId());
         instockHandle.setBrandId(anomaly.getBrandId());
+        instockHandle.setCustomerId(anomaly.getCustomerId());
         instockHandle.setNumber(anomaly.getNeedNumber());
         instockHandle.setType(type);
         instockHandle.setInstockOrderId(anomaly.getFormId());
@@ -631,6 +632,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 instockLogDetail.setType("error");
                 instockLogDetail.setBrandId(anomaly.getBrandId());
                 instockLogDetail.setCustomerId(anomaly.getCustomerId());
+                instockLogDetail.setSourceId(anomaly.getOrderId());
+                instockLogDetail.setSource("anomalyOrder");
                 instockLogDetail.setNumber(errorNum);
                 instockLogDetailService.save(instockLogDetail);
                 /**

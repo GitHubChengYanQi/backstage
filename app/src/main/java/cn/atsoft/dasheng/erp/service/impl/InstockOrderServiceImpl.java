@@ -714,6 +714,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             ToolUtil.copyProperties(listParam, instockHandle);
             instockHandle.setInstockOrderId(param.getInstockOrderId());
             instockHandle.setType("inStock");
+            instockHandle.setSource("inStockList");
+            instockHandle.setSourceId(listParam.getInstockListId());
             instockHandles.add(instockHandle);
 
             listParam.setInstockOrderId(param.getInstockOrderId());
