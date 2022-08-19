@@ -87,6 +87,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Autowired
     private TaskParticipantService taskParticipantService;
 
+
     @Override
     public Long add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
@@ -95,9 +96,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         entity.setOrigin(origin);
         this.updateById(entity);
 
-
+        this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
         return entity.getProcessTaskId();
-
     }
 
     @Override
@@ -194,14 +194,11 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param) {
-        List<Long> taskIds = new ArrayList<>();
-        taskIds.add(0L);
-        taskIds.addAll(getTaskId());    //查看节点权限
-        // 参与人权限
-        taskIds.addAll(getTaskIdsByUserIds());
-        param.setTaskIds(taskIds);
-//        Long userId = LoginContextHolder.getContext().getUserId();
-//        param.setUserIds(userId.toString());
+
+        if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的
+            Long userId = LoginContextHolder.getContext().getUserId();
+            param.setParticipantUser(userId);  //参与人和负责人
+        }
 
         /**
          * 超期筛选
@@ -219,39 +216,11 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             param.setTimeOutTaskIds(timeOutTaskIds);
         }
 
-
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
-    }
-
-    private List<Long> getTaskIdsByUserIds() {
-        List<Long> taskIds = new ArrayList<>();
-//        List<ActivitiProcessTask> processTasks = this.query().eq("display", 1).isNotNull("user_ids").ne("status", 99).list();
-
-        Long loginUserId = LoginContextHolder.getContext().getUserId();
-        List<TaskParticipant> taskParticipants = taskParticipantService.list();
-        for (TaskParticipant taskParticipant : taskParticipants) {
-            if (loginUserId.equals(taskParticipant.getUserId())) {
-                taskIds.add(taskParticipant.getProcessTaskId());
-            }
-        }
-
-//        for (ActivitiProcessTask processTask : processTasks) {
-//            try {
-//                List<Long> userIds = JSON.parseArray(processTask.getUserIds(), Long.class);
-//                for (Long userId : userIds) {
-//                    if (LoginContextHolder.getContext().getUserId().equals(userId)) {
-//                        taskIds.add(processTask.getProcessTaskId());
-//                    }
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-        return taskIds;
     }
 
 
@@ -390,6 +359,68 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return false;
     }
 
+    /**
+     * 获取流程 规则人员 并未任务添加参与人
+     *
+     * @param processId
+     * @param taskId
+     * @return
+     */
+    @Override
+    public void setProcessUserIds(Long processId, Long taskId) {
+
+        List<ActivitiSteps> activitiSteps = activitiStepsService.query().eq("process_id", processId).list();
+        List<Long> userIds = new ArrayList<>();
+
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            stepIds.add(activitiStep.getSetpsId());
+        }
+        List<ActivitiAudit> audits = auditService.query().in("setps_id", stepIds).list();
+
+
+        for (ActivitiAudit audit : audits) {
+            AuditRule rule = audit.getRule();
+            if (ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getRules())) {
+                for (AuditRule.Rule ruleRule : rule.getRules()) {
+                    switch (ruleRule.getType()) {
+                        case AppointUsers:
+                            for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+                                userIds.add(Long.valueOf(appointUser.getKey()));
+                            }
+                        case DeptPositions:
+                            for (DeptPosition deptPosition : ruleRule.getDeptPositions()) {
+                                List<Long> positionIds = new ArrayList<>();
+                                for (DeptPosition.Position position : deptPosition.getPositions()) {
+                                    if (ToolUtil.isNotEmpty(position.getValue())) {
+                                        positionIds.add(Long.valueOf(position.getValue()));
+                                    }
+                                }
+                                List<User> userByPositionAndDept = userService.getUserByPositionAndDept(Long.valueOf(deptPosition.getKey()), positionIds);
+                                for (User user : userByPositionAndDept) {
+                                    userIds.add(user.getUserId());
+                                }
+                            }
+                    }
+                }
+            }
+        }
+
+        List<TaskParticipant> taskParticipants = new ArrayList<>();
+
+        for (Long userId : userIds) {
+            TaskParticipant taskParticipant = new TaskParticipant();
+            taskParticipant.setUserId(userId);
+            taskParticipant.setProcessTaskId(taskId);
+            taskParticipant.setType("process");
+            taskParticipants.add(taskParticipant);
+        }
+
+        taskParticipantService.saveBatch(taskParticipants);
+
+    }
+
+
     @Override
     public Long getTaskIdByFormId(Long formId) {
         ActivitiProcessTask task = ToolUtil.isEmpty(formId) ? new ActivitiProcessTask() : this.query().eq("form_id", formId).one();
@@ -456,6 +487,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<ProductionPickLists> productionPickLists = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsIds);
         List<ProductionPickListsResult> productionPickListsResults = BeanUtil.copyToList(productionPickLists, ProductionPickListsResult.class, new CopyOptions());
+        pickListsService.taskFormat(productionPickListsResults);
         List<MaintenanceResult> maintenanceResults = maintenanceIds.size() == 0 ? new ArrayList<>() : maintenanceService.resultsByIds(maintenanceIds);
 
         List<Anomaly> anomalies = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
@@ -499,9 +531,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 if (datum.getType().equals("OUTSTOCK") && datum.getFormId().equals(productionPickListsResult.getPickListsId())) {
                     String statusName = statusMap.get(productionPickListsResult.getStatus());
                     productionPickListsResult.setStatusName(statusName);
-                    productionPickListsService.taskFormat(new ArrayList<ProductionPickListsResult>() {{
-                        add(productionPickListsResult);
-                    }});
                     datum.setReceipts(productionPickListsResult);
                     break;
                 }

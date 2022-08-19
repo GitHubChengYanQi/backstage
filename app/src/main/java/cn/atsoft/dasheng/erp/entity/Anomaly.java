@@ -24,6 +24,9 @@ public class Anomaly implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("customer_json")
+    private String customerJson;
+
     @TableField("check_number")
     private String checkNumber;
 
@@ -351,6 +354,14 @@ public class Anomaly implements Serializable {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
+    }
+
+    public String getCustomerJson() {
+        return customerJson;
+    }
+
+    public void setCustomerJson(String customerJson) {
+        this.customerJson = customerJson;
     }
 
     @Override

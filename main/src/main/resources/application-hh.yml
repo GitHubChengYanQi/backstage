@@ -1,0 +1,159 @@
+#Oracle配置
+#spring:
+#  datasource:
+#    driverClassName: oracle.jdbc.OracleDriver
+#    url: jdbc:oracle:thin:@127.0.0.1:1521:ORCLCDB
+#    username: GUNS
+#    password: GUNS
+#    filters: wall,mergeStat
+
+#SQLServer配置
+#spring:
+#  datasource:
+#    driverClassName: net.sourceforge.jtds.jdbc.Driver
+#    url: jdbc:jtds:sqlserver://127.0.0.1:3433;DatabaseName=guns
+#    username: guns
+#    password: 123456
+#    filters: wall,mergeStat
+
+#PostgreSQL配置
+#spring:
+#  datasource:
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://127.0.0.1:5432/guns
+#    username: postgres
+#    password: 123456
+#    filters: wall,mergeStat
+
+# Mysql数据库
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/guns?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+#    username: root
+#    password: root
+#    filters: wall,mergeStat
+
+# Mysql数据库
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://rm-2ze2a8h12t8w1pp9gqo.mysql.rds.aliyuncs.com/hhgy?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: hhgy
+    password: 123QWEasd
+    filters: wall,mergeStat
+
+    # 连接池大小根据实际情况调整
+    max-active: 20
+    max-pool-prepared-statement-per-connection-size: 20
+
+  redis:
+    host: 192.168.0.244
+    password: 123qweasd
+
+  # 邮件发送配置（改为自己的账号和密码）
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: sn93@qq.com
+    password: xxxpassword
+
+  rabbitmq:
+    addresses: 192.168.0.245
+    username: guest
+    password: guest
+    port: 5672
+    listener:
+      simple:
+        acknowledge-mode: manual
+    prefix: jazzasdadsads
+
+# 邮件发送（改为自己的账号）
+mail:
+  from: sn93@qq.com
+
+freed-template:
+  customer:
+    add: "[操作人]添加客户"
+    edit: "[操作人]修改客户"
+    delete: "[操作人]删除了客户"
+  Crmbusiness:
+    add: "[操作人]添加商机"
+    edit: "[操作人]修改商机"
+    delete: "[操作人]删除了商机"
+  Contacts:
+    add: "[操作人]添加联系人"
+    edit: "[操作人]修改联系人"
+    delete: "[操作人]删除了联系人"
+  Adress:
+    add: "[操作人]添加了地址"
+    edit: "[操作人]修改了地址"
+    delete: "[操作人]删除了地址"
+  Contract:
+    add: "[操作人]添加了合同"
+    edit: "[操作人]修改了合同"
+    delete: "[操作人]删除了合同"
+  ErpOrder:
+    add: "[操作人]添加了订单"
+    edit: "[操作人]修改了订单"
+    delete: "[操作人]删除了订单"
+  Repair:
+    add: "[操作人]添加了售后"
+    edit: "[操作人]修改了售后"
+    delete: "[操作人]删除了售后"
+  TrackMessage:
+    add: "[操作人]添加了跟进"
+
+# 微信相关配置
+wx:
+  # 小程序相关配置
+  miniapp:
+    appid: wxec126d7b5337447a
+    secret: 63d936d430de5bc1783408a50ed05376
+    aesKey: 3333
+    token: 11111
+    msg-data-format: JSON
+
+  mp:
+    appId: wx6b94599d68b93b0f
+    secret: 623b049c5bad1bba929b055bdd4862f0
+    token: 11111
+    aesKey: 3333
+
+
+
+# 支付相关配置
+pay:
+  notifyUrl: https://dasheng-soft.picp.vip
+
+  # 微信支付 小程序用
+  weiXinMiNiPay:
+    appId: 111
+    mchId: 222
+    mchKey: 3333
+
+# 推送支付信息,生产环境如开启支付功能 应设置为 true
+pushPayInfo: false
+
+aliyun:
+  accessId: LTAIypr5IqQ1tvpM
+  accessKey: TKG3sSvijsG4sq0q1b7Y9aQVYtMk7b
+
+  Sms:
+    SignName: 工业服务网
+    templateCode: SMS_137360127
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucket: gpkx
+    callbackUrl: https://dasheng-soft.picp.vip/v1
+    path: upload/
+wxcp:
+  corpId: wwac1139dc197ffe88
+  secret: 03QfUze77kkLavSSzG_AOwRwIM8AsPjGvxm3NLJe2l0
+  agentId: 1000008
+  token:
+  aesKey:
+
+#手机端跳转路径
+mobile:
+  url: https://wx.daoxin.gf2025.com/cp

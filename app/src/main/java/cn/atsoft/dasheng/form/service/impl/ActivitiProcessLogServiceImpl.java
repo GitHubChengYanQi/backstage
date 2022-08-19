@@ -521,8 +521,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         case "ALLOCATION":
                             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", instockOrder.getInstockOrderId()).eq("display", 1).list();
                             allocationService.checkCartDone(processTask.getFormId(), instockLists);
-//                            instockOrderService.checkAllocationDone(processTask);
-
                             break;
                         default:
 
@@ -983,8 +981,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         LoginUser user = LoginContextHolder.getContext().getUser();
         Long userId = user.getId();
         List<Long> users = taskSend.selectUsers(starUser, taskId);
-        for (Long aLong : users) {
-            if (aLong.equals(userId)) {
+        for (Long id : users) {
+            if (ToolUtil.isNotEmpty(id) && id.equals(userId)) {
                 return true;
             }
         }

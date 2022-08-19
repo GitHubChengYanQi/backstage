@@ -104,6 +104,6 @@
         from uc_open_user_info
         where source = 'wxCp'
           and member_id =
-              (select member_id from daoxin_portal_wxuser_info where source = 'wxCp' and user_id = #{userId})
+              (select member_id from daoxin_portal_wxuser_info where source = 'wxCp' and user_id = #{userId} and display = 1 order By create_time limit 1)
     </select>
 </mapper>

@@ -311,7 +311,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库申请");
             activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
-            activitiProcessTaskParam.setUserId(entity.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
             if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {

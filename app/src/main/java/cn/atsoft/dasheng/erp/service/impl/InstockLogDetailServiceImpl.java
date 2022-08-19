@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
@@ -57,6 +58,8 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
     private UserService userService;
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
 
     @Override
@@ -258,11 +261,13 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
-        List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
-        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+        List<StorehousePositionsResult> positionsResults = storehousePositionsService.details(positionIds);
 
 
         for (InstockLogDetailResult result : results) {
+
+            Integer stockNumber = stockDetailsService.getNumberByStock(result.getSkuId(), result.getBrandId(), result.getStorehousePositionsId());
+            result.setStockNumber(stockNumber);
 
             for (StorehousePositionsResult position : positionsResults) {
                 if (ToolUtil.isNotEmpty(result.getStorehousePositionsId()) && result.getStorehousePositionsId().equals(position.getStorehousePositionsId())) {

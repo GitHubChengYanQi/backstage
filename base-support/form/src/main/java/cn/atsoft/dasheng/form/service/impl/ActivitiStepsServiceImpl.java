@@ -520,6 +520,16 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         //取出所有步骤
         List<ActivitiAuditResult> auditResults = auditService.backAudits(stepIds);
+        for (ActivitiAuditResult auditResult : auditResults) {
+            AuditRule rule = auditResult.getRule();
+            if (ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getActionStatuses())) {
+                for (ActionStatus actionStatus : rule.getActionStatuses()) {
+                    DocumentsAction action = ToolUtil.isEmpty(actionStatus.getActionId()) ? new DocumentsAction() : actionService.getById(actionStatus.getActionId());
+                    actionStatus.setActionName(action.getActionName());
+                }
+            }
+        }
+
         return groupSteps(steps, auditResults, top);
     }
 
@@ -681,9 +691,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                                 appointUsers.add(new AppointUser() {{
                                     setKey(user.getUserId().toString());
                                     setTitle(user.getName());
-                                    if (logResult.getStatus()==1) {
+                                    if (logResult.getStatus() == 1) {
                                         setAuditStatus(99);
-                                    }else if (logResult.getStatus()==0){
+                                    } else if (logResult.getStatus() == 0) {
                                         setAuditStatus(50);
                                     }
 

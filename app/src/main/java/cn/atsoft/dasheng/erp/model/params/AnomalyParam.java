@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.erp.pojo.AnomalyCustomerNum;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
@@ -27,6 +28,10 @@ import java.util.List;
 public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private List<AnomalyCustomerNum> customerNums;
+
+    private String customerJson;
 
     private Integer beginTime;
 

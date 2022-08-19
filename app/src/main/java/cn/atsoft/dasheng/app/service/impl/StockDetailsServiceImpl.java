@@ -86,6 +86,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Autowired
     private SpuClassificationService spuClassificationService;
 
+
     @Override
     public Long add(StockDetailsParam param) {
         StockDetails entity = getEntity(param);
