@@ -11,6 +11,7 @@
         <result column="user_id" property="userId" />
         <result column="allocation_type" property="allocationType" />
         <result column="reason" property="reason" />
+        <result column="task_id" property="taskId" />
         <result column="remark" property="remark" />
         <result column="note" property="note" />
         <result column="enclosure" property="enclosure" />

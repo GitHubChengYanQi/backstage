@@ -46,6 +46,9 @@ public class ProductionPickLists implements Serializable {
     @TableField("user_ids")
     private Long userIds;
 
+    @TableField("task_id")
+    private Long taskId;
+
     /**
      * 来源
      */
@@ -128,11 +131,6 @@ public class ProductionPickLists implements Serializable {
     @TableField("status")
     private Long status;
 
-    /**
-     * 状态
-     */
-    @TableField("task_id")
-    private Long taskId;
 
     public Long getUserIds() {
         return userIds;
