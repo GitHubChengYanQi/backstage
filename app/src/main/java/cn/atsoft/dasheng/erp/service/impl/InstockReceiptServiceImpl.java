@@ -111,22 +111,26 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         InstockReceiptResult detail = detail(receiptId);
 
         FileInfo fileInfo = fileInfoService.getById(fileId);
+
         try {
-
-
             InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
             XWPFDocument document = new XWPFDocument(inputStream);
             XWPFTable xwpfTable = document.getTableArray(0);     //需要替换表格的位置
             int size = xwpfTable.getRows().size();
 
+            List<XWPFTable> tables = new ArrayList<>();
+            int mapSize = detail.getCustomerMap().size();
+            for (int i = 0; i < mapSize; i++) {
+                tables.add(xwpfTable);
+            }
+
+
+
+
+
             for (String customer : detail.getCustomerMap().keySet()) {
-
                 List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
-
                 for (int i = 0; i < xwpfTable.getRows().size(); i++) {   //表格里循环 行
-//                    if (i == size) {
-//                        break;
-//                    }
                     XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
                     boolean copy = copy(xwpfTable, row, size + i, customer, results);
                     if (copy) {
@@ -134,6 +138,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                     }
                 }
             }
+
             return document;
 
         } catch (Exception e) {
@@ -224,7 +229,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             xwpfTableRow = newRow;
         }
-        table.removeRow(table.getRows().size()-1);
+        table.removeRow(table.getRows().size() - 1);
         return true;
     }
 
