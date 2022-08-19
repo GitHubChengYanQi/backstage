@@ -1533,12 +1533,18 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             //图片
 
-            List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.stream(skuResult.getImages().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<String> imageUrls = new ArrayList<>();
+            List<String> imgThumbUrls = new ArrayList<>();
             for (Long imageid : imageids) {
                 imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
+                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L,"image/resize,m_fill,h_200,w_200");
+                imgThumbUrls.add(imgThumbUrl);
+
             }
+
             skuResult.setImgUrls(imageUrls);
+            skuResult.setImgThumbUrls(imgThumbUrls);
             for (StockDetails stockDetails : lockStockDetail) {
                 if (stockDetails.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setLockStockDetailNumber(Math.toIntExact(stockDetails.getNumber()));
@@ -1842,6 +1848,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             add("skuName");
             add("spuName");
             add("stockNumber");
+            add("spuId");
         }};
         return PageFactory.defaultPage(fields);
     }
