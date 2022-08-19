@@ -283,7 +283,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + param.getSpuClassificationId());
                 entity.setSkuValueMd5(md5);
                 /**
-                 * //TODO 原 SKU防重复判断
+                 * //原 SKU防重复判断
                  *
                  * Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
                  *  if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(spu)) {

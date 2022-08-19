@@ -351,11 +351,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * 流程结束需要重新获取需要审批的节点
          */
         audit = this.getAudit(taskId);
-        //TODO 写一个判断如果下步为动作时 执行动作
+        // 写一个判断如果下步为动作时 执行动作
 //        startAction(audit, task);
 
         /**
-         * TODO 更新单据状态
+         * 更新单据状态
          */
         if (auditCheck) {
             updateDocumentStatus(audit, activitiAudits, task);
