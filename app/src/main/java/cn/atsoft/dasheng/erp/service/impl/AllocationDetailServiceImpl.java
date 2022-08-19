@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -68,12 +69,15 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
     }
 
     @Override
+    @Transactional
     public void add(AllocationParam param) {
         List<AllocationDetail> entityList = new ArrayList<>();
         List<AllocationCart> cartList = new ArrayList<>();
         if (ToolUtil.isEmpty(param.getJsonParam())) {
             throw new ServiceException(500, "请选择所需物料及库位后提交");
         }
+        int cartNum = 0;
+        int detailNum = 0;
         /**
          * 需求目标位置
          */
@@ -82,6 +86,7 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
                 AllocationDetail entity = this.getEntity(storehouseAndPosition);
                 entity.setAllocationId(param.getAllocationId());
                 entityList.add(entity);
+                detailNum+=storehouseAndPosition.getNumber();
             }
             this.saveBatch(entityList);
         }
@@ -94,6 +99,10 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
                 cart.setAllocationId(param.getAllocationId());
                 cart.setType("hope");
                 cartList.add(cart);
+                cartNum+=storehouseAndPosition.getNumber();
+            }
+            if (cartNum>detailNum){
+                throw new ServiceException(500,"预期调拨物料总数不可超过实际申请总数量");
             }
             allocationCartService.saveBatch(cartList);
 

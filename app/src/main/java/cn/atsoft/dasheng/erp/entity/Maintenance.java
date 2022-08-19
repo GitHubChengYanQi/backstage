@@ -62,6 +62,11 @@ public class Maintenance implements Serializable {
      */
     @TableField("user_id")
     private Long userId;
+    /**
+     * 任务id
+     */
+    @TableField("task_id")
+    private Long taskId;
 
     /**
      * 类型
@@ -292,6 +297,14 @@ public class Maintenance implements Serializable {
 
     public void setSelectParams(String selectParams) {
         this.selectParams = selectParams;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     @Override
