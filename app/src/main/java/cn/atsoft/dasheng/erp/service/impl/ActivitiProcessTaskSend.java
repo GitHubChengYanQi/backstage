@@ -122,7 +122,9 @@ public class ActivitiProcessTaskSend {
                         ActivitiProcessTask processTask = processTaskService.getById(taskId);
                         if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
                             ActivitiProcessTask mainTask = processTaskService.getById(processTask.getMainTaskId());
-                            users.add(mainTask.getCreateUser());
+                            if (ToolUtil.isNotEmpty(mainTask)) {
+                                users.add(mainTask.getCreateUser());
+                            }
                         }
                         if (processTask.getType().equals("INSTOCKERROR")) {
                             AnomalyOrder anomalyOrder = anomalyOrderService.getById(processTask.getFormId());
