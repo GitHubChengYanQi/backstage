@@ -408,7 +408,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<TaskParticipant> taskParticipants = new ArrayList<>();
 
-        for (Long userId : userIds) {
+        Set<Long> setUserIds = new HashSet<>(userIds);
+
+        for (Long userId : setUserIds) {
             TaskParticipant taskParticipant = new TaskParticipant();
             taskParticipant.setUserId(userId);
             taskParticipant.setProcessTaskId(taskId);

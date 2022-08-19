@@ -193,6 +193,8 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         activitiProcessTaskParam.setFormId(detail.getAnomalyId());
         activitiProcessTaskParam.setProcessId(processTask.getProcessId());
         activitiProcessTaskParam.setType("ErrorForWard");
+        activitiProcessTaskParam.setPid(processTask.getProcessTaskId());
+        activitiProcessTaskParam.setMainTaskId(processTask.getProcessTaskId());
         activitiProcessTaskParam.setUserId(detail.getUserId());
         Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{

@@ -343,6 +343,12 @@
                 <spring.active>hh</spring.active>
             </properties>
         </profile>
+        <profile>
+            <id>daoxin</id>
+            <properties>
+                <spring.active>daoxin</spring.active>
+            </properties>
+        </profile>
     </profiles>
 
 </project>

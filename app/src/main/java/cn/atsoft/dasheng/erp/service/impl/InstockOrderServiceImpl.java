@@ -804,7 +804,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             inkind.setSourceId(listParam.getInstockListId());
             inkind.setType("1");
             inkind.setBrandId(listParam.getBrandId());
-            inkind.setPositionId(listParam.getStorehousePositionsId());
+            inkind.setPositionId(listParam.getStorehousePositionsId());   //勿动
             inkinds.add(inkind);
 
             OrCode orCode = new OrCode();    //创建二维码
@@ -940,6 +940,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         inkind.setPositionId(param.getStorehousePositionsId());
         inkind.setType("1");
         inkind.setLastMaintenanceTime(new DateTime());
+        inkind.setPositionId(param.getStorehousePositionsId());   //别动
         inkind.setBrandId(param.getBrandId());
 
         inkindService.save(inkind);

@@ -80,14 +80,12 @@ public class ActivitiProcessLogResult implements Serializable {
     private Long createUser;
 
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
     private Long updateUser;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
     private Date updateTime;
 
     @JSONField(serialize = false)

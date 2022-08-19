@@ -245,5 +245,6 @@
             or activiti_process_task.user_id = #{paramCondition.participantUser}
             )
         </if>
+            group by processTaskId
     </select>
 </mapper>
