@@ -82,8 +82,8 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
     @Override
     public List<ErpPartsDetailResult> bomList(ErpPartsDetailParam param) {
         List<ErpPartsDetailResult> detailResults = null;
-        if (ToolUtil.isNotEmpty(param.getSkuId())) {   //当前bom所有下级
-            detailResults = recursiveDetails(param.getSkuId());
+        if (ToolUtil.isNotEmpty(param.getSkuId())) {   //bom最末级
+            detailResults = recursiveDetails(param.getSkuId(),null);
         } else {      //当前bom 下一级
             detailResults = this.baseMapper.customList(param);
         }
@@ -91,8 +91,8 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         return detailResults;
     }
 
-
-    private List<ErpPartsDetailResult> recursiveDetails(Long skuId) {
+    @Override
+    public List<ErpPartsDetailResult> recursiveDetails(Long skuId, ErpPartsDetailResult result) {
 
         List<ErpPartsDetailResult> list = new ArrayList<>();
         Parts parts = partsService.query().eq("sku_id", skuId).eq("status", 99).eq("display", 1).one();
@@ -100,10 +100,11 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         if (ToolUtil.isNotEmpty(parts)) {
             List<ErpPartsDetail> partsDetails = this.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
             List<ErpPartsDetailResult> detailResults = BeanUtil.copyToList(partsDetails, ErpPartsDetailResult.class);
-            list.addAll(detailResults);
             for (ErpPartsDetailResult detailResult : detailResults) {
-                list.addAll(recursiveDetails(detailResult.getSkuId()));
+                list.addAll(recursiveDetails(detailResult.getSkuId(),detailResult));
             }
+        } else {
+            list.add(result);
         }
         return list;
     }
