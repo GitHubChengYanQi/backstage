@@ -35,7 +35,7 @@ import java.util.List;
 public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private List<String> imgThumbUrls;//缩略图
     private Boolean inSupply;
     private Integer maintenancePeriod;
     List<String> imgUrls;
@@ -64,7 +64,6 @@ public class SkuResult implements Serializable {
     private Long lackNumber;  //缺料数
     private Long storehouseId;
     private Long positionId;
-    @FieldPermission(value = true)
     private Integer stockNumber = 0;
     private List<StorehousePositionsResult> positionsResult;
     private Integer lockStockDetailNumber;
