@@ -77,7 +77,7 @@ public class CustomerFileController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CustomerFileResult> detail(@RequestBody CustomerFileParam customerFileParam) {
+    public ResponseData detail(@RequestBody CustomerFileParam customerFileParam) {
         CustomerFile detail = this.customerFileService.getById(customerFileParam.getFileId());
         CustomerFileResult result = new CustomerFileResult();
         ToolUtil.copyProperties(detail, result);
@@ -93,7 +93,7 @@ public class CustomerFileController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData<PageInfo<CustomerFileResult>> list(@RequestBody(required = false) CustomerFileParam customerFileParam) {
+    public ResponseData list(@RequestBody(required = false) CustomerFileParam customerFileParam) {
         if(ToolUtil.isEmpty(customerFileParam)){
             customerFileParam = new CustomerFileParam();
         }

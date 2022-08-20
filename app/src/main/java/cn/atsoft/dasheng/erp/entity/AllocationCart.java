@@ -42,6 +42,10 @@ public class AllocationCart implements Serializable {
 
     @TableField("done_number")
     private Integer doneNumber;
+    @TableField("pick_lists_id")
+    private Long pickListsId;
+    @TableField("instock_order_id")
+    private Long instockOrderId;
 
     @TableField("type")
     private String type;
@@ -263,6 +267,22 @@ public class AllocationCart implements Serializable {
 
     public void setDoneNumber(Integer doneNumber) {
         this.doneNumber = doneNumber;
+    }
+
+    public Long getPickListsId() {
+        return pickListsId;
+    }
+
+    public void setPickListsId(Long pickListsId) {
+        this.pickListsId = pickListsId;
+    }
+
+    public Long getInstockOrderId() {
+        return instockOrderId;
+    }
+
+    public void setInstockOrderId(Long outstockOrderId) {
+        this.instockOrderId = outstockOrderId;
     }
 
     @Override

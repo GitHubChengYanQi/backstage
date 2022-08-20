@@ -84,7 +84,7 @@ public class SpeechcraftTypeDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SpeechcraftTypeDetailResult> detail(@RequestBody SpeechcraftTypeDetailParam speechcraftTypeDetailParam) {
+    public ResponseData detail(@RequestBody SpeechcraftTypeDetailParam speechcraftTypeDetailParam) {
         SpeechcraftTypeDetail detail = this.speechcraftTypeDetailService.getById(speechcraftTypeDetailParam.getSpeechcraftTypeDetailId());
         SpeechcraftTypeDetailResult result = new SpeechcraftTypeDetailResult();
         ToolUtil.copyProperties(detail, result);
@@ -108,7 +108,7 @@ public class SpeechcraftTypeDetailController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpeechcraftTypeDetailParam speechcraftTypeDetailParam) {
+    public ResponseData listSelect(@RequestBody(required = false) SpeechcraftTypeDetailParam speechcraftTypeDetailParam) {
         QueryWrapper<SpeechcraftTypeDetail> speechcraftTypeDetailQueryWrapper = new QueryWrapper<>();
         speechcraftTypeDetailQueryWrapper.in("display", 1);
         if (ToolUtil.isNotEmpty(speechcraftTypeDetailParam) && ToolUtil.isNotEmpty(speechcraftTypeDetailParam.getSpeechcraftTypeId())){

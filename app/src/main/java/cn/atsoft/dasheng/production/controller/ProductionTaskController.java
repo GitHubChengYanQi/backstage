@@ -106,7 +106,7 @@ public class ProductionTaskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionTaskResult> detail(@RequestBody ProductionTaskParam productionTaskParam) {
+    public ResponseData detail(@RequestBody ProductionTaskParam productionTaskParam) {
         ProductionTask detail = this.productionTaskService.getById(productionTaskParam.getProductionTaskId());
         ProductionTaskResult result = new ProductionTaskResult();
         ToolUtil.copyProperties(detail, result);

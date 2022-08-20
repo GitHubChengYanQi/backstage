@@ -88,7 +88,7 @@ public class PrintTemplateController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<PrintTemplateResult> detail(@RequestBody PrintTemplateParam printTemplateParam) {
+    public ResponseData detail(@RequestBody PrintTemplateParam printTemplateParam) {
         PrintTemplate detail = this.printTemplateService.getById(printTemplateParam.getPrintTemplateId());
         PrintTemplateResult result = new PrintTemplateResult();
         ToolUtil.copyProperties(detail, result);

@@ -85,7 +85,7 @@ public class InkindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InkindResult> detail(@RequestBody InkindParam inkindParam) {
+    public ResponseData detail(@RequestBody InkindParam inkindParam) {
         InkindResult result = this.inkindService.inkindDetail(inkindParam);
         return ResponseData.success(result);
     }
@@ -99,7 +99,7 @@ public class InkindController extends BaseController {
      */
     @RequestMapping(value = "/details", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<List<InkindResult>> details(@RequestBody InkindParam inkindParam) {
+    public ResponseData details(@RequestBody InkindParam inkindParam) {
         List<InkindResult> inkindResults = this.inkindService.details(inkindParam);
         return ResponseData.success(inkindResults);
     }

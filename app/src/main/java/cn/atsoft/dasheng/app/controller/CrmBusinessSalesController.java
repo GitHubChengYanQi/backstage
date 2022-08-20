@@ -84,7 +84,7 @@ public class CrmBusinessSalesController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmBusinessSalesResult> detail(@RequestBody CrmBusinessSalesParam crmBusinessSalesParam) {
+    public ResponseData detail(@RequestBody CrmBusinessSalesParam crmBusinessSalesParam) {
         CrmBusinessSales detail = this.crmBusinessSalesService.getById(crmBusinessSalesParam.getSalesId());
         CrmBusinessSalesResult result = new CrmBusinessSalesResult();
         ToolUtil.copyProperties(detail, result);
@@ -117,7 +117,7 @@ public class CrmBusinessSalesController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<CrmBusinessSales> businessSalesQueryWrapper = new QueryWrapper<>();
         businessSalesQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.crmBusinessSalesService.listMaps(businessSalesQueryWrapper);

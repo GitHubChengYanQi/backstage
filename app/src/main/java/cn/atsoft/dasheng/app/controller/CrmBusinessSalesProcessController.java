@@ -84,7 +84,7 @@ public class CrmBusinessSalesProcessController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmBusinessSalesProcessResult> detail(@RequestBody CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
+    public ResponseData detail(@RequestBody CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
         if (LoginContextHolder.getContext().isAdmin()){
             PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
             return ResponseData.success(pageBySpec.getData().get(0));
@@ -122,7 +122,7 @@ public class CrmBusinessSalesProcessController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.crmBusinessSalesProcessService.listMaps(processQueryWrapper);

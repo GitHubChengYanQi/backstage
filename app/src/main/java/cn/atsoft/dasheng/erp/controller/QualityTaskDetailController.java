@@ -87,7 +87,7 @@ public class QualityTaskDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityTaskDetailResult> detail(@RequestBody QualityTaskDetailParam qualityTaskDetailParam) {
+    public ResponseData detail(@RequestBody QualityTaskDetailParam qualityTaskDetailParam) {
         QualityTaskDetail detail = this.qualityTaskDetailService.getById(qualityTaskDetailParam.getQualityTaskDetailId());
         QualityTaskDetailResult result = new QualityTaskDetailResult();
         ToolUtil.copyProperties(detail, result);

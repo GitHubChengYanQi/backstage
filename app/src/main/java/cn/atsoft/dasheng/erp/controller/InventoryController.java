@@ -203,7 +203,7 @@ public class InventoryController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InventoryResult> detail(@RequestBody InventoryParam inventoryParam) {
+    public ResponseData detail(@RequestBody InventoryParam inventoryParam) {
         InventoryResult detail = this.inventoryService.detail(inventoryParam.getInventoryTaskId());
         return ResponseData.success(detail);
     }

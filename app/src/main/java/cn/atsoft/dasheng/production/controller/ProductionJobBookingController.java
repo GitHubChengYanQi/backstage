@@ -80,7 +80,7 @@ public class ProductionJobBookingController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionJobBookingResult> detail(@RequestBody ProductionJobBookingParam productionJobBookingParam) {
+    public ResponseData detail(@RequestBody ProductionJobBookingParam productionJobBookingParam) {
         ProductionJobBooking detail = this.productionJobBookingService.getById(productionJobBookingParam.getJobBookingId());
         ProductionJobBookingResult result = new ProductionJobBookingResult();
         ToolUtil.copyProperties(detail, result);

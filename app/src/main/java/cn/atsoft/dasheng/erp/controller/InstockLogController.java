@@ -80,7 +80,7 @@ public class InstockLogController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InstockLogResult> detail(@RequestBody InstockLogParam instockLogParam) {
+    public ResponseData detail(@RequestBody InstockLogParam instockLogParam) {
         InstockLog detail = this.instockLogService.getById(instockLogParam.getInstockLogId());
         InstockLogResult result = new InstockLogResult();
         ToolUtil.copyProperties(detail, result);

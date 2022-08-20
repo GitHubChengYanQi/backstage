@@ -323,7 +323,7 @@ public class QualityTaskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityTaskResult> detail(@RequestBody QualityTaskParam qualityTaskParam) {
+    public ResponseData detail(@RequestBody QualityTaskParam qualityTaskParam) {
         QualityTask details = this.qualityTaskService.getById(qualityTaskParam.getQualityTaskId());
         if (ToolUtil.isEmpty(details)) {
             return null;

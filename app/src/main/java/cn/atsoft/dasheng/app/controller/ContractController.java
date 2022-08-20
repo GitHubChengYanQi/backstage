@@ -167,7 +167,7 @@ public class ContractController extends BaseController {
     @Permission
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ContractResult> detail(@RequestBody ContractParam contractParam) {
+    public ResponseData detail(@RequestBody ContractParam contractParam) {
         Long customerId = contractParam.getContractId();
         ContractResult detail = contractService.detail(customerId);
         return ResponseData.success(detail);
@@ -205,7 +205,7 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) ContractParam contractParam) {
+    public ResponseData listSelect(@RequestBody(required = false) ContractParam contractParam) {
         QueryWrapper<Contract> queryWrapper = new QueryWrapper();
         queryWrapper.in("display", 1);
         if (ToolUtil.isNotEmpty(contractParam) && ToolUtil.isNotEmpty(contractParam.getContractId())) {

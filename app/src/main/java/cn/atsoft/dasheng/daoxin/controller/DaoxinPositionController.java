@@ -80,7 +80,7 @@ public class DaoxinPositionController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DaoxinPositionResult> detail(@RequestBody DaoxinPositionParam daoxinPositionParam) {
+    public ResponseData detail(@RequestBody DaoxinPositionParam daoxinPositionParam) {
         DaoxinPosition detail = this.daoxinPositionService.getById(daoxinPositionParam.getPositionId());
         DaoxinPositionResult result = new DaoxinPositionResult();
         ToolUtil.copyProperties(detail, result);

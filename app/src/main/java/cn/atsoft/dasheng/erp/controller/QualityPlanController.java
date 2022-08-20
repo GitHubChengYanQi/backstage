@@ -98,7 +98,7 @@ public class QualityPlanController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityPlanResult> detail(@RequestBody QualityPlanParam qualityPlanParam) {
+    public ResponseData detail(@RequestBody QualityPlanParam qualityPlanParam) {
         QualityPlan detail = this.qualityPlanService.getById(qualityPlanParam.getQualityPlanId());
         List<QualityPlanDetail> qualityPlanDetails = qualityPlanDetailService.query().in("plan_id", detail.getQualityPlanId()).orderByDesc("sort").list();
         List<QualityPlanDetailResult> planDetailResults = new ArrayList<>();
@@ -145,7 +145,7 @@ public class QualityPlanController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) QualityPlanParam qualityPlanParam) {
+    public ResponseData listSelect(@RequestBody(required = false) QualityPlanParam qualityPlanParam) {
 
 
         QueryWrapper<QualityPlan> qualityCheckQueryWrapper = new QueryWrapper<>();

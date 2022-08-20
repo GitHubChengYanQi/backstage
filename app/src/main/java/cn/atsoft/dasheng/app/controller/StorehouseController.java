@@ -100,7 +100,7 @@ public class StorehouseController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<StorehouseResult> detail(@RequestBody StorehouseParam storehouseParam) {
+    public ResponseData detail(@RequestBody StorehouseParam storehouseParam) {
         Storehouse detail = this.storehouseService.getById(storehouseParam.getStorehouseId());
         StorehouseResult result = new StorehouseResult();
         ToolUtil.copyProperties(detail, result);
@@ -136,7 +136,7 @@ public class StorehouseController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) StorehouseParam storehouseParam) {
+    public ResponseData listSelect(@RequestBody(required = false) StorehouseParam storehouseParam) {
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         storehouseQueryWrapper.in("display", 1);
         if (ToolUtil.isNotEmpty(storehouseParam) && ToolUtil.isNotEmpty(storehouseParam.getName())) {

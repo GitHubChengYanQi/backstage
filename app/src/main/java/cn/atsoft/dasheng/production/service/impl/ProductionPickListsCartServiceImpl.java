@@ -14,7 +14,9 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.ShopCartService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -32,6 +34,7 @@ import cn.atsoft.dasheng.production.model.result.PickListsStorehouseResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
@@ -89,15 +92,39 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     private ShopCartService shopCartService;
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private InkindService inkindService;
 
 
     @Override
     public void add(ProductionPickListsCartParam param, List<StockDetails> stockDetails) {
 
+
         /**
-         * 过滤实物
+         * 获取 库存中实物信息  拆分实物时匹配数据
          */
+        List<Inkind> inkinds = this.getStockDetailInkinds(stockDetails);
+        /**
+         * 查找扫码物料是否存在于备料之中  如果存在 此物料不可再次扫码备料
+         */
+        List<Long> lockInkinds = new ArrayList<>();
+        for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
+            if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())){
+                lockInkinds.add(productionPickListsCartParam.getInkindId());
+            }
+        }
+        Integer lockInkindCount =inkinds.size() == 0 ? 0 : this.query().in("inkind_id", inkinds).count();
+        if (lockInkindCount>0){
+            throw new ServiceException(500,"扫码物料已被备料,不可再次备料,操作终止");
+        }
+
+
+
+        /**
+             * 过滤实物
+             */
         List<ProductionPickListsCart> entitys = new ArrayList<>();
+        List<StockDetails> newStockDetails = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             if (ToolUtil.isEmpty(productionPickListsCartParam.getBrandId())) {
                 productionPickListsCartParam.setBrandId(0L);
@@ -116,8 +143,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             int number = productionPickListsCartParam.getNumber();
 
             if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
+                Inkind inkind = inkindService.getById(param.getInkindId());
                 ProductionPickListsCart entity = new ProductionPickListsCart();
                 entity.setPickListsId(productionPickListsCartParam.getPickListsId());
+                entity.setCustomerId(inkind.getCustomerId());
                 entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                 entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
                 entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());
@@ -135,19 +164,21 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                         if ((ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getBrandId().equals(productionPickListsCartParam.getBrandId()) && stockDetail.getSkuId().equals(productionPickListsCartParam.getSkuId()) && stockDetail.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId())) || ((ToolUtil.isEmpty(stockDetail.getBrandId()) || stockDetail.getBrandId().equals(0L)) && stockDetail.getSkuId().equals(productionPickListsCartParam.getSkuId()) && stockDetail.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId()))) {
                             int lastNumber = number;
                             number -= stockDetail.getNumber();
-                            if (number >= 0) {
+                            if (number >= 0) {  //如果库存实物被全部备料 则不拆分实物  反之 需要拆分实物
                                 ProductionPickListsCart entity = new ProductionPickListsCart();
                                 entity.setNumber(Math.toIntExact(stockDetail.getNumber()));
                                 entity.setSkuId(stockDetail.getSkuId());
                                 if (ToolUtil.isNotEmpty(stockDetail.getBrandId())) {
                                     entity.setBrandId(stockDetail.getBrandId());
                                 }
+
                                 entity.setPickListsId(productionPickListsCartParam.getPickListsId());
                                 entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                                 entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
                                 entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());
                                 entity.setType(productionPickListsCartParam.getType());
                                 entity.setInkindId(stockDetail.getInkindId());
+                                entity.setCustomerId(stockDetail.getCustomerId());
                                 entitys.add(entity);
                             } else {
                                 ProductionPickListsCart entity = new ProductionPickListsCart();
@@ -156,20 +187,37 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                 if (ToolUtil.isNotEmpty(stockDetail.getBrandId())) {
                                     entity.setBrandId(stockDetail.getBrandId());
                                 }
-                                entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
-                                entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());
-                                entity.setPickListsId(productionPickListsCartParam.getPickListsId());
-                                entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
-                                entity.setType(productionPickListsCartParam.getType());
-                                entity.setInkindId(stockDetail.getInkindId());
-                                entitys.add(entity);
+                                for (Inkind inkind : inkinds) {
+                                    if (stockDetail.getInkindId().equals(inkind.getInkindId())){
+                                        Inkind newInkind = BeanUtil.copyProperties(inkind, Inkind.class);
+                                        newInkind.setInkindId(null);
+                                        newInkind.setSource("Inkind");
+                                        newInkind.setSourceId(inkind.getInkindId());
+                                        inkindService.save(newInkind);
+                                        StockDetails newStockDetail = BeanUtil.copyProperties(stockDetail, StockDetails.class);
+                                        newStockDetail.setStockItemId(null);
+                                        newStockDetail.setNumber(stockDetail.getNumber()-lastNumber);
+                                        newStockDetails.add(newStockDetail);
+                                        entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
+                                        entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());
+                                        entity.setPickListsId(productionPickListsCartParam.getPickListsId());
+                                        entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
+                                        entity.setType(productionPickListsCartParam.getType());
+                                        entity.setInkindId(stockDetail.getInkindId());
+                                        entity.setCustomerId(stockDetail.getCustomerId());
+                                        entitys.add(entity);
+                                        stockDetail.setNumber((long) lastNumber);
+                                        break;
+                                    }
+                                }
                             }
-
                         }
                     }
                 }
             }
         }
+        stockDetailsService.saveBatch(newStockDetails);
+        stockDetailsService.updateBatchById(stockDetails);
         if (entitys.size() > 0) {
             this.saveBatch(entitys);
             String skuName = skuService.skuMessage(entitys.get(0).getSkuId());
@@ -253,7 +301,13 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
 
     }
-
+    List<Inkind>getStockDetailInkinds(List<StockDetails> stockDetails){
+        List<Long> inkindIds = new ArrayList<>();
+        for (StockDetails stockDetail : stockDetails) {
+            inkindIds.add(stockDetail.getInkindId());
+        }
+        return inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
+    }
     @Override
     public void addCheck(ProductionPickListsCartParam param) {
         List<Long> detailIds = new ArrayList<>();
@@ -387,6 +441,9 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             listsIds.add(productionPickListsCartResult.getPickListsId());
             detailIds.add(productionPickListsCartResult.getPickListsDetailId());
             brandIds.add(productionPickListsCartResult.getBrandId());
+            if (ToolUtil.isNotEmpty(productionPickListsCartResult.getBrandIds())) {
+                brandIds.addAll(productionPickListsCartResult.getBrandIds());
+            }
         }
         /**
          * ids去重
@@ -394,6 +451,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         skuIds = skuIds.stream().distinct().collect(Collectors.toList());
         storehouseIds = storehouseIds.stream().distinct().collect(Collectors.toList());
         detailIds = detailIds.stream().distinct().collect(Collectors.toList());
+        brandIds = brandIds.stream().distinct().collect(Collectors.toList());
 
         /**
          * 查询数据
@@ -405,8 +463,25 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
         List<ProductionPickListsDetailResult> pickListsDetailResults = detailIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(pickListsDetailService.listByIds(detailIds), ProductionPickListsDetailResult.class);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-//        pickListsDetailService.format(pickListsDetailResults);
+        List<StockDetails> list = new ArrayList<>();
+        if (brandIds.size() > 0 && skuIds.size() >0){
+            list = stockDetailsService.query().select("sku_id,brand_id, sum(number) as num").in("brand_id", brandIds).in("sku_id", skuIds).eq("display", 1).groupBy("sku_id").groupBy("brand_id").list();
+            List<StockDetails> lockStockDetail = this.getLockStockDetail();
+            for (StockDetails stockDetails : list) {
+                for (StockDetails details : lockStockDetail) {
+                    if (stockDetails.getBrandId().equals(details.getBrandId()) && stockDetails.getSkuId().equals(details.getSkuId())){
+                        stockDetails.setNum(stockDetails.getNum()-details.getNumber());
+                    }
+                }
+            }
+        }
+        //        pickListsDetailService.format(pickListsDetailResults);
         for (ProductionPickListsCartResult productionPickListsCartResult : param) {
+            for (StockDetails stockDetails : list) {
+                if (productionPickListsCartResult.getSkuId().equals(stockDetails.getSkuId()) && ToolUtil.isNotEmpty(productionPickListsCartResult.getBrandId()) && productionPickListsCartResult.getBrandId().equals(stockDetails.getBrandId())){
+                    productionPickListsCartResult.setStockNumber(stockDetails.getNum());
+                }
+            }
             for (SkuSimpleResult skuResult : skuSimpleResults) {
                 if (productionPickListsCartResult.getSkuId().equals(skuResult.getSkuId())) {
                     productionPickListsCartResult.setSkuResult(skuResult);
@@ -438,11 +513,21 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 }
             }
             for (BrandResult brandResult : brandResults) {
-                if (productionPickListsCartResult.getBrandId().equals(brandResult.getBrandId())) {
+                if (ToolUtil.isNotEmpty(productionPickListsCartResult.getBrandId()) && productionPickListsCartResult.getBrandId().equals(brandResult.getBrandId())) {
                     productionPickListsCartResult.setBrandResult(brandResult);
                     break;
                 }
             }
+            List<String> brandNames = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(productionPickListsCartResult.getBrandIds())) {
+                for (BrandResult brandResult : brandResults) {
+                    if (productionPickListsCartResult.getBrandIds().stream().anyMatch(i->i.equals(brandResult.getBrandId()))){
+                        brandNames.add(brandResult.getBrandName());
+                    }
+                }
+            }
+            brandNames = brandNames.stream().distinct().collect(Collectors.toList());
+            productionPickListsCartResult.setBrandNames(brandNames);
         }
     }
 
@@ -707,6 +792,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         );
         return totalLockDetail;
 
+    }
+    @Override
+    public Integer getLockNumber(QuerryLockedParam param) {
+        return  this.baseMapper.lockNumber(param);
     }
 
     @Override

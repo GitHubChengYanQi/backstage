@@ -11,13 +11,12 @@ import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.AllocationLogResult;
 import cn.atsoft.dasheng.erp.model.result.InstockReceiptResult;
-import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,17 +78,15 @@ public class DataStatisticsViewController extends BaseController {
         List<Maintenance> maintenances = maintenanceIds.size() == 0 ? new ArrayList<>() : new ArrayList<>();
 
 
-
-
         for (Maintenance maintenance : maintenances) {
             if (maintenance.getEndTime().getTime() < DateUtil.date().getTime()) {
                 overdueCount += 1;
             }
         }
-        Map<String,Object> result = new HashMap<>();
-        result.put("doneCount",doneCount);
-        result.put("startingCount",startingCount);
-        result.put("overdueCount",overdueCount);
+        Map<String, Object> result = new HashMap<>();
+        result.put("doneCount", doneCount);
+        result.put("startingCount", startingCount);
+        result.put("overdueCount", overdueCount);
 
         return ResponseData.success(result);
     }
@@ -115,31 +112,65 @@ public class DataStatisticsViewController extends BaseController {
     @ApiOperation("新增")
     public PageInfo<Object> billPageList(@RequestBody DataStatisticsViewParam param) {
         PageInfo<Object> result = new PageInfo<>();
-        switch (param.getType()){
+        if (ToolUtil.isEmpty(param.getType())) {
+            throw new ServiceException(500, "请传入参数");
+        }
+        List<String> times = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(param.getDateParams())) {
+            for (Date dateParam : param.getDateParams()) {
+                String timeStr = DateUtil.format(dateParam, "yyyy-MM-dd HH:mm:ss");
+                times.add(timeStr);
+            }
+        }
+        switch (param.getType()) {
             case "instockLog":
-                PageInfo<InstockReceiptResult> pageBySpec = instockReceiptService.findPageBySpec(new InstockReceiptParam());
-                ToolUtil.copyProperties(pageBySpec,result);
+                PageInfo<InstockReceiptResult> pageBySpec = instockReceiptService.findPageBySpec(new InstockReceiptParam() {{
+                    if (ToolUtil.isNotEmpty(param.getCreateUser())) {
+                        setCreateUser(param.getCreateUser());
+                    }
+                    setTimes(times);
+                }});
+                ToolUtil.copyProperties(pageBySpec, result);
                 break;
             case "maintenanceLog":
-                PageInfo<MaintenanceLogResult> pageBySpec1 = maintenanceLogService.findPageBySpec(new MaintenanceLogParam());
-                ToolUtil.copyProperties(pageBySpec1,result);
+                PageInfo<MaintenanceLogResult> pageBySpec1 = maintenanceLogService.findPageBySpec(new MaintenanceLogParam() {{
+                    if (ToolUtil.isNotEmpty(param.getCreateUser())) {
+                        setCreateUser(param.getCreateUser());
+                    }
+                    setTimes(times);
+                }});
+                ToolUtil.copyProperties(pageBySpec1, result);
                 break;
-                case "outstockLog":
-                PageInfo<OutstockOrderResult> pageBySpec2 = outstockOrderService.findPageBySpec(new OutstockOrderParam(),null);
-                ToolUtil.copyProperties(pageBySpec2,result);
+            case "outstockLog":
+                PageInfo<OutstockOrderResult> pageBySpec2 = outstockOrderService.findPageBySpec(new OutstockOrderParam() {{
+                    if (ToolUtil.isNotEmpty(param.getCreateUser())) {
+                        setCreateUser(param.getCreateUser());
+                    }
+                    setTimes(times);
+                }}, null);
+                ToolUtil.copyProperties(pageBySpec2, result);
                 break;
             case "inventoryLog":
-                PageInfo<InventoryResult> pageBySpec3 = inventoryService.findPageBySpec(new InventoryParam());
-                ToolUtil.copyProperties(pageBySpec3,result);
+                PageInfo pageBySpec3 = inventoryService.findPageBySpec(new InventoryParam() {{
+                    if (ToolUtil.isNotEmpty(param.getCreateUser())) {
+                        setCreateUser(param.getCreateUser());
+                    }
+                    setTimes(times);
+                }});
+                ToolUtil.copyProperties(pageBySpec3, result);
                 break;
-                case "allocationLog":
-                PageInfo<AllocationLogResult> pageBySpec4 = allocationLogService.findPageBySpec(new AllocationLogParam());
-                ToolUtil.copyProperties(pageBySpec4,result);
+            case "allocationLog":
+                PageInfo<AllocationLogResult> pageBySpec4 = allocationLogService.findPageBySpec(new AllocationLogParam() {{
+                    if (ToolUtil.isNotEmpty(param.getCreateUser())) {
+                        setCreateUser(param.getCreateUser());
+                    }
+                    setTimes(times);
+                }});
+                ToolUtil.copyProperties(pageBySpec4, result);
                 break;
         }
         return result;
     }
-
 
 
 }

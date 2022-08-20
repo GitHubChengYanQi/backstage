@@ -77,7 +77,7 @@ public class ClassDifferenceDetailsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ClassDifferenceDetailsResult> detail(@RequestBody ClassDifferenceDetailsParam classDifferenceDetailsParam) {
+    public ResponseData detail(@RequestBody ClassDifferenceDetailsParam classDifferenceDetailsParam) {
         ClassDifferenceDetails detail = this.classDifferenceDetailsService.getById(classDifferenceDetailsParam.getDetailId());
         ClassDifferenceDetailsResult result = new ClassDifferenceDetailsResult();
         ToolUtil.copyProperties(detail, result);

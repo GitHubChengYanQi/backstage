@@ -92,7 +92,7 @@ public class ItemsController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<ItemsResult> detail(@RequestBody ItemsParam itemsParam) {
+    public ResponseData detail(@RequestBody ItemsParam itemsParam) {
         Items detail = this.itemsService.getById(itemsParam.getItemId());
         ItemsResult result = new ItemsResult();
         ToolUtil.copyProperties(detail, result);
@@ -125,7 +125,7 @@ public class ItemsController extends BaseController {
 
 //    @Permission
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.itemsService.listMaps(itemsQueryWrapper);

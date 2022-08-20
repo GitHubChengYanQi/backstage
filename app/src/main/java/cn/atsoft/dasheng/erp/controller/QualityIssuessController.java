@@ -80,7 +80,7 @@ public class QualityIssuessController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityIssuessResult> detail(@RequestBody QualityIssuessParam qualityIssuessParam) {
+    public ResponseData detail(@RequestBody QualityIssuessParam qualityIssuessParam) {
         QualityIssuess detail = this.qualityIssuessService.getById(qualityIssuessParam.getQualityIssuesId());
         QualityIssuessResult result = new QualityIssuessResult();
         ToolUtil.copyProperties(detail, result);

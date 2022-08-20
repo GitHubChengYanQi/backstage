@@ -100,7 +100,7 @@ public class ProcurementOrderController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProcurementOrderResult> detail(@RequestBody ProcurementOrderParam procurementOrderParam) {
+    public ResponseData detail(@RequestBody ProcurementOrderParam procurementOrderParam) {
         ProcurementOrder detail = this.procurementOrderService.getById(procurementOrderParam.getProcurementOrderId());
         ProcurementOrderResult result = new ProcurementOrderResult();
         ToolUtil.copyProperties(detail, result);

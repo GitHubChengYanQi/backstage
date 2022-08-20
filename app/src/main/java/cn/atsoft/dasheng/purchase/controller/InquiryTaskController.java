@@ -81,7 +81,7 @@ public class InquiryTaskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InquiryTaskResult> detail(@RequestBody InquiryTaskParam inquiryTaskParam) {
+    public ResponseData detail(@RequestBody InquiryTaskParam inquiryTaskParam) {
         InquiryTaskResult detail = this.inquiryTaskService.detail(inquiryTaskParam.getInquiryTaskId());
         return ResponseData.success(detail);
     }

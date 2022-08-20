@@ -79,7 +79,7 @@ public class BusinessDynamicController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<BusinessDynamicResult> detail(@RequestBody BusinessDynamicParam businessDynamicParam) {
+    public ResponseData detail(@RequestBody BusinessDynamicParam businessDynamicParam) {
         BusinessDynamic detail = this.businessDynamicService.getById(businessDynamicParam.getDynamicId());
         BusinessDynamicResult result = new BusinessDynamicResult();
         ToolUtil.copyProperties(detail, result);

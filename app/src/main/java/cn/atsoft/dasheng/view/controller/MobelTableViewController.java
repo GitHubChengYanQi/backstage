@@ -84,11 +84,35 @@ public class MobelTableViewController extends BaseController {
      * @author Captain_Jazz
      * @Date 2022-05-09
      */
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/viewDetail", method = RequestMethod.GET)
     @ApiOperation("详情")
-    public ResponseData<MobelTableViewResult> detail() {
+    public ResponseData viewDetail() {
         Long userId = LoginContextHolder.getContext().getUserId();
-        MobelTableView detail = this.mobelTableViewService.query().eq("user_id", userId).eq("display", 1).one();
+        MobelTableView detail = this.mobelTableViewService.query().eq("user_id", userId).eq("display", 1).eq("type",0).one();
+        if (ToolUtil.isEmpty(detail)) {
+            return ResponseData.success(new MobelTableViewResult());
+        }else {
+            MobelTableViewResult result = new MobelTableViewResult();
+            ToolUtil.copyProperties(detail, result);
+            if (ToolUtil.isNotEmpty(detail.getField())) {
+                List<MobelViewJson> mobelViewJsons = JSON.parseArray(detail.getField(), MobelViewJson.class);
+                mobelViewJsons.sort(Comparator.comparing(MobelViewJson::getSort));
+                result.setDetails(mobelViewJsons);
+            }
+            return ResponseData.success(result);
+        }
+    }
+    /**
+     * 查看详情接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-05-09
+     */
+    @RequestMapping(value = "/chartDetail", method = RequestMethod.GET)
+    @ApiOperation("详情")
+    public ResponseData chartDetail() {
+        Long userId = LoginContextHolder.getContext().getUserId();
+        MobelTableView detail = this.mobelTableViewService.query().eq("user_id", userId).eq("display", 1).eq("type",1).one();
         if (ToolUtil.isEmpty(detail)) {
             return ResponseData.success(new MobelTableViewResult());
         }else {

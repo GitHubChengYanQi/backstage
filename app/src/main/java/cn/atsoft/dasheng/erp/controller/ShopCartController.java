@@ -158,7 +158,7 @@ public class ShopCartController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ShopCartResult> detail(@RequestBody ShopCartParam shopCartParam) {
+    public ResponseData detail(@RequestBody ShopCartParam shopCartParam) {
         ShopCart detail = this.shopCartService.getById(shopCartParam.getCartId());
         ShopCartResult result = new ShopCartResult();
         ToolUtil.copyProperties(detail, result);

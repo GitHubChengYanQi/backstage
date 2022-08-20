@@ -80,7 +80,7 @@ public class ProcessRouteController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProcessRouteResult> detail(@RequestBody ProcessRouteParam processRouteParam) {
+    public ResponseData detail(@RequestBody ProcessRouteParam processRouteParam) {
         ProcessRoute detail = this.processRouteService.getById(processRouteParam.getProcessRouteId());
         ProcessRouteResult result = new ProcessRouteResult();
         ToolUtil.copyProperties(detail, result);
@@ -96,7 +96,7 @@ public class ProcessRouteController extends BaseController {
      */
     @RequestMapping(value = "/getRouteBySkuId", method = RequestMethod.GET)
     @ApiOperation("详情")
-    public ResponseData<ProcessRouteResult> getRouteBySkuId(@RequestParam Long id) {
+    public ResponseData getRouteBySkuId(@RequestParam Long id) {
        return ResponseData.success(this.processRouteService.getRouteBySkuId(id));
     }
 

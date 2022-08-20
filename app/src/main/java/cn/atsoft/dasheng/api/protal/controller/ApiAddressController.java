@@ -46,7 +46,7 @@ public class ApiAddressController {
     }
 
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
-    public ResponseData<List<TreeNode>> treeView() {
+    public ResponseData treeView() {
         List<Map<String,Object>> list = this.commonAreaService.listMaps();
 
         if(ToolUtil.isEmpty(list)){

@@ -80,7 +80,7 @@ public class ProductionPickListsDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickListsDetailResult> detail(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam) {
+    public ResponseData detail(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam) {
         ProductionPickListsDetail detail = this.productionPickListsDetailService.getById(productionPickListsDetailParam.getPickListsDetailId());
         ProductionPickListsDetailResult result = new ProductionPickListsDetailResult();
         ToolUtil.copyProperties(detail, result);

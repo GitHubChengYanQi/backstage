@@ -112,7 +112,7 @@ public class AnnouncementsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AnnouncementsResult> detail(@RequestBody AnnouncementsParam announcementsParam) {
+    public ResponseData detail(@RequestBody AnnouncementsParam announcementsParam) {
         Announcements detail = this.announcementsService.getById(announcementsParam.getNoticeId());
         AnnouncementsResult result = new AnnouncementsResult();
         ToolUtil.copyProperties(detail, result);
@@ -138,7 +138,7 @@ public class AnnouncementsController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) AnnouncementsParam param) {
+    public ResponseData listSelect(@RequestBody(required = false) AnnouncementsParam param) {
         if (ToolUtil.isEmpty(param)) {
             param = new AnnouncementsParam();
         }

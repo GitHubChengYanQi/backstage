@@ -160,7 +160,7 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickListsResult> detail(@RequestBody ProductionPickListsParam productionPickListsParam) {
+    public ResponseData detail(@RequestBody ProductionPickListsParam productionPickListsParam) {
         ProductionPickLists detail = new ProductionPickLists();
         ProductionPickListsResult result = new ProductionPickListsResult();
         if (ToolUtil.isNotEmpty(productionPickListsParam.getPickListsId())) {

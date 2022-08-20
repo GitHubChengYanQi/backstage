@@ -80,7 +80,7 @@ public class SkuValuesController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SkuValuesResult> detail(@RequestBody SkuValuesParam skuValuesParam) {
+    public ResponseData detail(@RequestBody SkuValuesParam skuValuesParam) {
         SkuValues detail = this.skuValuesService.getById(skuValuesParam.getSkuDetailId());
         SkuValuesResult result = new SkuValuesResult();
         ToolUtil.copyProperties(detail, result);

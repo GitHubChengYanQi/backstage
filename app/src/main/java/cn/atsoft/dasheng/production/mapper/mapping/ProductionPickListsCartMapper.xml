@@ -223,5 +223,19 @@
         inkind_id AS inkindId
         from daoxin_production_pick_lists_cart where 1 = 1 and display = 1
     </select>
+    <select id="lockNumber" resultType="Long"  parameterType="cn.atsoft.dasheng.production.pojo.QuerryLockedParam">
+        select
+        sum(number) AS number
+        from daoxin_production_pick_lists_cart where 1 = 1 and display = 1
+        <if test="paramCondition.positionId != null">
+            and storehouse_positions_id = #{paramCondition.positionId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_d = #{paramCondition.skuId}
+        </if>
+    </select>
 
 </mapper>

@@ -108,7 +108,7 @@ public class AllocationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AllocationResult> detail(@RequestBody AllocationParam allocationParam) {
+    public ResponseData detail(@RequestBody AllocationParam allocationParam) {
 
         AllocationResult detail = this.allocationService.detail(allocationParam.getAllocationId());
 

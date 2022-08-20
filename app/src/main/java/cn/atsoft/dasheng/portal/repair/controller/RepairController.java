@@ -91,7 +91,7 @@ public class RepairController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<RepairResult> detail(@RequestBody RepairParam repairParam) {
+    public ResponseData detail(@RequestBody RepairParam repairParam) {
         Long result = repairParam.getRepairId();
         RepairResult repairResult = repairService.detail(result);
         return ResponseData.success(repairResult);

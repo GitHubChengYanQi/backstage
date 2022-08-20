@@ -80,7 +80,7 @@ public class DocumentsActionController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DocumentsActionResult> detail(@RequestBody DocumentsActionParam documentsActionParam) {
+    public ResponseData detail(@RequestBody DocumentsActionParam documentsActionParam) {
         DocumentsAction detail = this.documentsActionService.getById(documentsActionParam.getDocumentsActionId());
         DocumentsActionResult result = new DocumentsActionResult();
         ToolUtil.copyProperties(detail, result);

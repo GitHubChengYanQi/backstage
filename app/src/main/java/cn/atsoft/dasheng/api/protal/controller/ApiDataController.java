@@ -43,7 +43,7 @@ public class ApiDataController {
      */
     @RequestMapping(value = "/listData", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<DataResult> list(@RequestBody(required = false) DataParam dataParam) {
+    public PageInfo list(@RequestBody(required = false) DataParam dataParam) {
         UserUtils.getUserId();
         if (ToolUtil.isEmpty(dataParam)) {
             dataParam = new DataParam();
@@ -59,7 +59,7 @@ public class ApiDataController {
      */
     @RequestMapping(value = "/detailData", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
+    public ResponseData detail(@RequestBody DataParam dataParam) {
         UserUtils.getUserId();
         DataResult detail = dataService.detail(dataParam);
         return ResponseData.success(detail);
@@ -73,7 +73,7 @@ public class ApiDataController {
      */
     @RequestMapping(value = "/dataClassDetail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DataClassificationResult> detail(@RequestBody DataClassificationParam dataClassificationParam) {
+    public ResponseData detail(@RequestBody DataClassificationParam dataClassificationParam) {
         DataClassification detail = this.dataClassificationService.getById(dataClassificationParam.getDataClassificationId());
         DataClassificationResult result = new DataClassificationResult();
         ToolUtil.copyProperties(detail, result);

@@ -80,7 +80,7 @@ public class RulesRelationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<RulesRelationResult> detail(@RequestBody RulesRelationParam rulesRelationParam) {
+    public ResponseData detail(@RequestBody RulesRelationParam rulesRelationParam) {
         RulesRelation detail = this.rulesRelationService.getById(rulesRelationParam.getRulesRelationId());
         RulesRelationResult result = new RulesRelationResult();
         ToolUtil.copyProperties(detail, result);

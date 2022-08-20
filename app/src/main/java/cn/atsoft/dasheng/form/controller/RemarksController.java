@@ -45,7 +45,7 @@ public class RemarksController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<RemarksResult> detail(@RequestBody RemarksParam remarksParam) {
+    public ResponseData detail(@RequestBody RemarksParam remarksParam) {
         Remarks detail = this.remarksService.getById(remarksParam.getRemarksId());
         RemarksResult result = new RemarksResult();
         ToolUtil.copyProperties(detail, result);

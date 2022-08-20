@@ -86,7 +86,7 @@ public class TaxRateController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<TaxRateResult> detail(@RequestBody TaxRateParam taxRateParam) {
+    public ResponseData detail(@RequestBody TaxRateParam taxRateParam) {
         TaxRate detail = this.taxRateService.getById(taxRateParam.getTaxRateId());
         TaxRateResult result = new TaxRateResult();
         ToolUtil.copyProperties(detail, result);
@@ -112,7 +112,7 @@ public class TaxRateController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<TaxRate> taxRateQueryWrapper = new QueryWrapper<>();
         taxRateQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.taxRateService.listMaps(taxRateQueryWrapper);
