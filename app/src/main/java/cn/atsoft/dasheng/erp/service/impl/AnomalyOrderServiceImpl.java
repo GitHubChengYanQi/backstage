@@ -39,6 +39,7 @@ import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
@@ -138,6 +139,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     private StockDetailsService stockDetailsService;
     @Autowired
     private TaskParticipantService taskParticipantService;
+
 
     @Override
     @Transactional
@@ -512,16 +514,16 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
                 int size = checkNumbers.size();
                 CheckNumber checkNumber = checkNumbers.get(size - 1);
-                if (ToolUtil.isNotEmpty(anomalyResult.getCustomerNums())) {     //选择供应商需入库
-                    for (AnomalyCustomerNum customerNum : anomalyResult.getCustomerNums()) {
-                        inventoryService.inStockUpdateStock(anomalyResult.getSkuId(), anomalyResult.getBrandId(), customerNum.getCustomerId(), anomalyResult.getPositionId(), customerNum.getNum());
+                if (check(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), checkNumber.getNumber())) {    //复核数 + 备料数  = 库存数  不需要修改库存
+                    if (ToolUtil.isNotEmpty(anomalyResult.getCustomerNums())) {     //选择供应商需入库
+                        for (AnomalyCustomerNum customerNum : anomalyResult.getCustomerNums()) {
+                            inventoryService.inStockUpdateStock(anomalyResult.getSkuId(), anomalyResult.getBrandId(), customerNum.getCustomerId(), anomalyResult.getPositionId(), customerNum.getNum());
+                        }
+                    } else {                                                        //需出库
+                        inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), Long.valueOf(checkNumber.getNumber()));
                     }
-                } else {                                                        //需出库
-                    inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), Long.valueOf(checkNumber.getNumber()));
                 }
-
             }
-
 
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 stockDetailsService.splitInKind(detail.getInkindId());   //拆分 库存中的实物
@@ -587,6 +589,29 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             }}, stockDetails);
 
         }
+    }
+
+    /**
+     * 判断复核数
+     *
+     * @param skuId
+     * @param brandId
+     * @param positionId
+     * @param checkNum
+     * @return
+     */
+    private boolean check(Long skuId, Long brandId, Long positionId, Integer checkNum) {
+        Integer lockNumber = listsCartService.getLockNumber(new QuerryLockedParam() {{    //当前物料备料数
+            setSkuId(skuId);
+            setPositionId(brandId);
+            setBrandId(positionId);
+        }});
+
+        Integer stockNumber = stockDetailsService.getNumberByStock(skuId, brandId, positionId);   //当前物料库存数
+        if (checkNum + lockNumber == stockNumber) {
+            return false;
+        }
+        return true;
     }
 
     /**

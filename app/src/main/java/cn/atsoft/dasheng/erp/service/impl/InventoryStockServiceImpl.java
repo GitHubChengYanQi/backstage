@@ -20,6 +20,8 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -73,6 +75,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private StepsService stepsService;
     @Autowired
     private InstockHandleService instockHandleService;
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
 
 
     @Override
@@ -552,10 +556,19 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         for (InventoryStockResult datum : data) {
 
+            Integer lockNumber = pickListsCartService.getLockNumber(new QuerryLockedParam() {{
+                setBrandId(datum.getBrandId());
+                setPositionId(datum.getPositionId());
+                setSkuId(datum.getSkuId());
+            }});
+
+            datum.setLockNumber(lockNumber);
+
             Integer number = stockDetailsService.getNumberByStock(datum.getSkuId(), datum.getBrandId(), datum.getPositionId());
             if (ToolUtil.isEmpty(number)) {
                 number = 0;
             }
+
             datum.setNumber(Long.valueOf(number));
 
             for (SkuResult skuResult : skuResults) {
