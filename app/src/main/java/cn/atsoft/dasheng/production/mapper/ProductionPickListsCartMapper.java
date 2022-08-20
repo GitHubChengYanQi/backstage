@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.mapper;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -54,5 +55,6 @@ public interface ProductionPickListsCartMapper extends BaseMapper<ProductionPick
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsCartParam paramCondition);
     List<Long> lockInkind();
+    Integer lockNumber(@Param("paramCondition") QuerryLockedParam param);
 
 }
