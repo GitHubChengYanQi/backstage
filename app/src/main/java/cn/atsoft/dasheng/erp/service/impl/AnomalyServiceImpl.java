@@ -631,7 +631,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public void dealWithError(AnomalyParam param) {
 
 
-
         Anomaly oldEntity = getOldEntity(param);
 
         /**
@@ -655,7 +654,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             throw new ServiceException(500, "你没有操作权限");
         }
 
-
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
@@ -666,7 +664,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             instockListService.updateById(instockList);
         }
 
-        updateStatus(param.getAnomalyId()); //更新异常状态
+        if (param.getComplete()) {
+            updateStatus(param.getAnomalyId()); //更新异常状态
+        }
+
         if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {
             detailService.pushPeople(oldEntity.getCreateUser(), oldEntity.getAnomalyId());
         }
@@ -683,11 +684,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private void updateStatus(Long anomalyId) {
         Anomaly anomaly = this.getById(anomalyId);
-        Integer count = detailService.lambdaQuery().eq(AnomalyDetail::getAnomalyId, anomalyId).eq(AnomalyDetail::getStauts, 0).count();
-        if (ToolUtil.isEmpty(count) || count == 0) {
-            anomaly.setStatus(99);
-            this.updateById(anomaly);
-        }
+        anomaly.setStatus(99);
+        this.updateById(anomaly);
     }
 
 
