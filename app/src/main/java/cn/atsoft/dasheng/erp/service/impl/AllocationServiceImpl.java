@@ -257,7 +257,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                         listsParam.setPickListsDetailParams(pickListsDetailParams);
                         ProductionPickLists pickLists = productionPickListsService.add(listsParam);
                         for (AllocationCart allocationCart : updateCart) {
-                            //TODO setPickListsId 方便对应生成入库单时查找
+                            //setPickListsId 方便对应生成入库单时查找
                             allocationCart.setPickListsId(pickLists.getPickListsId());
                         }
                         allocationCartService.updateBatchById(updateCart);
