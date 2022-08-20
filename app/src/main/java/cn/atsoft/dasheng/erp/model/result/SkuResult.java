@@ -64,7 +64,6 @@ public class SkuResult implements Serializable {
     private Long lackNumber;  //缺料数
     private Long storehouseId;
     private Long positionId;
-    @FieldPermission(value = true)
     private Integer stockNumber = 0;
     private List<StorehousePositionsResult> positionsResult;
     private Integer lockStockDetailNumber;
