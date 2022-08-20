@@ -751,6 +751,41 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             pickListsIds.add(cartParam.getPickListsId());
         }
         List<ProductionPickListsCart> list =pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id",pickListsIds).eq("display", 1).isNull("type").list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (ProductionPickListsCart pickListsCart : list) {
+            inkindIds.add(pickListsCart.getInkindId());
+        }
+
+        List<Inkind> inkinds = inkindService.listByIds(inkindIds);
+        List<Long>   parentInkindIds = new ArrayList<>();
+        for (Inkind inkind : inkinds) {
+            if (inkind.getSource().equals("Inkind")){
+                parentInkindIds.add(inkind.getSourceId());
+            }
+        }
+        List<StockDetails> stockDetails =inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).eq("display",1).list();
+        List<StockDetails> parentStockDetails =parentInkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", parentInkindIds).eq("display",1).list();
+        for (StockDetails stockDetail : stockDetails) {
+            for (Inkind inkind : inkinds) {
+                for (StockDetails parentStockDetail : parentStockDetails) {
+                    if (stockDetail.getInkindId().equals(inkind.getInkindId()) && inkind.getSource().equals("Inkind") && inkind.getSourceId().equals(parentStockDetail.getInkindId()) && parentStockDetail.getDisplay().equals(1) && stockDetail.getDisplay().equals(1)){
+                        parentStockDetail.setNumber(stockDetail.getNumber()+parentStockDetail.getNumber());
+                        stockDetail.setDisplay(0);
+                        stockDetail.setStage(2);
+                    }
+                }
+            }
+            stockDetailsService.updateBatchById(stockDetails);
+            stockDetailsService.updateBatchById(parentStockDetails);
+        }
+
+
+
+
+
+
+
+
         List<ProductionPickListsCart> updateEntity = new ArrayList<>();
         for (ProductionPickListsCartParam cartParam : cartParams) {
             for (ProductionPickListsCart pickListsCart : list) {
