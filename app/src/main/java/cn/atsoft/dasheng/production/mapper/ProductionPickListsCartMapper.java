@@ -56,5 +56,6 @@ public interface ProductionPickListsCartMapper extends BaseMapper<ProductionPick
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsCartParam paramCondition);
     List<Long> lockInkind();
     Integer lockNumber(@Param("paramCondition") QuerryLockedParam param);
+    List<Long> lockInkind(@Param("paramCondition") QuerryLockedParam param);
 
 }
