@@ -204,7 +204,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         entity.setPickListsId(productionPickListsCartParam.getPickListsId());
                                         entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                                         entity.setType(productionPickListsCartParam.getType());
-                                        entity.setInkindId(stockDetail.getInkindId());
+                                        entity.setInkindId(newInkind.getInkindId());
                                         entity.setCustomerId(stockDetail.getCustomerId());
                                         entitys.add(entity);
                                         stockDetail.setNumber((long) lastNumber);
