@@ -34,6 +34,7 @@ import cn.atsoft.dasheng.production.model.result.PickListsStorehouseResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
+import cn.atsoft.dasheng.production.pojo.LockedStockDetails;
 import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -424,6 +425,24 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         Page<ProductionPickListsCartResult> pageContext = getPageContext();
         IPage<ProductionPickListsCartResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+    @Override
+    public List<LockedStockDetails> getLockSkuAndNumber(List<Long> skuIds) {
+        List<ProductionPickListsCart> lockedSkuNumber =skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).eq("display", 1).eq("status", 0).list();
+        List<ProductionPickListsCart> totalList = new ArrayList<>();
+        lockedSkuNumber.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new ProductionPickListsCart() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+
+        return  BeanUtil.copyToList(totalList, LockedStockDetails.class);
+
+
     }
 
     @Override

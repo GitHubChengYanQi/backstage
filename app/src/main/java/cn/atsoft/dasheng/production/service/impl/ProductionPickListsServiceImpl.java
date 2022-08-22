@@ -35,6 +35,7 @@ import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
 import cn.atsoft.dasheng.production.model.result.*;
+import cn.atsoft.dasheng.production.pojo.LockedStockDetails;
 import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
@@ -1481,8 +1482,18 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         List<ProductionPickListsCart> carts = pickListsCartService.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
         List<ProductionPickListsCartResult> productionPickListsCartResults = BeanUtil.copyToList(carts, ProductionPickListsCartResult.class, new CopyOptions());
-
-
+        List<Long> skuIds = new ArrayList<>();
+        for (ProductionPickListsCartResult productionPickListsCartResult : productionPickListsCartResults) {
+            skuIds.add(productionPickListsCartResult.getSkuId());
+        }
+        List<LockedStockDetails> lockSkuAndNumber = pickListsCartService.getLockSkuAndNumber(skuIds.stream().distinct().collect(Collectors.toList()));
+        for (ProductionPickListsCartResult cartResult : productionPickListsCartResults) {
+            for (LockedStockDetails lockedStockDetails : lockSkuAndNumber) {
+                if (cartResult.getBrandId().equals(lockedStockDetails.getBrandId()) && cartResult.getSkuId().equals(lockedStockDetails.getSkuId())) {
+                    cartResult.setLockStockDetailNumber(lockedStockDetails.getNumber());
+                }
+            }
+        }
         List<ProductionPickListsCartResult> totalList = new ArrayList<>();
         productionPickListsCartResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()), Collectors.toList())).forEach(
                 (id, transfer) -> {
