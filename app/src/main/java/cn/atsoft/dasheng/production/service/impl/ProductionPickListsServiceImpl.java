@@ -1497,6 +1497,19 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
         );
         pickListsCartService.format(totalList);
+        List<Long> lockedSkuIds = new ArrayList<>();
+        List<Long> lockedBrandIds = new ArrayList<>();
+        for (ProductionPickListsCartResult pickListsCartResult : totalList) {
+            lockedSkuIds.add(pickListsCartResult.getSkuId());
+            lockedBrandIds.add(pickListsCartResult.getBrandId());
+        }
+        lockedSkuIds = lockedSkuIds.stream().distinct().collect(Collectors.toList());
+        lockedBrandIds = lockedBrandIds.stream().distinct().collect(Collectors.toList());
+
+//        pickListsCartService.query()
+
+
+
 
 
         userIds = userIds.stream().distinct().collect(Collectors.toList());

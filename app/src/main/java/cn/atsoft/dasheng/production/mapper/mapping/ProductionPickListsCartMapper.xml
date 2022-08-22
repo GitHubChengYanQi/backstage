@@ -248,7 +248,8 @@
             and brand_id = #{paramCondition.brandId}
         </if>
         <if test="paramCondition.skuId != null">
-        and sku_id = #{paramCondition.skuId}
+            and sku_id = #{paramCondition.skuId}
+        </if>
     </select>
 
 </mapper>
