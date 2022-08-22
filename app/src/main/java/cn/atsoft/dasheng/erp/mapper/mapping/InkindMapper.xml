@@ -145,6 +145,9 @@ spu_id
                 #{state}
             </foreach>
         </if>
+        <if test="paramCondition.anomaly != null and paramCondition.anomaly != ''">
+            and anomaly = #{paramCondition.anomaly}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.InkindParam">

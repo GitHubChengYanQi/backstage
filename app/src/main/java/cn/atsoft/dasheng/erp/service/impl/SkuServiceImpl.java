@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.MediaService;
@@ -1040,7 +1041,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
             switch (param.getSelectBom()) {
                 case All:
-                    List<Long> skuIdsByBom = partsService.getSkuIdsByBom(parts.getSkuId());
+                    List<ErpPartsDetailResult> detailResults = partsDetailService.recursiveDetails(parts.getSkuId(), null);  //最末级物料
+                    List<Long> skuIdsByBom = new ArrayList<>();
+                    for (ErpPartsDetailResult detailResult : detailResults) {
+                        skuIdsByBom.add(detailResult.getSkuId());
+                    }
+//                    List<Long> skuIdsByBom = partsService.getSkuIdsByBom(parts.getSkuId());    //bom 全部物料
                     param.setSkuIds(skuIdsByBom);
                     break;
                 case Present:
@@ -1544,7 +1550,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     skuResult.setLockStockDetailNumber(Math.toIntExact(stockDetails.getNumber()));
                 }
             }
-
 
 
 //            for (ActivitiProcess process : processes) {
