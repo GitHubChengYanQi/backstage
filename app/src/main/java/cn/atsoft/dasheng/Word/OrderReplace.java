@@ -42,6 +42,7 @@ public class OrderReplace {
     public XWPFTable replaceInTable(XWPFDocument document, XWPFTable xwpfTable) {
 
         XWPFTable table = document.createTable();
+        table.removeRow(0);
         for (int i = 0; i < xwpfTable.getRows().size(); i++) {
             XWPFTableRow xwpfTableRow = xwpfTable.getRows().get(i);
             copy(table, xwpfTableRow, i);
@@ -81,7 +82,7 @@ public class OrderReplace {
                 targetCell.setText(sourceCell.getText());
             }
         }
-        table.removeRow(table.getRows().size());
+//        table.removeRow(table.getRows().size());
     }
 
 

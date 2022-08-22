@@ -124,18 +124,22 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             List<XWPFTable> xwpfTables = new ArrayList<>();
 
             for (String customer : customerMap.keySet()) {
-                XWPFTable newTable = orderReplace.replaceInTable( document ,xwpfTable);//表格循环插入
+                XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
                 List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
+
 //                replace(newTable, customer, results);
                 xwpfTables.add(newTable);
             }
 
-
+            int i = 0;
             for (XWPFTable table : xwpfTables) {
-                XWPFTable documentTable = document.createTable();
-                for (int i1 = 0; i1 < table.getRows().size(); i1++) {
-                    documentTable.addRow(table.getRow(i1), i1);
-                }
+                XWPFParagraph paragraph = document.createParagraph();
+                XWPFRun run = paragraph.createRun();
+                run.addBreak();
+                run.addCarriageReturn();
+
+                document.insertTable(i + 1, table);
+                i++;
             }
 
 
@@ -242,7 +246,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             xwpfTableRow = newRow;
         }
-        table.removeRow(table.getRows().size() );
+        table.removeRow(table.getRows().size());
         return true;
     }
 
