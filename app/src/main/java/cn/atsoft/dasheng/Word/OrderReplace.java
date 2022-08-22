@@ -18,6 +18,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,65 +33,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
-@RequestMapping("/Word")
+@Component
 public class OrderReplace {
     @Autowired
     private FileInfoService fileInfoService;
 
-    @RequestMapping(value = "/exportWord", method = RequestMethod.GET)
-    public void exportContract(HttpServletResponse response, Long id) {
 
+    public XWPFTable replaceInTable(XWPFDocument document, XWPFTable xwpfTable) {
 
-        FileInfo fileInfo = fileInfoService.getById(id);
-        if (ToolUtil.isEmpty(fileInfo)) {
-            throw new ServiceException(500, "请确定合同模板");
+        XWPFTable table = document.createTable();
+        for (int i = 0; i < xwpfTable.getRows().size(); i++) {
+            XWPFTableRow xwpfTableRow = xwpfTable.getRows().get(i);
+            copy(table, xwpfTableRow, i);
         }
-        try {
-            XWPFDocument document = formatDocument(fileInfo.getFilePath());  //读取word
-
-            String fileName = "test.docx";
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            OutputStream os = response.getOutputStream();
-            document.write(os);
-        } catch (Exception e) {
-            //异常处理
-            e.printStackTrace();
-        }
+        return table;
 
     }
 
-    public XWPFDocument formatDocument(String url) throws InvalidFormatException, IOException {
 
-        InputStream inputStream = new FileInputStream(url);
-        XWPFDocument document = new XWPFDocument(inputStream);
-        replaceInTable(document);
+    public static void copy(XWPFTable table, XWPFTableRow sourceRow, int rowIndex) {
 
-        return document;
-
-    }
-
-    public void replaceInTable(XWPFDocument doc) {
-
-
-//        for (int i = 0; i < doc.getTables().size(); i++) {
-
-        XWPFTable xwpfTable = doc.getTableArray(0);   //表
-
-        int size = xwpfTable.getRows().size();
-        for (int i = 0; i < xwpfTable.getRows().size(); i++) {   //表格里循环 行
-            if (i == size) {
-                break;
-            }
-            XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
-            copy(xwpfTable, row, i + size );
-
-        }
-    }
-
-
-    public void copy(XWPFTable table, XWPFTableRow sourceRow, int rowIndex) {
         //在表格指定位置新增一行
         XWPFTableRow targetRow = table.insertNewTableRow(rowIndex);
         //复制行属性
@@ -119,23 +81,7 @@ public class OrderReplace {
                 targetCell.setText(sourceCell.getText());
             }
         }
-    }
-
-
-    /**
-     * 设置表格位置
-     *
-     * @param xwpfTable
-     * @param location  整个表格居中center,left居左，right居右，both两端对齐
-     */
-    public static void setTableLocation(XWPFTable xwpfTable, String location) {
-
-        CTTbl cttbl = xwpfTable.getCTTbl();
-        CTTblPr tblpr = cttbl.getTblPr() == null ? cttbl.addNewTblPr() : cttbl.getTblPr();
-        CTJc cTJc = tblpr.addNewJc();
-
-
-        cTJc.setVal(STJc.Enum.forString(location));
+        table.removeRow(table.getRows().size());
     }
 
 

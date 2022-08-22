@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.Word.OrderReplace;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -33,6 +34,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +76,8 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     private ActivitiProcessTaskService taskService;
     @Autowired
     private FileInfoService fileInfoService;
+    @Autowired
+    private OrderReplace orderReplace;
 
     @Override
     public void add(InstockReceiptParam param) {
@@ -116,28 +120,24 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
             XWPFDocument document = new XWPFDocument(inputStream);
             XWPFTable xwpfTable = document.getTableArray(0);     //需要替换表格的位置
-            int size = xwpfTable.getRows().size();
+            Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
+            List<XWPFTable> xwpfTables = new ArrayList<>();
 
-            List<XWPFTable> tables = new ArrayList<>();
-            int mapSize = detail.getCustomerMap().size();
-            for (int i = 0; i < mapSize; i++) {
-                tables.add(xwpfTable);
+            for (String customer : customerMap.keySet()) {
+                XWPFTable newTable = orderReplace.replaceInTable( document ,xwpfTable);//表格循环插入
+                List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
+//                replace(newTable, customer, results);
+                xwpfTables.add(newTable);
             }
 
 
-
-
-
-            for (String customer : detail.getCustomerMap().keySet()) {
-                List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
-                for (int i = 0; i < xwpfTable.getRows().size(); i++) {   //表格里循环 行
-                    XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
-                    boolean copy = copy(xwpfTable, row, size + i, customer, results);
-                    if (copy) {
-                        break;
-                    }
+            for (XWPFTable table : xwpfTables) {
+                XWPFTable documentTable = document.createTable();
+                for (int i1 = 0; i1 < table.getRows().size(); i1++) {
+                    documentTable.addRow(table.getRow(i1), i1);
                 }
             }
+
 
             return document;
 
@@ -149,7 +149,20 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         return null;
     }
 
-    public boolean copy(XWPFTable table, XWPFTableRow sourceRow, int rowIndex, String customer, List<InstockLogDetailResult> results) {
+
+    private void replace(XWPFTable xwpfTable, String customer, List<InstockLogDetailResult> results) {
+
+        for (int i = 0; i < xwpfTable.getRows().size(); i++) {   //表格里循环 行
+            XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
+            boolean copy = copy(xwpfTable, row, customer, results);
+            if (copy) {
+                break;
+            }
+        }
+    }
+
+
+    public boolean copy(XWPFTable table, XWPFTableRow sourceRow, String customer, List<InstockLogDetailResult> results) {
 
 
         List<XWPFTableCell> cellList = sourceRow.getTableCells();
@@ -229,7 +242,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             xwpfTableRow = newRow;
         }
-        table.removeRow(table.getRows().size() - 1);
+        table.removeRow(table.getRows().size() );
         return true;
     }
 
