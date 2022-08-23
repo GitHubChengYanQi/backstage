@@ -29,6 +29,8 @@ public class MobelTableView implements Serializable {
 
     @TableField("field")
     private String field;
+    @TableField("type")
+    private Integer type;
 
     @TableField("table_key")
     private String tableKey;
@@ -159,6 +161,14 @@ public class MobelTableView implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     @Override

@@ -89,7 +89,7 @@ public class DeliveryController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<DeliveryResult> detail(@RequestBody DeliveryParam deliveryParam) {
+    public ResponseData detail(@RequestBody DeliveryParam deliveryParam) {
         Delivery detail = this.deliveryService.getById(deliveryParam.getDeliveryId());
         DeliveryResult result = new DeliveryResult();
         ToolUtil.copyProperties(detail, result);

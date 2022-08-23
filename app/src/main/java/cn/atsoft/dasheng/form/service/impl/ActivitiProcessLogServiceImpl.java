@@ -351,11 +351,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * 流程结束需要重新获取需要审批的节点
          */
         audit = this.getAudit(taskId);
-        //TODO 写一个判断如果下步为动作时 执行动作
+        // 写一个判断如果下步为动作时 执行动作
 //        startAction(audit, task);
 
         /**
-         * TODO 更新单据状态
+         * 更新单据状态
          */
         if (auditCheck) {
             updateDocumentStatus(audit, activitiAudits, task);
@@ -593,8 +593,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             break;
                     }
                     instockOrderParam.setType("调拨入库");
-                    instockOrderParam.setSource("PickLists");
-                    instockOrderParam.setSourceId(pickLists.getPickListsId());
+                    instockOrderParam.setSource("processTask");
+                    if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                        instockOrderParam.setMainTaskId(processTask.getMainTaskId());
+                    }
+                    instockOrderParam.setSourceId(processTask.getProcessTaskId());
+                    instockOrderParam.setPid(processTask.getProcessTaskId());
                     instockOrderParam.setListParams(instockListParams);
                     InstockOrder addEntity = instockOrderService.add(instockOrderParam);
                     for (AllocationCart allocationCart : allocationCarts) {

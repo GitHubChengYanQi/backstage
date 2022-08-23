@@ -85,7 +85,7 @@ public class UnitController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<UnitResult> detail(@RequestBody UnitParam unitParam) {
+    public ResponseData detail(@RequestBody UnitParam unitParam) {
         Unit detail = this.unitService.getById(unitParam.getUnitId());
         UnitResult result = new UnitResult();
         ToolUtil.copyProperties(detail, result);
@@ -116,7 +116,7 @@ public class UnitController extends BaseController {
     }
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<Map<String, Object>> list = this.unitService.listMaps();
         UnitSelectWrapper unitSelectWrapper = new UnitSelectWrapper(list);
         List<Map<String, Object>> result = unitSelectWrapper.wrap();

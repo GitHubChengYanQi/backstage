@@ -51,6 +51,11 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private String module;
 
     private String shopCardType;
+
+    @ApiModelProperty("上级任务id")
+    private Long pid;
+    @ApiModelProperty("主任务id")
+    private Long mainTaskId;
     /**
      * 库位id
      */

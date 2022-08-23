@@ -29,6 +29,8 @@ public class MaintenanceLogParam implements Serializable, BaseValidatingParam {
     private String coding;
     private Long storehousePositionsId;
 
+    private List<String> times;
+
 
     @ApiModelProperty("")
     private Long maintenanceLogId;

@@ -36,6 +36,8 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
     private List<Long> remarkUserIds;
     @ApiModelProperty("redisCode")
     private String code;
+    @ApiModelProperty("主任务id")
+    private Long mainTaskId;
 
 
 

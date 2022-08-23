@@ -75,7 +75,7 @@ public interface PartsService extends IService<Parts> {
      * @author song
      * @Date 2021-10-21
      */
-    PageInfo<PartsResult> oldFindPageBySpec(PartsParam param);
+    PageInfo oldFindPageBySpec(PartsParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -83,7 +83,7 @@ public interface PartsService extends IService<Parts> {
      * @author song
      * @Date 2021-10-21
      */
-    PageInfo<PartsResult> findPageBySpec(PartsParam param);
+    PageInfo findPageBySpec(PartsParam param);
 
 
     List<Long> getSkuIdsByBom(Long skuId);

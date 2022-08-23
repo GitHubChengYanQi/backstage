@@ -77,7 +77,7 @@ public class CustomerDynamicController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CustomerDynamicResult> detail(@RequestBody CustomerDynamicParam customerDynamicParam) {
+    public ResponseData detail(@RequestBody CustomerDynamicParam customerDynamicParam) {
         CustomerDynamic detail = this.customerDynamicService.getById(customerDynamicParam.getDynamicId());
         CustomerDynamicResult result = new CustomerDynamicResult();
         ToolUtil.copyProperties(detail, result);

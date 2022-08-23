@@ -110,6 +110,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
 
     @Override
+    @Transactional
     public Allocation add(AllocationParam param) {
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "17").eq("state", 1).one();
@@ -147,7 +148,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
             ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-
+            entity.setTaskId(taskId);
+            this.updateById(entity);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
@@ -255,7 +257,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                         listsParam.setPickListsDetailParams(pickListsDetailParams);
                         ProductionPickLists pickLists = productionPickListsService.add(listsParam);
                         for (AllocationCart allocationCart : updateCart) {
-                            //TODO setPickListsId 方便对应生成入库单时查找
+                            //setPickListsId 方便对应生成入库单时查找
                             allocationCart.setPickListsId(pickLists.getPickListsId());
                         }
                         allocationCartService.updateBatchById(updateCart);

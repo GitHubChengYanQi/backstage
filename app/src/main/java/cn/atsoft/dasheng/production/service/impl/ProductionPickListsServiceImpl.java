@@ -184,7 +184,16 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     @Transactional
     public ProductionPickLists add(ProductionPickListsParam param) {
         ProductionPickLists entity = getEntity(param);
-        entity.setCoding(codingRulesService.defaultEncoding());
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "2").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                entity.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置养护单据自动生成编码规则");
+            }
+        }
+
         entity.setStatus(0L);
 //        entity.setUserId(LoginContextHolder.getContext().getUserId());
         this.save(entity);
@@ -220,6 +229,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getPickListsId());
             activitiProcessTaskParam.setType("OUTSTOCK");
+            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask")) {
+                activitiProcessTaskParam.setPid(param.getSourceId());
+            }
+            if (ToolUtil.isNotEmpty(param.getMainTaskId())) {
+                activitiProcessTaskParam.setMainTaskId(param.getMainTaskId());
+            }
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             activitiProcessTaskParam.setSource(param.getSource());
@@ -356,7 +371,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             /**
              * 是否可以领料
              */
-            if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().allMatch(i -> i)) {
+            if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().anyMatch(i -> i)) {
+
                 result.setCanPick(true);
             } else if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().noneMatch(i -> i)) {
                 result.setCanPick(false);
@@ -371,7 +387,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     result.setCreateUserResult(userResult);
                 }
-                if (result.getUserId().equals(result.getCreateUser())) {
+                if (result.getUserId().equals(userResult.getUserId())) {
                     result.setUserResult(userResult);
                 }
             }
@@ -412,7 +428,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 查询备料单与领料单
          */
 
-        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listStatus0ByPickLists(pickListsIds);
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listByPickLists(pickListsIds);
 
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {

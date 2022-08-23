@@ -83,7 +83,7 @@ public class ItemBrandController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ItemBrandResult> detail(@RequestBody ItemBrandParam itemBrandParam) {
+    public ResponseData detail(@RequestBody ItemBrandParam itemBrandParam) {
         ItemBrand detail = this.itemBrandService.getById(itemBrandParam.getItemId());
         ItemBrandResult result = new ItemBrandResult();
         ToolUtil.copyProperties(detail, result);

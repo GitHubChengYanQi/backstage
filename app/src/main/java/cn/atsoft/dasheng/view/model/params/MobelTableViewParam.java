@@ -28,9 +28,12 @@ public class MobelTableViewParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("")
     private Long mobelTableViewId;
+    @ApiModelProperty("")
+    private Integer type;
 
     @ApiModelProperty("")
     private Long userId;
+
 
     @ApiModelProperty("")
     private String field;
