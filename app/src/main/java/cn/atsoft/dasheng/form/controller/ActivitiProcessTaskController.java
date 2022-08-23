@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -140,7 +142,23 @@ public class ActivitiProcessTaskController extends BaseController {
             return this.activitiProcessTaskService.findPageBySpec(activitiProcessTaskParam);
         }
     }
+    /**
+     * 查看
+     *
+     * @author Jazz
+     * @Date 2021-11-19
+     */
+    @RequestMapping(value = "/getTaskStatus", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public ResponseData getTaskStatus (Long taskId){
+        Map<String,Object> result = new HashMap<>();
+        result.put("processTaskId",taskId);
+        ActivitiProcessTask processTask = this.activitiProcessTaskService.getById(taskId);
+        result.put("status",processTask.getStatus());
+        return ResponseData.success(result);
 
+
+    }
 
 
     @RequestMapping(value = "/auditList", method = RequestMethod.POST)
