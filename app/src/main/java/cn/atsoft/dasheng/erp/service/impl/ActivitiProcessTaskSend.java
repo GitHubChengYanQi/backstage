@@ -132,6 +132,15 @@ public class ActivitiProcessTaskSend {
                             users.add(instockOrder.getCreateUser());
                         }
                     }
+                    break;
+                case Director:
+                    if (ToolUtil.isNotEmpty(taskId)) {
+                        ActivitiProcessTask processTask = processTaskService.getById(taskId);
+                        if (ToolUtil.isNotEmpty(processTask) && ToolUtil.isNotEmpty(processTask.getUserId())) {
+                            users.add(processTask.getUserId());
+                        }
+                    }
+                    break;
             }
         }
 

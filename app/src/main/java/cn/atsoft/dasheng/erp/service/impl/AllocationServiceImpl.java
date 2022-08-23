@@ -23,6 +23,7 @@ import cn.atsoft.dasheng.form.entity.DocumentsStatus;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -30,6 +31,8 @@ import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -38,6 +41,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,6 +113,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private StepsService stepsService;
     @Autowired
     private DocumentStatusService statusService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
 
     @Override
@@ -202,12 +208,20 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     /**
      * 创建出库单
      *
-     * @param allocationId
+     * @param
      */
     @Override
-    public void createPickListsAndInStockOrder(Long allocationId, List<AllocationCart> allocationCarts) {
-        Allocation allocation = this.getById(allocationId);
-        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", "ALLOCATION").eq("form_id", allocation.getAllocationId()).one();
+    public void createPickListsAndInStockOrder(AllocationParam param , List<AllocationCart> allocationCarts) {
+        Allocation allocation = this.getById(param.getAllocationId());
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", allocation.getAllocationId()).eq("type", ALLOCATION.getType()).one();
+        if (ToolUtil.isEmpty(processTask.getUserId())) {
+            allocation.setUserId(param.getUserId());
+            this.updateById(allocation);
+            processTask.setUserId(param.getUserId());
+            activitiProcessTaskService.updateById(processTask);
+
+        }
+        boolean haveTransfer = false;
         if (allocation.getType().equals("allocation")) {
             if (allocation.getAllocationType() == 1) {
                 List<Long> stockIds = new ArrayList<>();
@@ -223,7 +237,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 //                instockOrderParam.setType("调拨入库");
 //                instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
 //                List<InstockListParam> listParams = new ArrayList<>();
-
                 for (Long stockId : stockIds) {
                     ProductionPickListsParam listsParam = new ProductionPickListsParam();
                     listsParam.setPickListsName(allocation.getAllocationName());
@@ -241,6 +254,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
                             allocationCart.setStatus(98);
                             updateCart.add(allocationCart);
+                        }
+                        if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isNotEmpty(allocationCart.getStorehousePositionsId())) {
+                            haveTransfer = true;
                         }
                     }
                     if (details.size() > 0) {
@@ -279,7 +295,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     listsParam.setPickListsName(allocation.getAllocationName());
                     listsParam.setUserId(allocation.getUserId());
                     listsParam.setSource("ALLOCATION");
-                    listsParam.setSourceId(allocationId);
+                    listsParam.setSourceId(param.getAllocationId());
                     List<ProductionPickListsDetailParam> details = new ArrayList<>();
                     List<AllocationCart> updateCart = new ArrayList<>();
                     for (AllocationCart allocationCart : allocationCarts) {
@@ -297,6 +313,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             allocationCart.setStatus(98);
                             updateCart.add(allocationCart);
 
+                        }
+                        if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isNotEmpty(allocationCart.getStorehousePositionsId())) {
+                            haveTransfer = true;
                         }
                     }
                     if (details.size() > 0) {
@@ -340,6 +359,22 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             }
         }
         shopCartService.addDynamic(allocation.getAllocationId(), "指派了调拨物料");
+        if (haveTransfer){
+            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+                setFunction(MarkDownTemplateTypeEnum.transfer);
+                setType(1);
+                setItems("需要调拨");
+                setUrl("/#/Receipts/ReceiptsDetail?" + "id=" + processTask.getProcessTaskId());
+                setSource("processTask");
+                setSourceId(processTask.getProcessTaskId());
+                setCreateTime(processTask.getCreateTime());
+                setCreateUser(processTask.getCreateUser());
+                setTaskId(processTask.getProcessTaskId());
+                setUserIds(new ArrayList<Long>(){{
+                    add(processTask.getUserId());
+                }});
+            }});
+        }
 
     }
 
@@ -626,14 +661,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             throw new ServiceException(500, "请选择单据");
         }
         Allocation allocation = this.getById(param.getAllocationId());
-        if (ToolUtil.isEmpty(allocation.getUserId())) {
-            allocation.setUserId(param.getUserId());
-            this.updateById(allocation);
-            ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", allocation.getAllocationId()).eq("type", ALLOCATION.getType()).one();
-            processTask.setUserId(param.getUserId());
-            activitiProcessTaskService.updateById(processTask);
 
-        }
         List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status", 0).list();
         List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("status", 0).eq("type", "carry").list();
 
@@ -657,7 +685,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         }
         allocationDetailService.updateBatchById(details);
         allocationCartService.updateBatchById(carts);
-        this.createPickListsAndInStockOrder(param.getAllocationId(), carts);
+        this.createPickListsAndInStockOrder(param, carts);
         details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
         if (details.stream().noneMatch(i -> i.getStatus().equals(0))) {
             checkCart(allocation.getAllocationId());
