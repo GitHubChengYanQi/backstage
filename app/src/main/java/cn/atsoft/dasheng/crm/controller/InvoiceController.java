@@ -81,7 +81,7 @@ public class InvoiceController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InvoiceResult> detail(@RequestBody InvoiceParam invoiceParam) {
+    public ResponseData detail(@RequestBody InvoiceParam invoiceParam) {
         Invoice detail = this.invoiceService.getById(invoiceParam.getInvoiceId());
         InvoiceResult result = new InvoiceResult();
         ToolUtil.copyProperties(detail, result);

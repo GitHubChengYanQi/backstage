@@ -541,7 +541,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
-    public PageInfo<InstockOrderResult> findPageBySpec(InstockOrderParam param) {
+    public PageInfo findPageBySpec(InstockOrderParam param) {
         Page<InstockOrderResult> pageContext = getPageContext();
         IPage<InstockOrderResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
@@ -925,6 +925,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @return
      */
     private Long createInKind(InstockListParam param) {
+
+        if (ToolUtil.isEmpty(param.getStorehousePositionsId())) {
+            throw new ServiceException(500, "库位不能为空");
+        }
+
         Inkind inkind = new Inkind();
         inkind.setNumber(param.getNumber());
         inkind.setSkuId(param.getSkuId());
@@ -932,10 +937,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         inkind.setSource("入库");
         inkind.setLastMaintenanceTime(new DateTime());
         inkind.setSourceId(param.getInstockListId());
+        inkind.setPositionId(param.getStorehousePositionsId());
         inkind.setType("1");
         inkind.setLastMaintenanceTime(new DateTime());
         inkind.setPositionId(param.getStorehousePositionsId());   //别动
         inkind.setBrandId(param.getBrandId());
+
         inkindService.save(inkind);
 
         OrCode orCode = new OrCode();
@@ -1745,7 +1752,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 int number = Math.toIntExact(instockList.getNumber());
                 for (AllocationCart cart : allocationCarts) {
                     if (number > 0) {
-                        if (cart.getStatus().equals(98) && !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getStoreHouseId().equals(cart.getStorehouseId())) {
+                        if (cart.getStatus().equals(98) && cart.getInstockOrderId().equals(instockList.getInstockOrderId()) &&  !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getSkuId().equals(cart.getSkuId())) {
                             int lastNumber = number;
                             number = number - (cart.getNumber() - cart.getDoneNumber());
                             if (number >= 0) {

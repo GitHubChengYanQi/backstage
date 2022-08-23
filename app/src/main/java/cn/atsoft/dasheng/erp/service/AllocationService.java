@@ -79,7 +79,7 @@ public interface AllocationService extends IService<Allocation> {
      * @author Captain_Jazz
      * @Date 2022-07-13
      */
-     PageInfo<AllocationResult> findPageBySpec(AllocationParam param);
+     PageInfo findPageBySpec(AllocationParam param);
 
     void createOrder(AllocationParam param);
 

@@ -85,7 +85,7 @@ public class BankController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<BankResult> detail(@RequestBody BankParam bankParam) {
+    public ResponseData detail(@RequestBody BankParam bankParam) {
         Bank detail = this.bankService.getById(bankParam.getBankId());
         BankResult result = new BankResult();
         ToolUtil.copyProperties(detail, result);
@@ -117,7 +117,7 @@ public class BankController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<Map<String, Object>> list = this.bankService.listMaps();
         BankSelectWrapper dataSelectWrapper = new BankSelectWrapper(list);
         List<Map<String, Object>> result = dataSelectWrapper.wrap();

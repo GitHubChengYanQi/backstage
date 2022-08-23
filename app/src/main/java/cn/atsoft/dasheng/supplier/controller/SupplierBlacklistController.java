@@ -85,7 +85,7 @@ public class SupplierBlacklistController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<SupplierBlacklistResult> detail(@RequestBody SupplierBlacklistParam supplierBlacklistParam) {
+    public ResponseData detail(@RequestBody SupplierBlacklistParam supplierBlacklistParam) {
         SupplierBlacklist detail = this.supplierBlacklistService.getById(supplierBlacklistParam.getBlackListId());
         SupplierBlacklistResult result = new SupplierBlacklistResult();
         ToolUtil.copyProperties(detail, result);

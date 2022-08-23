@@ -41,7 +41,7 @@ public class ProcurementPlanBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProcurementPlanBindResult> detail(@RequestBody ProcurementPlanBindParam procurementPlanBindParam) {
+    public ResponseData detail(@RequestBody ProcurementPlanBindParam procurementPlanBindParam) {
         ProcurementPlanBind detail = this.procurementPlanBindService.getById(procurementPlanBindParam.getDetailId());
         ProcurementPlanBindResult result = new ProcurementPlanBindResult();
         ToolUtil.copyProperties(detail, result);

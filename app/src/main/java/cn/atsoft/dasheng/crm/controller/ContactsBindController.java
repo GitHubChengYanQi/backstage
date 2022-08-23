@@ -80,7 +80,7 @@ public class ContactsBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ContactsBindResult> detail(@RequestBody ContactsBindParam contactsBindParam) {
+    public ResponseData detail(@RequestBody ContactsBindParam contactsBindParam) {
         ContactsBind detail = this.contactsBindService.getById(contactsBindParam.getContactsBindId());
         ContactsBindResult result = new ContactsBindResult();
         ToolUtil.copyProperties(detail, result);

@@ -101,7 +101,7 @@ public class AuthLoginController extends BaseController {
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
-    public ResponseData<String> phoneByCode(@RequestBody @Valid SmsCodeParam smsCodeParam) {
+    public ResponseData phoneByCode(@RequestBody @Valid SmsCodeParam smsCodeParam) {
         String token = ucMemberAuth.loginByCode(smsCodeParam.getPhone(), smsCodeParam.getCode());
         return ResponseData.success(token);
     }
@@ -147,7 +147,7 @@ public class AuthLoginController extends BaseController {
      */
     @RequestMapping("/callback/{source}")
     @ApiOperation(value = "OAuth2.0回调接口", httpMethod = "POST", notes = "{source}=AppWx(微信登录) shanyan-android,shanyan-ios(闪验),apple(Sign in With Apple)")
-    public ResponseData<String> callback(@PathVariable("source") String source, AuthCallback callback, @RequestBody(required = false) AuthCallback postData) {
+    public ResponseData callback(@PathVariable("source") String source, AuthCallback callback, @RequestBody(required = false) AuthCallback postData) {
 
         ToolUtil.copyProperties(postData, callback);
         if (ToolUtil.isEmpty(callback.getCode())) {
@@ -218,7 +218,7 @@ public class AuthLoginController extends BaseController {
 
     @RequestMapping("/mp/loginByCode")
     @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
-    public ResponseData<String> mpLoginByCode(@RequestParam("code") String code) {
+    public ResponseData mpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.mpLogin(code);
         return ResponseData.success(token);
     }
@@ -226,7 +226,7 @@ public class AuthLoginController extends BaseController {
 
     @RequestMapping("/cp/loginByCode")
     @ApiOperation(value = "企业微信通过Code登录", httpMethod = "GET")
-    public ResponseData<String> cpLoginByCode(@RequestParam("code") String code) {
+    public ResponseData cpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.cpLogin(code);
         UcJwtPayLoad jwtPayLoad = UcJwtTokenUtil.getJwtPayLoad(token);
         Long memberId = jwtPayLoad.getUserId();
@@ -261,7 +261,7 @@ public class AuthLoginController extends BaseController {
      */
     @RequestMapping("/miniprogram/code2session")
     @ApiOperation(value = "小程序code2session", httpMethod = "POST")
-    public ResponseData<String> wxMiniApp(@RequestBody @Valid MiniAppLoginParam miniAppLoginParam) throws WxErrorException {
+    public ResponseData wxMiniApp(@RequestBody @Valid MiniAppLoginParam miniAppLoginParam) throws WxErrorException {
         if (ToolUtil.isOneEmpty(miniAppLoginParam, miniAppLoginParam.getCode())) {
             throw new ServiceException(500, "参数错误");
         }
@@ -272,7 +272,7 @@ public class AuthLoginController extends BaseController {
 
     @RequestMapping("/miniprogram/loginByPhone")
     @ApiOperation(value = "小程序code2session", httpMethod = "POST")
-    public ResponseData<String> loginByPhone(@RequestBody @Valid MiniAppUserProfileParam miniAppLoginParam) throws WxErrorException {
+    public ResponseData loginByPhone(@RequestBody @Valid MiniAppUserProfileParam miniAppLoginParam) throws WxErrorException {
         if (ToolUtil.isOneEmpty(miniAppLoginParam, miniAppLoginParam.getIv(), miniAppLoginParam.getEncryptedData())) {
             throw new ServiceException(500, "参数错误");
         }
@@ -283,7 +283,7 @@ public class AuthLoginController extends BaseController {
 
     @RequestMapping("/miniprogram/getUserProfile")
     @ApiOperation(value = "小程序提交用户加密信息及iv返回全新token", httpMethod = "POST")
-    public ResponseData<String> userInfo(@RequestBody MiniAppUserProfileParam miniAppUserProfileParam) {
+    public ResponseData userInfo(@RequestBody MiniAppUserProfileParam miniAppUserProfileParam) {
         if (ToolUtil.isOneEmpty(miniAppUserProfileParam, miniAppUserProfileParam.getIv(), miniAppUserProfileParam.getEncryptedData())) {
             throw new ServiceException(500, "参数错误");
         }

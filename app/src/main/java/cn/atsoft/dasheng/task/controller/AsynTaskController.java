@@ -49,7 +49,7 @@ public class AsynTaskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AsynTaskResult> detail(@RequestBody AsynTaskParam asynTaskParam) {
+    public ResponseData detail(@RequestBody AsynTaskParam asynTaskParam) {
         AsynTask detail = this.asynTaskService.getById(asynTaskParam.getTaskId());
         AsynTaskResult result = new AsynTaskResult();
         ToolUtil.copyProperties(detail, result);

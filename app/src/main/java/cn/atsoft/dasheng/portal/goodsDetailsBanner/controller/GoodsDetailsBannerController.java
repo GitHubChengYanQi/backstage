@@ -76,7 +76,7 @@ public class GoodsDetailsBannerController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<GoodsDetailsBannerResult> detail(@RequestBody GoodsDetailsBannerParam goodsDetailsBannerParam) {
+    public ResponseData detail(@RequestBody GoodsDetailsBannerParam goodsDetailsBannerParam) {
         GoodsDetailsBanner detail = this.goodsDetailsBannerService.getById(goodsDetailsBannerParam.getDetailBannerId());
         GoodsDetailsBannerResult result = new GoodsDetailsBannerResult();
         ToolUtil.copyProperties(detail, result);

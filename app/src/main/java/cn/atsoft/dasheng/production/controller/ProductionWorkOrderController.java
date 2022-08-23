@@ -80,7 +80,7 @@ public class ProductionWorkOrderController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionWorkOrderResult> detail(@RequestBody ProductionWorkOrderParam productionWorkOrderParam) {
+    public ResponseData detail(@RequestBody ProductionWorkOrderParam productionWorkOrderParam) {
         ProductionWorkOrder detail = this.productionWorkOrderService.getById(productionWorkOrderParam.getWorkOrderId());
         ProductionWorkOrderResult result = new ProductionWorkOrderResult();
         ToolUtil.copyProperties(detail, result);

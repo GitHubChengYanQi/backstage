@@ -82,7 +82,7 @@ public class AnomalyDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AnomalyDetailResult> detail(@RequestBody AnomalyDetailParam anomalyDetailParam) {
+    public ResponseData detail(@RequestBody AnomalyDetailParam anomalyDetailParam) {
         AnomalyDetail detail = this.anomalyDetailService.getById(anomalyDetailParam.getDetailId());
         AnomalyDetailResult result = new AnomalyDetailResult();
         ToolUtil.copyProperties(detail, result);

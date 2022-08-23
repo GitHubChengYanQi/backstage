@@ -102,7 +102,7 @@ public class CompetitorController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<CompetitorResult> detail(@RequestBody CompetitorParam competitorParam) {
+    public ResponseData detail(@RequestBody CompetitorParam competitorParam) {
         Long competitorId = competitorParam.getCompetitorId();
         final CompetitorResult detail = competitorService.detail(competitorId);
         return ResponseData.success(detail);
@@ -132,7 +132,7 @@ public class CompetitorController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) ListSelectRequest listSelectRequest) {
+    public ResponseData listSelect(@RequestBody(required = false) ListSelectRequest listSelectRequest) {
         if (ToolUtil.isEmpty(listSelectRequest)) {
             listSelectRequest = new ListSelectRequest();
         }

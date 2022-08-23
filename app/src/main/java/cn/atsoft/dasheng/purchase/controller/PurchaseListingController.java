@@ -88,7 +88,7 @@ public class PurchaseListingController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PurchaseListingResult> detail(@RequestBody PurchaseListingParam purchaseListingParam) {
+    public ResponseData detail(@RequestBody PurchaseListingParam purchaseListingParam) {
         PurchaseListing detail = this.purchaseListingService.getById(purchaseListingParam.getPurchaseListingId());
         PurchaseListingResult result = new PurchaseListingResult();
         ToolUtil.copyProperties(detail, result);

@@ -80,7 +80,7 @@ public class ProductionCardController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionCardResult> detail(@RequestBody ProductionCardParam productionCardParam) {
+    public ResponseData detail(@RequestBody ProductionCardParam productionCardParam) {
         ProductionCard detail = this.productionCardService.getById(productionCardParam.getProductionCardId());
         ProductionCardResult result = new ProductionCardResult();
         ToolUtil.copyProperties(detail, result);

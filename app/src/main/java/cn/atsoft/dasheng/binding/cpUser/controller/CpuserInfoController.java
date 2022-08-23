@@ -93,7 +93,7 @@ public class CpuserInfoController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CpuserInfoResult> detail(@RequestBody CpuserInfoParam cpuserInfoParam) {
+    public ResponseData detail(@RequestBody CpuserInfoParam cpuserInfoParam) {
         CpuserInfo detail = this.cpuserInfoService.getById(cpuserInfoParam.getCpUserId());
         CpuserInfoResult result = new CpuserInfoResult();
         ToolUtil.copyProperties(detail, result);

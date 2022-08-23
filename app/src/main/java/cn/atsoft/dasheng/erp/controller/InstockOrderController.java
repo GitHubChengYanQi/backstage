@@ -146,7 +146,7 @@ public class InstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InstockOrderResult> detail(@RequestBody InstockOrderParam instockOrderParam) {
+    public ResponseData detail(@RequestBody InstockOrderParam instockOrderParam) {
         InstockOrder detail = this.instockOrderService.getById(instockOrderParam.getInstockOrderId());
         InstockOrderResult result = new InstockOrderResult();
         ToolUtil.copyProperties(detail, result);

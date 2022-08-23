@@ -179,7 +179,7 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<StorehousePositionsResult> detail(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+    public ResponseData detail(@RequestBody StorehousePositionsParam storehousePositionsParam) {
         StorehousePositions detail = this.storehousePositionsService.getById(storehousePositionsParam.getStorehousePositionsId());
         StorehousePositionsResult result = new StorehousePositionsResult();
         ToolUtil.copyProperties(detail, result);
@@ -225,7 +225,7 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
 
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
@@ -242,7 +242,7 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.GET)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView(@RequestParam(required = false) Long ids, String name) {
+    public ResponseData treeView(@RequestParam(required = false) Long ids, String name) {
 
 
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();

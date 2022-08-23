@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
@@ -115,6 +116,9 @@ public class DataStatisticsViewController extends BaseController {
     @ApiOperation("新增")
     public PageInfo<Object> billPageList(@RequestBody DataStatisticsViewParam param) {
         PageInfo<Object> result = new PageInfo<>();
+        if (ToolUtil.isEmpty(param.getType())) {
+            throw  new ServiceException(500,"请传入参数");
+        }
         switch (param.getType()){
             case "instockLog":
                 PageInfo<InstockReceiptResult> pageBySpec = instockReceiptService.findPageBySpec(new InstockReceiptParam());

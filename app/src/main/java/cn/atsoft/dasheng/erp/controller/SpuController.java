@@ -125,7 +125,7 @@ public class SpuController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SpuResult> detail(@RequestBody SpuParam spuParam) {
+    public ResponseData detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
 
         if (ToolUtil.isNotEmpty(detail)) {
@@ -367,7 +367,7 @@ public class SpuController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuParam spuParam) {
+    public ResponseData listSelect(@RequestBody(required = false) SpuParam spuParam) {
 
         QueryWrapper<Spu> spuQueryWrapper = new QueryWrapper<>();
 

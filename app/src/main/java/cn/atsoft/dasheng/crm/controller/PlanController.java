@@ -80,7 +80,7 @@ public class PlanController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PlanResult> detail(@RequestBody PlanParam planParam) {
+    public ResponseData detail(@RequestBody PlanParam planParam) {
         Plan detail = this.planService.getById(planParam.getSalesProcessPlanId());
         PlanResult result = new PlanResult();
         ToolUtil.copyProperties(detail, result);

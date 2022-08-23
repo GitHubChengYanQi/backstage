@@ -81,7 +81,7 @@ public class BannerController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<BannerResult> detail(@RequestBody BannerParam bannerParam) {
+    public ResponseData detail(@RequestBody BannerParam bannerParam) {
         Banner detail = this.bannerService.getById(bannerParam.getBannerId());
         BannerResult result = new BannerResult();
         ToolUtil.copyProperties(detail, result);

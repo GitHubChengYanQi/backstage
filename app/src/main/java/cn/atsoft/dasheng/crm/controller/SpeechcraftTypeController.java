@@ -98,7 +98,7 @@ public class SpeechcraftTypeController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SpeechcraftTypeResult> detail(@RequestBody SpeechcraftTypeParam speechcraftTypeParam) {
+    public ResponseData detail(@RequestBody SpeechcraftTypeParam speechcraftTypeParam) {
         SpeechcraftType detail = this.speechcraftTypeService.getById(speechcraftTypeParam.getSpeechcraftTypeId());
         SpeechcraftTypeResult result = new SpeechcraftTypeResult();
         ToolUtil.copyProperties(detail, result);
@@ -125,7 +125,7 @@ public class SpeechcraftTypeController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<SpeechcraftType> speechcraftTypeQueryWrapper = new QueryWrapper<>();
         speechcraftTypeQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.speechcraftTypeService.listMaps(speechcraftTypeQueryWrapper);

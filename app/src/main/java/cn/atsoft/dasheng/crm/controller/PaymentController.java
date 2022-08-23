@@ -80,7 +80,7 @@ public class PaymentController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PaymentResult> detail(@RequestBody PaymentParam paymentParam) {
+    public ResponseData detail(@RequestBody PaymentParam paymentParam) {
         Payment detail = this.paymentService.getById(paymentParam.getPaymentId());
         PaymentResult result = new PaymentResult();
         ToolUtil.copyProperties(detail, result);

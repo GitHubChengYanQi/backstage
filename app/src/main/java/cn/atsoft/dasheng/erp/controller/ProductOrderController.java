@@ -111,7 +111,7 @@ public class ProductOrderController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductOrderResult> detail(@RequestBody ProductOrderParam productOrderParam) {
+    public ResponseData detail(@RequestBody ProductOrderParam productOrderParam) {
         ProductOrder detail = this.productOrderService.getById(productOrderParam.getProductOrderId());
         if (ToolUtil.isEmpty(detail)) {
             throw new ServiceException(500, "没有当前信息");

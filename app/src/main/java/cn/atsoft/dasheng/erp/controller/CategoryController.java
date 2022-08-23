@@ -100,7 +100,7 @@ public class CategoryController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CategoryResult> detail(@RequestBody CategoryParam categoryParam) {
+    public ResponseData detail(@RequestBody CategoryParam categoryParam) {
         Category detail = this.categoryService.getById(categoryParam.getCategoryId());
         CategoryResult result = new CategoryResult();
         List<CategoryRequest> categoryRequests = new ArrayList<>();
@@ -189,7 +189,7 @@ public class CategoryController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
         categoryQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.categoryService.listMaps(categoryQueryWrapper);
@@ -207,7 +207,7 @@ public class CategoryController extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView() {
+    public ResponseData treeView() {
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
         categoryQueryWrapper.in("display", 1);
         categoryQueryWrapper.orderByDesc("sort");

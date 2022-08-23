@@ -82,7 +82,7 @@ public class ClassDifferenceController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ClassDifferenceResult> detail(@RequestBody ClassDifferenceParam classDifferenceParam) {
+    public ResponseData detail(@RequestBody ClassDifferenceParam classDifferenceParam) {
         ClassDifference detail = this.classDifferenceService.getById(classDifferenceParam.getClassDifferenceId());
         ClassDifferenceResult result = new ClassDifferenceResult();
         ToolUtil.copyProperties(detail, result);
@@ -108,7 +108,7 @@ public class ClassDifferenceController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<ClassDifference> queryWrapper = new QueryWrapper();
         queryWrapper.in("display",1);
         List<Map<String, Object>> list = this.classDifferenceService.listMaps(queryWrapper);

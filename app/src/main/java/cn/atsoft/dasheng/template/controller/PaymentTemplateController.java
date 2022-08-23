@@ -87,7 +87,7 @@ public class PaymentTemplateController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PaymentTemplateResult> detail(@RequestBody(required = false) PaymentTemplateParam paymentTemplateParam) {
+    public ResponseData detail(@RequestBody(required = false) PaymentTemplateParam paymentTemplateParam) {
         PaymentTemplateResult result = this.paymentTemplateService.detail(paymentTemplateParam.getTemplateId());
         return ResponseData.success(result);
     }
@@ -109,7 +109,7 @@ public class PaymentTemplateController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) PaymentTemplateParam param) {
+    public ResponseData listSelect(@RequestBody(required = false) PaymentTemplateParam param) {
         QueryWrapper<PaymentTemplate> queryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(param.getOftenUser())) {
             queryWrapper.in("often_user", param.getOftenUser());

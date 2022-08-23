@@ -87,7 +87,7 @@ public class ActivitiProcessTaskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiProcessTaskResult> detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
+    public ResponseData detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
         ActivitiProcessTask detail = this.activitiProcessTaskService.getById(activitiProcessTaskParam.getProcessTaskId());
         ActivitiProcessTaskResult result = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(detail, result);

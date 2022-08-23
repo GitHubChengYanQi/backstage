@@ -80,7 +80,7 @@ public class ContractTempleteDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ContractTempleteDetailResult> detail(@RequestBody ContractTempleteDetailParam contractTempleteDetailParam) {
+    public ResponseData detail(@RequestBody ContractTempleteDetailParam contractTempleteDetailParam) {
         ContractTempleteDetail detail = this.contractTempleteDetailService.getById(contractTempleteDetailParam.getContractTempleteDetailId());
         ContractTempleteDetailResult result = new ContractTempleteDetailResult();
         ToolUtil.copyProperties(detail, result);

@@ -86,7 +86,7 @@ public class ToolClassificationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ToolClassificationResult> detail(@RequestBody ToolClassificationParam toolClassificationParam) {
+    public ResponseData detail(@RequestBody ToolClassificationParam toolClassificationParam) {
         ToolClassification detail = this.toolClassificationService.getById(toolClassificationParam.getToolClassificationId());
         ToolClassificationResult result = new ToolClassificationResult();
         ToolUtil.copyProperties(detail, result);
@@ -111,7 +111,7 @@ public class ToolClassificationController extends BaseController {
     }
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("编码规则下拉列表")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<Map<String, Object>> list = this.toolClassificationService.listMaps();
         ToolClassificationSelectWrapper toolClassificationSelectWrapper = new ToolClassificationSelectWrapper(list);
         List<Map<String, Object>> result = toolClassificationSelectWrapper.wrap();

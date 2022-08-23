@@ -87,7 +87,7 @@ public class QualityCheckClassificationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityCheckClassificationResult> detail(@RequestBody QualityCheckClassificationParam qualityCheckClassificationParam) {
+    public ResponseData detail(@RequestBody QualityCheckClassificationParam qualityCheckClassificationParam) {
         QualityCheckClassification detail = this.qualityCheckClassificationService.getById(qualityCheckClassificationParam.getQualityCheckClassificationId());
         QualityCheckClassificationResult result = new QualityCheckClassificationResult();
         ToolUtil.copyProperties(detail, result);
@@ -118,7 +118,7 @@ public class QualityCheckClassificationController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
 
         List<Map<String, Object>> list = this.qualityCheckClassificationService.listMaps();
         QualityCheckClassificationSelectWrapper factory = new QualityCheckClassificationSelectWrapper(list);

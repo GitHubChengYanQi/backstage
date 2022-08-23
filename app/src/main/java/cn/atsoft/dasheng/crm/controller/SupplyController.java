@@ -163,7 +163,7 @@ public class SupplyController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SupplyParam supplyParam) {
+    public ResponseData listSelect(@RequestBody(required = false) SupplyParam supplyParam) {
         QueryWrapper<Supply> supplyQueryWrapper = new QueryWrapper<>();
         supplyQueryWrapper.in("display", 1);
         if (ToolUtil.isNotEmpty(supplyParam.getCustomerId())) {

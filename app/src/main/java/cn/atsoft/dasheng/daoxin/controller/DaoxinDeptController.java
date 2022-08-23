@@ -80,7 +80,7 @@ public class DaoxinDeptController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DaoxinDeptResult> detail(@RequestBody DaoxinDeptParam daoxinDeptParam) {
+    public ResponseData detail(@RequestBody DaoxinDeptParam daoxinDeptParam) {
         DaoxinDept detail = this.daoxinDeptService.getById(daoxinDeptParam.getDeptId());
         DaoxinDeptResult result = new DaoxinDeptResult();
         ToolUtil.copyProperties(detail, result);

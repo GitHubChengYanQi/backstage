@@ -87,7 +87,7 @@ public class CompetitorQuoteController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<CompetitorQuoteResult> detail(@RequestBody CompetitorQuoteParam competitorQuoteParam) {
+    public ResponseData detail(@RequestBody CompetitorQuoteParam competitorQuoteParam) {
         CompetitorQuote detail = this.competitorQuoteService.getById(competitorQuoteParam.getQuoteId());
         CompetitorQuoteResult result = new CompetitorQuoteResult();
         ToolUtil.copyProperties(detail, result);

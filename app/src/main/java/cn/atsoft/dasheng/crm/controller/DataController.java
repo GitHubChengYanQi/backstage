@@ -96,7 +96,7 @@ public class DataController extends BaseController {
     @Permission
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
+    public ResponseData detail(@RequestBody DataParam dataParam) {
         DataResult detail = dataService.detail(dataParam);
         return ResponseData.success(detail);
     }
@@ -133,7 +133,7 @@ public class DataController extends BaseController {
     @Permission
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DataResult> batchDelete(@RequestBody DataRequest dataRequest) {
+    public ResponseData batchDelete(@RequestBody DataRequest dataRequest) {
         dataService.batchDelete(dataRequest.getIds());
         return ResponseData.success();
     }
@@ -146,7 +146,7 @@ public class DataController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.GET)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(String name, String content) {
+    public ResponseData listSelect(String name, String content) {
         QueryWrapper<Data> dataQueryWrapper = new QueryWrapper<>();
         dataQueryWrapper.like("name", name).or().like("content", content);
         List<Map<String, Object>> list = this.dataService.listMaps(dataQueryWrapper);

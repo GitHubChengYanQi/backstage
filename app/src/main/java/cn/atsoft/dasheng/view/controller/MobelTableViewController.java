@@ -86,7 +86,7 @@ public class MobelTableViewController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     @ApiOperation("详情")
-    public ResponseData<MobelTableViewResult> detail() {
+    public ResponseData detail() {
         Long userId = LoginContextHolder.getContext().getUserId();
         MobelTableView detail = this.mobelTableViewService.query().eq("user_id", userId).eq("display", 1).one();
         if (ToolUtil.isEmpty(detail)) {

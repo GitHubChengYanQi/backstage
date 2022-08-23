@@ -80,7 +80,7 @@ public class InstockReceiptController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InstockReceiptResult> detail(@RequestBody InstockReceiptParam instockReceiptParam) {
+    public ResponseData detail(@RequestBody InstockReceiptParam instockReceiptParam) {
         InstockReceiptResult result = this.instockReceiptService.detail(instockReceiptParam.getReceiptId());
         return ResponseData.success(result);
     }

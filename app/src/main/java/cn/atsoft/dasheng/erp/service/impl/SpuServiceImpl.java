@@ -168,7 +168,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     }
 
     @Override
-    public ResponseData<SpuResult> detail(SpuParam spuParam) {
+    public ResponseData detail(SpuParam spuParam) {
 
         Spu detail = this.spuService.getById(spuParam.getSpuId());
         SkuRequest skuRequest = new SkuRequest();

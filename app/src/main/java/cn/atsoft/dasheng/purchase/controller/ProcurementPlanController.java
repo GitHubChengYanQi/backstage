@@ -74,7 +74,7 @@ public class ProcurementPlanController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<ProcurementPlanResult> detail(@RequestBody ProcurementPlanParam procurementPlanParam) {
+    public ResponseData detail(@RequestBody ProcurementPlanParam procurementPlanParam) {
         ProcurementPlan detail = this.procurementPlanService.getById(procurementPlanParam.getProcurementPlanId());
         if (ToolUtil.isEmpty(detail)) {
             return null;
