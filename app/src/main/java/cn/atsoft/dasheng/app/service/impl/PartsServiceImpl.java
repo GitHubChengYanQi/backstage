@@ -77,6 +77,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Autowired
     private AsynTaskService asynTaskService;
 
+
     @Override
     public Parts add(PartsParam partsParam) {
 
@@ -175,6 +176,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     }
 
+    @Transactional
     public Parts newAdd(PartsParam partsParam) {
         Parts part = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(part)) {
@@ -184,7 +186,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts entity = getEntity(partsParam);
         entity.setStatus(99);
         if (ToolUtil.isEmpty(entity.getName())) {   //版本号
-//            entity.setName();
+            throw new ServiceException(500, "请传入版本号");
         }
         this.save(entity);
 
@@ -196,13 +198,29 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             partsDetails.add(partsDetail);
         }
 
+        erpPartsDetailService.saveBatch(partsDetails);
 
         return entity;
     }
 
 
-    private void updateStatus() {
+    private List<Long> getChildren(Long partId) {
+        List<Long> partIds = new ArrayList<>();
+        List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.query().eq("parts_id", partId).eq("display", 1).list();
+        List<Long> skuIds = new ArrayList<>();
 
+        for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
+            skuIds.add(erpPartsDetail.getSkuId());
+        }
+        if (ToolUtil.isEmpty(skuIds)) {
+            return partIds;
+        }
+        List<Parts> list = this.query().in("sku_id", skuIds).eq("status", 99).list();
+        for (Parts parts : list) {
+            partIds.add(parts.getPartsId());
+            getChildren(parts.getPartsId());
+        }
+        return partIds;
     }
 
 
