@@ -80,7 +80,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                 supply.setSkuId(param.getSkuId());
                 supply.setBrandId(brandId);
                 supply.setCustomerId(param.getCustomerId());
-                if (supplyList.stream().noneMatch(i -> i.getBrandId().equals(brandId) && i.getSkuId().equals(param.getSupplyId()) && i.getCustomerId().equals(param.getCustomerId()))) {
+                if (supplyList.stream().noneMatch(i -> i.getBrandId().equals(brandId) && i.getSkuId().equals(param.getSkuId()) && i.getCustomerId().equals(param.getCustomerId()))) {
                     supplyList.add(supply);
                 }
             }
