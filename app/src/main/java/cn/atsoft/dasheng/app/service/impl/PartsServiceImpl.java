@@ -77,6 +77,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Autowired
     private AsynTaskService asynTaskService;
 
+
     @Override
     public Parts add(PartsParam partsParam) {
 
@@ -174,6 +175,64 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
     }
+
+    @Transactional
+    @Override
+    public Parts newAdd(PartsParam partsParam) {
+        Parts part = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
+        if (ToolUtil.isNotEmpty(part)) {
+            part.setStatus(0);
+            part.setDisplay(0);
+            this.updateById(part);
+        }
+        Parts entity = getEntity(partsParam);
+        entity.setStatus(99);
+        if (ToolUtil.isEmpty(entity.getName())) {   //版本号
+            throw new ServiceException(500, "请传入版本号");
+        }
+        this.save(entity);
+
+        List<ErpPartsDetail> partsDetails = new ArrayList<>();
+        for (ErpPartsDetailParam partsParamPart : partsParam.getParts()) {
+            ErpPartsDetail partsDetail = new ErpPartsDetail();
+            ToolUtil.copyProperties(partsParamPart, partsDetail);
+            partsParamPart.setPartsId(entity.getPartsId());
+            partsDetails.add(partsDetail);
+        }
+
+        erpPartsDetailService.saveBatch(partsDetails);
+
+        List<Long> children = getChildren(entity.getPartsId());
+        if (ToolUtil.isNotEmpty(children)) {
+            entity.setChildren(JSON.toJSONString(children));
+        }
+
+        this.updateById(entity);
+        return entity;
+    }
+
+
+    private List<Long> getChildren(Long partId) {
+        List<Long> partIds = new ArrayList<>();
+        List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.query().eq("parts_id", partId).eq("display", 1).list();
+        List<Long> skuIds = new ArrayList<>();
+
+        for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
+            skuIds.add(erpPartsDetail.getSkuId());
+        }
+        if (ToolUtil.isEmpty(skuIds)) {
+            return partIds;
+        }
+        List<Parts> list = this.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
+        for (Parts parts : list) {
+            partIds.add(parts.getPartsId());
+            parts.setPid(partId);
+//            getChildren(parts.getPartsId());
+        }
+        this.updateBatchById(list);
+        return partIds;
+    }
+
 
     /**
      * 开始分析

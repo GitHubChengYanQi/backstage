@@ -414,12 +414,14 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             skuIds.add(datum.getSkuId());
             positionIds.add(datum.getPositionId());
             userIds.add(datum.getCreateUser());
+            inkindIds.add(datum.getInkindId());
         }
 
         List<SkuSimpleResult> simpleResults = skuService.simpleFormatSkuResult(skuIds);
         List<StorehousePositionsResult> positionsResultList = positionsService.details(positionIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<MaintenanceLogDetailResult> maintenanceLogDetailResults = maintenanceLogDetailService.lastLogByInkindIds(inkindIds);
+        List<OrCodeBind> orCodeBinds = inkindIds.size() == 0 ? new ArrayList<>() : orCodeBindService.query().in("form_id", inkindIds).eq("display", 1).list();
 
         for (InkindResult datum : data) {
 
@@ -452,6 +454,14 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
                     break;
                 }
             }
+
+            for (OrCodeBind orCodeBind : orCodeBinds) {
+                if (datum.getInkindId().equals(orCodeBind.getFormId())) {
+                    datum.setQrCodeId(orCodeBind.getOrCodeId());
+                    break;
+                }
+            }
+
         }
 
     }
@@ -469,7 +479,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         for (InkindResult datum : data) {
             for (OrCodeBind orCodeBind : orCodeBinds) {
                 if (datum.getInkindId().equals(orCodeBind.getFormId())) {
-                    datum.setQrcode(orCodeBind.getOrCodeId());
+                    datum.setQrCodeId(orCodeBind.getOrCodeId());
                     break;
                 }
             }

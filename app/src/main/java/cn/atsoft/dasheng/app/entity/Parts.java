@@ -25,6 +25,10 @@ public class Parts implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    @TableField("name")
+    private String name;
+
     @TableField("children")
     private String children;
 
@@ -278,6 +282,14 @@ public class Parts implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
