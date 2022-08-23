@@ -101,7 +101,7 @@ public class CompanyRoleController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CompanyRoleResult> detail(@RequestBody CompanyRoleParam companyRoleParam) {
+    public ResponseData detail(@RequestBody CompanyRoleParam companyRoleParam) {
         CompanyRole detail = this.companyRoleService.getById(companyRoleParam.getCompanyRoleId());
         CompanyRoleResult result = new CompanyRoleResult();
         ToolUtil.copyProperties(detail, result);
@@ -133,7 +133,7 @@ public class CompanyRoleController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<CompanyRole> companyRoleQueryWrapper = new QueryWrapper<>();
         companyRoleQueryWrapper.in("display",1);
         List<Map<String,Object>> list = this.companyRoleService.listMaps(companyRoleQueryWrapper);

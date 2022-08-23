@@ -80,7 +80,7 @@ public class SopDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SopDetailResult> detail(@RequestBody SopDetailParam sopDetailParam) {
+    public ResponseData detail(@RequestBody SopDetailParam sopDetailParam) {
         SopDetail detail = this.sopDetailService.getById(sopDetailParam.getSopDetailId());
         SopDetailResult result = new SopDetailResult();
         ToolUtil.copyProperties(detail, result);

@@ -85,7 +85,7 @@ public interface InstockOrderService extends IService<InstockOrder> {
      * @author song
      * @Date 2021-10-06
      */
-    PageInfo<InstockOrderResult> findPageBySpec(InstockOrderParam param);
+    PageInfo findPageBySpec(InstockOrderParam param);
 
 
     /**

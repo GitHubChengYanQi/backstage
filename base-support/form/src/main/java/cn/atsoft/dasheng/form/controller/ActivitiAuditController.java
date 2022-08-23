@@ -81,7 +81,7 @@ public class ActivitiAuditController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiAuditResult> detail(@RequestBody ActivitiAuditParam activitiAuditParam) {
+    public ResponseData detail(@RequestBody ActivitiAuditParam activitiAuditParam) {
         ActivitiAudit detail = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
         ActivitiAuditResult result = new ActivitiAuditResult();
         ToolUtil.copyProperties(detail, result);

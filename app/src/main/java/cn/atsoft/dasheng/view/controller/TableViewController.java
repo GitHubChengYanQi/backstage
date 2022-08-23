@@ -86,7 +86,7 @@ public class TableViewController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<TableViewResult> detail(@RequestBody TableViewParam tableViewParam) {
+    public ResponseData detail(@RequestBody TableViewParam tableViewParam) {
         TableView detail = this.tableViewService.getById(tableViewParam.getTableViewId());
 
         if (ToolUtil.isEmpty(detail)) {
@@ -122,7 +122,7 @@ public class TableViewController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) TableViewParam tableViewParam) {
+    public ResponseData listSelect(@RequestBody(required = false) TableViewParam tableViewParam) {
         QueryWrapper<TableView> tableViewQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(tableViewParam.getTableKey())) {
             tableViewQueryWrapper.in("table_key", tableViewParam.getTableKey());

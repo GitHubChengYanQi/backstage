@@ -80,7 +80,7 @@ public class FormDataController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<FormDataResult> detail(@RequestBody FormDataParam formDataParam) {
+    public ResponseData detail(@RequestBody FormDataParam formDataParam) {
         FormData detail = this.formDataService.getById(formDataParam.getDataId());
         FormDataResult result = new FormDataResult();
         ToolUtil.copyProperties(detail, result);

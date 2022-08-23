@@ -85,7 +85,7 @@ public class InstockHandleController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InstockHandleResult> detail(@RequestBody InstockHandleParam instockHandleParam) {
+    public ResponseData detail(@RequestBody InstockHandleParam instockHandleParam) {
         InstockHandle detail = this.instockHandleService.getById(instockHandleParam.getInstockHandleId());
         InstockHandleResult result = new InstockHandleResult();
         ToolUtil.copyProperties(detail, result);

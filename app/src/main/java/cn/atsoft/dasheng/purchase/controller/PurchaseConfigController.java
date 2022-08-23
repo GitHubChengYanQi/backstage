@@ -80,7 +80,7 @@ public class PurchaseConfigController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PurchaseConfigResult> detail(@RequestBody PurchaseConfigParam purchaseConfigParam) {
+    public ResponseData detail(@RequestBody PurchaseConfigParam purchaseConfigParam) {
         PurchaseConfig detail = this.purchaseConfigService.getById(purchaseConfigParam.getPurchaseConfigId());
         PurchaseConfigResult result = new PurchaseConfigResult();
         ToolUtil.copyProperties(detail, result);

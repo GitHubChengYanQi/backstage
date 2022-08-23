@@ -91,7 +91,7 @@ public class CodingRulesController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CodingRulesResult> detail(@RequestBody CodingRulesParam codingRulesParam) {
+    public ResponseData detail(@RequestBody CodingRulesParam codingRulesParam) {
         CodingRules detail = this.codingRulesService.getById(codingRulesParam.getCodingRulesId());
         CodingRulesResult result = new CodingRulesResult();
         ToolUtil.copyProperties(detail, result);
@@ -164,7 +164,7 @@ public class CodingRulesController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) CodingRulesParam codingRulesParam) {
+    public ResponseData listSelect(@RequestBody(required = false) CodingRulesParam codingRulesParam) {
         QueryWrapper<CodingRules> codingRulesQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(codingRulesParam))
             if (ToolUtil.isNotEmpty(codingRulesParam.getModule()))

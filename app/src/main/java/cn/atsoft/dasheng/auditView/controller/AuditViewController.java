@@ -80,7 +80,7 @@ public class AuditViewController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AuditViewResult> detail(@RequestBody AuditViewParam auditViewParam) {
+    public ResponseData detail(@RequestBody AuditViewParam auditViewParam) {
         AuditView detail = this.auditViewService.getById(auditViewParam.getAuditViewId());
         AuditViewResult result = new AuditViewResult();
         ToolUtil.copyProperties(detail, result);

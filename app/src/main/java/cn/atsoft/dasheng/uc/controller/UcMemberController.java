@@ -100,7 +100,7 @@ public class UcMemberController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<UcMemberResult> detail(@RequestBody UcMemberParam ucMemberParam) {
+    public ResponseData detail(@RequestBody UcMemberParam ucMemberParam) {
         UcMember byId = this.ucMemberService.getById(ucMemberParam.getMemberId());
         UcMemberResult result = new UcMemberResult();
         ToolUtil.copyProperties(byId, result);

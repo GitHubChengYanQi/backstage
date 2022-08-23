@@ -80,7 +80,7 @@ public class TrackMessageController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<TrackMessageResult> detail(@RequestBody TrackMessageParam trackMessageParam) {
+    public ResponseData detail(@RequestBody TrackMessageParam trackMessageParam) {
         TrackMessage detail = this.trackMessageService.getById(trackMessageParam.getTrackMessageId());
         TrackMessageResult result = new TrackMessageResult();
         ToolUtil.copyProperties(detail, result);

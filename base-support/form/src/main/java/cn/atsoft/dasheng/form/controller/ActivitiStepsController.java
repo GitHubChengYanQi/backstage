@@ -95,7 +95,7 @@ public class ActivitiStepsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiStepsResult> detail(@RequestBody ActivitiStepsParam activitiStepsParam) {
+    public ResponseData detail(@RequestBody ActivitiStepsParam activitiStepsParam) {
         ActivitiStepsResult steps = activitiStepsService.getStepResult(activitiStepsParam.getProcessId());
 //        ActivitiStepsResult stepsResult = this.activitiStepsService.backStepsResult(activitiStepsParam.getProcessId());
         return ResponseData.success(steps);

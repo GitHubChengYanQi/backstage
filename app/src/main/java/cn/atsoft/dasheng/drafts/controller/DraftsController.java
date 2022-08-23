@@ -80,7 +80,7 @@ public class DraftsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DraftsResult> detail(@RequestBody DraftsParam draftsParam) {
+    public ResponseData detail(@RequestBody DraftsParam draftsParam) {
         Drafts detail = this.draftsService.getById(draftsParam.getDraftsId());
         DraftsResult result = new DraftsResult();
         ToolUtil.copyProperties(detail, result);

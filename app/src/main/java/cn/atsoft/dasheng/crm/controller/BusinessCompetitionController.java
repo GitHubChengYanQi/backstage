@@ -82,7 +82,7 @@ public class BusinessCompetitionController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<BusinessCompetitionResult> detail(@RequestBody BusinessCompetitionParam businessCompetitionParam) {
+    public ResponseData detail(@RequestBody BusinessCompetitionParam businessCompetitionParam) {
         BusinessCompetition detail = this.businessCompetitionService.getById(businessCompetitionParam.getBusinessCompetitionId());
         BusinessCompetitionResult result = new BusinessCompetitionResult();
         ToolUtil.copyProperties(detail, result);

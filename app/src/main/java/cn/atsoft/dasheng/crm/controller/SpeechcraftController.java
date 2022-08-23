@@ -80,7 +80,7 @@ public class SpeechcraftController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SpeechcraftResult> detail(@RequestBody SpeechcraftParam speechcraftParam) {
+    public ResponseData detail(@RequestBody SpeechcraftParam speechcraftParam) {
         Speechcraft detail = this.speechcraftService.getById(speechcraftParam.getSpeechcraftId());
         SpeechcraftResult result = new SpeechcraftResult();
         ToolUtil.copyProperties(detail, result);

@@ -80,7 +80,7 @@ public class AllocationLogController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AllocationLogResult> detail(@RequestBody AllocationLogParam allocationLogParam) {
+    public ResponseData detail(@RequestBody AllocationLogParam allocationLogParam) {
         AllocationLog detail = this.allocationLogService.getById(allocationLogParam.getAllocationLogId());
         AllocationLogResult result = new AllocationLogResult();
         ToolUtil.copyProperties(detail, result);

@@ -90,7 +90,7 @@ public class ToolController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ToolResult> detail(@RequestBody ToolParam toolParam) {
+    public ResponseData detail(@RequestBody ToolParam toolParam) {
         Tool detail = this.toolService.getById(toolParam.getToolId());
         ToolResult result = new ToolResult();
         ToolUtil.copyProperties(detail, result);
@@ -121,7 +121,7 @@ public class ToolController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
 
         List<Map<String, Object>> list = this.toolService.listMaps();
         ToolSelectWrapper factory = new ToolSelectWrapper(list);

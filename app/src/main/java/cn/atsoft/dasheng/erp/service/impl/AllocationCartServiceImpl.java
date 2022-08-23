@@ -213,7 +213,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
     }
 
     @Override
-    public PageInfo<AllocationCartResult> findPageBySpec(AllocationCartParam param) {
+    public PageInfo findPageBySpec(AllocationCartParam param) {
         Page<AllocationCartResult> pageContext = getPageContext();
         IPage<AllocationCartResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

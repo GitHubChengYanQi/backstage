@@ -77,7 +77,7 @@ public class RemindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<RemindResult> detail(@RequestBody RemindParam remindParam) {
+    public ResponseData detail(@RequestBody RemindParam remindParam) {
         PageInfo<RemindResult> pageBySpec = this.remindService.findPageBySpec(remindParam);
         return ResponseData.success(pageBySpec.getData().get(0));
     }

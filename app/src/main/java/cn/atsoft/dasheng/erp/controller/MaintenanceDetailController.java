@@ -89,7 +89,7 @@ public class MaintenanceDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<MaintenanceDetailResult> detail(@RequestBody MaintenanceDetailParam maintenanceDetailParam) {
+    public ResponseData detail(@RequestBody MaintenanceDetailParam maintenanceDetailParam) {
         MaintenanceDetail detail = this.maintenanceDetailService.getById(maintenanceDetailParam.getMaintenanceDetailId());
         MaintenanceDetailResult result = new MaintenanceDetailResult();
         ToolUtil.copyProperties(detail, result);

@@ -97,7 +97,7 @@ public class DataClassificationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DataClassificationResult> detail(@RequestBody DataClassificationParam dataClassificationParam) {
+    public ResponseData detail(@RequestBody DataClassificationParam dataClassificationParam) {
         DataClassification detail = this.dataClassificationService.getById(dataClassificationParam.getDataClassificationId());
         DataClassificationResult result = new DataClassificationResult();
         ToolUtil.copyProperties(detail, result);
@@ -123,7 +123,7 @@ public class DataClassificationController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<DataClassification> dataClassificationQueryWrapper = new QueryWrapper<>();
         dataClassificationQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.dataClassificationService.listMaps(dataClassificationQueryWrapper);

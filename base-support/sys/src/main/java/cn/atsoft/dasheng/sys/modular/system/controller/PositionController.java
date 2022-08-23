@@ -188,7 +188,7 @@ public class PositionController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<Map<String, Object>> list = this.positionService.listMaps();
         PositionSelectWrapper factory = new PositionSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();

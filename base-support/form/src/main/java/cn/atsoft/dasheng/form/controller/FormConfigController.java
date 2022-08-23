@@ -77,7 +77,7 @@ public class FormConfigController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<FormConfigResult> detail(@RequestBody FormConfigParam formConfigParam) {
+    public ResponseData detail(@RequestBody FormConfigParam formConfigParam) {
         FormConfig detail = this.formConfigService.getById(formConfigParam.getFormId());
         FormConfigResult result = new FormConfigResult();
         ToolUtil.copyProperties(detail, result);

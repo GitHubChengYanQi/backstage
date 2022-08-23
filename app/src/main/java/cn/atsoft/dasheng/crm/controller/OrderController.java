@@ -60,7 +60,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OrderResult> detail(@RequestBody OrderParam orderParam) {
+    public ResponseData detail(@RequestBody OrderParam orderParam) {
         OrderResult detail = this.orderService.getDetail(orderParam.getOrderId());
         return ResponseData.success(detail);
     }

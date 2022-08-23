@@ -105,7 +105,7 @@ public class supplierController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<CustomerResult> detail(@RequestBody(required = false) CustomerParam customerParam) {
+    public ResponseData detail(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isNotEmpty(customerParam) && ToolUtil.isNotEmpty(customerParam.getCustomerId())) {
             Long customerId = customerParam.getCustomerId();
             CustomerResult detail = customerService.detail(customerId);
@@ -155,7 +155,7 @@ public class supplierController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) CustomerParam customerParam) {
+    public ResponseData listSelect(@RequestBody(required = false) CustomerParam customerParam) {
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
         queryWrapper.eq("display", 1);
         if (ToolUtil.isNotEmpty(customerParam)) {

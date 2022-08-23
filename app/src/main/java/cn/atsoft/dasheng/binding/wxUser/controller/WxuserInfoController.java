@@ -95,7 +95,7 @@ public class WxuserInfoController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<WxuserInfoResult> detail(@RequestBody WxuserInfoParam wxuserInfoParam) {
+    public ResponseData detail(@RequestBody WxuserInfoParam wxuserInfoParam) {
         WxuserInfo detail = this.wxuserInfoService.getById(wxuserInfoParam.getUserInfoId());
         WxuserInfoResult result = new WxuserInfoResult();
         ToolUtil.copyProperties(detail, result);
@@ -124,7 +124,7 @@ public class WxuserInfoController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<WxuserInfo> wxuserInfos = wxuserInfoService.lambdaQuery().in(WxuserInfo::getSource, "wxMp").list();
         List<Long> ids = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfos) {

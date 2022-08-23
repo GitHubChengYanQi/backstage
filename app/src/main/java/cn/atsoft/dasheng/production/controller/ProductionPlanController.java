@@ -78,7 +78,7 @@ public class ProductionPlanController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPlanResult> detail(@RequestBody ProductionPlanParam productionPlanParam) {
+    public ResponseData detail(@RequestBody ProductionPlanParam productionPlanParam) {
         ProductionPlan detail = this.productionPlanService.getById(productionPlanParam.getProductionPlanId());
         ProductionPlanResult result = new ProductionPlanResult();
         ToolUtil.copyProperties(detail, result);

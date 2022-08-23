@@ -81,7 +81,7 @@ public class NavigationController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<NavigationResult> detail(@RequestBody NavigationParam navigationParam) {
+    public ResponseData detail(@RequestBody NavigationParam navigationParam) {
         Navigation detail = this.navigationService.getById(navigationParam.getNavigationId());
         NavigationResult result = new NavigationResult();
         ToolUtil.copyProperties(detail, result);

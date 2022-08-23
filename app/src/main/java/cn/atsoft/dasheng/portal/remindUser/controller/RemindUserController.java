@@ -80,7 +80,7 @@ public class RemindUserController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<RemindUserResult> detail(@RequestBody RemindUserParam remindUserParam) {
+    public ResponseData detail(@RequestBody RemindUserParam remindUserParam) {
         RemindUser detail = this.remindUserService.getById(remindUserParam.getRemindUserId());
         RemindUserResult result = new RemindUserResult();
         ToolUtil.copyProperties(detail, result);

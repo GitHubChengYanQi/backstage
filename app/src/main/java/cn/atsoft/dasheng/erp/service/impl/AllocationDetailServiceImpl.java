@@ -124,7 +124,7 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
     }
 
     @Override
-    public PageInfo<AllocationDetailResult> findPageBySpec(AllocationDetailParam param) {
+    public PageInfo findPageBySpec(AllocationDetailParam param) {
         Page<AllocationDetailResult> pageContext = getPageContext();
         IPage<AllocationDetailResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

@@ -79,7 +79,7 @@ public class PurchaseQuotationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PurchaseQuotationResult> detail(@RequestBody PurchaseQuotationParam purchaseQuotationParam) {
+    public ResponseData detail(@RequestBody PurchaseQuotationParam purchaseQuotationParam) {
         PurchaseQuotation detail = this.purchaseQuotationService.getById(purchaseQuotationParam.getPurchaseQuotationId());
         PurchaseQuotationResult result = new PurchaseQuotationResult();
         ToolUtil.copyProperties(detail, result);

@@ -94,7 +94,7 @@ public class ItemAttributeController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ItemAttributeResult> detail(@RequestBody ItemAttributeParam itemAttributeParam) {
+    public ResponseData detail(@RequestBody ItemAttributeParam itemAttributeParam) {
         ItemAttribute detail = this.itemAttributeService.getById(itemAttributeParam.getAttributeId());
         List<AttributeValuesResult> attributeValuesResults = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail)) {
@@ -134,7 +134,7 @@ public class ItemAttributeController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.GET)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(Long itemId) {
+    public ResponseData listSelect(Long itemId) {
         QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
         itemAttributeQueryWrapper.in("display", 1);
         if (ToolUtil.isNotEmpty(itemId)) {

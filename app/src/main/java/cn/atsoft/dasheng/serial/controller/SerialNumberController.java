@@ -80,7 +80,7 @@ public class SerialNumberController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SerialNumberResult> detail(@RequestBody SerialNumberParam serialNumberParam) {
+    public ResponseData detail(@RequestBody SerialNumberParam serialNumberParam) {
         SerialNumber detail = this.serialNumberService.getById(serialNumberParam.getSerialId());
         SerialNumberResult result = new SerialNumberResult();
         ToolUtil.copyProperties(detail, result);
