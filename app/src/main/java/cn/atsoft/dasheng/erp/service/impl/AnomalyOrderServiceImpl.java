@@ -812,8 +812,11 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     public PageInfo<AnomalyOrderResult> findPageBySpec(AnomalyOrderParam param) {
         Page<AnomalyOrderResult> pageContext = getPageContext();
         IPage<AnomalyOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
+
 
 
     private Serializable getKey(AnomalyOrderParam param) {
