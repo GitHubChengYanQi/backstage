@@ -36,9 +36,6 @@ public class MobelTableViewServiceImpl extends ServiceImpl<MobelTableViewMapper,
     @Override
     public void add(MobelTableViewParam param) {
         Long userId = LoginContextHolder.getContext().getUserId();
-        if (ToolUtil.isEmpty(param.getType())) {
-            throw new ServiceException(500,"请传入类型");
-        }
         List<MobelTableView> views = this.query().eq("user_id", userId).eq("display", 1).eq("type",param.getType()).list();
         if (ToolUtil.isNotEmpty(views)) {
             for (MobelTableView view : views) {
