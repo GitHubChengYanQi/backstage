@@ -195,6 +195,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
     @Override
     public void checkCarry(Long allocation) {
+        Allocation entity = this.getById(allocation);
+        entity.setStatus(99L);
+        this.updateById(entity);
         DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
         activitiProcessLogService.checkAction(allocation, "ALLOCATION", action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
     }
