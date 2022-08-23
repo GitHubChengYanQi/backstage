@@ -200,6 +200,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         erpPartsDetailService.saveBatch(partsDetails);
 
+        List<Long> children = getChildren(entity.getPartsId());
+        entity.setChildrens(JSON.toJSONString(children));
+        this.updateById(entity);
+
         return entity;
     }
 
