@@ -65,6 +65,6 @@ public interface CustomerDynamicService extends IService<CustomerDynamic> {
      * @author cheng
      * @Date 2021-08-10
      */
-     PageInfo<CustomerDynamicResult> findPageBySpec(CustomerDynamicParam param, DataScope dataScope );
+     PageInfo findPageBySpec(CustomerDynamicParam param, DataScope dataScope );
 
 }

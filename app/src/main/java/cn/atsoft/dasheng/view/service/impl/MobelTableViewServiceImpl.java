@@ -11,7 +11,7 @@ import cn.atsoft.dasheng.view.entity.MobelTableView;
 import cn.atsoft.dasheng.view.mapper.MobelTableViewMapper;
 import cn.atsoft.dasheng.view.model.params.MobelTableViewParam;
 import cn.atsoft.dasheng.view.model.result.MobelTableViewResult;
-import  cn.atsoft.dasheng.view.service.MobelTableViewService;
+import cn.atsoft.dasheng.view.service.MobelTableViewService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -34,39 +34,41 @@ import java.util.List;
 public class MobelTableViewServiceImpl extends ServiceImpl<MobelTableViewMapper, MobelTableView> implements MobelTableViewService {
 
     @Override
-    public void add(MobelTableViewParam param){
+    public void add(MobelTableViewParam param) {
         Long userId = LoginContextHolder.getContext().getUserId();
-
-        List<MobelTableView> views = this.query().eq("user_id", userId).eq("display", 1).list();
+        if (ToolUtil.isEmpty(param.getType())) {
+            throw new ServiceException(500,"请传入类型");
+        }
+        List<MobelTableView> views = this.query().eq("user_id", userId).eq("display", 1).eq("type",param.getType()).list();
         if (ToolUtil.isNotEmpty(views)) {
             for (MobelTableView view : views) {
                 view.setDisplay(0);
             }
             this.updateBatchById(views);
         }
-            MobelTableView entity = getEntity(param);
-            if(ToolUtil.isNotEmpty(param.getDetails())){
-                entity.setField(JSON.toJSONString(param.getDetails()));
-            }
+        MobelTableView entity = getEntity(param);
+        if (ToolUtil.isNotEmpty(param.getDetails())) {
+            entity.setField(JSON.toJSONString(param.getDetails()));
+        }
 
-            Integer count = this.query().in("table_key",param.getTableKey()).eq("name", param.getName()).eq("user_id",userId).count();
-            if (count > 0) {
-                throw new ServiceException(500, "视图名称重复,请更换");
-            }
-            entity.setUserId(userId);
+        Integer count = this.query().in("table_key", param.getTableKey()).eq("name", param.getName()).eq("user_id", userId).count();
+        if (count > 0) {
+            throw new ServiceException(500, "视图名称重复,请更换");
+        }
+        entity.setUserId(userId);
 
-            this.save(entity);
-        
+        this.save(entity);
+
 
     }
 
     @Override
-    public void delete(MobelTableViewParam param){
+    public void delete(MobelTableViewParam param) {
 //        this.removeById(getKey(param));
     }
 
     @Override
-    public void update(MobelTableViewParam param){
+    public void update(MobelTableViewParam param) {
         MobelTableView oldEntity = getOldEntity(param);
         MobelTableView newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -75,23 +77,23 @@ public class MobelTableViewServiceImpl extends ServiceImpl<MobelTableViewMapper,
     }
 
     @Override
-    public MobelTableViewResult findBySpec(MobelTableViewParam param){
+    public MobelTableViewResult findBySpec(MobelTableViewParam param) {
         return null;
     }
 
     @Override
-    public List<MobelTableViewResult> findListBySpec(MobelTableViewParam param){
+    public List<MobelTableViewResult> findListBySpec(MobelTableViewParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<MobelTableViewResult> findPageBySpec(MobelTableViewParam param){
+    public PageInfo<MobelTableViewResult> findPageBySpec(MobelTableViewParam param) {
         Page<MobelTableViewResult> pageContext = getPageContext();
         IPage<MobelTableViewResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(MobelTableViewParam param){
+    private Serializable getKey(MobelTableViewParam param) {
         return param.getMobelTableViewId();
     }
 

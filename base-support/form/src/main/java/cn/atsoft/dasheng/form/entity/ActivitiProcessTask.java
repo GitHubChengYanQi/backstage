@@ -46,6 +46,9 @@ public class ActivitiProcessTask implements Serializable {
     @TableField("deptIds")
     private String deptIds;
 
+    @TableField(value = "deptId",fill = FieldFill.INSERT)
+    private Long deptId;
+
     @TableField("type")
     private String type;
 
@@ -290,6 +293,14 @@ public class ActivitiProcessTask implements Serializable {
 
     public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     @Override

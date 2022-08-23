@@ -66,7 +66,7 @@ public class UcMemberServiceImpl extends ServiceImpl<UcMemberMapper, UcMember> i
     }
 
     @Override
-    public PageInfo<UcMemberResult> findPageBySpec(UcMemberParam param){
+    public PageInfo findPageBySpec(UcMemberParam param){
         Page<UcMemberResult> pageContext = getPageContext();
         IPage<UcMemberResult> page = this.baseMapper.customPageList(pageContext, param);
 

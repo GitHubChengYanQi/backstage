@@ -65,6 +65,6 @@ public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSale
      * @author 
      * @Date 2021-08-04
      */
-     PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param, DataScope dataScope );
+     PageInfo findPageBySpec(CrmBusinessSalesProcessParam param, DataScope dataScope );
 
 }

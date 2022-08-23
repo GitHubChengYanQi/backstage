@@ -65,7 +65,7 @@ public interface ActivitiProcessService extends IService<ActivitiProcess> {
      */
     List<ActivitiProcessResult> findListBySpec(ActivitiProcessParam param);
 
-    PageInfo<ActivitiProcessResult> findShipPageBySpec(ActivitiProcessParam param);
+    PageInfo findShipPageBySpec(ActivitiProcessParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -73,7 +73,7 @@ public interface ActivitiProcessService extends IService<ActivitiProcess> {
      * @author Sing
      * @Date 2021-11-10
      */
-     PageInfo<ActivitiProcessResult> findPageBySpec(ActivitiProcessParam param);
+     PageInfo findPageBySpec(ActivitiProcessParam param);
 
     List<String> getModule(ProcessEnum processEnum);
 }

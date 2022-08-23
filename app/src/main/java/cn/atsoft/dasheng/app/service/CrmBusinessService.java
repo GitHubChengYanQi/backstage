@@ -78,7 +78,7 @@ public interface CrmBusinessService extends IService<CrmBusiness> {
      * @author 
      * @Date 2021-08-03
      */
-     PageInfo<CrmBusinessResult> findPageBySpec(DataScope dataScope, CrmBusinessParam param);
+     PageInfo findPageBySpec(DataScope dataScope, CrmBusinessParam param);
 
 
       void batchDelete(List<Long> businessIds);

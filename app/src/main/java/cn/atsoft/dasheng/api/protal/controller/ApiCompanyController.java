@@ -41,7 +41,7 @@ public class ApiCompanyController {
         }
         wxuserInfoParam.setUserId(userId);
 
-        PageInfo<WxuserInfoResult> res = wxuserInfoService.findPageBySpec(wxuserInfoParam);
+        PageInfo res = wxuserInfoService.findPageBySpec(wxuserInfoParam);
         if(ToolUtil.isNotEmpty(res)){
             if (ToolUtil.isEmpty(customerParam)) {
                 customerParam = new CustomerParam();

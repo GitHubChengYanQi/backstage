@@ -84,7 +84,7 @@ public class PhoneController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PhoneResult> detail(@RequestBody PhoneParam phoneParam) {
+    public ResponseData detail(@RequestBody PhoneParam phoneParam) {
         Phone detail = this.phoneService.getById(phoneParam.getPhoneId());
         PhoneResult result = new PhoneResult();
         ToolUtil.copyProperties(detail, result);
@@ -117,7 +117,7 @@ public class PhoneController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<Phone> QueryWrapper = new QueryWrapper<>();
         QueryWrapper.in("display",1);
         List<Map<String, Object>> list = this.phoneService.listMaps(QueryWrapper);

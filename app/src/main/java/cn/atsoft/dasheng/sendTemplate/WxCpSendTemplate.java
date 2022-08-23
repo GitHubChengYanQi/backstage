@@ -272,7 +272,6 @@ public class WxCpSendTemplate {
 
         }
         return markDownTemplate;
-
     }
 
 }

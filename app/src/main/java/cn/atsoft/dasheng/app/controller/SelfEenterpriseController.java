@@ -28,7 +28,7 @@ public class SelfEenterpriseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
 //    @Permission
-    public PageInfo<CustomerResult> list(@RequestBody(required = false) CustomerParam customerParam) {
+    public PageInfo list(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isEmpty(customerParam)) {
             customerParam = new CustomerParam();
         }
@@ -46,7 +46,7 @@ public class SelfEenterpriseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
 //    @Permission
-    public ResponseData<CustomerResult> detail(@RequestBody(required = false) CustomerParam customerParam) {
+    public ResponseData detail(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isNotEmpty(customerParam) && ToolUtil.isNotEmpty(customerParam.getCustomerId())) {
             Long customerId = customerParam.getCustomerId();
             CustomerResult detail = customerService.detail(customerId);

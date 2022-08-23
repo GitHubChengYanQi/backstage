@@ -128,6 +128,12 @@ public class ProductionPickLists implements Serializable {
     @TableField("status")
     private Long status;
 
+    /**
+     * 状态
+     */
+    @TableField("task_id")
+    private Long taskId;
+
     public Long getUserIds() {
         return userIds;
     }
@@ -278,6 +284,15 @@ public class ProductionPickLists implements Serializable {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     @Override

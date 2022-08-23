@@ -58,7 +58,7 @@ public class UcCurrencyServiceImpl extends ServiceImpl<UcCurrencyMapper, UcCurre
     }
 
     @Override
-    public PageInfo<UcCurrencyResult> findPageBySpec(UcCurrencyParam param){
+    public PageInfo findPageBySpec(UcCurrencyParam param){
         Page<UcCurrencyResult> pageContext = getPageContext();
         IPage<UcCurrencyResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
@@ -68,7 +68,7 @@ public class UcCurrencyServiceImpl extends ServiceImpl<UcCurrencyMapper, UcCurre
         return null;
     }
 
-    private Page<UcCurrencyResult> getPageContext() {
+    private Page getPageContext() {
         return PageFactory.defaultPage();
     }
 

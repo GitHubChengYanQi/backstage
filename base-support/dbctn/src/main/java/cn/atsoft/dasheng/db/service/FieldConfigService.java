@@ -64,6 +64,6 @@ public interface FieldConfigService extends IService<DBFieldConfig> {
      * @author Sing
      * @Date 2020-12-12
      */
-     PageInfo<FieldConfigResult> findPageBySpec(FieldConfigParam param);
+     PageInfo findPageBySpec(FieldConfigParam param);
 
 }

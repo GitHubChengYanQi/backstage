@@ -141,6 +141,12 @@ public class Maintenance implements Serializable {
     @TableField("note")
     private String note;
 
+    /**
+     * 备注
+     */
+    @TableField("task_id")
+    private Long taskId;
+
 
     public Long getMaintenanceId() {
         return maintenanceId;
@@ -284,6 +290,14 @@ public class Maintenance implements Serializable {
 
     public void setCoding(String coding) {
         this.coding = coding;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     public String getSelectParams() {

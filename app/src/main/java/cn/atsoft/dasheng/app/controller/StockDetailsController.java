@@ -131,7 +131,7 @@ public class StockDetailsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<StockDetailsResult> detail(@RequestBody StockDetailsParam stockDetailsParam) {
+    public ResponseData detail(@RequestBody StockDetailsParam stockDetailsParam) {
         StockDetails detail = this.stockDetailsService.getById(stockDetailsParam.getStockItemId());
         StockDetailsResult result = new StockDetailsResult();
         ToolUtil.copyProperties(detail, result);

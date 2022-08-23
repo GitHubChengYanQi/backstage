@@ -65,6 +65,6 @@ public interface ItemBrandBindService extends IService<ItemBrandBind> {
      * @author 
      * @Date 2021-09-24
      */
-     PageInfo<ItemBrandBindResult> findPageBySpec(ItemBrandBindParam param, DataScope dataScope );
+     PageInfo findPageBySpec(ItemBrandBindParam param, DataScope dataScope );
 
 }

@@ -78,7 +78,7 @@ public class ItemClassController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ItemClassResult> detail(@RequestBody ItemClassParam itemClassParam) {
+    public ResponseData detail(@RequestBody ItemClassParam itemClassParam) {
         ItemClass detail = this.itemClassService.getById(itemClassParam.getClassId());
         ItemClassResult result = new ItemClassResult();
         ToolUtil.copyProperties(detail, result);
@@ -95,7 +95,7 @@ public class ItemClassController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ItemClassResult> list(@RequestBody(required = false) ItemClassParam itemClassParam) {
+    public PageInfo list(@RequestBody(required = false) ItemClassParam itemClassParam) {
         if(ToolUtil.isEmpty(itemClassParam)){
             itemClassParam = new ItemClassParam();
         }
