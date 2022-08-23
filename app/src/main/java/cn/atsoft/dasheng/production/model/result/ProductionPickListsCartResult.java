@@ -34,8 +34,7 @@ public class ProductionPickListsCartResult implements Serializable {
     private ProductionPickListsResult productionPickListsResult;
     private ProductionPickListsResult pickListsResult;
     private ProductionPickListsDetailResult productionPickListsDetailResult;
-    private List<Long> brandIds;
-    private List<String> brandNames;
+
     private Long stockNumber;
     //仓库
     private StorehouseSimpleResult storehouseResult;
