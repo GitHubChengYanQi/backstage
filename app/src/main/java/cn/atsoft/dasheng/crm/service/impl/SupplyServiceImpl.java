@@ -71,7 +71,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Transactional
     public void add(SupplyParam param) {
 
-        List<Supply> supplies = this.query().eq("sku_id", param.getSkuId()).list();
+        List<Supply> supplies = this.query().eq("sku_id", param.getSkuId()).eq("display",1).list();
         List<Supply> supplyList = new ArrayList<>();
 
         for (Long brandId : param.getBrandIds()) {
