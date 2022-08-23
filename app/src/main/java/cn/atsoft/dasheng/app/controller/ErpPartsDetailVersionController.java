@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import io.swagger.annotations.Api;
@@ -26,7 +27,7 @@ import java.util.List;
  * @Date 2021-10-26 10:59:07
  */
 @RestController
-@RequestMapping("/erpPartsDetail/{v}")
+@RequestMapping("/erpPartsDetail/v1")
 @Api(tags = "清单详情")
 
 public class ErpPartsDetailVersionController extends BaseController {
@@ -36,16 +37,12 @@ public class ErpPartsDetailVersionController extends BaseController {
 
 
     @RequestMapping(value = "/bomList", method = RequestMethod.POST)
-    
+    @ApiVersion("1.1")
     @ApiOperation("详情")
     public ResponseData bomList(@RequestBody ErpPartsDetailParam erpPartsDetailParam) {
         List<ErpPartsDetailResult> detailResults = this.erpPartsDetailService.bomListVersion(erpPartsDetailParam);
         return ResponseData.success(detailResults);
     }
-
-
-
-
 
 
 }
