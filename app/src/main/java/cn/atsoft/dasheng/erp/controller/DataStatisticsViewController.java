@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.AllocationLogResult;
+import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockReceiptResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult;
 import cn.atsoft.dasheng.erp.service.*;
@@ -48,9 +49,11 @@ public class DataStatisticsViewController extends BaseController {
     @Autowired
     private MaintenanceService maintenanceService;
 
-
     @Autowired
     private AllocationLogService allocationLogService;
+
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
 
     @RequestMapping(value = "/taskCountView", method = RequestMethod.GET)
@@ -167,6 +170,10 @@ public class DataStatisticsViewController extends BaseController {
                     setTimes(times);
                 }});
                 ToolUtil.copyProperties(pageBySpec4, result);
+                break;
+            case "anomaly":
+                PageInfo<AnomalyOrderResult> pageBySpec5 = anomalyOrderService.findPageBySpec(new AnomalyOrderParam());
+                ToolUtil.copyProperties(pageBySpec5, result);
                 break;
         }
         return result;
