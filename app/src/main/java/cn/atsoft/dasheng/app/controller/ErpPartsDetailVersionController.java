@@ -27,7 +27,7 @@ import java.util.List;
  * @Date 2021-10-26 10:59:07
  */
 @RestController
-@RequestMapping("/erpPartsDetail/v1")
+@RequestMapping("/erpPartsDetail/{v}")
 @Api(tags = "清单详情")
 
 public class ErpPartsDetailVersionController extends BaseController {
@@ -37,7 +37,7 @@ public class ErpPartsDetailVersionController extends BaseController {
 
 
     @RequestMapping(value = "/bomList", method = RequestMethod.POST)
-    @ApiVersion("1.1")
+    @ApiVersion("1.1.1")
     @ApiOperation("详情")
     public ResponseData bomList(@RequestBody ErpPartsDetailParam erpPartsDetailParam) {
         List<ErpPartsDetailResult> detailResults = this.erpPartsDetailService.bomListVersion(erpPartsDetailParam);

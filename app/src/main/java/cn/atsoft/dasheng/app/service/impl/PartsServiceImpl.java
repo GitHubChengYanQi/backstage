@@ -177,6 +177,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     @Transactional
+    @Override
     public Parts newAdd(PartsParam partsParam) {
         Parts part = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(part)) {
@@ -201,7 +202,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         erpPartsDetailService.saveBatch(partsDetails);
 
         List<Long> children = getChildren(entity.getPartsId());
-        entity.setChildrens(JSON.toJSONString(children));
+        if (ToolUtil.isNotEmpty(children)) {
+            entity.setChildren(JSON.toJSONString(children));
+        }
+
         this.updateById(entity);
 
         return entity;
@@ -222,8 +226,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Parts> list = this.query().in("sku_id", skuIds).eq("status", 99).list();
         for (Parts parts : list) {
             partIds.add(parts.getPartsId());
-            getChildren(parts.getPartsId());
+            parts.setPid(partId);
+//            getChildren(parts.getPartsId());
         }
+        this.updateBatchById(list);
         return partIds;
     }
 

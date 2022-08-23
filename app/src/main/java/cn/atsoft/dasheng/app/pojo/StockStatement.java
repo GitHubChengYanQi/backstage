@@ -11,4 +11,5 @@ public class StockStatement {
     private String month;
     private Long value;
     private Long num;
+    private Long classNum;
 }

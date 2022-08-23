@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.AnomalyCensus;
 import cn.atsoft.dasheng.erp.pojo.AnomalyCustomerNum;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.CheckNumber;
@@ -184,7 +185,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
 
     @Override
-    public Map<Integer, Integer> anomalyCensus(AnomalyParam param) {
+    public List<AnomalyCensus> anomalyCensus(AnomalyParam param) {
 
         List<AnomalyResult> anomalyResults = this.baseMapper.customList(param);
         Map<Integer, Integer> map = new HashMap<>();
@@ -210,7 +211,16 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             map.put(month, num);
         }
 
-        return map;
+        List<AnomalyCensus> anomalyCensuses = new ArrayList<>();
+        for (Integer month : map.keySet()) {
+            Integer number = map.get(month);
+            AnomalyCensus anomalyCensus = new AnomalyCensus();
+            anomalyCensus.setMonth(month);
+            anomalyCensus.setNumber(number);
+            anomalyCensuses.add(anomalyCensus);
+        }
+
+        return anomalyCensuses;
     }
 
     @Override

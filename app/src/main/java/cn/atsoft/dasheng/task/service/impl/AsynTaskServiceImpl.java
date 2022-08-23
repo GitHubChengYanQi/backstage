@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.task.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.app.pojo.AnalysisResult;
 import cn.atsoft.dasheng.app.pojo.StockStatement;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
@@ -18,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +37,9 @@ import java.util.*;
  */
 @Service
 public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> implements AsynTaskService {
+    @Autowired
+    private StockDetailsService stockDetailsService;
+
 
     @Override
     public void add(AsynTaskParam param) {
@@ -54,15 +60,44 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         this.updateById(newEntity);
     }
 
+
     @Override
     public List<AsynTaskResult> BomDetailed() {
         List<AsynTask> asynTasks = this.query().eq("type", "报表物料分析").list();
         List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
 
+
+        List<Long> skuIds = new ArrayList<>();
         for (AsynTaskResult asynTask : asynTaskResults) {
             AllBomResult allBomResult = JSON.parseObject(asynTask.getContent(), AllBomResult.class);
             asynTask.setAllBomResult(allBomResult);
+            for (AnalysisResult analysisResult : allBomResult.getOwe()) {
+                skuIds.add(analysisResult.getSkuId());
+            }
         }
+
+        List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query()
+                .select("sku_id AS skuId ,sum(number) as num ")
+                .eq("display", 1)
+                .in("sku_id", skuIds)
+                .groupBy("sku_id")
+                .list();
+
+
+        for (AsynTaskResult asynTaskResult : asynTaskResults) {
+            AllBomResult allBomResult = asynTaskResult.getAllBomResult();
+            if (ToolUtil.isNotEmpty(allBomResult) && ToolUtil.isNotEmpty(allBomResult.getOwe())) {
+                for (AnalysisResult analysisResult : allBomResult.getOwe()) {
+                    for (StockDetails stockDetail : stockDetails) {
+                        if (analysisResult.getSkuId().equals(stockDetail.getSkuId())) {
+                            analysisResult.setStockNumber(stockDetail.getNum());
+                        }
+                    }
+                }
+            }
+        }
+
+
         return asynTaskResults;
     }
 
@@ -150,6 +185,16 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
             }
             skuMap.put(skuName, skuAnalyseList);
         }
+
+
+//        List<StockDetails> stockDetails = allSkuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query()
+//                .select("sku_id AS skuId ,sum(number) as num ")
+//                .eq("display", 1)
+//                .in("sku_id", allSkuIds)
+//                .groupBy("sku_id")
+//                .list();
+
+
         return skuMap;
     }
 
@@ -161,8 +206,10 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
         format(asynTaskResults);
 
-        if (ToolUtil.isNotEmpty(asynTaskResults)) {
+        if (ToolUtil.isNotEmpty(asynTaskResults)) {     //就是一个
             AsynTaskResult asynTaskResult = asynTaskResults.get(0);
+            List<StockStatement> stockStatements = asynTaskResult.getStockStatements();
+
             return asynTaskResult.getStockStatements();
         }
         return null;

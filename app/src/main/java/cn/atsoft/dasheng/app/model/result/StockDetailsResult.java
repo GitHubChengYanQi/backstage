@@ -51,6 +51,8 @@ public class StockDetailsResult implements Serializable {
     private Long spuClassificationId;
     private Integer anomaly;
     private Set<Long> skuIds;
+    private Long spuClassId;
+    private Long spuClassNum;
     /**
      * 库位id
      */

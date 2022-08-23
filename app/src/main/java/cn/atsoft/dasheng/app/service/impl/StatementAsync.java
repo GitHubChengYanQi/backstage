@@ -49,6 +49,8 @@ public class StatementAsync {
             for (SkuAnalyse skuAnalyse : skuAnalyseList) {
                 if (detailsResult.getSkuId().equals(skuAnalyse.getSkuId())) {
                     detailsResult.setSpuClassName(skuAnalyse.getClassName());
+                    detailsResult.setSpuClassificationId(skuAnalyse.getSpuClassId());
+                    detailsResult.setSpuClassNum(skuAnalyse.getNumber());
                     break;
                 }
             }

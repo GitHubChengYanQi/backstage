@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -26,6 +27,9 @@ public interface PartsService extends IService<Parts> {
      * @Date 2021-10-21
      */
     Parts add(PartsParam partsParam);
+
+    @Transactional
+    Parts newAdd(PartsParam partsParam);
 
     void startAnalyse();
 
