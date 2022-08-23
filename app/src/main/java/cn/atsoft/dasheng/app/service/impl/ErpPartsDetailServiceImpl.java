@@ -84,14 +84,12 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         List<ErpPartsDetailResult> detailResults = null;
         if (ToolUtil.isNotEmpty(param.getSkuId())) {   //bom最末级
             detailResults = recursiveDetails(param.getSkuId(), null);
-            format(detailResults);
-
         } else {      //当前bom 下一级
             detailResults = this.baseMapper.customList(param);
+        }
+        if (ToolUtil.isNotEmpty(detailResults) && detailResults.size() > 0) {
             format(detailResults);
         }
-
-
 
         return detailResults;
     }
@@ -106,8 +104,10 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
                 detailResults = recursiveDetails(param.getSkuId(), null);   //bom最末级
             } else {
                 Parts parts = partsService.query().eq("sku_id", param.getSkuId()).eq("status", 99).last("limit 1").one();
-                param.setPartsId(parts.getPartsId());
-                detailResults = this.baseMapper.customList(param);  //当前bom 下一级
+                if (ToolUtil.isNotEmpty(parts)) {
+                    param.setPartsId(parts.getPartsId());
+                    detailResults = this.baseMapper.customList(param);  //当前bom 下一级
+                }
             }
         }
         if (ToolUtil.isNotEmpty(detailResults)) {
@@ -129,7 +129,7 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
             for (ErpPartsDetailResult detailResult : detailResults) {
                 list.addAll(recursiveDetails(detailResult.getSkuId(), detailResult));
             }
-        } else {
+        } else if (ToolUtil.isNotEmpty(result)) {
             list.add(result);
         }
         return list;
