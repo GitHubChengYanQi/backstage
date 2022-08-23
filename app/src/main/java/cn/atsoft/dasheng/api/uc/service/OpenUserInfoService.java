@@ -64,6 +64,6 @@ public interface OpenUserInfoService extends IService<OpenUserInfo> {
      * @author 
      * @Date 2021-08-25
      */
-     PageInfo<OpenUserInfoResult> findPageBySpec(OpenUserInfoParam param);
+     PageInfo findPageBySpec(OpenUserInfoParam param);
 
 }

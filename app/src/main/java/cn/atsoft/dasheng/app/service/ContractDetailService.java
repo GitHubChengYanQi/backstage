@@ -68,7 +68,7 @@ public interface ContractDetailService extends IService<ContractDetail> {
      * @author sb
      * @Date 2021-09-18
      */
-     PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param, DataScope dataScope );
+     PageInfo findPageBySpec(ContractDetailParam param, DataScope dataScope );
 
     void format(List<ContractDetailResult> data);
 }

@@ -101,7 +101,7 @@ public class OriginController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<OriginResult> list(@RequestBody(required = false) OriginParam originParam) {
+    public PageInfo list(@RequestBody(required = false) OriginParam originParam) {
         if (ToolUtil.isEmpty(originParam)) {
             originParam = new OriginParam();
         }

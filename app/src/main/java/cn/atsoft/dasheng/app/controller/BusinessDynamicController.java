@@ -96,7 +96,7 @@ public class BusinessDynamicController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<BusinessDynamicResult> list(@RequestBody(required = false) BusinessDynamicParam businessDynamicParam) {
+    public PageInfo list(@RequestBody(required = false) BusinessDynamicParam businessDynamicParam) {
         if (ToolUtil.isEmpty(businessDynamicParam)) {
             businessDynamicParam = new BusinessDynamicParam();
         }

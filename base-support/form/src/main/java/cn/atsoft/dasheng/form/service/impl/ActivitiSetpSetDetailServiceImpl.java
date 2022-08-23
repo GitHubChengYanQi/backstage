@@ -60,7 +60,7 @@ public class ActivitiSetpSetDetailServiceImpl extends ServiceImpl<ActivitiSetpSe
     }
 
     @Override
-    public PageInfo<ActivitiSetpSetDetailResult> findPageBySpec(ActivitiSetpSetDetailParam param){
+    public PageInfo findPageBySpec(ActivitiSetpSetDetailParam param){
         Page<ActivitiSetpSetDetailResult> pageContext = getPageContext();
         IPage<ActivitiSetpSetDetailResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

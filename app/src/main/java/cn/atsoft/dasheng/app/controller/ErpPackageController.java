@@ -113,7 +113,7 @@ public class ErpPackageController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ErpPackageResult> list(@RequestBody(required = false) ErpPackageParam erpPackageParam) {
+    public PageInfo list(@RequestBody(required = false) ErpPackageParam erpPackageParam) {
         if (ToolUtil.isEmpty(erpPackageParam)) {
             erpPackageParam = new ErpPackageParam();
         }

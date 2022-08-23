@@ -162,7 +162,7 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
     }
 
     @Override
-    public PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param, DataScope dataScope) {
+    public PageInfo findPageBySpec(ContractDetailParam param, DataScope dataScope) {
         Page<ContractDetailResult> pageContext = getPageContext();
         IPage<ContractDetailResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
 

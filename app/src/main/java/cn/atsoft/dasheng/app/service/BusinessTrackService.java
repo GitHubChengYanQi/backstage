@@ -66,7 +66,7 @@ public interface BusinessTrackService extends IService<BusinessTrack> {
      * @author cheng
      * @Date 2021-09-17
      */
-    PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope);
+    PageInfo findPageBySpec(BusinessTrackParam param, DataScope dataScope);
 
     /**
      *查找分类数量

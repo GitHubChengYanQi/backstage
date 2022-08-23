@@ -109,7 +109,7 @@ public class ErpPartsDetailController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ErpPartsDetailResult> list(@RequestBody(required = false) ErpPartsDetailParam erpPartsDetailParam) {
+    public PageInfo list(@RequestBody(required = false) ErpPartsDetailParam erpPartsDetailParam) {
         if(ToolUtil.isEmpty(erpPartsDetailParam)){
             erpPartsDetailParam = new ErpPartsDetailParam();
         }

@@ -262,7 +262,7 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ProductionPickListsResult> list(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+    public PageInfo list(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
         if (ToolUtil.isEmpty(productionPickListsParam)) {
             productionPickListsParam = new ProductionPickListsParam();
         }
@@ -290,7 +290,7 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/selfPickTasks", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiProcessTaskResult> selfPickTasks(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+    public PageInfo selfPickTasks(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
 
 
         if (ToolUtil.isEmpty(activitiProcessTaskParam)) {

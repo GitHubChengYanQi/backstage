@@ -86,11 +86,11 @@ public class CrmBusinessSalesProcessController extends BaseController {
     @ApiOperation("详情")
     public ResponseData detail(@RequestBody CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
         if (LoginContextHolder.getContext().isAdmin()){
-            PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
+            PageInfo pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
             return ResponseData.success(pageBySpec.getData().get(0));
         }else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, dataScope);
+            PageInfo pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, dataScope);
             return ResponseData.success(pageBySpec.getData().get(0));
         }
 
@@ -106,7 +106,7 @@ public class CrmBusinessSalesProcessController extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CrmBusinessSalesProcessResult> list(@RequestBody(required = false) CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
+    public PageInfo list(@RequestBody(required = false) CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
         salesId = crmBusinessSalesProcessParam.getSalesId();
         if (ToolUtil.isEmpty(crmBusinessSalesProcessParam)) {
             crmBusinessSalesProcessParam = new CrmBusinessSalesProcessParam();

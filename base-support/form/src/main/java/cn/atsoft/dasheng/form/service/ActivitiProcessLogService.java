@@ -65,7 +65,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      * @author Sing
      * @Date 2021-11-10
      */
-    PageInfo<ActivitiProcessLogResult> findPageBySpec(ActivitiProcessLogParam param);
+    PageInfo findPageBySpec(ActivitiProcessLogParam param);
 
 
 

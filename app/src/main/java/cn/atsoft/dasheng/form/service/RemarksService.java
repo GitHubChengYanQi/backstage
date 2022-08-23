@@ -65,10 +65,10 @@ public interface RemarksService extends IService<Remarks> {
      * @author song
      * @Date 2021-12-16
      */
-    PageInfo<RemarksResult> findPageBySpec(RemarksParam param);
+    PageInfo findPageBySpec(RemarksParam param);
 
 
-    PageInfo<RemarksResult> personalDynamic(RemarksParam param);
+    PageInfo personalDynamic(RemarksParam param);
 
     void addNote(AuditParam auditParam);
 

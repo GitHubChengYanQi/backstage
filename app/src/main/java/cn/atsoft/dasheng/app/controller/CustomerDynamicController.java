@@ -94,7 +94,7 @@ public class CustomerDynamicController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CustomerDynamicResult> list(@RequestBody(required = false) CustomerDynamicParam customerDynamicParam) {
+    public PageInfo list(@RequestBody(required = false) CustomerDynamicParam customerDynamicParam) {
         if(ToolUtil.isEmpty(customerDynamicParam)){
             customerDynamicParam = new CustomerDynamicParam();
         }

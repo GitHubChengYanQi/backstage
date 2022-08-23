@@ -110,7 +110,7 @@ public class SysDeptController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<SysDeptResult> list(@RequestBody(required = false) SysDeptParam sysDeptParam) {
+    public PageInfo list(@RequestBody(required = false) SysDeptParam sysDeptParam) {
         if(ToolUtil.isEmpty(sysDeptParam)){
             sysDeptParam = new SysDeptParam();
         }

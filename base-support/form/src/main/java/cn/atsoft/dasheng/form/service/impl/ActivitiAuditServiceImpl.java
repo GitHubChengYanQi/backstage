@@ -133,7 +133,7 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     }
 
     @Override
-    public PageInfo<ActivitiAuditResult> findPageBySpec(ActivitiAuditParam param) {
+    public PageInfo findPageBySpec(ActivitiAuditParam param) {
         Page<ActivitiAuditResult> pageContext = getPageContext();
         IPage<ActivitiAuditResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

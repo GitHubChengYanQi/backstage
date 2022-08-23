@@ -97,7 +97,7 @@ public class FormDataValueController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<FormDataValueResult> list(@RequestBody(required = false) FormDataValueParam formDataValueParam) {
+    public PageInfo list(@RequestBody(required = false) FormDataValueParam formDataValueParam) {
         if(ToolUtil.isEmpty(formDataValueParam)){
             formDataValueParam = new FormDataValueParam();
         }

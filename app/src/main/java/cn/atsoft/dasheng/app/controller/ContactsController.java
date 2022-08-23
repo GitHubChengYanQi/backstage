@@ -117,7 +117,7 @@ public class ContactsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam) {
+    public PageInfo list(@RequestBody(required = false) ContactsParam contactsParam) {
         if (ToolUtil.isEmpty(contactsParam)) {
             contactsParam = new ContactsParam();
         }

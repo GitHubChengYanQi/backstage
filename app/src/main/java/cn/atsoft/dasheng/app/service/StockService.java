@@ -73,7 +73,7 @@ public interface StockService extends IService<Stock> {
      * @author
      * @Date 2021-07-15
      */
-    PageInfo<StockResult> findPageBySpec(StockParam param, DataScope dataScope);
+    PageInfo findPageBySpec(StockParam param, DataScope dataScope);
 
     void batchDelete(List<Long> Ids);
 
