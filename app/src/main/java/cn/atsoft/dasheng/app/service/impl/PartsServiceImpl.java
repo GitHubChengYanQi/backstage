@@ -175,6 +175,37 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     }
 
+    public Parts newAdd(PartsParam partsParam) {
+        Parts part = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
+        if (ToolUtil.isNotEmpty(part)) {
+            part.setStatus(0);
+            this.updateById(part);
+        }
+        Parts entity = getEntity(partsParam);
+        entity.setStatus(99);
+        if (ToolUtil.isEmpty(entity.getName())) {   //版本号
+//            entity.setName();
+        }
+        this.save(entity);
+
+        List<ErpPartsDetail> partsDetails = new ArrayList<>();
+        for (ErpPartsDetailParam partsParamPart : partsParam.getParts()) {
+            ErpPartsDetail partsDetail = new ErpPartsDetail();
+            ToolUtil.copyProperties(partsParamPart, partsDetail);
+            partsParamPart.setPartsId(entity.getPartsId());
+            partsDetails.add(partsDetail);
+        }
+
+
+        return entity;
+    }
+
+
+    private void updateStatus() {
+
+    }
+
+
     /**
      * 开始分析
      */
