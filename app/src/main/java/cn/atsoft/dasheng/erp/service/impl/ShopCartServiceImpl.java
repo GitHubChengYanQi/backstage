@@ -390,7 +390,6 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                 case Stocktaking:
                     Inventory inventory = inventoryService.getById(param.getSourceId());
                     formId = inventory.getInventoryTaskId();
-
                     break;
             }
             processTask = activitiProcessTaskService.getByFormId(formId);

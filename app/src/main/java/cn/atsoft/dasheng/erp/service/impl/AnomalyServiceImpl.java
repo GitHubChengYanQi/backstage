@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -16,6 +17,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.AnomalyCensus;
 import cn.atsoft.dasheng.erp.pojo.AnomalyCustomerNum;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.CheckNumber;
@@ -27,6 +29,9 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -105,12 +110,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private AnomalyDetailService anomalyDetailService;
     @Autowired
     private InstockLogDetailService logDetailService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private ProductionPickListsCartService listsCartService;
 
 
     @Transactional
     @Override
     public Anomaly add(AnomalyParam param) {
-
         switch (param.getAnomalyType()) {
             case InstockError:     //判断入库单
                 inventoryService.staticState();  //静态盘点判断
@@ -125,10 +133,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 param.setType(param.getAnomalyType().toString());
                 break;
             case StocktakingError:  //盘点:
-                boolean normal = isNormal(param);  //判断有无异常件  没有异常件 不执行以下代码 直接退出
-                if (normal) {
+            case timelyInventory:
+                boolean normal = isNormal(param);   //判断有无异常件
+                if (!normal) {    //无异常
                     updateInventory(param);   //盘点详情 修改成正常状态
-                    return null;
+                } else {
+                    inventoryStockService.updateInventoryStatus(param, -1);
                 }
                 break;
         }
@@ -184,7 +194,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
 
     @Override
-    public Map<Integer, Integer> anomalyCensus(AnomalyParam param) {
+    public List<AnomalyCensus> anomalyCensus(AnomalyParam param) {
 
         List<AnomalyResult> anomalyResults = this.baseMapper.customList(param);
         Map<Integer, Integer> map = new HashMap<>();
@@ -210,7 +220,16 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             map.put(month, num);
         }
 
-        return map;
+        List<AnomalyCensus> anomalyCensuses = new ArrayList<>();
+        for (Integer month : map.keySet()) {
+            Integer number = map.get(month);
+            AnomalyCensus anomalyCensus = new AnomalyCensus();
+            anomalyCensus.setMonth(month);
+            anomalyCensus.setNumber(number);
+            anomalyCensuses.add(anomalyCensus);
+        }
+
+        return anomalyCensuses;
     }
 
     @Override
@@ -365,20 +384,24 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public boolean addDetails(AnomalyParam param) {
         boolean t = true;
 
-        if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
-            switch (param.getAnomalyType()) {
-                case StocktakingError:
-                case timelyInventory:
-                    deleteBind(param.getAnomalyId());
-                    updateInventory(param);     //盘点正常
-                    t = false;
-                    break;
-                case InstockError:
+        switch (param.getAnomalyType()) {
+            case InstockError:
+                if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
                     throw new ServiceException(500, "缺少异常信息");
-            }
-        } else {
-            inventoryStockService.updateInventoryStatus(param, -1);
+                }
+                break;
+            case timelyInventory:
+            case StocktakingError:
+                boolean normal = isNormal(param);   //判断有无异常件
+                if (!normal) {    //无异常
+                    updateInventory(param);   //盘点详情 修改成正常状态
+                    t = false;
+                } else {
+                    inventoryStockService.updateInventoryStatus(param, -1);
+                }
+                break;
         }
+
         if (t) {   //添加异常信息
             List<Inkind> inkinds = new ArrayList<>();
 
@@ -424,13 +447,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @return
      */
     private boolean isNormal(AnomalyParam param) {
-        inventoryDetailService.jurisdiction(param.getFormId());
         //判断盘点操作权限
-        if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
-            deleteBind(param.getAnomalyId()); //删除绑定数据
-            return true;
-        }
-        return false;
+        inventoryDetailService.jurisdiction(param.getFormId());
+
+        return anomalyOrderService.check(param.getSkuId(), param.getBrandId(), param.getPositionId(), Math.toIntExact(param.getRealNumber()));
     }
 
     /**
@@ -574,21 +594,19 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
+
         deleteBind(param.getAnomalyId());   //删除绑定数据
-
-
         for (AnomalyType value : AnomalyType.values()) {
             if (value.name().equals(oldEntity.getType())) {
                 param.setAnomalyType(value);
             }
         }
+
         boolean b = addDetails(param);
         if (b) {    //添加购物车
-
             shopCartService.remove(new QueryWrapper<ShopCart>() {{
                 eq("form_id", oldEntity.getAnomalyId());
             }});
-
             ShopCartParam shopCartParam = new ShopCartParam();
             shopCartParam.setSkuId(param.getSkuId());
             shopCartParam.setBrandId(param.getBrandId());
