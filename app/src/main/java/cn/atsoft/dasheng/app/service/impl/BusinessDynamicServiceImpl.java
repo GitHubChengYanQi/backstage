@@ -74,7 +74,7 @@ public class BusinessDynamicServiceImpl extends ServiceImpl<BusinessDynamicMappe
     }
 
     @Override
-    public PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param, DataScope dataScope) {
+    public PageInfo findPageBySpec(BusinessDynamicParam param, DataScope dataScope) {
         Page<BusinessDynamicResult> pageContext = getPageContext();
         IPage<BusinessDynamicResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());

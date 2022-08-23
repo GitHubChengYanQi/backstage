@@ -58,7 +58,7 @@ public class OpenUserInfoServiceImpl extends ServiceImpl<OpenUserInfoMapper, Ope
     }
 
     @Override
-    public PageInfo<OpenUserInfoResult> findPageBySpec(OpenUserInfoParam param){
+    public PageInfo findPageBySpec(OpenUserInfoParam param){
         Page<OpenUserInfoResult> pageContext = getPageContext();
         IPage<OpenUserInfoResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

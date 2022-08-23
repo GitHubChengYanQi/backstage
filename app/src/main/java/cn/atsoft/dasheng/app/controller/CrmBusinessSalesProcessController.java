@@ -84,13 +84,13 @@ public class CrmBusinessSalesProcessController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmBusinessSalesProcessResult> detail(@RequestBody CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
+    public ResponseData detail(@RequestBody CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
         if (LoginContextHolder.getContext().isAdmin()){
-            PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
+            PageInfo pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
             return ResponseData.success(pageBySpec.getData().get(0));
         }else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, dataScope);
+            PageInfo pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, dataScope);
             return ResponseData.success(pageBySpec.getData().get(0));
         }
 
@@ -106,7 +106,7 @@ public class CrmBusinessSalesProcessController extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CrmBusinessSalesProcessResult> list(@RequestBody(required = false) CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
+    public PageInfo list(@RequestBody(required = false) CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
         salesId = crmBusinessSalesProcessParam.getSalesId();
         if (ToolUtil.isEmpty(crmBusinessSalesProcessParam)) {
             crmBusinessSalesProcessParam = new CrmBusinessSalesProcessParam();
@@ -122,7 +122,7 @@ public class CrmBusinessSalesProcessController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.crmBusinessSalesProcessService.listMaps(processQueryWrapper);

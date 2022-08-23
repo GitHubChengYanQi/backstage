@@ -185,7 +185,7 @@ public class DocumentsPermissionsServiceImpl extends ServiceImpl<DocumentsPermis
     }
 
     @Override
-    public PageInfo<DocumentsPermissionsResult> findPageBySpec(DocumentsPermissionsParam param) {
+    public PageInfo findPageBySpec(DocumentsPermissionsParam param) {
         Page<DocumentsPermissionsResult> pageContext = getPageContext();
         IPage<DocumentsPermissionsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

@@ -157,7 +157,7 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PartsResult> detail(@RequestBody PartsParam partsParam) {
+    public ResponseData detail(@RequestBody PartsParam partsParam) {
         Parts detail = this.partsService.getById(partsParam.getPartsId());
         PartsResult result = new PartsResult();
         ToolUtil.copyProperties(detail, result);
@@ -210,7 +210,7 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<PartsResult> list(@RequestBody(required = false) PartsParam partsParam) {
+    public PageInfo list(@RequestBody(required = false) PartsParam partsParam) {
         if (ToolUtil.isEmpty(partsParam)) {
             partsParam = new PartsParam();
         }
@@ -235,7 +235,7 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/oldList", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<PartsResult> oldList(@RequestBody(required = false) PartsParam partsParam) {
+    public PageInfo oldList(@RequestBody(required = false) PartsParam partsParam) {
         if (ToolUtil.isEmpty(partsParam)) {
             partsParam = new PartsParam();
         }
@@ -254,7 +254,7 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) PartsParam partsParam) {
+    public ResponseData listSelect(@RequestBody(required = false) PartsParam partsParam) {
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
         partsQueryWrapper.eq("display", 1);
         if (ToolUtil.isNotEmpty(partsParam)) {
@@ -279,7 +279,7 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView() {
+    public ResponseData treeView() {
         List<Map<String, Object>> list = this.partsService.listMaps();
 
         if (ToolUtil.isEmpty(list)) {

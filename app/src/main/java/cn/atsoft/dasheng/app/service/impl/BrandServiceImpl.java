@@ -118,7 +118,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     @Override
-    public PageInfo<BrandResult> findPageBySpec(BrandParam param, DataScope dataScope) {
+    public PageInfo findPageBySpec(BrandParam param, DataScope dataScope) {
         Page<BrandResult> pageContext = getPageContext();
         IPage<BrandResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
@@ -126,7 +126,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     @Override
-    public PageInfo<BrandResult> pureList(BrandParam param, DataScope dataScope) {
+    public PageInfo pureList(BrandParam param, DataScope dataScope) {
         Page<BrandResult> pageContext = getPageContext();
         IPage<BrandResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         return PageFactory.createPageInfo(page);

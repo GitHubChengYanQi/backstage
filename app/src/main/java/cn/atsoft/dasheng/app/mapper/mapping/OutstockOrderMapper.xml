@@ -67,7 +67,15 @@
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-
+        <if test="paramCondition.createUser != null">
+            and create_user =  #{paramCondition.createUser}
+        </if>
+        <if test="paramCondition.times != null and paramCondition.times.size == 2">
+            and create_time between
+            <foreach collection="paramCondition.times" index="index" item="state" separator=" and ">
+                #{state}
+            </foreach>
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"

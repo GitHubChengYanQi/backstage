@@ -68,6 +68,6 @@ public interface ErpPackageService extends IService<ErpPackage> {
      * @author qr
      * @Date 2021-08-04
      */
-     PageInfo<ErpPackageResult> findPageBySpec(ErpPackageParam param, DataScope dataScope );
+     PageInfo findPageBySpec(ErpPackageParam param, DataScope dataScope );
 
 }

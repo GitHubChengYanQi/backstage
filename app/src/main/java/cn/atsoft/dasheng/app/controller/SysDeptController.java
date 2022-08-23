@@ -91,7 +91,7 @@ public class SysDeptController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SysDeptResult> detail(@RequestBody SysDeptParam sysDeptParam) {
+    public ResponseData detail(@RequestBody SysDeptParam sysDeptParam) {
         SysDept detail = this.sysDeptService.getById(sysDeptParam.getDeptId());
         SysDeptResult result = new SysDeptResult();
         ToolUtil.copyProperties(detail, result);
@@ -110,7 +110,7 @@ public class SysDeptController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<SysDeptResult> list(@RequestBody(required = false) SysDeptParam sysDeptParam) {
+    public PageInfo list(@RequestBody(required = false) SysDeptParam sysDeptParam) {
         if(ToolUtil.isEmpty(sysDeptParam)){
             sysDeptParam = new SysDeptParam();
         }
@@ -135,7 +135,7 @@ public class SysDeptController extends BaseController {
     */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<Map<String,Object>> list = this.sysDeptService.listMaps();
 
         SysDeptSelectWrapper factory = new SysDeptSelectWrapper(list);
@@ -150,7 +150,7 @@ public class SysDeptController extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView() {
+    public ResponseData treeView() {
         List<Map<String,Object>> list = this.sysDeptService.listMaps();
 
         if(ToolUtil.isEmpty(list)){
@@ -192,7 +192,7 @@ public class SysDeptController extends BaseController {
 
     @RequestMapping(value = "/dictTypeListSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> dictTypeListSelect() {
+    public ResponseData dictTypeListSelect() {
         List<Map<String, Object>> list = this.dictTypeService.listMaps();
         DictTypeWrapper dictTypeWrapper = new DictTypeWrapper(list);
         List<Map<String, Object>> result = dictTypeWrapper.wrap();

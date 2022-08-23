@@ -291,7 +291,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     }
 
     @Override
-    public PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param, DataScope dataScope ) {
+    public PageInfo findPageBySpec(CrmBusinessDetailedParam param, DataScope dataScope ) {
         Page<CrmBusinessDetailedResult> pageContext = getPageContext();
         IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 

@@ -593,8 +593,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             break;
                     }
                     instockOrderParam.setType("调拨入库");
-                    instockOrderParam.setSource("PickLists");
-                    instockOrderParam.setSourceId(pickLists.getPickListsId());
+                    instockOrderParam.setSource("processTask");
+                    if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                        instockOrderParam.setMainTaskId(processTask.getMainTaskId());
+                    }
+                    instockOrderParam.setSourceId(processTask.getProcessTaskId());
+                    instockOrderParam.setPid(processTask.getProcessTaskId());
                     instockOrderParam.setListParams(instockListParams);
                     InstockOrder addEntity = instockOrderService.add(instockOrderParam);
                     for (AllocationCart allocationCart : allocationCarts) {
@@ -1229,7 +1233,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public PageInfo<ActivitiProcessLogResult> findPageBySpec(ActivitiProcessLogParam param) {
+    public PageInfo findPageBySpec(ActivitiProcessLogParam param) {
         Page<ActivitiProcessLogResult> pageContext = getPageContext();
         IPage<ActivitiProcessLogResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

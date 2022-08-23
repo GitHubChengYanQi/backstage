@@ -74,6 +74,6 @@ public interface CrmBusinessDetailedService extends IService<CrmBusinessDetailed
      * @author qr
      * @Date 2021-08-04
      */
-     PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param, DataScope dataScope );
+     PageInfo findPageBySpec(CrmBusinessDetailedParam param, DataScope dataScope );
 
 }

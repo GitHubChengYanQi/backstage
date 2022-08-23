@@ -98,7 +98,7 @@ public class ActivitiAuditController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiAuditResult> list(@RequestBody(required = false) ActivitiAuditParam activitiAuditParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiAuditParam activitiAuditParam) {
         if (ToolUtil.isEmpty(activitiAuditParam)) {
             activitiAuditParam = new ActivitiAuditParam();
         }

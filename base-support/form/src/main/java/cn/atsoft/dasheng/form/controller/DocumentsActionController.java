@@ -97,7 +97,7 @@ public class DocumentsActionController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<DocumentsActionResult> list(@RequestBody(required = false) DocumentsActionParam documentsActionParam) {
+    public PageInfo list(@RequestBody(required = false) DocumentsActionParam documentsActionParam) {
         if(ToolUtil.isEmpty(documentsActionParam)){
             documentsActionParam = new DocumentsActionParam();
         }

@@ -67,6 +67,6 @@ public interface UcSmsCodeService extends IService<UcSmsCode> {
      * @author Sing
      * @Date 2021-03-16
      */
-     PageInfo<UcSmsCodeResult> findPageBySpec(UcSmsCodeParam param);
+     PageInfo findPageBySpec(UcSmsCodeParam param);
 
 }

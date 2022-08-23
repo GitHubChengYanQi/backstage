@@ -220,6 +220,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getPickListsId());
             activitiProcessTaskParam.setType("OUTSTOCK");
+            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask")) {
+                activitiProcessTaskParam.setPid(param.getSourceId());
+            }
+            if (ToolUtil.isNotEmpty(param.getMainTaskId())) {
+                activitiProcessTaskParam.setMainTaskId(param.getMainTaskId());
+            }
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             activitiProcessTaskParam.setSource(param.getSource());
@@ -301,7 +307,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
 
     @Override
-    public PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param) {
+    public PageInfo findPageBySpec(ProductionPickListsParam param) {
         Page<ProductionPickListsResult> pageContext = getPageContext();
         IPage<ProductionPickListsResult> page = this.baseMapper.customPageList(pageContext, param);
         if (ToolUtil.isNotEmpty(page.getRecords())) {

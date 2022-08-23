@@ -83,7 +83,7 @@ public class MaterialController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<MaterialResult> detail(@RequestBody MaterialParam materialParam) {
+    public ResponseData detail(@RequestBody MaterialParam materialParam) {
         Material detail = this.materialService.getById(materialParam.getMaterialId());
         MaterialResult result = new MaterialResult();
         ToolUtil.copyProperties(detail, result);
@@ -100,7 +100,7 @@ public class MaterialController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MaterialResult> list(@RequestBody(required = false) MaterialParam materialParam) {
+    public PageInfo list(@RequestBody(required = false) MaterialParam materialParam) {
         if(ToolUtil.isEmpty(materialParam)){
             materialParam = new MaterialParam();
         }
@@ -121,7 +121,7 @@ public class MaterialController extends BaseController {
     */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<Material> materialQueryWrapper = new QueryWrapper<>();
         materialQueryWrapper.in("display",1);
         List<Map<String,Object>> list = this.materialService.listMaps(materialQueryWrapper);

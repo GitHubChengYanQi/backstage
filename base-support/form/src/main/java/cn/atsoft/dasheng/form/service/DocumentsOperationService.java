@@ -68,7 +68,7 @@ public interface DocumentsOperationService extends IService<DocumentsOperation> 
      * @author 
      * @Date 2022-05-18
      */
-     PageInfo<DocumentsOperationResult> findPageBySpec(DocumentsOperationParam param);
+     PageInfo findPageBySpec(DocumentsOperationParam param);
 
     DocumentsOperation getEntity(DocumentsOperationParam param);
 }

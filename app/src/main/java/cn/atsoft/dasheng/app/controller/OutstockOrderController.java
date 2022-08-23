@@ -136,7 +136,7 @@ public class OutstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OutstockOrderResult> detail(@RequestBody OutstockOrderParam outstockOrderParam) {
+    public ResponseData detail(@RequestBody OutstockOrderParam outstockOrderParam) {
         OutstockOrder detail = this.outstockOrderService.getById(outstockOrderParam.getOutstockOrderId());
         OutstockOrderResult result = new OutstockOrderResult();
         ToolUtil.copyProperties(detail, result);
@@ -153,7 +153,7 @@ public class OutstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<OutstockOrderResult> list(@RequestBody(required = false) OutstockOrderParam outstockOrderParam) {
+    public PageInfo list(@RequestBody(required = false) OutstockOrderParam outstockOrderParam) {
         if (ToolUtil.isEmpty(outstockOrderParam)) {
             outstockOrderParam = new OutstockOrderParam();
         }
@@ -186,7 +186,7 @@ public class OutstockOrderController extends BaseController {
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<OutstockOrder> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("display", 1).in("state", 1);
         List<Map<String, Object>> list = this.outstockOrderService.listMaps(itemsQueryWrapper);
