@@ -12,6 +12,8 @@ public class SkuAnalyse {
 
     private Long number;
 
+    private Long stockNumber;
+
     @JSONField(serialize = false)
     private Long skuId;
 

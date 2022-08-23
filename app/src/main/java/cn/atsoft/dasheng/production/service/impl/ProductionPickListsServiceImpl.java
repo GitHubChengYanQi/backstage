@@ -370,7 +370,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             /**
              * 是否可以领料
              */
-            if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().allMatch(i -> i)) {
+            if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().anyMatch(i -> i)) {
+
                 result.setCanPick(true);
             } else if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().noneMatch(i -> i)) {
                 result.setCanPick(false);
@@ -385,7 +386,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     result.setCreateUserResult(userResult);
                 }
-                if (result.getUserId().equals(result.getCreateUser())) {
+                if (result.getUserId().equals(userResult.getUserId())) {
                     result.setUserResult(userResult);
                 }
             }
@@ -426,7 +427,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 查询备料单与领料单
          */
 
-        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listStatus0ByPickLists(pickListsIds);
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listByPickLists(pickListsIds);
 
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {

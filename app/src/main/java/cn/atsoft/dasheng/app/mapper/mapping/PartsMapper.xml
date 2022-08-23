@@ -23,11 +23,12 @@
         <result column="children" property="children"/>
         <result column="childrens" property="childrens"/>
         <result column="status" property="status"/>
+        <result column="name" property="name"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sku_id
-    AS "skuId", children AS "children",childrens AS "childrens",status AS "status",
+    AS "skuId", children AS "children",childrens AS "childrens",status AS "status",name AS "name",
         parts_id
         AS "partsId", spu_id AS "spuId",skus AS "skus",type AS "type", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
     </sql>
@@ -97,7 +98,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="sku_join_column"/>from
-        daoxin_erp_parts  join (SELECT sku_id FROM goods_sku where display = 1 ) as goods_sku on
+        daoxin_erp_parts join (SELECT sku_id FROM goods_sku where display = 1 ) as goods_sku on
         daoxin_erp_parts.sku_id = goods_sku.sku_id
         where 1 = 1
         <if test="paramCondition.partsId != null">
@@ -265,5 +266,5 @@
           AND type = 1
           AND STATUS = 99
           and display = 1
-  </select>
+    </select>
 </mapper>

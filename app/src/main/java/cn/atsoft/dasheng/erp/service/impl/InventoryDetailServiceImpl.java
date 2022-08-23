@@ -488,6 +488,9 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     public void jurisdiction(Long inventoryId) {
         List<Long> userIds = new ArrayList<>();
         Inventory inventory = inventoryService.getById(inventoryId);
+        if (ToolUtil.isEmpty(inventory)) {    //及时盘点
+            return;
+        }
         if (ToolUtil.isNotEmpty(inventory.getParticipants())) {
             userIds.addAll(JSON.parseArray(inventory.getParticipants(), Long.class));
         }
