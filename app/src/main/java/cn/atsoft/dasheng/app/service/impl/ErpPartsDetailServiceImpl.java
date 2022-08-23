@@ -84,12 +84,14 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         List<ErpPartsDetailResult> detailResults = null;
         if (ToolUtil.isNotEmpty(param.getSkuId())) {   //bom最末级
             detailResults = recursiveDetails(param.getSkuId(), null);
+            format(detailResults);
+
         } else {      //当前bom 下一级
             detailResults = this.baseMapper.customList(param);
-        }
-        if (ToolUtil.isNotEmpty(detailResults) && detailResults.size() > 0) {
             format(detailResults);
         }
+
+
 
         return detailResults;
     }
