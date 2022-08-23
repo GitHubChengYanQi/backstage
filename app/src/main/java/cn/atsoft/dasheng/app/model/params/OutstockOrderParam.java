@@ -29,7 +29,7 @@ public class OutstockOrderParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<OutstockListingParam> listingParams;
-
+    private List<String> times;
     /**
      * 主题
      */

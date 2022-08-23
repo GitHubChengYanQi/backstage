@@ -89,7 +89,7 @@ public class BusinessTrackController extends BaseController {
     @Permission
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<BusinessTrackResult> detail(@RequestBody BusinessTrackParam businessTrackParam) {
+    public ResponseData detail(@RequestBody BusinessTrackParam businessTrackParam) {
         BusinessTrack detail = this.businessTrackService.getById(businessTrackParam.getTrackId());
         BusinessTrackResult result = new BusinessTrackResult();
         ToolUtil.copyProperties(detail, result);
@@ -106,7 +106,7 @@ public class BusinessTrackController extends BaseController {
     @Permission
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<BusinessTrackResult> list(@RequestBody(required = false) BusinessTrackParam businessTrackParam) {
+    public PageInfo list(@RequestBody(required = false) BusinessTrackParam businessTrackParam) {
         if (ToolUtil.isEmpty(businessTrackParam)) {
             businessTrackParam = new BusinessTrackParam();
         }
@@ -124,7 +124,7 @@ public class BusinessTrackController extends BaseController {
     @Permission
     @RequestMapping(value = "/listNumber", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData<TrackNumberResult> listNumber() {
+    public ResponseData listNumber() {
         TrackNumberResult trackServiceNumber = businessTrackService.findNumber();
         return ResponseData.success(trackServiceNumber);
     }

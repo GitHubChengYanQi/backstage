@@ -82,7 +82,7 @@ public class DeliveryDetailsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DeliveryDetailsResult> detail(@RequestBody DeliveryDetailsParam deliveryDetailsParam) {
+    public ResponseData detail(@RequestBody DeliveryDetailsParam deliveryDetailsParam) {
         DeliveryDetails detail = this.deliveryDetailsService.getById(deliveryDetailsParam.getDeliveryDetailsId());
         DeliveryDetailsResult result = new DeliveryDetailsResult();
         ToolUtil.copyProperties(detail, result);
@@ -98,7 +98,7 @@ public class DeliveryDetailsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<DeliveryDetailsResult> list(@RequestBody(required = false) DeliveryDetailsParam deliveryDetailsParam) {
+    public PageInfo list(@RequestBody(required = false) DeliveryDetailsParam deliveryDetailsParam) {
         if(ToolUtil.isEmpty(deliveryDetailsParam)){
             deliveryDetailsParam = new DeliveryDetailsParam();
         }

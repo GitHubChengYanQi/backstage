@@ -64,7 +64,7 @@ public interface UcOpenUserInfoService extends IService<UcOpenUserInfo> {
      * @author Sing
      * @Date 2021-03-17
      */
-     PageInfo<UcOpenUserInfoResult> findPageBySpec(UcOpenUserInfoParam param);
+     PageInfo findPageBySpec(UcOpenUserInfoParam param);
     UcOpenUserInfoResult findByOne(UcOpenUserInfoParam param);
 
 }

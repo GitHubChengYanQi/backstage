@@ -82,7 +82,7 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
     }
 
     @Override
-    public PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope) {
+    public PageInfo findPageBySpec(BusinessTrackParam param, DataScope dataScope) {
 
         List<Long> trackMessageIds = param.getTrackMessageIds();
 

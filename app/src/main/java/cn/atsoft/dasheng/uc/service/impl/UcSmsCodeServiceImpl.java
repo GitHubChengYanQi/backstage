@@ -106,7 +106,7 @@ public class UcSmsCodeServiceImpl extends ServiceImpl<UcSmsCodeMapper, UcSmsCode
     }
 
     @Override
-    public PageInfo<UcSmsCodeResult> findPageBySpec(UcSmsCodeParam param) {
+    public PageInfo findPageBySpec(UcSmsCodeParam param) {
         Page<UcSmsCodeResult> pageContext = getPageContext();
         IPage<UcSmsCodeResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

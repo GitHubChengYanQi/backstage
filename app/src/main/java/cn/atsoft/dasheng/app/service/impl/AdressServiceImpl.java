@@ -116,7 +116,7 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     }
 
     @Override
-    public PageInfo<AdressResult> findPageBySpec( AdressParam param,DataScope dataScope) {
+    public PageInfo findPageBySpec( AdressParam param,DataScope dataScope) {
         Page<AdressResult> pageContext = getPageContext();
         IPage<AdressResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 

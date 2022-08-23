@@ -47,7 +47,7 @@ public class StockController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<StockResult> detail(@RequestBody StockParam stockParam) {
+    public ResponseData detail(@RequestBody StockParam stockParam) {
         Stock detail = this.stockService.getById(stockParam.getStockId());
         StockResult result = new StockResult();
         ToolUtil.copyProperties(detail, result);
@@ -63,7 +63,7 @@ public class StockController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<StockResult> list(@RequestBody(required = false) StockParam stockParam) {
+    public PageInfo list(@RequestBody(required = false) StockParam stockParam) {
         if (ToolUtil.isEmpty(stockParam)) {
             stockParam = new StockParam();
         }
@@ -88,7 +88,7 @@ public class StockController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<Stock> stockQueryWrapper = new QueryWrapper<>();
         stockQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.stockService.listMaps(stockQueryWrapper);

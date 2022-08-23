@@ -121,13 +121,13 @@ public class GeneratorController {
 
     @RequestMapping("/getTableField")
     @ResponseBody
-    public PageInfo<FieldConfigResult> getTableField(@RequestParam("dbId") Long dbId,
+    public PageInfo getTableField(@RequestParam("dbId") Long dbId,
                                   @RequestParam("tableName") String tableName) {
 
         //获取这个表的所有字段以及其他信息
         List<FieldConfigResult> tableFields = tableService.getTableFields(dbId, tableName);
 
-        PageInfo<FieldConfigResult> PageInfo = new PageInfo<>();
+        PageInfo PageInfo = new PageInfo();
         PageInfo.setData(tableFields);
         PageInfo.setCount(tableFields.size());
 

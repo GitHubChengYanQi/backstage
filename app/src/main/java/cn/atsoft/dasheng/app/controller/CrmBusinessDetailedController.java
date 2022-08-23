@@ -103,7 +103,7 @@ public class CrmBusinessDetailedController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmBusinessDetailedResult> detail(@RequestBody  CrmBusinessDetailedParam crmBusinessDetailedParam) {
+    public ResponseData detail(@RequestBody  CrmBusinessDetailedParam crmBusinessDetailedParam) {
         CrmBusinessDetailed detail = this.crmBusinessDetailedService.getById(crmBusinessDetailedParam.getId());
 
         CrmBusinessDetailedResult result = new CrmBusinessDetailedResult();
@@ -122,7 +122,7 @@ public class CrmBusinessDetailedController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CrmBusinessDetailedResult> list(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam) {
+    public PageInfo list(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam) {
         if(ToolUtil.isEmpty(crmBusinessDetailedParam)){
             crmBusinessDetailedParam = new CrmBusinessDetailedParam();
         }

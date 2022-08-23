@@ -138,7 +138,7 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
     }
 
     @Override
-    public PageInfo<DocumentsStatusResult> findPageBySpec(DocumentsStatusParam param) {
+    public PageInfo findPageBySpec(DocumentsStatusParam param) {
         Page<DocumentsStatusResult> pageContext = getPageContext();
         IPage<DocumentsStatusResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

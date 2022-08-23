@@ -104,7 +104,7 @@ public class TemplateController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<TemplateResult> detail(@RequestBody TemplateParam templateParam) {
+    public ResponseData detail(@RequestBody TemplateParam templateParam) {
         Template detail = this.templateService.getById(templateParam.getTemplateId());
         TemplateResult result = new TemplateResult();
         ToolUtil.copyProperties(detail, result);
@@ -121,7 +121,7 @@ public class TemplateController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<TemplateResult> list(@RequestBody(required = false) TemplateParam templateParam) {
+    public PageInfo list(@RequestBody(required = false) TemplateParam templateParam) {
         if (ToolUtil.isEmpty(templateParam)) {
             templateParam = new TemplateParam();
         }
@@ -136,7 +136,7 @@ public class TemplateController extends BaseController {
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<Template> templateQueryWrapper = new QueryWrapper<>();
         templateQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.templateService.listMaps(templateQueryWrapper);

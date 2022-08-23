@@ -64,6 +64,6 @@ public interface FormFieldConfigService extends IService<FormFieldConfig> {
      * @author Sing
      * @Date 2021-11-10
      */
-     PageInfo<FormFieldConfigResult> findPageBySpec(FormFieldConfigParam param);
+     PageInfo findPageBySpec(FormFieldConfigParam param);
 
 }

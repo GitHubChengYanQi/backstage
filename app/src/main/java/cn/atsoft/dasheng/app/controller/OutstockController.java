@@ -95,7 +95,7 @@ public class OutstockController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<OutstockResult> detail(@RequestBody OutstockParam outstockParam) {
+    public ResponseData detail(@RequestBody OutstockParam outstockParam) {
         Long outstockId = outstockParam.getOutstockId();
         OutstockResult detail = outstockService.detail(outstockId);
         return ResponseData.success(detail);
@@ -110,7 +110,7 @@ public class OutstockController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<OutstockResult> list(@RequestBody(required = false) OutstockParam outstockParam) {
+    public PageInfo list(@RequestBody(required = false) OutstockParam outstockParam) {
         if (ToolUtil.isEmpty(outstockParam)) {
             outstockParam = new OutstockParam();
         }
@@ -133,7 +133,7 @@ public class OutstockController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
         outstockQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.outstockService.listMaps(outstockQueryWrapper);

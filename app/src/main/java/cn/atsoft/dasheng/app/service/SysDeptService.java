@@ -65,6 +65,6 @@ public interface SysDeptService extends IService<SysDept> {
      * @author 
      * @Date 2020-12-22
      */
-     PageInfo<SysDeptResult> findPageBySpec(SysDeptParam param, DataScope dataScope );
+     PageInfo findPageBySpec(SysDeptParam param, DataScope dataScope );
 
 }

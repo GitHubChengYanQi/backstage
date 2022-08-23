@@ -116,7 +116,7 @@ public class UcMemberController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<UcMemberResult> list(@RequestBody(required = false) UcMemberParam ucMemberParam) {
+    public PageInfo list(@RequestBody(required = false) UcMemberParam ucMemberParam) {
         if (ToolUtil.isEmpty(ucMemberParam)) {
             ucMemberParam = new UcMemberParam();
         }

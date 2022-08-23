@@ -378,7 +378,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     }
 
     @Override
-    public PageInfo<MaintenanceResult> findPageBySpec(MaintenanceParam param) {
+    public PageInfo findPageBySpec(MaintenanceParam param) {
         Page<MaintenanceResult> pageContext = getPageContext();
         IPage<MaintenanceResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());

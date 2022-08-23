@@ -104,7 +104,7 @@ public class ActivitiProcessTaskController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiProcessTaskResult> list(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
 
 
         if (ToolUtil.isEmpty(activitiProcessTaskParam)) {

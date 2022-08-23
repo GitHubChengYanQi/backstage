@@ -65,7 +65,7 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      * @author 
      * @Date 2021-08-02
      */
-     PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param, DataScope dataScope );
+     PageInfo findPageBySpec(CrmIndustryParam param, DataScope dataScope );
 
 
      void batchDelete(List<Long>ids);

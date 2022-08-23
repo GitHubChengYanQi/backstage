@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.entity.ProductionWorkOrder;
@@ -60,6 +61,10 @@ public class GetOrigin {
 
     @Autowired
     private ProductionPickListsService pickListsService;
+
+
+    @Autowired
+    private ActivitiProcessTaskService taskService;
 
     public ThemeAndOrigin getOrigin(ThemeAndOrigin themeAndOrigin) {
 //        ThemeAndOrigin themeAndOrigin = JSON.parseObject(Origin, ThemeAndOrigin.class); //将字段中的JSON解析出对象
@@ -315,6 +320,14 @@ public class GetOrigin {
             case "productionPlan":
                 ProductionPlan productionPlan = productionPlanService.getById(sourceId);
                 json = productionPlan.getOrigin();
+                break;
+            case "processTask":
+                ActivitiProcessTask task = taskService.getById(sourceId);
+                json = task.getOrigin();
+                break;
+            case "pickLists":
+                ProductionPickLists pickLists = pickListsService.getById(sourceId);
+                json = pickLists.getOrigin();
                 break;
             default:
         }

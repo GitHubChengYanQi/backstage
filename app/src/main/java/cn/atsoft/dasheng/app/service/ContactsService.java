@@ -70,7 +70,7 @@ public interface ContactsService extends IService<Contacts> {
      * @author 
      * @Date 2021-07-23
      */
-     PageInfo<ContactsResult> findPageBySpec(DataScope dataScope, ContactsParam param);
+     PageInfo findPageBySpec(DataScope dataScope, ContactsParam param);
 
      void batchDelete(List<Long> id);
 

@@ -85,7 +85,7 @@ public class ErpPackageTableController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ErpPackageTableResult> detail(@RequestBody ErpPackageTableParam erpPackageTableParam) {
+    public ResponseData detail(@RequestBody ErpPackageTableParam erpPackageTableParam) {
         ErpPackageTable detail = this.erpPackageTableService.getById(erpPackageTableParam.getId());
         ErpPackageTableResult result = new ErpPackageTableResult();
         ToolUtil.copyProperties(detail, result);
@@ -102,7 +102,7 @@ public class ErpPackageTableController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ErpPackageTableResult> list(@RequestBody(required = false) ErpPackageTableParam erpPackageTableParam) {
+    public PageInfo list(@RequestBody(required = false) ErpPackageTableParam erpPackageTableParam) {
         if(ToolUtil.isEmpty(erpPackageTableParam)){
             erpPackageTableParam = new ErpPackageTableParam();
         }
@@ -124,7 +124,7 @@ public class ErpPackageTableController extends BaseController {
    */
   @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
   @ApiOperation("Select数据接口")
-  public ResponseData<List<Map<String,Object>>> listSelect() {
+  public ResponseData listSelect() {
       QueryWrapper<ErpPackageTable> packageTableQueryWrapper = new QueryWrapper<>();
     List<Map<String,Object>> list = this.erpPackageTableService.listMaps(packageTableQueryWrapper);
     ErpPackageTableSelectWrapper factory = new ErpPackageTableSelectWrapper(list);
