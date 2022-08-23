@@ -1638,7 +1638,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public SkuResult getSku(Long id) {
         Sku sku = this.getById(id);
-        SkuResult skuResult = new SkuResult();
+        SkuResult skuResult = BeanUtil.copyProperties(sku,SkuResult.class);
         if (ToolUtil.isEmpty(sku)) {
             return skuResult;
         }
@@ -1646,7 +1646,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             add(skuResult);
         }});
 
-        ToolUtil.copyProperties(sku, skuResult);
         //返回附件图片等
         try {
             if (ToolUtil.isNotEmpty(skuResult.getFileId())) {
