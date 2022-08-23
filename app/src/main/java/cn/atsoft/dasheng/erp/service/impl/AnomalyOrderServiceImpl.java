@@ -633,15 +633,20 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
         for (AnomalyResult anomaly : anomalyResults) {
 
-
             long errorNum = 0;
             boolean t = false;
-            for (AnomalyDetailResult detail : anomaly.getDetails()) {
-                if (detail.getStauts() == -1) {
-                    errorNum = errorNum + detail.getNumber();
-                    t = true;
+            if (anomaly.getInstockNumber() == 0) {
+                t = true;
+                errorNum = anomaly.getRealNumber();
+            } else {
+                for (AnomalyDetailResult detail : anomaly.getDetails()) {
+                    if (detail.getStauts() == -1) {
+                        errorNum = errorNum + detail.getNumber();
+                        t = true;
+                    }
                 }
             }
+
 
             if (!anomaly.getRealNumber().equals(anomaly.getNeedNumber())) {    //数量核实异常
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomaly.getCheckNumber(), CheckNumber.class);

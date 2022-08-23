@@ -187,6 +187,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         Parts entity = getEntity(partsParam);
         entity.setStatus(99);
+        entity.setPartsId(null);
         if (ToolUtil.isEmpty(entity.getName())) {   //版本号
             throw new ServiceException(500, "请传入版本号");
         }
@@ -196,7 +197,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         for (ErpPartsDetailParam partsParamPart : partsParam.getParts()) {
             ErpPartsDetail partsDetail = new ErpPartsDetail();
             ToolUtil.copyProperties(partsParamPart, partsDetail);
-            partsParamPart.setPartsId(entity.getPartsId());
+            partsDetail.setPartsId(entity.getPartsId());
+            partsDetail.setPartsDetailId(null);
             partsDetails.add(partsDetail);
         }
 
