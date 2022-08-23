@@ -149,7 +149,7 @@ public class SkuController extends BaseController {
     @BussinessLog(value = "修改/上传 sku附件", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
     @Permission
-    public ResponseData editEnclosure(@RequestBody SkuParam skuParam) {
+    public ResponseData editEnclosure(@RequestBody(required = false) SkuParam skuParam) {
         this.skuService.editEnclosure(skuParam);
         return ResponseData.success();
     }

@@ -244,6 +244,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         }
 
         URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
+        ossClient.shutdown();
         return url.toString();
     }
 
@@ -272,8 +273,8 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 //                put("x-oss-process",useData);
 //            }});
 //        }
-
 //        URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
+        ossClient.shutdown();
         return "https://" + result.getBucket() + "." + result.getEndpoint() + "/" + result.getPath();
     }
 
@@ -319,6 +320,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
             ossClient.putObject(bucket, media.getPath(), download);
 
             String mediaUrlAddUseData = getMediaUrlAddUseData(media.getMediaId(), 0L, null);
+            ossClient.shutdown();
             return media.getMediaId();
 
         } catch (Exception e) {

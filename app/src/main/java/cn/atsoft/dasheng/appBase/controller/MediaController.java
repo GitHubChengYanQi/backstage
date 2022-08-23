@@ -143,6 +143,7 @@ public class MediaController extends BaseController {
         ObjectMetadata objectMetadata = ossClient.headObject(result.getBucket(), result.getPath());
         MediaObjectResult mediaObjectResult = new MediaObjectResult();
         ToolUtil.copyProperties(objectMetadata, mediaObjectResult);
+        ossClient.shutdown();
         return ResponseData.success(mediaObjectResult);
     }
 
