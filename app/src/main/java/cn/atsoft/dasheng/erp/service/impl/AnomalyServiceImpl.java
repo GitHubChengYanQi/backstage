@@ -119,7 +119,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Transactional
     @Override
     public Anomaly add(AnomalyParam param) {
-
         switch (param.getAnomalyType()) {
             case InstockError:     //判断入库单
                 inventoryService.staticState();  //静态盘点判断
@@ -390,6 +389,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
                     throw new ServiceException(500, "缺少异常信息");
                 }
+                break;
             case timelyInventory:
             case StocktakingError:
                 boolean normal = isNormal(param);   //判断有无异常件
@@ -399,6 +399,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 } else {
                     inventoryStockService.updateInventoryStatus(param, -1);
                 }
+                break;
         }
 
         if (t) {   //添加异常信息
