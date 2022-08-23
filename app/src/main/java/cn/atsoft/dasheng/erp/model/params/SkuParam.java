@@ -40,6 +40,9 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private Long skuId;
     private Long customerId;
     private List<Long> skuIds = new ArrayList<>();
+    private List<Long> imageIds;
+    private List<Long> enclosureIds;
+    private List<Long> fileIds;
     private SpuParam spu;
     private Long spuClassificationId;
     private Long spuStandard;
@@ -69,7 +72,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private Integer timeWithin; //查询条件(几天内)
     private String startTime;
     private String endTime;
-    private String enclosure;
+    private String enclosure;   //附件
 
     private List<Long> anomalySkuIds; //异常的物料
     private Boolean openBom = false;

@@ -27,12 +27,12 @@ public class AliyunService {
     }
 
     public OSS getOssClient() {
-        if (ToolUtil.isEmpty(ossClient)){
+//        if (ToolUtil.isEmpty(ossClient)){
             ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
             clientBuilderConfiguration.setProtocol(Protocol.HTTPS);
-            ossClient = new OSSClientBuilder().build(configuration.getOss().getEndpoint(), configuration.getAccessId(), configuration.getAccessKey(),clientBuilderConfiguration);
-        }
-        return ossClient;
+            return new OSSClientBuilder().build(configuration.getOss().getEndpoint(), configuration.getAccessId(), configuration.getAccessKey(),clientBuilderConfiguration);
+//        }
+//        return ossClient;
     }
 
     public com.aliyun.dysmsapi20170525.Client getSmsClient() throws Exception {

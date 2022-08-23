@@ -46,6 +46,8 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.atsoft.dasheng.form.pojo.ProcessType.ALLOCATION;
+
 /**
  * <p>
  * 调拨主表 服务实现类
@@ -632,6 +634,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         if (ToolUtil.isEmpty(allocation.getUserId())) {
             allocation.setUserId(param.getUserId());
             this.updateById(allocation);
+            ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", allocation.getAllocationId()).eq("type", ALLOCATION.getType()).one();
+            processTask.setUserId(param.getUserId());
+            activitiProcessTaskService.updateById(processTask);
 
         }
         List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status", 0).list();

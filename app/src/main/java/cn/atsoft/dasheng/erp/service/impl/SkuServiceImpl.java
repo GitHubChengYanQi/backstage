@@ -378,7 +378,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         Long skuId = param.getSkuId();
         Sku sku = this.getById(skuId);
-        String enclosure = ToolUtil.isNotEmpty(param.getEnclosure()) ? param.getEnclosure() : null;
+        String enclosure = ToolUtil.isNotEmpty(param.getEnclosureIds()) ? param.getEnclosure() : null;
         String drawing = ToolUtil.isNotEmpty(param.getDrawing()) ? param.getDrawing() : null;
         String images = ToolUtil.isNotEmpty(param.getImages()) ? param.getImages() : null;
         String filedId = ToolUtil.isNotEmpty(param.getFileId()) ? param.getFileId() : null;
@@ -1507,7 +1507,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * 查询已占用库存数
          */
-        List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
+//        List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
 
 
         for (SkuResult skuResult : param) {
@@ -1538,17 +1538,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
             //图片
+            List<Long> imageIds = new ArrayList<>();
+            try {
+                imageIds = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            } catch (Exception e) {
 
-            List<Long> imageids = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            }
             List<String> imageUrls = new ArrayList<>();
             List<String> imgThumbUrls = new ArrayList<>();
-            for (Long imageid : imageids) {
+            for (Long imageid : imageIds) {
                 imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
-                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L,"image/resize,m_fill,h_200,w_200");
+                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L, "image/resize,m_fill,h_200,w_200");
                 imgThumbUrls.add(imgThumbUrl);
 
             }
-
             skuResult.setImgUrls(imageUrls);
             skuResult.setImgThumbUrls(imgThumbUrls);
 
@@ -1635,90 +1638,106 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public SkuResult getSku(Long id) {
         Sku sku = this.getById(id);
-        SkuResult skuResult = new SkuResult();
+        SkuResult skuResult = BeanUtil.copyProperties(sku,SkuResult.class);
         if (ToolUtil.isEmpty(sku)) {
             return skuResult;
         }
-        ToolUtil.copyProperties(sku, skuResult);
+        this.format(new ArrayList<SkuResult>() {{
+            add(skuResult);
+        }});
+
         //返回附件图片等
-        if (ToolUtil.isNotEmpty(skuResult.getFileId())) {
-            List<Long> filedIds = Arrays.asList(skuResult.getFileId().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            List<String> filedUrls = new ArrayList<>();
-            for (Long filedId : filedIds) {
-                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
-                filedUrls.add(mediaUrl);
+        try {
+            if (ToolUtil.isNotEmpty(skuResult.getFileId())) {
+                List<Long> filedIds = Arrays.asList(skuResult.getFileId().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                List<String> filedUrls = new ArrayList<>();
+                for (Long filedId : filedIds) {
+                    String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                    filedUrls.add(mediaUrl);
+                }
+                skuResult.setFiledUrls(filedUrls);
             }
-            skuResult.setFiledUrls(filedUrls);
+        }catch (Exception ignored){
+
         }
-        if (ToolUtil.isNotEmpty(skuResult.getDrawing())) {
-            List<Long> filedIds = Arrays.asList(skuResult.getDrawing().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            List<String> filedUrls = new ArrayList<>();
-            for (Long filedId : filedIds) {
-                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
-                filedUrls.add(mediaUrl);
+        try {
+            if (ToolUtil.isNotEmpty(skuResult.getDrawing())) {
+                List<Long> filedIds = Arrays.asList(skuResult.getDrawing().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                List<String> filedUrls = new ArrayList<>();
+                for (Long filedId : filedIds) {
+                    String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                    filedUrls.add(mediaUrl);
+                }
+                skuResult.setDrawingUrls(filedUrls);
             }
-            skuResult.setDrawingUrls(filedUrls);
+        } catch (Exception ignored) {
+
         }
-        if (ToolUtil.isNotEmpty(skuResult.getEnclosure())) {
-            List<Long> enclosure = Arrays.asList(skuResult.getEnclosure().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            List<String> filedUrls = new ArrayList<>();
-            for (Long filedId : enclosure) {
-                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
-                filedUrls.add(mediaUrl);
+
+        try {
+            if (ToolUtil.isNotEmpty(skuResult.getEnclosure())) {
+                List<Long> enclosure = Arrays.asList(skuResult.getEnclosure().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                List<String> filedUrls = new ArrayList<>();
+                for (Long filedId : enclosure) {
+                    String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+                    filedUrls.add(mediaUrl);
+                }
+                skuResult.setEnclosureUrls(filedUrls);
             }
-            skuResult.setEnclosureUrls(filedUrls);
+
+
+        }catch(Exception ignored){
+
         }
-        if (ToolUtil.isNotEmpty(skuResult.getImages())) {
-            List<Long> enclosure = Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            List<String> filedUrls = new ArrayList<>();
-            List<String> imgThumbUrls = new ArrayList<>();
-            for (Long filedId : enclosure) {
-                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
-                String imgThumbUrl = mediaService.getMediaUrlAddUseData(filedId, 0L,"image/resize,m_fill,h_200,w_200");
-                filedUrls.add(mediaUrl);
-                imgThumbUrls.add(imgThumbUrl);
-            }
-            skuResult.setImgUrls(filedUrls);
-            skuResult.setImgThumbUrls(imgThumbUrls);
-        }
-        if (ToolUtil.isEmpty(sku)) {
-            return new SkuResult();
-        }
-        List<SkuBrandBind> skuBrandBindList = skuBrandBindService.query().eq("sku_id", id).eq("display", 1).list();
-        List<Long> brandIds = new ArrayList<>();
-        for (SkuBrandBind skuBrandBind : skuBrandBindList) {
-            brandIds.add(skuBrandBind.getBrandId());
-        }
-        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.query().in("brand_id", brandIds).list();
-        List<BrandResult> brandResults = new ArrayList<>();
-        for (Brand brand : brands) {
-            BrandResult brandResult = new BrandResult();
-            ToolUtil.copyProperties(brand, brandResult);
-            brandResults.add(brandResult);
-        }
+//        if (ToolUtil.isNotEmpty(skuResult.getImages())) {
+//            List<Long> enclosure = Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+//            List<String> filedUrls = new ArrayList<>();
+//            List<String> imgThumbUrls = new ArrayList<>();
+//            for (Long filedId : enclosure) {
+//                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
+//                String imgThumbUrl = mediaService.getMediaUrlAddUseData(filedId, 0L,"image/resize,m_fill,h_200,w_200");
+//                filedUrls.add(mediaUrl);
+//                imgThumbUrls.add(imgThumbUrl);
+//            }
+//            skuResult.setImgUrls(filedUrls);
+//            skuResult.setImgThumbUrls(imgThumbUrls);
+//        }
 
-        skuResult.setBrandIds(brandIds);
-
-        skuResult.setBrandResults(brandResults);
+//        List<SkuBrandBind> skuBrandBindList = skuBrandBindService.query().eq("sku_id", id).eq("display", 1).list();
+//        List<Long> brandIds = new ArrayList<>();
+//        for (SkuBrandBind skuBrandBind : skuBrandBindList) {
+//            brandIds.add(skuBrandBind.getBrandId());
+//        }
+//        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.query().in("brand_id", brandIds).list();
+//        List<BrandResult> brandResults = new ArrayList<>();
+//        for (Brand brand : brands) {
+//            BrandResult brandResult = new BrandResult();
+//            ToolUtil.copyProperties(brand, brandResult);
+//            brandResults.add(brandResult);
+//        }
+//
+//        skuResult.setBrandIds(brandIds);
+//
+//        skuResult.setBrandResults(brandResults);
 
 
-        SpuResult spuResult = this.backSpu(sku.getSkuId());
-        skuResult.setSpuResult(spuResult);
-        ActivitiProcess process = processService.query().eq("form_id", id).eq("type", "ship").eq("display", 1).one();
-
-
-        if (ToolUtil.isNotEmpty(process)) {
-            ActivitiProcessResult processResult = new ActivitiProcessResult();
-            ToolUtil.copyProperties(process, processResult);
-            skuResult.setProcessResult(processResult);
-        }
-
-        Parts parts = partsService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).eq("type", 1).one();
-
-        if (ToolUtil.isNotEmpty(parts)) {
-            skuResult.setInBom(true);
-            skuResult.setPartsId(parts.getPartsId());
-        }
+//        SpuResult spuResult = this.backSpu(sku.getSkuId());
+//        skuResult.setSpuResult(spuResult);
+//        ActivitiProcess process = processService.query().eq("form_id", id).eq("type", "ship").eq("display", 1).one();
+//
+//
+//        if (ToolUtil.isNotEmpty(process)) {
+//            ActivitiProcessResult processResult = new ActivitiProcessResult();
+//            ToolUtil.copyProperties(process, processResult);
+//            skuResult.setProcessResult(processResult);
+//        }
+//
+//        Parts parts = partsService.query().eq("sku_id", id).eq("display", 1).eq("status", 99).eq("type", 1).one();
+//
+//        if (ToolUtil.isNotEmpty(parts)) {
+//            skuResult.setInBom(true);
+//            skuResult.setPartsId(parts.getPartsId());
+//        }
 
         JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
@@ -1728,7 +1747,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             attIds.add(valuesRequest.getAttributeId());
             valueIds.add(valuesRequest.getAttributeValuesId());
         }
-        List<ItemAttribute> itemAttributes = attIds.size() == 0 ? new ArrayList<>() : itemAttributeService.query().in("attribute_id", attIds).eq("display", 1).eq("category_id", spuResult.getCategoryId()).list();
+        List<ItemAttribute> itemAttributes = attIds.size() == 0 ? new ArrayList<>() : itemAttributeService.query().in("attribute_id", attIds).eq("display", 1).eq("category_id", skuResult.getSpuResult().getCategoryId()).list();
         List<AttributeValues> valuesList = valueIds.size() == 0 ? new ArrayList<>() : attributeValuesService.query().in("attribute_values_id", valueIds).eq("display", 1).list();
         List<AttributeValuesResult> valuesResults = new ArrayList<>();
 
@@ -1770,9 +1789,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         skuRequest.setTree(tree);
         skuResult.setSkuTree(skuRequest);
 
-        this.format(new ArrayList<SkuResult>() {{
-            add(skuResult);
-        }});
 
         return skuResult;
     }
