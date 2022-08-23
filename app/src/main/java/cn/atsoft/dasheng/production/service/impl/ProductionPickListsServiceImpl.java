@@ -194,7 +194,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 throw new ServiceException(500, "请配置养护单据自动生成编码规则");
             }
         }
-
         entity.setStatus(0L);
 //        entity.setUserId(LoginContextHolder.getContext().getUserId());
         this.save(entity);
