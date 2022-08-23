@@ -198,6 +198,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         StockDetails newStockDetail = BeanUtil.copyProperties(stockDetail, StockDetails.class);
                                         newStockDetail.setStockItemId(null);
                                         newStockDetail.setNumber(stockDetail.getNumber()-lastNumber);
+                                        newStockDetail.setInkindId(newInkind.getInkindId());
                                         newStockDetails.add(newStockDetail);
                                         entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
                                         entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());

@@ -339,11 +339,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         /**
          * 获取userId
          * */
-        List<Long> collectUserIds = userIds.stream().distinct().collect(Collectors.toList());
 //        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
 //        userQueryWrapper.in("user_id", collectUserIds);
 //        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
-        List<UserResult> userResults = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
+        List<UserResult> userResults = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds.stream().distinct().collect(Collectors.toList()));
         QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
         industryQueryWrapper.in("industry_id", industryIds);
         List<CrmIndustry> industryList = industryIds.size() == 0 ? new ArrayList<>() : crmIndustryService.list(industryQueryWrapper);
