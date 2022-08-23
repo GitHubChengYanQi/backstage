@@ -95,7 +95,7 @@ public class MessageController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MessageResult> list(@RequestBody(required = false) MessageParam messageParam) {
+    public PageInfo list(@RequestBody(required = false) MessageParam messageParam) {
         if (ToolUtil.isEmpty(messageParam)) {
             messageParam = new MessageParam();
         }
@@ -111,7 +111,7 @@ public class MessageController extends BaseController {
 
     @RequestMapping(value = "/view", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MessageResult> view(@RequestBody(required = false) MessageParam messageParam) {
+    public PageInfo view(@RequestBody(required = false) MessageParam messageParam) {
         if (ToolUtil.isEmpty(messageParam)) {
             messageParam = new MessageParam();
         }

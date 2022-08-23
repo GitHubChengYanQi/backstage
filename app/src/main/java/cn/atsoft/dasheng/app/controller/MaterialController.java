@@ -100,7 +100,7 @@ public class MaterialController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MaterialResult> list(@RequestBody(required = false) MaterialParam materialParam) {
+    public PageInfo list(@RequestBody(required = false) MaterialParam materialParam) {
         if(ToolUtil.isEmpty(materialParam)){
             materialParam = new MaterialParam();
         }

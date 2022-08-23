@@ -65,7 +65,7 @@ public interface StorehouseService extends IService<Storehouse> {
      * @author
      * @Date 2021-07-15
      */
-    PageInfo<StorehouseResult> findPageBySpec(StorehouseParam param, DataScope dataScope);
+    PageInfo findPageBySpec(StorehouseParam param, DataScope dataScope);
 
 
     StorehouseResult getDetail(Long Id);

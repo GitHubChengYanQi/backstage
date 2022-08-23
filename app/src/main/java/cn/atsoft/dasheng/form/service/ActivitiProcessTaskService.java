@@ -76,17 +76,17 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
      * @author Jazz
      * @Date 2021-11-19
      */
-    PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param);
+    PageInfo findPageBySpec(ActivitiProcessTaskParam param);
 
 
-    PageInfo<ActivitiProcessTaskResult> selfPickTasks(ActivitiProcessTaskParam param);
+    PageInfo selfPickTasks(ActivitiProcessTaskParam param);
 
     ActivitiProcessTaskResult detail(Long id);
 
-    PageInfo<ActivitiProcessTaskResult> auditList(ActivitiProcessTaskParam param);
+    PageInfo auditList(ActivitiProcessTaskParam param);
 
 
-    PageInfo<ActivitiProcessTaskResult> LoginStart(ActivitiProcessTaskParam param);
+    PageInfo LoginStart(ActivitiProcessTaskParam param);
 
     boolean startHaveME(AuditRule rule, LoginContext loginContext);
 

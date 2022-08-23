@@ -65,6 +65,6 @@ public interface UnitService extends IService<Unit> {
      * @author cheng
      * @Date 2021-08-11
      */
-     PageInfo<UnitResult> findPageBySpec(UnitParam param, DataScope dataScope );
+     PageInfo findPageBySpec(UnitParam param, DataScope dataScope );
 
 }

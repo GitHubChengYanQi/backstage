@@ -97,7 +97,7 @@ public class ActivitiSetpSetDetailController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiSetpSetDetailResult> list(@RequestBody(required = false) ActivitiSetpSetDetailParam activitiSetpSetDetailParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiSetpSetDetailParam activitiSetpSetDetailParam) {
         if(ToolUtil.isEmpty(activitiSetpSetDetailParam)){
             activitiSetpSetDetailParam = new ActivitiSetpSetDetailParam();
         }

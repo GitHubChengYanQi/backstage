@@ -1233,7 +1233,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public PageInfo<ActivitiProcessLogResult> findPageBySpec(ActivitiProcessLogParam param) {
+    public PageInfo findPageBySpec(ActivitiProcessLogParam param) {
         Page<ActivitiProcessLogResult> pageContext = getPageContext();
         IPage<ActivitiProcessLogResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

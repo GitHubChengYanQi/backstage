@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.production.model.result.PickListsStorehouseResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
+import cn.atsoft.dasheng.production.pojo.LockedStockDetails;
 import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -78,6 +79,8 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
      * @Date 2022-03-25
      */
      PageInfo<ProductionPickListsCartResult> findPageBySpec(ProductionPickListsCartParam param);
+
+    List<LockedStockDetails> getLockSkuAndNumber(List<Long> skuIds);
 
     void format(List<ProductionPickListsCartResult> param);
 

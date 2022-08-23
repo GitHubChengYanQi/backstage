@@ -81,7 +81,7 @@ public interface StockDetailsService extends IService<StockDetails> {
      * @author
      * @Date 2021-07-15
      */
-    PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope);
+    PageInfo findPageBySpec(StockDetailsParam param, DataScope dataScope);
 
     /**
      * 通过仓库返回所有sku

@@ -102,7 +102,7 @@ public class UnitController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<UnitResult> list(@RequestBody(required = false) UnitParam unitParam) {
+    public PageInfo list(@RequestBody(required = false) UnitParam unitParam) {
         if(ToolUtil.isEmpty(unitParam)){
             unitParam = new UnitParam();
         }

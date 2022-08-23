@@ -109,7 +109,7 @@ public class ActivitiStepsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiStepsResult> list(@RequestBody(required = false) ActivitiStepsParam activitiStepsParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiStepsParam activitiStepsParam) {
         if (ToolUtil.isEmpty(activitiStepsParam)) {
             activitiStepsParam = new ActivitiStepsParam();
         }

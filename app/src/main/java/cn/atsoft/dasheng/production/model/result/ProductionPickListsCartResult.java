@@ -29,12 +29,17 @@ public class ProductionPickListsCartResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private SkuSimpleResult skuResult;
+    private List<Long> brandIds;
+    private List<String> brandNames;
     private ProductionPickListsResult productionPickListsResult;
     private ProductionPickListsResult pickListsResult;
     private ProductionPickListsDetailResult productionPickListsDetailResult;
-    private List<Long> brandIds;
-    private List<String> brandNames;
+
     private Long stockNumber;
+
+    private Integer lockStockDetailNumber;
+
+
     //仓库
     private StorehouseSimpleResult storehouseResult;
     //库位

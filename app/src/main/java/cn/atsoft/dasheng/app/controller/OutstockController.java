@@ -110,7 +110,7 @@ public class OutstockController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<OutstockResult> list(@RequestBody(required = false) OutstockParam outstockParam) {
+    public PageInfo list(@RequestBody(required = false) OutstockParam outstockParam) {
         if (ToolUtil.isEmpty(outstockParam)) {
             outstockParam = new OutstockParam();
         }

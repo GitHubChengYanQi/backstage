@@ -74,7 +74,7 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
      * @author Sing
      * @Date 2021-11-10
      */
-    PageInfo<ActivitiAuditResult> findPageBySpec(ActivitiAuditParam param);
+    PageInfo findPageBySpec(ActivitiAuditParam param);
 
 
     List<ActivitiAuditResult> backAudits(List<Long> ids);

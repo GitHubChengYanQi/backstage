@@ -65,7 +65,7 @@ public interface OriginService extends IService<Origin> {
      * @author 
      * @Date 2021-07-19
      */
-     PageInfo<OriginResult> findPageBySpec(OriginParam param, DataScope dataScope );
+     PageInfo findPageBySpec(OriginParam param, DataScope dataScope );
 
      void batchDelete (List<Long> ids);
 

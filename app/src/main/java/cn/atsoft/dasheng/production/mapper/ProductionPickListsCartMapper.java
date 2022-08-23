@@ -58,5 +58,6 @@ public interface ProductionPickListsCartMapper extends BaseMapper<ProductionPick
     List<Long> lockInkind();
 
     Integer lockNumber(@Param("paramCondition") QuerryLockedParam param);
+    List<Long> lockInkind(@Param("paramCondition") QuerryLockedParam param);
 
 }

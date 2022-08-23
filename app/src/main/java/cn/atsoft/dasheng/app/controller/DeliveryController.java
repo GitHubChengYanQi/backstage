@@ -106,7 +106,7 @@ public class DeliveryController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<DeliveryResult> list(@RequestBody(required = false) DeliveryParam deliveryParam) {
+    public PageInfo list(@RequestBody(required = false) DeliveryParam deliveryParam) {
         if(ToolUtil.isEmpty(deliveryParam)){
             deliveryParam = new DeliveryParam();
         }

@@ -249,5 +249,19 @@
             and sku_id = #{paramCondition.skuId}
         </if>
     </select>
+    <select id="lockInkind" resultType="Long" parameterType="cn.atsoft.dasheng.production.pojo.QuerryLockedParam">
+        select
+            inkind_id AS inkindId
+        from daoxin_production_pick_lists_cart where 1 = 1 and display = 1
+        <if test="paramCondition.positionId != null">
+            and storehouse_positions_id = #{paramCondition.positionId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id = #{paramCondition.skuId}
+        </if>
+    </select>
 
 </mapper>

@@ -59,7 +59,7 @@ public interface MessageService extends IService<Message> {
      */
     List<MessageResult> findListBySpec(MessageParam param);
 
-    PageInfo<MessageResult> view(MessageParam param);
+    PageInfo view(MessageParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -67,7 +67,7 @@ public interface MessageService extends IService<Message> {
      * @author 
      * @Date 2021-08-03
      */
-     PageInfo<MessageResult> findPageBySpec(MessageParam param, DataScope dataScope );
+     PageInfo findPageBySpec(MessageParam param, DataScope dataScope );
 
     Integer getViewCount();
 }

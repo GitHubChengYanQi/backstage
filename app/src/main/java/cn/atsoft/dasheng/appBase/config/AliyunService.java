@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.appBase.config;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Data
 public class AliyunService {
 
+    private OSS ossClient;
     private AliConfiguration configuration;
 
     public AliyunService(AliConfiguration config) {
@@ -25,9 +27,12 @@ public class AliyunService {
     }
 
     public OSS getOssClient() {
-        ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
-        clientBuilderConfiguration.setProtocol(Protocol.HTTPS);
-        return new OSSClientBuilder().build(configuration.getOss().getEndpoint(), configuration.getAccessId(), configuration.getAccessKey(),clientBuilderConfiguration);
+        if (ToolUtil.isEmpty(ossClient)){
+            ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
+            clientBuilderConfiguration.setProtocol(Protocol.HTTPS);
+            ossClient = new OSSClientBuilder().build(configuration.getOss().getEndpoint(), configuration.getAccessId(), configuration.getAccessKey(),clientBuilderConfiguration);
+        }
+        return ossClient;
     }
 
     public com.aliyun.dysmsapi20170525.Client getSmsClient() throws Exception {

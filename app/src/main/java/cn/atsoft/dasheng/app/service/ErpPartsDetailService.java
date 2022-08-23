@@ -64,7 +64,7 @@ public interface ErpPartsDetailService extends IService<ErpPartsDetail> {
      * @author cheng
      * @Date 2021-10-26
      */
-     PageInfo<ErpPartsDetailResult> findPageBySpec(ErpPartsDetailParam param);
+     PageInfo findPageBySpec(ErpPartsDetailParam param);
 
     List<ErpPartsDetailResult> bomList(ErpPartsDetailParam param);
 

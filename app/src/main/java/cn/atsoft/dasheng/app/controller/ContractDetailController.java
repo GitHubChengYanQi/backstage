@@ -107,7 +107,7 @@ public class ContractDetailController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ContractDetailResult> list(@RequestBody(required = false) ContractDetailParam contractDetailParam) {
+    public PageInfo list(@RequestBody(required = false) ContractDetailParam contractDetailParam) {
         if(ToolUtil.isEmpty(contractDetailParam)){
             contractDetailParam = new ContractDetailParam();
         }

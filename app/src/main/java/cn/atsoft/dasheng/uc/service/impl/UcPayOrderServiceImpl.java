@@ -58,7 +58,7 @@ public class UcPayOrderServiceImpl extends ServiceImpl<UcPayOrderMapper, UcPayOr
     }
 
     @Override
-    public PageInfo<UcPayOrderResult> findPageBySpec(UcPayOrderParam param){
+    public PageInfo findPageBySpec(UcPayOrderParam param){
         Page<UcPayOrderResult> pageContext = getPageContext();
         IPage<UcPayOrderResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

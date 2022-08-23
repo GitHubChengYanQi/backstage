@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.production.mapper.ProductionPickListsDetailMapper;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
+import cn.atsoft.dasheng.production.pojo.LockedStockDetails;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -143,6 +144,10 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
         }
         List<Long> lockedInkindIds = this.getLockedInkindIds();
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
+        /**
+         * 获取相关被锁定实物数量
+         */
+        List<LockedStockDetails> lockSkuAndNumber = pickListsCartService.getLockSkuAndNumber(skuIds);
 
         //TODO notin
         List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : lockedInkindIds.size() == 0 ? stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id",lockedInkindIds).eq("display", 1).list();
@@ -164,7 +169,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     }}).ifPresent(totalList::add);
                 }
         );
-        for (StockDetails stockDetails : totalList) {
+        for (StockDetails stockDetails : stockSkus) {
             positionIds.add(stockDetails.getStorehousePositionsId());
         }
         positionIds = positionIds.stream().distinct().collect(Collectors.toList());
@@ -177,6 +182,16 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                         setNumber(a.getNumber() + b.getNumber());
                         setStorehousePositionsId(a.getStorehousePositionsId());
                     }}).ifPresent(anyBrand::add);
+                }
+        );
+        List<StockDetails> positionTotal = new ArrayList<>();
+        stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_"+item.getBrandId()+"_"+item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                    }}).ifPresent(positionTotal::add);
                 }
         );
 
@@ -198,7 +213,18 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                         }
                     }
                 }
-
+                for (StockDetails stockDetails : positionTotal) {
+                    for (StorehousePositionsResult positionsResult : positionsResultList) {
+                        if (result.getSkuId().equals(stockDetails.getSkuId()) && result.getBrandId().equals(stockDetails.getBrandId()) && stockDetails.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())){
+                            positionNames.add(positionsResult.getName());
+                        }
+                    }
+                }
+                for (LockedStockDetails lockedStockDetails : lockSkuAndNumber) {
+                    if (result.getSkuId().equals(lockedStockDetails.getSkuId()) && result.getBrandId().equals(lockedStockDetails.getBrandId())){
+                        result.setLockStockDetailNumber(lockedStockDetails.getNumber());
+                    }
+                }
             } else {
                 for (StockDetails stockDetails : anyBrand) {
                     if (result.getSkuId().equals(stockDetails.getSkuId())) {
@@ -206,13 +232,23 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                         if (result.getNumber() <= stockDetails.getNumber()) {
                             result.setIsMeet(true);
                         }
-                        for (StorehousePositionsResult positionsResult : positionsResultList) {
-                            if (stockDetails.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())){
-                                positionNames.add(positionsResult.getName());
-                            }
+
+                    }
+                }
+                for (StockDetails stockDetails : positionTotal) {
+                    for (StorehousePositionsResult positionsResult : positionsResultList) {
+                        if (result.getSkuId().equals(stockDetails.getSkuId()) && stockDetails.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())){
+                            positionNames.add(positionsResult.getName());
                         }
                     }
                 }
+                int lockedNumber = 0 ;
+                for (LockedStockDetails lockedStockDetails : lockSkuAndNumber) {
+                    if (result.getSkuId().equals(lockedStockDetails.getSkuId())){
+                        lockedNumber+=lockedStockDetails.getNumber();
+                    }
+                }
+                result.setLockStockDetailNumber(lockedNumber);
             }
             //返回可备料仓库名称
             positionNames = positionNames.stream().distinct().collect(Collectors.toList());

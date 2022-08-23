@@ -63,7 +63,7 @@ public class StockController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<StockResult> list(@RequestBody(required = false) StockParam stockParam) {
+    public PageInfo list(@RequestBody(required = false) StockParam stockParam) {
         if (ToolUtil.isEmpty(stockParam)) {
             stockParam = new StockParam();
         }

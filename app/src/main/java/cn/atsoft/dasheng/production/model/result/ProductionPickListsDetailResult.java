@@ -50,6 +50,8 @@ public class ProductionPickListsDetailResult implements Serializable {
     private ProductionPickListsResult pickListsResult;
     private Boolean canPick;
     private List<String> positionNames;
+    private Integer lockStockDetailNumber;
+
     /**
      * 子表id
      */

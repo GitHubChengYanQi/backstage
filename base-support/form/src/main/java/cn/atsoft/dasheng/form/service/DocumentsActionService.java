@@ -71,6 +71,6 @@ public interface DocumentsActionService extends IService<DocumentsAction> {
      * @author song
      * @Date 2022-04-28
      */
-     PageInfo<DocumentsActionResult> findPageBySpec(DocumentsActionParam param);
+     PageInfo findPageBySpec(DocumentsActionParam param);
 
 }

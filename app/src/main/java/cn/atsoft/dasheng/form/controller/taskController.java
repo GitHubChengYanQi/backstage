@@ -262,7 +262,6 @@ public class taskController extends BaseController {
             String imgUrl = appStepService.imgUrl(user.getUserId().toString());
             user.setAvatar(imgUrl);
             taskResult.setUser(user);
-
         }
         return ResponseData.success(taskResult);
 

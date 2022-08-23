@@ -68,7 +68,7 @@ public interface DocumentStatusService extends IService<DocumentsStatus> {
      * @author song
      * @Date 2022-04-28
      */
-     PageInfo<DocumentsStatusResult> findPageBySpec(DocumentsStatusParam param);
+     PageInfo findPageBySpec(DocumentsStatusParam param);
 
     List<DocumentsStatusResult> resultsByIds(List<Long> ids);
 }

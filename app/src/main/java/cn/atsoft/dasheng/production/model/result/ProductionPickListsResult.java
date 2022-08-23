@@ -72,7 +72,7 @@ public class ProductionPickListsResult implements Serializable {
     @ApiModelProperty("仓库总数")
     private Integer positionCount ;
     @ApiModelProperty("任务id")
-    private Integer taskId;
+    private Long taskId;
 
     /**
      * 附件

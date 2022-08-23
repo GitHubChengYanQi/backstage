@@ -103,7 +103,7 @@ public class BrandController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<BrandResult> list(@RequestBody(required = false) BrandParam brandParam) {
+    public PageInfo list(@RequestBody(required = false) BrandParam brandParam) {
         if (ToolUtil.isEmpty(brandParam)) {
             brandParam = new BrandParam();
         }
@@ -120,7 +120,7 @@ public class BrandController extends BaseController {
 
     @RequestMapping(value = "/pureList", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<BrandResult> pureList(@RequestBody(required = false) BrandParam brandParam) {
+    public PageInfo pureList(@RequestBody(required = false) BrandParam brandParam) {
         if (ToolUtil.isEmpty(brandParam)) {
             brandParam = new BrandParam();
         }

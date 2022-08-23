@@ -121,7 +121,7 @@ public class TemplateController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<TemplateResult> list(@RequestBody(required = false) TemplateParam templateParam) {
+    public PageInfo list(@RequestBody(required = false) TemplateParam templateParam) {
         if (ToolUtil.isEmpty(templateParam)) {
             templateParam = new TemplateParam();
         }

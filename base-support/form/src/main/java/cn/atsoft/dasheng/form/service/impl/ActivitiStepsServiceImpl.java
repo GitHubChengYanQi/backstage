@@ -292,7 +292,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     }
 
     @Override
-    public PageInfo<ActivitiStepsResult> findPageBySpec(ActivitiStepsParam param) {
+    public PageInfo findPageBySpec(ActivitiStepsParam param) {
         Page<ActivitiStepsResult> pageContext = getPageContext();
         IPage<ActivitiStepsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
