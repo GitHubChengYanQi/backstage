@@ -97,7 +97,7 @@ public class FormFieldConfigController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<FormFieldConfigResult> list(@RequestBody(required = false) FormFieldConfigParam formFieldConfigParam) {
+    public PageInfo list(@RequestBody(required = false) FormFieldConfigParam formFieldConfigParam) {
         if(ToolUtil.isEmpty(formFieldConfigParam)){
             formFieldConfigParam = new FormFieldConfigParam();
         }

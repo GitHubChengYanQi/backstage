@@ -86,7 +86,7 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      * @author cheng
      * @Date 2021-08-16
      */
-    PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param, DataScope dataScope);
+    PageInfo findPageBySpec(OutstockOrderParam param, DataScope dataScope);
 
 
 

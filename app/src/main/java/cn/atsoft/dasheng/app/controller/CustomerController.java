@@ -166,7 +166,7 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<CustomerResult> list(@RequestBody(required = false) CustomerParam customerParam) {
+    public PageInfo list(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isEmpty(customerParam)) {
             customerParam = new CustomerParam();
         }
@@ -184,7 +184,7 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/pureList", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<CustomerResult> pureList(@RequestBody(required = false) CustomerParam customerParam) {
+    public PageInfo pureList(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isEmpty(customerParam)) {
             customerParam = new CustomerParam();
         }

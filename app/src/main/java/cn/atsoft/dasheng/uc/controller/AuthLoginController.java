@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static cn.atsoft.dasheng.action.dict.InStockDictEnum.userId;
 import static cn.atsoft.dasheng.uc.utils.UserUtils.getPayLoad;
 
 @RestController

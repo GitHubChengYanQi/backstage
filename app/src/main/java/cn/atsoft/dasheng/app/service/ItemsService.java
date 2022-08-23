@@ -66,7 +66,7 @@ public interface ItemsService extends IService<Items> {
      * @author 1
      * @Date 2021-07-14
      */
-     PageInfo<ItemsResult> findPageBySpec(ItemsParam param, DataScope dataScope );
+     PageInfo findPageBySpec(ItemsParam param, DataScope dataScope );
 
     void formatResult(ItemsResult data);
     void batchDelete(List<Long> ids);

@@ -211,14 +211,14 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
     }
 
     @Override
-    public PageInfo<ActivitiProcessResult> findShipPageBySpec(ActivitiProcessParam param) {
+    public PageInfo findShipPageBySpec(ActivitiProcessParam param) {
         Page<ActivitiProcessResult> pageContext = getPageContext();
         IPage<ActivitiProcessResult> page = this.baseMapper.shipPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
     @Override
-    public PageInfo<ActivitiProcessResult> findPageBySpec(ActivitiProcessParam param) {
+    public PageInfo findPageBySpec(ActivitiProcessParam param) {
 
         Page<ActivitiProcessResult> pageContext = getPageContext();
         IPage<ActivitiProcessResult> page = this.baseMapper.customPageList(pageContext, param);

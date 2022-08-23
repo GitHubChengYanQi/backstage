@@ -110,7 +110,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     }
 
     @Override
-    public PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param) {
+    public PageInfo findPageBySpec(ActivitiProcessTaskParam param) {
 
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();

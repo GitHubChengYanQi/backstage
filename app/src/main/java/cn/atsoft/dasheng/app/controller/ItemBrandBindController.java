@@ -97,7 +97,7 @@ public class ItemBrandBindController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ItemBrandBindResult> list(@RequestBody(required = false) ItemBrandBindParam itemBrandBindParam) {
+    public PageInfo list(@RequestBody(required = false) ItemBrandBindParam itemBrandBindParam) {
         if(ToolUtil.isEmpty(itemBrandBindParam)){
             itemBrandBindParam = new ItemBrandBindParam();
         }

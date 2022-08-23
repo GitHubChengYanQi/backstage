@@ -66,7 +66,7 @@ public interface ErpPackageTableService extends IService<ErpPackageTable> {
      * @author qr
      * @Date 2021-08-04
      */
-     PageInfo<ErpPackageTableResult> findPageBySpec(ErpPackageTableParam param, DataScope dataScope );
+     PageInfo findPageBySpec(ErpPackageTableParam param, DataScope dataScope );
 
      void batchAdd(BusinessDetailedParam param);
 

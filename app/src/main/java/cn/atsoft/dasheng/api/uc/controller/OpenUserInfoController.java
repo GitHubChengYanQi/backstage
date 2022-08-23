@@ -102,7 +102,7 @@ public class OpenUserInfoController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<OpenUserInfoResult> list(@RequestBody(required = false) OpenUserInfoParam openUserInfoParam) {
+    public PageInfo list(@RequestBody(required = false) OpenUserInfoParam openUserInfoParam) {
         if (ToolUtil.isEmpty(openUserInfoParam)) {
             openUserInfoParam = new OpenUserInfoParam();
         }

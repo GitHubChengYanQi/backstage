@@ -65,6 +65,6 @@ public interface MaterialService extends IService<Material> {
      * @author 1
      * @Date 2021-07-14
      */
-     PageInfo<MaterialResult> findPageBySpec(MaterialParam param, DataScope dataScope );
+     PageInfo findPageBySpec(MaterialParam param, DataScope dataScope );
 
 }

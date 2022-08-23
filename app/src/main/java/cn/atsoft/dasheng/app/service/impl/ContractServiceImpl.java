@@ -235,7 +235,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     }
 
     @Override
-    public PageInfo<ContractResult> findPageBySpec(ContractParam param, DataScope dataScope) {
+    public PageInfo findPageBySpec(ContractParam param, DataScope dataScope) {
         Page<ContractResult> pageContext = getPageContext();
         IPage<ContractResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());

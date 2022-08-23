@@ -22,7 +22,7 @@ public class ApiWxUserController {
     public ResponseData getWxUser() {
         WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
         wxuserInfoParam.setMemberId(UserUtils.getUserId());
-        PageInfo<WxuserInfoResult> list = this.wxuserInfoService.findPageBySpec(wxuserInfoParam);
+        PageInfo list = this.wxuserInfoService.findPageBySpec(wxuserInfoParam);
         if(ToolUtil.isNotEmpty(list)){
             return  ResponseData.success(list);
         }else{

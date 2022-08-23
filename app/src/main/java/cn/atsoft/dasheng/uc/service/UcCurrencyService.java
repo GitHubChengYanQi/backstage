@@ -64,6 +64,6 @@ public interface UcCurrencyService extends IService<UcCurrency> {
      * @author Sing
      * @Date 2021-03-22
      */
-     PageInfo<UcCurrencyResult> findPageBySpec(UcCurrencyParam param);
+     PageInfo findPageBySpec(UcCurrencyParam param);
 
 }

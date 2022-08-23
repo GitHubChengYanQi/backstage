@@ -131,7 +131,7 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<CrmBusinessResult> list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
+    public PageInfo list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
         if (ToolUtil.isEmpty(crmBusinessParam)) {
             crmBusinessParam = new CrmBusinessParam();
         }

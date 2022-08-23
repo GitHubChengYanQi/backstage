@@ -105,7 +105,7 @@ public class DocumentStatusController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<DocumentsStatusResult> list(@RequestBody(required = false) DocumentsStatusParam documentsStatusParam) {
+    public PageInfo list(@RequestBody(required = false) DocumentsStatusParam documentsStatusParam) {
         if (ToolUtil.isEmpty(documentsStatusParam)) {
             documentsStatusParam = new DocumentsStatusParam();
         }

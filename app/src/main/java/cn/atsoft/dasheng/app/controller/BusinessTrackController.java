@@ -106,7 +106,7 @@ public class BusinessTrackController extends BaseController {
     @Permission
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<BusinessTrackResult> list(@RequestBody(required = false) BusinessTrackParam businessTrackParam) {
+    public PageInfo list(@RequestBody(required = false) BusinessTrackParam businessTrackParam) {
         if (ToolUtil.isEmpty(businessTrackParam)) {
             businessTrackParam = new BusinessTrackParam();
         }

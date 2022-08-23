@@ -317,7 +317,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
 
     @Override
-    public PageInfo<ProductionPickListsResult> findPageBySpec(ProductionPickListsParam param) {
+    public PageInfo findPageBySpec(ProductionPickListsParam param) {
         Page<ProductionPickListsResult> pageContext = getPageContext();
         IPage<ProductionPickListsResult> page = this.baseMapper.customPageList(pageContext, param);
         if (ToolUtil.isNotEmpty(page.getRecords())) {
@@ -931,7 +931,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 出库数据处理会更新此状态
          * 如子表全部数据 更新状态为完成  主表在最后更新数据
          */
-        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).ne("status", 99).list();
+        List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("status", 0).list();
         for (ProductionPickListsCartParam pickListsCartParam : param.getCartsParams()) {
 
             for (Long brandId : pickListsCartParam.getBrandIds()) {

@@ -65,7 +65,7 @@ public class FieldConfigServiceImpl extends ServiceImpl<RestFieldConfigMapper, D
     }
 
     @Override
-    public PageInfo<FieldConfigResult> findPageBySpec(FieldConfigParam param){
+    public PageInfo findPageBySpec(FieldConfigParam param){
         Page<FieldConfigResult> pageContext = getPageContext();
         IPage<FieldConfigResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

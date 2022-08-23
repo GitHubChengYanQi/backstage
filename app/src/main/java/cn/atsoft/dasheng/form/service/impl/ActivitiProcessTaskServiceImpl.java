@@ -163,7 +163,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     }
 
     @Override
-    public PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param) {
+    public PageInfo findPageBySpec(ActivitiProcessTaskParam param) {
 
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
@@ -173,7 +173,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     }
 
     @Override
-    public PageInfo<ActivitiProcessTaskResult> selfPickTasks(ActivitiProcessTaskParam param) {
+    public PageInfo selfPickTasks(ActivitiProcessTaskParam param) {
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.selfPickListsTasks(pageContext, param);
         format(page.getRecords());
@@ -225,7 +225,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
 
     @Override
-    public PageInfo<ActivitiProcessTaskResult> LoginStart(ActivitiProcessTaskParam param) {
+    public PageInfo LoginStart(ActivitiProcessTaskParam param) {
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
         format(page.getRecords());
