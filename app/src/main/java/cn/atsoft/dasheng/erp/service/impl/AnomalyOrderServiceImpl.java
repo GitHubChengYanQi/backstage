@@ -600,12 +600,18 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
      * @param checkNum
      * @return
      */
-    private boolean check(Long skuId, Long brandId, Long positionId, Integer checkNum) {
+    @Override
+    public boolean check(Long skuId, Long brandId, Long positionId, Integer checkNum) {
         Integer lockNumber = listsCartService.getLockNumber(new QuerryLockedParam() {{    //当前物料备料数
             setSkuId(skuId);
-            setPositionId(brandId);
-            setBrandId(positionId);
+            setBrandId(brandId);
+            setPositionId(positionId);
+
         }});
+
+        if (ToolUtil.isEmpty(lockNumber)) {
+            lockNumber = 0;
+        }
 
         Integer stockNumber = stockDetailsService.getNumberByStock(skuId, brandId, positionId);   //当前物料库存数
         if (checkNum + lockNumber == stockNumber) {

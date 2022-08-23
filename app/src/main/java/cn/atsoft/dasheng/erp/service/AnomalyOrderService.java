@@ -33,6 +33,8 @@ public interface AnomalyOrderService extends IService<AnomalyOrder> {
 
     void submit(AnomalyOrderParam orderParam);
 
+    boolean check(Long skuId, Long brandId, Long positionId, Integer checkNum);
+
     /**
      * 删除
      *
