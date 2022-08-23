@@ -182,6 +182,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts part = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
         if (ToolUtil.isNotEmpty(part)) {
             part.setStatus(0);
+            part.setDisplay(0);
             this.updateById(part);
         }
         Parts entity = getEntity(partsParam);
@@ -207,7 +208,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
 
         this.updateById(entity);
-
         return entity;
     }
 
@@ -223,7 +223,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isEmpty(skuIds)) {
             return partIds;
         }
-        List<Parts> list = this.query().in("sku_id", skuIds).eq("status", 99).list();
+        List<Parts> list = this.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
         for (Parts parts : list) {
             partIds.add(parts.getPartsId());
             parts.setPid(partId);

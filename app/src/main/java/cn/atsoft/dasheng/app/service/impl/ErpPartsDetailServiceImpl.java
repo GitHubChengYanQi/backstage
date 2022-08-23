@@ -87,7 +87,10 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         } else {      //当前bom 下一级
             detailResults = this.baseMapper.customList(param);
         }
-        format(detailResults);
+        if (ToolUtil.isNotEmpty(detailResults) && detailResults.size() > 0) {
+            format(detailResults);
+        }
+
         return detailResults;
     }
 

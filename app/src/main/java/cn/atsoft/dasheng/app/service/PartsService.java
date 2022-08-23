@@ -28,7 +28,7 @@ public interface PartsService extends IService<Parts> {
      */
     Parts add(PartsParam partsParam);
 
-    @Transactional
+
     Parts newAdd(PartsParam partsParam);
 
     void startAnalyse();
