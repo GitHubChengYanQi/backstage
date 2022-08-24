@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class ProductionPickListsDetailController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam)  {
+    public ResponseData delete(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam) {
         this.productionPickListsDetailService.delete(productionPickListsDetailParam);
         return ResponseData.success();
     }
@@ -98,13 +99,26 @@ public class ProductionPickListsDetailController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ProductionPickListsDetailResult> list(@RequestBody(required = false) ProductionPickListsDetailParam productionPickListsDetailParam) {
-        if(ToolUtil.isEmpty(productionPickListsDetailParam)){
+        if (ToolUtil.isEmpty(productionPickListsDetailParam)) {
             productionPickListsDetailParam = new ProductionPickListsDetailParam();
         }
         return this.productionPickListsDetailService.findPageBySpec(productionPickListsDetailParam);
     }
 
-
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/noPageList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<ProductionPickListsDetailResult> noPageList(@RequestBody(required = false) ProductionPickListsDetailParam productionPickListsDetailParam) {
+        if (ToolUtil.isEmpty(productionPickListsDetailParam)) {
+            productionPickListsDetailParam = new ProductionPickListsDetailParam();
+        }
+        return this.productionPickListsDetailService.findListBySpec(productionPickListsDetailParam);
+    }
 
 
 }

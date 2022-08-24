@@ -41,7 +41,6 @@ import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -216,7 +215,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
      * @param
      */
     @Override
-    public void createPickListsAndInStockOrder(AllocationParam param , List<AllocationCart> allocationCarts) {
+    public void createPickListsAndInStockOrder(AllocationParam param, List<AllocationCart> allocationCarts) {
         Allocation allocation = this.getById(param.getAllocationId());
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", allocation.getAllocationId()).eq("type", ALLOCATION.getType()).one();
         if (ToolUtil.isEmpty(processTask.getUserId())) {
@@ -364,7 +363,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             }
         }
         shopCartService.addDynamic(allocation.getAllocationId(), "指派了调拨物料");
-        if (haveTransfer){
+        if (haveTransfer) {
             wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
                 setFunction(MarkDownTemplateTypeEnum.transfer);
                 setType(1);
@@ -375,15 +374,37 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 setCreateTime(processTask.getCreateTime());
                 setCreateUser(processTask.getCreateUser());
                 setTaskId(processTask.getProcessTaskId());
-                setUserIds(new ArrayList<Long>(){{
+                setUserIds(new ArrayList<Long>() {{
                     add(processTask.getUserId());
                 }});
             }});
         }
 
     }
+    @Override
+    public void format(List<AllocationResult> data) {
+        List<Long> allocationIds = new ArrayList<>();
+        for (AllocationResult datum : data) {
+            allocationIds.add(datum.getAllocationId());
+        }
+        List<AllocationDetail> details =allocationIds.size() == 0 ?  new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
 
-    void format() {
+        for (AllocationResult datum : data) {
+            List<Long> skuIds = new ArrayList<>();
+            List<Long> storehousePositionsIds = new ArrayList<>();
+            for (AllocationDetail detail : details) {
+                if (datum.getAllocationId().equals(detail.getAllocationId()) ) {
+                    skuIds.add(detail.getSkuId());
+                    if (ToolUtil.isNotEmpty(detail.getStorehousePositionsId())) {
+                        storehousePositionsIds.add(detail.getStorehousePositionsId());
+                    }
+                }
+
+            }
+            datum.setSkuCount((int) skuIds.stream().distinct().count());
+            datum.setPositionCount((int) storehousePositionsIds.stream().distinct().count());
+        }
+
 
     }
 

@@ -38,6 +38,8 @@ public interface AllocationService extends IService<Allocation> {
 
     void createPickListsAndInStockOrder(AllocationParam param, List<AllocationCart> allocationCarts);
 
+    void format(List<AllocationResult> data);
+
     /**
      * 删除
      *

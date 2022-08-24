@@ -114,7 +114,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 lockInkinds.add(productionPickListsCartParam.getInkindId());
             }
         }
-        Integer lockInkindCount = inkinds.size() == 0 ? 0 : this.query().in("inkind_id", inkinds).count();
+        int lockInkindCount = lockInkinds.size() == 0 ? 0 : this.query().in("inkind_id", lockInkinds).count();
         if (lockInkindCount > 0) {
             throw new ServiceException(500, "扫码物料已被备料,不可再次备料,操作终止");
         }
@@ -812,6 +812,11 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 for (StockDetails parentStockDetail : parentStockDetails) {
                     if (stockDetail.getInkindId().equals(inkind.getInkindId()) && inkind.getSource().equals("Inkind") && inkind.getSourceId().equals(parentStockDetail.getInkindId()) && parentStockDetail.getDisplay().equals(1) && stockDetail.getDisplay().equals(1)) {
                         parentStockDetail.setNumber(stockDetail.getNumber() + parentStockDetail.getNumber());
+                        if (parentStockDetail.getDisplay().equals(0) && parentStockDetail.getStage().equals(2)){
+                            parentStockDetail.setDisplay(1);
+                            parentStockDetail.setStage(1);
+                            parentStockDetail.setNumber(stockDetail.getNumber());
+                        }
                         stockDetail.setDisplay(0);
                         stockDetail.setStage(2);
                     }
