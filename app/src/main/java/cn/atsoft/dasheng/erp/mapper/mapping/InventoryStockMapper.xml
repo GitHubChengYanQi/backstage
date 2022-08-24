@@ -208,8 +208,14 @@
         <if test="paramCondition.customerId != null">
             and daoxin_erp_inventory_stock.customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
-        <if test="paramCondition.positionId != null">
-            and daoxin_erp_inventory_stock.position_id like CONCAT('%',#{paramCondition.positionId},'%')
+<!--        <if test="paramCondition.positionId != null">-->
+<!--            and daoxin_erp_inventory_stock.position_id like CONCAT('%',#{paramCondition.positionId},'%')-->
+        <!--        </if>-->
+        <if test="paramCondition.positionIds != null and paramCondition.positionIds.size >0">
+            and daoxin_erp_inventory_stock.position_id in
+            <foreach collection="paramCondition.positionIds" open="(" close=")" item="state" index="index" separator=",">
+                #{state}
+            </foreach>
         </if>
         <if test="paramCondition.anomalyId != null">
             and daoxin_erp_inventory_stock.anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')

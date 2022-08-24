@@ -33,6 +33,9 @@ public class InventoryStockParam implements Serializable, BaseValidatingParam {
 
     private Long inkindId;
 
+
+    private List<Long> positionIds;
+
     @ApiModelProperty("")
     private Long inventoryStockId;
 
