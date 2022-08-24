@@ -282,11 +282,12 @@ public class ActivitiProcessTaskSend {
         switch (type) {
             case audit:
             case send:
+            case status:
                 url = url + "/#/Receipts/ReceiptsDetail?" + "id=" + map.get("taskId");
                 break;
-            case status:
-                url = url + "/#/Receipts/ReceiptsDetail?" + "type=" + map.get("type") + "&formId=" + map.get("formId");
-                break;
+//
+//                url = url + "/#/Receipts/ReceiptsDetail?" + "type=" + map.get("type") + "&formId=" + map.get("formId");
+//                break;
 //                case quality_perform:
 //                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");
 //                break;

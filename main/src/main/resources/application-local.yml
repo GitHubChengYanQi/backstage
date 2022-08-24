@@ -156,4 +156,5 @@ wxcp:
 
 #手机端跳转路径
 mobile:
-  url: https://wx.daoxin.gf2025.com/cp
+  url: 192.168.0.111:8001/cp
+  apiUrl: 192.168.0.100:80
