@@ -29,6 +29,8 @@ public class AnomalyDetailResult implements Serializable {
 
     private List<Announcements> announcements;
 
+    private Long codeId;
+
     private List<String> reasonUrls;
 
     private List<String> opinionUrls;

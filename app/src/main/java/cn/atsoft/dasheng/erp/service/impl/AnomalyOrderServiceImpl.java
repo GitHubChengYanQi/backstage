@@ -614,6 +614,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
 
         Integer stockNumber = stockDetailsService.getNumberByStock(skuId, brandId, positionId);   //当前物料库存数
+        if (ToolUtil.isEmpty(stockNumber)) {
+            stockNumber = 0;
+        }
         if (checkNum + lockNumber == stockNumber) {
             return false;
         }
@@ -851,8 +854,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-
-
 
 
     private Serializable getKey(AnomalyOrderParam param) {

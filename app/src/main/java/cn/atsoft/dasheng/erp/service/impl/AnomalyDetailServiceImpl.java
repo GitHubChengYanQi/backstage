@@ -24,6 +24,8 @@ import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
@@ -88,6 +90,8 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private ActivitiProcessService processService;
+    @Autowired
+    private OrCodeBindService codeBindService;
 
     @Override
     public void add(AnomalyDetailParam param) {
@@ -287,13 +291,25 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
     public void format(List<AnomalyDetailResult> data) {
 
         List<Long> userIds = new ArrayList<>();
+        List<Long> inkindIds = new ArrayList<>();
+
         for (AnomalyDetailResult datum : data) {
             userIds.add(datum.getUserId());
+            inkindIds.add(datum.getInkindId());
         }
 
+        List<OrCodeBind> orCodeBinds = inkindIds.size() == 0 ? new ArrayList<>() : codeBindService.query().in("form_id", inkindIds).eq("display", 1).list();
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
         for (AnomalyDetailResult datum : data) {
+
+            for (OrCodeBind orCodeBind : orCodeBinds) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId()) && orCodeBind.getFormId().equals(datum.getInkindId())) {
+                    datum.setCodeId(orCodeBind.getOrCodeId());
+                    break;
+                }
+            }
+
             for (User user : userList) {
                 if (ToolUtil.isNotEmpty(datum.getUserId()) && datum.getUserId().equals(user.getUserId())) {
                     datum.setUser(user);

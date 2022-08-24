@@ -429,8 +429,6 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
     @Override
     public void updateInventoryStatus(AnomalyParam param, int status) {
-
-
         QueryWrapper<InventoryStock> queryWrapper = new QueryWrapper<>();
         /**
          * 同一时间段   统一修改
