@@ -43,6 +43,9 @@ public class NoneAuthedResources {
             //系统公共信息
             "/getPublicInfo",
 
+            //消息跳转接口
+            "/message/jump",
+
             //oauth登录的接口
             "/oauth/render/*",
             "/oauth/callback/*",

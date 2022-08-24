@@ -11,6 +11,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class MobileConfig {
 
     private String url;
-
+    private String apiUrl;
 
 }

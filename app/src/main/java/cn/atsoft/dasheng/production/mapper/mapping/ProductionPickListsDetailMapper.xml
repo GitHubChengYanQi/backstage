@@ -47,42 +47,78 @@
 	    a.status AS "status",
 	    a.deptId AS "deptId"
     </sql>
+    <sql id="left_join_stock_details">
+        DISTINCTROW
+        a.inkind_id AS "inkindId",
+	    a.pick_lists_detail_id AS "pickListsDetailId",
+	    a.received_number AS "receivedNumber",
+    	a.brand_id AS "brandId",
+    	a.STATUS AS "status",
+    	a.storehouse_positions_id AS "storehousePositionsId",
+    	a.storehouse_id AS "storehouseId",
+    	a.pick_lists_id AS "pickListsId",
+    	a.sku_id AS "skuId",
+    	a.number AS "number",
+    	a.create_user AS "createUser",
+    	a.update_user AS "updateUser",
+    	a.create_time AS "createTime",
+    	a.update_time AS "updateTime",
+    	a.display AS "display",
+    	a.deptId AS "deptId"
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult"
             parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_production_pick_lists_detail where 1 = 1
-        <if test="paramCondition.pickListsDetailId != null">
-            and pick_lists_detail_id like CONCAT('%',#{paramCondition.pickListsDetailId},'%')
+        <include refid="left_join_stock_details"/>
+        FROM
+        `daoxin_production_pick_lists_detail` a
+        LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
+        AND a.brand_id = b.brand_id
+        WHERE 1 = 1
+        and b.display = 1 and b.stage = 1
+        <if test="paramCondition.storehousePositionsId!=null">
+            and(
+            b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
+            <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
+                or b.storehouse_positions_id in
+                <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                         close=")" open="(">
+                    #{state}
+                </foreach>
+
+            </if>
+            )
         </if>
-        <if test="paramCondition.pickListsId != null">
-            and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
+        <if test="paramCondition.pickListsId!=null">
+            and a.pick_lists_id = #{paramCondition.pickListsId}
         </if>
-        <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+
+        UNION
+        select
+        <include refid="left_join_stock_details"/>
+        FROM
+        `daoxin_production_pick_lists_detail` a
+        LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
+        WHERE 1 = 1
+        and b.display = 1 and b.stage = 1
+        and a.brand_id = 0
+        <if test="paramCondition.storehousePositionsId!=null">
+            and (
+            b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
+            <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
+                or b.storehouse_positions_id in
+                <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                         close=")" open="(">
+                    #{state}
+                </foreach>
+
+            </if>
+            )
         </if>
-        <if test="paramCondition.number != null">
-            and number like CONCAT('%',#{paramCondition.number},'%')
-        </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-        </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
-        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-        </if>
-        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-        </if>
-        <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
-        </if>
-        <if test="paramCondition.deptId != null">
-            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        <if test="paramCondition.pickListsId!=null">
+            and a.pick_lists_id = #{paramCondition.pickListsId}
         </if>
     </select>
     <select id="customList2" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult"
