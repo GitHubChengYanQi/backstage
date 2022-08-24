@@ -133,7 +133,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 param.setType(param.getAnomalyType().toString());
                 break;
             case StocktakingError:  //盘点:
-            case timelyInventory:
                 boolean normal = isNormal(param);   //判断有无异常件
                 if (!normal) {    //无异常
                     updateInventory(param);   //盘点详情 修改成正常状态
