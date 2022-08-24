@@ -76,38 +76,46 @@
         `daoxin_production_pick_lists_detail` a
         LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
         AND a.brand_id = b.brand_id
-        WHERE 1 = 1  and a.display = 1
+        WHERE 1 = 1
+        and b.display = 1 and b.stage = 1
         <if test="paramCondition.storehousePositionsId!=null">
-            and
-                b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
-          <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
-            or b.storehouse_positions_id in
-              <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator="," close=")" open="(">
-                  #{state}
-              </foreach>
+            and(
+            b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
+            <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
+                or b.storehouse_positions_id in
+                <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                         close=")" open="(">
+                    #{state}
+                </foreach>
 
-          </if>
+            </if>
+            )
         </if>
         <if test="paramCondition.pickListsId!=null">
             and a.pick_lists_id = #{paramCondition.pickListsId}
         </if>
+
         UNION
         select
         <include refid="left_join_stock_details"/>
         FROM
         `daoxin_production_pick_lists_detail` a
         LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
-        WHERE 1 = 1 and a.display = 1 and a.brand_id = 0
+        WHERE 1 = 1
+        and b.display = 1 and b.stage = 1
+        and a.brand_id = 0
         <if test="paramCondition.storehousePositionsId!=null">
-            and
+            and (
             b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
             <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
                 or b.storehouse_positions_id in
-                <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator="," close=")" open="(">
+                <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                         close=")" open="(">
                     #{state}
                 </foreach>
 
             </if>
+            )
         </if>
         <if test="paramCondition.pickListsId!=null">
             and a.pick_lists_id = #{paramCondition.pickListsId}
