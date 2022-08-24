@@ -53,7 +53,7 @@
             parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_production_pick_lists_detail where 1 = 1
+        from daoxin_production_pick_lists_detail where 1 = 1 and display = 1
         <if test="paramCondition.pickListsDetailId != null">
             and pick_lists_detail_id like CONCAT('%',#{paramCondition.pickListsDetailId},'%')
         </if>

@@ -387,7 +387,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         for (AllocationResult datum : data) {
             allocationIds.add(datum.getAllocationId());
         }
-        List<AllocationDetail> details = allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
+        List<AllocationDetail> details =allocationIds.size() == 0 ?  new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
 
         for (AllocationResult datum : data) {
             List<Long> skuIds = new ArrayList<>();

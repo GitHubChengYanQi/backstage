@@ -103,6 +103,20 @@ public class ProductionPickListsDetailController extends BaseController {
         }
         return this.productionPickListsDetailService.findPageBySpec(productionPickListsDetailParam);
     }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/noPageList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<ProductionPickListsDetailResult> noPageList(@RequestBody(required = false) ProductionPickListsDetailParam productionPickListsDetailParam) {
+        if(ToolUtil.isEmpty(productionPickListsDetailParam)){
+            productionPickListsDetailParam = new ProductionPickListsDetailParam();
+        }
+        return this.productionPickListsDetailService.findListBySpec(productionPickListsDetailParam);
+    }
 
 
 
