@@ -25,6 +25,7 @@ public class SkuSimpleResult {
 
     private Integer maintenancePeriod;
 
+    private Integer lockStockDetailNumber;
 
     private String skuName;
 

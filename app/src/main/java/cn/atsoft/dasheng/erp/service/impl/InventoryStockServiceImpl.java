@@ -20,6 +20,8 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -73,6 +75,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     private StepsService stepsService;
     @Autowired
     private InstockHandleService instockHandleService;
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
 
 
     @Override
@@ -231,29 +235,35 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         Set<Long> positionIds = new HashSet<>();
         Set<Long> skuIds = new HashSet<>();
         int shopCartNum = 0;
+
+
         for (InventoryStock inventoryStock : inventoryStocks) {
             if (inventoryStock.getStatus() != 0) {
                 operation = operation + 1;
             }
             positionIds.add(inventoryStock.getPositionId());
             skuIds.add(inventoryStock.getSkuId());
+            //   shopCartService.query().eq("type","StocktakingError").eq("")
+        }
 
-            if (ToolUtil.isNotEmpty(inventory.getMethod()) && inventory.getMethod().equals("OpenDisc")) {
-                if (inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99) {
-                    shopCartNum = shopCartNum + 1;
-                }
-            } else if (
-                    inventoryStock.getStatus() == -1 && inventoryStock.getLockStatus() != 99 &&
-                            inventoryStock.getAnomalyId() != null && inventoryStock.getAnomalyId() != 0) {
-                Integer count = anomalyDetailService.query()
-                        .eq("anomaly_id", inventoryStock.getAnomalyId())
-                        .eq("display", 1).count();
-                if (count > 0) {
-                    shopCartNum = shopCartNum + 1;
+        List<Long> anomalyIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(inventory.getMethod()) && inventory.getMethod().equals("OpenDisc")) {
+            for (InventoryStock inventoryStock : inventoryStocks) {         //明盘购物车角标数量
+                if (inventoryStock.getLockStatus() != 99 && ToolUtil.isNotEmpty(inventoryStock.getAnomalyId()) && inventoryStock.getAnomalyId() != 0) {
+                    anomalyIds.add(inventoryStock.getAnomalyId());
                 }
             }
-
+            shopCartNum = anomalyIds.size() == 0 ? 0 : anomalyService.query().in("anomaly_id", anomalyIds).eq("status", 0).count();
+        } else {
+            //TODO 暗盘购物车角标 不显示 数量异常
+            for (InventoryStock inventoryStock : inventoryStocks) {
+                if (inventoryStock.getLockStatus() != 99 && ToolUtil.isNotEmpty(inventoryStock.getAnomalyId()) && inventoryStock.getAnomalyId() != 0) {
+                    anomalyIds.add(inventoryStock.getAnomalyId());
+                }
+            }
+            shopCartNum = anomalyIds.size() == 0 ? 0 : anomalyService.query().in("anomaly_id", anomalyIds).eq("status", 0).count();
         }
+
 
         Map<String, Integer> map = new HashMap<>();
         map.put("total", size);
@@ -552,10 +562,19 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
 
         for (InventoryStockResult datum : data) {
 
+            Integer lockNumber = pickListsCartService.getLockNumber(new QuerryLockedParam() {{
+                setBrandId(datum.getBrandId());
+                setPositionId(datum.getPositionId());
+                setSkuId(datum.getSkuId());
+            }});
+
+            datum.setLockNumber(lockNumber);
+
             Integer number = stockDetailsService.getNumberByStock(datum.getSkuId(), datum.getBrandId(), datum.getPositionId());
             if (ToolUtil.isEmpty(number)) {
                 number = 0;
             }
+
             datum.setNumber(Long.valueOf(number));
 
             for (SkuResult skuResult : skuResults) {

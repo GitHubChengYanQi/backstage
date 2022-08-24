@@ -4,32 +4,36 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.ProductionPickListsCart">
-        <id column="pick_lists_cart" property="pickListsCart" />
-        <result column="pick_lists_id" property="pickListsId" />
-        <result column="sku_id" property="skuId" />
-        <result column="inkind_id" property="inkindId" />
-        <result column="brand_id" property="brandId" />
-        <result column="customer_id" property="customerId" />
-        <result column="pick_lists_detail_id" property="pickListsDetailId" />
-        <result column="storehouse_positions_id" property="storehousePositionsId" />
-        <result column="storehouse_id" property="storehouseId" />
-        <result column="number" property="number" />
-        <result column="status" property="status" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
-        <result column="deptId" property="deptId" />
-        <result column="type" property="type" />
+        <id column="pick_lists_cart" property="pickListsCart"/>
+        <result column="pick_lists_id" property="pickListsId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="inkind_id" property="inkindId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="pick_lists_detail_id" property="pickListsDetailId"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="storehouse_id" property="storehouseId"/>
+        <result column="number" property="number"/>
+        <result column="status" property="status"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="type" property="type"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_cart AS "pickListsCart",type AS "type",inkind_id AS "inkindId",status AS "status", pick_lists_detail_id AS "pickListsDetailId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        pick_lists_cart
+        AS "pickListsCart",type AS "type",inkind_id AS "inkindId",status AS "status", pick_lists_detail_id AS "pickListsDetailId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
     <sql id="Self_Count_List">
-        c.pick_lists_cart AS "pickListsCart",
+        c
+        .
+        pick_lists_cart
+        AS "pickListsCart",
         c.inkind_id AS "inkindId",
         c.STATUS AS "status",
         c.pick_lists_detail_id AS "pickListsDetailId",
@@ -47,122 +51,128 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_pick_lists_cart where 1 = 1
-            <if test="paramCondition.pickListsCart != null">
-                and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
-            </if>
-            <if test="paramCondition.pickListsId != null">
-                and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
-            </if>
-            <if test="paramCondition.skuId != null">
-                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-            </if>
-            <if test="paramCondition.number != null">
-                and number like CONCAT('%',#{paramCondition.number},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
-            <if test="paramCondition.deptId != null">
-                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-            </if>
-            <if test="paramCondition.pickListsIds!= null ">
-                and pick_lists_id in
-                <foreach collection="paramCondition.pickListsIds" index="index" item="state" separator="," close=")" open="(">
-                    #{state}
-                </foreach>
-            </if>
+        <if test="paramCondition.pickListsCart != null">
+            and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
+        </if>
+        <if test="paramCondition.pickListsId != null">
+            and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.pickListsIds!= null ">
+            and pick_lists_id in
+            <foreach collection="paramCondition.pickListsIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+        </if>
 
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_pick_lists_cart where 1 = 1
-                <if test="paramCondition.pickListsCart != null">
-                        and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
-                </if>
-                <if test="paramCondition.pickListsId != null">
-                    and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.pickListsCart != null">
+            and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
+        </if>
+        <if test="paramCondition.pickListsId != null">
+            and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_pick_lists_cart where 1 = 1
-                <if test="paramCondition.pickListsCart != null">
-                        and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
-                </if>
-                <if test="paramCondition.pickListsId != null">
-                    and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-    </select><select id="selfCartList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
-    SELECT
-    <include refid="Self_Count_List"/>
+        <if test="paramCondition.pickListsCart != null">
+            and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
+        </if>
+        <if test="paramCondition.pickListsId != null">
+            and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+    <select id="selfCartList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
+        SELECT
+        <include refid="Self_Count_List"/>
         FROM daoxin_production_pick_lists_cart c
         LEFT JOIN daoxin_production_pick_lists l on c.pick_lists_id = l.pick_lists_id
         LEFT JOIN goods_sku s on s.sku_id = c.sku_id
@@ -170,10 +180,10 @@
         WHERE 1=1 and c.display = 1
         <if test="paramCondition.queryText !=null and paramCondition.queryText !=''">
             and (
-                s.sku_name like CONCAT('%',#{paramCondition.query},'%')
-                or p.name like CONCAT('%',#{paramCondition.query},'%')
-                or l.coding like CONCAT('%',#{paramCondition.query},'%')
-                )
+            s.sku_name like CONCAT('%',#{paramCondition.query},'%')
+            or p.name like CONCAT('%',#{paramCondition.query},'%')
+            or l.coding like CONCAT('%',#{paramCondition.query},'%')
+            )
         </if>
         <if test="userId != null">
             and l.user_id = #{userId}
@@ -181,47 +191,63 @@
         <if test="paramCondition.pickListsId != null">
             and c.pick_lists_id = #{paramCondition.pickListsId}
         </if>
-</select>
+    </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_pick_lists_cart where 1 = 1
-                <if test="paramCondition.pickListsCart != null">
-                        and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
-                </if>
-                <if test="paramCondition.pickListsId != null">
-                    and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.pickListsCart != null">
+            and pick_lists_cart like CONCAT('%',#{paramCondition.pickListsCart},'%')
+        </if>
+        <if test="paramCondition.pickListsId != null">
+            and pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
-    <select id="lockInkind" resultType="Long" >
+    <select id="lockInkind" resultType="Long">
+        select inkind_id AS inkindId
+        from daoxin_production_pick_lists_cart
+        where 1 = 1
+          and display = 1
+    </select>
+    <select id="lockNumber" resultType="Integer" parameterType="cn.atsoft.dasheng.production.pojo.QuerryLockedParam">
         select
-        inkind_id AS inkindId
-        from daoxin_production_pick_lists_cart where 1 = 1 and display = 1
+        sum(number) AS number
+        from daoxin_production_pick_lists_cart where 1 = 1 and display = 1 and status = 0
+        <if test="paramCondition.positionId != null">
+            and storehouse_positions_id = #{paramCondition.positionId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id = #{paramCondition.skuId}
+        </if>
     </select>
 
 </mapper>

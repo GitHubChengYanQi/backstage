@@ -260,6 +260,10 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             inventoryDetailParam.setSkuIds(maintenanceAndInventorySelectParam.getSkuIds());
             inventoryDetailParam.setSpuIds(maintenanceAndInventorySelectParam.getSpuIds());
             List<InventoryStock> condition = inventoryService.condition(inventoryDetailParam);
+
+            if (ToolUtil.isNotEmpty(inkindIds)){
+                inkindIds.add(maintenanceAndInventorySelectParam.getInkindId());
+            }
             for (InventoryStock inventoryDetail : condition) {
                 inkindIds.add(inventoryDetail.getInkindId());
                 skuIds.add(inventoryDetail.getSkuId());

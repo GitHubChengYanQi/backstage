@@ -83,13 +83,39 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
     public List<ErpPartsDetailResult> bomList(ErpPartsDetailParam param) {
         List<ErpPartsDetailResult> detailResults = null;
         if (ToolUtil.isNotEmpty(param.getSkuId())) {   //bom最末级
-            detailResults = recursiveDetails(param.getSkuId(),null);
+            detailResults = recursiveDetails(param.getSkuId(), null);
         } else {      //当前bom 下一级
             detailResults = this.baseMapper.customList(param);
         }
-        format(detailResults);
+        if (ToolUtil.isNotEmpty(detailResults) && detailResults.size() > 0) {
+            format(detailResults);
+        }
+
         return detailResults;
     }
+
+
+    @Override
+    public List<ErpPartsDetailResult> bomListVersion(ErpPartsDetailParam param) {
+        List<ErpPartsDetailResult> detailResults = null;
+
+        if (ToolUtil.isNotEmpty(param.getAll()) && ToolUtil.isNotEmpty(param.getSkuId())) {
+            if (param.getAll()) {
+                detailResults = recursiveDetails(param.getSkuId(), null);   //bom最末级
+            } else {
+                Parts parts = partsService.query().eq("sku_id", param.getSkuId()).eq("status", 99).last("limit 1").one();
+                if (ToolUtil.isNotEmpty(parts)) {
+                    param.setPartsId(parts.getPartsId());
+                    detailResults = this.baseMapper.customList(param);  //当前bom 下一级
+                }
+            }
+        }
+        if (ToolUtil.isNotEmpty(detailResults)) {
+            format(detailResults);
+        }
+        return detailResults;
+    }
+
 
     @Override
     public List<ErpPartsDetailResult> recursiveDetails(Long skuId, ErpPartsDetailResult result) {
@@ -101,9 +127,9 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
             List<ErpPartsDetail> partsDetails = this.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
             List<ErpPartsDetailResult> detailResults = BeanUtil.copyToList(partsDetails, ErpPartsDetailResult.class);
             for (ErpPartsDetailResult detailResult : detailResults) {
-                list.addAll(recursiveDetails(detailResult.getSkuId(),detailResult));
+                list.addAll(recursiveDetails(detailResult.getSkuId(), detailResult));
             }
-        } else {
+        } else if (ToolUtil.isNotEmpty(result)) {
             list.add(result);
         }
         return list;

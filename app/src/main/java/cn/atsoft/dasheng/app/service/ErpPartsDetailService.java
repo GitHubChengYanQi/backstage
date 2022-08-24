@@ -68,6 +68,8 @@ public interface ErpPartsDetailService extends IService<ErpPartsDetail> {
 
     List<ErpPartsDetailResult> bomList(ErpPartsDetailParam param);
 
+    List<ErpPartsDetailResult> bomListVersion(ErpPartsDetailParam param);
+
     List<ErpPartsDetailResult> recursiveDetails(Long skuId, ErpPartsDetailResult result);
 
     List<ErpPartsDetailResult> getDetails(List<Long> partIds);
