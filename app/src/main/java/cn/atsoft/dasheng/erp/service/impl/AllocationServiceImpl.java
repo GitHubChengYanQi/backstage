@@ -298,8 +298,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     ProductionPickListsParam listsParam = new ProductionPickListsParam();
                     listsParam.setPickListsName(allocation.getAllocationName());
                     listsParam.setUserId(allocation.getUserId());
-                    listsParam.setSource("ALLOCATION");
-                    listsParam.setSourceId(param.getAllocationId());
+                    listsParam.setSource("process");
+                    listsParam.setSourceId(processTask.getProcessTaskId());
                     List<ProductionPickListsDetailParam> details = new ArrayList<>();
                     List<AllocationCart> updateCart = new ArrayList<>();
                     for (AllocationCart allocationCart : allocationCarts) {
@@ -359,6 +359,55 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                         storehousePositionsBind.setDisplay(0);
                     }
                     storehousePositionsBindService.updateBatchById(list);
+                }
+            }
+            List<Long> stockIds = new ArrayList<>();
+            for (AllocationCart allocationCart : allocationCarts) {
+                stockIds.add(allocationCart.getStorehouseId());
+            }
+            stockIds = stockIds.stream().distinct().collect(Collectors.toList());
+
+            for (Long stockId : stockIds) {
+                ProductionPickListsParam listsParam = new ProductionPickListsParam();
+                listsParam.setPickListsName(allocation.getAllocationName());
+                listsParam.setUserId(allocation.getUserId());
+                listsParam.setSource("processTask");
+                listsParam.setSourceId(processTask.getProcessTaskId());
+                List<ProductionPickListsDetailParam> details = new ArrayList<>();
+                List<AllocationCart> updateCart = new ArrayList<>();
+                for (AllocationCart allocationCart : allocationCarts) {
+                    if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isEmpty(allocationCart.getStorehousePositionsId())) {
+                        ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
+                        ToolUtil.copyProperties(allocationCart, listsDetailParam);
+                        listsDetailParam.setStatus(0);
+                        details.add(listsDetailParam);
+
+                        allocationCart.setStatus(98);
+                        updateCart.add(allocationCart);
+                    }
+                    if (allocationCart.getStorehouseId().equals(stockId) && ToolUtil.isNotEmpty(allocationCart.getStorehousePositionsId())) {
+                        haveTransfer = true;
+                    }
+                }
+                if (details.size() > 0) {
+                    List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+                    details.parallelStream().collect(Collectors.groupingBy(i -> i.getSkuId() + "_" + i.getBrandId(), Collectors.toList())).forEach(
+                            (id, transfer) -> {
+                                transfer.stream().reduce((a, b) -> new ProductionPickListsDetailParam() {{
+                                    setSkuId(a.getSkuId());
+                                    setBrandId(a.getBrandId());
+                                    setNumber(a.getNumber() + b.getNumber());
+                                }}).ifPresent(pickListsDetailParams::add);
+                            }
+                    );
+                    listsParam.setPickListsDetailParams(pickListsDetailParams);
+                    ProductionPickLists pickLists = productionPickListsService.add(listsParam);
+                    for (AllocationCart allocationCart : updateCart) {
+                        //setPickListsId 方便对应生成入库单时查找
+                        allocationCart.setPickListsId(pickLists.getPickListsId());
+                    }
+                    allocationCartService.updateBatchById(updateCart);
+
                 }
             }
         }

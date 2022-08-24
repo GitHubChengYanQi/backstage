@@ -372,7 +372,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
              * 是否可以领料
              */
             if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().anyMatch(i -> i)) {
-
                 result.setCanPick(true);
             } else if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().noneMatch(i -> i)) {
                 result.setCanPick(false);

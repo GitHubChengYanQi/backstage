@@ -105,9 +105,8 @@ public class WxCpSendTemplate {
         return uuIds;
     }
     private List<UserId2WxOpenId> userIds2UuIdsObject(List<Long> userIds) {
-        List<String> uuIds = new ArrayList<>();
         List<UserId2WxOpenId> userId2WxOpenIds = new ArrayList<>();
-        List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).eq("source", "wxCp").list();
+        List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).eq("source", "wxCp").eq("display",1).list();
 
         List<Long> memberIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(wxuserInfos)) {
@@ -193,6 +192,8 @@ public class WxCpSendTemplate {
 //            wxCpMessage.setMsgType("markdown");
 //            wxCpMessage.setContent(this.getContent(markDownTemplate));
 //            List<String> userIds = userIds2UuIds(markDownTemplate.getUserIds());
+        MarkDownTemplate itemAndDescription = this.selectTitle(markDownTemplate);
+
         List<UserId2WxOpenId> userId2WxOpenIds = userIds2UuIdsObject(markDownTemplate.getUserIds());
         if (ToolUtil.isNotEmpty(userId2WxOpenIds)) {
 
@@ -200,8 +201,8 @@ public class WxCpSendTemplate {
             for (Long userId : markDownTemplate.getUserIds()) {
                 Message message = new Message();
                 message.setTime(new DateTime());
-                message.setTitle(markDownTemplate.getTitle());
-                message.setContent(markDownTemplate.getItems());
+                message.setTitle(itemAndDescription.getTitle());
+                message.setContent(itemAndDescription.getItems());
                 message.setType(markDownTemplate.getType());
                 message.setUserId(userId);
                 message.setSort(0L);
@@ -229,7 +230,7 @@ public class WxCpSendTemplate {
                 messageEntity.setType(MessageType.CP);
                 WxCpMessage wxCpMessage = new WxCpMessage();
                 wxCpMessage.setMsgType("markdown");
-                wxCpMessage.setContent(this.getContent(markDownTemplate));
+                wxCpMessage.setContent(this.getContent(markDownTemplate,itemAndDescription));
                 /**
                  * 匹配openId
                  */
@@ -255,8 +256,7 @@ public class WxCpSendTemplate {
         }
     }
 
-    public String getContent(MarkDownTemplate markDownTemplate) {
-        MarkDownTemplate markDownTemplate1 = this.selectTitle(markDownTemplate);
+    public String getContent(MarkDownTemplate markDownTemplate,MarkDownTemplate markDownTemplate1) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("**").append(markDownTemplate1.getTitle()).append("**").append("\n\n");
 
