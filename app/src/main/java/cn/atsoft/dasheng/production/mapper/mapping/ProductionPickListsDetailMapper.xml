@@ -78,8 +78,17 @@
         AND a.brand_id = b.brand_id
         WHERE 1 = 1  and a.display = 1
         <if test="paramCondition.storehousePositionsId!=null">
-            and b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
-        </if><if test="paramCondition.pickListsId!=null">
+            and
+                b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
+          <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
+            or b.storehouse_positions_id in
+              <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator="," close=")" open="(">
+                  #{state}
+              </foreach>
+
+          </if>
+        </if>
+        <if test="paramCondition.pickListsId!=null">
             and a.pick_lists_id = #{paramCondition.pickListsId}
         </if>
         UNION
@@ -90,8 +99,17 @@
         LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
         WHERE 1 = 1 and a.display = 1 and a.brand_id = 0
         <if test="paramCondition.storehousePositionsId!=null">
-            and b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
-        </if><if test="paramCondition.pickListsId!=null">
+            and
+            b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
+            <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
+                or b.storehouse_positions_id in
+                <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator="," close=")" open="(">
+                    #{state}
+                </foreach>
+
+            </if>
+        </if>
+        <if test="paramCondition.pickListsId!=null">
             and a.pick_lists_id = #{paramCondition.pickListsId}
         </if>
     </select>

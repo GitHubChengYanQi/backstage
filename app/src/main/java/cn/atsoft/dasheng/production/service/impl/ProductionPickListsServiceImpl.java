@@ -427,8 +427,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 查询备料单与领料单
          */
-        List<ProductionPickListsDetail> pickListsDetails =pickListsIds.size() == 0 ? new ArrayList<>() : this.pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
-        List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class);
+//        List<ProductionPickListsDetail> pickListsDetails =pickListsIds.size() == 0 ? new ArrayList<>() : this.pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
+//        List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class);
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listByPickLists(pickListsIds);
+
 
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {
