@@ -704,17 +704,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         if (ToolUtil.isNotEmpty(result.getInstockNumber()) && result.getInstockNumber() > 0) {   //允许入库 并添加 入库购物车
             addShopCart(result);
-
+            canInStock(result);               //允许入库
             String skuMessage = skuService.skuMessage(result.getSkuId());
             shopCartService.addDynamic(result.getFormId(), "异常物料" + skuMessage + "允许入库");
         }
 
         for (AnomalyDetailResult detail : result.getDetails()) {
-
             if (detail.getStauts() == -1) {       //终止入库
                 stopInStock(result, detail);
-            } else if (detail.getStauts() == 1) {   //允许入库
-                canInStock(result);
             }
         }
 
