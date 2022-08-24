@@ -29,8 +29,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -71,7 +73,39 @@ public class InstockHandleServiceImpl extends ServiceImpl<InstockHandleMapper, I
         this.updateById(newEntity);
     }
 
+
     @Override
+    public List<InstockHandleResult> detailByInStockOrder(Long instockOrderId) {
+        if (ToolUtil.isEmpty(instockOrderId)) {
+            return new ArrayList<>();
+        }
+
+        List<InstockHandle> instockHandles = this.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
+        List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
+        List<InstockHandleResult> detailTotalList = new ArrayList<>();
+
+        instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId() + "_" + item.getType() + "_" + item.getCustomerId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockHandleResult() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setBrandId(a.getBrandId());
+                        setType(a.getType());
+                        setCustomerId(a.getCustomerId());
+                    }}).ifPresent(detailTotalList::add);
+                }
+        );
+
+        /**
+         * 排序
+         */
+        List<InstockHandleResult> collect = detailTotalList.stream().sorted(Comparator.comparing(InstockHandleResult::getSkuId).reversed()).collect(Collectors.toList());
+        this.format(collect);
+        return collect;
+    }
+
+    @Override
+
     public InstockHandleResult findBySpec(InstockHandleParam param) {
         return null;
     }
@@ -106,6 +140,7 @@ public class InstockHandleServiceImpl extends ServiceImpl<InstockHandleMapper, I
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
     public void format(List<InstockHandleResult> data) {
         List<Long> skuIds = new ArrayList<>();

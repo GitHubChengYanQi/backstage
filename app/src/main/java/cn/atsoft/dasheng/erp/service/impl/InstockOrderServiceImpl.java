@@ -691,6 +691,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     public void formatResult(InstockOrderResult result) {
         DocumentsStatusResult statusResult = documentStatusService.detail(result.getStatus());
         result.setStatusResult(statusResult);
+
+        List<InstockHandleResult> instockHandleResults = instockHandleService.detailByInStockOrder(result.getInstockOrderId());
+        result.setHandleResults(instockHandleResults);
     }
 
 
@@ -1078,7 +1081,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (InStockByOrderParam.SkuParam skuParam : skuParams) {
             List<Inkind> inkinds = skuParam.getInkindIds().size() == 0 ? new ArrayList<>() : inkindService.listByIds(skuParam.getInkindIds());
-
             if (ToolUtil.isNotEmpty(skuParam.getStockNumber()) && skuParam.getStockNumber() > 0) {   //盘点
                 List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuParam.getSkuId()).eq("storehouse_positions_id", skuParam.getPositionId()).list();
                 for (int i = 0; i < stockDetails.size(); i++) {
@@ -1092,7 +1094,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
                 stockDetailsService.updateBatchById(stockDetails);
             }
-
 
             long number = 0L;
             for (Inkind inKind : inkinds) {
@@ -1573,6 +1574,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void format(List<InstockOrderResult> data) {
+
+
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
@@ -1629,14 +1632,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             int waitInStockNum = 0;
             int instockErrorNum = 0;
             List<InstockListResult> instockListResults = new ArrayList<>();
-            for (InstockListResult instockList : instockListList) {
 
+            for (InstockListResult instockList : instockListList) {
                 for (Anomaly anomaly : anomalyList) {
                     if (ToolUtil.isNotEmpty(anomaly.getSourceId()) && anomaly.getSourceId().equals(instockList.getInstockListId())) {
                         instockList.setAnomalyId(anomaly.getAnomalyId());
                     }
                 }
-
                 if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
                     instockListResults.add(instockList);
                     enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
@@ -1671,6 +1673,28 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     break;
                 }
             }
+
+            /**
+             * 可入库状态
+             */
+            boolean canPut = false;
+            for (InstockListResult instockListResult : instockListList) {
+                if (instockListResult.getInstockOrderId().equals(datum.getInstockOrderId())) {
+                    if (instockListResult.getStatus() == 0) {    //是否滑动到购物车
+                        canPut = true;
+                        break;
+                    } else {
+                        if (instockErrorNum > 0) {
+                            canPut = true;
+                            break;
+                        } else if (waitInStockNum > 0) {
+                            canPut = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            datum.setCanPut(canPut);
 
 
             for (User user : users) {
@@ -1752,7 +1776,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 int number = Math.toIntExact(instockList.getNumber());
                 for (AllocationCart cart : allocationCarts) {
                     if (number > 0) {
-                        if (cart.getStatus().equals(98) && cart.getInstockOrderId().equals(instockList.getInstockOrderId()) &&  !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getSkuId().equals(cart.getSkuId())) {
+                        if (cart.getStatus().equals(98) && cart.getInstockOrderId().equals(instockList.getInstockOrderId()) && !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getSkuId().equals(cart.getSkuId())) {
                             int lastNumber = number;
                             number = number - (cart.getNumber() - cart.getDoneNumber());
                             if (number >= 0) {
