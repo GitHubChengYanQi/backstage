@@ -99,6 +99,8 @@ public class taskController extends BaseController {
     private InventoryService inventoryService;
     @Autowired
     private AllocationService allocationService;
+    @Autowired
+    private InstockOrderService instockOrderService;
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -174,6 +176,8 @@ public class taskController extends BaseController {
                     taskService.format(new ArrayList<ActivitiProcessTaskResult>() {{
                         add(taskResult);
                     }});
+                    InstockOrderResult instockOrderResult = (InstockOrderResult) taskResult.getReceipts();
+                    instockOrderService.formatResult(instockOrderResult);
                     break;
                 case "ERROR":
                     AnomalyOrderResult orderResult = anomalyOrderService.detail(taskResult.getFormId());
