@@ -614,6 +614,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
 
         Integer stockNumber = stockDetailsService.getNumberByStock(skuId, brandId, positionId);   //当前物料库存数
+        if (ToolUtil.isEmpty(stockNumber)) {
+            stockNumber = 0;
+        }
         if (checkNum + lockNumber == stockNumber) {
             return false;
         }
@@ -635,27 +638,36 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
             long errorNum = 0;
             boolean t = false;
-            if (anomaly.getInstockNumber() == 0) {
-                t = true;
-                errorNum = anomaly.getRealNumber();
-            } else {
-                for (AnomalyDetailResult detail : anomaly.getDetails()) {
-                    if (detail.getStauts() == -1) {
-                        errorNum = errorNum + detail.getNumber();
-                        t = true;
-                    }
+
+            if (ToolUtil.isNotEmpty(anomaly.getCheckNumber())) {  //有复核数
+                List<CheckNumber> checkNumbers = JSON.parseArray(anomaly.getCheckNumber(), CheckNumber.class);
+                CheckNumber checkNumber = checkNumbers.get(checkNumbers.size() - 1);   //取复核数最后一位
+                if (anomaly.getInstockNumber() == 0) {      //入库数量为0  复核数全部终止入库
+                    t = true;
+                    errorNum = checkNumber.getNumber();
+                } else if (checkNumber.getNumber() - anomaly.getInstockNumber() > 0) {   //入库数不为0 复合数减去入库数
+                    errorNum = checkNumber.getNumber() - anomaly.getInstockNumber();
+                    t = true;
+                }
+            } else {                                            //无复核数
+                if (anomaly.getInstockNumber() == 0) {
+                    t = true;
+                    errorNum = anomaly.getRealNumber();
+                } else if (anomaly.getRealNumber() - anomaly.getInstockNumber() > 0) {
+                    errorNum = anomaly.getRealNumber() - anomaly.getInstockNumber();
+                    t = true;
                 }
             }
 
 
-            if (!anomaly.getRealNumber().equals(anomaly.getNeedNumber())) {    //数量核实异常
-                List<CheckNumber> checkNumbers = JSON.parseArray(anomaly.getCheckNumber(), CheckNumber.class);
-                int i = checkNumbers.size() - 1;
-                CheckNumber checkNumber = checkNumbers.get(i);
-                InstockHandle inStockHandle = createInStockHandle(anomaly, "ErrorNumber");
-                inStockHandle.setNumber(checkNumber.getNumber() - anomaly.getNeedNumber());
-                instockHandleService.save(inStockHandle);
-            }
+//            if (!anomaly.getRealNumber().equals(anomaly.getNeedNumber())) {    //数量核实异常
+//                List<CheckNumber> checkNumbers = JSON.parseArray(anomaly.getCheckNumber(), CheckNumber.class);
+//                int i = checkNumbers.size() - 1;
+//                CheckNumber checkNumber = checkNumbers.get(i);
+//                InstockHandle inStockHandle = createInStockHandle(anomaly, "ErrorNumber");
+//                inStockHandle.setNumber(checkNumber.getNumber() - anomaly.getNeedNumber());
+//                instockHandleService.save(inStockHandle);
+//            }
 
 
             if (t) {
@@ -692,16 +704,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         if (ToolUtil.isNotEmpty(result.getInstockNumber()) && result.getInstockNumber() > 0) {   //允许入库 并添加 入库购物车
             addShopCart(result);
-
+            canInStock(result);               //允许入库
             String skuMessage = skuService.skuMessage(result.getSkuId());
             shopCartService.addDynamic(result.getFormId(), "异常物料" + skuMessage + "允许入库");
         }
 
         for (AnomalyDetailResult detail : result.getDetails()) {
-            //终止入库
-            if (detail.getStauts() == -1) {
+            if (detail.getStauts() == -1) {       //终止入库
                 stopInStock(result, detail);
-//                stopInStock(detail.getDetailId());
             }
         }
 
@@ -750,7 +760,18 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         shopCart.setFormId(result.getAnomalyId());
         shopCart.setNumber(result.getInstockNumber());
         shopCartService.save(shopCart);
+    }
 
+    /**
+     * 允许入库
+     *
+     * @param anomalyResult
+     */
+    private void canInStock(AnomalyResult anomalyResult) {
+        Long inStockListId = anomalyResult.getSourceId();
+        InstockList instockList = instockListService.getById(inStockListId);
+        instockList.setAnomalyHandle("canInStock");
+        instockListService.updateById(instockList);
     }
 
     /**
@@ -772,14 +793,12 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
      * @param
      */
     private void stopInStock(AnomalyResult anomalyResult, AnomalyDetailResult detailResult) {
-
         Long inStockListId = anomalyResult.getSourceId();
         InstockList instockList = instockListService.getById(inStockListId);
         instockList.setStatus(-1L);
         instockListService.updateById(instockList);
-
-
     }
+
 
     @Override
     public void delete(AnomalyOrderParam param) {
@@ -851,8 +870,6 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-
-
 
 
     private Serializable getKey(AnomalyOrderParam param) {
