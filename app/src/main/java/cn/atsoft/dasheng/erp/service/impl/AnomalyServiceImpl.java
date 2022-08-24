@@ -213,7 +213,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         for (AnomalyResult anomalyResult : anomalyResults) {
             DateTime dateTime = new DateTime(anomalyResult.getCreateTime());
-            int month = dateTime.month();
+            int month = dateTime.month() + 1;
             Integer num = map.get(month);
             num++;
             map.put(month, num);
