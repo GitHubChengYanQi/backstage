@@ -280,25 +280,26 @@ public class ExcelAsync {
                 }
 
                 //判断 分类 产品 型号 --------------------------------------------------------------------------------------
-                for (Sku sku : skus) {
-                    if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
-                        for (Spu spu : spuList) {
-                            if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
-                                skuExcelItem.setType("spuRepeat");
-                                SkuResult results = skuService.getDetail(sku.getSkuId());
-                                skuExcelItem.setUnitId(unitId);
-                                skuExcelItem.setClassId(spuClass.getSpuClassificationId());
-                                skuExcelItem.setSimpleResult(results);
-                                skuExcelItem.setErrorSkuId(sku.getSkuId());
-                                throw new ServiceException(500, "分类，产品，型号 重复");
+                if (skuExcelItem.getSpecifications().equals("")) {   //有规格 不进此判断
+                    for (Sku sku : skus) {
+                        if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
+                            for (Spu spu : spuList) {
+                                if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
+                                    skuExcelItem.setType("spuRepeat");
+                                    SkuResult results = skuService.getDetail(sku.getSkuId());
+                                    skuExcelItem.setUnitId(unitId);
+                                    skuExcelItem.setClassId(spuClass.getSpuClassificationId());
+                                    skuExcelItem.setSimpleResult(results);
+                                    skuExcelItem.setErrorSkuId(sku.getSkuId());
+                                    throw new ServiceException(500, "分类，产品，型号 重复");
+                                }
                             }
                         }
                     }
-
                 }
 
                 //判断分类 产品 型号 描述-------------------------------------------------------------------------------------
-                String md5 = SecureUtil.md5(newSku.getSkuValue() + newSku.getSpuId().toString() + newSku.getSkuName() + spuClass.getSpuClassificationId());
+                String md5 = SecureUtil.md5(newSku.getSpecifications() + newSku.getSpuId().toString() + newSku.getSkuName() + spuClass.getSpuClassificationId());
                 for (Sku sku : skus) {
                     if (md5.equals(sku.getSkuValueMd5())) {
                         skuExcelItem.setType("skuRepeat");
