@@ -127,7 +127,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                 XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
                 List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
 
-//                replace(newTable, customer, results);
+                replace(newTable, customer, results);
                 xwpfTables.add(newTable);
             }
 
@@ -246,7 +246,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             xwpfTableRow = newRow;
         }
-        table.removeRow(table.getRows().size());
+        table.removeRow(table.getRows().size()-1);
         return true;
     }
 
