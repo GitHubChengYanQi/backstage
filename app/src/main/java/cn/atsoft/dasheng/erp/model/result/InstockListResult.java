@@ -38,7 +38,6 @@ public class InstockListResult implements Serializable {
     private Map<String, Object> stockDetails;
     private Long storehousePositionsId;
     private Long instockNumber;
-
     private CustomerResult customerResult;
     private BrandResult brandResult;
     private StorehouseResult storehouseResult;
@@ -46,7 +45,7 @@ public class InstockListResult implements Serializable {
     private Sku sku;
     private Integer positionNum;
     private Long inkindId;
-
+    private String anomalyHandle;
     private Long notNumber;
 
     /**

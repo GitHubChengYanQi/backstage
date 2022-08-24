@@ -29,13 +29,14 @@
         <result column="instock_number" property="instockNumber"/>
         <result column="real_number" property="realNumber"/>
         <result column="customer_id" property="customerId"/>
+        <result column="anomaly_handle" property="anomalyHandle"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">received_date
     AS "receivedDate",effective_date AS "effectiveDate",manufacture_date AS "manufactureDate",lot_number AS "lotNumber",serial_number AS "serialNumber",
         instock_number
-        AS "instockNumber",real_number AS "realNumber",customer_id AS "customerId",
+        AS "instockNumber",real_number AS "realNumber",customer_id AS "customerId",anomaly_handle AS "anomalyHandle",
 storehouse_id
     AS "storeHouseId", selling_price AS "sellingPrice",cost_price AS "costPrice",sku_id AS "skuId",storehouse_positions_id AS "storehousePositionsId",
         instock_list_id AS "instockListId", brand_id AS "brandId",inkind_id AS "inkindId", status AS "status", number AS "number", instock_order_id AS "instockOrderId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
@@ -160,7 +161,7 @@ storehouse_id
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
         <if test="paramCondition.storeHouseId != null">
-          and  storeHouseId like CONCAT('%',#{paramCondition.storeHouseId},'%')
+            and storeHouseId like CONCAT('%',#{paramCondition.storeHouseId},'%')
         </if>
     </select>
 

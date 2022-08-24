@@ -627,7 +627,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<InstockLogResult> logResults = instockLogService.listByInstockOrderId(orderResult.getInstockOrderId());
         orderResult.setLogResults(logResults);
-
         List<Long> userIds = new ArrayList<>();
         userIds.add(orderResult.getUserId());
         userIds.add(orderResult.getCreateUser());
@@ -1538,10 +1537,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         List<InstockList> instockListList = orderIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", orderIds).list();
         List<InstockListResult> instockListResults = BeanUtil.copyToList(instockListList, InstockListResult.class, new CopyOptions());
+
         format(data);
-
         instockListService.format(instockListResults);
-
         for (InstockOrderResult datum : data) {
             List<InstockListResult> results = new ArrayList<>();
 
@@ -1695,8 +1693,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
             }
             datum.setCanPut(canPut);
-
-
 
 
             for (User user : users) {
