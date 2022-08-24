@@ -92,6 +92,10 @@ public class InstockHandleServiceImpl extends ServiceImpl<InstockHandleMapper, I
                         setBrandId(a.getBrandId());
                         setType(a.getType());
                         setCustomerId(a.getCustomerId());
+                        setCreateTime(a.getCreateTime());
+                        setInstockOrderId(a.getInstockOrderId());
+                        setInstockHandleId(a.getInstockHandleId());
+                        setInstockHandleId(a.getInstockListId());
                     }}).ifPresent(detailTotalList::add);
                 }
         );
