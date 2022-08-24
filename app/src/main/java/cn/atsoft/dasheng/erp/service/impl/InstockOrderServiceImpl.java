@@ -1696,6 +1696,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
             datum.setCanPut(canPut);
 
+            
+
 
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(datum.getUserId())) {
