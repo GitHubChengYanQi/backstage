@@ -235,11 +235,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public Map<Integer, List<AnomalyResult>> detailed(AnomalyParam param) {
         Map<Integer, List<AnomalyResult>> map = new HashMap<>();
         List<AnomalyResult> anomalyResults = this.baseMapper.customList(param);
+        anomalyResults.removeIf(i -> i.getType().equals("InstockError"));
         this.format(anomalyResults);
 
         for (AnomalyResult anomalyResult : anomalyResults) {
             DateTime dateTime = new DateTime(anomalyResult.getCreateTime());
-            int month = dateTime.month();
+            int month = dateTime.month() + 1;
             List<AnomalyResult> results = map.get(month);
             if (ToolUtil.isEmpty(results)) {
                 results = new ArrayList<>();
