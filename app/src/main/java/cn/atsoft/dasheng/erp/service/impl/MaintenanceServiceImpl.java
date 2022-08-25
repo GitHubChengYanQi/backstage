@@ -73,15 +73,6 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private SkuService skuService;
 
     @Autowired
-    private MaterialService materialService;
-
-    @Autowired
-    private SpuService spuService;
-
-    @Autowired
-    private PartsService partsService;
-
-    @Autowired
     private StockDetailsService stockDetailsService;
 
 
@@ -93,9 +84,6 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
     @Autowired
     private MediaService mediaService;
-
-    @Autowired
-    private DocumentStatusService statusService;
 
     @Autowired
     private ActivitiAuditService auditService;
@@ -118,14 +106,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     @Autowired
     private MaintenanceCycleService maintenanceCycleService;
 
-    @Autowired
-    private SpuClassificationService spuClassificationService;
 
     @Autowired
     private InventoryService inventoryService;
-
-    @Autowired
-    private MessageProducer messageProducer;
 
     @Autowired
     private UserService userService;
@@ -261,8 +244,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             inventoryDetailParam.setSpuIds(maintenanceAndInventorySelectParam.getSpuIds());
             List<InventoryStock> condition = inventoryService.condition(inventoryDetailParam);
 
-            if (ToolUtil.isNotEmpty(inkindIds)){
-                inkindIds.add(maintenanceAndInventorySelectParam.getInkindId());
+            if (ToolUtil.isNotEmpty(maintenanceAndInventorySelectParam.getInkindIds())){
+                inkindIds.addAll(maintenanceAndInventorySelectParam.getInkindIds());
             }
             for (InventoryStock inventoryDetail : condition) {
                 inkindIds.add(inventoryDetail.getInkindId());
