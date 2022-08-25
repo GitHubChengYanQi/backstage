@@ -122,6 +122,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private InkindService inkindService;
     @Autowired
     private RemarksService remarksService;
+    @Autowired
+    private MaintenanceLogDetailService logDetailService;
 
     @Override
 
@@ -233,6 +235,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
         List<Long> skuIds = new ArrayList<>();
         List<Long> inkindIds = new ArrayList<>();
+        List<StockDetails> stockDetails = new ArrayList<>();
         List<MaintenanceAndInventorySelectParam> maintenanceAndInventorySelectParams = JSON.parseArray(param.getSelectParams(), MaintenanceAndInventorySelectParam.class);
         for (MaintenanceAndInventorySelectParam maintenanceAndInventorySelectParam : maintenanceAndInventorySelectParams) {
             InventoryDetailParam inventoryDetailParam = new InventoryDetailParam();
@@ -242,8 +245,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             inventoryDetailParam.setClassIds(maintenanceAndInventorySelectParam.getSpuClassificationIds());
             inventoryDetailParam.setSkuIds(maintenanceAndInventorySelectParam.getSkuIds());
             inventoryDetailParam.setSpuIds(maintenanceAndInventorySelectParam.getSpuIds());
+            inventoryDetailParam.setInkindIds(maintenanceAndInventorySelectParam.getInkindIds());
             List<InventoryStock> condition = inventoryService.condition(inventoryDetailParam);
-
+            stockDetails = BeanUtil.copyToList(condition,StockDetails.class);
             if (ToolUtil.isNotEmpty(maintenanceAndInventorySelectParam.getInkindIds())){
                 inkindIds.addAll(maintenanceAndInventorySelectParam.getInkindIds());
             }
@@ -257,18 +261,37 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
         List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
+        List<MaintenanceLogDetail> logDetails = logDetailService.query().eq("maintenance_id", param.getMaintenanceId()).list();
+        /**
+         * 查询养护记录   被养护过的实物计算总数  如果此实物养护记录数量小于库存数量  证明此实物未被全部养护完（针对批量物料）
+         */
+        for (StockDetails stockDetail : stockDetails) {
+            for (MaintenanceLogDetail logDetail : logDetails) {
+                if  (stockDetail.getInkindId().equals(logDetail.getInkindId())){
+                    stockDetail.setNumber(stockDetail.getNumber()-logDetail.getNumber());
+                }
+            }
+        }
+        stockDetails.removeIf(i->i.getNumber()<=0);
+
+
+        /**
+         * 如果实物没在此任务中养护过 并且下次养护时间大于当前时间
+         * 则证明此物料不是所需要养护的物料
+         * 如果在此任务中有过养护记录 证明批量物料养护  养护时更新了实物下次养护时间但是此批量实物未必全部养护完成
+         */
         if (ToolUtil.isNotEmpty(param.getNearMaintenance())) {
             for (Inkind inkind : inkinds) {
                 for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
-                    if (inkind.getSkuId().equals(maintenanceCycle.getSkuId()) && ToolUtil.isNotEmpty(inkind.getLastMaintenanceTime()) && param.getNearMaintenance().getTime() < inkind.getLastMaintenanceTime().getTime()) {
-                        inkindIds.remove(inkind.getInkindId());
+                    if (inkind.getSkuId().equals(maintenanceCycle.getSkuId()) && ToolUtil.isNotEmpty(inkind.getLastMaintenanceTime()) && param.getNearMaintenance().getTime() < inkind.getLastMaintenanceTime().getTime() && logDetails.stream().noneMatch(i->i.getInkindId().equals(inkind.getInkindId()))) {
+                        stockDetails.removeIf(i->i.getInkindId().equals(inkind.getInkindId()));
+
                     }
                 }
             }
         }
-
+        return stockDetails;
         //根据此条件去库存查询需要养护的实物
-        return inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).list();
 
     }
 
