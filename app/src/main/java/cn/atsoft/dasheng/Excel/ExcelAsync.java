@@ -280,7 +280,7 @@ public class ExcelAsync {
                 }
 
 
-                if (!skuExcelItem.getSpecifications().equals("")) {   //有规格 不进此判断
+                if (ToolUtil.isNotEmpty(skuExcelItem.getSpecifications()) &&  !skuExcelItem.getSpecifications().equals("")) {   //有规格 不进此判断
                     //判断分类 产品 型号 描述-------------------------------------------------------------------------------------
                     String md5 = SecureUtil.md5(newSku.getSpecifications() + newSku.getSpuId().toString() + newSku.getSkuName() + spuClass.getSpuClassificationId());
                     for (Sku sku : skus) {
@@ -295,7 +295,7 @@ public class ExcelAsync {
                         }
                     }
                     newSku.setSkuValueMd5(md5);
-                }else {
+                } else {
                     //判断 分类 产品 型号 --------------------------------------------------------------------------------------
                     for (Sku sku : skus) {
                         if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
@@ -313,10 +313,6 @@ public class ExcelAsync {
                         }
                     }
                 }
-
-
-
-
 
 
                 if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
