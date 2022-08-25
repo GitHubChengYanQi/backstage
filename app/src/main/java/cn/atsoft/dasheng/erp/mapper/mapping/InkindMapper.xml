@@ -188,7 +188,7 @@ spu_id
 
 
     <sql id="stockInkind">
-        goods_inkind
+        daoxin_erp_stock_details
         .
         number
         AS "number",
@@ -221,7 +221,7 @@ spu_id
         select
         <include refid="stockInkind"/>
         from goods_inkind
-         JOIN ( SELECT * FROM daoxin_erp_stock_details WHERE display = 1 ) AS daoxin_erp_stock_details ON
+        JOIN ( SELECT * FROM daoxin_erp_stock_details WHERE display = 1 and number > 0 ) AS daoxin_erp_stock_details ON
         goods_inkind.inkind_id = daoxin_erp_stock_details.inkind_id
         WHERE
         1 = 1
