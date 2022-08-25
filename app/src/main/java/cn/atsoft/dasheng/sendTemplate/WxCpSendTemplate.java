@@ -106,7 +106,7 @@ public class WxCpSendTemplate {
     }
     private List<UserId2WxOpenId> userIds2UuIdsObject(List<Long> userIds) {
         List<UserId2WxOpenId> userId2WxOpenIds = new ArrayList<>();
-        List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).eq("source", "wxCp").eq("display",1).list();
+        List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).eq("source", "wxCp").orderByDesc("create_time").groupBy("user_id").list();
 
         List<Long> memberIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(wxuserInfos)) {
