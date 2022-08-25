@@ -422,10 +422,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     /**
      * 流程规则取负责人
      */
-    public void processAuditPerson(Long processId) {
+    @Override
+    public Object processAuditPerson(Long processId) {
+
+        List<AuditRule.Rule> rules = new ArrayList<>();
 
         List<ActivitiSteps> activitiSteps = activitiStepsService.query().eq("process_id", processId).list();
-
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiSteps activitiStep : activitiSteps) {
             stepIds.add(activitiStep.getSetpsId());
@@ -435,13 +437,10 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
             if (ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getRules()) && ToolUtil.isNotEmpty(rule.getActionStatuses())) {
-                for (AuditRule.Rule ruleRule : rule.getRules()) {
-                    
-                }
-
+                rules.addAll(rule.getRules());
             }
         }
-
+        return rules;
     }
 
     @Override
