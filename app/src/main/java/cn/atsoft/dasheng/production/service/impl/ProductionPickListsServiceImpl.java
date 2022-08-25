@@ -322,7 +322,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         if (ToolUtil.isNotEmpty(page.getRecords())) {
             this.format(page.getRecords());
         }
-        return PageFactory.createPageInfo(page);
+        PageInfo<ProductionPickListsResult> pageInfo = PageFactory.createPageInfo(page);
+        return ;
     }
 
     @Override
@@ -431,10 +432,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listByPickLists(pickListsIds);
 
 
-        List<Long> skuIds = new ArrayList<>();
-        for (ProductionPickListsDetailResult detailResult : detailResults) {
-            skuIds.add(detailResult.getSkuId());
-        }
+        List<Long> positionIds = new ArrayList<>();
+
         for (ProductionPickListsResult result : results) {
             for (UserResult userResultsById : userResultsByIds) {
                 if (ToolUtil.isNotEmpty(result.getUserId()) && result.getUserId().equals(userResultsById.getUserId())) {
@@ -447,9 +446,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
                 if (result.getPickListsId().equals(detailResult.getPickListsId())) {
+                    if (ToolUtil.isNotEmpty(detailResult.getPositionIds())) {
+                        positionIds.addAll(detailResult.getPositionIds());
+                    }
                     detailResultList.add(detailResult);
                 }
             }
+            positionIds = positionIds.stream().distinct().collect(Collectors.toList());
+            result.setPositionIds(positionIds);
             result.setDetailResults(detailResultList);
             if (ToolUtil.isNotEmpty(result.getRemarks())) {
                 List<AnnouncementsResult> announcementsResultList = new ArrayList<>();

@@ -34,43 +34,66 @@ import java.util.Map;
 public class ProductionPickListsResult implements Serializable {
     @ApiModelProperty("是否有物料可以操作")
     private Boolean canOperate;
+
+    @ApiModelProperty("相关的库位")
+    private List<Long> positionIds;
+
     @ApiModelProperty("是否可领料")
     private Boolean canPick;
+
     private static final long serialVersionUID = 1L;
+
     @ApiModelProperty("任务")
     private ProductionTaskResult productionTaskResult;
+
     @ApiModelProperty("任务集合")
     private List<ProductionTaskResult> productionTaskResults;
+
     @ApiModelProperty("状态名称")
     private UserResult createUserResult;
+
     @ApiModelProperty("负责人")
     private UserResult userResult;
+
     @ApiModelProperty("子表集合")
     private List<ProductionPickListsDetailResult> detailResults;
+
     @ApiModelProperty("购物车集合")
     private List<ProductionPickListsCartResult> cartResults;
+
     @ApiModelProperty("仓库返回集合")
     private List<StorehouseResult> storehouseResults;
+
     @ApiModelProperty("库位返回集合")
     private List<StorehousePositionsResult> storehousePositionsResults;
+
     @ApiModelProperty("状态名称")
     private String statusName;
+
     @ApiModelProperty("注意事项")
     private List<AnnouncementsResult> announcementsResults;
+
     @ApiModelProperty("附件urls")
     private List<String> enclosureUrl;
+
     @ApiModelProperty("物料返回集合")
     private List<SkuSimpleResult> skuResults;
+
     @ApiModelProperty("出库单名称")
     private String pickListsName;
+
     @ApiModelProperty("总数")
     private Integer numberCount  ;
+
     @ApiModelProperty("已经完成总数")
     private Integer receivedCount ;
+
     @ApiModelProperty("sku总数")
     private Integer skuCount  ;
+
     @ApiModelProperty("仓库总数")
     private Integer positionCount ;
+    
     @ApiModelProperty("任务id")
     private Long taskId;
 
