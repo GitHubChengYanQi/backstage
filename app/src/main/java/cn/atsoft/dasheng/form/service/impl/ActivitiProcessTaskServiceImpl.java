@@ -96,6 +96,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         entity.setOrigin(origin);
         this.updateById(entity);
 
+        List<AuditRule.Rule> rules = this.processAuditPerson(param.getProcessId());  //取出执行节点规则
+        entity.setAuditRule(JSON.toJSONString(rules));
         this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
         return entity.getProcessTaskId();
     }
