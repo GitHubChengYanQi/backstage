@@ -527,6 +527,11 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
 
+            if (ToolUtil.isNotEmpty(datum.getAuditRule())) {
+                List<AuditRule.Rule> rules = JSON.parseArray(datum.getAuditRule(), AuditRule.Rule.class);
+                datum.setRules(rules);
+            }
+
             for (User user : users) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     datum.setUser(user);
