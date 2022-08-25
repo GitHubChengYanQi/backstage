@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -61,6 +62,17 @@ public class ActivitiProcessTaskController extends BaseController {
         ActivitiAudit audit = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
         List<Long> longs = taskSend.selectUsers(audit.getRule(), null);
         return ResponseData.success(longs);
+    }
+
+    /**
+     * 流程执行节点规则
+     * @param processId
+     * @return
+     */
+    @RequestMapping(value = "/processAuditPerson", method = RequestMethod.POST)
+    public ResponseData processAuditPerson(@Param("processId") Long processId) {
+        Object person = this.activitiProcessTaskService.processAuditPerson(processId);
+        return ResponseData.success(person);
     }
 
     /**

@@ -71,6 +71,8 @@ public interface StockDetailsService extends IService<StockDetails> {
 
     List<StockDetailsResult> getDetailsBySkuId(Long id);
 
+    List<StockDetailsResult> stockInKindList();
+
     List<SpuClassDetail> detailed();
 
     List<StockCensus> stockCensus();

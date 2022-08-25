@@ -278,7 +278,8 @@ stage
                daoxin_erp_stock_details.number    as num,
                goods_sku.spu_id                   as spuId,
                goods_spu.spu_classification_id    as spuClassificationId,
-               goods_inkind.anomaly               as anomaly
+               goods_inkind.anomaly               as anomaly,
+               daoxin_erp_stock_details.number    as number
         FROM daoxin_erp_stock_details
                  LEFT JOIN goods_sku ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
                  LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
@@ -288,5 +289,7 @@ stage
 
 
     </select>
+
+
 
 </mapper>

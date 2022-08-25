@@ -168,12 +168,22 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         return detailsResults;
     }
 
+    /**
+     * 库存实物联查
+     *
+     * @return
+     */
+    @Override
+    public List<StockDetailsResult> stockInKindList() {
+        return this.baseMapper.stockInKindList();
+    }
+
+
     @Override
     public List<SpuClassDetail> detailed() {
 
         List<StockDetailsResult> detailsResults = this.baseMapper.stockInKindList();
         Map<Long, List<StockDetailsResult>> map = new HashMap<>();
-
         for (StockDetailsResult detailsResult : detailsResults) {
             List<StockDetailsResult> results = map.get(detailsResult.getSpuClassificationId());
             if (ToolUtil.isEmpty(results)) {
@@ -231,14 +241,14 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public List<StockCensus> stockCensus() {
         List<StockCensus> stockCensuses = new ArrayList<>();
 
-        List<StockDetails> stock = this.getStock();
+//        List<StockDetails> stock = this.getStock();
+        List<StockDetailsResult> stock = this.baseMapper.stockInKindList();
         Set<Long> skuIds = new HashSet<>();
-        List<Long> inkindIds = new ArrayList<>();
+
         long count = 0L;
-        for (StockDetails details : stock) {
+        for (StockDetailsResult details : stock) {
             skuIds.add(details.getSkuId());
             count = count + details.getNumber();
-            inkindIds.add(details.getInkindId());
         }
 
         //库存所有类
@@ -253,26 +263,24 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         stockCount.setNumber(count);
         stockCensuses.add(stockCount);
 
-        List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
 
         long normal = 0L;
         long error = 0L;
         Set<Long> normalSkuNum = new HashSet<>();
         Set<Long> errorSkuNum = new HashSet<>();
-        for (Inkind inkind : inkinds) {
-            for (StockDetails details : stock) {
-                if (details.getInkindId().equals(inkind.getInkindId())) {
-                    if (inkind.getAnomaly() == 0) {
-                        normalSkuNum.add(inkind.getSkuId());
-                        normal = normal+details.getNumber();
-                    } else {
-                        errorSkuNum.add(inkind.getSkuId());
-                        error = error+details.getNumber();
-                    }
-                }
 
+        for (StockDetailsResult details : stock) {
+            if (details.getAnomaly() == 0) {
+                normalSkuNum.add(details.getSkuId());
+                normal = normal + details.getNumber();
+            } else {
+                errorSkuNum.add(details.getSkuId());
+                error = error + details.getNumber();
             }
+
+
         }
+
         //正常数
         StockCensus normalCount = new StockCensus();
         normalCount.setName("normal");

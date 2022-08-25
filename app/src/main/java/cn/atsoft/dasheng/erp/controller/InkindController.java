@@ -120,6 +120,16 @@ public class InkindController extends BaseController {
     }
 
 
+
+    @RequestMapping(value = "/stockInkind", method = RequestMethod.POST)
+    @ApiOperation("库存实物列表")
+    public PageInfo<InkindResult> stockInkind(@RequestBody(required = false) InkindParam inkindParam) {
+        if (ToolUtil.isEmpty(inkindParam)) {
+            inkindParam = new InkindParam();
+        }
+        return this.inkindService.stockInkind(inkindParam);
+    }
+
 }
 
 

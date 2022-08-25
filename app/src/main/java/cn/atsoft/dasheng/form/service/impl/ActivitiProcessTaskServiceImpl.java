@@ -96,6 +96,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         entity.setOrigin(origin);
         this.updateById(entity);
 
+        List<AuditRule.Rule> rules = this.processAuditPerson(param.getProcessId());  //取出执行节点规则
+        entity.setAuditRule(JSON.toJSONString(rules));
         this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
         return entity.getProcessTaskId();
     }
@@ -376,8 +378,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         for (ActivitiSteps activitiStep : activitiSteps) {
             stepIds.add(activitiStep.getSetpsId());
         }
-        List<ActivitiAudit> audits = auditService.query().in("setps_id", stepIds).list();
-
+        List<ActivitiAudit> audits = stepIds.size() == 0 ? new ArrayList<>() : auditService.query().in("setps_id", stepIds).list();
 
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
@@ -417,13 +418,34 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             taskParticipant.setType("process");
             taskParticipants.add(taskParticipant);
         }
-
         taskParticipantService.saveBatch(taskParticipants);
-
     }
 
+    /**
+     * 流程规则取负责人
+     */
+    @Override
+    public List<AuditRule.Rule> processAuditPerson(Long processId) {
+
+        List<AuditRule.Rule> rules = new ArrayList<>();
+        List<ActivitiSteps> activitiSteps = activitiStepsService.query().eq("process_id", processId).list();
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            stepIds.add(activitiStep.getSetpsId());
+        }
+        List<ActivitiAudit> audits = stepIds.size() == 0 ? new ArrayList<>() : auditService.query().in("setps_id", stepIds).list();
+
+        for (ActivitiAudit audit : audits) {
+            AuditRule rule = audit.getRule();
+            if (ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getRules()) && ToolUtil.isNotEmpty(rule.getActionStatuses())) {
+                rules.addAll(rule.getRules());
+            }
+        }
+        return rules;
+    }
 
     @Override
+
     public Long getTaskIdByFormId(Long formId) {
         ActivitiProcessTask task = ToolUtil.isEmpty(formId) ? new ActivitiProcessTask() : this.query().eq("form_id", formId).one();
         if (ToolUtil.isEmpty(task)) {
@@ -505,6 +527,11 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         allocationService.format(allocationResults);
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (ActivitiProcessTaskResult datum : data) {
+
+            if (ToolUtil.isNotEmpty(datum.getAuditRule())) {
+                List<AuditRule.Rule> rules = JSON.parseArray(datum.getAuditRule(), AuditRule.Rule.class);
+                datum.setRules(rules);
+            }
 
             for (User user : users) {
                 if (user.getUserId().equals(datum.getCreateUser())) {

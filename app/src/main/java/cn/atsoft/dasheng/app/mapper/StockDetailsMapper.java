@@ -31,6 +31,7 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
     List<StockDetailsResult> customList(@Param("paramCondition") StockDetailsParam paramCondition);
 
 
+
     List<StockDetailExcel> stockDetailExcelExport();
 
     /**

@@ -30,6 +30,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.*;
