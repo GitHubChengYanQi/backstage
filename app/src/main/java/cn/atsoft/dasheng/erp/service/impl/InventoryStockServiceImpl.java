@@ -517,7 +517,15 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         pageContext.setOrders(null);
         IPage<InventoryStockResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
-        return PageFactory.createPageInfo(page);
+
+        List<InventoryStockResult> inventoryStockResults = this.baseMapper.customList(param);
+        List<Long> positionIds = new ArrayList<>();
+        for (InventoryStockResult inventoryStockResult : inventoryStockResults) {
+            positionIds.add(inventoryStockResult.getPositionId());
+        }
+        PageInfo<InventoryStockResult> pageInfo = PageFactory.createPageInfo(page);
+        pageInfo.setSearch(positionIds);
+        return pageInfo;
     }
 
     private Serializable getKey(InventoryStockParam param) {

@@ -423,10 +423,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
      * 流程规则取负责人
      */
     @Override
-    public Object processAuditPerson(Long processId) {
+    public List<AuditRule.Rule> processAuditPerson(Long processId) {
 
         List<AuditRule.Rule> rules = new ArrayList<>();
-
         List<ActivitiSteps> activitiSteps = activitiStepsService.query().eq("process_id", processId).list();
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiSteps activitiStep : activitiSteps) {

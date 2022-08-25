@@ -92,7 +92,7 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
 
     void setProcessUserIds(Long processId, Long taskId);
 
-    Object processAuditPerson(Long processId);
+    List<> processAuditPerson(Long processId);
 
     Long getTaskIdByFormId(Long formId);
 

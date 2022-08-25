@@ -26,6 +26,8 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String auditRule;
+
     private Object receipts;
 
     private ActivitiStepsResult stepsResult;
@@ -65,7 +67,6 @@ public class ActivitiProcessTaskResult implements Serializable {
     private String createName;
 
     private Integer status;
-
 
 
     @ApiModelProperty("主题")
