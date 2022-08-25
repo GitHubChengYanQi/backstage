@@ -119,6 +119,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         try {
             InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
             XWPFDocument document = new XWPFDocument(inputStream);
+
             XWPFTable xwpfTable = document.getTableArray(0);     //需要替换表格的位置
             Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
             List<XWPFTable> xwpfTables = new ArrayList<>();
