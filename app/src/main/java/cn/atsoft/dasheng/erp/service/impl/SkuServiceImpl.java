@@ -657,7 +657,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public void deleteBatch(SkuParam param) {
         List<Long> skuIds = param.getId();
-        Integer stockSku = stockDetailsService.query().eq("sku_id", param.getSkuId()).count();
+        Integer stockSku =skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).count();
         if (stockSku > 0) {
             throw new ServiceException(500, "库存中中有此物品数据,删除终止");
 
@@ -667,14 +667,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (ErpPartsDetail erpPartsDetail : partsDetailList) {
             partsIds.add(erpPartsDetail.getPartsId());
         }
-        List<Parts> parts = partsIds.size() == 0 ? new ArrayList<>() : partsService.listByIds(partsIds);
-        for (Parts part : parts) {
-            if (!part.getStatus().equals(99) || part.getDisplay().equals(0)) {
-                parts.removeIf(i -> i.getPartsId().equals(part.getPartsId()));
-            }
-        }
+        List<Parts> parts = partsIds.size() == 0 ? new ArrayList<>() : partsService.query().in("parts_id",partsIds).eq("status",99).eq("display",1).list();
+
         List<Parts> partList = skuIds.size() == 0 ? new ArrayList<>() : partsService.lambdaQuery().in(Parts::getSkuId, skuIds).and(i -> i.eq(Parts::getDisplay, 1)).and(i -> i.eq(Parts::getStatus, 99)).list();
-        if (ToolUtil.isNotEmpty(partsDetailList) || ToolUtil.isNotEmpty(partList)) {
+        partList.addAll(parts);
+        partList = partList.stream().distinct().collect(Collectors.toList());
+        if (ToolUtil.isNotEmpty(partList)) {
             throw new ServiceException(500, "清单中有此物品数据,删除终止");
         }
         List<Long> attributeValuesIds = new ArrayList<>();
