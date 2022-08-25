@@ -32,24 +32,59 @@ import java.util.Map;
 public class ProductionPickListsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private SkuSimpleResult skuResult;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private List<BrandResult> brandResults;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
+    private List<Long> positionIds;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private List<StoreHouseNameAndSkuNumber> positionAndStockDetail;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Integer status;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private String pickListsName;
+
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehousePositionsId;
+
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long storehouseId;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private UserResult userResult;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private String pickListsCoding;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Integer stockNumber = 0;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Boolean isMeet;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private List<ProductionPickListsCartResult> cartResults;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Map<String,String> brandResult;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private ProductionPickListsResult pickListsResult;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Boolean canPick;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private List<String> positionNames;
+
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Integer lockStockDetailNumber;
 
     /**
