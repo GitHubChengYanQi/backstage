@@ -123,25 +123,23 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
             List<XWPFTable> xwpfTables = new ArrayList<>();
 
+
             for (String customer : customerMap.keySet()) {
                 XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
                 List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
-
-                replace(newTable, customer, results);
+                replace(document, newTable, customer, results);
                 xwpfTables.add(newTable);
             }
 
+
+            int pos = document.getPosOfTable(xwpfTable);  //删除模板中需替换的表格
+            document.removeBodyElement(pos);
+
             int i = 0;
-            for (XWPFTable table : xwpfTables) {
-
-                XWPFParagraph paragraph = document.createParagraph();
-                paragraph.insertNewRun(0).addCarriageReturn();
-
-                document.insertTable(i + 1, table);
+            for (XWPFTable table : xwpfTables) {          //插入替换完的表格
+                document.insertTable(i + 2, table);
                 i++;
             }
-
-
             return document;
 
         } catch (Exception e) {
@@ -153,12 +151,13 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     }
 
 
-    private void replace(XWPFTable xwpfTable, String customer, List<InstockLogDetailResult> results) {
+    private void replace(XWPFDocument document, XWPFTable xwpfTable, String customer, List<InstockLogDetailResult> results) {
 
         for (int i = 0; i < xwpfTable.getRows().size(); i++) {   //表格里循环 行
             XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
             boolean copy = copy(xwpfTable, row, customer, results);
             if (copy) {
+                document.createParagraph();   //表格之间 插入回车
                 break;
             }
         }

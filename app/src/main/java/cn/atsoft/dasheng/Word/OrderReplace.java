@@ -47,6 +47,7 @@ public class OrderReplace {
             XWPFTableRow xwpfTableRow = xwpfTable.getRows().get(i);
             copy(table, xwpfTableRow, i);
         }
+
         return table;
 
     }
@@ -82,7 +83,7 @@ public class OrderReplace {
                 targetCell.setText(sourceCell.getText());
             }
         }
-//        table.removeRow(table.getRows().size());
+        //        table.removeRow(table.getRows().size());
     }
 
 
