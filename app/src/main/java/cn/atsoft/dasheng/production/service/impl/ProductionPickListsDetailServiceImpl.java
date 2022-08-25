@@ -198,6 +198,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
         List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         for (ProductionPickListsDetailResult result : results) {
             List<String> positionNames = new ArrayList<>();
+            List<Long> positionIdList = new ArrayList<>();
             result.setIsMeet(false);
             if (!result.getBrandId().equals(0L)) {
                 for (StockDetails stockSkuTotal : totalList) {
@@ -239,6 +240,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
                     for (StorehousePositionsResult positionsResult : positionsResultList) {
                         if (result.getSkuId().equals(stockDetails.getSkuId()) && stockDetails.getStorehousePositionsId().equals(positionsResult.getStorehousePositionsId())){
                             positionNames.add(positionsResult.getName());
+                            positionIdList.add(positionsResult.getStorehousePositionsId());
                         }
                     }
                 }
@@ -253,6 +255,8 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
             //返回可备料仓库名称
             positionNames = positionNames.stream().distinct().collect(Collectors.toList());
             result.setPositionNames(positionNames);
+            positionIdList = positionIdList.stream().distinct().collect(Collectors.toList());
+            result.setPositionIds(positionIdList);
 
             for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
                 if (result.getSkuId().equals(skuSimpleResult.getSkuId())) {

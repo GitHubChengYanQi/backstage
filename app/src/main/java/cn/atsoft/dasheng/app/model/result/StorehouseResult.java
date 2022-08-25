@@ -32,6 +32,7 @@ public class StorehouseResult implements Serializable {
     /**
      * 纬度
      */
+    @JSONField(serialize = false)
     private BigDecimal latitude;
 
 
@@ -40,6 +41,7 @@ public class StorehouseResult implements Serializable {
      * 经度
      */
 
+    @JSONField(serialize = false)
     private BigDecimal longitude;
 
     /**
