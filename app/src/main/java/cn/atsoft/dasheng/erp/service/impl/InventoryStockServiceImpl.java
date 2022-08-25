@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServlet;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -513,15 +514,18 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             param.setPositionIds(child);
         }
 
+
         Page<InventoryStockResult> pageContext = getPageContext();
         pageContext.setOrders(null);
         IPage<InventoryStockResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
 
-        List<InventoryStockResult> inventoryStockResults = this.baseMapper.customList(param);
         List<Long> positionIds = new ArrayList<>();
-        for (InventoryStockResult inventoryStockResult : inventoryStockResults) {
-            positionIds.add(inventoryStockResult.getPositionId());
+        if (ToolUtil.isNotEmpty(param.getInventoryId())) {
+            List<InventoryStock> inventoryStocks = this.query().eq("inventory_id", param.getInventoryId()).eq("display", 1).list();
+            for (InventoryStock inventoryStockResult : inventoryStocks) {
+                positionIds.add(inventoryStockResult.getPositionId());
+            }
         }
         PageInfo<InventoryStockResult> pageInfo = PageFactory.createPageInfo(page);
         pageInfo.setSearch(positionIds);
