@@ -812,25 +812,16 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                     queryWrapper.eq("brand_id", cartParam.getBrandId());
                 }
                 queryWrapper.eq("storehouse_positions_id", cartParam.getStorehousePositionsId());
-                queryWrapper.last("limit " + cartParam.getNumber() + cartInkindIds.size());
+                queryWrapper.eq("display",1);
+                queryWrapper.eq("stage",1);
+
                 list.addAll(this.list(queryWrapper));
             }
         }
-        List<StockDetails> detailTotalList = new ArrayList<>();
-        list.parallelStream().collect(Collectors.groupingBy(StockDetails::getStockItemId, Collectors.toList())).forEach(
-                (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> a).ifPresent(detailTotalList::add);
-                }
-        );
-        List<StockDetails> removeInkind = new ArrayList<>();
+         list = list.stream().distinct().collect(Collectors.toList());
         for (Long inkindId : cartInkindIds) {
-            for (StockDetails stockDetails : detailTotalList) {
-                if (inkindId.equals(stockDetails.getInkindId())) {
-                    removeInkind.add(stockDetails);
-                }
-            }
+            list.removeIf(i->i.getInkindId().equals(inkindId));
         }
-        detailTotalList.removeAll(removeInkind);
-        return detailTotalList;
+        return list;
     }
 }
