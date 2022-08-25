@@ -48,6 +48,30 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         this.save(entity);
     }
 
+    /**
+     * 置顶
+     */
+    @Override
+    public void top(Long messageId) {
+        if (ToolUtil.isEmpty(messageId)) {
+            return;
+        }
+        Message message = this.getById(messageId);
+        if (ToolUtil.isEmpty(message)) {
+            return;
+        }
+        List<Message> messages = this.query().gt("sort", 0).list();
+        long sort = 0;
+        for (Message mes : messages) {
+            if (mes.getSort() > 0) {
+                sort = mes.getSort();
+            }
+        }
+
+        message.setSort(sort + 1);
+        this.updateById(message);
+    }
+
     @Override
     public void delete(MessageParam param) {
         param.setDisplay(0);
@@ -110,9 +134,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public Integer getViewCount(){
-        return  this.query().eq("user_id", LoginContextHolder.getContext().getUserId()).eq("view", 0).count();
+    public Integer getViewCount() {
+        return this.query().eq("user_id", LoginContextHolder.getContext().getUserId()).eq("view", 0).count();
     }
 
     private void format(List<MessageResult> data) {
