@@ -1507,7 +1507,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * 查询已占用库存数
          */
-//        List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
+        List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
+
 
 
         for (SkuResult skuResult : param) {
@@ -1536,7 +1537,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
             }
 
-
+            for (StockDetails stockDetails : lockStockDetail) {
+                if (stockDetails.getSkuId().equals(skuResult.getSkuId())) {
+                    skuResult.setLockStockDetailNumber(Math.toIntExact(stockDetails.getNumber()));
+                }
+            }
             //图片
             List<Long> imageIds = new ArrayList<>();
             try {
