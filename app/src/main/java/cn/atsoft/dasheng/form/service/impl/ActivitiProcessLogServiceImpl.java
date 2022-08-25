@@ -567,47 +567,51 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
             case "OUTSTOCK":
                 ProductionPickLists pickLists = pickListsService.getById(processTask.getFormId());
-                if (ToolUtil.isNotEmpty(pickLists.getSource()) && pickLists.getSource().equals("ALLOCATION")) {
-                    /**
-                     * 如果来源是调拨单
-                     * 对应生成入库单
-                     */
-                    List<ProductionPickListsCart> pickListsCarts = pickListsCartService.query().eq("pick_lists_id", processTask.getFormId()).eq("status", 99).list();
-                    Allocation allocation = allocationService.getById(pickLists.getSourceId());
-                    List<AllocationCart> allocationCarts = allocationCartService.query().eq("allocation_id", allocation.getAllocationId()).eq("pick_lists_id", pickLists.getPickListsId()).eq("status", 98).list();
+                if (ToolUtil.isNotEmpty(pickLists.getSource()) && pickLists.getSource().equals("processTask")) {
+                    ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getSourceId());
+                    if (parentTask.getType().equals("ALLOCATION")) {
 
-                    List<InstockListParam> instockListParams = BeanUtil.copyToList(pickListsCarts, InstockListParam.class);
-                    for (InstockListParam instockListParam : instockListParams) {
-                        instockListParam.setStatus(0L);
-                    }
-                    InstockOrderParam instockOrderParam = new InstockOrderParam();
+                        /**
+                         * 如果来源是调拨单
+                         * 对应生成入库单
+                         */
+                        List<ProductionPickListsCart> pickListsCarts = pickListsCartService.query().eq("pick_lists_id", processTask.getFormId()).eq("status", 99).list();
+                        Allocation allocation = allocationService.getById(pickLists.getSourceId());
+                        List<AllocationCart> allocationCarts = allocationCartService.query().eq("allocation_id", allocation.getAllocationId()).eq("pick_lists_id", pickLists.getPickListsId()).eq("status", 98).list();
 
-                    instockOrderParam.setUserId(allocation.getUserId());
+                        List<InstockListParam> instockListParams = BeanUtil.copyToList(pickListsCarts, InstockListParam.class);
+                        for (InstockListParam instockListParam : instockListParams) {
+                            instockListParam.setStatus(0L);
+                        }
+                        InstockOrderParam instockOrderParam = new InstockOrderParam();
 
-                    switch (allocation.getAllocationType()) {
-                        case 1:
-                            instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
-                            break;
-                        case 2:
-                            instockOrderParam.setStoreHouseId(allocationCarts.get(0).getStorehouseId());
-                            break;
+                        instockOrderParam.setUserId(allocation.getUserId());
+
+                        switch (allocation.getAllocationType()) {
+                            case 1:
+                                instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
+                                break;
+                            case 2:
+                                instockOrderParam.setStoreHouseId(allocationCarts.get(0).getStorehouseId());
+                                break;
+                        }
+                        instockOrderParam.setType("调拨入库");
+                        instockOrderParam.setSource("processTask");
+                        if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                            instockOrderParam.setMainTaskId(processTask.getMainTaskId());
+                        }
+                        instockOrderParam.setSourceId(processTask.getProcessTaskId());
+                        instockOrderParam.setPid(processTask.getProcessTaskId());
+                        instockOrderParam.setListParams(instockListParams);
+                        InstockOrder addEntity = instockOrderService.add(instockOrderParam);
+                        for (AllocationCart allocationCart : allocationCarts) {
+                            allocationCart.setInstockOrderId(addEntity.getInstockOrderId());
+                        }
                     }
-                    instockOrderParam.setType("调拨入库");
-                    instockOrderParam.setSource("processTask");
-                    if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
-                        instockOrderParam.setMainTaskId(processTask.getMainTaskId());
-                    }
-                    instockOrderParam.setSourceId(processTask.getProcessTaskId());
-                    instockOrderParam.setPid(processTask.getProcessTaskId());
-                    instockOrderParam.setListParams(instockListParams);
-                    InstockOrder addEntity = instockOrderService.add(instockOrderParam);
-                    for (AllocationCart allocationCart : allocationCarts) {
-                        allocationCart.setInstockOrderId(addEntity.getInstockOrderId());
-                    }
+                    break;
                 }
-                break;
-        }
 
+                }
     }
 
 
