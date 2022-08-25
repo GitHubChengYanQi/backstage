@@ -148,6 +148,9 @@ spu_id
         <if test="paramCondition.anomaly != null and paramCondition.anomaly != ''">
             and anomaly = #{paramCondition.anomaly}
         </if>
+        <if test="paramCondition">
+
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.InkindParam">
@@ -180,6 +183,56 @@ spu_id
         </if>
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+
+    <sql id="stockInkind">
+        goods_inkind
+        .
+        number
+        AS "number",
+	goods_inkind.anomaly AS "anomaly",
+	goods_inkind.source AS "source",
+	goods_inkind.last_maintenance_time AS lastMaintenanceTime,
+	goods_inkind.source_id AS "sourceId",
+	goods_inkind.customer_id AS "customerId",
+	goods_inkind.batch_number AS "batchNumber",
+	goods_inkind.serial_number AS "serialNumber",
+	goods_inkind.production_time AS "productionTime",
+	goods_inkind.spu_id AS "spuId",
+	goods_inkind.cost_price AS "costPrice",
+	goods_inkind.selling_price AS "sellingPrice",
+	goods_inkind.brand_id AS "brandId",
+	goods_inkind.pid AS "pid",
+	daoxin_erp_stock_details.storehouse_positions_id AS "positionId",
+	goods_inkind.inkind_id AS "inkindId",
+	goods_inkind.type AS "type",
+	goods_inkind.sku_id AS "skuId",
+	goods_inkind.create_user AS "createUser",
+	goods_inkind.update_user AS "updateUser",
+	goods_inkind.create_time AS "createTime",
+	goods_inkind.update_time AS "updateTime",
+	goods_inkind.display AS "display",
+	goods_inkind.deptId AS "deptId"
+    </sql>
+    <select id="stockInkindList" resultType="cn.atsoft.dasheng.erp.model.result.InkindResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InkindParam">
+        select
+        <include refid="stockInkind"/>
+        from goods_inkind
+         JOIN ( SELECT * FROM daoxin_erp_stock_details WHERE display = 1 ) AS daoxin_erp_stock_details ON
+        goods_inkind.inkind_id = daoxin_erp_stock_details.inkind_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.inkindIds != null and paramCondition.inkindIds.size>0 ">
+            and goods_inkind.inkind_id in
+            <foreach collection="paramCondition.inkindIds" separator="," index="index" item="state" close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.anomaly != null and paramCondition.anomaly != ''">
+            and goods_inkind.anomaly = #{paramCondition.anomaly}
         </if>
     </select>
 
