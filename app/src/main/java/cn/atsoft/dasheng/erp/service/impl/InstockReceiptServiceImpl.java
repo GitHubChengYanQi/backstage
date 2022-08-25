@@ -133,10 +133,9 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             int i = 0;
             for (XWPFTable table : xwpfTables) {
+
                 XWPFParagraph paragraph = document.createParagraph();
-                XWPFRun run = paragraph.createRun();
-                run.addBreak();
-                run.addCarriageReturn();
+                paragraph.insertNewRun(0).addCarriageReturn();
 
                 document.insertTable(i + 1, table);
                 i++;
@@ -246,7 +245,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             xwpfTableRow = newRow;
         }
-        table.removeRow(table.getRows().size()-1);
+        table.removeRow(table.getRows().size() - 1);
         return true;
     }
 
