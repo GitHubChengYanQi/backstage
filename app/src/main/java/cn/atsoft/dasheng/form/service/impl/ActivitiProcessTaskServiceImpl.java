@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -200,6 +201,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的
             Long userId = LoginContextHolder.getContext().getUserId();
             param.setParticipantUser(userId);  //参与人和负责人
+        }
+        if(ToolUtil.isNotEmpty(param.getStatusList())){
+            param.setStatusList(param.getStatusList().stream().distinct().collect(Collectors.toList()));
         }
 
         /**

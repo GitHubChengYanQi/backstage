@@ -96,7 +96,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
             Maintenance maintenance = maintenanceService.getById(param.getMaintenanceId());
             maintenanceDetails = maintenanceDetailService.query().eq("maintenance_id", param.getMaintenanceId()).eq("status", 0).eq("display", 1).list();
             stockDetails = maintenanceService.needMaintenanceByRequirement(maintenance);
-            maintenanceDetailService.updateBatchById(maintenanceDetails);
+//            maintenanceDetailService.updateBatchById(maintenanceDetails);
             /**
              * 判断任务是否完成
              */
@@ -134,8 +134,6 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
             maintenanceService.updateStatus(param.getMaintenanceId());
         }
-
-
 //        List<MaintenanceDetail> details = new ArrayList<>();
 //        if (ToolUtil.isNotEmpty(param.getMaintenanceId())){
 //            details = maintenanceDetailService.query().eq("maintenances_id", param.getMaintenanceId()).eq("status", 0).list();
