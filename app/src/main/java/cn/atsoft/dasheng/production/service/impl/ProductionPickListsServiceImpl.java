@@ -322,8 +322,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         if (ToolUtil.isNotEmpty(page.getRecords())) {
             this.format(page.getRecords());
         }
-        PageInfo<ProductionPickListsResult> pageInfo = PageFactory.createPageInfo(page);
-        return ;
+        return PageFactory.createPageInfo(page);
     }
 
     @Override
