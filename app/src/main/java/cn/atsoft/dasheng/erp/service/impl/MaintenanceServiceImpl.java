@@ -247,15 +247,18 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             inventoryDetailParam.setSpuIds(maintenanceAndInventorySelectParam.getSpuIds());
             inventoryDetailParam.setInkindIds(maintenanceAndInventorySelectParam.getInkindIds());
             List<InventoryStock> condition = inventoryService.condition(inventoryDetailParam);
-            stockDetails .addAll(BeanUtil.copyToList(condition,StockDetails.class));
+
+            for (InventoryStock inventoryStock : condition) {
+                inkindIds.add(inventoryStock.getInkindId());
+            }
             if (ToolUtil.isNotEmpty(maintenanceAndInventorySelectParam.getInkindIds())){
                 inkindIds.addAll(maintenanceAndInventorySelectParam.getInkindIds());
             }
             for (InventoryStock inventoryDetail : condition) {
-                inkindIds.add(inventoryDetail.getInkindId());
                 skuIds.add(inventoryDetail.getSkuId());
             }
         }
+        stockDetails = stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
         inkindIds = inkindIds.stream().distinct().collect(Collectors.toList());
 
 
@@ -502,17 +505,19 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 detail.setNumber(detail.getNumber() - detail.getDoneNumber());
             }
             List<MaintenanceDetail> totalList = new ArrayList<>();
-            details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()) + '_' + item.getStorehousePositionsId() + "_" + item.getMaintenanceId(), Collectors.toList())).forEach(
-                    (id, transfer) -> {
-                        transfer.stream().reduce((a, b) -> new MaintenanceDetail() {{
-                            setSkuId(a.getSkuId());
-                            setNumber(a.getNumber() + b.getNumber());
-                            setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
-                            setStorehousePositionsId(a.getStorehousePositionsId());
-                            setMaintenanceId(a.getMaintenanceId());
-                        }}).ifPresent(totalList::add);
-                    }
-            );
+            if (ToolUtil.isNotEmpty(details)) {
+                details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()) + '_' + item.getStorehousePositionsId() + "_" + item.getMaintenanceId(), Collectors.toList())).forEach(
+                        (id, transfer) -> {
+                            transfer.stream().reduce((a, b) -> new MaintenanceDetail() {{
+                                setSkuId(a.getSkuId());
+                                setNumber(a.getNumber() + b.getNumber());
+                                setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                                setStorehousePositionsId(a.getStorehousePositionsId());
+                                setMaintenanceId(a.getMaintenanceId());
+                            }}).ifPresent(totalList::add);
+                        }
+                );
+            }
             /**
              * 获取库位
              */
