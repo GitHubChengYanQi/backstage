@@ -29,6 +29,12 @@ public class AnomalyParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Long> skuIds;
+
+    private List<Long> brandIds;
+
+    private List<Long> positionIds;
+
     private Boolean complete = false;
 
     private List<AnomalyCustomerNum> customerNums;
