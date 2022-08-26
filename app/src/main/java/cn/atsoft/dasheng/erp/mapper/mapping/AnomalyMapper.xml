@@ -312,4 +312,39 @@ position_id AS "positionId",customer_json AS "customerJson",
         </if>
     </select>
 
+    <select id="anomalyComplete" resultType="cn.atsoft.dasheng.erp.model.result.AnomalyResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.AnomalyParam">
+        SELECT daoxin_anomaly.anomaly_id as anomalyId,
+        daoxin_anomaly.sku_id as skuId,
+        daoxin_anomaly.brand_id as brandId,
+        daoxin_anomaly.position_id as positionId,
+        daoxin_anomaly_order.order_id as orderId,
+        daoxin_anomaly.type as type,
+        daoxin_anomaly_order.complete as orderComplete
+        FROM daoxin_anomaly
+        LEFT JOIN daoxin_anomaly_order ON daoxin_anomaly.order_id = daoxin_anomaly_order.order_id
+        where daoxin_anomaly.order_id is not null
+        and daoxin_anomaly.type = 'timelyInventory'
+        and daoxin_anomaly_order.complete != 99
+        <if test="paramCondition.skuIds != null and paramCondition.skuIds.size>0">
+            and daoxin_anomaly.sku_id in
+            <foreach collection="paramCondition.skuIds" separator="," index="index" item="state" close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.brandIds != null and paramCondition.brandIds.size>0">
+            and daoxin_anomaly.brand_id in
+            <foreach collection="paramCondition.brandIds" separator="," index="index" item="state" close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.positionIds != null and paramCondition.positionIds.size>0">
+            and daoxin_anomaly.position_id in
+            <foreach collection="paramCondition.positionIds" separator="," index="index" item="state" close=")"
+                     open="(">
+                #{state}
+            </foreach>
+        </if>
+    </select>
+
 </mapper>

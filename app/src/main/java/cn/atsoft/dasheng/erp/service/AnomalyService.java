@@ -87,6 +87,8 @@ public interface AnomalyService extends IService<Anomaly> {
      */
      PageInfo<AnomalyResult> findPageBySpec(AnomalyParam param);
 
+    List<AnomalyResult> anomalyIsComplete(List<Long> skuIds, List<Long> brandIds, List<Long> positionIds);
+
     void getOrder(List<AnomalyResult> data);
 
     void detailFormat(AnomalyResult result);

@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author song
@@ -53,4 +53,6 @@ public interface AnomalyMapper extends BaseMapper<Anomaly> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") AnomalyParam paramCondition);
 
+
+    List<AnomalyResult> anomalyComplete(@Param("paramCondition") AnomalyParam paramCondition);
 }

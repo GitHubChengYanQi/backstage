@@ -766,6 +766,23 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         return PageFactory.createPageInfo(page);
     }
 
+    /**
+     * 通过物料 品牌 库位 查询 是否有未完成的异常件
+     *
+     * @param skuIds
+     * @param brandIds
+     * @param positionIds
+     * @return
+     */
+    @Override
+    public List<AnomalyResult> anomalyIsComplete(List<Long> skuIds, List<Long> brandIds, List<Long> positionIds) {
+        AnomalyParam anomalyParam = new AnomalyParam();
+        anomalyParam.setSkuIds(skuIds);
+        anomalyParam.setBrandIds(brandIds);
+        anomalyParam.setPositionIds(positionIds);
+        return this.baseMapper.anomalyComplete(anomalyParam);
+    }
+
     private Serializable getKey(AnomalyParam param) {
         return param.getAnomalyId();
     }

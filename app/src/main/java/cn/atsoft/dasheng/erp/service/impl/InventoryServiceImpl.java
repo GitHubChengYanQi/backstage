@@ -146,6 +146,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private ProductionPickListsCartService listsCartService;
     @Autowired
     private TaskParticipantService taskParticipantService;
+    @Autowired
+    private AnomalyService anomalyService;
 
     @Override
     @Transactional
@@ -603,11 +605,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }});
 
         List<SkuBind> skuBinds = this.getSkuBinds(detailParam);  //从物料绑定取
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> storePositionIds = new ArrayList<>();
+
         for (SkuBind skuBind : skuBinds) {
             InventoryStock inventoryStock = new InventoryStock();
             inventoryStock.setSkuId(skuBind.getSkuId());
             inventoryStock.setBrandId(skuBind.getBrandId());
             inventoryStock.setPositionId(skuBind.getPositionId());
+            storePositionIds.add(skuBind.getPositionId());
+            skuIds.add(skuBind.getSkuId());
+            brandIds.add(skuBind.getBrandId());
             condition.add(inventoryStock);
         }
 
@@ -619,7 +628,24 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 all.add(inventoryStock);
             }
         }
+
         List<InventoryStockResult> inventoryStockResults = BeanUtil.copyToList(all, InventoryStockResult.class, new CopyOptions());
+        List<AnomalyResult> anomalyResults = anomalyService.anomalyIsComplete(skuIds, brandIds, storePositionIds);
+
+        /**
+         * 比对未处理完成的异常件
+         */
+        for (InventoryStockResult inventoryStock : inventoryStockResults) {
+            for (AnomalyResult anomalyResult : anomalyResults) {
+                if (inventoryStock.getSkuId().equals(anomalyResult.getSkuId())
+                        && inventoryStock.getBrandId().equals(anomalyResult.getBrandId())
+                        && inventoryStock.getPositionId().equals(anomalyResult.getPositionId())) {
+                    inventoryStock.setLockStatus(99);
+                    break;
+                }
+            }
+        }
+
         inventoryStockService.format(inventoryStockResults);
         return inventoryStockResults;
     }
