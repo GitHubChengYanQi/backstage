@@ -280,12 +280,12 @@ stage
                goods_spu.spu_classification_id    as spuClassificationId,
                goods_inkind.anomaly               as anomaly,
                daoxin_erp_stock_details.number    as number
-        FROM daoxin_erp_stock_details
+        FROM    daoxin_erp_stock_details
                  LEFT JOIN goods_sku ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
                  LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
                  LEFT JOIN goods_inkind on daoxin_erp_stock_details.inkind_id = goods_inkind.inkind_id
 
-        WHERE daoxin_erp_stock_details.number > 0
+        WHERE daoxin_erp_stock_details.number > 0  and daoxin_erp_stock_details.display = 1
 
 
     </select>
