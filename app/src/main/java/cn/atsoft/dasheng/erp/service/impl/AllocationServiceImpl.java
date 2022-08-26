@@ -438,13 +438,13 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         for (AllocationResult datum : data) {
             allocationIds.add(datum.getAllocationId());
         }
-        List<AllocationDetail> details =allocationIds.size() == 0 ?  new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
+        List<AllocationDetail> details = allocationIds.size() == 0 ? new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
 
         for (AllocationResult datum : data) {
             List<Long> skuIds = new ArrayList<>();
             List<Long> storehousePositionsIds = new ArrayList<>();
             for (AllocationDetail detail : details) {
-                if (datum.getAllocationId().equals(detail.getAllocationId()) ) {
+                if (datum.getAllocationId().equals(detail.getAllocationId())) {
                     skuIds.add(detail.getSkuId());
                     if (ToolUtil.isNotEmpty(detail.getStorehousePositionsId())) {
                         storehousePositionsIds.add(detail.getStorehousePositionsId());
@@ -495,10 +495,10 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         return result;
 
     }
-    public void transferInStorehouse2(AllocationCartParam param) {
-        Long allocationId = param.getAllocationId();
-        List<AllocationCart> allCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("type", "carry").list();
-        List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).list();
+
+
+    @Override
+    public void newTransfer(AllocationCartParam param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> storehousePositionsIds = new ArrayList<>();
@@ -507,12 +507,142 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             brandIds.add(allocationCartParam.getBrandId());
             storehousePositionsIds.add(allocationCartParam.getStorehousePositionsId());
         }
-        List<StockDetails> stockDetails = new ArrayList<>();
-        if (skuIds.size()==0 || brandIds.size()==0 || storehousePositionsIds.size()==0){
-            stockDetails = stockDetailsService.query().in("sku_id", skuIds).in("brand_id", brandIds).in("storehouse_positions_id", storehousePositionsIds).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(param.getAllocationId())) {
+            //查询全部Cart
+            List<AllocationCart> allCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("type", "carry").list();
+            //查询details
+            List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).list();
+            List<StockDetails> stockDetails = new ArrayList<>();
+            if (skuIds.size() != 0 && brandIds.size() != 0 && storehousePositionsIds.size() != 0) {
+                stockDetails = stockDetailsService.query().in("sku_id", skuIds).in("brand_id", brandIds).in("storehouse_positions_id", storehousePositionsIds).eq("display", 1).list();
+            }
+            if (stockDetails.size() == 0) {
+                throw new ServiceException(500, "库存数量不足 无法调用");
+            }
+
+            Long allocationId = param.getAllocationId();
+            Allocation allocation = this.getById(allocationId);
+            /**
+             * 查询出库内调拨cart
+             */
+            List<AllocationCart> allocationCarts = new ArrayList<>();
+            if (allocation.getAllocationType().equals(1)) {
+                allocationCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).in("sku_id", skuIds).in("brand_id", brandIds).in("storehouse_positions_id", storehousePositionsIds).isNull("pick_lists_id").eq("type", "carry").eq("status", 98).eq("display", 1).list();
+            } else if (allocation.getAllocationType().equals(2)) {
+                allocationCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).in("sku_id", skuIds).eq("brand_id", brandIds).eq("storehouse_positions_id", param.getToStorehouseId()).isNull("pick_lists_id").eq("type", "carry").eq("status", 98).eq("display", 1).list();
+            }
+            List<AllocationLogDetail> allocationLogDetails = new ArrayList<>();
+
+            for (AllocationCartParam allocationCartParam : param.getAllocationCartParams()) {
+                //TODO 数量防空抛异常
+                int number = allocationCartParam.getNumber();
+                if (allocationCarts.size() > 0) {
+                    int kickNum = number;
+                    for (StockDetails stockDetail : stockDetails) {
+                        if (number > 0) {
+                            if (ToolUtil.isNotEmpty(allocationCartParam.getInkindId())) {
+                                if (stockDetail.getInkindId().equals(allocationCartParam.getInkindId())) {
+                                    addLogs(number, kickNum, allocation, param, allocationCartParam, stockDetail, allocationLogDetails, allCarts);
+                                }
+                            }
+                        }
+                    }
+                    for (StockDetails stockDetail : stockDetails) {
+                        if (number > 0) {
+                            if (ToolUtil.isEmpty(allocationCartParam.getInkindId())) {
+
+                                addLogs(number, kickNum, allocation, param, allocationCartParam, stockDetail, allocationLogDetails, allCarts);
+
+                            }
+                        }
+                    }
+                }
+
+
+            }
+
+            allocationCartService.updateBatchById(allCarts);
+            int detailCount = 0;
+            for (AllocationDetail detail : details) {
+                detailCount += detail.getNumber();
+            }
+            int cartCount = 0;
+            for (AllocationCart cart : allCarts) {
+                cartCount += cart.getNumber();
+            }
+            if (allCarts.stream().allMatch(i -> i.getStatus().equals(99)) && detailCount == cartCount && detailCount > 0) {
+                for (AllocationDetail allocationDetail : details) {
+                    allocationDetail.setStatus(99);
+                }
+                this.checkCarry(param.getAllocationId());
+            }
+            stockDetailsService.updateBatchById(stockDetails);
+            AllocationLog allocationLog = new AllocationLog();
+            allocationLog.setAllocationId(param.getAllocationId());
+            String code = RandomUtil.randomString(5);
+            allocationLog.setCoding(code);
+            allocationLogService.save(allocationLog);
+            for (AllocationLogDetail allocationLogDetail : allocationLogDetails) {
+                allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
+            }
+            allocationLogDetailService.saveBatch(allocationLogDetails);
+            shopCartService.addDynamic(param.getAllocationId(), "库内调拨了物料");
+        }
+    }
+
+
+    private void addLogs(int number, int kickNum, Allocation allocation, AllocationCartParam param, AllocationCartParam allocationCartParam, StockDetails stockDetail, List<AllocationLogDetail> allocationLogDetails, List<AllocationCart> allCarts) {
+        number = Math.toIntExact(number - stockDetail.getNumber());
+        if (number >= 0) {
+            AllocationLogDetail allocationLogDetail = new AllocationLogDetail();
+            allocationLogDetail.setInkindId(stockDetail.getInkindId());
+            allocationLogDetail.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
+            allocationLogDetail.setToStorehousePositionsId(allocationCartParam.getToStorehousePositionsId());
+            allocationLogDetail.setSkuId(stockDetail.getSkuId());
+            allocationLogDetail.setBrandId(stockDetail.getBrandId());
+            allocationLogDetail.setAllocationId(allocationCartParam.getAllocationId());  //song
+            allocationLogDetail.setNumber(Math.toIntExact(stockDetail.getNumber()));
+            allocationLogDetails.add(allocationLogDetail);
+            stockDetail.setStorehousePositionsId(allocationCartParam.getToStorehousePositionsId());
+            stockDetailsService.updateById(stockDetail);
+            this.checkCartNumber(allocationCartParam, allCarts, allocation, Math.toIntExact(stockDetail.getNumber()));
+        } else {
+            //拆分实物创建新的实物
+            Inkind inkind = new Inkind();
+            stockDetail.setNumber(stockDetail.getNumber() - kickNum);
+            ToolUtil.copyProperties(stockDetail, inkind);
+            inkind.setInkindId(null);
+            if (ToolUtil.isNotEmpty(stockDetail.getCustomerId())) {
+                inkind.setCustomerId(stockDetail.getCustomerId());
+            }
+            inkind.setBrandId(stockDetail.getBrandId());
+            inkind.setSource("inkind");
+            inkind.setSourceId(stockDetail.getInkindId());
+            inkindService.save(inkind);
+            //添加调拨记录
+            AllocationLogDetail allocationLogDetail = new AllocationLogDetail();
+            allocationLogDetail.setInkindId(inkind.getInkindId());
+            allocationLogDetail.setNumber(kickNum);
+            allocationLogDetail.setSkuId(inkind.getSkuId());
+            allocationLogDetail.setBrandId(inkind.getBrandId());
+            allocationLogDetail.setStorehousePositionsId(allocationCartParam.getStorehousePositionsId());
+            allocationLogDetail.setStorehouseId(allocationCartParam.getStorehouseId());
+            allocationLogDetail.setToStorehouseId(allocationCartParam.getToStorehouseId());
+            allocationLogDetail.setAllocationId(allocationCartParam.getAllocationId());  //song
+            allocationLogDetail.setToStorehousePositionsId(allocationCartParam.getToStorehousePositionsId());
+            allocationLogDetails.add(allocationLogDetail);
+            //因是创建实物  故创建库存
+            StockDetails stockDetailEntity = BeanUtil.copyProperties(stockDetail, StockDetails.class);
+            stockDetailEntity.setInkindId(inkind.getInkindId());
+            stockDetailEntity.setStorehousePositionsId(allocationCartParam.getToStorehousePositionsId());
+            stockDetailEntity.setNumber((long) kickNum);
+            stockDetailsService.save(stockDetailEntity);
+            stockDetailsService.updateById(stockDetail);
+            this.checkCartNumber(allocationCartParam, allCarts, allocation, kickNum);
         }
 
     }
+
     /**
      * 库间调拨接口
      * 更改实物库位
@@ -599,39 +729,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                         }
                     }
                 }
-
-
-//                /**
-//                 * 处理 carts DoneNumber
-//                 */
-//                number = param.getNumber();
-//                for (AllocationCart cart : allCarts) {
-//                    if (number > 0) {
-//                        if (ToolUtil.isNotEmpty(cart.getStorehousePositionsId())) {
-//                            if (allocation.getAllocationType().equals(1) && param.getSkuId().equals(cart.getSkuId()) && param.getBrandId().equals(cart.getBrandId()) && param.getStorehousePositionsId().equals(cart.getStorehousePositionsId()) && cart.getStatus().equals(98)) {
-//                                int lastNumber = number;
-//                                number = number - (cart.getNumber() - cart.getDoneNumber());
-//                                if (number >= 0) {
-//                                    cart.setDoneNumber(cart.getNumber());
-//                                    cart.setStatus(99);
-//                                } else {
-//                                    cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
-//                                }
-//                                cart.setStatus(99);
-//                            } else if (allocation.getAllocationType().equals(2) && param.getSkuId().equals(cart.getSkuId()) && param.getBrandId().equals(cart.getBrandId()) && param.getToStorehousePositionsId().equals(cart.getStorehousePositionsId()) && cart.getStatus().equals(98)) {
-//                                int lastNumber = number;
-//                                number = number - (cart.getNumber() - cart.getDoneNumber());
-//                                if (number >= 0) {
-//                                    cart.setDoneNumber(cart.getNumber());
-//                                    cart.setStatus(99);
-//                                } else {
-//                                    cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
-//                                }
-//                            }
-//                        }
-//                    }
-//
-//                }
                 allocationCartService.updateBatchById(allCarts);
 
 
