@@ -94,10 +94,10 @@ public class OrderReplace {
      * @param replaceRules
      * @return
      */
-    public static String getTableRule(int table, List<TempReplaceRule.ReplaceRule> replaceRules) {
+    public static TempReplaceRule.ReplaceRule getTableRule(int table, List<TempReplaceRule.ReplaceRule> replaceRules) {
         for (TempReplaceRule.ReplaceRule replaceRule : replaceRules) {
             if (replaceRule.getTableIndex().equals(table)) {
-                return replaceRule.getTableType();
+                return replaceRule;
             }
         }
         return null;
