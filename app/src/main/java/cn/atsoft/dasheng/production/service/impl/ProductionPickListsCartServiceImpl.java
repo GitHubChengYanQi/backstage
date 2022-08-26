@@ -869,7 +869,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         return totalLockDetail;
 
     }
-
+    @Override
+    public List<Long> getLockedInkindIds(){
+        return this.baseMapper.lockInkind();
+    }
     @Override
     public Integer getLockNumber(QuerryLockedParam param) {
         return this.baseMapper.lockNumber(param);

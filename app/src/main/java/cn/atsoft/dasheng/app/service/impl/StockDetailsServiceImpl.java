@@ -620,7 +620,6 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<Long> skuIds = new ArrayList<>();
         List<Long> inkindIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
-
         for (StockDetailsResult datum : data) {
             stoIds.add(datum.getStorehouseId());
             customerIds.add(datum.getCustomerId());
@@ -629,6 +628,12 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             skuIds.add(datum.getSkuId());
             inkindIds.add(datum.getInkindId());
             userIds.add(datum.getCreateUser());
+        }
+        List<Long> lockedInkindIds = pickListsCartService.getLockedInkindIds();
+        if (ToolUtil.isNotEmpty(lockedInkindIds)) {
+            for (Long lockedInkindId : lockedInkindIds) {
+                data.removeIf(i->i.getInkindId().equals(lockedInkindId));
+            }
         }
         List<OrCodeBind> codeBinds = inkindIds.size() == 0 ? new ArrayList<>() : codeBindService.query().in("form_id", inkindIds).list();
         List<MaintenanceLogDetailResult> maintenanceLogDetailResults = maintenanceLogDetailService.lastLogByInkindIds(inkindIds);
