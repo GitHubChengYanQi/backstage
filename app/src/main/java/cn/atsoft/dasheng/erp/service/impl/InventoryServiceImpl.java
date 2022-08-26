@@ -641,6 +641,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         && inventoryStock.getBrandId().equals(anomalyResult.getBrandId())
                         && inventoryStock.getPositionId().equals(anomalyResult.getPositionId())) {
                     inventoryStock.setLockStatus(99);
+                    inventoryStock.setAnomalyId(anomalyResult.getAnomalyId());
+                    inventoryStock.setStatus(-1);
                     break;
                 }
             }
