@@ -143,7 +143,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             int number = productionPickListsCartParam.getNumber();
 
             if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
-                Inkind inkind = inkindService.getById(param.getInkindId());
+                Inkind inkind = inkindService.getById(productionPickListsCartParam.getInkindId());
                 ProductionPickListsCart entity = new ProductionPickListsCart();
                 entity.setPickListsId(productionPickListsCartParam.getPickListsId());
                 entity.setCustomerId(inkind.getCustomerId());

@@ -430,6 +430,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         }
 
     }
+
+
     @Override
     public void format(List<AllocationResult> data) {
         List<Long> allocationIds = new ArrayList<>();
@@ -493,7 +495,24 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         return result;
 
     }
+    public void transferInStorehouse2(AllocationCartParam param) {
+        Long allocationId = param.getAllocationId();
+        List<AllocationCart> allCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("type", "carry").list();
+        List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).list();
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> storehousePositionsIds = new ArrayList<>();
+        for (AllocationCartParam allocationCartParam : param.getAllocationCartParams()) {
+            skuIds.add(allocationCartParam.getSkuId());
+            brandIds.add(allocationCartParam.getBrandId());
+            storehousePositionsIds.add(allocationCartParam.getStorehousePositionsId());
+        }
+        List<StockDetails> stockDetails = new ArrayList<>();
+        if (skuIds.size()==0 || brandIds.size()==0 || storehousePositionsIds.size()==0){
+            stockDetails = stockDetailsService.query().in("sku_id", skuIds).in("brand_id", brandIds).in("storehouse_positions_id", storehousePositionsIds).eq("display", 1).list();
+        }
 
+    }
     /**
      * 库间调拨接口
      * 更改实物库位
