@@ -14,9 +14,8 @@ public class TempReplaceRule {
         private String type;
         private Integer trIndex;
         private Integer tableIndex;
+        private String tableType;
     }
-
-
 
 
 }

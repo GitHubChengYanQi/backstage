@@ -87,4 +87,21 @@ public class OrderReplace {
     }
 
 
+    /**
+     * 表格替换
+     *
+     * @param table
+     * @param replaceRules
+     * @return
+     */
+    public static String getTableRule(int table, List<TempReplaceRule.ReplaceRule> replaceRules) {
+        for (TempReplaceRule.ReplaceRule replaceRule : replaceRules) {
+            if (replaceRule.getTableIndex().equals(table)) {
+                return replaceRule.getTableType();
+            }
+        }
+        return null;
+    }
+
+
 }

@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.Word.OrderReplace;
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -78,6 +80,8 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     private FileInfoService fileInfoService;
     @Autowired
     private OrderReplace orderReplace;
+    @Autowired
+    private TemplateService templateService;
 
     @Override
     public void add(InstockReceiptParam param) {
@@ -111,36 +115,45 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
 
     @Override
-    public XWPFDocument createWord(Long receiptId, Long fileId) {
+    public XWPFDocument createWord(Long receiptId, Long templateId) {
         InstockReceiptResult detail = detail(receiptId);
+        Template template = templateService.getById(templateId);
 
-        FileInfo fileInfo = fileInfoService.getById(fileId);
+        FileInfo fileInfo = fileInfoService.getById(template.getFileId());
 
         try {
             InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
             XWPFDocument document = new XWPFDocument(inputStream);
 
-            XWPFTable xwpfTable = document.getTableArray(0);     //需要替换表格的位置
-            Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
-            List<XWPFTable> xwpfTables = new ArrayList<>();
+            for (int i = 0; i < document.getTables().size(); i++) {
 
 
-            for (String customer : customerMap.keySet()) {
-                XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
-                List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
-                replace(document, newTable, customer, results);
-                xwpfTables.add(newTable);
+//                orderReplace.getTableRule(i, )
+                XWPFTable xwpfTable = document.getTableArray(0);     //需要替换表格的位置
+                Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
+                List<XWPFTable> xwpfTables = new ArrayList<>();
+
+
+                for (String customer : customerMap.keySet()) {
+                    XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
+                    List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
+                    replace(document, newTable, customer, results);
+                    xwpfTables.add(newTable);
+                }
+
+
+                int pos = document.getPosOfTable(xwpfTable);  //删除模板中需替换的表格
+                document.removeBodyElement(pos);
+
+                int tablePos = pos;
+                for (XWPFTable table : xwpfTables) {          //插入替换完的表格
+                    document.insertTable(tablePos, table);
+                    tablePos++;
+                }
+
             }
 
 
-            int pos = document.getPosOfTable(xwpfTable);  //删除模板中需替换的表格
-            document.removeBodyElement(pos);
-
-            int i = 0;
-            for (XWPFTable table : xwpfTables) {          //插入替换完的表格
-                document.insertTable(i + 2, table);
-                i++;
-            }
             return document;
 
         } catch (Exception e) {
@@ -172,7 +185,6 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         if (null == cellList) {
             return true;
         }
-
         for (XWPFTableCell sourceCell : cellList) {
             Matcher matcher = matcher(sourceCell.getText());
             while (matcher.find()) {
