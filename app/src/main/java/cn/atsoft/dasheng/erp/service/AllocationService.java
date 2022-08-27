@@ -50,6 +50,8 @@ public interface AllocationService extends IService<Allocation> {
 
     AllocationResult detail(Long allocationId);
 
+    void newTransfer(AllocationCartParam param);
+
     void transferInStorehouse(AllocationCartParam param);
 
     /**
