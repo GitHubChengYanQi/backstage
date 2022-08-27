@@ -537,20 +537,21 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 //TODO 数量防空抛异常
                 int number = allocationCartParam.getNumber();
                 if (allocationCarts.size() > 0) {
-                    int kickNum = number;
                     for (StockDetails stockDetail : stockDetails) {
                         if (number > 0) {
-                            if (ToolUtil.isNotEmpty(allocationCartParam.getInkindId())) {
-                                if (stockDetail.getInkindId().equals(allocationCartParam.getInkindId())) {
-                                    addLogs(number, kickNum, allocation, param, allocationCartParam, stockDetail, allocationLogDetails, allCarts);
-                                }
+                            if (ToolUtil.isNotEmpty(allocationCartParam.getInkindId()) && stockDetail.getInkindId().equals(allocationCartParam.getInkindId())) {
+                                int kickNum = number;
+                                number = Math.toIntExact(number - stockDetail.getNumber());
+                                addLogs(number, kickNum, allocation, param, allocationCartParam, stockDetail, allocationLogDetails, allCarts);
+
                             }
                         }
                     }
                     for (StockDetails stockDetail : stockDetails) {
                         if (number > 0) {
                             if (ToolUtil.isEmpty(allocationCartParam.getInkindId())) {
-
+                                int kickNum = number;
+                                number = Math.toIntExact(number - stockDetail.getNumber());
                                 addLogs(number, kickNum, allocation, param, allocationCartParam, stockDetail, allocationLogDetails, allCarts);
 
                             }
@@ -592,7 +593,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
 
     private void addLogs(int number, int kickNum, Allocation allocation, AllocationCartParam param, AllocationCartParam allocationCartParam, StockDetails stockDetail, List<AllocationLogDetail> allocationLogDetails, List<AllocationCart> allCarts) {
-        number = Math.toIntExact(number - stockDetail.getNumber());
+
         if (number >= 0) {
             AllocationLogDetail allocationLogDetail = new AllocationLogDetail();
             allocationLogDetail.setInkindId(stockDetail.getInkindId());
@@ -618,6 +619,10 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             inkind.setBrandId(stockDetail.getBrandId());
             inkind.setSource("inkind");
             inkind.setSourceId(stockDetail.getInkindId());
+            inkind.setCreateUser(null);
+            inkind.setCreateTime(null);
+            inkind.setUpdateTime(null);
+            inkind.setUpdateUser(null);
             inkindService.save(inkind);
             //添加调拨记录
             AllocationLogDetail allocationLogDetail = new AllocationLogDetail();
@@ -636,6 +641,10 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             stockDetailEntity.setInkindId(inkind.getInkindId());
             stockDetailEntity.setStorehousePositionsId(allocationCartParam.getToStorehousePositionsId());
             stockDetailEntity.setNumber((long) kickNum);
+            stockDetailEntity.setUpdateTime(null);
+            stockDetailEntity.setUpdateUser(null);
+            stockDetailEntity.setCreateTime(null);
+            stockDetailEntity.setCreateUser(null);
             stockDetailsService.save(stockDetailEntity);
             stockDetailsService.updateById(stockDetail);
             this.checkCartNumber(allocationCartParam, allCarts, allocation, kickNum);
@@ -782,7 +791,6 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             cart.setDoneNumber(cart.getDoneNumber() + lastNumber);
                             break;
                         }
-                        cart.setStatus(99);
                     } else if (allocation.getAllocationType().equals(2) && param.getSkuId().equals(cart.getSkuId()) && param.getBrandId().equals(cart.getBrandId()) && param.getToStorehousePositionsId().equals(cart.getStorehousePositionsId()) && cart.getStatus().equals(98)) {
                         int lastNumber = number;
                         number = number - (cart.getNumber() - cart.getDoneNumber());
