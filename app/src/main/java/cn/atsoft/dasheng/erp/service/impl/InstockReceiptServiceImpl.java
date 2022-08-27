@@ -132,13 +132,17 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             for (int i = 0; i < document.getTables().size(); i++) {
 
+
                 TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
 
+
                 if (ToolUtil.isNotEmpty(tableRule) && tableRule.getTableType().equals("sku")) {        //循环插入规则则
+
 
                     XWPFTable xwpfTable = document.getTableArray(i);     //需要替换表格的位置
                     Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
                     List<XWPFTable> xwpfTables = new ArrayList<>();
+
 
                     for (String customer : customerMap.keySet()) {
                         XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入

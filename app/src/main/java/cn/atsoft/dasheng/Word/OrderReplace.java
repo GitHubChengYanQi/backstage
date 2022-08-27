@@ -88,7 +88,7 @@ public class OrderReplace {
 
 
     /**
-     * 表格替换
+     * 表格规则
      *
      * @param table
      * @param replaceRules
@@ -98,6 +98,22 @@ public class OrderReplace {
         for (TempReplaceRule.ReplaceRule replaceRule : replaceRules) {
             if (replaceRule.getTableIndex().equals(table)) {
                 return replaceRule;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 行规则
+     *
+     * @param
+     * @param replaceRules
+     * @return
+     */
+    public static String getRowRule(int row, TempReplaceRule.ReplaceRule rule, List<TempReplaceRule.ReplaceRule> replaceRules) {
+        for (TempReplaceRule.ReplaceRule replaceRule : replaceRules) {
+            if (rule.getTableIndex().equals(replaceRule.getTableIndex()) && replaceRule.getTrIndex().equals(row)) {
+                return replaceRule.getType();
             }
         }
         return null;
