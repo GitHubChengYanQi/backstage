@@ -116,7 +116,7 @@ public class OrderReplace {
                 return replaceRule.getType();
             }
         }
-        return null;
+        return "";
     }
 
 
