@@ -137,7 +137,7 @@
             and complete = #{paramCondition.complete}
         </if>
         <if test="paramCondition.createUser != null">
-            and create_user =  #{paramCondition.userId}
+            and create_user = #{paramCondition.userId}
         </if>
         <if test="paramCondition.times != null and paramCondition.times.size == 2">
             and create_time between

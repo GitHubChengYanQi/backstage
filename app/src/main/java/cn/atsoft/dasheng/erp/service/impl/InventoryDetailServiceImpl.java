@@ -140,24 +140,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
     }
 
-    /**
-     * 时间范围内 合并盘点
-     *
-     * @return
-     */
-    @Override
-    public Object mergeList() {
-
-        DateTime dateTime = DateUtil.date();
-        List<Inventory> inventories = inventoryService.query().apply("begin_time < " + "'" + dateTime + "'" + " and  end_time> " + "'" + dateTime + "'").list();
-        List<Long> inventoryIds = new ArrayList<>();
-        for (Inventory inventory : inventories) {
-            inventoryIds.add(inventory.getInventoryTaskId());
-        }
-        List<InventoryDetail> inventoryDetails = inventoryIds.size() == 0 ? new ArrayList<>() : this.query().in("inventory_id", inventoryIds).eq("display", 1).list();
-        List<InventoryDetailResult> detailResults = BeanUtil.copyToList(inventoryDetails, InventoryDetailResult.class, new CopyOptions());
-        return positionsResultList(detailResults);
-    }
 
 
     @Override
@@ -176,30 +158,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return detailResults;
     }
 
-    /**
-     * 时间范围内 所有未完成的盘点任务 合并
-     *
-     * @return
-     */
-    @Override
-    public Object mergeDetail() {
-        List<InventoryResult> inventoryResults = inventoryService.listByTime();
-        List<Long> inventoryTaskIds = new ArrayList<>();
-        for (InventoryResult inventoryResult : inventoryResults) {
-            inventoryTaskIds.add(inventoryResult.getInventoryTaskId());
-        }
-        List<InventoryDetail> inventoryDetails = inventoryTaskIds.size() == 0 ? new ArrayList<>() : this.query().in("inventory_id", inventoryTaskIds)
-                .groupBy("inkind_id")
-                .eq("display", 1)
-
-                .list();
-        List<InventoryDetailResult> detailResults = BeanUtil.copyToList(inventoryDetails, InventoryDetailResult.class, new CopyOptions());
-        List<StorehousePositionsResult> positionsResultList = positionsResultList(detailResults);
-        Map<String, Object> map = new HashMap<>();
-        map.put("ids", inventoryTaskIds);
-        map.put("List", positionsResultList);
-        return map;
-    }
 
 
     private void detailList(List<InventoryDetailResult> detailResults) {
