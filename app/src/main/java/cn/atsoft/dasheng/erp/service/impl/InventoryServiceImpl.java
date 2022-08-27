@@ -226,6 +226,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryStock.setInventoryId(entity.getInventoryTaskId());
 //            inventoryStock.setRealNumber(inventoryStock.getNumber());
         }
+
         inventoryStockService.saveBatch(inventoryStocks);
         param.setCreateUser(entity.getCreateUser());
         List<ShopCart> shopCarts = shopCartService.query()

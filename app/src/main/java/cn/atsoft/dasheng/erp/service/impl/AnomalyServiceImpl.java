@@ -91,8 +91,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Autowired
     private ActivitiProcessTaskService taskService;
     @Autowired
-    private RemarksService remarksService;
-    @Autowired
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private MessageProducer messageProducer;
@@ -330,51 +328,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     }
 
 
-    /**
-     * 修改盘点明细状态
-     *
-     * @param param
-     */
-    private void updateInventoryStatus(AnomalyParam param, int status) {
-        QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
-        /**
-         * 同一时间段   统一修改
-         */
-        List<Long> inventoryIds = new ArrayList<>();
-        List<InventoryResult> inventoryResults = inventoryService.listByTime();
-        if (ToolUtil.isNotEmpty(inventoryResults)) {
-            for (InventoryResult inventoryResult : inventoryResults) {
-                inventoryIds.add(inventoryResult.getInventoryTaskId());
-            }
-        }
-        inventoryIds.add(param.getFormId());
-        queryWrapper.in("inventory_id", inventoryIds);
-        queryWrapper.eq("sku_id", param.getSkuId());
-        queryWrapper.eq("brand_id", param.getBrandId());
-        queryWrapper.eq("position_id", param.getPositionId());
-
-        List<InventoryDetail> inventoryDetails = inventoryDetailService.list(queryWrapper);
-
-        for (InventoryDetail inventoryDetail : inventoryDetails) {    //保留之前记录
-            if (inventoryDetail.getLockStatus() == 99) {
-                throw new ServiceException(500, "当前状态不可更改");
-            }
-            inventoryDetail.setStatus(status);
-            inventoryDetail.setAnomalyId(param.getAnomalyId());
-            inventoryDetail.setLockStatus(0);
-            inventoryDetail.setDisplay(0);
-        }
-
-        List<InventoryDetail> detailList = BeanUtil.copyToList(inventoryDetails, InventoryDetail.class, new CopyOptions());
-        for (InventoryDetail inventoryDetail : detailList) {
-            inventoryDetail.setDetailId(null);
-            inventoryDetail.setDisplay(1);
-        }
-
-        param.setType(param.getAnomalyType().toString());
-        inventoryDetailService.updateBatchById(inventoryDetails);
-        inventoryDetailService.saveBatch(detailList);
-    }
 
     /**
      * 添加详情(区分批量)

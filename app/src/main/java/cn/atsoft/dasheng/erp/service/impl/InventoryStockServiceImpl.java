@@ -100,7 +100,6 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     }
 
     @Override
-    @Async
     public void addList(List<InventoryDetailParam> detailParams) {
         List<InventoryStock> all = new ArrayList<>();
         for (InventoryDetailParam detailParam : detailParams) {
@@ -135,7 +134,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             }
         }
         if (all.size() == 0) {
-            throw new ServiceException(500, "没有可盘点的物料");
+            throw new ServiceException(500, "盘点内容弄暂无绑定库位和库存,无需盘点  ");
         }
         this.saveBatch(all);
     }
@@ -493,6 +492,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             content = "对" + skuMessage + "进行了盘点";
         }
         Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
+
+
         for (Long inventoryId : inventoryIdsSet) {
             shopCartService.addDynamic(inventoryId, content);
         }
