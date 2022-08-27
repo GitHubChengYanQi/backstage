@@ -491,13 +491,34 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         } else {
             content = "对" + skuMessage + "进行了盘点";
         }
+
         Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
+        Set<Long> filterInventoryIds = filter(inventoryIdsSet, param);
 
-
-        for (Long inventoryId : inventoryIdsSet) {
+        for (Long inventoryId : filterInventoryIds) {
             shopCartService.addDynamic(inventoryId, content);
         }
 
+    }
+
+    /**
+     * 返回涉及这个物料的盘点任务
+     *
+     * @param inventoryIdsSet
+     * @param param
+     */
+    private Set<Long> filter(Set<Long> inventoryIdsSet, AnomalyParam param) {
+        Set<Long> inventoryIds = new HashSet<>();
+        List<InventoryStock> stockList = this.query().in("inventory_id", inventoryIdsSet).eq("display", 1)
+                .eq("sku_id", param.getSkuId())
+                .eq("brand_id", param.getBrandId())
+                .eq("position_id", param.getPositionId())
+                .list();
+
+        for (InventoryStock inventoryStock : stockList) {
+            inventoryIds.add(inventoryStock.getInventoryId());
+        }
+        return inventoryIds;
     }
 
 
