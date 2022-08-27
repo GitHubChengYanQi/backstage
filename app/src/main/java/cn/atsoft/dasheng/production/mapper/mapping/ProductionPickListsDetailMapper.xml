@@ -77,7 +77,6 @@
         LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
         AND a.brand_id = b.brand_id
         WHERE 1 = 1
-        and b.display = 1 and b.stage = 1
         <if test="paramCondition.storehousePositionsId!=null">
             and(
             b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
@@ -90,6 +89,7 @@
 
             </if>
             )
+            and b.display = 1 and b.stage = 1
         </if>
         <if test="paramCondition.pickListsId!=null">
             and a.pick_lists_id = #{paramCondition.pickListsId}
@@ -102,8 +102,6 @@
         `daoxin_production_pick_lists_detail` a
         LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
         WHERE 1 = 1
-        and b.display = 1 and b.stage = 1
-        and a.brand_id = 0
         <if test="paramCondition.storehousePositionsId!=null">
             and (
             b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
@@ -116,6 +114,8 @@
 
             </if>
             )
+            and b.display = 1 and b.stage = 1
+            and a.brand_id = 0
         </if>
         <if test="paramCondition.pickListsId!=null">
             and a.pick_lists_id = #{paramCondition.pickListsId}

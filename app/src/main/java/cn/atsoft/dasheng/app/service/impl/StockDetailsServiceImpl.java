@@ -546,30 +546,19 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         } else {
             details = this.query().in("brand_id", param.getBrandIds()).eq("sku_id", param.getSkuId()).eq("display", 1).list();
         }
-        List<StockDetails> totalList = new ArrayList<>();
-        List<ProductionPickListsCart> carts = pickListsCartService.query().eq("display", 1).eq("status", 0).list();
-        List<Long> inkindIds = new ArrayList<>();
-        for (ProductionPickListsCart cart : carts) {
-            inkindIds.add(cart.getInkindId());
-        }
-
-        for (Long inkindId : inkindIds) {
-            details.removeIf(i -> i.getInkindId().equals(inkindId));
-        }
-        details.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
+        List<StockDetailsResult> results = details.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(details, StockDetailsResult.class);
+        this.format(results);
+        List<StockDetailsResult> totalList = new ArrayList<>();
+        results.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
                 (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new StockDetails() {{
-                        setNumber(a.getNumber() + b.getNumber());
-                        setSkuId(a.getSkuId());
-                        setStorehousePositionsId(a.getStorehousePositionsId());
-                        setBrandId(a.getBrandId());
-                        setStorehouseId(a.getStorehouseId());
-                    }}).ifPresent(totalList::add);
+                    transfer.stream().reduce((a, b) -> {
+                        StockDetailsResult stockDetailsResult = BeanUtil.copyProperties(a, StockDetailsResult.class);
+                        stockDetailsResult.setNumber(a.getNumber()+b.getNumber());
+                        return stockDetailsResult;
+                    }).ifPresent(totalList::add);
                 }
         );
-        List<StockDetailsResult> results = totalList.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(totalList, StockDetailsResult.class);
-        this.format(results);
-        return results;
+        return totalList;
     }
 
     @Override

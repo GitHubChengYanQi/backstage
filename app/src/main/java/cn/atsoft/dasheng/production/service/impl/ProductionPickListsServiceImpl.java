@@ -179,6 +179,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private StorehousePositionsBindService positionsBindService;
     @Autowired
     private MessageProducer messageProducer;
+    @Autowired
+    private AllocationLogService allocationLogService;
+    @Autowired
+    private AllocationLogDetailService allocationLogDetailService;
 
 
     @Override
@@ -893,6 +897,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         for (ProductionPickListsCartParam pickListsCartParam : param.getCartsParams()) {
             pickListsIds.add(pickListsCartParam.getPickListsId());
         }
+        Long fromAllocation = isFromAllocation(ToolUtil.isNotEmpty(pickListsIds.get(0)) ? pickListsIds.get(0) : null);
         /**
          * 取出购物车数据
          */
@@ -1023,9 +1028,24 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     log.setSourceId(listsCart.getPickListsId());
                     logDetails.add(log);
                     listings.add(listingParam);
+
                 }
             }
+            if (ToolUtil.isNotEmpty(fromAllocation)) {
+                AllocationLog allocationLog = new AllocationLog();
+                allocationLog.setAllocationId(fromAllocation);
+                allocationLog.setCoding(codingRulesService.defaultEncoding());
+                allocationLogService.save(allocationLog);
+                List<AllocationLogDetail> allocationLogDetails = new ArrayList<>();
+                for (InstockLogDetail logDetail : logDetails) {
+                    AllocationLogDetail allocationLogDetail = BeanUtil.copyProperties(logDetail, AllocationLogDetail.class);
+                    allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
+                    allocationLogDetails.add(allocationLogDetail);
+                }
+                allocationLogDetailService.saveBatch(allocationLogDetails);
 
+
+            }
             for (ProductionPickListsCart listsCart : newCarts) {
                 if (listsCart.getStatus() == 99 && listsCart.getStorehouseId().equals(stockId)) {
                     OutstockListingParam listingParam = new OutstockListingParam();
@@ -1074,6 +1094,16 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return null;
     }
 
+    private Long isFromAllocation(Long pickListsId) {
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", pickListsId).eq("type", "OUTSTOCK").one();
+        if (ToolUtil.isNotEmpty(processTask) && ToolUtil.isNotEmpty(processTask.getPid())) {
+            ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getPid());
+            if (parentTask.getType().equals("ALLOCATION")) {
+                parentTask.getFormId();
+            }
+        }
+        return null;
+    }
 
     private void allForOut(List<ProductionPickLists> pickLists, List<ProductionPickListsCart> listsCarts, List<ProductionPickListsCartParam> cartParams) {
         List<Long> stockIds = new ArrayList<>();
@@ -1509,9 +1539,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         lockedBrandIds = lockedBrandIds.stream().distinct().collect(Collectors.toList());
 
 //        pickListsCartService.query()
-
-
-
 
 
         userIds = userIds.stream().distinct().collect(Collectors.toList());
