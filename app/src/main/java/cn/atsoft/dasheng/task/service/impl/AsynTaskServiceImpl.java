@@ -69,11 +69,14 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
 
         List<Long> skuIds = new ArrayList<>();
         for (AsynTaskResult asynTask : asynTaskResults) {
-            AllBomResult allBomResult = JSON.parseObject(asynTask.getContent(), AllBomResult.class);
-            asynTask.setAllBomResult(allBomResult);
-            for (AnalysisResult analysisResult : allBomResult.getOwe()) {
-                skuIds.add(analysisResult.getSkuId());
+            if (ToolUtil.isNotEmpty(asynTask.getContent())) {
+                AllBomResult allBomResult = JSON.parseObject(asynTask.getContent(), AllBomResult.class);
+                asynTask.setAllBomResult(allBomResult);
+                for (AnalysisResult analysisResult : allBomResult.getOwe()) {
+                    skuIds.add(analysisResult.getSkuId());
+                }
             }
+
         }
 
         List<StockDetails> stockDetails = skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query()
