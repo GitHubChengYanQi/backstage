@@ -186,12 +186,18 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
             skuIds.add(datum.getSkuId());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
+        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
 
         for (ErpPartsDetailResult datum : data) {
             for (SkuResult skuResult : skuResults) {
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (Parts part : parts) {
+                if (part.getSkuId().equals(datum.getSkuId())) {
+                    datum.setHaveBom(true);
                     break;
                 }
             }
