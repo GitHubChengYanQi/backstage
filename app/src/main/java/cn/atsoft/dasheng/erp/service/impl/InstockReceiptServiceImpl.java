@@ -124,17 +124,14 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
          */
         Template template = templateService.getById(templateId);
         FileInfo fileInfo = fileInfoService.getById(template.getFileId());
-        List<TempReplaceRule.ReplaceRule> replaceRules = JSON.parseArray(template.getReplaceRule(), TempReplaceRule.ReplaceRule.class);
+        TempReplaceRule replaceRules = JSON.parseObject(template.getReplaceRule(), TempReplaceRule.class);
 
         try {
             InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
             XWPFDocument document = new XWPFDocument(inputStream);
 
             for (int i = 0; i < document.getTables().size(); i++) {
-
-
                 TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
-
                 if (ToolUtil.isNotEmpty(tableRule) && tableRule.getTableType().equals("sku")) {        //循环插入规则则
 
                     XWPFTable xwpfTable = document.getTableArray(i);     //需要替换表格的位置
@@ -145,7 +142,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                     for (String customer : customerMap.keySet()) {
                         XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
                         List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
-                        replace(document, newTable, customer, results, tableRule, replaceRules);
+                        replace(document, newTable, customer, results, tableRule, replaceRules.getReplaceRules());
                         xwpfTables.add(newTable);
                     }
 
@@ -179,14 +176,17 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             String rowRule = OrderReplace.getRowRule(i, tableRule, replaceRules);   //行替换规则
             XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
-            if (rowRule.equals("none")) {
-
-            }
-
-            boolean copy = copy(xwpfTable, row, customer, results);
-            if (copy) {
-                document.createParagraph();   //表格之间 插入回车
-                break;
+            switch (rowRule) {
+                case "none":
+                    easyCopy(row, customer);
+                    break;
+                case "sku":
+                    boolean copy = loopCopy(xwpfTable, row, results);
+                    if (copy) {
+                        document.createParagraph();   //表格之间 插入回车
+                        return;
+                    }
+                    break;
             }
         }
     }
@@ -211,7 +211,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     }
 
 
-    public boolean copy(XWPFTable table, XWPFTableRow sourceRow, String customer, List<InstockLogDetailResult> results) {
+    public boolean loopCopy(XWPFTable table, XWPFTableRow sourceRow, List<InstockLogDetailResult> results) {
         List<XWPFTableCell> cellList = sourceRow.getTableCells();
         if (null == cellList) {
             return true;
@@ -221,10 +221,6 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             while (matcher.find()) {
                 String group = matcher.group(0);
                 switch (group) {
-                    case "${供应商}":
-                        sourceCell.removeParagraph(0);
-                        sourceCell.setText(customer);
-                        break;
                     case "${物料名称}":   //TODO  取标的物替换规则
                     case "${产品名称}":
                     case "${型号规格}":
@@ -232,11 +228,8 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                     case "${数量}":
                     case "${序号}":
                         return insertNewRow(table, sourceRow, results);
-
                 }
-
             }
-
         }
         return false;
     }

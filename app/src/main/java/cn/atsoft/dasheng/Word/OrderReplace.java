@@ -91,11 +91,11 @@ public class OrderReplace {
      * 表格规则
      *
      * @param table
-     * @param replaceRules
+     * @param
      * @return
      */
-    public static TempReplaceRule.ReplaceRule getTableRule(int table, List<TempReplaceRule.ReplaceRule> replaceRules) {
-        for (TempReplaceRule.ReplaceRule replaceRule : replaceRules) {
+    public static TempReplaceRule.ReplaceRule getTableRule(int table, TempReplaceRule rule) {
+        for (TempReplaceRule.ReplaceRule replaceRule : rule.getReplaceRules()) {
             if (replaceRule.getTableIndex().equals(table)) {
                 return replaceRule;
             }
