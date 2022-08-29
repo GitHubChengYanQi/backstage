@@ -45,7 +45,9 @@ public interface AsynTaskService extends IService<AsynTask> {
      */
     void update(AsynTaskParam param);
 
-    List<AllBomResult.View> BomDetailed();
+    List<AsynTaskResult> BomDetailed();
+
+    List<AllBomResult.View> BomDetailedVersion();
 
     List<ErpPartsDetail> bomResult(Long skuId, int num);
 
@@ -74,6 +76,8 @@ public interface AsynTaskService extends IService<AsynTask> {
     PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param);
 
     Object spectaculars();
+
+    Object spectacularsVersion();
 
     Object stockSpectaculars();
 
