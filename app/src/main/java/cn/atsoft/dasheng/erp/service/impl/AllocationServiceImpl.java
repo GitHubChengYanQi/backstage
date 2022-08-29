@@ -439,21 +439,31 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             allocationIds.add(datum.getAllocationId());
         }
         List<AllocationDetail> details = allocationIds.size() == 0 ? new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
-
+        List<AllocationCart> allocationCarts = allocationIds.size() == 0 ? new ArrayList<>() : allocationCartService.query().in("allocation_id", allocationIds).eq("type","carry").eq("display", 1).list();
         for (AllocationResult datum : data) {
             List<Long> skuIds = new ArrayList<>();
             List<Long> storehousePositionsIds = new ArrayList<>();
+            int detailNumber = 0;
+            int doneNumber  = 0;
             for (AllocationDetail detail : details) {
                 if (datum.getAllocationId().equals(detail.getAllocationId())) {
                     skuIds.add(detail.getSkuId());
+                    detailNumber+=detail.getNumber();
                     if (ToolUtil.isNotEmpty(detail.getStorehousePositionsId())) {
                         storehousePositionsIds.add(detail.getStorehousePositionsId());
                     }
                 }
 
             }
+            for (AllocationCart allocationCart : allocationCarts) {
+                if (allocationCart.getAllocationId().equals(datum.getAllocationId())){
+                    doneNumber += allocationCart.getDoneNumber();
+                }
+            }
             datum.setSkuCount((int) skuIds.stream().distinct().count());
             datum.setPositionCount((int) storehousePositionsIds.stream().distinct().count());
+            datum.setDetailNumber(detailNumber);
+            datum.setDoneNumber(doneNumber);
         }
 
 
