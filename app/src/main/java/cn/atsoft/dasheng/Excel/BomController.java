@@ -106,7 +106,7 @@ public class BomController {
 
                     ExcelReader reader = ExcelUtil.getReader(excelFile, sheetName);
                     reader.addHeaderAlias("序号", "line");
-                    reader.addHeaderAlias("物料编号", "strand");
+                    reader.addHeaderAlias("物料编码", "strand");
                     reader.addHeaderAlias("名称", "spuName");
                     reader.addHeaderAlias("规格", "spc");
                     reader.addHeaderAlias("数量", "num");

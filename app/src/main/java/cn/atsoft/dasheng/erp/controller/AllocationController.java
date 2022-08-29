@@ -83,7 +83,7 @@ public class AllocationController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData transferInStorehouse(@RequestBody AllocationCartParam allocationParam) {
 
-        this.allocationService.transferInStorehouse(allocationParam);
+        allocationService.newTransfer(allocationParam);
         return ResponseData.success();
     }
 
