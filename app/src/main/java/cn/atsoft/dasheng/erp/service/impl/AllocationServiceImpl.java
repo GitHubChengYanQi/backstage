@@ -307,6 +307,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
                             listsDetailParam.setStorehouseId(allocation.getStorehouseId());
                             ToolUtil.copyProperties(allocationCart, listsDetailParam);
+                            listsDetailParam.setStatus(0);
                             details.add(listsDetailParam);
                             InstockListParam instockListParam = new InstockListParam();
                             instockListParam.setStoreHouseId(stockId);

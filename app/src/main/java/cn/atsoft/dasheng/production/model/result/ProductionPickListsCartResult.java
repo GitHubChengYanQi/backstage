@@ -62,7 +62,6 @@ public class ProductionPickListsCartResult implements Serializable {
      * 购物车id
      */
     @ApiModelProperty("购物车id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long pickListsCart;
 
     @JSONField(serializeUsing= ToStringSerializer.class)
