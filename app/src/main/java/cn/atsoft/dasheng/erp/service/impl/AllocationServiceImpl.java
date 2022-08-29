@@ -245,7 +245,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     ProductionPickListsParam listsParam = new ProductionPickListsParam();
                     listsParam.setPickListsName(allocation.getAllocationName());
                     listsParam.setUserId(allocation.getUserId());
-                    listsParam.setSource("processTask");
+                    listsParam.setSource("process");
                     listsParam.setSourceId(processTask.getProcessTaskId());
                     List<ProductionPickListsDetailParam> details = new ArrayList<>();
                     List<AllocationCart> updateCart = new ArrayList<>();
