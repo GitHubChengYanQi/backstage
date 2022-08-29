@@ -179,8 +179,8 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         return detailResults;
     }
 
-
-    private void format(List<ErpPartsDetailResult> data) {
+    @Override
+    public void format(List<ErpPartsDetailResult> data) {
         List<Long> skuIds = new ArrayList<>();
         for (ErpPartsDetailResult datum : data) {
             skuIds.add(datum.getSkuId());
@@ -189,7 +189,6 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
 
 
         for (ErpPartsDetailResult datum : data) {
-
             for (SkuResult skuResult : skuResults) {
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);
