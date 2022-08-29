@@ -298,7 +298,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     ProductionPickListsParam listsParam = new ProductionPickListsParam();
                     listsParam.setPickListsName(allocation.getAllocationName());
                     listsParam.setUserId(allocation.getUserId());
-                    listsParam.setSource("process");
+                    listsParam.setSource("processTask");
                     listsParam.setSourceId(processTask.getProcessTaskId());
                     List<ProductionPickListsDetailParam> details = new ArrayList<>();
                     List<AllocationCart> updateCart = new ArrayList<>();
@@ -307,6 +307,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
                             listsDetailParam.setStorehouseId(allocation.getStorehouseId());
                             ToolUtil.copyProperties(allocationCart, listsDetailParam);
+                            listsDetailParam.setStatus(0);
                             details.add(listsDetailParam);
                             InstockListParam instockListParam = new InstockListParam();
                             instockListParam.setStoreHouseId(stockId);
@@ -439,21 +440,31 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             allocationIds.add(datum.getAllocationId());
         }
         List<AllocationDetail> details = allocationIds.size() == 0 ? new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
-
+        List<AllocationCart> allocationCarts = allocationIds.size() == 0 ? new ArrayList<>() : allocationCartService.query().in("allocation_id", allocationIds).eq("type","carry").eq("display", 1).list();
         for (AllocationResult datum : data) {
             List<Long> skuIds = new ArrayList<>();
             List<Long> storehousePositionsIds = new ArrayList<>();
+            int detailNumber = 0;
+            int doneNumber  = 0;
             for (AllocationDetail detail : details) {
                 if (datum.getAllocationId().equals(detail.getAllocationId())) {
                     skuIds.add(detail.getSkuId());
+                    detailNumber+=detail.getNumber();
                     if (ToolUtil.isNotEmpty(detail.getStorehousePositionsId())) {
                         storehousePositionsIds.add(detail.getStorehousePositionsId());
                     }
                 }
 
             }
+            for (AllocationCart allocationCart : allocationCarts) {
+                if (allocationCart.getAllocationId().equals(datum.getAllocationId())){
+                    doneNumber += allocationCart.getDoneNumber();
+                }
+            }
             datum.setSkuCount((int) skuIds.stream().distinct().count());
             datum.setPositionCount((int) storehousePositionsIds.stream().distinct().count());
+            datum.setDetailNumber(detailNumber);
+            datum.setDoneNumber(doneNumber);
         }
 
 

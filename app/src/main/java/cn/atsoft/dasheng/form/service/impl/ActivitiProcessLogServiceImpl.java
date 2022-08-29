@@ -568,7 +568,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "OUTSTOCK":
                 ProductionPickLists pickLists = pickListsService.getById(processTask.getFormId());
                 if (ToolUtil.isNotEmpty(pickLists.getSource()) && pickLists.getSource().equals("processTask")) {
-                    ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getSourceId());
+                    ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getPid());
                     if (parentTask.getType().equals("ALLOCATION")) {
 
                         /**

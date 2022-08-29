@@ -293,7 +293,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
                 stockSkuBrand.setNumber(number);
 
-            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
+            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) &&  detailParam.getBrandId() != 0 && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
 
                 stockSkuBrand.setNumber(number);
