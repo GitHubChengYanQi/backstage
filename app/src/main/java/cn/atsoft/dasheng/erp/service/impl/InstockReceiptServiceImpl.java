@@ -130,6 +130,9 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
             XWPFDocument document = new XWPFDocument(inputStream);
 
+
+
+
             for (int i = 0; i < document.getTables().size(); i++) {
                 TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
                 if (ToolUtil.isNotEmpty(tableRule) && tableRule.getTableType().equals("sku")) {        //循环插入规则则

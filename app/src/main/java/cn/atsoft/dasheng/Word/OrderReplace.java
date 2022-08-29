@@ -38,7 +38,13 @@ public class OrderReplace {
     @Autowired
     private FileInfoService fileInfoService;
 
-
+    /**
+     * 复制表格
+     *
+     * @param document
+     * @param xwpfTable
+     * @return
+     */
     public XWPFTable replaceInTable(XWPFDocument document, XWPFTable xwpfTable) {
 
         XWPFTable table = document.createTable();
@@ -83,7 +89,6 @@ public class OrderReplace {
                 targetCell.setText(sourceCell.getText());
             }
         }
-        //        table.removeRow(table.getRows().size());
     }
 
 
