@@ -261,7 +261,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                     anomalyIds.add(inventoryStock.getAnomalyId());
                 }
             }
-            shopCartNum = anomalyIds.size() == 0 ? 0 : anomalyService.query().in("anomaly_id", anomalyIds).eq("status", 0).count();
+            List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
+            Set<Long> setAnomalyIds = new HashSet<>();
+            for (AnomalyDetail anomalyDetail : anomalyDetails) {
+                setAnomalyIds.add(anomalyDetail.getAnomalyId());
+            }
+            shopCartNum = setAnomalyIds.size();
         }
 
 
