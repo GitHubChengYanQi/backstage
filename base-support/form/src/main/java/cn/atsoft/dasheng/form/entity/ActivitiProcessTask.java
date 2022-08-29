@@ -28,8 +28,7 @@ public class ActivitiProcessTask implements Serializable {
     @TableId(value = "process_task_id", type = IdType.ID_WORKER)
     private Long processTaskId;
 
-    @TableField("audit_rule")
-    private String auditRule;
+
 
     @TableField("process_id")
     private Long processId;
@@ -309,13 +308,7 @@ public class ActivitiProcessTask implements Serializable {
         this.deptId = deptId;
     }
 
-    public String getAuditRule() {
-        return auditRule;
-    }
 
-    public void setAuditRule(String auditRule) {
-        this.auditRule = auditRule;
-    }
 
     @Override
     public String toString() {

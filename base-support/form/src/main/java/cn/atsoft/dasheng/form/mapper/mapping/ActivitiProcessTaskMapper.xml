@@ -27,7 +27,6 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
-        <result column="audit_rule" property="auditRule"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -112,8 +111,8 @@
 	activiti_process_task.source AS "source",
 	activiti_process_task.source_id AS "source_id" ,
 	daoxin_task_participant.user_id as "participantUser",
-	daoxin_task_participant.type as "participantType",
-    activiti_process_task.audit_rule as auditRule
+	daoxin_task_participant.type as "participantType"
+
     </sql>
 
 
