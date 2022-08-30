@@ -19,6 +19,8 @@ import java.util.List;
 @Data
 @ApiModel
 public class AllocationCartResult implements Serializable {
+    private Long pickListsId;
+    private Long inStockOrderId;
     private SkuSimpleResult skuResult;
     private BrandResult brandResult;
     private StorehousePositionsResult positionsResult;

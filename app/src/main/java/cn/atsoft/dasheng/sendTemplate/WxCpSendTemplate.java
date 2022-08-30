@@ -293,6 +293,7 @@ public class WxCpSendTemplate {
                 case send:
                 case pickSend:
                 case warning:
+                case transfer:
                     markDownTemplate.setTitle(markDownTemplate.getFunction().getEnumName());
                     break;
                 case atPerson:

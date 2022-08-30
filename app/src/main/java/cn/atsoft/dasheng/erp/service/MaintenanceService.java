@@ -89,7 +89,7 @@ public interface MaintenanceService extends IService<Maintenance> {
 
     MaintenanceResult detail(Long id);
 
-    Boolean updateDetail(Maintenance maintenance);
+    void updateDetail(Maintenance maintenance);
 
     void updateStatus(Long id);
 }
