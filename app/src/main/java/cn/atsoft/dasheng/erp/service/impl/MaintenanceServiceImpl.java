@@ -34,6 +34,7 @@ import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -124,6 +125,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private RemarksService remarksService;
     @Autowired
     private MaintenanceLogDetailService logDetailService;
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
 
     @Override
 
@@ -258,10 +261,11 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 skuIds.add(inventoryDetail.getSkuId());
             }
         }
-        stockDetails = stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
         inkindIds = inkindIds.stream().distinct().collect(Collectors.toList());
+        List<Long> lockedInkindIds = pickListsCartService.getLockedInkindIds();
+        inkindIds.removeAll(lockedInkindIds);
 
-
+        stockDetails =inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
         List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
         List<MaintenanceLogDetail> logDetails = logDetailService.query().eq("maintenance_id", param.getMaintenanceId()).list();

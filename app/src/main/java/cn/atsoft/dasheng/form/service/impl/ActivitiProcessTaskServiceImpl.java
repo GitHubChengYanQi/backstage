@@ -7,10 +7,7 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.Anomaly;
-import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
-import cn.atsoft.dasheng.erp.entity.InstockOrder;
-import cn.atsoft.dasheng.erp.entity.Inventory;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
@@ -188,7 +185,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcessTask processTask = this.getById(id);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(processTask, taskResult);
-
+        if(taskResult.getType().equals("MAINTENANCE")){
+            Maintenance byId = maintenanceService.getById(taskResult.getFormId());
+            if (ToolUtil.isNotEmpty(byId)) {
+                maintenanceService.startMaintenance(byId    );
+            }
+        }
         format(new ArrayList<ActivitiProcessTaskResult>() {{
             add(taskResult);
         }});
