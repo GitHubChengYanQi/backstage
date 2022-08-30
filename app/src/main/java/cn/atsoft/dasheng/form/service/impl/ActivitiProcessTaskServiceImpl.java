@@ -191,7 +191,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         if(taskResult.getType().equals("MAINTENANCE")){
             Maintenance byId = maintenanceService.getById(taskResult.getFormId());
             if (ToolUtil.isNotEmpty(byId)) {
-                maintenanceService.startMaintenance(byId    );
+                maintenanceService.startMaintenance(byId);
             }
         }
         format(new ArrayList<ActivitiProcessTaskResult>() {{

@@ -639,7 +639,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
      * @param maintenance
      */
     @Override
-    public Boolean updateDetail(Maintenance maintenance) {
+    public void updateDetail(Maintenance maintenance) {
         List<StockDetails> stockDetails = this.needMaintenanceByRequirement(maintenance);
         List<StockDetails> detailTotalList = new ArrayList<>();
 
@@ -685,13 +685,10 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         }
         maintenanceDetailService.saveOrUpdateBatch(maintenanceDetails);
         if (maintenanceDetails.stream().allMatch(i -> i.getDisplay().equals(0))) {
-            maintenance.setStatus(99);
-            this.updateById(maintenance);
-            return true;
+            this.updateStatus(maintenance.getMaintenanceId());
         } else {
             maintenance.setStatus(98);
             this.updateById(maintenance);
-            return false;
         }
 
     }
