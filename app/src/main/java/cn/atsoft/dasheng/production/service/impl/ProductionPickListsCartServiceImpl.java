@@ -196,7 +196,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         inkindService.save(newInkind);
                                         StockDetails newStockDetail = BeanUtil.copyProperties(stockDetail, StockDetails.class);
                                         newStockDetail.setStockItemId(null);
-                                        newStockDetail.setNumber(stockDetail.getNumber() - lastNumber);
+                                        newStockDetail.setNumber((long) lastNumber);
                                         newStockDetail.setInkindId(newInkind.getInkindId());
                                         newStockDetails.add(newStockDetail);
                                         entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
@@ -205,9 +205,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                                         entity.setType(productionPickListsCartParam.getType());
                                         entity.setInkindId(newInkind.getInkindId());
-                                        entity.setCustomerId(stockDetail.getCustomerId());
+                                        entity.setNumber(Math.toIntExact(newStockDetail.getNumber()));
+                                        entity.setCustomerId(newInkind.getCustomerId());
                                         entitys.add(entity);
-                                        stockDetail.setNumber((long) lastNumber);
+                                        stockDetail.setNumber(stockDetail.getNumber()- lastNumber);
                                         break;
                                     }
                                 }
