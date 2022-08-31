@@ -20,7 +20,7 @@ import java.util.List;
 @ApiModel
 public class AllocationCartResult implements Serializable {
     private Long pickListsId;
-    private Long inStockOrderId;
+    private Long instockOrderId;
     private SkuSimpleResult skuResult;
     private BrandResult brandResult;
     private StorehousePositionsResult positionsResult;
