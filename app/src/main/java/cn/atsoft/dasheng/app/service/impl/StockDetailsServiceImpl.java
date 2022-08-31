@@ -804,7 +804,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                     queryWrapper.eq("brand_id", cartParam.getBrandId());
                 }
                 queryWrapper.eq("storehouse_positions_id", cartParam.getStorehousePositionsId());
-                queryWrapper.last("limit " + cartParam.getNumber() + cartInkindIds.size());
+                queryWrapper.eq("display",1);
+                queryWrapper.eq("stage",1);
+
                 list.addAll(this.list(queryWrapper));
             }
         }

@@ -143,7 +143,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             int number = productionPickListsCartParam.getNumber();
 
             if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
-                Inkind inkind = inkindService.getById(param.getInkindId());
+                Inkind inkind = inkindService.getById(productionPickListsCartParam.getInkindId());
                 ProductionPickListsCart entity = new ProductionPickListsCart();
                 entity.setPickListsId(productionPickListsCartParam.getPickListsId());
                 entity.setCustomerId(inkind.getCustomerId());
@@ -196,7 +196,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         inkindService.save(newInkind);
                                         StockDetails newStockDetail = BeanUtil.copyProperties(stockDetail, StockDetails.class);
                                         newStockDetail.setStockItemId(null);
-                                        newStockDetail.setNumber(stockDetail.getNumber() - lastNumber);
+                                        newStockDetail.setNumber((long) lastNumber);
                                         newStockDetail.setInkindId(newInkind.getInkindId());
                                         newStockDetails.add(newStockDetail);
                                         entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
@@ -205,9 +205,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                                         entity.setType(productionPickListsCartParam.getType());
                                         entity.setInkindId(newInkind.getInkindId());
-                                        entity.setCustomerId(stockDetail.getCustomerId());
+                                        entity.setNumber(Math.toIntExact(newStockDetail.getNumber()));
+                                        entity.setCustomerId(newInkind.getCustomerId());
                                         entitys.add(entity);
-                                        stockDetail.setNumber((long) lastNumber);
+                                        stockDetail.setNumber(stockDetail.getNumber()- lastNumber);
                                         break;
                                     }
                                 }
@@ -293,7 +294,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
                 stockSkuBrand.setNumber(number);
 
-            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
+            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) &&  detailParam.getBrandId() != 0 && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
 
                 stockSkuBrand.setNumber(number);
@@ -869,7 +870,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         return totalLockDetail;
 
     }
-
+    @Override
+    public List<Long> getLockedInkindIds(){
+        return this.baseMapper.lockInkind();
+    }
     @Override
     public Integer getLockNumber(QuerryLockedParam param) {
         return this.baseMapper.lockNumber(param);
