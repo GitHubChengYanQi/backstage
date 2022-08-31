@@ -790,6 +790,11 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     @Override
     public void deleteBatchByIds(List<ProductionPickListsCartParam> cartParams) {
         List<Long> pickListsIds = new ArrayList<>();
+
+        for (ProductionPickListsCartParam cartParam : cartParams) {
+
+        }
+
         for (ProductionPickListsCartParam cartParam : cartParams) {
             pickListsIds.add(cartParam.getPickListsId());
         }
@@ -808,24 +813,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
         List<StockDetails> stockDetails = inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
         List<StockDetails> parentStockDetails = parentInkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", parentInkindIds).eq("display", 1).list();
-        for (StockDetails stockDetail : stockDetails) {
-            for (Inkind inkind : inkinds) {
-                for (StockDetails parentStockDetail : parentStockDetails) {
-                    if (stockDetail.getInkindId().equals(inkind.getInkindId()) && inkind.getSource().equals("Inkind") && inkind.getSourceId().equals(parentStockDetail.getInkindId()) && parentStockDetail.getDisplay().equals(1) && stockDetail.getDisplay().equals(1)) {
-                        parentStockDetail.setNumber(stockDetail.getNumber() + parentStockDetail.getNumber());
-                        if (parentStockDetail.getDisplay().equals(0) && parentStockDetail.getStage().equals(2)){
-                            parentStockDetail.setDisplay(1);
-                            parentStockDetail.setStage(1);
-                            parentStockDetail.setNumber(stockDetail.getNumber());
-                        }
-                        stockDetail.setDisplay(0);
-                        stockDetail.setStage(2);
-                    }
-                }
-            }
-            stockDetailsService.updateBatchById(stockDetails);
-            stockDetailsService.updateBatchById(parentStockDetails);
-        }
+
 
 
         List<ProductionPickListsCart> updateEntity = new ArrayList<>();
@@ -835,9 +823,31 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                     pickListsCart.setStatus(-1);
                     pickListsCart.setDisplay(0);
                     updateEntity.add(pickListsCart);
+                    for (StockDetails stockDetail : stockDetails) {
+                        if (stockDetail.getInkindId().equals(pickListsCart.getInkindId())){
+                            for (Inkind inkind : inkinds) {
+                                for (StockDetails parentStockDetail : parentStockDetails) {
+                                    if (stockDetail.getInkindId().equals(inkind.getInkindId()) && inkind.getSource().equals("Inkind") && inkind.getSourceId().equals(parentStockDetail.getInkindId()) && parentStockDetail.getDisplay().equals(1) && stockDetail.getDisplay().equals(1)) {
+                                        parentStockDetail.setNumber(stockDetail.getNumber() + parentStockDetail.getNumber());
+                                        if (parentStockDetail.getDisplay().equals(0) && parentStockDetail.getStage().equals(2)){
+                                            parentStockDetail.setDisplay(1);
+                                            parentStockDetail.setStage(1);
+                                            parentStockDetail.setNumber(stockDetail.getNumber());
+                                        }
+                                        stockDetail.setNumber(0L);
+                                        stockDetail.setDisplay(0);
+                                        stockDetail.setStage(2);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
                 }
             }
         }
+        stockDetailsService.updateBatchById(stockDetails);
+        stockDetailsService.updateBatchById(parentStockDetails);
         this.updateBatchById(updateEntity);
     }
 
