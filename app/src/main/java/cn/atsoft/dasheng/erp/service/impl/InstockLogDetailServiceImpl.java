@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.entity.InstockLogDetail;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.mapper.InstockLogDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam;
+import cn.atsoft.dasheng.erp.model.result.InstockHandleResult;
 import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -326,8 +327,10 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
                     }}).ifPresent(totalList::add);
                 }
         );
-        this.format(totalList);
-        return totalList;
+
+        List<InstockLogDetailResult> results =  totalList.stream().sorted(Comparator.comparing(InstockLogDetailResult::getCreateTime).reversed()).collect(Collectors.toList());
+        this.format(results);
+        return results;
     }
 
 }
