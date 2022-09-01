@@ -209,7 +209,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             }
             this.updateById(parts);
             return parts;
-        } else if (ToolUtil.isNotEmpty(partsParam.getItem()) && ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
+        } else if (ToolUtil.isNotEmpty(partsParam.getSpuId())) {
             Spu spu = spuService.getById(partsParam.getItem().getSpuId());
             SpuParam spuParam = new SpuParam();
             ToolUtil.copyProperties(spu, spuParam);
@@ -230,6 +230,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
             // 以上新建sku
             partsParam.setSkuId(skuId);
+            partsParam.setSpuId(partsParam.getSpuId());
+            //以下新建bom
             Parts parts = new Parts();
             if (ToolUtil.isEmpty(partsParam.getName())) {
                 throw new ServiceException(500, "请输入版本号");
