@@ -49,7 +49,7 @@ public class PartsVersionController extends BaseController {
 
     @ApiVersion("1.1")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResponseData add(@RequestBody @Valid PartsParam partsParam) {
+    public ResponseData add(@RequestBody  PartsParam partsParam) {
         Parts parts = this.partsService.newAdd(partsParam);
         return ResponseData.success(parts);
     }

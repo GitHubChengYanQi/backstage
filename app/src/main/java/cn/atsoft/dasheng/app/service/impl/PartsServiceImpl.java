@@ -179,38 +179,85 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Transactional
     @Override
     public Parts newAdd(PartsParam partsParam) {
-        Parts part = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
-        if (ToolUtil.isNotEmpty(part)) {
-            part.setStatus(0);
-            part.setDisplay(0);
-            this.updateById(part);
-        }
-        Parts entity = getEntity(partsParam);
-        entity.setStatus(99);
-        entity.setPartsId(null);
-        if (ToolUtil.isEmpty(entity.getName())) {   //版本号
-            throw new ServiceException(500, "请传入版本号");
-        }
-        this.save(entity);
+        //如果相同skuBom    发布最新创建的
+        if (ToolUtil.isNotEmpty(partsParam.getSkuId())) {
+            Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
+            if (ToolUtil.isNotEmpty(one)) {
+                one.setStatus(0);
+                this.updateById(one);
+            }
+            Parts parts = new Parts();
+            if (ToolUtil.isEmpty(partsParam.getName())) {
+                throw new ServiceException(500, "请输入版本号");
+            }
+            ToolUtil.copyProperties(partsParam, parts);
+            parts.setStatus(99);
+            parts.setPartsId(null);
+            this.save(parts);
+            List<ErpPartsDetail> partsDetails = new ArrayList<>();
+            for (ErpPartsDetailParam part : partsParam.getParts()) {
+                part.setPartsId(parts.getPartsId());
+                part.setPartsDetailId(null);
+                ErpPartsDetail partsDetail = new ErpPartsDetail();
+                ToolUtil.copyProperties(part, partsDetail);
+                partsDetails.add(partsDetail);
+            }
+            erpPartsDetailService.saveBatch(partsDetails);
+            List<Long> children = getChildren(parts.getPartsId());   //更新childRens
+            if (ToolUtil.isNotEmpty(children)) {
+                parts.setChildren(JSON.toJSONString(children));
+            }
+            this.updateById(parts);
+            return parts;
+        } else if (ToolUtil.isNotEmpty(partsParam.getSpuId())) {
+            Spu spu = spuService.getById(partsParam.getItem().getSpuId());
+            SpuParam spuParam = new SpuParam();
+            ToolUtil.copyProperties(spu, spuParam);
+            SkuParam skuParam = new SkuParam();
+            skuParam.setBatch(partsParam.getBatch());
+            skuParam.setSkuName(partsParam.getSkuName());
+            skuParam.setType(0);
+            skuParam.setRemarks(partsParam.getSkuNote());
+            skuParam.setStandard(partsParam.getStandard());
+            skuParam.setSpecifications(partsParam.getSpecifications());
+            skuParam.setSpuId(partsParam.getItem().getSpuId());
+            skuParam.setSku(partsParam.getSku());
+            skuParam.setSpu(spuParam);
+            skuParam.setSpuClass(spuParam.getSpuClassificationId());
+            Map<String, Sku> add = skuService.add(skuParam);
+            Sku success = add.get("success");
+            Long skuId = success.getSkuId();
 
-        List<ErpPartsDetail> partsDetails = new ArrayList<>();
-        for (ErpPartsDetailParam partsParamPart : partsParam.getParts()) {
-            ErpPartsDetail partsDetail = new ErpPartsDetail();
-            ToolUtil.copyProperties(partsParamPart, partsDetail);
-            partsDetail.setPartsId(entity.getPartsId());
-            partsDetail.setPartsDetailId(null);
-            partsDetails.add(partsDetail);
+            // 以上新建sku
+            partsParam.setSkuId(skuId);
+            partsParam.setSpuId(partsParam.getSpuId());
+            //以下新建bom
+            Parts parts = new Parts();
+            if (ToolUtil.isEmpty(partsParam.getName())) {
+                throw new ServiceException(500, "请输入版本号");
+            }
+            ToolUtil.copyProperties(partsParam, parts);
+            parts.setStatus(99);
+            parts.setPartsId(null);
+            this.save(parts);
+            List<ErpPartsDetail> partsDetails = new ArrayList<>();
+            for (ErpPartsDetailParam part : partsParam.getParts()) {
+                part.setPartsId(parts.getPartsId());
+                part.setPartsDetailId(null);
+                ErpPartsDetail partsDetail = new ErpPartsDetail();
+                ToolUtil.copyProperties(part, partsDetail);
+                partsDetails.add(partsDetail);
+            }
+            erpPartsDetailService.saveBatch(partsDetails);
+            List<Long> children = getChildren(parts.getPartsId());   //更新childRens
+            if (ToolUtil.isNotEmpty(children)) {
+                parts.setChildren(JSON.toJSONString(children));
+            }
+            this.updateById(parts);
+            return parts;
         }
 
-        erpPartsDetailService.saveBatch(partsDetails);
-
-        List<Long> children = getChildren(entity.getPartsId());
-        if (ToolUtil.isNotEmpty(children)) {
-            entity.setChildren(JSON.toJSONString(children));
-        }
-
-        this.updateById(entity);
-        return entity;
+        throw new ServiceException(500, "创建失败");
     }
 
 
