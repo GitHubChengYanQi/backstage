@@ -203,7 +203,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
 
         erpPartsDetailService.saveBatch(partsDetails);
-
         List<Long> children = getChildren(entity.getPartsId());
         if (ToolUtil.isNotEmpty(children)) {
             entity.setChildren(JSON.toJSONString(children));
