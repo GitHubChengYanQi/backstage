@@ -9,11 +9,16 @@ import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 /**
@@ -29,6 +34,8 @@ public class MessageController extends BaseController {
 
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private MobileService mobileService;
 
     /**
      * 新增接口
@@ -117,6 +124,17 @@ public class MessageController extends BaseController {
         }
         return this.messageService.findPageBySpec(messageParam, null);
     }
+
+    @RequestMapping(value = "/jump", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public void jump(HttpServletRequest request, HttpServletResponse response, Long id) throws IOException {
+        Message message = messageService.getById(id);
+        if (message.getSource().equals("processTask")){
+            String jumpUrl = "";
+            response.sendRedirect(mobileService.getMobileConfig().getUrl()+"/#/Receipts/ReceiptsDetail?id="+message.getSourceId());
+        }
+    }
+
 
     @RequestMapping(value = "/getViewCount", method = RequestMethod.GET)
     @ApiOperation("查询登陆人未读消息数量")

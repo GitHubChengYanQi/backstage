@@ -313,8 +313,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         Map<Long, List<StorehousePositionsResult>> positionMap = positionsService.getMap(skuIds);
         List<StorehousePositionsBind> storehousePositionsBinds = skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
 
-        for (InstockListResult datum : data) {
 
+        for (InstockListResult datum : data) {
             int positionNum = 0;
             for (StorehousePositionsBind storehousePositionsBind : storehousePositionsBinds) {
                 if (storehousePositionsBind.getSkuId().equals(datum.getSkuId())) {
@@ -322,7 +322,6 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
                 }
             }
             datum.setPositionNum(positionNum);
-
             for (CustomerResult customerResult : customerResults) {
                 if (ToolUtil.isNotEmpty(datum.getCustomerId()) && datum.getCustomerId().equals(customerResult.getCustomerId())) {
                     datum.setCustomerResult(customerResult);

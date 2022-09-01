@@ -98,6 +98,8 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
 
     List<StockDetails>getLockStockDetail();
 
+    List<Long> getLockedInkindIds();
+
     Integer getLockNumber(QuerryLockedParam param);
 
     List<Long> getCartInkindIds(ProductionPickListsCartParam productionPickListsCartParam);

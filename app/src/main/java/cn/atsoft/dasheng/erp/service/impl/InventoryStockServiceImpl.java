@@ -507,6 +507,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     @Override
     public PageInfo<InventoryStockResult> findPageBySpec(InventoryStockParam param) {
         matchingData(param.getInventoryId());  //开始盘点 同步数据
+
+        if (ToolUtil.isNotEmpty(param.getPositionId())) {  //库位查询
+            List<Long> child = positionsService.getEndChild(param.getPositionId());
+            param.setPositionIds(child);
+        }
+
         Page<InventoryStockResult> pageContext = getPageContext();
         pageContext.setOrders(null);
         IPage<InventoryStockResult> page = this.baseMapper.customPageList(pageContext, param);

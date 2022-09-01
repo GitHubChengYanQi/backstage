@@ -114,7 +114,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 lockInkinds.add(productionPickListsCartParam.getInkindId());
             }
         }
-        Integer lockInkindCount = inkinds.size() == 0 ? 0 : this.query().in("inkind_id", inkinds).count();
+        int lockInkindCount = lockInkinds.size() == 0 ? 0 : this.query().in("inkind_id", lockInkinds).count();
         if (lockInkindCount > 0) {
             throw new ServiceException(500, "扫码物料已被备料,不可再次备料,操作终止");
         }
@@ -143,7 +143,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             int number = productionPickListsCartParam.getNumber();
 
             if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
-                Inkind inkind = inkindService.getById(param.getInkindId());
+                Inkind inkind = inkindService.getById(productionPickListsCartParam.getInkindId());
                 ProductionPickListsCart entity = new ProductionPickListsCart();
                 entity.setPickListsId(productionPickListsCartParam.getPickListsId());
                 entity.setCustomerId(inkind.getCustomerId());
@@ -196,7 +196,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         inkindService.save(newInkind);
                                         StockDetails newStockDetail = BeanUtil.copyProperties(stockDetail, StockDetails.class);
                                         newStockDetail.setStockItemId(null);
-                                        newStockDetail.setNumber(stockDetail.getNumber() - lastNumber);
+                                        newStockDetail.setNumber((long) lastNumber);
                                         newStockDetail.setInkindId(newInkind.getInkindId());
                                         newStockDetails.add(newStockDetail);
                                         entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
@@ -205,9 +205,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
                                         entity.setType(productionPickListsCartParam.getType());
                                         entity.setInkindId(newInkind.getInkindId());
-                                        entity.setCustomerId(stockDetail.getCustomerId());
+                                        entity.setNumber(Math.toIntExact(newStockDetail.getNumber()));
+                                        entity.setCustomerId(newInkind.getCustomerId());
                                         entitys.add(entity);
-                                        stockDetail.setNumber((long) lastNumber);
+                                        stockDetail.setNumber(stockDetail.getNumber()- lastNumber);
                                         break;
                                     }
                                 }
@@ -293,7 +294,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
 
                 stockSkuBrand.setNumber(number);
 
-            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
+            } else if (ToolUtil.isNotEmpty(detailParam.getBrandId()) &&  detailParam.getBrandId() != 0 && detailParam.getBrandId().equals(stockSkuBrand.getBrandId()) && detailParam.getSkuId().equals(stockSkuBrand.getSkuId())) {  //指定品牌
                 long number = stockSkuBrand.getNumber() - detailParam.getNumber();
 
                 stockSkuBrand.setNumber(number);
@@ -789,6 +790,11 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     @Override
     public void deleteBatchByIds(List<ProductionPickListsCartParam> cartParams) {
         List<Long> pickListsIds = new ArrayList<>();
+
+        for (ProductionPickListsCartParam cartParam : cartParams) {
+
+        }
+
         for (ProductionPickListsCartParam cartParam : cartParams) {
             pickListsIds.add(cartParam.getPickListsId());
         }
@@ -807,19 +813,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
         List<StockDetails> stockDetails = inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
         List<StockDetails> parentStockDetails = parentInkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", parentInkindIds).eq("display", 1).list();
-        for (StockDetails stockDetail : stockDetails) {
-            for (Inkind inkind : inkinds) {
-                for (StockDetails parentStockDetail : parentStockDetails) {
-                    if (stockDetail.getInkindId().equals(inkind.getInkindId()) && inkind.getSource().equals("Inkind") && inkind.getSourceId().equals(parentStockDetail.getInkindId()) && parentStockDetail.getDisplay().equals(1) && stockDetail.getDisplay().equals(1)) {
-                        parentStockDetail.setNumber(stockDetail.getNumber() + parentStockDetail.getNumber());
-                        stockDetail.setDisplay(0);
-                        stockDetail.setStage(2);
-                    }
-                }
-            }
-            stockDetailsService.updateBatchById(stockDetails);
-            stockDetailsService.updateBatchById(parentStockDetails);
-        }
+
 
 
         List<ProductionPickListsCart> updateEntity = new ArrayList<>();
@@ -829,9 +823,31 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                     pickListsCart.setStatus(-1);
                     pickListsCart.setDisplay(0);
                     updateEntity.add(pickListsCart);
+                    for (StockDetails stockDetail : stockDetails) {
+                        if (stockDetail.getInkindId().equals(pickListsCart.getInkindId())){
+                            for (Inkind inkind : inkinds) {
+                                for (StockDetails parentStockDetail : parentStockDetails) {
+                                    if (stockDetail.getInkindId().equals(inkind.getInkindId()) && inkind.getSource().equals("Inkind") && inkind.getSourceId().equals(parentStockDetail.getInkindId()) && parentStockDetail.getDisplay().equals(1) && stockDetail.getDisplay().equals(1)) {
+                                        parentStockDetail.setNumber(stockDetail.getNumber() + parentStockDetail.getNumber());
+                                        if (parentStockDetail.getDisplay().equals(0) && parentStockDetail.getStage().equals(2)){
+                                            parentStockDetail.setDisplay(1);
+                                            parentStockDetail.setStage(1);
+                                            parentStockDetail.setNumber(stockDetail.getNumber());
+                                        }
+                                        stockDetail.setNumber(0L);
+                                        stockDetail.setDisplay(0);
+                                        stockDetail.setStage(2);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
                 }
             }
         }
+        stockDetailsService.updateBatchById(stockDetails);
+        stockDetailsService.updateBatchById(parentStockDetails);
         this.updateBatchById(updateEntity);
     }
 
@@ -864,7 +880,10 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         return totalLockDetail;
 
     }
-
+    @Override
+    public List<Long> getLockedInkindIds(){
+        return this.baseMapper.lockInkind();
+    }
     @Override
     public Integer getLockNumber(QuerryLockedParam param) {
         return this.baseMapper.lockNumber(param);

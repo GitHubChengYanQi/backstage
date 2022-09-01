@@ -31,6 +31,7 @@ public interface ProductionPickListsDetailMapper extends BaseMapper<ProductionPi
     
     List<ProductionPickListsDetailResult> customList2(@Param("paramCondition") ProductionPickListsDetailParam paramCondition);
 
+    
     /**
      * 获取map列表
      *

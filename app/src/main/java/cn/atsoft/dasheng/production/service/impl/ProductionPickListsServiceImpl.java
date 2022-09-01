@@ -372,7 +372,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
              * 是否可以领料
              */
             if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().anyMatch(i -> i)) {
-
                 result.setCanPick(true);
             } else if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().noneMatch(i -> i)) {
                 result.setCanPick(false);
@@ -427,19 +426,16 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 查询备料单与领料单
          */
-
+//        List<ProductionPickListsDetail> pickListsDetails =pickListsIds.size() == 0 ? new ArrayList<>() : this.pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
+//        List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class);
         List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listByPickLists(pickListsIds);
+
 
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
         }
-        List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
-
-
         for (ProductionPickListsResult result : results) {
-
-
             for (UserResult userResultsById : userResultsByIds) {
                 if (ToolUtil.isNotEmpty(result.getUserId()) && result.getUserId().equals(userResultsById.getUserId())) {
                     result.setUserResult(userResultsById);
@@ -449,18 +445,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
             }
             List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
-            List<SkuSimpleResult> skuResult = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
                 if (result.getPickListsId().equals(detailResult.getPickListsId())) {
                     detailResultList.add(detailResult);
-                    for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                        if (detailResult.getSkuId().equals(skuSimpleResult.getSkuId())) {
-                            skuResult.add(skuSimpleResult);
-                        }
-                    }
                 }
             }
-            result.setSkuResults(skuResult);
             result.setDetailResults(detailResultList);
             if (ToolUtil.isNotEmpty(result.getRemarks())) {
                 List<AnnouncementsResult> announcementsResultList = new ArrayList<>();
