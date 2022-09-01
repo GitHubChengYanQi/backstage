@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -66,13 +64,15 @@ public class ActivitiProcessTaskController extends BaseController {
 
     /**
      * 流程执行节点规则
+     *
      * @param processId
      * @return
      */
-    @RequestMapping(value = "/processAuditPerson", method = RequestMethod.POST)
+    @RequestMapping(value = "/processAuditPerson", method = RequestMethod.GET)
     public ResponseData processAuditPerson(@Param("processId") Long processId) {
-        Object person = this.activitiProcessTaskService.processAuditPerson(processId);
-        return ResponseData.success(person);
+        Set<Long> ids = this.activitiProcessTaskService.processAuditPerson(processId);
+        List<Long> userIds = new ArrayList<>(ids);
+        return ResponseData.success(userIds);
     }
 
     /**
@@ -154,6 +154,7 @@ public class ActivitiProcessTaskController extends BaseController {
             return this.activitiProcessTaskService.findPageBySpec(activitiProcessTaskParam);
         }
     }
+
     /**
      * 查看
      *
@@ -162,11 +163,11 @@ public class ActivitiProcessTaskController extends BaseController {
      */
     @RequestMapping(value = "/getTaskStatus", method = RequestMethod.GET)
     @ApiOperation("列表")
-    public ResponseData getTaskStatus (Long taskId){
-        Map<String,Object> result = new HashMap<>();
-        result.put("processTaskId",taskId);
+    public ResponseData getTaskStatus(Long taskId) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("processTaskId", taskId);
         ActivitiProcessTask processTask = this.activitiProcessTaskService.getById(taskId);
-        result.put("status",processTask.getStatus());
+        result.put("status", processTask.getStatus());
         return ResponseData.success(result);
 
 
@@ -192,7 +193,6 @@ public class ActivitiProcessTaskController extends BaseController {
         }
         return this.activitiProcessTaskService.LoginStart(activitiProcessTaskParam);
     }
-
 
 
 }

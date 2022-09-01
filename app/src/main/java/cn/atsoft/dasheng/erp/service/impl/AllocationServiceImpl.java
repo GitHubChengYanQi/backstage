@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.AllocationCartResult;
 import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
 import cn.atsoft.dasheng.erp.model.result.AllocationResult;
+import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -114,6 +115,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private DocumentStatusService statusService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private InstockListService instockListService;
 
 
     @Override
@@ -298,7 +301,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     ProductionPickListsParam listsParam = new ProductionPickListsParam();
                     listsParam.setPickListsName(allocation.getAllocationName());
                     listsParam.setUserId(allocation.getUserId());
-                    listsParam.setSource("process");
+                    listsParam.setSource("processTask");
                     listsParam.setSourceId(processTask.getProcessTaskId());
                     List<ProductionPickListsDetailParam> details = new ArrayList<>();
                     List<AllocationCart> updateCart = new ArrayList<>();
@@ -307,6 +310,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                             ProductionPickListsDetailParam listsDetailParam = new ProductionPickListsDetailParam();
                             listsDetailParam.setStorehouseId(allocation.getStorehouseId());
                             ToolUtil.copyProperties(allocationCart, listsDetailParam);
+                            listsDetailParam.setStatus(0);
                             details.add(listsDetailParam);
                             InstockListParam instockListParam = new InstockListParam();
                             instockListParam.setStoreHouseId(stockId);
@@ -539,7 +543,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             if (allocation.getAllocationType().equals(1)) {
                 allocationCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).in("sku_id", skuIds).in("brand_id", brandIds).in("storehouse_positions_id", storehousePositionsIds).isNull("pick_lists_id").eq("type", "carry").eq("status", 98).eq("display", 1).list();
             } else if (allocation.getAllocationType().equals(2)) {
-                allocationCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).in("sku_id", skuIds).eq("brand_id", brandIds).eq("storehouse_positions_id", param.getToStorehouseId()).isNull("pick_lists_id").eq("type", "carry").eq("status", 98).eq("display", 1).list();
+                allocationCarts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).in("sku_id", skuIds).in("brand_id", brandIds).eq("storehouse_positions_id", param.getToStorehousePositionsId()).isNull("pick_lists_id").eq("type", "carry").eq("status", 98).eq("display", 1).list();
             }
             List<AllocationLogDetail> allocationLogDetails = new ArrayList<>();
 
@@ -945,5 +949,20 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         }
         allocationCartService.updateBatchById(allocationCarts);
         allocationDetailService.updateBatchById(allocationDetails);
+    }
+    @Override
+    public List<InstockListResult> getInstockListResultsByAllocationTask(Long taskId){
+        List<ActivitiProcessTask> childrenTasks = activitiProcessTaskService.query().eq("pid", taskId).list();
+        List<Long> formIds = new ArrayList<>();
+        for (ActivitiProcessTask childrenTask : childrenTasks) {
+            if (childrenTask.getType().equals("INSTOCK")) {
+                formIds.add(childrenTask.getFormId());
+            }
+        }
+        List<InstockList> instock_order_id =formIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", formIds).list();
+        List<InstockListResult> instockListResults = BeanUtil.copyToList(instock_order_id, InstockListResult.class);
+        instockListService.format(instockListResults);
+        return  instockListResults;
+
     }
 }

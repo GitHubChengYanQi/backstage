@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationResult;
+import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.service.AllocationCartService;
 import cn.atsoft.dasheng.erp.service.AllocationService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -128,6 +129,18 @@ public class AllocationController extends BaseController {
             allocationParam = new AllocationParam();
         }
         return this.allocationService.findPageBySpec(allocationParam);
+    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-07-13
+     */
+    @RequestMapping(value = "/getInstockListResultsByAllocationTask", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public List<InstockListResult> getInstockListResultsByAllocationTask(@RequestParam Long taskId) {
+
+        return this.allocationService.getInstockListResultsByAllocationTask(taskId);
     }
 
 

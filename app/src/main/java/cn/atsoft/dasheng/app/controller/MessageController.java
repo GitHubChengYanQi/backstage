@@ -11,7 +11,9 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -95,6 +97,48 @@ public class MessageController extends BaseController {
     }
 
     /**
+     * 全部已读
+     *
+     * @return
+     */
+    @RequestMapping(value = "/allRead", method = RequestMethod.GET)
+    public ResponseData allRead() {
+
+        Long userId = LoginContextHolder.getContext().getUserId();
+        QueryWrapper<Message> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("display", 1);
+
+        Message message = new Message();
+        message.setView(1);
+
+        this.messageService.update(message, queryWrapper);
+        return ResponseData.success();
+    }
+
+    /**
+     * 已读全部删除
+     *
+     * @return
+     */
+    @RequestMapping(value = "/removeAllRead", method = RequestMethod.GET)
+    public ResponseData removeAllRead() {
+
+        Long userId = LoginContextHolder.getContext().getUserId();
+        QueryWrapper<Message> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("view", 1);
+        queryWrapper.eq("display", 1);
+
+        Message message = new Message();
+        message.setDisplay(0);
+
+        this.messageService.update(message, queryWrapper);
+
+        return ResponseData.success();
+    }
+
+    /**
      * 查询列表
      *
      * @author
@@ -129,9 +173,9 @@ public class MessageController extends BaseController {
     @ApiOperation("列表")
     public void jump(HttpServletRequest request, HttpServletResponse response, Long id) throws IOException {
         Message message = messageService.getById(id);
-        if (message.getSource().equals("processTask")){
+        if (message.getSource().equals("processTask")) {
             String jumpUrl = "";
-            response.sendRedirect(mobileService.getMobileConfig().getUrl()+"/#/Receipts/ReceiptsDetail?id="+message.getSourceId());
+            response.sendRedirect(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + message.getSourceId());
         }
     }
 

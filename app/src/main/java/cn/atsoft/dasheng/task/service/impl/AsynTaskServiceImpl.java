@@ -1,31 +1,38 @@
 package cn.atsoft.dasheng.task.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.app.pojo.AnalysisResult;
 import cn.atsoft.dasheng.app.pojo.StockStatement;
+import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.mapper.AsynTaskMapper;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
 import cn.atsoft.dasheng.task.model.result.AsynTaskResult;
+import cn.atsoft.dasheng.task.pojo.BomRotation;
 import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
 import cn.atsoft.dasheng.task.service.AsynTaskService;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -39,7 +46,10 @@ import java.util.*;
 public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> implements AsynTaskService {
     @Autowired
     private StockDetailsService stockDetailsService;
-
+    @Autowired
+    private PartsService partsService;
+    @Autowired
+    private ErpPartsDetailService partsDetailService;
 
     @Override
     public void add(AsynTaskParam param) {
@@ -59,7 +69,6 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
-
 
     @Override
     public List<AsynTaskResult> BomDetailed() {
@@ -103,6 +112,57 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
 
         return asynTaskResults;
     }
+
+
+    @Override
+    public List<AllBomResult.View> BomDetailedVersion() {
+        List<AsynTask> asynTasks = this.query().eq("type", "报表物料分析").list();
+        List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
+
+        List<AllBomResult.View> views = new ArrayList<>();
+        for (AsynTaskResult asynTaskResult : asynTaskResults) {
+            if (ToolUtil.isNotEmpty(asynTaskResult.getContent())) {
+                AllBomResult allBomResult = JSON.parseObject(asynTaskResult.getContent(), AllBomResult.class);
+                if (ToolUtil.isNotEmpty(allBomResult) && ToolUtil.isNotEmpty(allBomResult.getView())) {
+                    AllBomResult.View view = allBomResult.getView().get(0);
+                    views.add(view);
+                }
+            }
+        }
+
+        return views;
+    }
+
+
+    @Override
+    public List<ErpPartsDetail> bomResult(Long skuId, int num) {
+        Parts parts = partsService.query().eq("sku_id", skuId).eq("status", 99).eq("display", 1).one();
+        if (ToolUtil.isEmpty(parts)) {
+            return null;
+        }
+        return loopChild(parts, num);
+    }
+
+    private List<ErpPartsDetail> loopChild(Parts parts, int num) {
+
+        List<ErpPartsDetail> back = new ArrayList<>();
+        List<ErpPartsDetail> details = partsDetailService.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();  //所需的物料
+
+        if (ToolUtil.isNotEmpty(details)) {
+            for (ErpPartsDetail detail : details) {
+                int needNum = (int) (detail.getNumber() * num);          //需求数
+                List<ErpPartsDetail> partsDetails = bomResult(detail.getSkuId(), needNum);
+                if (ToolUtil.isNotEmpty(partsDetails)) {
+                    back.addAll(bomResult(detail.getSkuId(), needNum));
+                } else {   //最下级
+                    detail.setNumber((double) needNum);
+                    back.add(detail);
+                }
+            }
+        }
+        return back;
+    }
+
 
     @Override
     public AsynTaskResult findBySpec(AsynTaskParam param) {
@@ -178,7 +238,6 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
                 }
             }
 
-
             List<SkuAnalyse> skuAnalyseList = new ArrayList<>();
             for (String s : spuClassNum.keySet()) {
                 SkuAnalyse skuAnalyse = new SkuAnalyse();
@@ -188,19 +247,80 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
             }
             skuMap.put(skuName, skuAnalyseList);
         }
-
-
-//        List<StockDetails> stockDetails = allSkuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query()
-//                .select("sku_id AS skuId ,sum(number) as num ")
-//                .eq("display", 1)
-//                .in("sku_id", allSkuIds)
-//                .groupBy("sku_id")
-//                .list();
-
-
         return skuMap;
     }
 
+
+    @Override
+    public Object spectacularsVersion() {
+        List<AsynTask> asynTasks = this.query().eq("type", "报表物料分析").eq("display", 1).list();
+        List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
+        format(asynTaskResults);
+
+        /**
+         * 先从异步里 取出被分析的物料
+         */
+        Map<String, List<AnalysisResult>> map = new HashMap<>();
+        for (AsynTaskResult asynTaskResult : asynTaskResults) {
+            AllBomResult allBomResult = asynTaskResult.getAllBomResult();
+            if (ToolUtil.isNotEmpty(allBomResult)) {
+                List<AllBomResult.View> view = allBomResult.getView();
+                AllBomResult.View skuView = view.get(0);
+                List<AnalysisResult> owe = allBomResult.getOwe();
+                map.put(skuView.getName(), owe);
+            }
+        }
+        /**
+         * 通过 物料取出分类
+         */
+        List<BomRotation> bomRotations = new ArrayList<>();
+        for (String skuName : map.keySet()) {
+            List<AnalysisResult> analysisResults = map.get(skuName);
+            List<Long> skuIds = new ArrayList<>();
+            for (AnalysisResult analysisResult : analysisResults) {
+                skuIds.add(analysisResult.getSkuId());
+            }
+            /**
+             * 分类叠加 取最小
+             */
+            List<SkuAnalyse> skuAnalyses = skuAnalyses(skuIds);
+            Map<String, Long> spuClassNum = new HashMap<>();
+
+            for (SkuAnalyse skuAnalyse : skuAnalyses) {
+                for (AnalysisResult analysisResult : analysisResults) {
+                    if (skuAnalyse.getSkuId().equals(analysisResult.getSkuId())) {
+
+                        analysisResult.setProduceMix(analysisResult.getStockNumber() / analysisResult.getDemandNumber());  //可生产数量
+                        Long number = spuClassNum.get(skuAnalyse.getClassName());
+
+
+                        if (ToolUtil.isEmpty(number)) {
+                            spuClassNum.put(skuAnalyse.getClassName(), analysisResult.getProduceMix());
+                        } else {
+                            if (number >= analysisResult.getProduceMix()) {
+                                spuClassNum.put(skuAnalyse.getClassName(), analysisResult.getProduceMix());
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
+
+            List<SkuAnalyse> skuAnalyseList = new ArrayList<>();
+            for (String s : spuClassNum.keySet()) {
+                SkuAnalyse skuAnalyse = new SkuAnalyse();
+                skuAnalyse.setClassName(s);
+                skuAnalyse.setNumber(spuClassNum.get(s));
+                skuAnalyseList.add(skuAnalyse);
+            }
+            BomRotation bomRotation = new BomRotation();
+            bomRotation.setSkuName(skuName);
+            bomRotation.setSkuAnalyses(skuAnalyseList);
+            bomRotations.add(bomRotation);
+        }
+        return bomRotations;
+    }
 
     @Override
     public Object stockSpectaculars() {

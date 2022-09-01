@@ -28,14 +28,13 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JSONField(serialize = false)
-    private  List<AuditRule.Rule> rules;
-
-    private String auditRule;
-
     private Object receipts;
 
     private ActivitiStepsResult stepsResult;
+
+    private List<Long> processUserIds;   //执行人
+
+    private List<User> processUsers;
 
     private User user;
 

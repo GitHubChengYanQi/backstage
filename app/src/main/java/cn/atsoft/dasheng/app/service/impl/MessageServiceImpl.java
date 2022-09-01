@@ -110,9 +110,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public Integer getViewCount(){
-        return  this.query().eq("user_id", LoginContextHolder.getContext().getUserId()).eq("view", 0).count();
+    public Integer getViewCount() {
+        return this.query().eq("user_id", LoginContextHolder.getContext().getUserId())
+                .eq("display", 1)
+                .eq("view", 0).count();
     }
 
     private void format(List<MessageResult> data) {
