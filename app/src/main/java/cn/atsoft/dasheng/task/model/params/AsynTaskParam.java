@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.task.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,7 +25,10 @@ public class AsynTaskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer successNum;
 
+
+    private Integer errorNum;
     /**
      * 任务id
      */
