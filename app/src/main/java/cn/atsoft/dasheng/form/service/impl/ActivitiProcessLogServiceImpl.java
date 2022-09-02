@@ -620,8 +620,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
                             instockOrderParam.setMainTaskId(processTask.getMainTaskId());
                         }
-                        instockOrderParam.setSourceId(processTask.getProcessTaskId());
-                        instockOrderParam.setPid(processTask.getProcessTaskId());
+                        instockOrderParam.setSourceId(parentTask.getProcessTaskId());
+                        instockOrderParam.setPid(parentTask.getProcessTaskId());
                         instockOrderParam.setListParams(totalList);
                         InstockOrder addEntity = instockOrderService.add(instockOrderParam);
                         for (AllocationCart allocationCart : allocationCarts) {

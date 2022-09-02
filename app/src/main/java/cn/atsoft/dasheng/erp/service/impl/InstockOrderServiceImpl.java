@@ -319,7 +319,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 activitiProcessTaskParam.setSourceId(entity.getSourceId());
             }
             if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask") && ToolUtil.isNotEmpty(entity.getSourceId())){
-                activitiProcessTaskParam.setPid(entity.getSourceId());
+                activitiProcessTaskParam.setPid(param.getPid());
             }
             if (param.getDirectInStock()) {
                 activitiProcessTaskParam.setStatus(99);
