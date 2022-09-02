@@ -59,8 +59,36 @@ public class SpuExcelController {
         reader.addHeaderAlias("产品分类", "spuClass");
         reader.addHeaderAlias("产品名称", "spuName");
         reader.addHeaderAlias("单位", "unit");
+        reader.addHeaderAlias("规格", "specifications");
 
         List<SpuExcel> spuExcels = reader.readAll(SpuExcel.class);
+
+        /**
+         * 去掉首尾空格
+         */
+        for (SpuExcel spuExcel : spuExcels) {
+
+            if (ToolUtil.isNotEmpty(spuExcel.getSpuCoding())) {
+                spuExcel.setSpuCoding(spuExcel.getSpuCoding().trim());
+            }
+
+            if (ToolUtil.isNotEmpty(spuExcel.getSpuClass())) {
+                spuExcel.setSpuClass(spuExcel.getSpuClass().trim());
+            }
+
+            if (ToolUtil.isNotEmpty(spuExcel.getSpuName())) {
+                spuExcel.setSpuName(spuExcel.getSpuName().trim());
+            }
+
+            if (ToolUtil.isNotEmpty(spuExcel.getUnit())) {
+                spuExcel.setUnit(spuExcel.getUnit().trim());
+            }
+
+            if (ToolUtil.isNotEmpty(spuExcel.getSpecifications())) {
+                spuExcel.setSpecifications(spuExcel.getSpecifications().trim());
+            }
+
+        }
         /**
          * 调用异步方法
          */
@@ -72,7 +100,7 @@ public class SpuExcelController {
     @RequestMapping(value = "/spuTemp", method = RequestMethod.GET)
     public void spuTemp(HttpServletResponse response) {
 
-        String[] header = {"产品编码", "产品分类", "产品名称", "单位"};
+        String[] header = {"产品编码", "产品分类", "产品名称", "单位", "规格"};
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet hssfSheet = workbook.createSheet("产品模板");

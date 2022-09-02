@@ -9,5 +9,6 @@ public class SpuExcel {
     private String spuClass;
     private String line;
     private String unit;
+    private String specifications;
     private String error;
 }
