@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.app.pojo.AnalysisResult;
+import cn.atsoft.dasheng.app.pojo.BomOrder;
 import cn.atsoft.dasheng.app.pojo.StockStatement;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
@@ -120,34 +121,41 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
 
 
     @Override
-    public List<AllBomResult.View> BomDetailedVersion() {
+    public List<BomOrder> BomDetailedVersion() {
         List<AsynTask> asynTasks = this.query().eq("type", "报表物料分析").list();
         List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
 
-        List<AllBomResult.View> views = new ArrayList<>();
+        List<BomOrder> bomOrders = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
         for (AsynTaskResult asynTaskResult : asynTaskResults) {
             if (ToolUtil.isNotEmpty(asynTaskResult.getContent())) {
                 AllBomResult allBomResult = JSON.parseObject(asynTaskResult.getContent(), AllBomResult.class);
-                if (ToolUtil.isNotEmpty(allBomResult) && ToolUtil.isNotEmpty(allBomResult.getView())) {
-                    AllBomResult.View view = allBomResult.getView().get(0);
-                    views.add(view);
-                    skuIds.add(view.getSkuId());
+
+                List<BomOrder> result = allBomResult.getResult();
+                if (ToolUtil.isNotEmpty(result) && result.size() > 0) {
+                    BomOrder bomOrder = result.get(0);
+                    bomOrders.add(bomOrder);
+                    if (ToolUtil.isNotEmpty(bomOrder.getResult()) && bomOrder.getResult().size() > 0) {
+                        AnalysisResult analysisResult = bomOrder.getResult().get(0);
+                        skuIds.add(analysisResult.getSkuId());
+                    }
                 }
             }
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
-        for (AllBomResult.View view : views) {
-            for (SkuResult skuResult : skuResults) {
-                if (view.getSkuId().equals(skuResult.getSkuId())) {
-                    view.setSkuResult(skuResult);
-                    break;
+        for (SkuResult skuResult : skuResults) {
+            for (BomOrder bomOrder : bomOrders) {
+                if (ToolUtil.isNotEmpty(bomOrder.getResult()) && bomOrder.getResult().size() > 0) {
+                    AnalysisResult analysisResult =  bomOrder.getResult().get(0);
+                    if (analysisResult.getSkuId().equals(skuResult.getSkuId())) {
+                        analysisResult.setStockNumber(Long.valueOf(skuResult.getStockNumber()));
+                        break;
+                    }
                 }
             }
         }
 
-        return views;
+        return bomOrders;
     }
 
 
