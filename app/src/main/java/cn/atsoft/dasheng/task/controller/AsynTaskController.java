@@ -59,7 +59,6 @@ public class AsynTaskController extends BaseController {
                 result.setAllBomResult(allBomResult);
                 break;
             case "物料导入":
-            case "产品导入":
             case "库存导入":
             case "库位导入":
                 Map<String, Integer> num = detailService.getNum(result.getTaskId());
