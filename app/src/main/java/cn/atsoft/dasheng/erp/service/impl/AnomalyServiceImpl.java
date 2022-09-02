@@ -328,7 +328,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     }
 
 
-
     /**
      * 添加详情(区分批量)
      *
@@ -402,7 +401,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private boolean isNormal(AnomalyParam param) {
         //判断盘点操作权限
         inventoryDetailService.jurisdiction(param.getFormId());
-
+        if (ToolUtil.isNotEmpty(param.getDetailParams()) && param.getDetailParams().size() > 0) {
+            return true;
+        }
         return anomalyOrderService.check(param.getSkuId(), param.getBrandId(), param.getPositionId(), Math.toIntExact(param.getRealNumber()));
     }
 
