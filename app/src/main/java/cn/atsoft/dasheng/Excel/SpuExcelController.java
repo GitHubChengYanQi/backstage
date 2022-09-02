@@ -59,7 +59,7 @@ public class SpuExcelController {
         reader.addHeaderAlias("产品分类", "spuClass");
         reader.addHeaderAlias("产品名称", "spuName");
         reader.addHeaderAlias("单位", "unit");
-        reader.addHeaderAlias("规格", "specifications");
+        reader.addHeaderAlias("型号", "specifications");
 
         List<SpuExcel> spuExcels = reader.readAll(SpuExcel.class);
 
@@ -100,7 +100,7 @@ public class SpuExcelController {
     @RequestMapping(value = "/spuTemp", method = RequestMethod.GET)
     public void spuTemp(HttpServletResponse response) {
 
-        String[] header = {"产品编码", "产品分类", "产品名称", "单位", "规格"};
+        String[] header = {"产品编码", "产品分类", "产品名称", "单位", "型号"};
 
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet hssfSheet = workbook.createSheet("产品模板");
