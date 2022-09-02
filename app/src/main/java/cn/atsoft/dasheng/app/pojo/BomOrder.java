@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class BomOrder {
     private Integer num;
-    private List<Object> result;
+    private List<AnalysisResult> result;
 }
