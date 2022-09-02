@@ -356,15 +356,41 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
          * 如果是移库操作  审批通过删除库位绑定
          */
         if (allocation.getType().equals("transfer")) {
+            List<Long> skuIds = new ArrayList<>();
+            List<Long> positionIds = new ArrayList<>();
+            List<Long> detailIds = new ArrayList<>();
             for (AllocationCart allocationCart : allocationCarts) {
-                List<StorehousePositionsBind> list = storehousePositionsBindService.query().eq("sku_id", allocationCart.getSkuId()).eq("position_id", allocationCart.getStorehousePositionsId()).list();
-                if (ToolUtil.isNotEmpty(list)) {
-                    for (StorehousePositionsBind storehousePositionsBind : list) {
-                        storehousePositionsBind.setDisplay(0);
-                    }
-                    storehousePositionsBindService.updateBatchById(list);
+
+                if (ToolUtil.isNotEmpty(allocationCart.getAllocationDetailId())) {
+                    detailIds.add(allocationCart.getAllocationDetailId());
                 }
             }
+            List<AllocationDetail> allocationDetails =detailIds.size() == 0 ? new ArrayList<>() : allocationDetailService.listByIds(detailIds);
+            for (AllocationDetail allocationDetail : allocationDetails) {
+                skuIds.add(allocationDetail.getSkuId());
+                if (ToolUtil.isNotEmpty(allocationDetail.getStorehousePositionsId())) {
+                    positionIds.add(allocationDetail.getStorehousePositionsId());
+                }
+            }
+            List<StorehousePositionsBind> list = new ArrayList<>();
+            if (skuIds.size()>0 && positionIds.size() >0) {
+                list  = storehousePositionsBindService.query().in("sku_id", skuIds).in("position_id", positionIds).list();
+            }
+
+
+            for (AllocationDetail allocationDetail : allocationDetails) {
+                if (ToolUtil.isNotEmpty(list)) {
+                    for (StorehousePositionsBind storehousePositionsBind : list) {
+                        if (allocationDetail.getSkuId().equals(storehousePositionsBind.getSkuId()) && ToolUtil.isNotEmpty(allocationDetail.getStorehousePositionsId()) && allocationDetail.getStorehousePositionsId().equals(storehousePositionsBind.getPositionId())){
+                            storehousePositionsBind.setDisplay(0);
+                        }
+                    }
+
+                }
+            }
+            storehousePositionsBindService.updateBatchById(list);
+
+
             List<Long> stockIds = new ArrayList<>();
             for (AllocationCart allocationCart : allocationCarts) {
                 stockIds.add(allocationCart.getStorehouseId());
