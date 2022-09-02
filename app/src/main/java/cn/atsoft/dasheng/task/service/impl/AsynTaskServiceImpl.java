@@ -13,6 +13,8 @@ import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.mapper.AsynTaskMapper;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
@@ -50,6 +52,9 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
     private PartsService partsService;
     @Autowired
     private ErpPartsDetailService partsDetailService;
+
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public void add(AsynTaskParam param) {
@@ -120,12 +125,24 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         List<AsynTaskResult> asynTaskResults = BeanUtil.copyToList(asynTasks, AsynTaskResult.class);
 
         List<AllBomResult.View> views = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (AsynTaskResult asynTaskResult : asynTaskResults) {
             if (ToolUtil.isNotEmpty(asynTaskResult.getContent())) {
                 AllBomResult allBomResult = JSON.parseObject(asynTaskResult.getContent(), AllBomResult.class);
                 if (ToolUtil.isNotEmpty(allBomResult) && ToolUtil.isNotEmpty(allBomResult.getView())) {
                     AllBomResult.View view = allBomResult.getView().get(0);
                     views.add(view);
+                    skuIds.add(view.getSkuId());
+                }
+            }
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        for (AllBomResult.View view : views) {
+            for (SkuResult skuResult : skuResults) {
+                if (view.getSkuId().equals(skuResult.getSkuId())) {
+                    view.setSkuResult(skuResult);
+                    break;
                 }
             }
         }
