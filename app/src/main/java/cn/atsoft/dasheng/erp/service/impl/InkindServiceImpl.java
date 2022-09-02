@@ -114,6 +114,15 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         return PageFactory.createPageInfo(page);
     }
 
+
+    @Override
+    public PageInfo<InkindResult> stockInkind(InkindParam param) {
+        Page<InkindResult> pageContext = getPageContext();
+        IPage<InkindResult> page = this.baseMapper.stockInkindList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
     /**
      * 修改异常实物
      */

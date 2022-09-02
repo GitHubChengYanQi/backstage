@@ -91,8 +91,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Autowired
     private ActivitiProcessTaskService taskService;
     @Autowired
-    private RemarksService remarksService;
-    @Autowired
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private MessageProducer messageProducer;
@@ -235,11 +233,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public Map<Integer, List<AnomalyResult>> detailed(AnomalyParam param) {
         Map<Integer, List<AnomalyResult>> map = new HashMap<>();
         List<AnomalyResult> anomalyResults = this.baseMapper.customList(param);
+        anomalyResults.removeIf(i -> i.getType().equals("InstockError"));
         this.format(anomalyResults);
 
         for (AnomalyResult anomalyResult : anomalyResults) {
             DateTime dateTime = new DateTime(anomalyResult.getCreateTime());
-            int month = dateTime.month();
+            int month = dateTime.month() + 1;
             List<AnomalyResult> results = map.get(month);
             if (ToolUtil.isEmpty(results)) {
                 results = new ArrayList<>();
@@ -329,51 +328,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     }
 
 
-    /**
-     * 修改盘点明细状态
-     *
-     * @param param
-     */
-    private void updateInventoryStatus(AnomalyParam param, int status) {
-        QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
-        /**
-         * 同一时间段   统一修改
-         */
-        List<Long> inventoryIds = new ArrayList<>();
-        List<InventoryResult> inventoryResults = inventoryService.listByTime();
-        if (ToolUtil.isNotEmpty(inventoryResults)) {
-            for (InventoryResult inventoryResult : inventoryResults) {
-                inventoryIds.add(inventoryResult.getInventoryTaskId());
-            }
-        }
-        inventoryIds.add(param.getFormId());
-        queryWrapper.in("inventory_id", inventoryIds);
-        queryWrapper.eq("sku_id", param.getSkuId());
-        queryWrapper.eq("brand_id", param.getBrandId());
-        queryWrapper.eq("position_id", param.getPositionId());
-
-        List<InventoryDetail> inventoryDetails = inventoryDetailService.list(queryWrapper);
-
-        for (InventoryDetail inventoryDetail : inventoryDetails) {    //保留之前记录
-            if (inventoryDetail.getLockStatus() == 99) {
-                throw new ServiceException(500, "当前状态不可更改");
-            }
-            inventoryDetail.setStatus(status);
-            inventoryDetail.setAnomalyId(param.getAnomalyId());
-            inventoryDetail.setLockStatus(0);
-            inventoryDetail.setDisplay(0);
-        }
-
-        List<InventoryDetail> detailList = BeanUtil.copyToList(inventoryDetails, InventoryDetail.class, new CopyOptions());
-        for (InventoryDetail inventoryDetail : detailList) {
-            inventoryDetail.setDetailId(null);
-            inventoryDetail.setDisplay(1);
-        }
-
-        param.setType(param.getAnomalyType().toString());
-        inventoryDetailService.updateBatchById(inventoryDetails);
-        inventoryDetailService.saveBatch(detailList);
-    }
 
     /**
      * 添加详情(区分批量)
@@ -763,6 +717,23 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         Page<AnomalyResult> pageContext = getPageContext();
         IPage<AnomalyResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 通过物料 品牌 库位 查询 是否有未完成的异常件
+     *
+     * @param skuIds
+     * @param brandIds
+     * @param positionIds
+     * @return
+     */
+    @Override
+    public List<AnomalyResult> anomalyIsComplete(List<Long> skuIds, List<Long> brandIds, List<Long> positionIds) {
+        AnomalyParam anomalyParam = new AnomalyParam();
+        anomalyParam.setSkuIds(skuIds);
+        anomalyParam.setBrandIds(brandIds);
+        anomalyParam.setPositionIds(positionIds);
+        return this.baseMapper.anomalyComplete(anomalyParam);
     }
 
     private Serializable getKey(AnomalyParam param) {

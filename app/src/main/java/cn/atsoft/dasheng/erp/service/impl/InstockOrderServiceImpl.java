@@ -30,6 +30,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.*;
@@ -316,6 +317,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {
                 activitiProcessTaskParam.setSource(entity.getSource());
                 activitiProcessTaskParam.setSourceId(entity.getSourceId());
+            }
+            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask") && ToolUtil.isNotEmpty(entity.getSourceId())){
+                activitiProcessTaskParam.setPid(entity.getSourceId());
             }
             if (param.getDirectInStock()) {
                 activitiProcessTaskParam.setStatus(99);

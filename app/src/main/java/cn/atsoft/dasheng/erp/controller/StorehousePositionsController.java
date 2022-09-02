@@ -93,7 +93,12 @@ public class StorehousePositionsController extends BaseController {
 
     @RequestMapping(value = "/selectByBrand", method = RequestMethod.POST)
     public ResponseData selectByBrand(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        List<BrandResult> resultList = this.storehousePositionsService.selectByBrand(storehousePositionsParam.getSkuId(), storehousePositionsParam.getBrandId(), storehousePositionsParam.getStorehouseId());
+        List<BrandResult> resultList = this.storehousePositionsService.selectByBrand(
+                storehousePositionsParam.getSkuId(),
+                storehousePositionsParam.getBrandId(),
+                storehousePositionsParam.getStorehouseId(),
+                storehousePositionsParam.getStorehousePositionsId()
+        );
         return ResponseData.success(resultList);
     }
 

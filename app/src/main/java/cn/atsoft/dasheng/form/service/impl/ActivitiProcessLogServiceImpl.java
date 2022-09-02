@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.*;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -568,7 +569,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "OUTSTOCK":
                 ProductionPickLists pickLists = pickListsService.getById(processTask.getFormId());
                 if (ToolUtil.isNotEmpty(pickLists.getSource()) && pickLists.getSource().equals("processTask")) {
-                    ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getSourceId());
+                    ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getPid());
                     if (parentTask.getType().equals("ALLOCATION")) {
 
                         /**
@@ -576,12 +577,31 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                          * 对应生成入库单
                          */
                         List<ProductionPickListsCart> pickListsCarts = pickListsCartService.query().eq("pick_lists_id", processTask.getFormId()).eq("status", 99).list();
-                        Allocation allocation = allocationService.getById(pickLists.getSourceId());
+                        Allocation allocation = allocationService.getById(parentTask.getFormId());
                         List<AllocationCart> allocationCarts = allocationCartService.query().eq("allocation_id", allocation.getAllocationId()).eq("pick_lists_id", pickLists.getPickListsId()).eq("status", 98).list();
 
                         List<InstockListParam> instockListParams = BeanUtil.copyToList(pickListsCarts, InstockListParam.class);
                         for (InstockListParam instockListParam : instockListParams) {
                             instockListParam.setStatus(0L);
+                        }
+                        List<InstockListParam> totalList = new ArrayList<>();
+                        instockListParams.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                                (id, transfer) -> {
+                                    transfer.stream().reduce((a, b) -> new InstockListParam() {{
+                                        setSkuId(a.getSkuId());
+                                        setNumber(a.getNumber() + b.getNumber());
+                                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                                    }}).ifPresent(totalList::add);
+                                }
+                        );
+                        for (InstockListParam instockListParam : totalList) {
+                            List<Long> inkindIds = new ArrayList<>();
+                            for (InstockListParam listParam : instockListParams) {
+                                if (instockListParam.getSkuId().equals(listParam.getSkuId()) && instockListParam.getBrandId().equals(listParam.getBrandId())){
+                                    inkindIds.add( listParam.getInkindId());
+                                }
+                            }
+                            instockListParam.setInkindIds(inkindIds);
                         }
                         InstockOrderParam instockOrderParam = new InstockOrderParam();
 
@@ -602,11 +622,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         }
                         instockOrderParam.setSourceId(processTask.getProcessTaskId());
                         instockOrderParam.setPid(processTask.getProcessTaskId());
-                        instockOrderParam.setListParams(instockListParams);
+                        instockOrderParam.setListParams(totalList);
                         InstockOrder addEntity = instockOrderService.add(instockOrderParam);
                         for (AllocationCart allocationCart : allocationCarts) {
                             allocationCart.setInstockOrderId(addEntity.getInstockOrderId());
                         }
+                        allocationCartService.updateBatchById(allocationCarts);
                     }
                     break;
                 }

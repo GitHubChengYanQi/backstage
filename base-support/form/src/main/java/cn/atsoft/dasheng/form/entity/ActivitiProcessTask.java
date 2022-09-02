@@ -3,15 +3,18 @@ package cn.atsoft.dasheng.form.entity;
 import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 流程任务表	
+ * 流程任务表
  * </p>
  *
  * @author Jazz
@@ -22,8 +25,10 @@ public class ActivitiProcessTask implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "process_task_id", type = IdType.ID_WORKER)
+    @TableId(value = "process_task_id", type = IdType.ID_WORKER)
     private Long processTaskId;
+
+
 
     @TableField("process_id")
     private Long processId;
@@ -46,7 +51,7 @@ public class ActivitiProcessTask implements Serializable {
     @TableField("deptIds")
     private String deptIds;
 
-    @TableField(value = "deptId",fill = FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     @TableField("type")
@@ -122,16 +127,16 @@ public class ActivitiProcessTask implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     public String getDeptIds() {
@@ -303,16 +308,18 @@ public class ActivitiProcessTask implements Serializable {
         this.deptId = deptId;
     }
 
+
+
     @Override
     public String toString() {
         return "ActivitiProcessTask{" +
-        "processTaskId=" + processTaskId +
-        ", processId=" + processId +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "processTaskId=" + processTaskId +
+                ", processId=" + processId +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }

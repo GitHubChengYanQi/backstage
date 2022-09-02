@@ -198,6 +198,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         inkindService.updateAnomalyInKind(inkindIds);
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
 
+
         if (entity.getType().equals("Stocktaking") || entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
             inventoryStockService.updateStatus(anomalyIds);
         }
@@ -509,8 +510,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
              * 有核实的数量 才走判断
              */
             //核实数量 修改库存数
-
-            if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {
+            if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {  //判断复核数
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
                 int size = checkNumbers.size();
                 CheckNumber checkNumber = checkNumbers.get(size - 1);

@@ -112,6 +112,7 @@
 	activiti_process_task.source_id AS "source_id" ,
 	daoxin_task_participant.user_id as "participantUser",
 	daoxin_task_participant.type as "participantType"
+
     </sql>
 
 
@@ -245,6 +246,6 @@
             or activiti_process_task.user_id = #{paramCondition.participantUser}
             )
         </if>
-            group by processTaskId
+        group by processTaskId
     </select>
 </mapper>

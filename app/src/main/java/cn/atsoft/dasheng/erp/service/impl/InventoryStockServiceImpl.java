@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServlet;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,7 +100,6 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
     }
 
     @Override
-    @Async
     public void addList(List<InventoryDetailParam> detailParams) {
         List<InventoryStock> all = new ArrayList<>();
         for (InventoryDetailParam detailParam : detailParams) {
@@ -134,7 +134,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             }
         }
         if (all.size() == 0) {
-            throw new ServiceException(500, "没有可盘点的物料");
+            throw new ServiceException(500, "盘点内容弄暂无绑定库位和库存,无需盘点  ");
         }
         this.saveBatch(all);
     }
@@ -261,7 +261,12 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                     anomalyIds.add(inventoryStock.getAnomalyId());
                 }
             }
-            shopCartNum = anomalyIds.size() == 0 ? 0 : anomalyService.query().in("anomaly_id", anomalyIds).eq("status", 0).count();
+            List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
+            Set<Long> setAnomalyIds = new HashSet<>();
+            for (AnomalyDetail anomalyDetail : anomalyDetails) {
+                setAnomalyIds.add(anomalyDetail.getAnomalyId());
+            }
+            shopCartNum = setAnomalyIds.size();
         }
 
 
@@ -491,11 +496,34 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         } else {
             content = "对" + skuMessage + "进行了盘点";
         }
+
         Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
-        for (Long inventoryId : inventoryIdsSet) {
+        Set<Long> filterInventoryIds = filter(inventoryIdsSet, param);
+
+        for (Long inventoryId : filterInventoryIds) {
             shopCartService.addDynamic(inventoryId, content);
         }
 
+    }
+
+    /**
+     * 返回涉及这个物料的盘点任务
+     *
+     * @param inventoryIdsSet
+     * @param param
+     */
+    private Set<Long> filter(Set<Long> inventoryIdsSet, AnomalyParam param) {
+        Set<Long> inventoryIds = new HashSet<>();
+        List<InventoryStock> stockList = this.query().in("inventory_id", inventoryIdsSet).eq("display", 1)
+                .eq("sku_id", param.getSkuId())
+                .eq("brand_id", param.getBrandId())
+                .eq("position_id", param.getPositionId())
+                .list();
+
+        for (InventoryStock inventoryStock : stockList) {
+            inventoryIds.add(inventoryStock.getInventoryId());
+        }
+        return inventoryIds;
     }
 
 
@@ -513,11 +541,22 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
             param.setPositionIds(child);
         }
 
+
         Page<InventoryStockResult> pageContext = getPageContext();
         pageContext.setOrders(null);
         IPage<InventoryStockResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
-        return PageFactory.createPageInfo(page);
+
+        List<Long> positionIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(param.getInventoryId())) {
+            List<InventoryStock> inventoryStocks = this.query().eq("inventory_id", param.getInventoryId()).eq("display", 1).list();
+            for (InventoryStock inventoryStockResult : inventoryStocks) {
+                positionIds.add(inventoryStockResult.getPositionId());
+            }
+        }
+        PageInfo<InventoryStockResult> pageInfo = PageFactory.createPageInfo(page);
+        pageInfo.setSearch(positionIds);
+        return pageInfo;
     }
 
     private Serializable getKey(InventoryStockParam param) {
