@@ -146,9 +146,9 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         for (SkuResult skuResult : skuResults) {
             for (BomOrder bomOrder : bomOrders) {
                 if (ToolUtil.isNotEmpty(bomOrder.getResult()) && bomOrder.getResult().size() > 0) {
-                    AnalysisResult analysisResult =  bomOrder.getResult().get(0);
+                    AnalysisResult analysisResult = bomOrder.getResult().get(0);
                     if (analysisResult.getSkuId().equals(skuResult.getSkuId())) {
-                        analysisResult.setStockNumber(Long.valueOf(skuResult.getStockNumber()));
+                        analysisResult.setSkuResult(skuResult);
                         break;
                     }
                 }
