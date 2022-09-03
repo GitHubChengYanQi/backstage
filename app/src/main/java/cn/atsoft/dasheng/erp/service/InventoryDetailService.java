@@ -37,13 +37,13 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
      */
     void delete(InventoryDetailParam param);
 
-    Object mergeList();
+
 
     Object taskList(Long inventoryTaskId);
 
     List<InventoryDetailResult> details(Long inventoryTaskId);
 
-    Object mergeDetail();
+
 
     boolean mergeBrand(List<BrandResult> brandResults, BrandResult brandResult);
 

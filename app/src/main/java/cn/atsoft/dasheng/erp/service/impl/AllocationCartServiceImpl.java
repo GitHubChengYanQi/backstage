@@ -191,7 +191,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
         /**
          * 先删除
          */
-        List<AllocationCart> list = this.query().eq("allocation_id", param.getAllocationId()).eq("sku_id", param.getSkuId()).eq("type", "carry").eq("display", 1).list();
+        List<AllocationCart> list = this.query().eq("allocation_id", param.getAllocationId()).eq("sku_id", param.getSkuId()).eq("type", "carry").eq("display", 1).eq("status",0).list();
         for (AllocationCart allocationCart : list) {
             allocationCart.setDisplay(0);
         }

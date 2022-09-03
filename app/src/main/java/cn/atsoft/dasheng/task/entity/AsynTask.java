@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.task.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,10 +24,20 @@ public class AsynTask implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    /**
+     * 成功数
+     */
+    @TableField("success_num")
+    private Integer successNum;
+
+    @TableField("error_num")
+    private Integer errorNum;
+
     /**
      * 任务id
      */
-      @TableId(value = "task_id", type = IdType.ID_WORKER)
+    @TableId(value = "task_id", type = IdType.ID_WORKER)
     private Long taskId;
 
     /**
@@ -60,25 +73,25 @@ public class AsynTask implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -190,21 +203,37 @@ public class AsynTask implements Serializable {
         this.deptId = deptId;
     }
 
+    public Integer getSuccessNum() {
+        return successNum;
+    }
+
+    public void setSuccessNum(Integer successNum) {
+        this.successNum = successNum;
+    }
+
+    public Integer getErrorNum() {
+        return errorNum;
+    }
+
+    public void setErrorNum(Integer errorNum) {
+        this.errorNum = errorNum;
+    }
+
     @Override
     public String toString() {
         return "AsynTask{" +
-        "taskId=" + taskId +
-        ", allCount=" + allCount +
-        ", count=" + count +
-        ", type=" + type +
-        ", content=" + content +
-        ", status=" + status +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "taskId=" + taskId +
+                ", allCount=" + allCount +
+                ", count=" + count +
+                ", type=" + type +
+                ", content=" + content +
+                ", status=" + status +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

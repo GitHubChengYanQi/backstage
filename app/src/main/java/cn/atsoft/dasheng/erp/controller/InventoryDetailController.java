@@ -65,11 +65,6 @@ public class InventoryDetailController extends BaseController {
         return ResponseData.success(taskList);
     }
 
-    @RequestMapping(value = "/mergeList", method = RequestMethod.POST)
-    public ResponseData mergeList() {
-        Object mergeList = this.inventoryDetailService.mergeList();
-        return ResponseData.success(mergeList);
-    }
 
 
     @RequestMapping(value = "/addPhoto", method = RequestMethod.POST)
@@ -85,16 +80,6 @@ public class InventoryDetailController extends BaseController {
         return ResponseData.success();
     }
 
-    /**
-     * 所有盘点任务合并
-     *
-     * @return
-     */
-    @RequestMapping(value = "/mergeDetail", method = RequestMethod.GET)
-    public ResponseData mergeDetail() {
-        Object detail = this.inventoryDetailService.mergeDetail();
-        return ResponseData.success(detail);
-    }
 
 
     /**

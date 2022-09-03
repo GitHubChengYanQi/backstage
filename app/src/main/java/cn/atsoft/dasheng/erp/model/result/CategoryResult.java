@@ -61,6 +61,7 @@ public class CategoryResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long createUser;
 
     /**
@@ -73,7 +74,8 @@ public class CategoryResult implements Serializable {
      * 修改者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serializeUsing= ToStringSerializer.class)
+
+    @JSONField(serialize = false,serializeUsing= ToStringSerializer.class)
     private Long updateUser;
 
     /**
@@ -85,6 +87,7 @@ public class CategoryResult implements Serializable {
     /**
      * 状态
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("状态")
     private Integer display;
     @JSONField(serialize = false)

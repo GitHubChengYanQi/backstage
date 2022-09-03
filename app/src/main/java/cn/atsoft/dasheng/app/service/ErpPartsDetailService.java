@@ -73,4 +73,6 @@ public interface ErpPartsDetailService extends IService<ErpPartsDetail> {
     List<ErpPartsDetailResult> recursiveDetails(Long skuId, ErpPartsDetailResult result);
 
     List<ErpPartsDetailResult> getDetails(List<Long> partIds);
+
+    void format(List<ErpPartsDetailResult> data);
 }

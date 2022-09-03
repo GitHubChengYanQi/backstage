@@ -1,7 +1,10 @@
 package cn.atsoft.dasheng.task.controller;
 
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelResult;
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
+import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
@@ -12,6 +15,7 @@ import cn.atsoft.dasheng.task.service.AsynTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +43,8 @@ public class AsynTaskController extends BaseController {
     private AsynTaskService asynTaskService;
     @Autowired
     private AsynTaskDetailService detailService;
+    @Autowired
+    private ErpPartsDetailService partsDetailService;
 
 
     /**
@@ -59,7 +65,6 @@ public class AsynTaskController extends BaseController {
                 result.setAllBomResult(allBomResult);
                 break;
             case "物料导入":
-            case "产品导入":
             case "库存导入":
             case "库位导入":
                 Map<String, Integer> num = detailService.getNum(result.getTaskId());
@@ -118,6 +123,21 @@ public class AsynTaskController extends BaseController {
     public ResponseData stockSpectaculars() {
         Object spectaculars = asynTaskService.stockSpectaculars();
         return ResponseData.success(spectaculars);
+    }
+
+    /**
+     * 生产当前bom 所需的物料
+     *
+     * @param skuId
+     * @return
+     */
+    @RequestMapping(value = "/bomResult", method = RequestMethod.GET)
+    public ResponseData bomResult(@RequestParam("skuId") Long skuId) {
+
+        List<ErpPartsDetail> details = asynTaskService.bomResult(skuId, 1);
+        List<ErpPartsDetailResult> detailResults = BeanUtil.copyToList(details, ErpPartsDetailResult.class);
+        partsDetailService.format(detailResults);
+        return ResponseData.success(detailResults);
     }
 
 }

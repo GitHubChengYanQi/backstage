@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -29,6 +31,10 @@ public class ActivitiProcessTaskResult implements Serializable {
     private Object receipts;
 
     private ActivitiStepsResult stepsResult;
+
+    private List<Long> processUserIds;   //执行人
+
+    private List<User> processUsers;
 
     private User user;
 
@@ -65,7 +71,6 @@ public class ActivitiProcessTaskResult implements Serializable {
     private String createName;
 
     private Integer status;
-
 
 
     @ApiModelProperty("主题")

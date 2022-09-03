@@ -32,24 +32,42 @@ import java.util.Map;
 public class ProductionPickListsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private SkuSimpleResult skuResult;
+
     private List<BrandResult> brandResults;
+
+    private List<Long> positionIds;
+
     private List<StoreHouseNameAndSkuNumber> positionAndStockDetail;
+
     private Integer status;
+
     private String pickListsName;
-    @JSONField(serializeUsing= ToStringSerializer.class)
+
     private Long storehousePositionsId;
-    @JSONField(serializeUsing= ToStringSerializer.class)
+
     private Long storehouseId;
+
     private UserResult userResult;
+
     private String pickListsCoding;
+
     private Integer stockNumber = 0;
+
     private Boolean isMeet;
+
     private List<ProductionPickListsCartResult> cartResults;
+
     private Map<String,String> brandResult;
+
     private ProductionPickListsResult pickListsResult;
+
     private Boolean canPick;
+
     private List<String> positionNames;
+
+
     private Integer lockStockDetailNumber;
 
     /**

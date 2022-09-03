@@ -23,6 +23,12 @@ import java.io.Serializable;
 public class Spu implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 规格
+     */
+    @TableField("specifications")
+    private String specifications;
     /**
      * 类型
      */
@@ -400,6 +406,14 @@ public class Spu implements Serializable {
 
     public void setCoding(String coding) {
         this.coding = coding;
+    }
+
+    public String getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(String specifications) {
+        this.specifications = specifications;
     }
 
     @Override

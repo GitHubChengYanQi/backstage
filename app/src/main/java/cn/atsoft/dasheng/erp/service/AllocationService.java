@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationResult;
+import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -50,6 +51,8 @@ public interface AllocationService extends IService<Allocation> {
 
     AllocationResult detail(Long allocationId);
 
+    void newTransfer(AllocationCartParam param);
+
     void transferInStorehouse(AllocationCartParam param);
 
     /**
@@ -87,4 +90,6 @@ public interface AllocationService extends IService<Allocation> {
     void createOrder(AllocationParam param);
 
     void checkCartDone(Long allocationId, List<InstockList> listing);
+
+    List<InstockListResult> getInstockListResultsByAllocationTask(Long taskId);
 }

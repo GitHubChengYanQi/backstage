@@ -31,6 +31,8 @@ public class ErpPartsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Boolean haveBom;
+
     private List<BackSku> backSkus;
 
     private SpuResult spuResult;

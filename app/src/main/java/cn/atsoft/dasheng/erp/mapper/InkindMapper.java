@@ -53,4 +53,13 @@ public interface InkindMapper extends BaseMapper<Inkind> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") InkindParam paramCondition);
 
+
+    /**
+     * 库存实物
+     *
+     * @author song
+     * @Date 2021-11-01
+     */
+    Page<InkindResult> stockInkindList(@Param("page") Page page, @Param("paramCondition") InkindParam paramCondition);
+
 }

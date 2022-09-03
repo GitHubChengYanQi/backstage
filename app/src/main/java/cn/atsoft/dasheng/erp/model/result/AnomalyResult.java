@@ -46,6 +46,8 @@ public class AnomalyResult implements Serializable {
 
     private AnomalyOrderResult orderResult;
 
+    private Integer complete;
+
     private Long orderId;
 
     private User user;
