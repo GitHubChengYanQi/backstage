@@ -16,10 +16,14 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
+        <result column="success_num" property="successNum"/>
+        <result column="error_num" property="errorNum"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List"> success_num
+    AS "successNum" , error_num AS "errorNum"
+    ,
         task_id
         AS "taskId", all_count AS "allCount", count AS "count", type AS "type",  status AS "status", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
@@ -204,12 +208,12 @@
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
         LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
         <where>
-          <if test="skuIds != null and skuIds.size > 0">
-              goods_sku.sku_id in
-            <foreach collection="skuIds" open="(" close=")" item="state" index="index" separator=",">
-                #{state}
-            </foreach>
-          </if>
+            <if test="skuIds != null and skuIds.size > 0">
+                goods_sku.sku_id in
+                <foreach collection="skuIds" open="(" close=")" item="state" index="index" separator=",">
+                    #{state}
+                </foreach>
+            </if>
         </where>
     </select>
 

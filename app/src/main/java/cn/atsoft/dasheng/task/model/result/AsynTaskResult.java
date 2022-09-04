@@ -27,6 +27,7 @@ public class AsynTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     private AllBomResult allBomResult;
 
     private List<StockStatement> stockStatements;

@@ -35,6 +35,8 @@ public class SpuParam extends AbstractDictMap implements Serializable, BaseValid
     private SpuClassificationParam spuClassification;
 //    private List<ItemAttributeParam> spuAttributes;
 
+    private String specifications;
+
     /**
      * 类型
      */

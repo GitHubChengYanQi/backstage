@@ -32,6 +32,8 @@ public class SpuResult implements Serializable {
 
     private UnitResult unitResult;
 
+    private String specifications;
+
     private static final long serialVersionUID = 1L;
     /**
      * 类型
@@ -57,14 +59,14 @@ public class SpuResult implements Serializable {
     /**
      * 分类id
      */
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long spuClassificationId;
 
     /**
      * 物品Id
      */
     @ApiModelProperty("物品Id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long spuId;
 
     /**
@@ -118,7 +120,7 @@ public class SpuResult implements Serializable {
      * 材质id
      */
     @ApiModelProperty("材质id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long materialId;
 
     /**
@@ -180,21 +182,21 @@ public class SpuResult implements Serializable {
      * 产品分类
      */
     @ApiModelProperty("产品分类")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long classId;
 
     /**
      * 单位
      */
     @ApiModelProperty("单位")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long unitId;
 
     /**
      * 类目id
      */
     @ApiModelProperty("类目id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Long categoryId;
 
     /**
