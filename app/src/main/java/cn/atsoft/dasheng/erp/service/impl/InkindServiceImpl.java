@@ -258,13 +258,15 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setSkuResult(skuResult);
         inkindResult.setBrandResult(brandService.getBrandResult(inkind.getBrandId()));
         //打印查询打印模板
-        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
-            eq("type", PHYSICALDETAIL);
-            eq("display", 1);
-        }});
-        if (ToolUtil.isNotEmpty(printTemplate)) {
-            this.returnPrintTemplate(inkindResult, printTemplate);
-        }
+        String template = printTemplateService.replaceInkindTemplate(inkind.getInkindId());
+//        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
+//            eq("type", PHYSICALDETAIL);
+//            eq("display", 1);
+//        }});
+//        if (ToolUtil.isNotEmpty(printTemplate)) {
+//            this.returnPrintTemplate(inkindResult, printTemplate);
+//        }
+        inkindResult.setPrintTemplate(template);
         inkindResult.setSkuResult(null);
         inkindResult.setBrandResult(null);
         return inkindResult;
