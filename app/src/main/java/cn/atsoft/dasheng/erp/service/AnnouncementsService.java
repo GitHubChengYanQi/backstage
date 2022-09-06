@@ -20,6 +20,8 @@ public interface AnnouncementsService extends IService<Announcements> {
 
     String toJson(List<Long> ids);
 
+    String toList(String noticeJson);
+
     /**
      * 新增
      *

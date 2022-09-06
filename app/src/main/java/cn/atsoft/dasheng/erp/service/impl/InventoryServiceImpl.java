@@ -470,7 +470,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
-        if  (ToolUtil.isNotEmpty(detailParam.getInkindIds())){
+        if (ToolUtil.isNotEmpty(detailParam.getInkindIds())) {
             queryWrapper.in("inkind_id", detailParam.getInkindIds());
         }
         if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {    //产品
@@ -771,8 +771,10 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             activitiProcessTaskParam.setTaskName(user.getName() + "的盘点任务");
             activitiProcessTaskParam.setQTaskId(param.getInventoryTaskId());
             activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setRemark(param.getRemark());
             activitiProcessTaskParam.setUserIds(param.getParticipants());
             activitiProcessTaskParam.setFormId(param.getInventoryTaskId());
+            activitiProcessTaskParam.setNoticeId(announcementsService.toList(param.getNotice()));
             activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);

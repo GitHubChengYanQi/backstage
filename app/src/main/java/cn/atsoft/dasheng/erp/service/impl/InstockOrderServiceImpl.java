@@ -314,11 +314,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
+            activitiProcessTaskParam.setRemark(entity.getRemark());
+            activitiProcessTaskParam.setNoticeId(announcementsService.toList(entity.getNoticeId()));
+
             if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {
                 activitiProcessTaskParam.setSource(entity.getSource());
                 activitiProcessTaskParam.setSourceId(entity.getSourceId());
             }
-            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask") && ToolUtil.isNotEmpty(entity.getSourceId())){
+            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask") && ToolUtil.isNotEmpty(entity.getSourceId())) {
                 activitiProcessTaskParam.setPid(param.getPid());
             }
             if (param.getDirectInStock()) {
