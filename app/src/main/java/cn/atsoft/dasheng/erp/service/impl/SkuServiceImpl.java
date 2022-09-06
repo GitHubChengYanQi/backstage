@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -1561,11 +1562,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<String> imageUrls = new ArrayList<>();
             List<String> imgThumbUrls = new ArrayList<>();
             for (Long imageid : imageIds) {
-                imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
-                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L, "image/resize,m_fill,h_200,w_200");
-                imgThumbUrls.add(imgThumbUrl);
 
+//                imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
+//                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L, "image/resize,m_fill,h_200,w_200");
+//                imgThumbUrls.add(imgThumbUrl);
             }
+            List<MediaUrlResult> mediaUrlResults = mediaService.getMediaUrlResults(imageIds);
+            skuResult.setImgResults(mediaUrlResults);
             skuResult.setImgUrls(imageUrls);
             skuResult.setImgThumbUrls(imgThumbUrls);
 

@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.mapper.MediaMapper;
 import cn.atsoft.dasheng.appBase.model.params.MediaParam;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -13,15 +14,12 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.appBase.config.AliyunService;
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.utils.BinaryUtil;
-import com.aliyun.oss.internal.OSSHeaders;
 import com.aliyun.oss.model.*;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -211,6 +209,21 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
             urls.add(url);
         }
         return urls;
+    }
+    @Override
+    public List<MediaUrlResult> getMediaUrlResults(List<Long> mediaIds) {
+        String param = "image/resize,m_fill,h_200,w_200";
+        List<MediaUrlResult>  results = new ArrayList<>();
+        for (Long mediaId : mediaIds) {
+            MediaUrlResult result = new MediaUrlResult();
+            String url = getMediaUrlAddUseData(mediaId, null, null);
+            String ThumbUrl = getMediaUrlAddUseData(mediaId, null, param);
+            result.setUrl(url);
+            result.setMediaId(mediaId);
+            result.setThumbUrl(ThumbUrl);
+            results.add(result);
+        }
+        return results;
     }
 
 
