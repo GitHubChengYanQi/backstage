@@ -582,7 +582,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }});
         if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
             for (Long pickListsId : param.getPickListsIds()) {
-                shopCartService.addDynamic(pickListsId, "通知领料人进行领料");
+                shopCartService.addDynamic(pickListsId, null,"通知领料人进行领料");
             }
         }
     }

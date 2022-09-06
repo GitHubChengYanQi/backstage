@@ -225,7 +225,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
          */
         ActivitiProcessTask processTask = taskService.getById(auditParam.getTaskId());
         if (ToolUtil.isNotEmpty(processTask)) {
-            shopCartService.addDynamic(processTask.getFormId(), "发布了评论");
+            shopCartService.addDynamic(processTask.getFormId(), null,"发布了评论");
         }
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{

@@ -9,6 +9,9 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.dynamic.entity.Dynamic;
+import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
+import cn.atsoft.dasheng.dynamic.service.DynamicService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.ShopCartMapper;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
@@ -25,6 +28,8 @@ import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
+import cn.atsoft.dasheng.message.enmu.OperationType;
+import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
@@ -42,6 +47,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
+
+import static cn.atsoft.dasheng.message.enmu.MicroServiceType.DYNAMIC;
+import static org.apache.poi.hemf.record.emfplus.HemfPlusRecordType.object;
 
 /**
  * <p>
@@ -88,6 +96,9 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     @Autowired
     private InventoryDetailService inventoryDetailService;
 
+    @Autowired
+    private DynamicService dynamicService;
+
     protected static final Logger logger = LoggerFactory.getLogger(ShopCartServiceImpl.class);
 
     @Override
@@ -116,7 +127,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
             InstockList instockList = instockListService.getById(param.getInstockListId());
             String skuMessage = skuService.skuMessage(instockList.getSkuId());
-            addDynamic(instockList.getInstockOrderId(), skuMessage + "核实完成准备入库");
+            addDynamic(instockList.getInstockOrderId(), instockList.getSkuId(), skuMessage + "核实完成准备入库");
         }
 
         return entity.getCartId();
@@ -158,7 +169,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                         instockList = instockListService.getById(anomaly.getSourceId());
                         skuMessage = skuService.skuMessage(instockList.getSkuId());
                         instockList = instockListService.getById(anomaly.getSourceId());
-                        addDynamic(instockList.getInstockOrderId(), skuMessage + "删除了异常描述");
+                        addDynamic(instockList.getInstockOrderId(), instockList.getSkuId(), skuMessage + "删除了异常描述");
                     }
                     //盘点的撤回
                     if (anomaly.getType().equals("StocktakingError")) {
@@ -174,7 +185,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
                     skuMessage = skuService.skuMessage(instockList.getSkuId());
-                    addDynamic(instockList.getInstockOrderId(), skuMessage + "取消入库重新核验");
+                    addDynamic(instockList.getInstockOrderId(), instockList.getSkuId(),skuMessage + "取消入库重新核验");
                     break;
                 case "instockByAnomaly":
                     throw new ServiceException(500, "异常件不可退回");
@@ -184,7 +195,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 //                    instockList = instockListService.getById(error.getSourceId());
 //                    break;
                 default:
-                    throw new ServiceException(500,"错误");
+                    throw new ServiceException(500, "错误");
             }
             if (instockList != null) {
                 instockList.setStatus(0L);
@@ -200,31 +211,45 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
      * 动态
      */
     @Override
-    public void addDynamic(Long fromId, String content) {
+    public void addDynamic(Long fromId, Long skuId, String content) {
         if (ToolUtil.isEmpty(fromId)) {
             return;
         }
         Long taskId = taskService.getTaskIdByFormId(fromId);
         if (ToolUtil.isNotEmpty(taskId)) {
+
             RemarksParam remarksParam = new RemarksParam();
             remarksParam.setTaskId(taskId);
             remarksParam.setType("dynamic");
             remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
             remarksParam.setContent(content);
-
             Remarks entity = new Remarks();
             ToolUtil.copyProperties(remarksParam, entity);
             remarksService.save(entity);
+
+
+            /**
+             * 统一动态
+             */
+            DynamicParam dynamic = new DynamicParam();
+            dynamic.setType("1");
+            dynamic.setSource("processTask");
+            dynamic.setUserId(LoginContextHolder.getContext().getUserId());
+            dynamic.setTaskId(taskId);
+            dynamic.setSkuId(skuId);
+            dynamic.setContent(content);
+            messageProducer.microService(new MicroServiceEntity() {{
+                setType(DYNAMIC);
+                setObject(dynamic);
+                setOperationType(OperationType.SAVE);
+                setMaxTimes(2);
+                setTimes(1);
+                ;
+            }});
+
         }
 
 
-        /**
-         * 消息队列获取不到当前人  不用这个了
-         */
-//        messageProducer.remarksServiceDo(new RemarksEntity() {{
-//            setOperationType(OperationType.SAVE);
-//            setRemarksParam(remarksParam);
-//        }});
     }
 
     /**
@@ -313,7 +338,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         }
         switch (oldEntity.getType()) {
             case "allocation":
-                if (!LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())){
+                if (!LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {
                     throw new ServiceException(500, "不可更改他人购物车");
                 }
                 break;

@@ -223,7 +223,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         if (entitys.size() > 0) {
             this.saveBatch(entitys);
             String skuName = skuService.skuMessage(entitys.get(0).getSkuId());
-            shopCartService.addDynamic(entitys.get(0).getPickListsId(), skuName + "进行了备料");
+            shopCartService.addDynamic(entitys.get(0).getPickListsId(), entitys.get(0).getSkuId(),skuName + "进行了备料");
         } else {
             throw new ServiceException(500, "未匹配到所需物料,备料失败");
         }

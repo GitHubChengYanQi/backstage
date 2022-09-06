@@ -152,7 +152,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                 /**
                  * 添加动态记录
                  */
-                shopCartService.addDynamic(param.getAnomalyOrderId(), skuMessage);
+                shopCartService.addDynamic(param.getAnomalyOrderId(), anomaly.getSkuId(), skuMessage);
 
                 if (ToolUtil.isNotEmpty(param.getUserId())) {
                     if (LoginContextHolder.getContext().getUserId().equals(param.getUserId())) {
@@ -160,7 +160,7 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
                     }
                     User user = userService.getById(param.getUserId());
                     skuMessage = skuService.skuMessage(anomaly.getSkuId());
-                    shopCartService.addDynamic(param.getAnomalyOrderId(), "将" + skuMessage + "转交给" + user.getName() + "进行处理");
+                    shopCartService.addDynamic(param.getAnomalyOrderId(), anomaly.getSkuId(), "将" + skuMessage + "转交给" + user.getName() + "进行处理");
                     forWard(oldEntity, anomaly);   //异常明细转交处理
                 }
 

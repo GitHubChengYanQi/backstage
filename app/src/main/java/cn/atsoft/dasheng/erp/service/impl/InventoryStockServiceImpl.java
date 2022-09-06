@@ -428,7 +428,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         this.updateBatchById(inventoryStocks);
 
         for (Long inventoryId : inventoryIds) {    //添加动态
-            shopCartService.addDynamic(inventoryId, "提交了异常描述");
+            shopCartService.addDynamic(inventoryId, null,"提交了异常描述");
         }
     }
 
@@ -501,7 +501,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         Set<Long> filterInventoryIds = filter(inventoryIdsSet, param);
 
         for (Long inventoryId : filterInventoryIds) {
-            shopCartService.addDynamic(inventoryId, content);
+            shopCartService.addDynamic(inventoryId,null, content);
         }
 
     }
