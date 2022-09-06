@@ -38,7 +38,9 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.query.service.QueryLogService;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.DictService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.view.entity.SkuBasisView;
 import cn.atsoft.dasheng.view.entity.SkuPositionView;
@@ -136,6 +138,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private InkindService inkindService;
     @Autowired
     private RemarksService remarksService;
+    @Autowired
+    private DictService dictService;
 
 
     @Transactional
@@ -896,17 +900,18 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         newEntity.setSpuId(orSaveSpu.getSpuId());
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);
-
+        Dict dict = dictService.query().eq("code", "editSku").one();
+        boolean editSkuFlag = ToolUtil.isNotEmpty(dict) && dict.getStatus().equals("ENABLE");
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
         String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
-        if (
+        if ((
 //                !oldEntity.getSkuValueMd5().equals(md5)
                 !oldEntity.getSkuName().equals(param.getSkuName())//
-                         || !param.getUnitId().equals(orSaveSpu.getUnitId())//
+                        || !param.getUnitId().equals(orSaveSpu.getUnitId())//
                         || !oldEntity.getBatch().equals(param.getBatch())
                         || !oldEntity.getSpuId().equals(param.getSpuId())
                         || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))
-        ) {
+        ) && editSkuFlag){
             /**
              * 如要变更sku主要信息数据  需要验证物料是否正在被 物料清单所使用   如果被使用则不可更改
              * 如果只是更新 上传附件与图片之类资料完善则不需查询清单中是否被使用
