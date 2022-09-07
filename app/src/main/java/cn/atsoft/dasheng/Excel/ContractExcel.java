@@ -183,7 +183,7 @@ public class ContractExcel {
 //                String skuReplace = contractService.skuReplace(templeteDetail.getValue(), contract.getSourceId());
 //                map.put(result.getName(), skuReplace);
 //            }
-//
+
 //            if (result.getType().equals("pay")) {
 //
 //            }
