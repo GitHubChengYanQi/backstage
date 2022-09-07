@@ -253,7 +253,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                     anomalyIds.add(inventoryStock.getAnomalyId());
                 }
             }
-            shopCartNum = anomalyIds.size() == 0 ? 0 : anomalyService.query().in("anomaly_id", anomalyIds).eq("status", 0).count();
+            shopCartNum = anomalyIds.size() == 0 ? 0 : anomalyService.query().in("anomaly_id", anomalyIds).isNotNull("form_id").eq("status", 0).count();
         } else {
             //TODO 暗盘购物车角标 不显示 数量异常
             for (InventoryStock inventoryStock : inventoryStocks) {
@@ -261,7 +261,8 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                     anomalyIds.add(inventoryStock.getAnomalyId());
                 }
             }
-            List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
+            List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds)
+                    .isNotNull("form_id").eq("display", 1).list();
             Set<Long> setAnomalyIds = new HashSet<>();
             for (AnomalyDetail anomalyDetail : anomalyDetails) {
                 setAnomalyIds.add(anomalyDetail.getAnomalyId());
