@@ -28,6 +28,7 @@ import java.util.Map;
 @Data
 @ApiModel
 public class InkindResult implements Serializable {
+    private String printTemplate;
 
     private User user;
 

@@ -51,12 +51,8 @@ public class AuditMessageService {
     }
 
     public void createTask(ActivitiProcess activitiProcess, Long taskId, Long loginUserId) {
-
         //添加log
         activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-        /**
-         * TODO 是否需要自动审批使用消息队列
-         */
         activitiProcessLogService.autoAudit(taskId, 1, loginUserId);
     }
 

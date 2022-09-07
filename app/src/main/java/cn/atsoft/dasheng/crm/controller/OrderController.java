@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -34,6 +36,9 @@ public class OrderController extends BaseController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private CodingRulesService codingRulesService;
+
 
     /**
      * 新增接口
@@ -44,9 +49,17 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody @Valid OrderParam orderParam) {
+
         if (ToolUtil.isEmpty(orderParam.getCoding())) {
-            throw new ServiceException(500, "请填写编号");
+            CodingRules codingRules = codingRulesService.query().eq("module", "11").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                orderParam.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置采购单据自动生成编码规则");
+            }
         }
+
         Order order = this.orderService.add(orderParam);
         return ResponseData.success(order);
     }

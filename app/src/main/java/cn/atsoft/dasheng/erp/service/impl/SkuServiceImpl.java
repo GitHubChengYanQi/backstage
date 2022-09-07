@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -38,7 +39,9 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.query.service.QueryLogService;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.DictService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.view.entity.SkuBasisView;
 import cn.atsoft.dasheng.view.entity.SkuPositionView;
@@ -136,6 +139,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private InkindService inkindService;
     @Autowired
     private RemarksService remarksService;
+    @Autowired
+    private DictService dictService;
 
 
     @Transactional
@@ -657,7 +662,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public void deleteBatch(SkuParam param) {
         List<Long> skuIds = param.getId();
-        Integer stockSku =skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).count();
+        Integer stockSku = skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).count();
         if (stockSku > 0) {
             throw new ServiceException(500, "库存中中有此物品数据,删除终止");
 
@@ -667,7 +672,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (ErpPartsDetail erpPartsDetail : partsDetailList) {
             partsIds.add(erpPartsDetail.getPartsId());
         }
-        List<Parts> parts = partsIds.size() == 0 ? new ArrayList<>() : partsService.query().in("parts_id",partsIds).eq("status",99).eq("display",1).list();
+        List<Parts> parts = partsIds.size() == 0 ? new ArrayList<>() : partsService.query().in("parts_id", partsIds).eq("status", 99).eq("display", 1).list();
 
         List<Parts> partList = skuIds.size() == 0 ? new ArrayList<>() : partsService.lambdaQuery().in(Parts::getSkuId, skuIds).and(i -> i.eq(Parts::getDisplay, 1)).and(i -> i.eq(Parts::getStatus, 99)).list();
         partList.addAll(parts);
@@ -896,10 +901,18 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         newEntity.setSpuId(orSaveSpu.getSpuId());
         String json = JSON.toJSONString(list);
         newEntity.setSkuValue(json);
-
+        Dict dict = dictService.query().eq("code", "editSku").one();
+        boolean editSkuFlag = ToolUtil.isNotEmpty(dict) && dict.getStatus().equals("ENABLE");
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
         String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
-        if (!oldEntity.getSkuValueMd5().equals(md5) || !param.getUnitId().equals(orSaveSpu.getUnitId()) || !oldEntity.getStandard().equals(newEntity.getStandard()) || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))) {
+        if ((
+//                !oldEntity.getSkuValueMd5().equals(md5)
+                !oldEntity.getSkuName().equals(param.getSkuName())//
+                        || !param.getUnitId().equals(orSaveSpu.getUnitId())//
+                        || !oldEntity.getBatch().equals(param.getBatch())
+                        || !oldEntity.getSpuId().equals(param.getSpuId())
+                        || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))
+        ) && editSkuFlag){
             /**
              * 如要变更sku主要信息数据  需要验证物料是否正在被 物料清单所使用   如果被使用则不可更改
              * 如果只是更新 上传附件与图片之类资料完善则不需查询清单中是否被使用
@@ -1508,7 +1521,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
 
 
-
         for (SkuResult skuResult : param) {
             for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
                 if (skuResult.getSkuId().equals(maintenanceCycle.getSkuId())) {
@@ -1550,11 +1562,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<String> imageUrls = new ArrayList<>();
             List<String> imgThumbUrls = new ArrayList<>();
             for (Long imageid : imageIds) {
-                imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
-                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L, "image/resize,m_fill,h_200,w_200");
-                imgThumbUrls.add(imgThumbUrl);
 
+//                imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
+//                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L, "image/resize,m_fill,h_200,w_200");
+//                imgThumbUrls.add(imgThumbUrl);
             }
+            List<MediaUrlResult> mediaUrlResults = mediaService.getMediaUrlResults(imageIds);
+            skuResult.setImgResults(mediaUrlResults);
             skuResult.setImgUrls(imageUrls);
             skuResult.setImgThumbUrls(imgThumbUrls);
 
@@ -1641,7 +1655,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public SkuResult getSku(Long id) {
         Sku sku = this.getById(id);
-        SkuResult skuResult = BeanUtil.copyProperties(sku,SkuResult.class);
+        SkuResult skuResult = BeanUtil.copyProperties(sku, SkuResult.class);
         if (ToolUtil.isEmpty(sku)) {
             return skuResult;
         }
@@ -1660,7 +1674,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
                 skuResult.setFiledUrls(filedUrls);
             }
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
 
         }
         try {
@@ -1689,7 +1703,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
 
-        }catch(Exception ignored){
+        } catch (Exception ignored) {
 
         }
 //        if (ToolUtil.isNotEmpty(skuResult.getImages())) {

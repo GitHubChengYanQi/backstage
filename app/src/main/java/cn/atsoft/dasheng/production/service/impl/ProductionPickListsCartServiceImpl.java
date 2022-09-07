@@ -791,9 +791,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     public void deleteBatchByIds(List<ProductionPickListsCartParam> cartParams) {
         List<Long> pickListsIds = new ArrayList<>();
 
-        for (ProductionPickListsCartParam cartParam : cartParams) {
-
-        }
 
         for (ProductionPickListsCartParam cartParam : cartParams) {
             pickListsIds.add(cartParam.getPickListsId());
@@ -848,6 +845,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
         stockDetailsService.updateBatchById(stockDetails);
         stockDetailsService.updateBatchById(parentStockDetails);
+        shopCartService.addDynamic(pickListsIds.get(0), "领取了物料 "+skuService.skuMessage(inkinds.get(0).getSkuId()));
         this.updateBatchById(updateEntity);
     }
 

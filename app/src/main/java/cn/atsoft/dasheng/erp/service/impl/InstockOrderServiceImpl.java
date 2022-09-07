@@ -335,23 +335,27 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
             //添加log
-            if (param.getDirectInStock()) {
-                messageProducer.auditMessageDo(new AuditEntity() {{
-                    setMessageType(AuditMessageType.COMPLETE);
-                    setActivitiProcess(activitiProcess);
-                    setTaskId(taskId);
-                    setTimes(0);
-                    setMaxTimes(1);
-                }});
-            } else {   // 直接成功
-                messageProducer.auditMessageDo(new AuditEntity() {{
-                    setMessageType(AuditMessageType.CREATE_TASK);
-                    setActivitiProcess(activitiProcess);
-                    setTaskId(taskId);
-                    setLoginUserId(LoginContextHolder.getContext().getUserId());
-                    setTimes(0);
-                    setMaxTimes(1);
-                }});
+            if (param.getDirectInStock()) {   // 直接入库
+//                messageProducer.auditMessageDo(new AuditEntity() {{
+//                    setMessageType(AuditMessageType.COMPLETE);
+//                    setActivitiProcess(activitiProcess);
+//                    setTaskId(taskId);
+//                    setTimes(0);
+//                    setMaxTimes(1);
+//                }});
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId, 1,LoginContextHolder.getContext().getUserId());
+            } else {
+//                messageProducer.auditMessageDo(new AuditEntity() {{
+//                    setMessageType(AuditMessageType.CREATE_TASK);
+//                    setActivitiProcess(activitiProcess);
+//                    setTaskId(taskId);
+//                    setLoginUserId(LoginContextHolder.getContext().getUserId());
+//                    setTimes(0);
+//                    setMaxTimes(0);
+//                }});
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+                activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+
                 entity.setStatus(99L);
                 this.updateById(entity);
             }

@@ -73,7 +73,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     public PageInfo<DynamicResult> findPageBySpec(DynamicParam param){
         Page<DynamicResult> pageContext = getPageContext();
         IPage<DynamicResult> page = this.baseMapper.customPageList(pageContext, param);
-        this.format(page.getRecords());
+//        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
     private void format(List<DynamicResult> data){
