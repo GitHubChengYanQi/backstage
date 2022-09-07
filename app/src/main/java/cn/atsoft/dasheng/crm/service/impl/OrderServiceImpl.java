@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.convert.NumberChineseFormatter;
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -364,19 +365,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     map.put(ContractEnum.ASite.getDetail(), "");
                     break;
                 case ATime:
-                    map.put(ContractEnum.ATime.getDetail(), orderResult.getCreateTime());
+                    DateTime dateTime = new DateTime(orderResult.getCreateTime());
+                    map.put(ContractEnum.ATime.getDetail(), dateTime);
                     break;
                 case mailingAddress:
                     map.put(ContractEnum.mailingAddress.getDetail(), "");
                     break;
                 case AZipCode:
-                    if (orderResult.getAcustomer().getZipCode() ==null) {
+                    if (orderResult.getAcustomer().getZipCode() == null) {
                         orderResult.getAcustomer().setZipCode("");
                     }
                     map.put(ContractEnum.AZipCode.getDetail(), orderResult.getAcustomer().getZipCode());
                     break;
                 case BZipCode:
-                    if (orderResult.getBcustomer().getZipCode() ==null) {
+                    if (orderResult.getBcustomer().getZipCode() == null) {
                         orderResult.getBcustomer().setZipCode("");
                     }
                     map.put(ContractEnum.BZipCode.getDetail(), orderResult.getBcustomer().getZipCode());
