@@ -57,14 +57,14 @@
         <if test="paramCondition.userId">
             and user_id = #{paramCondition.userId}
         </if>
-        <if test="paramCondition.view != null">
+        <if test="paramCondition.view != null and paramCondition.view != ''">
             and view = #{paramCondition.view}
         </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-
+        order by sort desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.MessageParam">

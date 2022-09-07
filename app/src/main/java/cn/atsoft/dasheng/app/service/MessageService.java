@@ -27,6 +27,8 @@ public interface MessageService extends IService<Message> {
      */
     void add(MessageParam param);
 
+    void top(Long messageId);
+
     /**
      * 删除
      *
