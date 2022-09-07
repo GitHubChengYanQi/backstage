@@ -317,7 +317,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     } else {
                         map.put(ContractEnum.BFax.getDetail(), "");
                     }
-
                     break;
                 case APhone:
                     map.put(ContractEnum.APhone.getDetail(), orderResult.getAContactsPhone());
@@ -344,10 +343,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     map.put(ContractEnum.TotalNumber.getDetail(), orderResult.getTotalNumber());
                     break;
                 case ALegalMan:
-                    map.put(ContractEnum.ALegalMan.getDetail(), "");
+                    if (ToolUtil.isEmpty(orderResult.getAcustomer().getLegal())) {
+                        orderResult.getAcustomer().setLegal("");
+                    }
+                    map.put(ContractEnum.ALegalMan.getDetail(), orderResult.getAcustomer().getLegal());
                     break;
                 case BLegalMan:
-                    map.put(ContractEnum.BLegalMan.getDetail(), "");
+                    if (ToolUtil.isEmpty(orderResult.getBcustomer().getLegal())) {
+                        orderResult.getBcustomer().setLegal("");
+                    }
+                    map.put(ContractEnum.BLegalMan.getDetail(), orderResult.getBcustomer().getLegal());
                     break;
                 case pickUpManPhone:
                     map.put(ContractEnum.pickUpManPhone.getDetail(), orderResult.getAContactsPhone());
@@ -364,7 +369,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 case mailingAddress:
                     map.put(ContractEnum.mailingAddress.getDetail(), "");
                     break;
-
+                case AZipCode:
+                    if (orderResult.getAcustomer().getZipCode() ==null) {
+                        orderResult.getAcustomer().setZipCode("");
+                    }
+                    map.put(ContractEnum.AZipCode.getDetail(), orderResult.getAcustomer().getZipCode());
+                    break;
+                case BZipCode:
+                    if (orderResult.getBcustomer().getZipCode() ==null) {
+                        orderResult.getBcustomer().setZipCode("");
+                    }
+                    map.put(ContractEnum.BZipCode.getDetail(), orderResult.getBcustomer().getZipCode());
+                    break;
             }
         }
 
@@ -394,6 +410,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderResult.setAllMoney(allMoney);
         orderResult.setDetailResults(details);
         orderResult.setPaymentResult(paymentResult);
+
         detailFormat(orderResult);
         return orderResult;
 
@@ -440,6 +457,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Phone Bphone = phoneService.getById(result.getPartyBPhone());//乙方电话
         result.setAphone(Aphone);
         result.setBphone(Bphone);
+        result.setAContactsPhone(Aphone.getPhoneNumber());
+        result.setBContactsPhone(Bphone.getPhoneNumber());
+
 
         Customer Acustomer = customerService.getById(result.getBuyerId());//甲方;
         Customer Bcustomer = customerService.getById(result.getSellerId());//乙方
