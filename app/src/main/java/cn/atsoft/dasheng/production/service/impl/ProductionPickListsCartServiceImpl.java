@@ -845,7 +845,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
         stockDetailsService.updateBatchById(stockDetails);
         stockDetailsService.updateBatchById(parentStockDetails);
-        shopCartService.addDynamic(pickListsIds.get(0), "领取了物料 "+skuService.skuMessage(inkinds.get(0).getSkuId()));
+        shopCartService.addDynamic(pickListsIds.get(0), inkinds.get(0).getSkuId(),"领取了物料 "+skuService.skuMessage(inkinds.get(0).getSkuId()));
         this.updateBatchById(updateEntity);
     }
 
