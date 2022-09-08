@@ -341,6 +341,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                    setMaxTimes(1);
 //                }});
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId, 1,LoginContextHolder.getContext().getUserId());
+                entity.setStatus(99L);
             } else {
 //                messageProducer.auditMessageDo(new AuditEntity() {{
 //                    setMessageType(AuditMessageType.CREATE_TASK);
@@ -352,8 +353,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                }});
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
                 activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
-
-                entity.setStatus(99L);
                 this.updateById(entity);
             }
 
