@@ -34,12 +34,14 @@ public class OrderResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private PaymentResult paymentResult;
+
     private List<OrderDetailResult> detailResults;
+
     private Date date;
 
     private Long userId;
 
-    private User deliverer;  //交货人
+    private Contacts deliverer;  //交货人
 
     private Long AContactsPhone;
 
