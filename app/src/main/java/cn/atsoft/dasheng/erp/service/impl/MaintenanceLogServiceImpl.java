@@ -137,7 +137,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
             maintenanceService.updateStatus(param.getMaintenanceId());
         }
-        shopCartService.addDynamic(param.getMaintenanceId(), "对 "+skuService.skuMessage(maintenanceDetails.get(0).getSkuId()) +" 进行了养护");
+        shopCartService.addDynamic(param.getMaintenanceId(), maintenanceDetails.get(0).getSkuId(),"对 "+skuService.skuMessage(maintenanceDetails.get(0).getSkuId()) +" 进行了养护");
 
 //        List<MaintenanceDetail> details = new ArrayList<>();
 //        if (ToolUtil.isNotEmpty(param.getMaintenanceId())){

@@ -582,7 +582,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }});
         if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
             for (Long pickListsId : param.getPickListsIds()) {
-                shopCartService.addDynamic(pickListsId, "通知领料人进行领料");
+                shopCartService.addDynamic(pickListsId, null,"通知领料人进行领料");
             }
         }
     }
@@ -1092,7 +1092,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 如有任务 则更新任务
          */
         checkListsStatus(pickLists);
-        shopCartService.addDynamic(pickLists.get(0).getPickListsId(), "领取了物料 "+skuService.skuMessage(skuId));
+        shopCartService.addDynamic(pickLists.get(0).getPickListsId(), skuId,"领取了物料 "+skuService.skuMessage(skuId));
         return null;
     }
 

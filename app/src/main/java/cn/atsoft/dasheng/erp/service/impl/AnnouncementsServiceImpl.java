@@ -48,6 +48,24 @@ public class AnnouncementsServiceImpl extends ServiceImpl<AnnouncementsMapper, A
         return JSON.toJSONString(ids);
     }
 
+    @Override
+    public String toList(String noticeJson) {
+        if (ToolUtil.isNotEmpty(noticeJson)) {
+            try {
+                List<Long> ids = JSON.parseArray(noticeJson, Long.class);
+                List<Announcements> announcements = this.listByIds(ids);
+                String notice = "";
+                for (Announcements announcement : announcements) {
+                    notice = notice + announcement.getContent() + ",";
+                }
+                return notice;
+            } catch (Exception e) {
+                return "";
+            }
+        }
+        return "";
+    }
+
 
     @Override
     public Announcements add(AnnouncementsParam param) {

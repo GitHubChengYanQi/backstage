@@ -29,7 +29,7 @@ public interface ShopCartService extends IService<ShopCart> {
 
     List<ShopCart> sendBack(List<Long> ids);
 
-    void addDynamic(Long fromId, String content);
+     void addDynamic(Long fromId, Long skuId, String content);
 
     Set<String> backType(List<String> types);
 
