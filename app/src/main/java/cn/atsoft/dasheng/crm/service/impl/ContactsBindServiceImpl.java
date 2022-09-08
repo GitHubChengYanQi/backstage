@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -43,13 +44,26 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
     }
 
     @Override
+    @Transactional
     public void delete(ContactsBindParam param) {
-        ContactsBind contactsBind = this.lambdaQuery().in(ContactsBind::getCustomerId, param.getCustomerId())
-                .and(i -> i.eq(ContactsBind::getContactsId, param.getContactsId()))
-                .one();
-        contactsBind.setDisplay(param.getDisplay());
-        ToolUtil.copyProperties(contactsBind, param);
-        this.updateById(contactsBind);
+
+        if (ToolUtil.isEmpty(param.getCustomerId())) {   //删除当前联系人 所有绑定
+            QueryWrapper<ContactsBind> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("contacts_id", param.getContactsId());
+            ContactsBind contactsBind = new ContactsBind();
+            contactsBind.setDisplay(0);
+            this.update(contactsBind, queryWrapper);
+        }
+
+        if (ToolUtil.isNotEmpty(param.getCustomerIds())) {    //当前客户与当前公司离职
+            QueryWrapper<ContactsBind> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("contacts_id", param.getContactsId());
+            queryWrapper.in("customer_id", param.getCustomerIds());
+            ContactsBind contactsBind = new ContactsBind();
+            contactsBind.setDisplay(0);
+            this.update(contactsBind, queryWrapper);
+        }
+
 
         if (ToolUtil.isNotEmpty(param.getNewCustomerId())) {   //复职
             ContactsBind bind = null;
@@ -63,7 +77,6 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
                 bind.setCustomerId(param.getNewCustomerId());
                 this.save(bind);
             }
-
         }
     }
 
@@ -118,7 +131,7 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
      */
     @Override
     public void ContractsFormat(List<ContactsResult> results, Long customerId) {
-        List<ContactsBind> contactsBinds = this.query().eq("customer_id", customerId).list();
+        List<ContactsBind> contactsBinds = this.query().eq("customer_id", customerId).eq("display",1).list();
 
         for (ContactsBind contactsBind : contactsBinds) {
             for (ContactsResult result : results) {

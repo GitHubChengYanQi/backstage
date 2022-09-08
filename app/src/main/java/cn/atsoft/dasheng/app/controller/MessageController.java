@@ -66,6 +66,26 @@ public class MessageController extends BaseController {
         return ResponseData.success();
     }
 
+
+    @RequestMapping(value = "/top", method = RequestMethod.GET)
+    @ApiOperation("置顶")
+    public ResponseData top(@RequestParam("messageId") Long messageId) {
+        this.messageService.top(messageId);
+        return ResponseData.success();
+    }
+
+
+    @RequestMapping(value = "/cancelTop", method = RequestMethod.GET)
+    @ApiOperation("取消置顶")
+    public ResponseData cancelTop(@RequestParam("messageId") Long messageId) {
+        if (ToolUtil.isNotEmpty(messageId)) {
+            Message message = this.messageService.getById(messageId);
+            message.setSort(0L);
+            this.messageService.updateById(message);
+        }
+        return ResponseData.success();
+    }
+
     /**
      * 删除接口
      *
