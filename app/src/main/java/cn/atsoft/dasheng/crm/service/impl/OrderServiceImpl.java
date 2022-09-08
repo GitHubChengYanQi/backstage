@@ -249,7 +249,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     break;
                 case pickUpMan:
                     if (ToolUtil.isNotEmpty(orderResult.getDeliverer())) {
-                        map.put(ContractEnum.pickUpMan.getDetail(), orderResult.getDeliverer().getName());
+                        map.put(ContractEnum.pickUpMan.getDetail(), orderResult.getDeliverer().getContactsName());
                     } else {
                         map.put(ContractEnum.pickUpMan.getDetail(), "");
                     }
@@ -346,10 +346,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     break;
                 case DeliveryAddress:
-                    if (ToolUtil.isEmpty(orderResult.getAdress()) || ToolUtil.isEmpty(orderResult.getAdress().getAddressName())) {
+                    if (ToolUtil.isEmpty(orderResult.getAdress()) || ToolUtil.isEmpty(orderResult.getAdress().getDetailLocation())) {
                         map.put(ContractEnum.DeliveryAddress.getDetail(), "");
                     } else {
-                        map.put(ContractEnum.DeliveryAddress.getDetail(), orderResult.getAdress().getAddressName());
+                        map.put(ContractEnum.DeliveryAddress.getDetail(), orderResult.getAdress().getDetailLocation());
                     }
                     break;
                 case TotalNumber:
@@ -494,8 +494,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Adress adress = ToolUtil.isEmpty(result.getAdressId()) ? new Adress() : adressService.getById(result.getAdressId());  //交货地址
         result.setAdress(adress);
 
-        User user = userService.getById(result.getUserId()); //交货人
-        result.setDeliverer(user);
+        Contacts contacts = contactsService.getById(result.getUserId());//交货人
+        result.setDeliverer(contacts);
+
     }
 
     @Override
