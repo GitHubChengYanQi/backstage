@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.generalForm.entity.GeneralFormData">
-        <id column=" id" property=" id" />
+        <id column=" id" property="id" />
         <result column="table_name" property="tableName" />
         <result column="field_name" property="fieldName" />
         <result column="value" property="value" />
@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         id AS " id", table_name AS "tableName", field_name AS "fieldName", value AS "value", source_id AS "sourceId", source AS "source", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+         id AS "id", table_name AS "tableName", field_name AS "fieldName", value AS "value", source_id AS "sourceId", source AS "source", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
