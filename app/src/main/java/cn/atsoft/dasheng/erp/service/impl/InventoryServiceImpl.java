@@ -470,7 +470,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
-        if  (ToolUtil.isNotEmpty(detailParam.getInkindIds())){
+        if (ToolUtil.isNotEmpty(detailParam.getInkindIds())) {
             queryWrapper.in("inkind_id", detailParam.getInkindIds());
         }
         if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {    //产品
@@ -1424,7 +1424,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<Long> positionIds = new ArrayList<>();
         List<Long> inventoryIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
-
+        
         for (InventoryResult datum : data) {
             inventoryIds.add(datum.getInventoryTaskId());
             positionIds.add(datum.getPositionId());
@@ -1434,9 +1434,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
-//        List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
+        List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
 
         for (InventoryResult datum : data) {
+
+            List<InventoryDetailResult> detailResults = new ArrayList<>();
+            for (InventoryDetailResult detail : details) {
+                if (detail.getInventoryId().equals(datum.getInventoryTaskId())) {
+                    detailResults.add(detail);
+                }
+            }
+            datum.setDetailResults(detailResults);
+
 
             for (StorehousePositionsResult positionsResult : positionsResultList) {
                 if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {

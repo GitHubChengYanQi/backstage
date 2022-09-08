@@ -141,7 +141,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     }
 
 
-
     @Override
     public Object taskList(Long inventoryTaskId) {
         List<InventoryDetail> inventoryDetails = this.query().eq("inventory_id", inventoryTaskId).eq("display", 1).list();
@@ -157,7 +156,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         detailList(detailResults);
         return detailResults;
     }
-
 
 
     private void detailList(List<InventoryDetailResult> detailResults) {
@@ -557,6 +555,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     public List<InventoryDetailResult> getDetails(List<Long> inventoryIds) {
         List<InventoryDetail> inventoryDetails = inventoryIds.size() == 0 ? new ArrayList<>() : this.query().in("inventory_id", inventoryIds).eq("display", 1).list();
         List<InventoryDetailResult> detailResults = BeanUtil.copyToList(inventoryDetails, InventoryDetailResult.class, new CopyOptions());
+        this.format(detailResults);
         return detailResults;
     }
 
