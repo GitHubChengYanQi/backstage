@@ -148,6 +148,7 @@ public class WxCpSendTemplate {
         wxCpMessage.setDescription(wxCpTemplate.getDescription());
         wxCpMessage.setMsgType("textcard");
         List<String> userIds = userIds();
+        logger.info("调用推送 推送人： " +JSON.toJSONString(userIds));
         if (ToolUtil.isNotEmpty(userIds)) {
             for (String userId : userIds) {
                 wxCpMessage.setToUser(userId);

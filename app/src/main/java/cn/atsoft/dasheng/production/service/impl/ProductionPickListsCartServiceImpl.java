@@ -223,7 +223,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         if (entitys.size() > 0) {
             this.saveBatch(entitys);
             String skuName = skuService.skuMessage(entitys.get(0).getSkuId());
-            shopCartService.addDynamic(entitys.get(0).getPickListsId(), skuName + "进行了备料");
+            shopCartService.addDynamic(entitys.get(0).getPickListsId(), entitys.get(0).getSkuId(),skuName + "进行了备料");
         } else {
             throw new ServiceException(500, "未匹配到所需物料,备料失败");
         }
@@ -791,9 +791,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     public void deleteBatchByIds(List<ProductionPickListsCartParam> cartParams) {
         List<Long> pickListsIds = new ArrayList<>();
 
-        for (ProductionPickListsCartParam cartParam : cartParams) {
-
-        }
 
         for (ProductionPickListsCartParam cartParam : cartParams) {
             pickListsIds.add(cartParam.getPickListsId());
@@ -848,6 +845,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
         stockDetailsService.updateBatchById(stockDetails);
         stockDetailsService.updateBatchById(parentStockDetails);
+        shopCartService.addDynamic(pickListsIds.get(0), inkinds.get(0).getSkuId(),"领取了物料 "+skuService.skuMessage(inkinds.get(0).getSkuId()));
         this.updateBatchById(updateEntity);
     }
 

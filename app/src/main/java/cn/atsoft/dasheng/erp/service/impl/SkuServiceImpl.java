@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -661,7 +662,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public void deleteBatch(SkuParam param) {
         List<Long> skuIds = param.getId();
-        Integer stockSku =skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).count();
+        Integer stockSku = skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).count();
         if (stockSku > 0) {
             throw new ServiceException(500, "库存中中有此物品数据,删除终止");
 
@@ -671,7 +672,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (ErpPartsDetail erpPartsDetail : partsDetailList) {
             partsIds.add(erpPartsDetail.getPartsId());
         }
-        List<Parts> parts = partsIds.size() == 0 ? new ArrayList<>() : partsService.query().in("parts_id",partsIds).eq("status",99).eq("display",1).list();
+        List<Parts> parts = partsIds.size() == 0 ? new ArrayList<>() : partsService.query().in("parts_id", partsIds).eq("status", 99).eq("display", 1).list();
 
         List<Parts> partList = skuIds.size() == 0 ? new ArrayList<>() : partsService.lambdaQuery().in(Parts::getSkuId, skuIds).and(i -> i.eq(Parts::getDisplay, 1)).and(i -> i.eq(Parts::getStatus, 99)).list();
         partList.addAll(parts);
@@ -1520,7 +1521,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
 
 
-
         for (SkuResult skuResult : param) {
             for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
                 if (skuResult.getSkuId().equals(maintenanceCycle.getSkuId())) {
@@ -1562,11 +1562,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<String> imageUrls = new ArrayList<>();
             List<String> imgThumbUrls = new ArrayList<>();
             for (Long imageid : imageIds) {
-                imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
-                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L, "image/resize,m_fill,h_200,w_200");
-                imgThumbUrls.add(imgThumbUrl);
 
+//                imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
+//                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L, "image/resize,m_fill,h_200,w_200");
+//                imgThumbUrls.add(imgThumbUrl);
             }
+            List<MediaUrlResult> mediaUrlResults = mediaService.getMediaUrlResults(imageIds);
+            skuResult.setImgResults(mediaUrlResults);
             skuResult.setImgUrls(imageUrls);
             skuResult.setImgThumbUrls(imgThumbUrls);
 
@@ -1653,7 +1655,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public SkuResult getSku(Long id) {
         Sku sku = this.getById(id);
-        SkuResult skuResult = BeanUtil.copyProperties(sku,SkuResult.class);
+        SkuResult skuResult = BeanUtil.copyProperties(sku, SkuResult.class);
         if (ToolUtil.isEmpty(sku)) {
             return skuResult;
         }
@@ -1672,7 +1674,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
                 skuResult.setFiledUrls(filedUrls);
             }
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
 
         }
         try {
@@ -1701,7 +1703,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
 
-        }catch(Exception ignored){
+        } catch (Exception ignored) {
 
         }
 //        if (ToolUtil.isNotEmpty(skuResult.getImages())) {
