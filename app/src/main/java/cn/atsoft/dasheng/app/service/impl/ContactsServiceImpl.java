@@ -44,6 +44,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
     @Override
     @FreedLog
+    @Transactional
     public Contacts add(ContactsParam param) {
 
         Contacts entity = getEntity(param);
@@ -386,6 +388,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isNotEmpty(contactsIds)) {
             contactsBinds = contactsBindService.lambdaQuery()
                     .in(ContactsBind::getContactsId, contactsIds)
+                    .eq(ContactsBind::getDisplay, 1)
                     .list();
 
             for (ContactsBind contactsBind : contactsBinds) {
