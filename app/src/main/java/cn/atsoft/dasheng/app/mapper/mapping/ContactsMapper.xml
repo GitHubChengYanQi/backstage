@@ -126,7 +126,8 @@
     <select id="queryContactsId" resultType="Long" parameterType="Long">
         select contacts_id
         from daoxin_crm_contacts_bind
-        where customer_id = #{id}
+        where display = 1
+          and customer_id = #{id}
 
 
     </select>

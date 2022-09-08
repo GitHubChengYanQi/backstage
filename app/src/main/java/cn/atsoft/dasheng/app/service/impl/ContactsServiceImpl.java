@@ -382,6 +382,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isNotEmpty(contactsIds)) {
             contactsBinds = contactsBindService.lambdaQuery()
                     .in(ContactsBind::getContactsId, contactsIds)
+                    .eq(ContactsBind::getDisplay, 1)
                     .list();
 
             for (ContactsBind contactsBind : contactsBinds) {
