@@ -30,6 +30,8 @@ import cn.atsoft.dasheng.daoxin.entity.DaoxinPosition;
 import cn.atsoft.dasheng.daoxin.model.result.DaoxinDeptResult;
 import cn.atsoft.dasheng.daoxin.service.DaoxinDeptService;
 import cn.atsoft.dasheng.daoxin.service.DaoxinPositionService;
+import cn.atsoft.dasheng.generalForm.entity.GeneralFormData;
+import cn.atsoft.dasheng.generalForm.service.GeneralFormDataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.Position;
 import cn.atsoft.dasheng.sys.modular.system.model.result.PositionResult;
@@ -68,6 +70,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     private DaoxinDeptService daoxinDeptService;
     @Autowired
     private CompanyRoleService roleService;
+    @Autowired
+    private GeneralFormDataService generalFormDataService;
 
 
     @Override
@@ -104,26 +108,30 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         }
 
         if (ToolUtil.isNotEmpty(param.getDeptName())) {   //部门
-            DaoxinDept daoxinDept = daoxinDeptService.query().eq("full_name", param.getDeptName()).one();
-            if (ToolUtil.isNotEmpty(daoxinDept)) {
-                entity.setDeptId(daoxinDept.getDeptId());
+            GeneralFormData sys_dept = generalFormDataService.query().eq("value", param.getDeptName()).eq("table_name", "sys_dept").eq("field_name",param.getDeptName()).orderByDesc("create_time").last("limit 1").one();
+            if (ToolUtil.isNotEmpty(sys_dept)) {
+                entity.setDeptId(sys_dept.getId());
             } else {
-                DaoxinDept newDept = new DaoxinDept();
-                newDept.setFullName(param.getDeptName());
-                daoxinDeptService.save(newDept);
-                entity.setDeptId(newDept.getDeptId());
+                GeneralFormData generalFormData = new GeneralFormData();
+                generalFormData.setTableName("sys_dept");
+                generalFormData.setFieldName("full_name");
+                generalFormData.setValue(param.getDeptName());
+                generalFormDataService.save(generalFormData);
+                entity.setDeptId(generalFormData.getId());
             }
         }
 
         if (ToolUtil.isNotEmpty(param.getPositionName())) {
-            CompanyRole position = roleService.query().eq("position", param.getPositionName()).one();
-            if (ToolUtil.isNotEmpty(position)) {
-                entity.setCompanyRole(position.getCompanyRoleId());
+            GeneralFormData sys_role = generalFormDataService.query().eq("value", param.getDeptName()).eq("table_name", "sys_role").eq("name",param.getPositionName()).orderByDesc("create_time").last("limit 1").one();
+            if (ToolUtil.isNotEmpty(sys_role)) {
+                entity.setCompanyRole(sys_role.getId());
             } else {
-                CompanyRole newRole = new CompanyRole();
-                newRole.setPosition(param.getPositionName());
-                roleService.save(newRole);
-                entity.setCompanyRole(newRole.getCompanyRoleId());
+                GeneralFormData generalFormData = new GeneralFormData();
+                generalFormData.setTableName("sys_dept");
+                generalFormData.setFieldName("name");
+                generalFormData.setValue(param.getPositionName());
+                generalFormDataService.save(generalFormData);
+                entity.setCompanyRole(generalFormData.getId());
             }
         }
 
@@ -367,16 +375,12 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
         }
         //查询部门
-        List<DaoxinDept> daoxinDepts = deptIds.size() == 0 ? new ArrayList<>() : daoxinDeptService.listByIds(deptIds);
-        List<DaoxinDeptResult> deptResults = new ArrayList<>();
-        for (DaoxinDept daoxinDept : daoxinDepts) {
-            DaoxinDeptResult daoxinDeptResult = new DaoxinDeptResult();
-            ToolUtil.copyProperties(daoxinDept, daoxinDeptResult);
-            deptResults.add(daoxinDeptResult);
-        }
+        List<GeneralFormData> deptList = deptIds.size() == 0 ? new ArrayList<>() : generalFormDataService.lambdaQuery().in(GeneralFormData::getId, roleIds).list();
+
+
 
         //查询职位
-        List<CompanyRole> companyRoleList = roleIds.size() == 0 ? new ArrayList<>() : companyRoleService.lambdaQuery().in(CompanyRole::getCompanyRoleId, roleIds).list();
+        List<GeneralFormData> roleList =roleIds.size() == 0 ? new ArrayList<>() : generalFormDataService.lambdaQuery().in(GeneralFormData::getId, roleIds).list();
         List<Long> ids = new ArrayList<>();
         List<ContactsBind> contactsBinds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(contactsIds)) {
@@ -413,10 +417,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 }
             }
 
-            for (CompanyRole companyRole : companyRoleList) {
-                if (companyRole.getCompanyRoleId().equals(record.getCompanyRole())) {
+            for (GeneralFormData companyRole : roleList) {
+                if (companyRole.getId().equals(record.getCompanyRole())) {
                     CompanyRoleResult companyRoleResult = new CompanyRoleResult();
-                    ToolUtil.copyProperties(companyRole, companyRoleResult);
+                    companyRoleResult.setCompanyRoleId(companyRole.getId());
+                    companyRoleResult.setPosition(companyRole.getValue());
                     record.setCompanyRoleResult(companyRoleResult);
                     break;
                 }
@@ -433,9 +438,13 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
             record.setPhoneParams(List);
 
-            for (DaoxinDeptResult deptResult : deptResults) {
-                if (ToolUtil.isNotEmpty(record.getDeptId()) && record.getDeptId().equals(deptResult.getDeptId())) {
-                    record.setDeptResult(deptResult);
+            for (GeneralFormData deptResult : deptList) {
+                if (ToolUtil.isNotEmpty(record.getDeptId()) && record.getDeptId().equals(deptResult.getId())) {
+
+                    record.setDeptResult(new DaoxinDeptResult(){{
+                        setDeptId(deptResult.getId());
+                        setFullName(deptResult.getValue());
+                    }});
                 }
             }
 
