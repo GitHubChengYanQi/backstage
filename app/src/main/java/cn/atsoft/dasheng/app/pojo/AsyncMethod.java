@@ -133,6 +133,7 @@ public class AsyncMethod {
         allBomResult.setView(views);
 
 
+
         asynTask.setContent(JSON.toJSONString(allBomResult));
         asynTask.setStatus(99);
         taskService.updateById(asynTask);
