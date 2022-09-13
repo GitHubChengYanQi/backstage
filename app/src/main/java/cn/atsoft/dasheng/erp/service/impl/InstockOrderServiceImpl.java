@@ -343,7 +343,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                    setTimes(0);
 //                    setMaxTimes(1);
 //                }});
-                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId, 1,LoginContextHolder.getContext().getUserId());
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId, 1, LoginContextHolder.getContext().getUserId());
+                entity.setStatus(99L);
             } else {
 //                messageProducer.auditMessageDo(new AuditEntity() {{
 //                    setMessageType(AuditMessageType.CREATE_TASK);
@@ -355,8 +356,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                }});
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
                 activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
-
-                entity.setStatus(99L);
                 this.updateById(entity);
             }
 
@@ -1593,6 +1592,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> mediaIds = new ArrayList<>();
         List<Long> formIds = new ArrayList<>();
 
+
         for (InstockOrderResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getNoticeId())) {
                 List<Long> noticeId = JSON.parseArray(datum.getNoticeId(), Long.class);
@@ -1641,6 +1641,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             int waitInStockNum = 0;
             int instockErrorNum = 0;
             List<InstockListResult> instockListResults = new ArrayList<>();
+
 
             for (InstockListResult instockList : instockListList) {
                 for (Anomaly anomaly : anomalyList) {

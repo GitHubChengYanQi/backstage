@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.task.service.impl;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.pojo.AllBomResult;
 import cn.atsoft.dasheng.app.pojo.AnalysisResult;
 import cn.atsoft.dasheng.app.pojo.BomOrder;
@@ -217,61 +218,55 @@ public class AsynTaskServiceImpl extends ServiceImpl<AsynTaskMapper, AsynTask> i
         /**
          * 先从异步里 取出被分析的物料
          */
-        Map<String, List<AnalysisResult>> map = new HashMap<>();
+        List<Long> skuIds = new ArrayList<>();
         for (AsynTaskResult asynTaskResult : asynTaskResults) {
             AllBomResult allBomResult = asynTaskResult.getAllBomResult();
             if (ToolUtil.isNotEmpty(allBomResult)) {
                 List<AllBomResult.View> view = allBomResult.getView();
                 AllBomResult.View skuView = view.get(0);
-                List<AnalysisResult> owe = allBomResult.getOwe();
-                map.put(skuView.getName(), owe);
+                skuIds.add(skuView.getSkuId());
+
             }
         }
+
+        List<SkuResult> skuResults = this.skuService.formatSkuResult(skuIds);
+        Map<String, List<SkuAnalyse>> skuMap = new HashMap<>();
+
+        for (SkuResult skuResult : skuResults) {
+            List<ErpPartsDetail> details = this.bomResult(skuResult.getSkuId(), 1);
+            List<ErpPartsDetailResult> detailResults = BeanUtil.copyToList(details, ErpPartsDetailResult.class);
+            partsDetailService.format(detailResults);
+
+
+            Map<String, Double> map = new HashMap<>();
+            for (ErpPartsDetailResult detailResult : detailResults) {
+                String name = detailResult.getSkuResult().getSpuResult().getSpuClassificationResult().getName();
+                Double number = map.get(name);
+                if (ToolUtil.isEmpty(number)) {
+                    number = 0.0;
+                }
+                number = number + detailResult.getNumber();
+                map.put(name, number);
+            }
+
+            List<SkuAnalyse> skuAnalyses = new ArrayList<>();
+
+            for (String name : map.keySet()) {
+                SkuAnalyse skuAnalyse = new SkuAnalyse();
+                Double num = map.get(name);
+                skuAnalyse.setClassName(name);
+                long value = num.longValue();
+                skuAnalyse.setNumber(value);
+                skuAnalyses.add(skuAnalyse);
+            }
+            skuMap.put(skuResult.getSpuResult().getName() +"/"+ skuResult.getSkuName(), skuAnalyses);
+        }
+
         /**
          * 通过 物料取出分类
          */
-        Map<String, List<SkuAnalyse>> skuMap = new HashMap<>();
-        for (String skuName : map.keySet()) {
-            List<AnalysisResult> analysisResults = map.get(skuName);
-            List<Long> skuIds = new ArrayList<>();
-            for (AnalysisResult analysisResult : analysisResults) {
-                skuIds.add(analysisResult.getSkuId());
-            }
-            /**
-             * 分类叠加 取最小
-             */
-            List<SkuAnalyse> skuAnalyses = skuAnalyses(skuIds);
-            Map<String, Long> spuClassNum = new HashMap<>();
-
-            for (SkuAnalyse skuAnalyse : skuAnalyses) {
-                for (AnalysisResult analysisResult : analysisResults) {
-                    if (skuAnalyse.getSkuId().equals(analysisResult.getSkuId())) {
-
-                        analysisResult.setProduceMix(analysisResult.getStockNumber() / analysisResult.getDemandNumber());  //可生产数量
-                        Long number = spuClassNum.get(skuAnalyse.getClassName());
 
 
-                        if (ToolUtil.isEmpty(number)) {
-                            spuClassNum.put(skuAnalyse.getClassName(), analysisResult.getProduceMix());
-                        } else {
-                            if (number >= analysisResult.getProduceMix()) {
-                                spuClassNum.put(skuAnalyse.getClassName(), analysisResult.getProduceMix());
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-
-            List<SkuAnalyse> skuAnalyseList = new ArrayList<>();
-            for (String s : spuClassNum.keySet()) {
-                SkuAnalyse skuAnalyse = new SkuAnalyse();
-                skuAnalyse.setClassName(s);
-                skuAnalyse.setNumber(spuClassNum.get(s));
-                skuAnalyseList.add(skuAnalyse);
-            }
-            skuMap.put(skuName, skuAnalyseList);
-        }
         return skuMap;
     }
 

@@ -554,7 +554,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
 
 
-        List<ContractTemplete> templetes = list.size() == 0 ? new ArrayList<>() : contractTempleteService.query().in("name", newStrings).list();
+        List<ContractTemplete> templetes = newStrings.size() == 0 ? new ArrayList<>() : contractTempleteService.query().in("name", newStrings).list();
         List<ContractTempleteResult> contractTempleteResults = BeanUtil.copyToList(templetes, ContractTempleteResult.class, new CopyOptions());
         List<Long> ids = new ArrayList<>();
         for (ContractTemplete templete : templetes) {

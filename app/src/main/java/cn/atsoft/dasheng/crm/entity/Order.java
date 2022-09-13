@@ -33,6 +33,13 @@ public class Order implements Serializable {
     @TableField("adress_id")
     private Long adressId;
 
+
+    /**
+     * 接货人
+     */
+    @TableField("user_id")
+    private Long userId;
+
     /**
      * 订单编号
      */
@@ -476,6 +483,13 @@ public class Order implements Serializable {
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public Long getOrderId() {
         return orderId;
