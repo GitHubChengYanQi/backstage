@@ -21,6 +21,7 @@ import java.util.List;
 @ApiModel
 public class AllocationResult implements Serializable {
 
+    private List<SkuSimpleResult> skuResults;
     private static final long serialVersionUID = 1L;
     private List<AllocationDetailResult> detailResults;
     private Integer haveBrand;
