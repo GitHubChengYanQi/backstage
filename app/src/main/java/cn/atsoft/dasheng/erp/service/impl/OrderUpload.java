@@ -38,7 +38,7 @@ public class OrderUpload {
             WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").one();
 
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
-                UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", wxuserInfo.getMemberId()).one();
+                UcOpenUserInfo userInfo = openUserInfoService.query().eq("source","wxCp").eq("member_id", wxuserInfo.getMemberId()).one();
                 if (ToolUtil.isNotEmpty(userInfo)) {
                     WxCpMessage wxCpMessage = new WxCpMessage();
                     wxCpMessage.setToUser(userInfo.getUuid());

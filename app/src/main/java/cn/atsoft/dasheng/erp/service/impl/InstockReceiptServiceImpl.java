@@ -140,12 +140,12 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             for (int i = 0; i < document.getTables().size(); i++) {
                 TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
-                if (ToolUtil.isNotEmpty(tableRule) && tableRule.getTableType().equals("sku")) {        //循环插入规则则
+                if (ToolUtil.isNotEmpty(tableRule) && ToolUtil.isNotEmpty(tableRule.getTableType()) &&
+                        tableRule.getTableType().equals("sku")) {        //循环插入规则则
 
                     XWPFTable xwpfTable = document.getTableArray(i);     //需要替换表格的位置
                     Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
                     List<XWPFTable> xwpfTables = new ArrayList<>();
-
 
                     for (String customer : customerMap.keySet()) {
                         XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
@@ -153,7 +153,6 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                         replace(document, newTable, customer, results, tableRule, replaceRules.getReplaceRules());
                         xwpfTables.add(newTable);
                     }
-
 
                     int pos = document.getPosOfTable(xwpfTable);  //删除模板中需替换的表格
                     document.removeBodyElement(pos);
@@ -169,9 +168,9 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
             document.write(bao);
-            FileOutputStream fileOutputStream = new FileOutputStream("D:/tmp/\\test.docx");
+            FileOutputStream fileOutputStream = new FileOutputStream("D:/tmp/\\入库单.docx");
             fileOutputStream.write(bao.toByteArray());
-            File file = new File("D:/tmp/\\test.docx");
+            File file = new File("D:/tmp/\\入库单.docx");
             orderUpload.upload(file);
             return document;
 
