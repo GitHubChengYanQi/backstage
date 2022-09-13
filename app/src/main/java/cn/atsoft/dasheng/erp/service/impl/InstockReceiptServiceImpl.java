@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -36,15 +38,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,8 +83,16 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     private OrderReplace orderReplace;
     @Autowired
     private TemplateService templateService;
+    @Autowired
+    private WxCpService wxCpService;
+    @Autowired
+    private MediaService mediaService;
+
+    @Autowired
+    private OrderUpload orderUpload;
 
     @Override
+
     public void add(InstockReceiptParam param) {
         InstockReceipt entity = getEntity(param);
         this.save(entity);
@@ -127,10 +134,8 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         TempReplaceRule replaceRules = JSON.parseObject(template.getReplaceRule(), TempReplaceRule.class);
 
         try {
-            InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
+            InputStream inputStream = Files.newInputStream(Paths.get(fileInfo.getFilePath()));
             XWPFDocument document = new XWPFDocument(inputStream);
-
-
 
 
             for (int i = 0; i < document.getTables().size(); i++) {
@@ -162,6 +167,12 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             }
 
 
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            document.write(bao);
+            FileOutputStream fileOutputStream = new FileOutputStream("D:/tmp/\\test.docx");
+            fileOutputStream.write(bao.toByteArray());
+            File file = new File("D:/tmp/\\test.docx");
+            orderUpload.upload(file);
             return document;
 
         } catch (Exception e) {

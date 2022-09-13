@@ -933,6 +933,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             for (InventoryStock inventoryStock : inventoryStocks) {
                 inventoryIds.add(inventoryStock.getInventoryId());
             }
+            inventoryIds.add(0L);
             param.setInventoryIds(inventoryIds);
         }
 

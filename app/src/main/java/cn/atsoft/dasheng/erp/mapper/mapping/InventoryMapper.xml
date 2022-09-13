@@ -154,9 +154,6 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_inventory where 1 = 1 and position_id is not null and display = 1
-        <if test="paramCondition.positionId != null">
-            and position_id = #{paramCondition.positionId}
-        </if>
         <if test="paramCondition.inventoryTaskId != null">
             and inventory_task_id like CONCAT('%',#{paramCondition.inventoryTaskId},'%')
         </if>

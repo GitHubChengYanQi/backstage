@@ -23,9 +23,9 @@ import java.util.List;
 @ApiModel
 public class InventoryParam implements Serializable, BaseValidatingParam {
 
-    private Date startTime;
+    private String startTime;
 
-    private Date endTime;
+    private String endTime;
 
     private static final long serialVersionUID = 1L;
 
