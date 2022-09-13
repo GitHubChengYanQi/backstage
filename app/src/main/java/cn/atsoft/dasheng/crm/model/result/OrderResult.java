@@ -31,6 +31,8 @@ public class OrderResult implements Serializable {
 
     private Long totalNumber;
 
+    private Long fileId;
+
     private static final long serialVersionUID = 1L;
 
     private PaymentResult paymentResult;

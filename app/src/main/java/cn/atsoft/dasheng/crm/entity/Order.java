@@ -24,6 +24,9 @@ public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    @TableField("file_id")
+    private Long fileId;
     /**
      * 交货地点
      */
@@ -239,6 +242,15 @@ public class Order implements Serializable {
      */
     @TableField("party_a_zipCode")
     private String partyAZipcode;
+
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
 
     public String getCoding() {
         return coding;
