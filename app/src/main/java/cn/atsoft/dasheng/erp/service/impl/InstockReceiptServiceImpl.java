@@ -44,10 +44,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,6 +123,12 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     @Override
     public XWPFDocument createWord(Long receiptId, Long templateId) {
         InstockReceiptResult detail = detail(receiptId);
+        Map<String, Object> map = new HashMap<>();
+        map.put("申请时间", detail.getCreateTime());
+        map.put("申请人", detail.getUser().getName());
+        map.put("单号", detail.getCoding());
+
+
         /**
          * 取出模板  和替换规则
          */
@@ -138,6 +141,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             XWPFDocument document = new XWPFDocument(inputStream);
 
 
+            replaceInPara(document, map);
             for (int i = 0; i < document.getTables().size(); i++) {
                 TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
                 if (ToolUtil.isNotEmpty(tableRule) && ToolUtil.isNotEmpty(tableRule.getTableType()) &&
@@ -180,6 +184,50 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         }
 
         return null;
+    }
+
+
+    public void replaceInPara(XWPFDocument doc, Map<String, Object> params) {
+        Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+        while (iterator.hasNext()) {
+            replaceInPara(iterator.next(), params);
+        }
+    }
+
+
+    private void replaceInPara(XWPFParagraph para, Map<String, Object> params) {
+        for (String key : params.keySet()) {
+            params.putIfAbsent(key, "");
+        }
+
+        List<XWPFRun> runs;
+        StringBuilder runText = new StringBuilder();
+
+        if (matcher(para.getParagraphText()).find()) {
+            runs = para.getRuns();
+            int j = runs.size();
+            for (int i = 0; i < j; i++) {
+
+                if (ToolUtil.isNotEmpty(runs.get(0).getText(0))) {
+                    runText.append(runs.get(0).getText(0));
+                }
+                //保留最后一个段落，在这段落中替换值，保留原有段落样式
+                if (!((j - 1) == i)) {
+                    para.removeRun(0);
+                }
+            }
+            String text = runText.toString();
+            Matcher matcher;
+            while ((matcher = matcher(text)).find()) {
+                String group = matcher.group(1);
+                if (group.equals("${sku}") || group.equals("${pay}")) {
+                    text = matcher.replaceFirst("");
+                } else {
+                    text = matcher.replaceFirst(String.valueOf(params.get(group)));
+                }
+            }
+            runs.get(0).setText(text, 0);
+        }
     }
 
 
