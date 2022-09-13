@@ -262,7 +262,7 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
                 }
             }
             List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds)
-                    .isNotNull("form_id").eq("display", 1).list();
+                    .eq("display", 1).list();
             Set<Long> setAnomalyIds = new HashSet<>();
             for (AnomalyDetail anomalyDetail : anomalyDetails) {
                 setAnomalyIds.add(anomalyDetail.getAnomalyId());
