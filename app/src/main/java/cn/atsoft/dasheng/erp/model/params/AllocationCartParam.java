@@ -25,6 +25,8 @@ public class AllocationCartParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<AllocationCartParam> allocationCartParams ;
+
+    private Integer haveBrand;
     @ApiModelProperty("")
     private Long allocationCartId;
     private Long inkindId;
