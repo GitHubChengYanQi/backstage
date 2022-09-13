@@ -25,6 +25,8 @@ import java.util.List;
 @ApiModel
 public class InventoryResult implements Serializable {
 
+    private List<InventoryStockResult> stockResults;
+
     private Long inkindId;
 
     private static final long serialVersionUID = 1L;
