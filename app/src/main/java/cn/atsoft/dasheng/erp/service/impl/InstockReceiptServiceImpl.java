@@ -1,11 +1,21 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.Excel.pojo.TempReplaceRule;
+import cn.atsoft.dasheng.Word.OrderReplace;
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.entity.InstockLogDetail;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.entity.InstockReceipt;
 import cn.atsoft.dasheng.erp.mapper.InstockReceiptMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.InstockReceiptParam;
@@ -15,21 +25,32 @@ import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InstockLogDetailService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.InstockReceiptService;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.StepsService;
+import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-import java.util.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  * <p>
@@ -56,8 +77,22 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     private InstockOrderService instockOrderService;
     @Autowired
     private ActivitiProcessTaskService taskService;
+    @Autowired
+    private FileInfoService fileInfoService;
+    @Autowired
+    private OrderReplace orderReplace;
+    @Autowired
+    private TemplateService templateService;
+    @Autowired
+    private WxCpService wxCpService;
+    @Autowired
+    private MediaService mediaService;
+
+    @Autowired
+    private OrderUpload orderUpload;
 
     @Override
+
     public void add(InstockReceiptParam param) {
         InstockReceipt entity = getEntity(param);
         this.save(entity);
@@ -87,8 +122,243 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
     }
 
+
     @Override
-    public InstockReceiptResult detail(Long receiptId) { 
+    public XWPFDocument createWord(Long receiptId, Long templateId) {
+        InstockReceiptResult detail = detail(receiptId);
+        /**
+         * 取出模板  和替换规则
+         */
+        Template template = templateService.getById(templateId);
+        FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+        TempReplaceRule replaceRules = JSON.parseObject(template.getReplaceRule(), TempReplaceRule.class);
+
+        try {
+            InputStream inputStream = Files.newInputStream(Paths.get(fileInfo.getFilePath()));
+            XWPFDocument document = new XWPFDocument(inputStream);
+
+
+            for (int i = 0; i < document.getTables().size(); i++) {
+                TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
+                if (ToolUtil.isNotEmpty(tableRule) && tableRule.getTableType().equals("sku")) {        //循环插入规则则
+
+                    XWPFTable xwpfTable = document.getTableArray(i);     //需要替换表格的位置
+                    Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
+                    List<XWPFTable> xwpfTables = new ArrayList<>();
+
+
+                    for (String customer : customerMap.keySet()) {
+                        XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
+                        List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
+                        replace(document, newTable, customer, results, tableRule, replaceRules.getReplaceRules());
+                        xwpfTables.add(newTable);
+                    }
+
+
+                    int pos = document.getPosOfTable(xwpfTable);  //删除模板中需替换的表格
+                    document.removeBodyElement(pos);
+
+                    int tablePos = pos;
+                    for (XWPFTable table : xwpfTables) {          //插入替换完的表格
+                        document.insertTable(tablePos, table);
+                        tablePos++;
+                    }
+                }
+            }
+
+
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            document.write(bao);
+            FileOutputStream fileOutputStream = new FileOutputStream("D:/tmp/\\test.docx");
+            fileOutputStream.write(bao.toByteArray());
+            File file = new File("D:/tmp/\\test.docx");
+            orderUpload.upload(file);
+            return document;
+
+        } catch (Exception e) {
+            //异常处理
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    private void replace(XWPFDocument document, XWPFTable xwpfTable, String customer, List<InstockLogDetailResult> results, TempReplaceRule.ReplaceRule tableRule, List<TempReplaceRule.ReplaceRule> replaceRules) {
+
+        for (int i = 0; i < xwpfTable.getRows().size(); i++) {   //表格里循环 行
+
+            String rowRule = OrderReplace.getRowRule(i, tableRule, replaceRules);   //行替换规则
+            XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
+            switch (rowRule) {
+                case "none":
+                    easyCopy(row, customer);
+                    break;
+                case "sku":
+                    boolean copy = loopCopy(xwpfTable, row, results);
+                    if (copy) {
+                        document.createParagraph();   //表格之间 插入回车
+                        return;
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void easyCopy(XWPFTableRow sourceRow, String content) {
+        List<XWPFTableCell> cellList = sourceRow.getTableCells();
+        if (ToolUtil.isEmpty(cellList)) {
+            return;
+        }
+        for (XWPFTableCell xwpfTableCell : cellList) {
+            Matcher matcher = matcher(xwpfTableCell.getText());
+            while (matcher.find()) {
+                String group = matcher.group(0);
+                switch (group) {
+                    case "${供应商}":
+                        xwpfTableCell.removeParagraph(0);
+                        xwpfTableCell.setText(content);
+                        break;
+                }
+            }
+        }
+    }
+
+
+    public boolean loopCopy(XWPFTable table, XWPFTableRow sourceRow, List<InstockLogDetailResult> results) {
+        List<XWPFTableCell> cellList = sourceRow.getTableCells();
+        if (null == cellList) {
+            return true;
+        }
+        for (XWPFTableCell sourceCell : cellList) {
+            Matcher matcher = matcher(sourceCell.getText());
+            while (matcher.find()) {
+                String group = matcher.group(0);
+                switch (group) {
+                    case "${物料名称}":   //TODO  取标的物替换规则
+                    case "${产品名称}":
+                    case "${型号规格}":
+                    case "${品牌厂家}":
+                    case "${数量}":
+                    case "${序号}":
+                        return insertNewRow(table, sourceRow, results);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 拷贝当前行 新建
+     *
+     * @param table
+     * @param xwpfTableRow
+     * @param results
+     */
+    private boolean insertNewRow(XWPFTable table, XWPFTableRow xwpfTableRow, List<InstockLogDetailResult> results) {
+        int size;
+
+        int size1 = results.size();//  需要插入行的长度
+
+
+        for (int i1 = 0; i1 < size1; i1++) {
+            size = table.getRows().size();   //当前表格最后一行的位置
+            List<XWPFTableCell> cellList = xwpfTableRow.getTableCells();
+            if (null == cellList) {
+                return true;
+            }
+            InstockLogDetailResult instockLogDetailResult = results.get(i1);
+            XWPFTableRow newRow = table.insertNewTableRow(size);
+            newRow.getCtRow().setTrPr(xwpfTableRow.getCtRow().getTrPr());
+
+            for (XWPFTableCell xwpfTableCell : cellList) {    //新插入列
+
+                //复制列及其属性和内容
+                XWPFTableCell targetCell = newRow.addNewTableCell();
+                //列属性
+                targetCell.getCTTc().setTcPr(xwpfTableCell.getCTTc().getTcPr());
+                //段落属性
+                if (xwpfTableCell.getParagraphs() != null && xwpfTableCell.getParagraphs().size() > 0) {
+                    targetCell.getParagraphs().get(0).getCTP().setPPr(xwpfTableCell.getParagraphs().get(0).getCTP().getPPr());
+                    if (xwpfTableCell.getParagraphs().get(0).getRuns() != null && xwpfTableCell.getParagraphs().get(0).getRuns().size() > 0) {
+                        XWPFRun cellR = targetCell.getParagraphs().get(0).createRun();
+                        cellR.setText(xwpfTableCell.getText());
+                        cellR.setBold(xwpfTableCell.getParagraphs().get(0).getRuns().get(0).isBold());
+                    } else {
+                        targetCell.setText(xwpfTableCell.getText());
+                    }
+                } else {
+                    targetCell.setText(xwpfTableCell.getText());
+                }
+                replace(xwpfTableCell, instockLogDetailResult, i1);  //替换
+            }
+
+            xwpfTableRow = newRow;
+        }
+        table.removeRow(table.getRows().size() - 1);
+        return true;
+    }
+
+    /**
+     * 替换
+     *
+     * @param xwpfTableCell
+     * @param instockLogDetailResult
+     * @param i
+     */
+    private void replace(XWPFTableCell xwpfTableCell, InstockLogDetailResult instockLogDetailResult, int i) {
+        Matcher matcher = matcher(xwpfTableCell.getText());
+        while (matcher.find()) {      //每一列替换
+            String group = matcher.group(0);
+            switch (group) {
+                case "${物料名称}":
+                    xwpfTableCell.removeParagraph(0);
+                    xwpfTableCell.setText(instockLogDetailResult.getSkuResult().getStandard());
+                    break;
+                case "${产品名称}":
+                    xwpfTableCell.removeParagraph(0);
+                    xwpfTableCell.setText(instockLogDetailResult.getSkuResult().getSpuResult().getName());
+                    break;
+                case "${型号规格}":
+                    xwpfTableCell.removeParagraph(0);
+                    xwpfTableCell.setText(instockLogDetailResult.getSkuResult().getSpecifications());
+                    break;
+                case "${品牌厂家}":
+                    xwpfTableCell.removeParagraph(0);
+                    if (ToolUtil.isEmpty(instockLogDetailResult.getBrandResult()) || ToolUtil.isEmpty(instockLogDetailResult.getBrandResult().getBrandName())) {
+                        xwpfTableCell.setText("");
+                    } else {
+                        xwpfTableCell.setText(instockLogDetailResult.getBrandResult().getBrandName());
+                    }
+                    break;
+                case "${数量}":
+                    xwpfTableCell.removeParagraph(0);
+                    xwpfTableCell.setText(instockLogDetailResult.getNumber() + "");
+                    break;
+                case "${序号}":
+                    xwpfTableCell.removeParagraph(0);
+                    xwpfTableCell.setText(i + 1 + "");
+                    break;
+            }
+        }
+    }
+
+
+    /**
+     * 正则匹配字符串
+     *
+     * @param str
+     * @return
+     */
+    public static Matcher matcher(String str) {
+        Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(str);
+        return matcher;
+    }
+
+
+    @Override
+    public InstockReceiptResult detail(Long receiptId) {
         InstockReceipt instockReceipt = this.getById(receiptId);
         InstockReceiptResult result = new InstockReceiptResult();
         ToolUtil.copyProperties(instockReceipt, result);

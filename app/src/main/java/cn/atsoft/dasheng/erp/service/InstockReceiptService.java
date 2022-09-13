@@ -7,7 +7,9 @@ import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.InstockReceiptParam;
 import cn.atsoft.dasheng.erp.model.result.InstockReceiptResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -29,6 +31,8 @@ public interface InstockReceiptService extends IService<InstockReceipt> {
     void add(InstockReceiptParam param);
 
     void addReceipt(InstockOrderParam param, List<InstockLogDetail> instockLogDetails);
+
+    XWPFDocument createWord( Long receiptId, Long fileId);
 
     InstockReceiptResult detail(Long receiptId);
 

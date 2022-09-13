@@ -9,10 +9,15 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,14 +99,27 @@ public class InstockReceiptController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InstockReceiptResult> list(@RequestBody(required = false) InstockReceiptParam instockReceiptParam) {
-        if(ToolUtil.isEmpty(instockReceiptParam)){
+        if (ToolUtil.isEmpty(instockReceiptParam)) {
             instockReceiptParam = new InstockReceiptParam();
         }
         return this.instockReceiptService.findPageBySpec(instockReceiptParam);
     }
 
 
-
+    @RequestMapping(value = "/createWord", method = RequestMethod.POST)
+    public ResponseData<InstockReceiptResult> createWord(HttpServletResponse response, @RequestBody InstockReceiptParam instockReceiptParam) {
+        try {
+            XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getReceiptId(), instockReceiptParam.getTemplateId());
+            String fileName = "test.docx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            OutputStream os = response.getOutputStream();
+            document.write(os);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseData.success();
+    }
 
 }
 

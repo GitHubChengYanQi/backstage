@@ -924,6 +924,21 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
     @Override
     public PageInfo pageList(InventoryParam param) {
+
+        /**
+         * 通过库位查询
+         */
+        if (ToolUtil.isNotEmpty(param.getPositionId())) {
+            List<Long> positionChild = positionsService.getEndChild(param.getPositionId());
+            List<InventoryStock> inventoryStocks = positionChild.size() == 0 ? new ArrayList<>() : inventoryStockService.query().in("position_id", positionChild).eq("display", 1).list();
+            List<Long> inventoryIds = new ArrayList<>();
+            for (InventoryStock inventoryStock : inventoryStocks) {
+                inventoryIds.add(inventoryStock.getInventoryId());
+            }
+            inventoryIds.add(0L);
+            param.setInventoryIds(inventoryIds);
+        }
+
         Page<InventoryResult> pageContext = getPageContext();
         IPage<InventoryResult> page = this.baseMapper.pageList(pageContext, param);
         format(page.getRecords());

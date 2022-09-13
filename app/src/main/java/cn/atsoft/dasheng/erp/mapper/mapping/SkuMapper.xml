@@ -181,7 +181,7 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-        ,daoxin_erp_stock_details.number as stockNumber
+        ,ifNULL(daoxin_erp_stock_details.number,0)  as stockNumber
         ,goods_spu.display
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id

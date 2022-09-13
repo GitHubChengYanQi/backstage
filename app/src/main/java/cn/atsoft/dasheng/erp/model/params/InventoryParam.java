@@ -23,7 +23,13 @@ import java.util.List;
 @ApiModel
 public class InventoryParam implements Serializable, BaseValidatingParam {
 
+    private String startTime;
+
+    private String endTime;
+
     private static final long serialVersionUID = 1L;
+
+    private List<Long> inventoryIds;
 
     private List<String> times;
 
@@ -54,8 +60,6 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
     private Long positionId;
 
     private Date currentTime;
-
-    private Date endTime;
 
     private Long userId;
 

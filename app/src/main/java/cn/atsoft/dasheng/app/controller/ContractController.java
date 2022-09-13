@@ -32,6 +32,7 @@ import cn.atsoft.dasheng.crm.model.result.ContractTempleteResult;
 import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
 import cn.atsoft.dasheng.crm.service.ContractTempleteService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
@@ -121,13 +122,17 @@ public class ContractController extends BaseController {
      */
     @RequestMapping(value = "/getWordTables", method = RequestMethod.GET)
     public ResponseData getWordTables(@RequestParam("fileId") Long fileId) {
+
+        XWPFDocument document = null;
         FileInfo fileInfo = fileInfoService.getById(fileId);
-        XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
+        try {
+            document = DocUtil.create(new File(fileInfo.getFilePath()));
+        } catch (Exception e) {
+            throw new ServiceException(500, "文件不支持");
+        }
+
         List<XWPFTable> tables = document.getTables();
-
-
         List<List<List<String>>> tableList = new ArrayList<>();
-
         for (XWPFTable table : tables) {   //表格
             List<List<String>> lines = new ArrayList<>();
             List<XWPFTableRow> rows = table.getRows();
@@ -140,7 +145,6 @@ public class ContractController extends BaseController {
             }
             tableList.add(lines);
         }
-
         return ResponseData.success(tableList);
     }
 
