@@ -11,10 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.AllocationMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
-import cn.atsoft.dasheng.erp.model.result.AllocationCartResult;
-import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
-import cn.atsoft.dasheng.erp.model.result.AllocationResult;
-import cn.atsoft.dasheng.erp.model.result.InstockListResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -117,6 +114,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private InstockListService instockListService;
+
+    @Autowired
+    private SkuService skuService;
 
 
     @Override
@@ -470,11 +470,18 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         }
         List<AllocationDetail> details = allocationIds.size() == 0 ? new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
         List<AllocationCart> allocationCarts = allocationIds.size() == 0 ? new ArrayList<>() : allocationCartService.query().in("allocation_id", allocationIds).eq("type", "carry").eq("display", 1).list();
+        List<Long> querySkuIds = new ArrayList<>();
+        for (AllocationDetail detail : details) {
+            querySkuIds.add(detail.getSkuId());
+        }
+        querySkuIds = querySkuIds .stream().distinct().collect(Collectors.toList());
+        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(querySkuIds);
         for (AllocationResult datum : data) {
             List<Long> skuIds = new ArrayList<>();
             List<Long> storehousePositionsIds = new ArrayList<>();
             int detailNumber = 0;
             int doneNumber = 0;
+            List<SkuSimpleResult> skuSimpleResultList = new ArrayList<>();
             for (AllocationDetail detail : details) {
                 if (datum.getAllocationId().equals(detail.getAllocationId())) {
                     skuIds.add(detail.getSkuId());
@@ -483,7 +490,14 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                         storehousePositionsIds.add(detail.getStorehousePositionsId());
                     }
                 }
-
+                for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                    if (skuSimpleResultList.size()<2){
+                        if (skuSimpleResult.getSkuId().equals(detail.getSkuId())){
+                            skuSimpleResultList.add(skuSimpleResult);
+                        }
+                    }
+                }
+                datum.setSkuResults(skuSimpleResultList);
             }
             for (AllocationCart allocationCart : allocationCarts) {
                 if (allocationCart.getAllocationId().equals(datum.getAllocationId())) {

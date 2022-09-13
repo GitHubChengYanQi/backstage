@@ -441,19 +441,27 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 maintenanceResult.setSelectParamResults(selectParams);
             }
 
-
             List<Long> storehousePositionsIds = new ArrayList<>();
             skuIds = new ArrayList<>();
             Integer num = 0;
             Integer doneNumber = 0;
+            List<SkuSimpleResult> skuSimpleResultList = new ArrayList<>();
+
             for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
                 if (maintenanceDetail.getMaintenanceId().equals(maintenanceResult.getMaintenanceId())) {
                     storehousePositionsIds.add(maintenanceDetail.getStorehousePositionsId());
                     skuIds.add(maintenanceDetail.getSkuId());
                     num += maintenanceDetail.getNumber();
                     doneNumber += maintenanceDetail.getDoneNumber();
+                    for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                        if( skuSimpleResultList.size() <2 && maintenanceDetail.getSkuId().equals(skuSimpleResult.getSkuId())){
+                                skuSimpleResultList.add(skuSimpleResult);
+                        }
+                    }
+
                 }
             }
+            maintenanceResult.setSkuResults(skuSimpleResultList);
             skuIds = skuIds.stream().distinct().collect(Collectors.toList());
             storehousePositionsIds = storehousePositionsIds.stream().distinct().collect(Collectors.toList());
             maintenanceResult.setNumberCount(num);
