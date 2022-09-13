@@ -28,5 +28,7 @@ public class AllBomResult {
         private String name;
 
         private String spuClass;
+
+        private SkuResult skuResult;
     }
 }

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.appBase.service;
 import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.model.params.MediaParam;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -75,6 +76,8 @@ public interface MediaService extends IService<Media> {
     Media getMediaId(String type ,Long userId);
 
     List<String> getMediaUrls(List<Long> mediaIds, Long userId);
+
+    List<MediaUrlResult> getMediaUrlResults(List<Long> mediaIds);
 
     String getMediaUrl(Long mediaId, Long userId);
 

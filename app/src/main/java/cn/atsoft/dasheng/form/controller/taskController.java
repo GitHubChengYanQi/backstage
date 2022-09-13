@@ -36,6 +36,7 @@ import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -122,6 +123,15 @@ public class taskController extends BaseController {
         }
         remarksService.addComments(auditParam);
         return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/getChildrenTasks", method = RequestMethod.GET)
+    @ApiOperation("获取子一级任务")
+    public ResponseData getChildrenTasks(Long taskId) {
+        List<ActivitiProcessTask> activitiProcessTasks = taskService.query().eq("pid", taskId).eq("display", 1).list();
+        List<ActivitiProcessTaskResult> activitiProcessTaskResults = BeanUtil.copyToList(activitiProcessTasks, ActivitiProcessTaskResult.class);
+        taskService.format(activitiProcessTaskResults);
+        return ResponseData.success(activitiProcessTaskResults);
     }
 
 

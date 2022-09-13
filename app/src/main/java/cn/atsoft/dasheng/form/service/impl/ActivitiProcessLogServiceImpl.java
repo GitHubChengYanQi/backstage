@@ -141,6 +141,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private ProductionPickListsCartService pickListsCartService;
     @Autowired
     private AllocationCartService allocationCartService;
+    @Autowired
+    private ShopCartService shopCartService;
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -521,7 +525,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                          */
                         case "ALLOCATION":
                             List<InstockList> instockLists = instockListService.query().eq("instock_order_id", instockOrder.getInstockOrderId()).eq("display", 1).list();
-                            allocationService.checkCartDone(processTask.getFormId(), instockLists);
+                            allocationService.checkCartDone(processTask.getPid(), instockLists);
+                            skuService.skuMessage(instockLists.get(0).getSkuId());
                             break;
                         default:
 
@@ -620,8 +625,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
                             instockOrderParam.setMainTaskId(processTask.getMainTaskId());
                         }
-                        instockOrderParam.setSourceId(processTask.getProcessTaskId());
-                        instockOrderParam.setPid(processTask.getProcessTaskId());
+                        instockOrderParam.setSourceId(parentTask.getProcessTaskId());
+                        instockOrderParam.setPid(parentTask.getProcessTaskId());
                         instockOrderParam.setListParams(totalList);
                         InstockOrder addEntity = instockOrderService.add(instockOrderParam);
                         for (AllocationCart allocationCart : allocationCarts) {

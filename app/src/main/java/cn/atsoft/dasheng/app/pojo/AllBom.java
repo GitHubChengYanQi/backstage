@@ -68,7 +68,7 @@ public class AllBom {
 
     public AllBomResult getResult() {
         AllBomResult allBomResult = new AllBomResult();
-        List<Object> canProduce = new ArrayList<>();
+        List<AnalysisResult> canProduce = new ArrayList<>();
         BomOrder bomOrder = new BomOrder();
 
         /**

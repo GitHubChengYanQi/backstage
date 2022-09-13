@@ -30,6 +30,9 @@ import cn.atsoft.dasheng.daoxin.entity.DaoxinPosition;
 import cn.atsoft.dasheng.daoxin.model.result.DaoxinDeptResult;
 import cn.atsoft.dasheng.daoxin.service.DaoxinDeptService;
 import cn.atsoft.dasheng.daoxin.service.DaoxinPositionService;
+import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.generalForm.entity.GeneralFormData;
+import cn.atsoft.dasheng.generalForm.service.GeneralFormDataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.Position;
 import cn.atsoft.dasheng.sys.modular.system.model.result.PositionResult;
@@ -69,6 +72,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     private DaoxinDeptService daoxinDeptService;
     @Autowired
     private CompanyRoleService roleService;
+    @Autowired
+    private GeneralFormDataService generalFormDataService;
 
 
     @Override
@@ -106,26 +111,30 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         }
 
         if (ToolUtil.isNotEmpty(param.getDeptName())) {   //部门
-            DaoxinDept daoxinDept = daoxinDeptService.query().eq("full_name", param.getDeptName()).one();
-            if (ToolUtil.isNotEmpty(daoxinDept)) {
-                entity.setDeptId(daoxinDept.getDeptId());
+            GeneralFormData sys_dept = generalFormDataService.query().eq("value", param.getDeptName()).eq("table_name", "sys_dept").eq("field_name",param.getDeptName()).orderByDesc("create_time").last("limit 1").one();
+            if (ToolUtil.isNotEmpty(sys_dept)) {
+                entity.setDeptId(sys_dept.getId());
             } else {
-                DaoxinDept newDept = new DaoxinDept();
-                newDept.setFullName(param.getDeptName());
-                daoxinDeptService.save(newDept);
-                entity.setDeptId(newDept.getDeptId());
+                GeneralFormData generalFormData = new GeneralFormData();
+                generalFormData.setTableName("sys_dept");
+                generalFormData.setFieldName("full_name");
+                generalFormData.setValue(param.getDeptName());
+                generalFormDataService.save(generalFormData);
+                entity.setDeptId(generalFormData.getId());
             }
         }
 
         if (ToolUtil.isNotEmpty(param.getPositionName())) {
-            CompanyRole position = roleService.query().eq("position", param.getPositionName()).one();
-            if (ToolUtil.isNotEmpty(position)) {
-                entity.setCompanyRole(position.getCompanyRoleId());
+            GeneralFormData sys_role = generalFormDataService.query().eq("value", param.getDeptName()).eq("table_name", "sys_role").eq("field_name",param.getPositionName()).orderByDesc("create_time").last("limit 1").one();
+            if (ToolUtil.isNotEmpty(sys_role)) {
+                entity.setCompanyRole(sys_role.getId());
             } else {
-                CompanyRole newRole = new CompanyRole();
-                newRole.setPosition(param.getPositionName());
-                roleService.save(newRole);
-                entity.setCompanyRole(newRole.getCompanyRoleId());
+                GeneralFormData generalFormData = new GeneralFormData();
+                generalFormData.setTableName("sys_role");
+                generalFormData.setFieldName("name");
+                generalFormData.setValue(param.getPositionName());
+                generalFormDataService.save(generalFormData);
+                entity.setCompanyRole(generalFormData.getId());
             }
         }
 
@@ -151,8 +160,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     public Long insert(ContactsParam param) {
         Contacts contacts;
-        DaoxinDept daoxinDept = null;
-        CompanyRole companyRole = null;
+        GeneralFormData daoxinDept = new GeneralFormData();
+        GeneralFormData companyRole = new GeneralFormData();
         contacts = this.query().eq("contacts_id", param.getContactsName()).one();   //联系人
         if (ToolUtil.isNotEmpty(contacts)) {
             return contacts.getContactsId();
@@ -162,23 +171,30 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         this.save(contacts);
 
         if (ToolUtil.isNotEmpty(param.getDeptName())) {                             //部门
-            daoxinDept = daoxinDeptService.query().eq("full_name", param.getDeptName()).one();
+            daoxinDept = generalFormDataService.query().eq("value", param.getDeptName()).eq("table_name", "sys_dept").eq("field_name",param.getDeptName()).orderByDesc("create_time").last("limit 1").one();
             if (ToolUtil.isEmpty(daoxinDept)) {
-                daoxinDept = new DaoxinDept();
-                daoxinDept.setFullName(param.getDeptName());
-                daoxinDeptService.save(daoxinDept);
+                GeneralFormData generalFormData= new GeneralFormData();
+                generalFormData = new GeneralFormData();
+                generalFormData.setTableName("sys_dept");
+                generalFormData.setFieldName("full_name");
+                generalFormData.setValue(param.getDeptName());
+                generalFormDataService.save(generalFormData);
+                contacts.setDeptId(generalFormData.getId());
             }
         }
         if (ToolUtil.isNotEmpty(param.getPositionName())) {                        //职位
-            companyRole = roleService.query().eq("position", param.getPositionName()).one();
+            companyRole = generalFormDataService.query().eq("value", param.getPositionName()).eq("table_name", "sys_role").eq("field_name",param.getPositionName()).orderByDesc("create_time").last("limit 1").one();
             if (ToolUtil.isEmpty(companyRole)) {
-                List<CompanyRole> positions = roleService.query().eq("position", param.getPositionName()).list();
+                List<GeneralFormData> positions = generalFormDataService.query().eq("value", param.getDeptName()).eq("table_name", "sys_role").eq("field_name",param.getPositionName()).orderByDesc("create_time").list();
                 if (ToolUtil.isNotEmpty(positions)) {
                     throw new ServiceException(500, "当前职位以存在");
                 }
-                companyRole = new CompanyRole();
-                companyRole.setPosition(param.getPositionName());
-                roleService.save(companyRole);
+                GeneralFormData generalFormData= new GeneralFormData();
+                generalFormData.setValue(param.getPositionName());
+                generalFormData.setTableName("sys_role");
+                generalFormData.setFieldName("name");
+                generalFormDataService.save(generalFormData);
+                contacts.setCompanyRole(generalFormData.getId());
             }
         }
         // 添加电话号码
@@ -191,10 +207,10 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
         }
         if (ToolUtil.isNotEmpty(daoxinDept)) {
-            contacts.setDeptId(daoxinDept.getDeptId());
+            contacts.setDeptId(daoxinDept.getId());
         }
         if (ToolUtil.isNotEmpty(companyRole)) {
-            contacts.setCompanyRole(companyRole.getCompanyRoleId());
+            contacts.setCompanyRole(companyRole.getId());
         }
 
 
@@ -369,16 +385,12 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
         }
         //查询部门
-        List<DaoxinDept> daoxinDepts = deptIds.size() == 0 ? new ArrayList<>() : daoxinDeptService.listByIds(deptIds);
-        List<DaoxinDeptResult> deptResults = new ArrayList<>();
-        for (DaoxinDept daoxinDept : daoxinDepts) {
-            DaoxinDeptResult daoxinDeptResult = new DaoxinDeptResult();
-            ToolUtil.copyProperties(daoxinDept, daoxinDeptResult);
-            deptResults.add(daoxinDeptResult);
-        }
+        List<GeneralFormData> deptList = deptIds.size() == 0 ? new ArrayList<>() : generalFormDataService.lambdaQuery().in(GeneralFormData::getId, deptIds).list();
+
+
 
         //查询职位
-        List<CompanyRole> companyRoleList = roleIds.size() == 0 ? new ArrayList<>() : companyRoleService.lambdaQuery().in(CompanyRole::getCompanyRoleId, roleIds).list();
+        List<GeneralFormData> roleList =roleIds.size() == 0 ? new ArrayList<>() : generalFormDataService.lambdaQuery().in(GeneralFormData::getId, roleIds).list();
         List<Long> ids = new ArrayList<>();
         List<ContactsBind> contactsBinds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(contactsIds)) {
@@ -416,10 +428,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 }
             }
 
-            for (CompanyRole companyRole : companyRoleList) {
-                if (companyRole.getCompanyRoleId().equals(record.getCompanyRole())) {
+            for (GeneralFormData companyRole : roleList) {
+                if (companyRole.getId().equals(record.getCompanyRole())) {
                     CompanyRoleResult companyRoleResult = new CompanyRoleResult();
-                    ToolUtil.copyProperties(companyRole, companyRoleResult);
+                    companyRoleResult.setCompanyRoleId(companyRole.getId());
+                    companyRoleResult.setPosition(companyRole.getValue());
                     record.setCompanyRoleResult(companyRoleResult);
                     break;
                 }
@@ -436,9 +449,13 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
             record.setPhoneParams(List);
 
-            for (DaoxinDeptResult deptResult : deptResults) {
-                if (ToolUtil.isNotEmpty(record.getDeptId()) && record.getDeptId().equals(deptResult.getDeptId())) {
-                    record.setDeptResult(deptResult);
+            for (GeneralFormData deptResult : deptList) {
+                if (ToolUtil.isNotEmpty(record.getDeptId()) && record.getDeptId().equals(deptResult.getId())) {
+
+                    record.setDeptResult(new DaoxinDeptResult(){{
+                        setDeptId(deptResult.getId());
+                        setFullName(deptResult.getValue());
+                    }});
                 }
             }
 

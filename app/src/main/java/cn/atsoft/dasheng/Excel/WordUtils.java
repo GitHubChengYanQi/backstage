@@ -430,7 +430,6 @@ public class WordUtils {
                 }
             }
             runs.get(0).setText(text, 0);
-
         }
     }
 
