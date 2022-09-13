@@ -116,14 +116,20 @@
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
         </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user =  #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.times != null and paramCondition.times.size == 2">
+            and create_time between
+            <foreach collection="paramCondition.times" index="index" item="state" separator=" and ">
+                #{state}
+            </foreach>
         </if>
     </select>
 

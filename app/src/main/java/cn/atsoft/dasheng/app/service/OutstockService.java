@@ -66,7 +66,7 @@ public interface OutstockService extends IService<Outstock> {
      * @author song
      * @Date 2021-07-17
      */
-     PageInfo<OutstockResult> findPageBySpec(OutstockParam param, DataScope dataScope );
+     PageInfo findPageBySpec(OutstockParam param, DataScope dataScope );
 
     OutstockResult detail (Long id);
 

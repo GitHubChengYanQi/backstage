@@ -80,7 +80,7 @@ public class SkuBrandBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SkuBrandBindResult> detail(@RequestBody SkuBrandBindParam skuBrandBindParam) {
+    public ResponseData detail(@RequestBody SkuBrandBindParam skuBrandBindParam) {
         SkuBrandBind detail = this.skuBrandBindService.getById(skuBrandBindParam.getSkuBrandBind());
         SkuBrandBindResult result = new SkuBrandBindResult();
         ToolUtil.copyProperties(detail, result);

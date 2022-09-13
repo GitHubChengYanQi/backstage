@@ -39,6 +39,7 @@ import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
@@ -139,6 +140,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     @Autowired
     private TaskParticipantService taskParticipantService;
 
+
     @Override
     @Transactional
     public Object add(AnomalyOrderParam param) {
@@ -195,6 +197,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
         inkindService.updateAnomalyInKind(inkindIds);
         anomalyService.updateBatchById(anomalies);    //更新异常单据状态
+
 
         if (entity.getType().equals("Stocktaking") || entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
             inventoryStockService.updateStatus(anomalyIds);
@@ -257,6 +260,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         InstockHandle instockHandle = new InstockHandle();
         instockHandle.setSkuId(anomaly.getSkuId());
         instockHandle.setBrandId(anomaly.getBrandId());
+        instockHandle.setCustomerId(anomaly.getCustomerId());
         instockHandle.setNumber(anomaly.getNeedNumber());
         instockHandle.setType(type);
         instockHandle.setInstockOrderId(anomaly.getFormId());
@@ -506,21 +510,20 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
              * 有核实的数量 才走判断
              */
             //核实数量 修改库存数
-
-            if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {
+            if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {  //判断复核数
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
                 int size = checkNumbers.size();
                 CheckNumber checkNumber = checkNumbers.get(size - 1);
-                if (ToolUtil.isNotEmpty(anomalyResult.getCustomerNums())) {     //选择供应商需入库
-                    for (AnomalyCustomerNum customerNum : anomalyResult.getCustomerNums()) {
-                        inventoryService.inStockUpdateStock(anomalyResult.getSkuId(), anomalyResult.getBrandId(), customerNum.getCustomerId(), anomalyResult.getPositionId(), customerNum.getNum());
+                if (check(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), checkNumber.getNumber())) {    //复核数 + 备料数  = 库存数  不需要修改库存
+                    if (ToolUtil.isNotEmpty(anomalyResult.getCustomerNums())) {     //选择供应商需入库
+                        for (AnomalyCustomerNum customerNum : anomalyResult.getCustomerNums()) {
+                            inventoryService.inStockUpdateStock(anomalyResult.getSkuId(), anomalyResult.getBrandId(), customerNum.getCustomerId(), anomalyResult.getPositionId(), customerNum.getNum());
+                        }
+                    } else {                                                        //需出库
+                        inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), Long.valueOf(checkNumber.getNumber()));
                     }
-                } else {                                                        //需出库
-                    inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(),  Long.valueOf(checkNumber.getNumber()));
                 }
-
             }
-
 
             for (AnomalyDetailResult detail : anomalyResult.getDetails()) {
                 stockDetailsService.splitInKind(detail.getInkindId());   //拆分 库存中的实物
@@ -589,6 +592,38 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     }
 
     /**
+     * 判断复核数
+     *
+     * @param skuId
+     * @param brandId
+     * @param positionId
+     * @param checkNum
+     * @return
+     */
+    @Override
+    public boolean check(Long skuId, Long brandId, Long positionId, Integer checkNum) {
+        Integer lockNumber = listsCartService.getLockNumber(new QuerryLockedParam() {{    //当前物料备料数
+            setSkuId(skuId);
+            setBrandId(brandId);
+            setPositionId(positionId);
+
+        }});
+
+        if (ToolUtil.isEmpty(lockNumber)) {
+            lockNumber = 0;
+        }
+
+        Integer stockNumber = stockDetailsService.getNumberByStock(skuId, brandId, positionId);   //当前物料库存数
+        if (ToolUtil.isEmpty(stockNumber)) {
+            stockNumber = 0;
+        }
+        if (checkNum + lockNumber == stockNumber) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 入库异常
      *
      * @param anomalyResults
@@ -601,24 +636,38 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
         for (AnomalyResult anomaly : anomalyResults) {
 
-
             long errorNum = 0;
             boolean t = false;
-            for (AnomalyDetailResult detail : anomaly.getDetails()) {
-                if (detail.getStauts() == -1) {
-                    errorNum = errorNum + detail.getNumber();
+
+            if (ToolUtil.isNotEmpty(anomaly.getCheckNumber())) {  //有复核数
+                List<CheckNumber> checkNumbers = JSON.parseArray(anomaly.getCheckNumber(), CheckNumber.class);
+                CheckNumber checkNumber = checkNumbers.get(checkNumbers.size() - 1);   //取复核数最后一位
+                if (anomaly.getInstockNumber() == 0) {      //入库数量为0  复核数全部终止入库
+                    t = true;
+                    errorNum = checkNumber.getNumber();
+                } else if (checkNumber.getNumber() - anomaly.getInstockNumber() > 0) {   //入库数不为0 复合数减去入库数
+                    errorNum = checkNumber.getNumber() - anomaly.getInstockNumber();
+                    t = true;
+                }
+            } else {                                            //无复核数
+                if (anomaly.getInstockNumber() == 0) {
+                    t = true;
+                    errorNum = anomaly.getRealNumber();
+                } else if (anomaly.getRealNumber() - anomaly.getInstockNumber() > 0) {
+                    errorNum = anomaly.getRealNumber() - anomaly.getInstockNumber();
                     t = true;
                 }
             }
 
-            if (!anomaly.getRealNumber().equals(anomaly.getNeedNumber())) {    //数量核实异常
-                List<CheckNumber> checkNumbers = JSON.parseArray(anomaly.getCheckNumber(), CheckNumber.class);
-                int i = checkNumbers.size() - 1;
-                CheckNumber checkNumber = checkNumbers.get(i);
-                InstockHandle inStockHandle = createInStockHandle(anomaly, "ErrorNumber");
-                inStockHandle.setNumber(checkNumber.getNumber() - anomaly.getNeedNumber());
-                instockHandleService.save(inStockHandle);
-            }
+
+//            if (!anomaly.getRealNumber().equals(anomaly.getNeedNumber())) {    //数量核实异常
+//                List<CheckNumber> checkNumbers = JSON.parseArray(anomaly.getCheckNumber(), CheckNumber.class);
+//                int i = checkNumbers.size() - 1;
+//                CheckNumber checkNumber = checkNumbers.get(i);
+//                InstockHandle inStockHandle = createInStockHandle(anomaly, "ErrorNumber");
+//                inStockHandle.setNumber(checkNumber.getNumber() - anomaly.getNeedNumber());
+//                instockHandleService.save(inStockHandle);
+//            }
 
 
             if (t) {
@@ -631,6 +680,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 instockLogDetail.setType("error");
                 instockLogDetail.setBrandId(anomaly.getBrandId());
                 instockLogDetail.setCustomerId(anomaly.getCustomerId());
+                instockLogDetail.setSourceId(anomaly.getOrderId());
+                instockLogDetail.setSource("anomalyOrder");
                 instockLogDetail.setNumber(errorNum);
                 instockLogDetailService.save(instockLogDetail);
                 /**
@@ -653,16 +704,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         if (ToolUtil.isNotEmpty(result.getInstockNumber()) && result.getInstockNumber() > 0) {   //允许入库 并添加 入库购物车
             addShopCart(result);
-
+            canInStock(result);               //允许入库
             String skuMessage = skuService.skuMessage(result.getSkuId());
             shopCartService.addDynamic(result.getFormId(), "异常物料" + skuMessage + "允许入库");
         }
 
         for (AnomalyDetailResult detail : result.getDetails()) {
-            //终止入库
-            if (detail.getStauts() == -1) {
+            if (detail.getStauts() == -1) {       //终止入库
                 stopInStock(result, detail);
-//                stopInStock(detail.getDetailId());
             }
         }
 
@@ -711,7 +760,18 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         shopCart.setFormId(result.getAnomalyId());
         shopCart.setNumber(result.getInstockNumber());
         shopCartService.save(shopCart);
+    }
 
+    /**
+     * 允许入库
+     *
+     * @param anomalyResult
+     */
+    private void canInStock(AnomalyResult anomalyResult) {
+        Long inStockListId = anomalyResult.getSourceId();
+        InstockList instockList = instockListService.getById(inStockListId);
+        instockList.setAnomalyHandle("canInStock");
+        instockListService.updateById(instockList);
     }
 
     /**
@@ -733,14 +793,12 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
      * @param
      */
     private void stopInStock(AnomalyResult anomalyResult, AnomalyDetailResult detailResult) {
-
         Long inStockListId = anomalyResult.getSourceId();
         InstockList instockList = instockListService.getById(inStockListId);
         instockList.setStatus(-1L);
         instockListService.updateById(instockList);
-
-
     }
+
 
     @Override
     public void delete(AnomalyOrderParam param) {
@@ -809,6 +867,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     public PageInfo<AnomalyOrderResult> findPageBySpec(AnomalyOrderParam param) {
         Page<AnomalyOrderResult> pageContext = getPageContext();
         IPage<AnomalyOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 

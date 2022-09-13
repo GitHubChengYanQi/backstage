@@ -144,11 +144,7 @@ public class InventoryController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/listByTime", method = RequestMethod.GET)
-    public ResponseData listByTime() {
-        List<InventoryResult> results = this.inventoryService.listByTime();
-        return ResponseData.success(results);
-    }
+
 
     /**
      * 扫码 盘点
@@ -203,7 +199,7 @@ public class InventoryController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InventoryResult> detail(@RequestBody InventoryParam inventoryParam) {
+    public ResponseData detail(@RequestBody InventoryParam inventoryParam) {
         InventoryResult detail = this.inventoryService.detail(inventoryParam.getInventoryTaskId());
         return ResponseData.success(detail);
     }

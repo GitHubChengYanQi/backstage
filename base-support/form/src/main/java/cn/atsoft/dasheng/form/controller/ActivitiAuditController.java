@@ -81,7 +81,7 @@ public class ActivitiAuditController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiAuditResult> detail(@RequestBody ActivitiAuditParam activitiAuditParam) {
+    public ResponseData detail(@RequestBody ActivitiAuditParam activitiAuditParam) {
         ActivitiAudit detail = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
         ActivitiAuditResult result = new ActivitiAuditResult();
         ToolUtil.copyProperties(detail, result);
@@ -98,7 +98,7 @@ public class ActivitiAuditController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiAuditResult> list(@RequestBody(required = false) ActivitiAuditParam activitiAuditParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiAuditParam activitiAuditParam) {
         if (ToolUtil.isEmpty(activitiAuditParam)) {
             activitiAuditParam = new ActivitiAuditParam();
         }

@@ -121,7 +121,7 @@ public class ProductionPickListsCartController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickListsCartResult> detail(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
+    public ResponseData detail(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
         ProductionPickListsCart detail = this.productionPickListsCartService.getById(productionPickListsCartParam.getPickListsCart());
         ProductionPickListsCartResult result = new ProductionPickListsCartResult();
         ToolUtil.copyProperties(detail, result);

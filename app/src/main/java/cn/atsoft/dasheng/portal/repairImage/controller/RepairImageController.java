@@ -80,7 +80,7 @@ public class RepairImageController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<RepairImageResult> detail(@RequestBody RepairImageParam repairImageParam) {
+    public ResponseData detail(@RequestBody RepairImageParam repairImageParam) {
         RepairImage detail = this.repairImageService.getById(repairImageParam.getRepairImageId());
         RepairImageResult result = new RepairImageResult();
         ToolUtil.copyProperties(detail, result);

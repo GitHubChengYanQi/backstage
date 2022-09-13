@@ -66,7 +66,7 @@ public interface TemplateService extends IService<Template> {
      * @author
      * @Date 2021-07-21
      */
-    PageInfo<TemplateResult> findPageBySpec(TemplateParam param, DataScope dataScope );
+    PageInfo findPageBySpec(TemplateParam param, DataScope dataScope );
 
     /**
      * 批量删除

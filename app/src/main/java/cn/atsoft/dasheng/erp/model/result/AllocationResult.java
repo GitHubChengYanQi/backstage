@@ -25,8 +25,15 @@ public class AllocationResult implements Serializable {
     private List<AllocationDetailResult> detailResults;
     private List<AllocationCartResult> allocationCartResults;
     private StorehouseResult storehouseResult;
+    private Integer detailNumber;
+    private Integer doneNumber;
     private String statusName;
     private UserResult userResult;
+    @ApiModelProperty("sku总数")
+    private Integer skuCount  ;
+    @ApiModelProperty("仓库总数")
+    private Integer positionCount ;
+
 
     /**
      * 调拨id

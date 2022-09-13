@@ -57,7 +57,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
     Object selectBySku(Long skuId);
 
-    List<BrandResult> selectByBrand(Long skuId, Long brandId, Long storehouseId);
+    List<BrandResult> selectByBrand(Long skuId, Long brandId, Long storehouseId, Long positionId);
 
     Integer getPositionNum(List<Long> skuIds);
 
@@ -103,6 +103,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
 
     List<StorehousePositionsResult> getDetails(List<Long> ids);
+
+    List<StorehousePositionsResult> resultsByIds(List<Long> ids);
 
     /**
      * 查询单条数据，Specification模式

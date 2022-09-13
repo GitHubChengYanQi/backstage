@@ -66,7 +66,7 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual
-    prefix: jazzasd
+    prefix: Captain_Jazz
 
 # 邮件发送（改为自己的账号）
 mail:
@@ -156,4 +156,5 @@ wxcp:
 
 #手机端跳转路径
 mobile:
-  url: https://wx.daoxin.gf2025.com/cp
+  url: http://192.168.0.111:8001/cp
+  apiUrl: http://192.168.0.100:80

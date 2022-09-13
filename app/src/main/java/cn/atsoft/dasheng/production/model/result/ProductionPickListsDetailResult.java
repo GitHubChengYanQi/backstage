@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.production.model.request.StoreHouseNameAndSkuNumber;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -31,23 +32,44 @@ import java.util.Map;
 public class ProductionPickListsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private SkuSimpleResult skuResult;
+
     private List<BrandResult> brandResults;
+
+    private List<Long> positionIds;
+
     private List<StoreHouseNameAndSkuNumber> positionAndStockDetail;
+
     private Integer status;
+
     private String pickListsName;
-    @JSONField(serializeUsing= ToStringSerializer.class)
+
     private Long storehousePositionsId;
-    @JSONField(serializeUsing= ToStringSerializer.class)
+
     private Long storehouseId;
+
     private UserResult userResult;
+
     private String pickListsCoding;
+
     private Integer stockNumber = 0;
+
     private Boolean isMeet;
+
     private List<ProductionPickListsCartResult> cartResults;
+
     private Map<String,String> brandResult;
+
     private ProductionPickListsResult pickListsResult;
+
     private Boolean canPick;
+
+    private List<String> positionNames;
+
+
+    private Integer lockStockDetailNumber;
+
     /**
      * 子表id
      */

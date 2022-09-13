@@ -87,7 +87,7 @@ public class ActivitiProcessTaskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiProcessTaskResult> detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
+    public ResponseData detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
         ActivitiProcessTask detail = this.activitiProcessTaskService.getById(activitiProcessTaskParam.getProcessTaskId());
         ActivitiProcessTaskResult result = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(detail, result);
@@ -104,7 +104,7 @@ public class ActivitiProcessTaskController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiProcessTaskResult> list(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
 
 
         if (ToolUtil.isEmpty(activitiProcessTaskParam)) {

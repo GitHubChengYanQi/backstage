@@ -65,6 +65,6 @@ public interface PhoneService extends IService<Phone> {
      * @author cheng
      * @Date 2021-08-12
      */
-     PageInfo<PhoneResult> findPageBySpec(PhoneParam param, DataScope dataScope );
+     PageInfo findPageBySpec(PhoneParam param, DataScope dataScope );
 
 }

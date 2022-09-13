@@ -90,10 +90,39 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
             List<Long> inkindIds = new ArrayList<>();
             List<Long> skuIds = new ArrayList<>();
             int num = MaintenanceLogDetailParam.getNumber();
+            for (StockDetails details : need) {
+                if (num>0){
+                    int lastNumber = num;
+                    num -= details.getNumber();
+                    if(num>=0){
+                        inkindIds.add(details.getInkindId());
+                        MaintenanceLogDetail log = new MaintenanceLogDetail();
+                        log.setNumber(Math.toIntExact(details.getNumber()));
+                        log.setBrandId(details.getBrandId());
+                        log.setSkuId(details.getSkuId());
+                        log.setInkindId(details.getInkindId());
+                        log.setEnclosure(MaintenanceLogDetailParam.getEnclosure());
+                        logs.add(log);
+                    }else {
+                        inkindIds.add(details.getInkindId());
+                        MaintenanceLogDetail log = new MaintenanceLogDetail();
+                        log.setNumber(lastNumber);
+                        log.setBrandId(details.getBrandId());
+                        log.setSkuId(details.getSkuId());
+                        log.setInkindId(details.getInkindId());
+                        log.setEnclosure(MaintenanceLogDetailParam.getEnclosure());
+                        logs.add(log);
+                    }
+                }
+
+            }
+
+
+
+
             if (num > 0) {
                 for (StockDetails details : need) {
                     inkindIds.add(details.getInkindId());
-                    num -= details.getNumber();
                     MaintenanceLogDetail log = new MaintenanceLogDetail();
                     log.setNumber(Math.toIntExact(details.getNumber()));
                     log.setBrandId(details.getBrandId());

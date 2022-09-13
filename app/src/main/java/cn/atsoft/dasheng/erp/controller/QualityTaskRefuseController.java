@@ -96,7 +96,7 @@ public class QualityTaskRefuseController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityTaskRefuseResult> detail(@RequestBody QualityTaskRefuseParam qualityTaskRefuseParam) {
+    public ResponseData detail(@RequestBody QualityTaskRefuseParam qualityTaskRefuseParam) {
         QualityTaskRefuse detail = this.qualityTaskRefuseService.getById(qualityTaskRefuseParam.getRefuseId());
         QualityTaskRefuseResult result = new QualityTaskRefuseResult();
         ToolUtil.copyProperties(detail, result);

@@ -21,8 +21,11 @@ public class SkuSimpleResult {
     @JSONField(serializeUsing = ToStringSerializer.class)
     private Long skuId;
 
+    private List<String> imgThumbUrls;//缩略图
+
     private Integer maintenancePeriod;
 
+    private Integer lockStockDetailNumber;
 
     private String skuName;
 

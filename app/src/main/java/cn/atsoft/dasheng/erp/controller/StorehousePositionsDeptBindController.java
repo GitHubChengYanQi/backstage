@@ -97,7 +97,7 @@ public class StorehousePositionsDeptBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<StorehousePositionsDeptBindResult> detail(@RequestBody StorehousePositionsDeptBindParam storehousePositionsDeptBindParam) {
+    public ResponseData detail(@RequestBody StorehousePositionsDeptBindParam storehousePositionsDeptBindParam) {
         StorehousePositionsDeptBind detail = this.storehousePositionsDeptBindService.getById(storehousePositionsDeptBindParam.getBindId());
         StorehousePositionsDeptBindResult result = new StorehousePositionsDeptBindResult();
         ToolUtil.copyProperties(detail, result);

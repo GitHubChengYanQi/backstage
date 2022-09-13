@@ -80,7 +80,7 @@ public class ProductionPickCodeBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickCodeBindResult> detail(@RequestBody ProductionPickCodeBindParam productionPickCodeBindParam) {
+    public ResponseData detail(@RequestBody ProductionPickCodeBindParam productionPickCodeBindParam) {
         ProductionPickCodeBind detail = this.productionPickCodeBindService.getById(productionPickCodeBindParam.getPickCodeBindId());
         ProductionPickCodeBindResult result = new ProductionPickCodeBindResult();
         ToolUtil.copyProperties(detail, result);

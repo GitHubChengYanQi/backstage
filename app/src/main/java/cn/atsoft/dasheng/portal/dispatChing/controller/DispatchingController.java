@@ -84,7 +84,7 @@ public class DispatchingController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DispatchingResult> detail(@RequestBody DispatchingParam dispatchingParam) {
+    public ResponseData detail(@RequestBody DispatchingParam dispatchingParam) {
         Dispatching detail = this.dispatchingService.getById(dispatchingParam.getDispatchingId());
         DispatchingResult result = new DispatchingResult();
         ToolUtil.copyProperties(detail, result);

@@ -279,38 +279,41 @@ public class ExcelAsync {
                     newSku.setSkuValue(json);
                 }
 
-                //判断 分类 产品 型号 --------------------------------------------------------------------------------------
-                for (Sku sku : skus) {
-                    if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
-                        for (Spu spu : spuList) {
-                            if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
-                                skuExcelItem.setType("spuRepeat");
-                                SkuResult results = skuService.getDetail(sku.getSkuId());
-                                skuExcelItem.setUnitId(unitId);
-                                skuExcelItem.setClassId(spuClass.getSpuClassificationId());
-                                skuExcelItem.setSimpleResult(results);
-                                skuExcelItem.setErrorSkuId(sku.getSkuId());
-                                throw new ServiceException(500, "分类，产品，型号 重复");
+
+                if (ToolUtil.isNotEmpty(skuExcelItem.getSpecifications()) &&  !skuExcelItem.getSpecifications().equals("")) {   //有规格 不进此判断
+                    //判断分类 产品 型号 描述-------------------------------------------------------------------------------------
+                    String md5 = SecureUtil.md5(newSku.getSpecifications() + newSku.getSpuId().toString() + newSku.getSkuName() + spuClass.getSpuClassificationId());
+                    for (Sku sku : skus) {
+                        if (md5.equals(sku.getSkuValueMd5())) {
+                            skuExcelItem.setType("skuRepeat");
+                            skuExcelItem.setUnitId(unitId);
+                            skuExcelItem.setClassId(spuClass.getSpuClassificationId());
+                            skuExcelItem.setErrorSkuId(sku.getSkuId());
+                            SkuResult results = skuService.getDetail(sku.getSkuId());
+                            skuExcelItem.setSimpleResult(results);
+                            throw new ServiceException(500, "分类，产品，型号，描述 重复");
+                        }
+                    }
+                    newSku.setSkuValueMd5(md5);
+                } else {
+                    //判断 分类 产品 型号 --------------------------------------------------------------------------------------
+                    for (Sku sku : skus) {
+                        if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
+                            for (Spu spu : spuList) {
+                                if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
+                                    skuExcelItem.setType("spuRepeat");
+                                    SkuResult results = skuService.getDetail(sku.getSkuId());
+                                    skuExcelItem.setUnitId(unitId);
+                                    skuExcelItem.setClassId(spuClass.getSpuClassificationId());
+                                    skuExcelItem.setSimpleResult(results);
+                                    skuExcelItem.setErrorSkuId(sku.getSkuId());
+                                    throw new ServiceException(500, "分类，产品，型号 重复");
+                                }
                             }
                         }
                     }
-
                 }
 
-                //判断分类 产品 型号 描述-------------------------------------------------------------------------------------
-                String md5 = SecureUtil.md5(newSku.getSkuValue() + newSku.getSpuId().toString() + newSku.getSkuName() + spuClass.getSpuClassificationId());
-                for (Sku sku : skus) {
-                    if (md5.equals(sku.getSkuValueMd5())) {
-                        skuExcelItem.setType("skuRepeat");
-                        skuExcelItem.setUnitId(unitId);
-                        skuExcelItem.setClassId(spuClass.getSpuClassificationId());
-                        skuExcelItem.setErrorSkuId(sku.getSkuId());
-                        SkuResult results = skuService.getDetail(sku.getSkuId());
-                        skuExcelItem.setSimpleResult(results);
-                        throw new ServiceException(500, "分类，产品，型号，描述 重复");
-                    }
-                }
-                newSku.setSkuValueMd5(md5);
 
                 if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
                     successNum++;
@@ -352,15 +355,13 @@ public class ExcelAsync {
         asynTask.setStatus(0);
         asynTask.setAllCount(spuExcels.size());
 
-        /**
-         * 先去重
-         */
-
 
         taskService.save(asynTask);
         List<Spu> spus = new ArrayList<>();
         List<AsynTaskDetail> asynTaskDetails = new ArrayList<>();
         int i = 0;
+        int successNum = 0;
+        int errorNum = 0;
         for (SpuExcel spuExcel : spuExcels) {
             i++;
             asynTask.setCount(i);
@@ -369,32 +370,41 @@ public class ExcelAsync {
             AsynTaskDetail asynTaskDetail = new AsynTaskDetail();
             asynTaskDetail.setTaskId(asynTask.getTaskId());
             asynTaskDetail.setType("产品导入");
-
-
             spuExcel.setLine(i + "");
+
             try {
                 Spu newSpu = new Spu();
                 newSpu.setName(spuExcel.getSpuName());
                 newSpu.setCoding(spuExcel.getSpuCoding());
+                newSpu.setSpecifications(spuExcel.getSpecifications());
 
-                Long classId = null;
+                Long spuClassificationId = null;
                 for (SpuClassification spuClassification : spuClassList) {
                     if (spuClassification.getName().equals(spuExcel.getSpuClass())) {
-                        classId = spuClassification.getSpuClassificationId();
+                        spuClassificationId = spuClassification.getSpuClassificationId();
                         break;
                     }
                 }
-                if (ToolUtil.isEmpty(classId)) {
+                if (ToolUtil.isEmpty(spuClassificationId)) {
                     throw new ServiceException(500, "产品分类不存在");
                 }
 
-                newSpu.setSpuClassificationId(classId);
-
-
+                newSpu.setSpuClassificationId(spuClassificationId);
                 for (Spu spu : spuList) {
-                    if (newSpu.getSpuClassificationId().equals(spu.getSpuClassificationId()) && newSpu.getName().equals(spu.getName())) {
-                        throw new ServiceException(500, "产品已存在");
+                    if (ToolUtil.isNotEmpty(newSpu.getSpecifications()) && !newSpu.getSpecifications().equals("")) {
+                        if (ToolUtil.isNotEmpty(spu.getSpecifications()) &&
+                                newSpu.getSpuClassificationId().equals(spu.getSpuClassificationId()) &&
+                                newSpu.getName().equals(spu.getName()) &&
+                                newSpu.getSpecifications().equals(spu.getSpecifications())
+                        ) {
+                            throw new ServiceException(500, "相同规格产品已存在");
+                        }
+                    } else {
+                        if (newSpu.getSpuClassificationId().equals(spu.getSpuClassificationId()) && newSpu.getName().equals(spu.getName())) {
+                            throw new ServiceException(500, "相同分类产品已存在");
+                        }
                     }
+
                 }
 
                 //------------------------------------------------------------------------------
@@ -405,7 +415,6 @@ public class ExcelAsync {
                         break;
                     }
                 }
-
                 if (ToolUtil.isEmpty(cate)) {
                     cate = new Category();
                     cate.setCategoryName(spuExcel.getSpuName());
@@ -433,13 +442,27 @@ public class ExcelAsync {
                 newSpu.setCategoryId(cate.getCategoryId());
 
 
-                if (spus.stream().noneMatch(p -> p.getName().equals(newSpu.getName()) && p.getClassId().equals(newSpu.getClassId()))) {
+                /**
+                 * 过滤
+                 */
+                if (ToolUtil.isNotEmpty(newSpu.getSpecifications()) && !newSpu.getSpecifications().equals("") &&
+                        spus.stream().noneMatch(p -> p.getName().equals(newSpu.getName()) && p.getSpuClassificationId().equals(newSpu.getSpuClassificationId()) &&
+                                p.getSpecifications().equals(newSpu.getSpecifications())
+                        )
+                ) {
                     spus.add(newSpu);
                     spuList.add(newSpu);
+                    successNum++;
+                } else if (spus.stream().noneMatch(p -> p.getName().equals(newSpu.getName()) && p.getSpuClassificationId().equals(newSpu.getSpuClassificationId()))) {
+                    spus.add(newSpu);
+                    spuList.add(newSpu);
+                    successNum++;
                 }
                 asynTaskDetail.setStatus(99);
 
+
             } catch (Exception e) {
+                errorNum++;
                 asynTaskDetail.setStatus(50);
                 spuExcel.setError(e.getMessage());
                 asynTaskDetail.setContentJson(JSON.toJSONString(spuExcel));
@@ -451,6 +474,8 @@ public class ExcelAsync {
         asynTaskDetailService.saveBatch(asynTaskDetails);
         spuService.saveBatch(spus);
         asynTask.setStatus(99);
+        asynTask.setSuccessNum(successNum);
+        asynTask.setErrorNum(errorNum);
         taskService.updateById(asynTask);
     }
 

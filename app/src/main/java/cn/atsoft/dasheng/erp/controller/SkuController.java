@@ -149,7 +149,7 @@ public class SkuController extends BaseController {
     @BussinessLog(value = "修改/上传 sku附件", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
     @Permission
-    public ResponseData editEnclosure(@RequestBody SkuParam skuParam) {
+    public ResponseData editEnclosure(@RequestBody(required = false) SkuParam skuParam) {
         this.skuService.editEnclosure(skuParam);
         return ResponseData.success();
     }
@@ -220,7 +220,7 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SkuResult> detail(@RequestBody SkuParam skuParam) {
+    public ResponseData detail(@RequestBody SkuParam skuParam) {
 
         SkuResult sku = skuService.getSku(skuParam.getSkuId());
         if (ToolUtil.isNotEmpty(sku.getSpuId())) {
@@ -265,7 +265,7 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("直接物料列表")
-    public PageInfo<SkuResult> list(@RequestBody(required = false) SkuParam skuParam) {
+    public PageInfo list(@RequestBody(required = false) SkuParam skuParam) {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
@@ -303,7 +303,7 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/changeSkuPageList", method = RequestMethod.POST)
     @ApiOperation("直接选择物料列表")
-    public PageInfo<SkuResult> changeList(@RequestBody(required = false) SkuParam skuParam) {
+    public PageInfo changeList(@RequestBody(required = false) SkuParam skuParam) {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
@@ -318,7 +318,7 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/indirectList", method = RequestMethod.POST)
     @ApiOperation("间接物料列表")
-    public PageInfo<SkuResult> indirectList(@RequestBody(required = false) SkuParam skuParam) {
+    public PageInfo indirectList(@RequestBody(required = false) SkuParam skuParam) {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
@@ -341,7 +341,7 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<Map<String, Object>> list = this.skuService.listMaps();
         SkuSelectWrapper factory = new SkuSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();

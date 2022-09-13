@@ -80,7 +80,7 @@ public class ActivitiSetpSetDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiSetpSetDetailResult> detail(@RequestBody ActivitiSetpSetDetailParam activitiSetpSetDetailParam) {
+    public ResponseData detail(@RequestBody ActivitiSetpSetDetailParam activitiSetpSetDetailParam) {
         ActivitiSetpSetDetail detail = this.activitiSetpSetDetailService.getById(activitiSetpSetDetailParam.getDetailId());
         ActivitiSetpSetDetailResult result = new ActivitiSetpSetDetailResult();
         ToolUtil.copyProperties(detail, result);
@@ -97,7 +97,7 @@ public class ActivitiSetpSetDetailController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiSetpSetDetailResult> list(@RequestBody(required = false) ActivitiSetpSetDetailParam activitiSetpSetDetailParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiSetpSetDetailParam activitiSetpSetDetailParam) {
         if(ToolUtil.isEmpty(activitiSetpSetDetailParam)){
             activitiSetpSetDetailParam = new ActivitiSetpSetDetailParam();
         }

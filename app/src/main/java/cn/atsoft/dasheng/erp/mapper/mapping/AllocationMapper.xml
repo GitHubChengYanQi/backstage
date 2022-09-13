@@ -11,6 +11,7 @@
         <result column="user_id" property="userId" />
         <result column="allocation_type" property="allocationType" />
         <result column="reason" property="reason" />
+        <result column="task_id" property="taskId" />
         <result column="remark" property="remark" />
         <result column="note" property="note" />
         <result column="enclosure" property="enclosure" />
@@ -24,11 +25,12 @@
         <result column="theme" property="theme" />
         <result column="origin" property="origin" />
         <result column="type" property="type" />
+        <result column="task_id" property="taskId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        allocation_id AS "allocationId", allocation_type AS "allocationType",coding AS "coding", allocation_name AS "allocationName", storehouse_id AS "storehouseId", user_id AS "userId", reason AS "reason", remark AS "remark", note AS "note", enclosure AS "enclosure", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", theme AS "theme", origin AS "origin", type AS "type"
+        allocation_id AS "allocationId", task_id AS "taskId",allocation_type AS "allocationType",coding AS "coding", allocation_name AS "allocationName", storehouse_id AS "storehouseId", user_id AS "userId", reason AS "reason", remark AS "remark", note AS "note", enclosure AS "enclosure", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", theme AS "theme", origin AS "origin", type AS "type"
     </sql>
 
 

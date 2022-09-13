@@ -59,7 +59,7 @@ public class FormDataServiceImpl extends ServiceImpl<FormDataMapper, FormData> i
     }
 
     @Override
-    public PageInfo<FormDataResult> findPageBySpec(FormDataParam param) {
+    public PageInfo findPageBySpec(FormDataParam param) {
         Page<FormDataResult> pageContext = getPageContext();
         IPage<FormDataResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

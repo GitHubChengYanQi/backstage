@@ -25,6 +25,10 @@ public class AllocationLogParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private String coding;
+
+    private List<String> times;
+
+
     /**
      * 调拨logid
      */

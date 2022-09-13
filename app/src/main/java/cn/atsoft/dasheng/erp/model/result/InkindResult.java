@@ -31,7 +31,7 @@ public class InkindResult implements Serializable {
 
     private User user;
 
-    private Long qrcode;
+    private Long qrCodeId;
 
     private MaintenanceLogDetailResult maintenanceLogResult;
 

@@ -30,6 +30,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.*;
@@ -311,12 +312,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库申请");
             activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
-            activitiProcessTaskParam.setUserId(entity.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
             if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {
                 activitiProcessTaskParam.setSource(entity.getSource());
                 activitiProcessTaskParam.setSourceId(entity.getSourceId());
+            }
+            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask") && ToolUtil.isNotEmpty(entity.getSourceId())) {
+                activitiProcessTaskParam.setPid(param.getPid());
             }
             if (param.getDirectInStock()) {
                 activitiProcessTaskParam.setStatus(99);
@@ -329,24 +332,27 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
             //添加log
-            if (param.getDirectInStock()) {
-                messageProducer.auditMessageDo(new AuditEntity() {{
-                    setMessageType(AuditMessageType.COMPLETE);
-                    setActivitiProcess(activitiProcess);
-                    setTaskId(taskId);
-                    setTimes(0);
-                    setMaxTimes(1);
-                }});
-            } else {   // 直接成功
-                messageProducer.auditMessageDo(new AuditEntity() {{
-                    setMessageType(AuditMessageType.CREATE_TASK);
-                    setActivitiProcess(activitiProcess);
-                    setTaskId(taskId);
-                    setLoginUserId(LoginContextHolder.getContext().getUserId());
-                    setTimes(0);
-                    setMaxTimes(1);
-                }});
+            if (param.getDirectInStock()) {   // 直接入库
+//                messageProducer.auditMessageDo(new AuditEntity() {{
+//                    setMessageType(AuditMessageType.COMPLETE);
+//                    setActivitiProcess(activitiProcess);
+//                    setTaskId(taskId);
+//                    setTimes(0);
+//                    setMaxTimes(1);
+//                }});
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId, 1, LoginContextHolder.getContext().getUserId());
                 entity.setStatus(99L);
+            } else {
+//                messageProducer.auditMessageDo(new AuditEntity() {{
+//                    setMessageType(AuditMessageType.CREATE_TASK);
+//                    setActivitiProcess(activitiProcess);
+//                    setTaskId(taskId);
+//                    setLoginUserId(LoginContextHolder.getContext().getUserId());
+//                    setTimes(0);
+//                    setMaxTimes(0);
+//                }});
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+                activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
                 this.updateById(entity);
             }
 
@@ -542,7 +548,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
-    public PageInfo<InstockOrderResult> findPageBySpec(InstockOrderParam param) {
+    public PageInfo findPageBySpec(InstockOrderParam param) {
         Page<InstockOrderResult> pageContext = getPageContext();
         IPage<InstockOrderResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
@@ -628,7 +634,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<InstockLogResult> logResults = instockLogService.listByInstockOrderId(orderResult.getInstockOrderId());
         orderResult.setLogResults(logResults);
-
         List<Long> userIds = new ArrayList<>();
         userIds.add(orderResult.getUserId());
         userIds.add(orderResult.getCreateUser());
@@ -692,6 +697,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     public void formatResult(InstockOrderResult result) {
         DocumentsStatusResult statusResult = documentStatusService.detail(result.getStatus());
         result.setStatusResult(statusResult);
+
+        List<InstockHandleResult> instockHandleResults = instockHandleService.detailByInStockOrder(result.getInstockOrderId());
+        result.setHandleResults(instockHandleResults);
     }
 
 
@@ -715,6 +723,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             ToolUtil.copyProperties(listParam, instockHandle);
             instockHandle.setInstockOrderId(param.getInstockOrderId());
             instockHandle.setType("inStock");
+            instockHandle.setSource("inStockList");
+            instockHandle.setSourceId(listParam.getInstockListId());
             instockHandles.add(instockHandle);
 
             listParam.setInstockOrderId(param.getInstockOrderId());
@@ -803,6 +813,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             inkind.setSourceId(listParam.getInstockListId());
             inkind.setType("1");
             inkind.setBrandId(listParam.getBrandId());
+            inkind.setPositionId(listParam.getStorehousePositionsId());   //勿动
             inkinds.add(inkind);
 
             OrCode orCode = new OrCode();    //创建二维码
@@ -923,6 +934,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @return
      */
     private Long createInKind(InstockListParam param) {
+
+        if (ToolUtil.isEmpty(param.getStorehousePositionsId())) {
+            throw new ServiceException(500, "库位不能为空");
+        }
+
         Inkind inkind = new Inkind();
         inkind.setNumber(param.getNumber());
         inkind.setSkuId(param.getSkuId());
@@ -930,9 +946,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         inkind.setSource("入库");
         inkind.setLastMaintenanceTime(new DateTime());
         inkind.setSourceId(param.getInstockListId());
+        inkind.setPositionId(param.getStorehousePositionsId());
         inkind.setType("1");
         inkind.setLastMaintenanceTime(new DateTime());
+        inkind.setPositionId(param.getStorehousePositionsId());   //别动
         inkind.setBrandId(param.getBrandId());
+
         inkindService.save(inkind);
 
         OrCode orCode = new OrCode();
@@ -1068,7 +1087,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (InStockByOrderParam.SkuParam skuParam : skuParams) {
             List<Inkind> inkinds = skuParam.getInkindIds().size() == 0 ? new ArrayList<>() : inkindService.listByIds(skuParam.getInkindIds());
-
             if (ToolUtil.isNotEmpty(skuParam.getStockNumber()) && skuParam.getStockNumber() > 0) {   //盘点
                 List<StockDetails> stockDetails = stockDetailsService.query().eq("sku_id", skuParam.getSkuId()).eq("storehouse_positions_id", skuParam.getPositionId()).list();
                 for (int i = 0; i < stockDetails.size(); i++) {
@@ -1082,7 +1100,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 }
                 stockDetailsService.updateBatchById(stockDetails);
             }
-
 
             long number = 0L;
             for (Inkind inKind : inkinds) {
@@ -1527,10 +1544,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         List<InstockList> instockListList = orderIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", orderIds).list();
         List<InstockListResult> instockListResults = BeanUtil.copyToList(instockListList, InstockListResult.class, new CopyOptions());
+
         format(data);
-
         instockListService.format(instockListResults);
-
         for (InstockOrderResult datum : data) {
             List<InstockListResult> results = new ArrayList<>();
 
@@ -1563,6 +1579,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void format(List<InstockOrderResult> data) {
+
+
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
@@ -1570,6 +1588,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> noticeIds = new ArrayList<>();
         List<Long> mediaIds = new ArrayList<>();
         List<Long> formIds = new ArrayList<>();
+
 
         for (InstockOrderResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getNoticeId())) {
@@ -1619,14 +1638,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             int waitInStockNum = 0;
             int instockErrorNum = 0;
             List<InstockListResult> instockListResults = new ArrayList<>();
-            for (InstockListResult instockList : instockListList) {
 
+
+            for (InstockListResult instockList : instockListList) {
                 for (Anomaly anomaly : anomalyList) {
                     if (ToolUtil.isNotEmpty(anomaly.getSourceId()) && anomaly.getSourceId().equals(instockList.getInstockListId())) {
                         instockList.setAnomalyId(anomaly.getAnomalyId());
                     }
                 }
-
                 if (datum.getInstockOrderId().equals(instockList.getInstockOrderId())) {
                     instockListResults.add(instockList);
                     enoughNumber = ToolUtil.isEmpty(instockList.getRealNumber()) ? 0 : enoughNumber + instockList.getNumber();
@@ -1661,6 +1680,28 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     break;
                 }
             }
+
+            /**
+             * 可入库状态
+             */
+            boolean canPut = false;
+            for (InstockListResult instockListResult : instockListList) {
+                if (instockListResult.getInstockOrderId().equals(datum.getInstockOrderId())) {
+                    if (instockListResult.getStatus() == 0) {    //是否滑动到购物车
+                        canPut = true;
+                        break;
+                    } else {
+                        if (instockErrorNum > 0) {
+                            canPut = true;
+                            break;
+                        } else if (waitInStockNum > 0) {
+                            canPut = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            datum.setCanPut(canPut);
 
 
             for (User user : users) {
@@ -1742,7 +1783,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 int number = Math.toIntExact(instockList.getNumber());
                 for (AllocationCart cart : allocationCarts) {
                     if (number > 0) {
-                        if (cart.getStatus().equals(98) && !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getBrandId().equals(cart.getBrandId()) && instockList.getSkuId().equals(cart.getSkuId()) && instockList.getStoreHouseId().equals(cart.getStorehouseId())) {
+                        if (cart.getStatus().equals(98) && cart.getInstockOrderId().equals(instockList.getInstockOrderId()) && !cart.getStorehouseId().equals(allocation.getStorehouseId()) && instockList.getSkuId().equals(cart.getSkuId())) {
                             int lastNumber = number;
                             number = number - (cart.getNumber() - cart.getDoneNumber());
                             if (number >= 0) {

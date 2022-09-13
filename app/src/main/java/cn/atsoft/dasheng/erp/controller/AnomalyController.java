@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.pojo.AnomalyCensus;
 import cn.atsoft.dasheng.erp.service.AnomalyService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -72,8 +73,8 @@ public class AnomalyController extends BaseController {
 
     @RequestMapping(value = "/anomalyCensus", method = RequestMethod.POST)
     public ResponseData anomalyCensus(@RequestBody AnomalyParam anomalyParam) {
-        Map<Integer, Integer> map = anomalyService.anomalyCensus(anomalyParam);
-        return ResponseData.success(map);
+        List<AnomalyCensus> anomalyCensuses = anomalyService.anomalyCensus(anomalyParam);
+        return ResponseData.success(anomalyCensuses);
     }
 
 
@@ -115,7 +116,7 @@ public class AnomalyController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AnomalyResult> detail(@RequestBody AnomalyParam anomalyParam) {
+    public ResponseData detail(@RequestBody AnomalyParam anomalyParam) {
         AnomalyResult result = this.anomalyService.detail(anomalyParam.getAnomalyId());
         return ResponseData.success(result);
     }

@@ -81,7 +81,7 @@ public class NavigationDifferenceController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<NavigationDifferenceResult> detail(@RequestBody NavigationDifferenceParam navigationDifferenceParam) {
+    public ResponseData detail(@RequestBody NavigationDifferenceParam navigationDifferenceParam) {
         NavigationDifference detail = this.navigationDifferenceService.getById(navigationDifferenceParam.getClassificationId());
         NavigationDifferenceResult result = new NavigationDifferenceResult();
         ToolUtil.copyProperties(detail, result);
@@ -106,7 +106,7 @@ public class NavigationDifferenceController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<NavigationDifference>  navigationDifferenceQueryWrapper= new QueryWrapper<>();
         navigationDifferenceQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.navigationDifferenceService.listMaps(navigationDifferenceQueryWrapper);

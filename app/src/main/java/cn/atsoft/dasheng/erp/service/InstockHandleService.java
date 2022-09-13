@@ -42,6 +42,8 @@ public interface InstockHandleService extends IService<InstockHandle> {
      */
     void update(InstockHandleParam param);
 
+    List<InstockHandleResult> detailByInStockOrder(Long instockOrderId);
+
     /**
      * 查询单条数据，Specification模式
      *

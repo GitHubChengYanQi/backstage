@@ -63,14 +63,6 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
 
     @Override
     public void add(AllocationCartParam param) {
-
-        Long allocationId = param.getAllocationId();
-        Long skuId = param.getSkuId();
-        Long brandId = param.getBrandId();
-        Long storehouseId = param.getStorehouseId();
-        List<AllocationDetail> allocationDetails = allocationDetailService.query().eq("allocation_id", allocationId).eq("display", 1).eq("status", 0).list();
-
-
         AllocationCart entity = getEntity(param);
         entity.setType("carry");
         this.save(entity);
@@ -191,7 +183,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
         /**
          * 先删除
          */
-        List<AllocationCart> list = this.query().eq("allocation_id", param.getAllocationId()).eq("sku_id", param.getSkuId()).eq("type", "carry").eq("display", 1).list();
+        List<AllocationCart> list = this.query().eq("allocation_id", param.getAllocationId()).eq("sku_id", param.getSkuId()).eq("type", "carry").eq("display", 1).eq("status",0).list();
         for (AllocationCart allocationCart : list) {
             allocationCart.setDisplay(0);
         }
@@ -213,7 +205,7 @@ public class AllocationCartServiceImpl extends ServiceImpl<AllocationCartMapper,
     }
 
     @Override
-    public PageInfo<AllocationCartResult> findPageBySpec(AllocationCartParam param) {
+    public PageInfo findPageBySpec(AllocationCartParam param) {
         Page<AllocationCartResult> pageContext = getPageContext();
         IPage<AllocationCartResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

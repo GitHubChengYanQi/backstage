@@ -65,6 +65,6 @@ public interface UcMemberService extends IService<UcMember> {
      * @author Sing
      * @Date 2021-03-16
      */
-     PageInfo<UcMemberResult> findPageBySpec(UcMemberParam param);
+     PageInfo findPageBySpec(UcMemberParam param);
 
 }

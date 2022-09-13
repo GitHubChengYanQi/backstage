@@ -117,7 +117,7 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<CrmBusinessResult> detail(@RequestBody CrmBusinessParam crmBusinessParam) {
+    public ResponseData detail(@RequestBody CrmBusinessParam crmBusinessParam) {
         CrmBusinessResult bySpec = crmBusinessService.detail(crmBusinessParam.getBusinessId());
         return ResponseData.success(bySpec);
     }
@@ -131,7 +131,7 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<CrmBusinessResult> list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
+    public PageInfo list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
         if (ToolUtil.isEmpty(crmBusinessParam)) {
             crmBusinessParam = new CrmBusinessParam();
         }
@@ -160,7 +160,7 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
+    public ResponseData listSelect(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
         QueryWrapper<CrmBusiness> businessQueryWrapper = new QueryWrapper<>();
         businessQueryWrapper.in("display", 1);
         if (ToolUtil.isNotEmpty(crmBusinessParam) && ToolUtil.isNotEmpty(crmBusinessParam.getBusinessId())){

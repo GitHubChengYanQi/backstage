@@ -81,7 +81,7 @@ public class BannerDifferenceController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<BannerDifferenceResult> detail(@RequestBody BannerDifferenceParam bannerDifferenceParam) {
+    public ResponseData detail(@RequestBody BannerDifferenceParam bannerDifferenceParam) {
         BannerDifference detail = this.bannerDifferenceService.getById(bannerDifferenceParam.getClassificationId());
         BannerDifferenceResult result = new BannerDifferenceResult();
         ToolUtil.copyProperties(detail, result);
@@ -106,7 +106,7 @@ public class BannerDifferenceController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<BannerDifference> bannerDifferenceQueryWrapper = new QueryWrapper<>();
         bannerDifferenceQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.bannerDifferenceService.listMaps(bannerDifferenceQueryWrapper);

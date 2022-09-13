@@ -85,7 +85,7 @@ public class InstockHandleController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<InstockHandleResult> detail(@RequestBody InstockHandleParam instockHandleParam) {
+    public ResponseData detail(@RequestBody InstockHandleParam instockHandleParam) {
         InstockHandle detail = this.instockHandleService.getById(instockHandleParam.getInstockHandleId());
         InstockHandleResult result = new InstockHandleResult();
         ToolUtil.copyProperties(detail, result);
@@ -118,29 +118,8 @@ public class InstockHandleController extends BaseController {
     @RequestMapping(value = "/listByInstockOrderId", method = RequestMethod.GET)
     @ApiOperation("列表")
     public ResponseData listByInstockOrderId(@RequestParam Long instockOrderId) {
-
-        List<InstockHandle> instockHandles = this.instockHandleService.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
-        List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
-        List<InstockHandleResult> detailTotalList = new ArrayList<>();
-
-        instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId() + "_" + item.getType() + "_" + item.getCustomerId(), Collectors.toList())).forEach(
-                (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new InstockHandleResult() {{
-                        setNumber(a.getNumber() + b.getNumber());
-                        setSkuId(a.getSkuId());
-                        setBrandId(a.getBrandId());
-                        setType(a.getType());
-                        setCustomerId(a.getCustomerId());
-                    }}).ifPresent(detailTotalList::add);
-                }
-        );
-
-        /**
-         * 排序
-         */
-        List<InstockHandleResult> collect = detailTotalList.stream().sorted(Comparator.comparing(InstockHandleResult::getSkuId).reversed()).collect(Collectors.toList());
-        this.instockHandleService.format(collect);
-        return ResponseData.success(collect);
+        List<InstockHandleResult> handleResults = instockHandleService.detailByInStockOrder(instockOrderId);
+        return ResponseData.success(handleResults);
     }
 
 }

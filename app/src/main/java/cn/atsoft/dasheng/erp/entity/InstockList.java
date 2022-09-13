@@ -25,6 +25,11 @@ public class InstockList implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 异常处理方式
+     */
+    @TableField("anomaly_handle")
+    private String anomalyHandle;
+    /**
      * 供应商
      */
     @TableField("customer_id")
@@ -160,6 +165,14 @@ public class InstockList implements Serializable {
      */
     @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
+
+    public String getAnomalyHandle() {
+        return anomalyHandle;
+    }
+
+    public void setAnomalyHandle(String anomalyHandle) {
+        this.anomalyHandle = anomalyHandle;
+    }
 
     public Integer getCostPrice() {
         return costPrice;

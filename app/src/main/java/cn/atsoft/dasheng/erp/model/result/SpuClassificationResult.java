@@ -73,7 +73,6 @@ public class SpuClassificationResult implements Serializable {
      * 名称
      */
     @ApiModelProperty("名称")
-    @FieldPermission(value = true)
     private String name;
 
     /**

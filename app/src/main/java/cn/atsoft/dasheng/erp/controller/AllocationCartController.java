@@ -80,7 +80,7 @@ public class AllocationCartController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<AllocationCartResult> detail(@RequestBody AllocationCartParam allocationCartParam) {
+    public ResponseData detail(@RequestBody AllocationCartParam allocationCartParam) {
         AllocationCart detail = this.allocationCartService.getById(allocationCartParam.getAllocationCartId());
         AllocationCartResult result = new AllocationCartResult();
         ToolUtil.copyProperties(detail, result);

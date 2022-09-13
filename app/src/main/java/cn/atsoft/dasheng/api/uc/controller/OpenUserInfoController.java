@@ -85,7 +85,7 @@ public class OpenUserInfoController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OpenUserInfoResult> detail(@RequestBody OpenUserInfoParam openUserInfoParam) {
+    public ResponseData detail(@RequestBody OpenUserInfoParam openUserInfoParam) {
         OpenUserInfo detail = this.openUserInfoService.getById(openUserInfoParam.getPrimaryKey());
         OpenUserInfoResult result = new OpenUserInfoResult();
         ToolUtil.copyProperties(detail, result);
@@ -102,7 +102,7 @@ public class OpenUserInfoController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<OpenUserInfoResult> list(@RequestBody(required = false) OpenUserInfoParam openUserInfoParam) {
+    public PageInfo list(@RequestBody(required = false) OpenUserInfoParam openUserInfoParam) {
         if (ToolUtil.isEmpty(openUserInfoParam)) {
             openUserInfoParam = new OpenUserInfoParam();
         }
@@ -118,7 +118,7 @@ public class OpenUserInfoController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<OpenUserInfo> openUserInfoQueryWrapper = new QueryWrapper<>();
         openUserInfoQueryWrapper.in("source", "wxMp");
         List<Map<String, Object>> list = this.openUserInfoService.listMaps(openUserInfoQueryWrapper);

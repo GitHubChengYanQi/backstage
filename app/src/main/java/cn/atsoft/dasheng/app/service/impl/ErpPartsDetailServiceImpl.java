@@ -82,17 +82,43 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
     @Override
     public List<ErpPartsDetailResult> bomList(ErpPartsDetailParam param) {
         List<ErpPartsDetailResult> detailResults = null;
-        if (ToolUtil.isNotEmpty(param.getSkuId())) {   //当前bom所有下级
-            detailResults = recursiveDetails(param.getSkuId());
+        if (ToolUtil.isNotEmpty(param.getSkuId())) {   //bom最末级
+            detailResults = recursiveDetails(param.getSkuId(), null);
         } else {      //当前bom 下一级
             detailResults = this.baseMapper.customList(param);
         }
-        format(detailResults);
+        if (ToolUtil.isNotEmpty(detailResults) && detailResults.size() > 0) {
+            format(detailResults);
+        }
+
         return detailResults;
     }
 
 
-    private List<ErpPartsDetailResult> recursiveDetails(Long skuId) {
+    @Override
+    public List<ErpPartsDetailResult> bomListVersion(ErpPartsDetailParam param) {
+        List<ErpPartsDetailResult> detailResults = null;
+
+        if (ToolUtil.isNotEmpty(param.getAll()) && ToolUtil.isNotEmpty(param.getSkuId())) {
+            if (param.getAll()) {
+                detailResults = recursiveDetails(param.getSkuId(), null);   //bom最末级
+            } else {
+                Parts parts = partsService.query().eq("sku_id", param.getSkuId()).eq("status", 99).last("limit 1").one();
+                if (ToolUtil.isNotEmpty(parts)) {
+                    param.setPartsId(parts.getPartsId());
+                    detailResults = this.baseMapper.customList(param);  //当前bom 下一级
+                }
+            }
+        }
+        if (ToolUtil.isNotEmpty(detailResults)) {
+            format(detailResults);
+        }
+        return detailResults;
+    }
+
+
+    @Override
+    public List<ErpPartsDetailResult> recursiveDetails(Long skuId, ErpPartsDetailResult result) {
 
         List<ErpPartsDetailResult> list = new ArrayList<>();
         Parts parts = partsService.query().eq("sku_id", skuId).eq("status", 99).eq("display", 1).one();
@@ -100,10 +126,11 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         if (ToolUtil.isNotEmpty(parts)) {
             List<ErpPartsDetail> partsDetails = this.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
             List<ErpPartsDetailResult> detailResults = BeanUtil.copyToList(partsDetails, ErpPartsDetailResult.class);
-            list.addAll(detailResults);
             for (ErpPartsDetailResult detailResult : detailResults) {
-                list.addAll(recursiveDetails(detailResult.getSkuId()));
+                list.addAll(recursiveDetails(detailResult.getSkuId(), detailResult));
             }
+        } else if (ToolUtil.isNotEmpty(result)) {
+            list.add(result);
         }
         return list;
     }
@@ -152,20 +179,25 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         return detailResults;
     }
 
-
-    private void format(List<ErpPartsDetailResult> data) {
+    @Override
+    public void format(List<ErpPartsDetailResult> data) {
         List<Long> skuIds = new ArrayList<>();
         for (ErpPartsDetailResult datum : data) {
             skuIds.add(datum.getSkuId());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
+        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
 
         for (ErpPartsDetailResult datum : data) {
-
             for (SkuResult skuResult : skuResults) {
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (Parts part : parts) {
+                if (part.getSkuId().equals(datum.getSkuId())) {
+                    datum.setHaveBom(true);
                     break;
                 }
             }

@@ -11,6 +11,8 @@ import cn.atsoft.dasheng.production.model.result.PickListsStorehouseResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
+import cn.atsoft.dasheng.production.pojo.LockedStockDetails;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -78,6 +80,8 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
      */
      PageInfo<ProductionPickListsCartResult> findPageBySpec(ProductionPickListsCartParam param);
 
+    List<LockedStockDetails> getLockSkuAndNumber(List<Long> skuIds);
+
     void format(List<ProductionPickListsCartResult> param);
 
     List<CartGroupByUserListRequest> groupByUser(ProductionPickListsCartParam param);
@@ -93,6 +97,10 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
     List<ProductionPickListsCartResult> listByListsDetailIds(List<Long> listsDetailIds);
 
     List<StockDetails>getLockStockDetail();
+
+    List<Long> getLockedInkindIds();
+
+    Integer getLockNumber(QuerryLockedParam param);
 
     List<Long> getCartInkindIds(ProductionPickListsCartParam productionPickListsCartParam);
 

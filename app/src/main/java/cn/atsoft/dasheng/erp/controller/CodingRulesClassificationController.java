@@ -86,7 +86,7 @@ public class CodingRulesClassificationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CodingRulesClassificationResult> detail(@RequestBody CodingRulesClassificationParam codingRulesClassificationParam) {
+    public ResponseData detail(@RequestBody CodingRulesClassificationParam codingRulesClassificationParam) {
         CodingRulesClassification detail = this.codingRulesClassificationService.getById(codingRulesClassificationParam.getCodingRulesClassificationId());
         CodingRulesClassificationResult result = new CodingRulesClassificationResult();
         ToolUtil.copyProperties(detail, result);
@@ -116,7 +116,7 @@ public class CodingRulesClassificationController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         List<Map<String, Object>> list = this.codingRulesClassificationService.listMaps();
         CodingRulesClassificationSelectWrapper codingRulesClassificationSelectWrapper = new CodingRulesClassificationSelectWrapper(list);
         List<Map<String, Object>> result = codingRulesClassificationSelectWrapper.wrap();

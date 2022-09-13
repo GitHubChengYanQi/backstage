@@ -38,5 +38,6 @@ public class MaintenanceAndInventorySelectParam {
     private List<SpuResult> spuResults;
     private List<SkuSimpleResult> skuResults;
     private Long skuId;
+    private List<Long> inkindIds;
     private SkuSimpleResult skuResult;
 }

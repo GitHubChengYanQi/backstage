@@ -79,7 +79,7 @@ public interface MaintenanceService extends IService<Maintenance> {
      * @author Captain_Jazz
      * @Date 2022-06-28
      */
-     PageInfo<MaintenanceResult> findPageBySpec(MaintenanceParam param);
+     PageInfo findPageBySpec(MaintenanceParam param);
 
     void format(List<MaintenanceResult> param);
 
@@ -89,7 +89,7 @@ public interface MaintenanceService extends IService<Maintenance> {
 
     MaintenanceResult detail(Long id);
 
-    Boolean updateDetail(Maintenance maintenance);
+    void updateDetail(Maintenance maintenance);
 
     void updateStatus(Long id);
 }

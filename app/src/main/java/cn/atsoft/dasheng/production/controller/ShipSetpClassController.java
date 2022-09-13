@@ -83,7 +83,7 @@ public class ShipSetpClassController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ShipSetpClassResult> detail(@RequestBody ShipSetpClassParam shipSetpClassParam) {
+    public ResponseData detail(@RequestBody ShipSetpClassParam shipSetpClassParam) {
         ShipSetpClass detail = this.shipSetpClassService.getById(shipSetpClassParam.getShipSetpClassId());
         ShipSetpClassResult result = new ShipSetpClassResult();
         ToolUtil.copyProperties(detail, result);
@@ -108,7 +108,7 @@ public class ShipSetpClassController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<ShipSetpClass> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.shipSetpClassService.listMaps(contactsQueryWrapper);

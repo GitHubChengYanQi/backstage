@@ -97,7 +97,7 @@ public class OutstockApplyController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OutstockApplyResult> detail(@RequestBody OutstockApplyParam outstockApplyParam) {
+    public ResponseData detail(@RequestBody OutstockApplyParam outstockApplyParam) {
         PageInfo<OutstockApplyResult> pageBySpec = this.outstockApplyService.findPageBySpec(outstockApplyParam);
         return ResponseData.success(pageBySpec.getData().get(0));
     }

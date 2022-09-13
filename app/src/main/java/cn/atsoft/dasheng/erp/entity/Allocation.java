@@ -32,6 +32,11 @@ public class Allocation implements Serializable {
      */
     @TableField("coding")
     private String coding;
+    /**
+     * 任务id
+     */
+    @TableField("task_id")
+    private Long taskId;
 
     @TableField("allocation_name")
     private String allocationName;
@@ -131,6 +136,14 @@ public class Allocation implements Serializable {
 
     public Long getAllocationId() {
         return allocationId;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     public void setAllocationId(Long allocationId) {
@@ -268,6 +281,7 @@ public class Allocation implements Serializable {
     public String getOrigin() {
         return origin;
     }
+
 
     public void setOrigin(String origin) {
         this.origin = origin;

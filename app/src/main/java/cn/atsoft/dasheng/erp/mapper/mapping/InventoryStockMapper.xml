@@ -33,6 +33,33 @@
     </sql>
 
 
+    <sql id="positionJoin">
+        daoxin_erp_inventory_stock
+        .
+        inkind_id
+        AS "inkindId",
+	daoxin_erp_inventory_stock.	inventory_stock_id AS "inventoryStockId",
+	daoxin_erp_inventory_stock.	inventory_id AS "inventoryId",
+	daoxin_erp_inventory_stock.	detail_id AS "detailId",
+	daoxin_erp_inventory_stock.	sku_id AS "skuId",
+		daoxin_erp_inventory_stock.brand_id AS "brandId",
+	daoxin_erp_inventory_stock.	customer_id AS "customerId",
+	daoxin_erp_inventory_stock.	position_id AS "positionId",
+	daoxin_erp_inventory_stock.	anomaly_id AS "anomalyId",
+	daoxin_erp_inventory_stock.	number AS "number",
+	daoxin_erp_inventory_stock.	lock_status AS "lockStatus",
+	daoxin_erp_inventory_stock.	real_number AS "realNumber",
+	daoxin_erp_inventory_stock.	STATUS AS "status",
+	daoxin_erp_inventory_stock.	create_user AS "createUser",
+	daoxin_erp_inventory_stock.	update_user AS "updateUser",
+	daoxin_erp_inventory_stock.	create_time AS "createTime",
+	daoxin_erp_inventory_stock.	update_time AS "updateTime",
+	daoxin_erp_inventory_stock.	deptId AS "deptId",
+	daoxin_erp_inventory_stock.	display AS "display",
+	daoxin_erp_storehouse_positions.pid as 'positionPid',
+	 daoxin_erp_storehouse_positions.sort as 'positionSort'
+    </sql>
+
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryStockResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.InventoryStockParam">
         select
@@ -157,71 +184,66 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryStockResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.InventoryStockParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_erp_inventory_stock where 1 = 1 and display = 1
+        <include refid="positionJoin"/>
+        from daoxin_erp_inventory_stock
+        left join
+        daoxin_erp_storehouse_positions on daoxin_erp_inventory_stock.position_id =
+        daoxin_erp_storehouse_positions.storehouse_positions_id
+        where 1 = 1 and daoxin_erp_inventory_stock.display = 1
         <if test="paramCondition.inventoryStockId != null">
-            and inventory_stock_id like CONCAT('%',#{paramCondition.inventoryStockId},'%')
+            and daoxin_erp_inventory_stock.inventory_stock_id like CONCAT('%',#{paramCondition.inventoryStockId},'%')
         </if>
         <if test="paramCondition.inventoryId != null">
-            and inventory_id = #{paramCondition.inventoryId}
+            and daoxin_erp_inventory_stock.inventory_id = #{paramCondition.inventoryId}
         </if>
         <if test="paramCondition.detailId != null">
-            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+            and daoxin_erp_inventory_stock.detail_id like CONCAT('%',#{paramCondition.detailId},'%')
         </if>
         <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+            and daoxin_erp_inventory_stock.sku_id like CONCAT('%',#{paramCondition.skuId},'%')
         </if>
         <if test="paramCondition.brandId != null">
-            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+            and daoxin_erp_inventory_stock.brand_id like CONCAT('%',#{paramCondition.brandId},'%')
         </if>
         <if test="paramCondition.customerId != null">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+            and daoxin_erp_inventory_stock.customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
-        <if test="paramCondition.positionId != null">
-            and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+<!--        <if test="paramCondition.positionId != null">-->
+<!--            and daoxin_erp_inventory_stock.position_id like CONCAT('%',#{paramCondition.positionId},'%')-->
+        <!--        </if>-->
+        <if test="paramCondition.positionIds != null and paramCondition.positionIds.size >0">
+            and daoxin_erp_inventory_stock.position_id in
+            <foreach collection="paramCondition.positionIds" open="(" close=")" item="state" index="index" separator=",">
+                #{state}
+            </foreach>
         </if>
         <if test="paramCondition.anomalyId != null">
-            and anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
+            and daoxin_erp_inventory_stock.anomaly_id like CONCAT('%',#{paramCondition.anomalyId},'%')
         </if>
         <if test="paramCondition.number != null">
-            and number like CONCAT('%',#{paramCondition.number},'%')
+            and daoxin_erp_inventory_stock.number like CONCAT('%',#{paramCondition.number},'%')
         </if>
         <if test="paramCondition.lockStatus != null">
-            and lock_status like CONCAT('%',#{paramCondition.lockStatus},'%')
+            and daoxin_erp_inventory_stock.lock_status like CONCAT('%',#{paramCondition.lockStatus},'%')
         </if>
         <if test="paramCondition.realNumber != null">
-            and real_number like CONCAT('%',#{paramCondition.realNumber},'%')
+            and daoxin_erp_inventory_stock.real_number like CONCAT('%',#{paramCondition.realNumber},'%')
         </if>
         <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
-        </if>
-        <if test="paramCondition.createUser != null">
-            and create_user = #{paramCondition.createUser}
-        </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
-        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-        </if>
-        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-        </if>
-        <if test="paramCondition.deptId != null">
-            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+            and daoxin_erp_inventory_stock.status = #{paramCondition.status}
         </if>
         <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
+            and daoxin_erp_inventory_stock.display like CONCAT('%',#{paramCondition.display},'%')
         </if>
         <if test="paramCondition.statusList != null and paramCondition.statusList.size > 0 ">
-            and status in
+            and daoxin_erp_inventory_stock.status in
             <foreach collection="paramCondition.statusList" open="(" close=")" item="state" index="index" separator=",">
                 #{state}
             </foreach>
         </if>
 
         <if test="paramCondition.skuName">
-            and sku_id in (
+            and daoxin_erp_inventory_stock.sku_id in (
             select sku_id from goods_sku where display = 1 and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
             union
             select sku_id from goods_sku where display = 1 and spu_id in (select spu_id from goods_spu where display =
@@ -229,9 +251,9 @@
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
         </if>
-        order by inventory_stock_id asc
+        order by positionSort desc
         <if test="paramCondition.positionSort != null">
-            , position_id
+            , positionPid
             <if test="paramCondition.positionSort == 'asc'">
                 asc
             </if>

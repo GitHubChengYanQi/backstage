@@ -14,12 +14,13 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -59,6 +60,19 @@ public class ActivitiProcessTaskController extends BaseController {
         ActivitiAudit audit = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
         List<Long> longs = taskSend.selectUsers(audit.getRule(), null);
         return ResponseData.success(longs);
+    }
+
+    /**
+     * 流程执行节点规则
+     *
+     * @param processId
+     * @return
+     */
+    @RequestMapping(value = "/processAuditPerson", method = RequestMethod.GET)
+    public ResponseData processAuditPerson(@Param("processId") Long processId) {
+        Set<Long> ids = this.activitiProcessTaskService.processAuditPerson(processId);
+        List<Long> userIds = new ArrayList<>(ids);
+        return ResponseData.success(userIds);
     }
 
     /**
@@ -111,7 +125,7 @@ public class ActivitiProcessTaskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiProcessTaskResult> detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
+    public ResponseData detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
         ActivitiProcessTaskResult result = this.activitiProcessTaskService.detail(activitiProcessTaskParam.getProcessTaskId());
         return ResponseData.success(result);
     }
@@ -141,6 +155,23 @@ public class ActivitiProcessTaskController extends BaseController {
         }
     }
 
+    /**
+     * 查看
+     *
+     * @author Jazz
+     * @Date 2021-11-19
+     */
+    @RequestMapping(value = "/getTaskStatus", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public ResponseData getTaskStatus(Long taskId) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("processTaskId", taskId);
+        ActivitiProcessTask processTask = this.activitiProcessTaskService.getById(taskId);
+        result.put("status", processTask.getStatus());
+        return ResponseData.success(result);
+
+
+    }
 
 
     @RequestMapping(value = "/auditList", method = RequestMethod.POST)
@@ -162,7 +193,6 @@ public class ActivitiProcessTaskController extends BaseController {
         }
         return this.activitiProcessTaskService.LoginStart(activitiProcessTaskParam);
     }
-
 
 
 }

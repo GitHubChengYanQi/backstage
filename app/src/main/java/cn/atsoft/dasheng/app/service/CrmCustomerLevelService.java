@@ -65,7 +65,7 @@ public interface CrmCustomerLevelService extends IService<CrmCustomerLevel> {
      * @author
      * @Date 2021-07-30
      */
-    PageInfo<CrmCustomerLevelResult> findPageBySpec(CrmCustomerLevelParam param, DataScope dataScope );
+    PageInfo findPageBySpec(CrmCustomerLevelParam param, DataScope dataScope );
 
     void batchDelete(List<Long> ids);
 

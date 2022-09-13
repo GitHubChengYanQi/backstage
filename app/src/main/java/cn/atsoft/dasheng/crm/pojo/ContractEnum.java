@@ -23,16 +23,19 @@ public enum ContractEnum {
     ACustomerPhone("需方公司电话"),         //需方公司电话
     AFax("需方公司传真"),         //需方公司传真
     ALegalMan("需方法人代表"),         //需方法人代表
+
     ALegalManPhone("需方法人电话"),            //需方法人电话
     AContacts("需方委托代表"),             //需方委托代表
     APhone("需方代表电话"),         //需方代表电话
     ABank("需方开户银行"),         //需方开户银行
     ABankAccount("需方银行账号"),         //需方银行账号
     ABankNo("需方开户行号"),         //需方开户行号
+
     AZipCode("需方邮政编码"),         //需方邮政编码
     AEmail("需方公司电邮"),         //需方公司电邮
     AEin("需方税号"),            //需方税号
     DeliveryAddress("提取(交付)地点"),           //交货地址
+
     supplierPhone("供货人及电话"),         //供货人及电话
     BCustomerAdress("供方公司地址"),         //供方公司地址
     BCustomerPhone("供方公司电话"),         //供方公司电话

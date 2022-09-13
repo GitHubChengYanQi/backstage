@@ -160,7 +160,7 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickListsResult> detail(@RequestBody ProductionPickListsParam productionPickListsParam) {
+    public ResponseData detail(@RequestBody ProductionPickListsParam productionPickListsParam) {
         ProductionPickLists detail = new ProductionPickLists();
         ProductionPickListsResult result = new ProductionPickListsResult();
         if (ToolUtil.isNotEmpty(productionPickListsParam.getPickListsId())) {
@@ -262,7 +262,7 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ProductionPickListsResult> list(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+    public PageInfo list(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
         if (ToolUtil.isEmpty(productionPickListsParam)) {
             productionPickListsParam = new ProductionPickListsParam();
         }
@@ -290,7 +290,7 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/selfPickTasks", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiProcessTaskResult> selfPickTasks(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+    public PageInfo selfPickTasks(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
 
 
         if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
@@ -337,23 +337,7 @@ public class ProductionPickListsController extends BaseController {
         return ResponseData.success();
     }
 
-    @RequestMapping(value = "/getByTask", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<ProductionPickListsResult> getByTask(@RequestBody ProductionPickListsParam productionPickListsParam) {
 
-
-        ProductionPickLists detail = this.productionPickListsService.query().eq("source", "productionTask").eq("source_id", productionPickListsParam.getSourceId()).one();
-        ProductionPickListsResult result = new ProductionPickListsResult();
-        if (ToolUtil.isEmpty(detail)) {
-            return ResponseData.success(result);
-        } else {
-            ToolUtil.copyProperties(detail, result);
-            productionPickListsService.formatStatus99(new ArrayList<ProductionPickListsResult>() {{
-                add(result);
-            }});
-        }
-        return ResponseData.success(result);
-    }
 
     @RequestMapping(value = "/listByUser", method = RequestMethod.POST)
     @ApiOperation("详情")

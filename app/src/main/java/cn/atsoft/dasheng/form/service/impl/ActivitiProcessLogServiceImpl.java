@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.*;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -9,6 +10,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
+import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.CheckInstock;
@@ -22,6 +25,8 @@ import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.production.service.impl.ProductionPickListsServiceImpl;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
@@ -31,6 +36,7 @@ import cn.atsoft.dasheng.purchase.service.*;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -43,6 +49,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.ProcessType.ALLOCATION;
 
@@ -129,6 +136,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private AllocationService allocationService;
     @Autowired
     private ActivitiProcessService processService;
+
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
+    @Autowired
+    private AllocationCartService allocationCartService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -340,11 +352,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * 流程结束需要重新获取需要审批的节点
          */
         audit = this.getAudit(taskId);
-        //TODO 写一个判断如果下步为动作时 执行动作
+        // 写一个判断如果下步为动作时 执行动作
 //        startAction(audit, task);
 
         /**
-         * TODO 更新单据状态
+         * 更新单据状态
          */
         if (auditCheck) {
             updateDocumentStatus(audit, activitiAudits, task);
@@ -537,7 +549,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 //                        }
 //                    }
 //                }
-                instockOrderService.checkAllocationDone(processTask);
                 break;
             case "ERROR":
                 List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();
@@ -554,8 +565,74 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 }
 
                 break;
-        }
 
+            case "OUTSTOCK":
+                ProductionPickLists pickLists = pickListsService.getById(processTask.getFormId());
+                if (ToolUtil.isNotEmpty(pickLists.getSource()) && pickLists.getSource().equals("processTask")) {
+                    ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getPid());
+                    if (parentTask.getType().equals("ALLOCATION")) {
+
+                        /**
+                         * 如果来源是调拨单
+                         * 对应生成入库单
+                         */
+                        List<ProductionPickListsCart> pickListsCarts = pickListsCartService.query().eq("pick_lists_id", processTask.getFormId()).eq("status", 99).list();
+                        Allocation allocation = allocationService.getById(parentTask.getFormId());
+                        List<AllocationCart> allocationCarts = allocationCartService.query().eq("allocation_id", allocation.getAllocationId()).eq("pick_lists_id", pickLists.getPickListsId()).eq("status", 98).list();
+
+                        List<InstockListParam> instockListParams = BeanUtil.copyToList(pickListsCarts, InstockListParam.class);
+                        for (InstockListParam instockListParam : instockListParams) {
+                            instockListParam.setStatus(0L);
+                        }
+                        List<InstockListParam> totalList = new ArrayList<>();
+                        instockListParams.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                                (id, transfer) -> {
+                                    transfer.stream().reduce((a, b) -> new InstockListParam() {{
+                                        setSkuId(a.getSkuId());
+                                        setNumber(a.getNumber() + b.getNumber());
+                                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                                    }}).ifPresent(totalList::add);
+                                }
+                        );
+                        for (InstockListParam instockListParam : totalList) {
+                            List<Long> inkindIds = new ArrayList<>();
+                            for (InstockListParam listParam : instockListParams) {
+                                if (instockListParam.getSkuId().equals(listParam.getSkuId()) && instockListParam.getBrandId().equals(listParam.getBrandId())){
+                                    inkindIds.add( listParam.getInkindId());
+                                }
+                            }
+                            instockListParam.setInkindIds(inkindIds);
+                        }
+                        InstockOrderParam instockOrderParam = new InstockOrderParam();
+
+                        instockOrderParam.setUserId(allocation.getUserId());
+
+                        switch (allocation.getAllocationType()) {
+                            case 1:
+                                instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
+                                break;
+                            case 2:
+                                instockOrderParam.setStoreHouseId(allocationCarts.get(0).getStorehouseId());
+                                break;
+                        }
+                        instockOrderParam.setType("调拨入库");
+                        instockOrderParam.setSource("processTask");
+                        if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                            instockOrderParam.setMainTaskId(processTask.getMainTaskId());
+                        }
+                        instockOrderParam.setSourceId(parentTask.getProcessTaskId());
+                        instockOrderParam.setPid(parentTask.getProcessTaskId());
+                        instockOrderParam.setListParams(totalList);
+                        InstockOrder addEntity = instockOrderService.add(instockOrderParam);
+                        for (AllocationCart allocationCart : allocationCarts) {
+                            allocationCart.setInstockOrderId(addEntity.getInstockOrderId());
+                        }
+                        allocationCartService.updateBatchById(allocationCarts);
+                    }
+                    break;
+                }
+
+                }
     }
 
 
@@ -1181,7 +1258,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public PageInfo<ActivitiProcessLogResult> findPageBySpec(ActivitiProcessLogParam param) {
+    public PageInfo findPageBySpec(ActivitiProcessLogParam param) {
         Page<ActivitiProcessLogResult> pageContext = getPageContext();
         IPage<ActivitiProcessLogResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

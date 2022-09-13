@@ -89,7 +89,7 @@ public class PurchaseAskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<PurchaseAskResult> detail(@RequestBody PurchaseAskParam purchaseAskParam) {
+    public ResponseData detail(@RequestBody PurchaseAskParam purchaseAskParam) {
         PurchaseAskResult detail = this.purchaseAskService.detail(purchaseAskParam);
         return ResponseData.success(detail);
     }

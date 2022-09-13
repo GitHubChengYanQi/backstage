@@ -48,6 +48,7 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     @NotNull
     private Long cartId;
 
+    private String anomalyHandle;
     /**
      * 供应商
      */

@@ -24,6 +24,12 @@ public class InstockHandle implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("source")
+    private String source;
+
+    @TableField("source_id")
+    private Long sourceId;
+
     /**
      * 入库处理
      */
@@ -285,6 +291,22 @@ public class InstockHandle implements Serializable {
 
     public void setInstockListId(Long instockListId) {
         this.instockListId = instockListId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 
     @Override

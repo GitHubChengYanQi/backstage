@@ -62,6 +62,7 @@ public class TaskParticipantServiceImpl extends ServiceImpl<TaskParticipantMappe
             TaskParticipant entity = new TaskParticipant();
             entity.setProcessTaskId(taskId);
             entity.setUserId(userId);
+            entity.setType("order");
             list.add(entity);
         }
         this.saveBatch(list);

@@ -214,7 +214,7 @@ public class ${entity}Controller extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView() {
+    public ResponseData treeView() {
         List<Map<String,Object>> list = this.${lowerEntity}Service.listMaps();
 
         if(ToolUtil.isEmpty(list)){

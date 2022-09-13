@@ -27,6 +27,8 @@ public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
 
     private List<Long> skuIds;
 
+    private Boolean all;
+
     /**
      * 清单详情id
      */

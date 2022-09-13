@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
@@ -9,10 +11,12 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +35,8 @@ public class ProductionPickListsDetailController extends BaseController {
 
     @Autowired
     private ProductionPickListsDetailService productionPickListsDetailService;
-
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
     /**
      * 新增接口
      *
@@ -67,7 +72,7 @@ public class ProductionPickListsDetailController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam)  {
+    public ResponseData delete(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam) {
         this.productionPickListsDetailService.delete(productionPickListsDetailParam);
         return ResponseData.success();
     }
@@ -80,7 +85,7 @@ public class ProductionPickListsDetailController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionPickListsDetailResult> detail(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam) {
+    public ResponseData detail(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam) {
         ProductionPickListsDetail detail = this.productionPickListsDetailService.getById(productionPickListsDetailParam.getPickListsDetailId());
         ProductionPickListsDetailResult result = new ProductionPickListsDetailResult();
         ToolUtil.copyProperties(detail, result);
@@ -98,13 +103,33 @@ public class ProductionPickListsDetailController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ProductionPickListsDetailResult> list(@RequestBody(required = false) ProductionPickListsDetailParam productionPickListsDetailParam) {
-        if(ToolUtil.isEmpty(productionPickListsDetailParam)){
+        if (ToolUtil.isEmpty(productionPickListsDetailParam)) {
             productionPickListsDetailParam = new ProductionPickListsDetailParam();
         }
         return this.productionPickListsDetailService.findPageBySpec(productionPickListsDetailParam);
     }
 
-
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/noPageList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<ProductionPickListsDetailResult> noPageList(@RequestBody(required = false) ProductionPickListsDetailParam productionPickListsDetailParam) {
+        if (ToolUtil.isEmpty(productionPickListsDetailParam)) {
+            productionPickListsDetailParam = new ProductionPickListsDetailParam();
+        }
+        if (ToolUtil.isNotEmpty(productionPickListsDetailParam.getStorehousePositionsId())) {
+            StorehousePositions positions = storehousePositionsService.getById(productionPickListsDetailParam.getStorehousePositionsId());
+            if (ToolUtil.isNotEmpty(positions.getChildrens())) {
+                List<Long> childrens = JSON.parseArray(positions.getChildrens(), Long.class);
+                productionPickListsDetailParam.setStorehousePositionsIds(childrens);
+            }
+        }
+        return this.productionPickListsDetailService.findListBySpec(productionPickListsDetailParam);
+    }
 
 
 }

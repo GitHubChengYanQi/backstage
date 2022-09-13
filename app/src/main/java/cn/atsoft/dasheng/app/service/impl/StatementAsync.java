@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.pojo.StockStatement;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.pojo.SkuAnalyse;
 import cn.atsoft.dasheng.task.service.AsynTaskService;
@@ -11,6 +12,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -49,6 +51,8 @@ public class StatementAsync {
             for (SkuAnalyse skuAnalyse : skuAnalyseList) {
                 if (detailsResult.getSkuId().equals(skuAnalyse.getSkuId())) {
                     detailsResult.setSpuClassName(skuAnalyse.getClassName());
+                    detailsResult.setSpuClassificationId(skuAnalyse.getSpuClassId());
+                    detailsResult.setSpuClassNum(skuAnalyse.getNumber());
                     break;
                 }
             }
@@ -102,6 +106,10 @@ public class StatementAsync {
 
         List<StockStatement> stockStatements = new ArrayList<>();
         for (StockDetailsResult stockDetailsResult : totalList) {
+            if (ToolUtil.isEmpty(stockDetailsResult.getSkuIds())) {
+                Set<Long> newSkuIds = new HashSet<>();
+                stockDetailsResult.setSkuIds(newSkuIds);
+            }
             StockStatement stockStatement = new StockStatement();
             switch (stockDetailsResult.getMonth()) {
                 case "30天":

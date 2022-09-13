@@ -9,11 +9,18 @@ import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 /**
@@ -29,6 +36,8 @@ public class MessageController extends BaseController {
 
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private MobileService mobileService;
 
     /**
      * 新增接口
@@ -78,13 +87,55 @@ public class MessageController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<MessageResult> detail(@RequestBody MessageParam messageParam) {
+    public ResponseData detail(@RequestBody MessageParam messageParam) {
         Message detail = this.messageService.getById(messageParam.getMessageId());
         MessageResult result = new MessageResult();
         ToolUtil.copyProperties(detail, result);
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);
+    }
+
+    /**
+     * 全部已读
+     *
+     * @return
+     */
+    @RequestMapping(value = "/allRead", method = RequestMethod.GET)
+    public ResponseData allRead() {
+
+        Long userId = LoginContextHolder.getContext().getUserId();
+        QueryWrapper<Message> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("display", 1);
+
+        Message message = new Message();
+        message.setView(1);
+
+        this.messageService.update(message, queryWrapper);
+        return ResponseData.success();
+    }
+
+    /**
+     * 已读全部删除
+     *
+     * @return
+     */
+    @RequestMapping(value = "/removeAllRead", method = RequestMethod.GET)
+    public ResponseData removeAllRead() {
+
+        Long userId = LoginContextHolder.getContext().getUserId();
+        QueryWrapper<Message> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("view", 1);
+        queryWrapper.eq("display", 1);
+
+        Message message = new Message();
+        message.setDisplay(0);
+
+        this.messageService.update(message, queryWrapper);
+
+        return ResponseData.success();
     }
 
     /**
@@ -95,7 +146,7 @@ public class MessageController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MessageResult> list(@RequestBody(required = false) MessageParam messageParam) {
+    public PageInfo list(@RequestBody(required = false) MessageParam messageParam) {
         if (ToolUtil.isEmpty(messageParam)) {
             messageParam = new MessageParam();
         }
@@ -111,12 +162,23 @@ public class MessageController extends BaseController {
 
     @RequestMapping(value = "/view", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<MessageResult> view(@RequestBody(required = false) MessageParam messageParam) {
+    public PageInfo view(@RequestBody(required = false) MessageParam messageParam) {
         if (ToolUtil.isEmpty(messageParam)) {
             messageParam = new MessageParam();
         }
         return this.messageService.findPageBySpec(messageParam, null);
     }
+
+    @RequestMapping(value = "/jump", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public void jump(HttpServletRequest request, HttpServletResponse response, Long id) throws IOException {
+        Message message = messageService.getById(id);
+        if (message.getSource().equals("processTask")) {
+            String jumpUrl = "";
+            response.sendRedirect(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + message.getSourceId());
+        }
+    }
+
 
     @RequestMapping(value = "/getViewCount", method = RequestMethod.GET)
     @ApiOperation("查询登陆人未读消息数量")

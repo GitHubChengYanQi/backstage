@@ -152,7 +152,7 @@ public class ContractExcel {
      * 返回表格
      */
     @RequestMapping(value = "/getWordTables", method = RequestMethod.GET)
-    public ResponseData<List<XWPFTable>> getWordTables(@RequestParam("fileId") Long fileId) {
+    public ResponseData getWordTables(@RequestParam("fileId") Long fileId) {
         FileInfo fileInfo = fileInfoService.getById(fileId);
         XWPFDocument document = DocUtil.create(new File(fileInfo.getFilePath()));
         List<XWPFTable> documentTables = document.getTables();
@@ -178,23 +178,10 @@ public class ContractExcel {
             if (!result.type.equals("sku") && !result.getType().equals("pay")) {
                 map.put(result.getName(), ToolUtil.isEmpty(result.getValue()) ? "" : result.getValue());
             }
-//            if (result.getType().equals("sku")) {
-//                ContractTempleteDetail templeteDetail = templeteDetailService.query().eq("contract_templete_id", template.getTemplateId()).one();
-//                String skuReplace = contractService.skuReplace(templeteDetail.getValue(), contract.getSourceId());
-//                map.put(result.getName(), skuReplace);
-//            }
-//
-//            if (result.getType().equals("pay")) {
-//
-//            }
-
         }
 
-//        ContractTempleteDetail templateDetail = templeteDetailService.query().eq("contract_template_id", template.getTemplateId()).one();
-//        String skuReplace = contractService.skuReplace(templateDetail.getValue(), contract.getSourceId());
 
         List<OrderDetailResult> list = contractService.skuReplaceList(contract.getSourceId());
-
         List<PaymentDetailResult> replaceList = contractService.paymentDetailsReplaceList(contract.getSourceId());
 
         map.put("sku", list);
@@ -219,7 +206,6 @@ public class ContractExcel {
         return document;
 
     }
-
 
 
     @RequestMapping(value = "/getWordLables", method = RequestMethod.GET)

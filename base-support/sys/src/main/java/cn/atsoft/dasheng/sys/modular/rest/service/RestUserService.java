@@ -10,7 +10,11 @@ import cn.atsoft.dasheng.sys.modular.rest.entity.RestUser;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestUserPos;
 import cn.atsoft.dasheng.sys.modular.rest.mapper.RestUserMapper;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
+import cn.atsoft.dasheng.sys.modular.system.entity.Role;
 import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
+import cn.atsoft.dasheng.sys.modular.system.service.DeptService;
+import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -55,6 +59,11 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
     @Resource
     private RestUserPosService restUserPosService;
 
+    @Resource
+    private DeptService deptService;
+
+    @Resource
+    private RoleService roleService;
 
     /**
      * 添加用戶
@@ -357,11 +366,29 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
         //获取当前用户角色列表
         LoginUser user = LoginContextHolder.getContext().getUser();
-        List<Long> roleList = user.getRoleList();
 
+        List<Long> roleList = user.getRoleList();
         //用户没有角色无法显示首页信息
         if (roleList == null || roleList.size() == 0) {
             return null;
+        }
+
+        List<Long> deptDataScope = LoginContextHolder.getContext().getDeptDataScope();  //当前角色部门
+        if (ToolUtil.isEmpty(deptDataScope)) {
+            deptDataScope = new ArrayList<>();
+        }
+
+        List<Dept> depts = deptDataScope.size() == 0 ? new ArrayList<>() : deptService.listByIds(deptDataScope);
+        List<String> deptNames = new ArrayList<>();
+        for (Dept dept : depts) {
+            deptNames.add(dept.getFullName());
+        }
+
+
+        List<String> roleName = new ArrayList<>();
+        List<Role> roles = roleService.listByIds(roleList);
+        for (Role role : roles) {
+            roleName.add(role.getName());
         }
 
         List<Map<String, Object>> menus = this.getUserMenuNodes(roleList);
@@ -375,7 +402,8 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         result.put("avatar", portrait);
         result.put("name", user.getName());
         result.put("id", user.getId());
-
+        result.put("dept", deptNames);
+        result.put("role", roleName);
         result.put("MobileUrl", MobileUrl.prefix);
         return result;
     }

@@ -80,7 +80,7 @@ public class FormDataController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<FormDataResult> detail(@RequestBody FormDataParam formDataParam) {
+    public ResponseData detail(@RequestBody FormDataParam formDataParam) {
         FormData detail = this.formDataService.getById(formDataParam.getDataId());
         FormDataResult result = new FormDataResult();
         ToolUtil.copyProperties(detail, result);
@@ -97,7 +97,7 @@ public class FormDataController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<FormDataResult> list(@RequestBody(required = false) FormDataParam formDataParam) {
+    public PageInfo list(@RequestBody(required = false) FormDataParam formDataParam) {
         if(ToolUtil.isEmpty(formDataParam)){
             formDataParam = new FormDataParam();
         }

@@ -122,7 +122,9 @@ public class ActivitiProcessTaskSend {
                         ActivitiProcessTask processTask = processTaskService.getById(taskId);
                         if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
                             ActivitiProcessTask mainTask = processTaskService.getById(processTask.getMainTaskId());
-                            users.add(mainTask.getCreateUser());
+                            if (ToolUtil.isNotEmpty(mainTask)) {
+                                users.add(mainTask.getCreateUser());
+                            }
                         }
                         if (processTask.getType().equals("INSTOCKERROR")) {
                             AnomalyOrder anomalyOrder = anomalyOrderService.getById(processTask.getFormId());
@@ -130,6 +132,15 @@ public class ActivitiProcessTaskSend {
                             users.add(instockOrder.getCreateUser());
                         }
                     }
+                    break;
+                case Director:
+                    if (ToolUtil.isNotEmpty(taskId)) {
+                        ActivitiProcessTask processTask = processTaskService.getById(taskId);
+                        if (ToolUtil.isNotEmpty(processTask) && ToolUtil.isNotEmpty(processTask.getUserId())) {
+                            users.add(processTask.getUserId());
+                        }
+                    }
+                    break;
             }
         }
 
@@ -271,11 +282,12 @@ public class ActivitiProcessTaskSend {
         switch (type) {
             case audit:
             case send:
+            case status:
                 url = url + "/#/Receipts/ReceiptsDetail?" + "id=" + map.get("taskId");
                 break;
-            case status:
-                url = url + "/#/Receipts/ReceiptsDetail?" + "type=" + map.get("type") + "&formId=" + map.get("formId");
-                break;
+//
+//                url = url + "/#/Receipts/ReceiptsDetail?" + "type=" + map.get("type") + "&formId=" + map.get("formId");
+//                break;
 //                case quality_perform:
 //                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");
 //                break;

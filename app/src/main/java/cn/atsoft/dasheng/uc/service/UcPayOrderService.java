@@ -64,6 +64,6 @@ public interface UcPayOrderService extends IService<UcPayOrder> {
      * @author Sing
      * @Date 2021-03-21
      */
-     PageInfo<UcPayOrderResult> findPageBySpec(UcPayOrderParam param);
+     PageInfo findPageBySpec(UcPayOrderParam param);
 
 }

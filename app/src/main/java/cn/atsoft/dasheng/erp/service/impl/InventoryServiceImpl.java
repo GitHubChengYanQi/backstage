@@ -146,6 +146,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private ProductionPickListsCartService listsCartService;
     @Autowired
     private TaskParticipantService taskParticipantService;
+    @Autowired
+    private AnomalyService anomalyService;
 
     @Override
     @Transactional
@@ -224,6 +226,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryStock.setInventoryId(entity.getInventoryTaskId());
 //            inventoryStock.setRealNumber(inventoryStock.getNumber());
         }
+
         inventoryStockService.saveBatch(inventoryStocks);
         param.setCreateUser(entity.getCreateUser());
         List<ShopCart> shopCarts = shopCartService.query()
@@ -467,7 +470,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
-
+        if (ToolUtil.isNotEmpty(detailParam.getInkindIds())) {
+            queryWrapper.in("inkind_id", detailParam.getInkindIds());
+        }
         if (ToolUtil.isNotEmpty(detailParam.getSpuIds())) {    //产品
             List<Sku> skus = skuService.query().in("spu_id", detailParam.getSpuIds()).eq("display", 1).list();
             queryWrapper.in("sku_id", new ArrayList<Long>() {{
@@ -520,6 +525,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryStock.setCustomerId(stockDetail.getCustomerId());
             inventoryStock.setPositionId(stockDetail.getStorehousePositionsId());
             inventoryStock.setInkindId(stockDetail.getInkindId());
+            inventoryStock.setNumber(stockDetail.getNumber());
             details.add(inventoryStock);
         }
         return details;
@@ -603,11 +609,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }});
 
         List<SkuBind> skuBinds = this.getSkuBinds(detailParam);  //从物料绑定取
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> storePositionIds = new ArrayList<>();
+
         for (SkuBind skuBind : skuBinds) {
             InventoryStock inventoryStock = new InventoryStock();
             inventoryStock.setSkuId(skuBind.getSkuId());
             inventoryStock.setBrandId(skuBind.getBrandId());
             inventoryStock.setPositionId(skuBind.getPositionId());
+            storePositionIds.add(skuBind.getPositionId());
+            skuIds.add(skuBind.getSkuId());
+            brandIds.add(skuBind.getBrandId());
             condition.add(inventoryStock);
         }
 
@@ -619,7 +632,26 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 all.add(inventoryStock);
             }
         }
+
         List<InventoryStockResult> inventoryStockResults = BeanUtil.copyToList(all, InventoryStockResult.class, new CopyOptions());
+        List<AnomalyResult> anomalyResults = anomalyService.anomalyIsComplete(skuIds, brandIds, storePositionIds);
+
+        /**
+         * 比对未处理完成的异常件
+         */
+        for (InventoryStockResult inventoryStock : inventoryStockResults) {
+            for (AnomalyResult anomalyResult : anomalyResults) {
+                if (inventoryStock.getSkuId().equals(anomalyResult.getSkuId())
+                        && inventoryStock.getBrandId().equals(anomalyResult.getBrandId())
+                        && inventoryStock.getPositionId().equals(anomalyResult.getPositionId())) {
+                    inventoryStock.setLockStatus(99);
+                    inventoryStock.setAnomalyId(anomalyResult.getAnomalyId());
+                    inventoryStock.setStatus(-1);
+                    break;
+                }
+            }
+        }
+
         inventoryStockService.format(inventoryStockResults);
         return inventoryStockResults;
     }
@@ -744,7 +776,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-
             //任务参与人
             if (ToolUtil.isNotEmpty(param.getParticipants())) {
                 List<Long> userIds = JSON.parseArray(param.getParticipants(), Long.class);
@@ -881,7 +912,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     }
 
     @Override
-    public PageInfo<InventoryResult> findPageBySpec(InventoryParam param) {
+    public PageInfo findPageBySpec(InventoryParam param) {
         Page<InventoryResult> pageContext = getPageContext();
         IPage<InventoryResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
@@ -890,7 +921,21 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
 
     @Override
-    public PageInfo<InventoryResult> pageList(InventoryParam param) {
+    public PageInfo pageList(InventoryParam param) {
+
+        /**
+         * 通过库位查询
+         */
+        if (ToolUtil.isNotEmpty(param.getPositionId())) {
+            List<Long> positionChild = positionsService.getEndChild(param.getPositionId());
+            List<InventoryStock> inventoryStocks = positionChild.size() == 0 ? new ArrayList<>() : inventoryStockService.query().in("position_id", positionChild).eq("display", 1).list();
+            List<Long> inventoryIds = new ArrayList<>();
+            for (InventoryStock inventoryStock : inventoryStocks) {
+                inventoryIds.add(inventoryStock.getInventoryId());
+            }
+            param.setInventoryIds(inventoryIds);
+        }
+
         Page<InventoryResult> pageContext = getPageContext();
         IPage<InventoryResult> page = this.baseMapper.pageList(pageContext, param);
         format(page.getRecords());
@@ -1173,7 +1218,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      * @param realNumber
      */
     @Override
-    public void outUpdateStockDetail(Long skuId, Long brandId,Long realNumber) {
+    public void outUpdateStockDetail(Long skuId, Long brandId, Long realNumber) {
 
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku_id", skuId);
@@ -1403,9 +1448,20 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
-//        List<InventoryDetailResult> details = inventoryDetailService.getDetails(inventoryIds);
+
+        List<InventoryStock> inventoryStocks = inventoryIds.size() == 0 ? new ArrayList<>() : inventoryStockService.query().in("inventory_id", inventoryIds).eq("display", 1).last("limit 2").list();
+        List<InventoryStockResult> inventoryStockResults = BeanUtil.copyToList(inventoryStocks, InventoryStockResult.class);
+        inventoryStockService.format(inventoryStockResults);
 
         for (InventoryResult datum : data) {
+
+            List<InventoryStockResult> stockResults = new ArrayList<>();
+            for (InventoryStockResult inventoryStockResult : inventoryStockResults) {
+                if (inventoryStockResult.getInventoryId().equals(datum.getInventoryTaskId())) {
+                    stockResults.add(inventoryStockResult);
+                }
+            }
+            datum.setStockResults(stockResults);
 
             for (StorehousePositionsResult positionsResult : positionsResultList) {
                 if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {

@@ -80,7 +80,7 @@ public class ProductionStationClassController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ProductionStationClassResult> detail(@RequestBody ProductionStationClassParam productionStationClassParam) {
+    public ResponseData detail(@RequestBody ProductionStationClassParam productionStationClassParam) {
         ProductionStationClass detail = this.productionStationClassService.getById(productionStationClassParam.getProductionStationClassId());
         ProductionStationClassResult result = new ProductionStationClassResult();
         ToolUtil.copyProperties(detail, result);

@@ -82,7 +82,7 @@ public class ActivitiProcessLogController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ActivitiProcessLogResult> detail(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
+    public ResponseData detail(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
         ActivitiProcessLog detail = this.activitiProcessLogService.getById(activitiProcessLogParam.getLogId());
         ActivitiProcessLogResult result = new ActivitiProcessLogResult();
         ToolUtil.copyProperties(detail, result);
@@ -99,7 +99,7 @@ public class ActivitiProcessLogController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ActivitiProcessLogResult> list(@RequestBody(required = false) ActivitiProcessLogParam activitiProcessLogParam) {
+    public PageInfo list(@RequestBody(required = false) ActivitiProcessLogParam activitiProcessLogParam) {
         if (ToolUtil.isEmpty(activitiProcessLogParam)) {
             activitiProcessLogParam = new ActivitiProcessLogParam();
         }

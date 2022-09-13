@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -16,6 +17,7 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.params.ShopCartParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.AnomalyCensus;
 import cn.atsoft.dasheng.erp.pojo.AnomalyCustomerNum;
 import cn.atsoft.dasheng.erp.pojo.AnomalyType;
 import cn.atsoft.dasheng.erp.pojo.CheckNumber;
@@ -27,6 +29,9 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -86,8 +91,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     @Autowired
     private ActivitiProcessTaskService taskService;
     @Autowired
-    private RemarksService remarksService;
-    @Autowired
     private AnomalyOrderService anomalyOrderService;
     @Autowired
     private MessageProducer messageProducer;
@@ -105,12 +108,15 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private AnomalyDetailService anomalyDetailService;
     @Autowired
     private InstockLogDetailService logDetailService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private ProductionPickListsCartService listsCartService;
 
 
     @Transactional
     @Override
     public Anomaly add(AnomalyParam param) {
-
         switch (param.getAnomalyType()) {
             case InstockError:     //判断入库单
                 inventoryService.staticState();  //静态盘点判断
@@ -125,10 +131,11 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 param.setType(param.getAnomalyType().toString());
                 break;
             case StocktakingError:  //盘点:
-                boolean normal = isNormal(param);  //判断有无异常件  没有异常件 不执行以下代码 直接退出
-                if (normal) {
+                boolean normal = isNormal(param);   //判断有无异常件
+                if (!normal) {    //无异常
                     updateInventory(param);   //盘点详情 修改成正常状态
-                    return null;
+                } else {
+                    inventoryStockService.updateInventoryStatus(param, -1);
                 }
                 break;
         }
@@ -184,7 +191,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
 
     @Override
-    public Map<Integer, Integer> anomalyCensus(AnomalyParam param) {
+    public List<AnomalyCensus> anomalyCensus(AnomalyParam param) {
 
         List<AnomalyResult> anomalyResults = this.baseMapper.customList(param);
         Map<Integer, Integer> map = new HashMap<>();
@@ -204,24 +211,34 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         for (AnomalyResult anomalyResult : anomalyResults) {
             DateTime dateTime = new DateTime(anomalyResult.getCreateTime());
-            int month = dateTime.month();
+            int month = dateTime.month() + 1;
             Integer num = map.get(month);
             num++;
             map.put(month, num);
         }
 
-        return map;
+        List<AnomalyCensus> anomalyCensuses = new ArrayList<>();
+        for (Integer month : map.keySet()) {
+            Integer number = map.get(month);
+            AnomalyCensus anomalyCensus = new AnomalyCensus();
+            anomalyCensus.setMonth(month);
+            anomalyCensus.setNumber(number);
+            anomalyCensuses.add(anomalyCensus);
+        }
+
+        return anomalyCensuses;
     }
 
     @Override
     public Map<Integer, List<AnomalyResult>> detailed(AnomalyParam param) {
         Map<Integer, List<AnomalyResult>> map = new HashMap<>();
         List<AnomalyResult> anomalyResults = this.baseMapper.customList(param);
+        anomalyResults.removeIf(i -> i.getType().equals("InstockError"));
         this.format(anomalyResults);
 
         for (AnomalyResult anomalyResult : anomalyResults) {
             DateTime dateTime = new DateTime(anomalyResult.getCreateTime());
-            int month = dateTime.month();
+            int month = dateTime.month() + 1;
             List<AnomalyResult> results = map.get(month);
             if (ToolUtil.isEmpty(results)) {
                 results = new ArrayList<>();
@@ -312,52 +329,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
 
     /**
-     * 修改盘点明细状态
-     *
-     * @param param
-     */
-    private void updateInventoryStatus(AnomalyParam param, int status) {
-        QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
-        /**
-         * 同一时间段   统一修改
-         */
-        List<Long> inventoryIds = new ArrayList<>();
-        List<InventoryResult> inventoryResults = inventoryService.listByTime();
-        if (ToolUtil.isNotEmpty(inventoryResults)) {
-            for (InventoryResult inventoryResult : inventoryResults) {
-                inventoryIds.add(inventoryResult.getInventoryTaskId());
-            }
-        }
-        inventoryIds.add(param.getFormId());
-        queryWrapper.in("inventory_id", inventoryIds);
-        queryWrapper.eq("sku_id", param.getSkuId());
-        queryWrapper.eq("brand_id", param.getBrandId());
-        queryWrapper.eq("position_id", param.getPositionId());
-
-        List<InventoryDetail> inventoryDetails = inventoryDetailService.list(queryWrapper);
-
-        for (InventoryDetail inventoryDetail : inventoryDetails) {    //保留之前记录
-            if (inventoryDetail.getLockStatus() == 99) {
-                throw new ServiceException(500, "当前状态不可更改");
-            }
-            inventoryDetail.setStatus(status);
-            inventoryDetail.setAnomalyId(param.getAnomalyId());
-            inventoryDetail.setLockStatus(0);
-            inventoryDetail.setDisplay(0);
-        }
-
-        List<InventoryDetail> detailList = BeanUtil.copyToList(inventoryDetails, InventoryDetail.class, new CopyOptions());
-        for (InventoryDetail inventoryDetail : detailList) {
-            inventoryDetail.setDetailId(null);
-            inventoryDetail.setDisplay(1);
-        }
-
-        param.setType(param.getAnomalyType().toString());
-        inventoryDetailService.updateBatchById(inventoryDetails);
-        inventoryDetailService.saveBatch(detailList);
-    }
-
-    /**
      * 添加详情(区分批量)
      *
      * @param param
@@ -365,20 +336,24 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public boolean addDetails(AnomalyParam param) {
         boolean t = true;
 
-        if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
-            switch (param.getAnomalyType()) {
-                case StocktakingError:
-                case timelyInventory:
-                    deleteBind(param.getAnomalyId());
-                    updateInventory(param);     //盘点正常
-                    t = false;
-                    break;
-                case InstockError:
+        switch (param.getAnomalyType()) {
+            case InstockError:
+                if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
                     throw new ServiceException(500, "缺少异常信息");
-            }
-        } else {
-            inventoryStockService.updateInventoryStatus(param, -1);
+                }
+                break;
+            case timelyInventory:
+            case StocktakingError:
+                boolean normal = isNormal(param);   //判断有无异常件
+                if (!normal) {    //无异常
+                    updateInventory(param);   //盘点详情 修改成正常状态
+                    t = false;
+                } else {
+                    inventoryStockService.updateInventoryStatus(param, -1);
+                }
+                break;
         }
+
         if (t) {   //添加异常信息
             List<Inkind> inkinds = new ArrayList<>();
 
@@ -424,13 +399,12 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      * @return
      */
     private boolean isNormal(AnomalyParam param) {
-        inventoryDetailService.jurisdiction(param.getFormId());
         //判断盘点操作权限
-        if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
-            deleteBind(param.getAnomalyId()); //删除绑定数据
+        inventoryDetailService.jurisdiction(param.getFormId());
+        if (ToolUtil.isNotEmpty(param.getDetailParams()) && param.getDetailParams().size() > 0) {
             return true;
         }
-        return false;
+        return anomalyOrderService.check(param.getSkuId(), param.getBrandId(), param.getPositionId(), Math.toIntExact(param.getRealNumber()));
     }
 
     /**
@@ -574,21 +548,19 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
+
         deleteBind(param.getAnomalyId());   //删除绑定数据
-
-
         for (AnomalyType value : AnomalyType.values()) {
             if (value.name().equals(oldEntity.getType())) {
                 param.setAnomalyType(value);
             }
         }
+
         boolean b = addDetails(param);
         if (b) {    //添加购物车
-
             shopCartService.remove(new QueryWrapper<ShopCart>() {{
                 eq("form_id", oldEntity.getAnomalyId());
             }});
-
             ShopCartParam shopCartParam = new ShopCartParam();
             shopCartParam.setSkuId(param.getSkuId());
             shopCartParam.setBrandId(param.getBrandId());
@@ -631,7 +603,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public void dealWithError(AnomalyParam param) {
 
 
-
         Anomaly oldEntity = getOldEntity(param);
 
         /**
@@ -655,7 +626,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             throw new ServiceException(500, "你没有操作权限");
         }
 
-
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
@@ -666,7 +636,10 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             instockListService.updateById(instockList);
         }
 
-        updateStatus(param.getAnomalyId()); //更新异常状态
+        if (param.getComplete()) {
+            updateStatus(param.getAnomalyId()); //更新异常状态
+        }
+
         if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {
             detailService.pushPeople(oldEntity.getCreateUser(), oldEntity.getAnomalyId());
         }
@@ -683,11 +656,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
      */
     private void updateStatus(Long anomalyId) {
         Anomaly anomaly = this.getById(anomalyId);
-        Integer count = detailService.lambdaQuery().eq(AnomalyDetail::getAnomalyId, anomalyId).eq(AnomalyDetail::getStauts, 0).count();
-        if (ToolUtil.isEmpty(count) || count == 0) {
-            anomaly.setStatus(99);
-            this.updateById(anomaly);
-        }
+        anomaly.setStatus(99);
+        this.updateById(anomaly);
     }
 
 
@@ -748,6 +718,23 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         Page<AnomalyResult> pageContext = getPageContext();
         IPage<AnomalyResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 通过物料 品牌 库位 查询 是否有未完成的异常件
+     *
+     * @param skuIds
+     * @param brandIds
+     * @param positionIds
+     * @return
+     */
+    @Override
+    public List<AnomalyResult> anomalyIsComplete(List<Long> skuIds, List<Long> brandIds, List<Long> positionIds) {
+        AnomalyParam anomalyParam = new AnomalyParam();
+        anomalyParam.setSkuIds(skuIds);
+        anomalyParam.setBrandIds(brandIds);
+        anomalyParam.setPositionIds(positionIds);
+        return this.baseMapper.anomalyComplete(anomalyParam);
     }
 
     private Serializable getKey(AnomalyParam param) {

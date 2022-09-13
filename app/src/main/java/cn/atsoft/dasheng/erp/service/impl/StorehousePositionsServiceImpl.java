@@ -47,7 +47,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import oshi.jna.platform.mac.SystemB;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -95,9 +94,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     public void add(StorehousePositionsParam param) {
         if (ToolUtil.isNotEmpty(param.getPid())) {
             List<StockDetails> stockDetails = stockDetailsService.query().eq("storehouse_positions_id", param.getPid()).list();
-//            if (ToolUtil.isNotEmpty(stockDetails)) {
-//                throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
-//            }
+            if (ToolUtil.isNotEmpty(stockDetails)) {
+                throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
+            }
         }
 
         Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
@@ -440,7 +439,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * @return
      */
     @Override
-    public List<BrandResult> selectByBrand(Long skuId, Long brandId, Long storehouseId) {
+    public List<BrandResult> selectByBrand(Long skuId, Long brandId, Long storehouseId, Long positionId) {
         List<ProductionPickListsCart> list = cartService.query().eq("status", 0).list();
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : list) {
@@ -453,6 +452,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         if (ToolUtil.isNotEmpty(brandId)) {
             stockDetailsQueryWrapper.eq("brand_id", brandId);
+        }
+        if (ToolUtil.isNotEmpty(positionId)) {
+            stockDetailsQueryWrapper.eq("storehouse_positions_id", positionId);
         }
         if (ToolUtil.isNotEmpty(storehouseId)) {
             stockDetailsQueryWrapper.eq("storehouse_id", storehouseId);
@@ -682,7 +684,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             String qrCode = qrCodeCreateService.createQrCode(codeId.toString());
             templete = templete.replace("${qrCode}", qrCode);
         }
-        if (templete.contains("${bind}") || templete.contains("${{物料编码}}") || templete.contains("${{产品名称}}") ||  templete.contains("${{型号}}") ||  templete.contains("${{规格}}") ) {
+        if (templete.contains("${bind}") || templete.contains("${{物料编码}}") || templete.contains("${{产品名称}}") || templete.contains("${{型号}}") || templete.contains("${{规格}}")) {
             List<StorehousePositionsBind> binds = storehousePositionsBindService.query().eq("position_id", param.getStorehousePositionsId()).list();
             List<Long> skuIds = new ArrayList<>();
             for (StorehousePositionsBind bind : binds) {
@@ -995,12 +997,12 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             if (skuGroup.contains("sku")) {
                 StringBuilder all = new StringBuilder();
                 List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-                if (ToolUtil.isNotEmpty(skuResults) && skuResults.size()>0) {
+                if (ToolUtil.isNotEmpty(skuResults) && skuResults.size() > 0) {
                     SkuResult skuResult = skuResults.get(0);
                     skuResults = new ArrayList<>();
                     skuResults.add(skuResult);
                 }
-                skuResults.removeIf(i->i.getDisplay().equals(0));
+                skuResults.removeIf(i -> i.getDisplay().equals(0));
                 int i = 0;
                 for (SkuResult skuResult : skuResults) {
                     StringBuilder group = new StringBuilder(m.group(0));
@@ -1025,7 +1027,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                         }
                     }
 
-                     all.append(group);
+                    all.append(group);
                 }
                 String toString = all.toString();
                 String group = m.group(0);
@@ -1136,6 +1138,17 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         this.format(positionsResults);
         return positionsResults;
+    }
+
+    @Override
+    public List<StorehousePositionsResult> resultsByIds(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<StorehousePositions> positions = this.query().in("storehouse_positions_id", ids).eq("display", 1).list();
+        List<StorehousePositionsResult> results = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
+
+        return results;
     }
 
     private StorehousePositionsResult getSupper(StorehousePositionsResult result, List<StorehousePositionsResult> data) {

@@ -121,9 +121,6 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-        </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
@@ -139,6 +136,16 @@
         <if test="paramCondition.complete != null and paramCondition.complete">
             and complete = #{paramCondition.complete}
         </if>
+        <if test="paramCondition.createUser != null">
+            and create_user = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.times != null and paramCondition.times.size == 2">
+            and create_time between
+            <foreach collection="paramCondition.times" index="index" item="state" separator=" and ">
+                #{state}
+            </foreach>
+        </if>
+
     </select>
 
 
@@ -146,7 +153,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.InventoryParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_inventory where 1 = 1 and position_id is not null
+        from daoxin_erp_inventory where 1 = 1 and position_id is not null and display = 1
         <if test="paramCondition.positionId != null">
             and position_id = #{paramCondition.positionId}
         </if>
@@ -163,7 +170,7 @@
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
         <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            and create_user = #{paramCondition.createUser}
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
@@ -177,6 +184,25 @@
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
+        <if test="paramCondition.inventoryIds != null and  paramCondition.inventoryIds.size > 0">
+            and inventory_task_id in
+            <foreach collection="paramCondition.inventoryIds" close=")" index="index" item="state" open="("
+                     separator=",">
+                #{state}
+            </foreach>
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map"

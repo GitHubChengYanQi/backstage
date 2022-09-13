@@ -77,6 +77,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Autowired
     private AsynTaskService asynTaskService;
 
+
     @Override
     public Parts add(PartsParam partsParam) {
 
@@ -174,6 +175,113 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
     }
+
+    @Transactional
+    @Override
+    public Parts newAdd(PartsParam partsParam) {
+        //如果相同skuBom    发布最新创建的
+        if (ToolUtil.isNotEmpty(partsParam.getSkuId())) {
+            Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
+            if (ToolUtil.isNotEmpty(one)) {
+                one.setStatus(0);
+                this.updateById(one);
+            }
+            Parts parts = new Parts();
+            if (ToolUtil.isEmpty(partsParam.getName())) {
+                throw new ServiceException(500, "请输入版本号");
+            }
+            ToolUtil.copyProperties(partsParam, parts);
+            parts.setStatus(99);
+            parts.setPartsId(null);
+            this.save(parts);
+            List<ErpPartsDetail> partsDetails = new ArrayList<>();
+            for (ErpPartsDetailParam part : partsParam.getParts()) {
+                part.setPartsId(parts.getPartsId());
+                part.setPartsDetailId(null);
+                ErpPartsDetail partsDetail = new ErpPartsDetail();
+                ToolUtil.copyProperties(part, partsDetail);
+                partsDetails.add(partsDetail);
+            }
+            erpPartsDetailService.saveBatch(partsDetails);
+            List<Long> children = getChildren(parts.getPartsId());   //更新childRens
+            if (ToolUtil.isNotEmpty(children)) {
+                parts.setChildren(JSON.toJSONString(children));
+            }
+            this.updateById(parts);
+            return parts;
+        } else if (ToolUtil.isNotEmpty(partsParam.getSpuId())) {
+            Spu spu = spuService.getById(partsParam.getItem().getSpuId());
+            SpuParam spuParam = new SpuParam();
+            ToolUtil.copyProperties(spu, spuParam);
+            SkuParam skuParam = new SkuParam();
+            skuParam.setBatch(partsParam.getBatch());
+            skuParam.setSkuName(partsParam.getSkuName());
+            skuParam.setType(0);
+            skuParam.setRemarks(partsParam.getSkuNote());
+            skuParam.setStandard(partsParam.getStandard());
+            skuParam.setSpecifications(partsParam.getSpecifications());
+            skuParam.setSpuId(partsParam.getItem().getSpuId());
+            skuParam.setSku(partsParam.getSku());
+            skuParam.setSpu(spuParam);
+            skuParam.setSpuClass(spuParam.getSpuClassificationId());
+            Map<String, Sku> add = skuService.add(skuParam);
+            Sku success = add.get("success");
+            Long skuId = success.getSkuId();
+
+            // 以上新建sku
+            partsParam.setSkuId(skuId);
+            partsParam.setSpuId(partsParam.getSpuId());
+            //以下新建bom
+            Parts parts = new Parts();
+            if (ToolUtil.isEmpty(partsParam.getName())) {
+                throw new ServiceException(500, "请输入版本号");
+            }
+            ToolUtil.copyProperties(partsParam, parts);
+            parts.setStatus(99);
+            parts.setPartsId(null);
+            this.save(parts);
+            List<ErpPartsDetail> partsDetails = new ArrayList<>();
+            for (ErpPartsDetailParam part : partsParam.getParts()) {
+                part.setPartsId(parts.getPartsId());
+                part.setPartsDetailId(null);
+                ErpPartsDetail partsDetail = new ErpPartsDetail();
+                ToolUtil.copyProperties(part, partsDetail);
+                partsDetails.add(partsDetail);
+            }
+            erpPartsDetailService.saveBatch(partsDetails);
+            List<Long> children = getChildren(parts.getPartsId());   //更新childRens
+            if (ToolUtil.isNotEmpty(children)) {
+                parts.setChildren(JSON.toJSONString(children));
+            }
+            this.updateById(parts);
+            return parts;
+        }
+
+        throw new ServiceException(500, "创建失败");
+    }
+
+
+    private List<Long> getChildren(Long partId) {
+        List<Long> partIds = new ArrayList<>();
+        List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.query().eq("parts_id", partId).eq("display", 1).list();
+        List<Long> skuIds = new ArrayList<>();
+
+        for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
+            skuIds.add(erpPartsDetail.getSkuId());
+        }
+        if (ToolUtil.isEmpty(skuIds)) {
+            return partIds;
+        }
+        List<Parts> list = this.query().in("sku_id", skuIds).eq("status", 99).eq("display", 1).list();
+        for (Parts parts : list) {
+            partIds.add(parts.getPartsId());
+            parts.setPid(partId);
+//            getChildren(parts.getPartsId());
+        }
+        this.updateBatchById(list);
+        return partIds;
+    }
+
 
     /**
      * 开始分析
@@ -394,7 +502,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     @Override
-    public PageInfo<PartsResult> oldFindPageBySpec(PartsParam param) {
+    public PageInfo oldFindPageBySpec(PartsParam param) {
         Page<PartsResult> pageContext = getPageContext();
         IPage<PartsResult> page = this.baseMapper.oldCustomPageList(pageContext, param);
         format(page.getRecords());
@@ -402,7 +510,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     @Override
-    public PageInfo<PartsResult> findPageBySpec(PartsParam param) {
+    public PageInfo findPageBySpec(PartsParam param) {
         Page<PartsResult> pageContext = getPageContext();
         param.setStatus(99);
         param.setDisplay(1);
@@ -420,7 +528,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isEmpty(parts)) {
             return ids;
         } else {
-            ids.add(parts.getSkuId());
             ids.addAll(getSkuIdsByPart(parts.getPartsId()));
         }
         return ids;
@@ -430,7 +537,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Long> ids = new ArrayList<>();
         List<ErpPartsDetail> partsDetails = erpPartsDetailService.query().eq("parts_id", partId).eq("display", 1).list();
         for (ErpPartsDetail partsDetail : partsDetails) {
-            ids.add(partsDetail.getSkuId());
             ids.addAll(getSkuIdsByBom(partsDetail.getSkuId()));
         }
         return ids;

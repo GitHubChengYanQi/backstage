@@ -95,7 +95,7 @@ public class SopController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SopResult> detail(@RequestBody SopParam sopParam) {
+    public ResponseData detail(@RequestBody SopParam sopParam) {
         SopResult result = this.sopService.detail(sopParam.getSopId());
         return ResponseData.success(result);
     }
@@ -123,7 +123,7 @@ public class SopController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SopParam sopParam) {
+    public ResponseData listSelect(@RequestBody(required = false) SopParam sopParam) {
 
         QueryWrapper<Sop> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("display", 1);

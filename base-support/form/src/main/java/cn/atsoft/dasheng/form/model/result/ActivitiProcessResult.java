@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.form.model.result;
 import cn.atsoft.dasheng.form.pojo.ProcessEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -60,6 +61,7 @@ public class ActivitiProcessResult implements Serializable {
      * 分类Id
      */
     @ApiModelProperty("分类Id")
+    @JSONField(serialize = false)
     private Long categoryId;
 
     /**
@@ -80,12 +82,15 @@ public class ActivitiProcessResult implements Serializable {
      * 删除状态
      */
     @ApiModelProperty("删除状态")
+    @JSONField(serialize = false)
     private Integer display;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long createUser;
 
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     @ApiModelProperty(hidden = true)

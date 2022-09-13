@@ -77,7 +77,7 @@ public class FormConfigController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<FormConfigResult> detail(@RequestBody FormConfigParam formConfigParam) {
+    public ResponseData detail(@RequestBody FormConfigParam formConfigParam) {
         FormConfig detail = this.formConfigService.getById(formConfigParam.getFormId());
         FormConfigResult result = new FormConfigResult();
         ToolUtil.copyProperties(detail, result);
@@ -94,7 +94,7 @@ public class FormConfigController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<FormConfigResult> list(@RequestBody(required = false) FormConfigParam formConfigParam) {
+    public PageInfo list(@RequestBody(required = false) FormConfigParam formConfigParam) {
         if(ToolUtil.isEmpty(formConfigParam)){
             formConfigParam = new FormConfigParam();
         }

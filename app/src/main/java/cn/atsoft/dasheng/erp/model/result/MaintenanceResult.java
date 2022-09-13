@@ -47,7 +47,8 @@ public class MaintenanceResult implements Serializable {
 
     private List<MaintenanceAndInventorySelectParam> selectParamResults;
     private String selectParams;
-
+    @ApiModelProperty("养护")
+    private Long taskId;
 
     @ApiModelProperty("养护")
     private Long maintenanceId;

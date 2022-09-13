@@ -292,7 +292,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     }
 
     @Override
-    public PageInfo<ActivitiStepsResult> findPageBySpec(ActivitiStepsParam param) {
+    public PageInfo findPageBySpec(ActivitiStepsParam param) {
         Page<ActivitiStepsResult> pageContext = getPageContext();
         IPage<ActivitiStepsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
@@ -682,6 +682,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                             case AllPeople:
                             case DeptPositions:
                             case MasterDocumentPromoter:
+                            case Director:
                                 Long updateUser = logResult.getUpdateUser();
                                 User user = userService.getById(updateUser);
                                 List<AppointUser> appointUsers = rule.getAppointUsers();
@@ -696,7 +697,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                                     } else if (logResult.getStatus() == 0) {
                                         setAuditStatus(50);
                                     }
-
                                 }});
                                 rule.setAppointUsers(appointUsers);
                                 break;

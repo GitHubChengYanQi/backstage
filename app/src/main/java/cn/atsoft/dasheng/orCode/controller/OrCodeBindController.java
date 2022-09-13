@@ -81,7 +81,7 @@ public class OrCodeBindController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OrCodeBindResult> detail(@RequestBody OrCodeBindParam orCodeBindParam) {
+    public ResponseData detail(@RequestBody OrCodeBindParam orCodeBindParam) {
         OrCodeBind detail = this.orCodeBindService.getById(orCodeBindParam.getOrCodeBindId());
         OrCodeBindResult result = new OrCodeBindResult();
         ToolUtil.copyProperties(detail, result);

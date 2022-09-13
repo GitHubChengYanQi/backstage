@@ -29,9 +29,17 @@ public class ProductionPickListsCartResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private SkuSimpleResult skuResult;
+    private List<Long> brandIds;
+    private List<String> brandNames;
     private ProductionPickListsResult productionPickListsResult;
     private ProductionPickListsResult pickListsResult;
     private ProductionPickListsDetailResult productionPickListsDetailResult;
+
+    private Long stockNumber;
+
+    private Integer lockStockDetailNumber;
+
+
     //仓库
     private StorehouseSimpleResult storehouseResult;
     //库位
@@ -54,7 +62,6 @@ public class ProductionPickListsCartResult implements Serializable {
      * 购物车id
      */
     @ApiModelProperty("购物车id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long pickListsCart;
 
     @JSONField(serializeUsing= ToStringSerializer.class)

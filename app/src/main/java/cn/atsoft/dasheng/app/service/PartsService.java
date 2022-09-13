@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -26,6 +27,9 @@ public interface PartsService extends IService<Parts> {
      * @Date 2021-10-21
      */
     Parts add(PartsParam partsParam);
+
+
+    Parts newAdd(PartsParam partsParam);
 
     void startAnalyse();
 
@@ -71,7 +75,7 @@ public interface PartsService extends IService<Parts> {
      * @author song
      * @Date 2021-10-21
      */
-    PageInfo<PartsResult> oldFindPageBySpec(PartsParam param);
+    PageInfo oldFindPageBySpec(PartsParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -79,7 +83,7 @@ public interface PartsService extends IService<Parts> {
      * @author song
      * @Date 2021-10-21
      */
-    PageInfo<PartsResult> findPageBySpec(PartsParam param);
+    PageInfo findPageBySpec(PartsParam param);
 
 
     List<Long> getSkuIdsByBom(Long skuId);

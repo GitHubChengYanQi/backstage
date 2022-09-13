@@ -100,7 +100,7 @@ public class UcMemberController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<UcMemberResult> detail(@RequestBody UcMemberParam ucMemberParam) {
+    public ResponseData detail(@RequestBody UcMemberParam ucMemberParam) {
         UcMember byId = this.ucMemberService.getById(ucMemberParam.getMemberId());
         UcMemberResult result = new UcMemberResult();
         ToolUtil.copyProperties(byId, result);
@@ -116,7 +116,7 @@ public class UcMemberController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<UcMemberResult> list(@RequestBody(required = false) UcMemberParam ucMemberParam) {
+    public PageInfo list(@RequestBody(required = false) UcMemberParam ucMemberParam) {
         if (ToolUtil.isEmpty(ucMemberParam)) {
             ucMemberParam = new UcMemberParam();
         }

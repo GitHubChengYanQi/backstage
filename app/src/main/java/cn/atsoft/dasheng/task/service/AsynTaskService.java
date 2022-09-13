@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.task.service;
 
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.pojo.AllBomResult;
+import cn.atsoft.dasheng.app.pojo.BomOrder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.task.entity.AsynTask;
 import cn.atsoft.dasheng.task.model.params.AsynTaskParam;
@@ -45,6 +48,10 @@ public interface AsynTaskService extends IService<AsynTask> {
 
     List<AsynTaskResult> BomDetailed();
 
+    List<BomOrder> BomDetailedVersion();
+
+    List<ErpPartsDetail> bomResult(Long skuId, int num);
+
     /**
      * 查询单条数据，Specification模式
      *
@@ -70,6 +77,8 @@ public interface AsynTaskService extends IService<AsynTask> {
     PageInfo<AsynTaskResult> findPageBySpec(AsynTaskParam param);
 
     Object spectaculars();
+
+    Object spectacularsVersion();
 
     Object stockSpectaculars();
 

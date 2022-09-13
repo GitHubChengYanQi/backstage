@@ -55,6 +55,8 @@ public class InstockOrderResult implements Serializable {
     private long inStockNum;
     private int positionNum;
     private int skuNum;
+    private List<InstockHandleResult> handleResults;
+    private Boolean canPut;
 
     /**
      * 来源

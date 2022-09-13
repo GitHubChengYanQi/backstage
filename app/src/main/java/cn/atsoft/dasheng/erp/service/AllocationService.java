@@ -8,6 +8,8 @@ import cn.atsoft.dasheng.erp.model.params.AllocationCartParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AllocationParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationResult;
+import cn.atsoft.dasheng.erp.model.result.InstockListResult;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -35,7 +37,9 @@ public interface AllocationService extends IService<Allocation> {
     void checkCarry(Long allocation);
 
 
-    void createPickListsAndInStockOrder(Long allocationId, List<AllocationCart> allocationCarts);
+    void createPickListsAndInStockOrder(AllocationParam param, List<AllocationCart> allocationCarts);
+
+    void format(List<AllocationResult> data);
 
     /**
      * 删除
@@ -46,6 +50,8 @@ public interface AllocationService extends IService<Allocation> {
     void delete(AllocationParam param);
 
     AllocationResult detail(Long allocationId);
+
+    void newTransfer(AllocationCartParam param);
 
     void transferInStorehouse(AllocationCartParam param);
 
@@ -79,9 +85,11 @@ public interface AllocationService extends IService<Allocation> {
      * @author Captain_Jazz
      * @Date 2022-07-13
      */
-     PageInfo<AllocationResult> findPageBySpec(AllocationParam param);
+    PageInfo findPageBySpec(AllocationParam param);
 
     void createOrder(AllocationParam param);
 
     void checkCartDone(Long allocationId, List<InstockList> listing);
+
+    List<InstockListResult> getInstockListResultsByAllocationTask(Long taskId);
 }

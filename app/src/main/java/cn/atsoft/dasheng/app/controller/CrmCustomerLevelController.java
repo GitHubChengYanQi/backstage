@@ -83,7 +83,7 @@ public class CrmCustomerLevelController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmCustomerLevelResult> detail(@RequestBody CrmCustomerLevelParam crmCustomerLevelParam) {
+    public ResponseData detail(@RequestBody CrmCustomerLevelParam crmCustomerLevelParam) {
         CrmCustomerLevel detail = this.crmCustomerLevelService.getById(crmCustomerLevelParam.getCustomerLevelId());
         CrmCustomerLevelResult result = new CrmCustomerLevelResult();
         ToolUtil.copyProperties(detail, result);
@@ -100,7 +100,7 @@ public class CrmCustomerLevelController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CrmCustomerLevelResult> list(@RequestBody(required = false) CrmCustomerLevelParam crmCustomerLevelParam) {
+    public PageInfo list(@RequestBody(required = false) CrmCustomerLevelParam crmCustomerLevelParam) {
         if(ToolUtil.isEmpty(crmCustomerLevelParam)){
             crmCustomerLevelParam = new CrmCustomerLevelParam();
         }
@@ -115,7 +115,7 @@ public class CrmCustomerLevelController extends BaseController {
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData listSelect() {
         QueryWrapper<CrmCustomerLevel> levelQueryWrapper = new QueryWrapper<>();
         levelQueryWrapper.in("display",1);
         levelQueryWrapper.orderByDesc("rank");

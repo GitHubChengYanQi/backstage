@@ -87,7 +87,7 @@ public class DocumentsOperationServiceImpl extends ServiceImpl<DocumentsOperatio
     }
 
     @Override
-    public PageInfo<DocumentsOperationResult> findPageBySpec(DocumentsOperationParam param) {
+    public PageInfo findPageBySpec(DocumentsOperationParam param) {
         Page<DocumentsOperationResult> pageContext = getPageContext();
         IPage<DocumentsOperationResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);

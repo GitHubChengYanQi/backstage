@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
+import cn.atsoft.dasheng.erp.pojo.AnomalyCensus;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public interface AnomalyService extends IService<Anomaly> {
      */
     Anomaly add(AnomalyParam param);
 
-    Map<Integer, Integer> anomalyCensus(AnomalyParam param);
+    List<AnomalyCensus> anomalyCensus(AnomalyParam param);
 
     Map<Integer, List<AnomalyResult>> detailed(AnomalyParam param);
 
@@ -85,6 +86,8 @@ public interface AnomalyService extends IService<Anomaly> {
      * @Date 2022-05-27
      */
      PageInfo<AnomalyResult> findPageBySpec(AnomalyParam param);
+
+    List<AnomalyResult> anomalyIsComplete(List<Long> skuIds, List<Long> brandIds, List<Long> positionIds);
 
     void getOrder(List<AnomalyResult> data);
 
