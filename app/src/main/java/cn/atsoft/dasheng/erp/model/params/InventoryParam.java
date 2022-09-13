@@ -25,6 +25,8 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Long> inventoryIds;
+
     private List<String> times;
 
     private Integer complete;
