@@ -185,7 +185,7 @@
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
         <if test="paramCondition.inventoryIds != null and  paramCondition.inventoryIds.size > 0">
-            and inventory_id in
+            and inventory_task_id in
             <foreach collection="paramCondition.inventoryIds" close=")" index="index" item="state" open="("
                      separator=",">
                 #{state}
