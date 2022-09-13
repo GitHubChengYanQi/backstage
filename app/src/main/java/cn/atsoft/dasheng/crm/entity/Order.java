@@ -24,6 +24,11 @@ public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 交货周期
+     */
+    @TableField("lead_time")
+    private String leadTime;
 
     @TableField("file_id")
     private Long fileId;
@@ -658,6 +663,14 @@ public class Order implements Serializable {
 
     public void setAdressId(Long adressId) {
         this.adressId = adressId;
+    }
+
+    public String getLeadTime() {
+        return leadTime;
+    }
+
+    public void setLeadTime(String leadTime) {
+        this.leadTime = leadTime;
     }
 
     @Override

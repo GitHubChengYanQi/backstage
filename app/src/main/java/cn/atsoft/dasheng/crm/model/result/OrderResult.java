@@ -33,6 +33,7 @@ public class OrderResult implements Serializable {
 
     private Long fileId;
 
+    private String leadTime;
     private static final long serialVersionUID = 1L;
 
     private PaymentResult paymentResult;

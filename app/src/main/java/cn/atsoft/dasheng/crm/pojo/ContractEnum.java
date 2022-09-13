@@ -65,6 +65,7 @@ public enum ContractEnum {
     DeliveryCycle("交货周期"),
     TotalAmountInWords("合计金额大写"),
     TotalAmountInFigures("合计金额小写"),
+
     remakr("产品备注"),
     Line("序号"),
     payMoney("付款金额"),
