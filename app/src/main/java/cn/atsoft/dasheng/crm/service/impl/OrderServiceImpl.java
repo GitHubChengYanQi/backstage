@@ -346,10 +346,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     break;
                 case DeliveryAddress:
-                    if (ToolUtil.isEmpty(orderResult.getAdress()) || ToolUtil.isEmpty(orderResult.getAdress().getDetailLocation())) {
+                    if (ToolUtil.isEmpty(orderResult.getAdress()) || ToolUtil.isEmpty(orderResult.getAdress().getLocation())) {
                         map.put(ContractEnum.DeliveryAddress.getDetail(), "");
                     } else {
-                        map.put(ContractEnum.DeliveryAddress.getDetail(), orderResult.getAdress().getDetailLocation());
+                        map.put(ContractEnum.DeliveryAddress.getDetail(), orderResult.getAdress().getLocation());
                     }
                     break;
                 case TotalNumber:
@@ -394,6 +394,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                         orderResult.getBcustomer().setZipCode("");
                     }
                     map.put(ContractEnum.BZipCode.getDetail(), orderResult.getBcustomer().getZipCode());
+                    break;
+                case DeliveryCycle:
+                    if (orderResult.getLeadTime() == null) {
+                        orderResult.setLeadTime("");
+                    }
+                    map.put(ContractEnum.DeliveryCycle.getDetail(), orderResult.getLeadTime());
                     break;
             }
         }

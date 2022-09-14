@@ -336,13 +336,12 @@ public class ContractExcel {
                         paperType = "专票";
                     }
                     map.put(ContractEnum.invoiceType.getDetail(), paperType);
-                case DeliveryCycle:
-                    if (ToolUtil.isNotEmpty(results.getDeliveryDate())) {
-                        map.put(ContractEnum.DeliveryCycle.getDetail(), results.getDeliveryDate() + "");
+                case remakr:
+                    if (ToolUtil.isNotEmpty(results.getRemark())) {
+                        map.put(ContractEnum.remakr.getDetail(), results.getRemark() + "");
                     } else {
-                        map.put(ContractEnum.DeliveryCycle.getDetail(), "");
+                        map.put(ContractEnum.remakr.getDetail(), "");
                     }
-
 
             }
         }

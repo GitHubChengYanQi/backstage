@@ -24,6 +24,9 @@ public class OrderDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("remark")
+    private String remark;
+
     /**
      * 详情id
      */
@@ -129,6 +132,14 @@ public class OrderDetail implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public Long getDetailId() {
         return detailId;
