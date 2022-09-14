@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,11 +58,15 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     }
 
     @Override
+    @Transactional
     public void update(TemplateParam param) {
         Template oldEntity = getOldEntity(param);
-        Template newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        oldEntity.setDisplay(0);
+        this.updateById(oldEntity);
+
+        Template entity = this.getEntity(param);
+        entity.setTemplateId(null);
+        this.save(entity);
     }
 
     @Override

@@ -50,8 +50,15 @@ public class SupplyController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem( @RequestBody SupplyParam supplyParam) {
+    public ResponseData addItem(@RequestBody SupplyParam supplyParam) {
         this.supplyService.add(supplyParam);
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/updateSupply", method = RequestMethod.POST)
+    public ResponseData updateSupply(@RequestBody SupplyParam param) {
+        this.supplyService.removeById(param.getSupplyId());
+        this.supplyService.add(param);
         return ResponseData.success();
     }
 
@@ -190,7 +197,7 @@ public class SupplyController extends BaseController {
 
     @RequestMapping(value = "/getSupplyByCustomer", method = RequestMethod.GET)
     public ResponseData getSupplyByCustomer(@RequestParam Long id) {
-        List<Long> ids = new ArrayList<Long>(){{
+        List<Long> ids = new ArrayList<Long>() {{
             add(id);
         }};
         List<SupplyResult> supplyByCustomerIds = this.supplyService.getSupplyByCustomerIds(ids);
