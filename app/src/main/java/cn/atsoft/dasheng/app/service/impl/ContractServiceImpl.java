@@ -446,43 +446,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         contract.setPartyAContactsId(orderParam.getPartyAContactsId());
         contract.setPartyBContactsId(orderParam.getPartyBContactsId());
         this.save(contract);
-//        Template template = templateService.getById(param.getTemplateId());
-//
-//        if (ToolUtil.isNotEmpty(template)) {
-//            String content = template.getContent();
-//            if (ToolUtil.isNotEmpty(param.getContractReplaces())) {
-//                for (ContractReplace contractReplace : param.getContractReplaces()) {    //替换
-//                    if (content.contains(contractReplace.getOldText())) {
-//                        if (contractReplace.getNewText().equals(contractReplace.getOldText())) {
-//                            content = content.replace(contractReplace.getOldText(), "");
-//                        } else {
-//                            content = content.replace(contractReplace.getOldText(), contractReplace.getNewText());
-//                        }
-//                    }
-//                }
-//            } else {
-//                String input = "\\<input (.*?)\\>";
-//                Pattern compile = Pattern.compile(input);
-//                Matcher matcher = compile.matcher(content);
-//                while (matcher.find()) {    //input
-//                    String group = matcher.group(0);
-//                    if (group.contains("input") && group.contains("type=") && group.contains(" data-title=")) {
-//                        content = content.replace(group, "");
-//                    }
-//                }
-//            }
 
-//
-
-//            content = replace(content, orderParam);
-//            String materialList = materialList(content, orderParam, param.getCycleReplaces());  //替换sku
-//            String replace = replace(materialList, orderParam); //全局替换
-//            String payList = payList(replace, orderParam, param.getPayReplaces());  //替换付款方式
-//            contract.setContent(payList);
-
-//            createContractDetail(contract.getContractId(), orderParam);
-//            return contract;
-//        }
         return contract;
     }
 
