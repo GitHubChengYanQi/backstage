@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.params;
 
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -79,7 +80,7 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     private Integer status;
     private Long sourceId;
     private String source;
-
+    private ThemeAndOrigin themeAndOrigin;
 
     @ApiModelProperty("主题")
     private String theme;

@@ -1,11 +1,9 @@
 package cn.atsoft.dasheng.form.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.Anomaly;
-import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
-import cn.atsoft.dasheng.erp.entity.Inventory;
-import cn.atsoft.dasheng.erp.entity.InventoryDetail;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
@@ -31,12 +29,15 @@ import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementOrderResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -102,6 +103,10 @@ public class taskController extends BaseController {
     private AllocationService allocationService;
     @Autowired
     private InstockOrderService instockOrderService;
+    @Autowired
+    private GetOrigin getOrigin;
+    @Autowired
+    private ShopCartService shopCartService;
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -277,6 +282,9 @@ public class taskController extends BaseController {
             user.setAvatar(imgUrl);
             taskResult.setUser(user);
         }
+        if (ToolUtil.isNotEmpty(taskResult.getOrigin())) {
+            taskResult.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(taskResult.getOrigin(), ThemeAndOrigin.class)));
+        }
         return ResponseData.success(taskResult);
 
     }
@@ -295,5 +303,25 @@ public class taskController extends BaseController {
     public ResponseData canOperat(@RequestBody ActivitiProcessParam activitiProcessParam) {
         boolean b = logService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
         return ResponseData.success(b);
+    }
+    @RequestMapping(value = "/revoke", method = RequestMethod.POST)
+    public ResponseData revoke(@RequestBody AuditParam auditParam ) {
+        if (ToolUtil.isEmpty(auditParam.getRevokeContent())) {
+            throw new ServiceException(500,"撤回任务必须填写撤回原因");
+        }
+        Long taskId = auditParam.getTaskId();
+        ActivitiProcessTask processTask = taskService.getById(taskId);
+        Long userId = LoginContextHolder.getContext().getUserId();
+        if (!processTask.getUserId().equals(userId)){
+            throw new ServiceException(500,"不是任务创建人，无法撤回");
+        }else {
+            //TODO 更新任务状态
+            processTask.setStatus(49);
+            shopCartService.addDynamic(processTask.getFormId(), null,LoginContextHolder.getContext().getUser().getName()+"撤回了任务,撤回原因"+auditParam.getRevokeContent());
+        }
+
+
+
+        return ResponseData.success();
     }
 }

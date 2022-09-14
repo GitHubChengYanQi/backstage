@@ -36,12 +36,12 @@ import java.util.List;
 public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private List<String> imgThumbUrls;//缩略图
+//    private List<String> imgThumbUrls;//缩略图
     private Boolean inSupply;
-    private Integer maintenancePeriod;
-    List<String> imgUrls;
-    List<MediaUrlResult> imgResults;
-    List<AttributeValuesResult> list;
+    private Integer maintenancePeriod; // 养护周期
+//    List<String> imgUrls;
+    List<MediaUrlResult> imgResults;    //图片返回
+    List<AttributeValuesResult> list;   //规格型号
     private List<SkuJson> skuJsons;
     private SpuResult spuResult;
     private String spuName;
@@ -61,10 +61,9 @@ public class SkuResult implements Serializable {
     private ActivitiProcessResult processResult;
     private List<Long> brandIds;
     private List<BrandResult> brandResults;
-    private List<String> filedUrls;
     private Long produceMix;   //生产数
     private Long lackNumber;  //缺料数
-    private Long storehouseId;
+    private Long storehouseId; //仓库id
     private Long positionId;
     private Integer stockNumber = 0;
     private List<StorehousePositionsResult> positionsResult;
@@ -76,8 +75,9 @@ public class SkuResult implements Serializable {
     private Integer inventoryStatus;
     private Long anomalyId;
     private Long inventoryStockId;
+    //图片  附件  文件等
     private String images;
-    private List<String> imagesUrls;
+    private List<String> filedUrls;
     private String drawing;
     private List<String> drawingUrls;
     private String enclosure;
@@ -101,6 +101,7 @@ public class SkuResult implements Serializable {
      * 类型
      */
     private Integer type;
+
     private Integer addMethod;
     /**
      * sku名字
