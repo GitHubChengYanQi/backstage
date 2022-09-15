@@ -49,6 +49,7 @@ public class supplierController extends BaseController {
     @ApiOperation("新增")
     @Permission
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
+        customerParam.setSupply(1);
         Customer add = this.customerService.add(customerParam);
         return ResponseData.success(add);
     }

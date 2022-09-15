@@ -69,6 +69,7 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     @Override
     @Transactional
     public void update(TemplateParam param) {
+
         Template oldEntity = getOldEntity(param);
         oldEntity.setDisplay(0);
         this.updateById(oldEntity);
