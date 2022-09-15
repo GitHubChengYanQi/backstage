@@ -143,7 +143,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     }
 
-//    @Permission
+    //    @Permission
     @Override
     public void updateContract(Long orderId, ContractParam contractParam) {
         Order order = this.getById(orderId);
@@ -218,10 +218,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public Map<String, Object> mapFormat(Long contractId) {
-        ContractResult detail = contractService.detail(contractId);
-
-        OrderResult orderResult = this.getDetail(detail.getSourceId());
-
+        ContractResult detail = contractService.detail(contractId);                         //合同表
+        OrderResult orderResult = this.getDetail(detail.getSourceId());                     //订单表
+        PaymentResult paymentResult = paymentService.getDetail(orderResult.getOrderId());  //付款主表
         Map<String, Object> map = new HashMap<>();
 
         for (ContractEnum label : ContractEnum.values()) {
@@ -313,13 +312,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     break;
                 case ABankAccount:
                     if (ToolUtil.isNotEmpty(orderResult.getPartyABankAccount())) {
-                        map.put(ContractEnum.ABankAccount.getDetail(), orderResult.getPartyABankAccount());
+                        Invoice invoice = invoiceService.getById(orderResult.getPartyABankAccount());
+                        map.put(ContractEnum.ABankAccount.getDetail(), invoice.getBankAccount());
                     } else {
                         map.put(ContractEnum.ABankAccount.getDetail(), "");
                     }
                     break;
                 case BBankAccount:
-                    map.put(ContractEnum.BBankAccount.getDetail(), orderResult.getPartyBBankAccount());
+                    if (ToolUtil.isNotEmpty(orderResult.getPartyBBankAccount())) {
+                        Invoice invoice = invoiceService.getById(orderResult.getPartyBBankAccount());
+                        map.put(ContractEnum.BBankAccount.getDetail(), invoice.getBankAccount());
+                    } else {
+                        map.put(ContractEnum.BBankAccount.getDetail(), "");
+                    }
                     break;
                 case TotalAmountInFigures:
                     map.put(ContractEnum.TotalAmountInFigures.getDetail(), orderResult.getAllMoney());
@@ -400,11 +405,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     map.put(ContractEnum.pickUpManPhone.getDetail(), orderResult.getAContactsPhone());
                     break;
                 case contractCoding:
-                    map.put(ContractEnum.contractCoding.getDetail(), orderResult.getCoding());
+                    if (ToolUtil.isEmpty(detail.getCoding())) {
+                        detail.setCoding("");
+                    }
+                    map.put(ContractEnum.contractCoding.getDetail(), detail.getCoding());
                     break;
-                case ASite:
-                    map.put(ContractEnum.ASite.getDetail(), "");
-                    break;
+//                case ASite:
+//                    map.put(ContractEnum.ASite.getDetail(), "");
+//                    break;
                 case ATime:
                     String str = DateUtil.format(orderResult.getCreateTime(), "yyyy年MM月dd日");
                     map.put(ContractEnum.ATime.getDetail(), str);
@@ -429,6 +437,47 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                         orderResult.setLeadTime("");
                     }
                     map.put(ContractEnum.DeliveryCycle.getDetail(), orderResult.getLeadTime());
+                    break;
+                case floatingAmount:
+                    Integer floatingAmount = paymentResult.getFloatingAmount();
+                    if (ToolUtil.isEmpty(floatingAmount)) {
+                        map.put(ContractEnum.floatingAmount.getDetail(), "");
+                    } else {
+                        map.put(ContractEnum.floatingAmount.getDetail(), floatingAmount);
+                    }
+                    break;
+                case totalAmount:
+                    Integer totalAmount = paymentResult.getTotalAmount();
+                    if (ToolUtil.isEmpty(totalAmount)) {
+                        map.put(ContractEnum.totalAmount.getDetail(), "");
+                    } else {
+                        map.put(ContractEnum.totalAmount.getDetail(), totalAmount);
+                    }
+                    break;
+                case paperType:
+                    Integer paperType = paymentResult.getPaperType();
+                    if (ToolUtil.isEmpty(paperType)) {
+                        map.put(ContractEnum.paperType.getDetail(), "");
+                    } else {
+                        String type = "";
+                        switch (paperType) {
+                            case 0:
+                                type = "普票";
+                                break;
+                            case 1:
+                                type = "专票";
+                                break;
+                        }
+                        map.put(ContractEnum.paperType.getDetail(), type);
+                    }
+                    break;
+                case rate:
+                    Long rate = paymentResult.getRate();
+                    if (ToolUtil.isEmpty(rate)) {
+                        map.put(ContractEnum.rate.getDetail(), "");
+                    } else {
+                        map.put(ContractEnum.rate.getDetail(), rate);
+                    }
                     break;
             }
         }

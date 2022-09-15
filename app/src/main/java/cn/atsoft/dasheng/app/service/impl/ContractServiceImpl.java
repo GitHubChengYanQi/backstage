@@ -437,6 +437,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         if (ToolUtil.isEmpty(param.getTemplateId())) {
             throw new ServiceException(500, "请选择合同模板");
         }
+
         contract.setPartyA(orderParam.getBuyerId());
         contract.setPartyB(orderParam.getSellerId());
         contract.setPartyAPhone(orderParam.getPartyAPhone());

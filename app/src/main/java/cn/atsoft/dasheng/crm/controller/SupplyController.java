@@ -50,7 +50,7 @@ public class SupplyController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem( @RequestBody SupplyParam supplyParam) {
+    public ResponseData addItem(@RequestBody SupplyParam supplyParam) {
         this.supplyService.add(supplyParam);
         return ResponseData.success();
     }
@@ -88,6 +88,11 @@ public class SupplyController extends BaseController {
         return ResponseData.success(supplyBySku);
     }
 
+    @RequestMapping(value = "/updateBind", method = RequestMethod.POST)
+    public ResponseData updateBind(@RequestBody SupplyParam supplyParam) {
+        this.supplyService.updateBind(supplyParam);
+        return ResponseData.success();
+    }
 
     /**
      * 批量增加
@@ -190,7 +195,7 @@ public class SupplyController extends BaseController {
 
     @RequestMapping(value = "/getSupplyByCustomer", method = RequestMethod.GET)
     public ResponseData getSupplyByCustomer(@RequestParam Long id) {
-        List<Long> ids = new ArrayList<Long>(){{
+        List<Long> ids = new ArrayList<Long>() {{
             add(id);
         }};
         List<SupplyResult> supplyByCustomerIds = this.supplyService.getSupplyByCustomerIds(ids);

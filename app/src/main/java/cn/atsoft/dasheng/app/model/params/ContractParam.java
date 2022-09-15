@@ -44,6 +44,8 @@ public class ContractParam implements Serializable, BaseValidatingParam {
 
     private List<LabelResult> labelResults;
 
+    private String coding;
+
     /**
      * 合同分类
      */

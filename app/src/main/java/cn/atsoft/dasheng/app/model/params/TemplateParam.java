@@ -26,6 +26,8 @@ public class TemplateParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String module;
+
     private String replaceRule;
 
     private Long fileId;

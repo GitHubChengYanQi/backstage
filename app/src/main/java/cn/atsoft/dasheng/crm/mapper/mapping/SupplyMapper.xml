@@ -13,11 +13,12 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="brand_id" property="brandId"/>
+        <result column="supplier_model" property="supplierModel"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">brand_id
-    AS "brandId",
+    AS "brandId",supplier_model AS "supplierModel",
         supply_id
         AS "supplyId", sku_id AS "skuId", customer_id AS "customerId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
@@ -114,7 +115,8 @@
             <include refid="Base_Column_List"/>
             from daoxin_supply where 1 = 1 and display = 1
             and customer_id not in
-            <foreach collection="paramCondition.noCustomerIds" index="index" item="state" separator="," close=")" open="(">
+            <foreach collection="paramCondition.noCustomerIds" index="index" item="state" separator="," close=")"
+                     open="(">
                 #{state}
             </foreach>
         </if>

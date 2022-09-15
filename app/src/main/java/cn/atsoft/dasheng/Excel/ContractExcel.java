@@ -136,8 +136,8 @@ public class ContractExcel {
         try {
             XWPFDocument document = formatDocument(contract, template, fileInfo.getFilePath());  //读取word
 
-            String fileName = "test.docx";
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+            response.setHeader("Content-Disposition", "attachment; filename=" + contract.getCoding());
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             OutputStream os = response.getOutputStream();
             document.write(os);
