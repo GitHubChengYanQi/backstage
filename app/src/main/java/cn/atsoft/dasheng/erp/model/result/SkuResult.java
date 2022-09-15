@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.appBase.aop.FieldPermission;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
@@ -39,6 +40,7 @@ public class SkuResult implements Serializable {
     private Boolean inSupply;
     private Integer maintenancePeriod;
     List<String> imgUrls;
+    List<MediaUrlResult> imgResults;
     List<AttributeValuesResult> list;
     private List<SkuJson> skuJsons;
     private SpuResult spuResult;

@@ -84,7 +84,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private AllocationService allocationService;
     @Autowired
     private TaskParticipantService taskParticipantService;
-
+    @Autowired
+    private AnnouncementsService announcementsService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -188,7 +189,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcessTask processTask = this.getById(id);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(processTask, taskResult);
-        if(taskResult.getType().equals("MAINTENANCE")){
+        if (taskResult.getType().equals("MAINTENANCE")) {
             Maintenance byId = maintenanceService.getById(taskResult.getFormId());
             if (ToolUtil.isNotEmpty(byId)) {
                 maintenanceService.startMaintenance(byId);
@@ -216,6 +217,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
          */
         if (ToolUtil.isNotEmpty(param.getOutTime())) {
             List<Long> timeOutTaskIds = new ArrayList<>();
+            timeOutTaskIds.add(0L);
             switch (param.getOutTime()) {
                 case "yes":
                     timeOutTaskIds.addAll(inventoryService.timeOut(true));

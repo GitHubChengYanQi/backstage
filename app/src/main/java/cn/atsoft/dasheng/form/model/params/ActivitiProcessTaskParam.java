@@ -27,6 +27,7 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private static final long serialVersionUID = 1L;
 
+    private String noticeId;
     private Date startTime;
 
     private Date endTime;

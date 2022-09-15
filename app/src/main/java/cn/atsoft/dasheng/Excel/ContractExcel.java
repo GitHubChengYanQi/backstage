@@ -136,8 +136,8 @@ public class ContractExcel {
         try {
             XWPFDocument document = formatDocument(contract, template, fileInfo.getFilePath());  //读取word
 
-            String fileName = "test.docx";
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+            response.setHeader("Content-Disposition", "attachment; filename=" + contract.getCoding());
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             OutputStream os = response.getOutputStream();
             document.write(os);
@@ -336,13 +336,12 @@ public class ContractExcel {
                         paperType = "专票";
                     }
                     map.put(ContractEnum.invoiceType.getDetail(), paperType);
-                case DeliveryCycle:
-                    if (ToolUtil.isNotEmpty(results.getDeliveryDate())) {
-                        map.put(ContractEnum.DeliveryCycle.getDetail(), results.getDeliveryDate() + "");
+                case remakr:
+                    if (ToolUtil.isNotEmpty(results.getRemark())) {
+                        map.put(ContractEnum.remakr.getDetail(), results.getRemark() + "");
                     } else {
-                        map.put(ContractEnum.DeliveryCycle.getDetail(), "");
+                        map.put(ContractEnum.remakr.getDetail(), "");
                     }
-
 
             }
         }

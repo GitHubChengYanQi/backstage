@@ -121,12 +121,12 @@ public class ContactsController extends BaseController {
         if (ToolUtil.isEmpty(contactsParam)) {
             contactsParam = new ContactsParam();
         }
-        if (LoginContextHolder.getContext().isAdmin()) {
+//        if (LoginContextHolder.getContext().isAdmin()) {
             return this.contactsService.findPageBySpec(null, contactsParam);
-        } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.contactsService.findPageBySpec(dataScope, contactsParam);
-        }
+//        } else {
+//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+//            return this.contactsService.findPageBySpec(dataScope, contactsParam);
+//        }
     }
 
 

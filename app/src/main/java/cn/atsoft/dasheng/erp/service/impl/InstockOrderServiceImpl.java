@@ -314,6 +314,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
+            activitiProcessTaskParam.setRemark(entity.getRemark());
+            activitiProcessTaskParam.setNoticeId(announcementsService.toList(entity.getNoticeId()));
+
             if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {
                 activitiProcessTaskParam.setSource(entity.getSource());
                 activitiProcessTaskParam.setSourceId(entity.getSourceId());
@@ -404,7 +407,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             /**
              * 添加动态记录
              */
-            shopCartService.addDynamic(entity.getInstockOrderId(), "发起了入库申请");
+            shopCartService.addDynamic(entity.getInstockOrderId(), null,"发起了入库申请");
 
 //           activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
 //                activitiProcessLogService.autoAudit(taskId, 1);
@@ -761,7 +764,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         /**
          * 添加动态
          */
-        shopCartService.addDynamic(param.getInstockOrderId(), "将物料入库");
+        shopCartService.addDynamic(param.getInstockOrderId(), null,"将物料入库");
         /**
          * 更新单据状态
          */
@@ -782,7 +785,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setActionId(param.getActionId());
 //            }});
             InstockOrder order = this.getById(param.getInstockOrderId());
-            shopCartService.addDynamic(param.getInstockOrderId(), "单据:" + order.getCoding() + "完成了入库");
+            shopCartService.addDynamic(param.getInstockOrderId(), null, "单据:" + order.getCoding() + "完成了入库");
 
         }
 

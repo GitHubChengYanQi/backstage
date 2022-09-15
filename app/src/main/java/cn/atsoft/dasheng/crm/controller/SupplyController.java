@@ -95,6 +95,11 @@ public class SupplyController extends BaseController {
         return ResponseData.success(supplyBySku);
     }
 
+    @RequestMapping(value = "/updateBind", method = RequestMethod.POST)
+    public ResponseData updateBind(@RequestBody SupplyParam supplyParam) {
+        this.supplyService.updateBind(supplyParam);
+        return ResponseData.success();
+    }
 
     /**
      * 批量增加

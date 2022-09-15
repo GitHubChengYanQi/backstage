@@ -27,10 +27,13 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="notice_id" property="noticeId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
+        notice_id
+        AS "noticeId",
         process_task_id
         AS "processTaskId",
 	    form_id AS "formId",
@@ -233,7 +236,10 @@
             union
             select pick_lists_id from daoxin_production_pick_lists where coding like
             CONCAT('%',#{paramCondition.skuName},'%')
-            ) or task_name like CONCAT('%',#{paramCondition.skuName},'%'))
+            ) or task_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or remark like CONCAT('%',#{paramCondition.skuName},'%')
+            or notice_id like CONCAT('%',#{paramCondition.skuName},'%')
+            )
         </if>
         <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
             and activiti_process_task.process_task_id in

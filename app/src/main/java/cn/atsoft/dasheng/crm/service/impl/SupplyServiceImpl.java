@@ -8,37 +8,27 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.crm.entity.ContactsBind;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
-import cn.atsoft.dasheng.crm.service.ContactsBindService;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.SkuBrandBind;
-import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
-import cn.atsoft.dasheng.erp.service.SkuBrandBindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
-import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
-import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.util.resources.cldr.nmg.LocaleNames_nmg;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -71,7 +61,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Transactional
     public void add(SupplyParam param) {
 
-        List<Supply> supplies = this.query().eq("sku_id", param.getSkuId()).eq("display",1).list();
+        List<Supply> supplies = this.query().eq("sku_id", param.getSkuId()).eq("customer_id", param.getCustomerId()).eq("display", 1).list();
         List<Supply> supplyList = new ArrayList<>();
 
         for (Long brandId : param.getBrandIds()) {
@@ -79,6 +69,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                 Supply supply = new Supply();
                 supply.setSkuId(param.getSkuId());
                 supply.setBrandId(brandId);
+                supply.setSupplierModel(param.getSupplierModel());
                 supply.setCustomerId(param.getCustomerId());
                 if (supplyList.stream().noneMatch(i -> i.getBrandId().equals(brandId) && i.getSkuId().equals(param.getSkuId()) && i.getCustomerId().equals(param.getCustomerId()))) {
                     supplyList.add(supply);
@@ -105,7 +96,21 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         this.updateById(newEntity);
     }
 
+    /**
+     * 修改绑定
+     *
+     * @param param
+     */
     @Override
+    @Transactional
+    public void updateBind(SupplyParam param) {
+        this.removeById(param.getSupplyId());
+        param.setSupplyId(null);
+        add(param);
+    }
+
+    @Override
+
     public SupplyResult findBySpec(SupplyParam param) {
         return null;
     }

@@ -355,11 +355,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             Integer numberCount = 0;
             Integer receivedCount = 0;
             List<Boolean> canPickBooleans = new ArrayList<>();
-
+            List<SkuSimpleResult> skuResults = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
                     if (detailResult.getStockNumber() > 0) {
                         result.setCanOperate(true);
+                    }
+                    if (skuResults.size()<2 && detailResult.getPickListsId().equals(result.getPickListsId())){
+                        skuResults.add(detailResult.getSkuResult());
                     }
                     listsSkuIds.add(detailResult.getSkuId());
                     canPickBooleans.add(detailResult.getCanPick());
@@ -372,6 +375,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     }
                 }
             }
+            result.setSkuResults(skuResults);
             /**
              * 是否可以领料
              */
@@ -582,7 +586,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }});
         if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
             for (Long pickListsId : param.getPickListsIds()) {
-                shopCartService.addDynamic(pickListsId, "通知领料人进行领料");
+                shopCartService.addDynamic(pickListsId, null,"通知领料人进行领料");
             }
         }
     }
@@ -894,6 +898,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public String outStock(ProductionPickListsParam param) {
         List<Long> stockIds = new ArrayList<>();
         List<Long> pickListsIds = new ArrayList<>();
+        Long skuId = param.getCartsParams().get(0).getSkuId();
         for (ProductionPickListsCartParam pickListsCartParam : param.getCartsParams()) {
             pickListsIds.add(pickListsCartParam.getPickListsId());
         }
@@ -1091,6 +1096,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 如有任务 则更新任务
          */
         checkListsStatus(pickLists);
+        shopCartService.addDynamic(pickLists.get(0).getPickListsId(), skuId,"领取了物料 "+skuService.skuMessage(skuId));
         return null;
     }
 

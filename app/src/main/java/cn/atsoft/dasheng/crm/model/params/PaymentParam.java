@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -23,6 +24,28 @@ import java.util.List;
 @Data
 @ApiModel
 public class PaymentParam implements Serializable, BaseValidatingParam {
+
+    /**
+     * 浮动金额
+     */
+
+    private Integer floatingAmount;
+
+    /**
+     * 总金额
+     */
+    private Integer totalAmount;
+
+    /**
+     * 票据类型
+     */
+    private Integer paperType;
+
+    /**
+     * 税率
+     */
+    private Long rate;
+
 
     private static final long serialVersionUID = 1L;
 

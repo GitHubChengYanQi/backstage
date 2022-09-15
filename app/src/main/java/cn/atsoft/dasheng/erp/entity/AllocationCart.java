@@ -33,6 +33,12 @@ public class AllocationCart implements Serializable {
     @TableField("allocation_id")
     private Long allocationId;
 
+    /**
+     * 是否指定品牌
+     */
+    @TableField("have_brand")
+    private Integer haveBrand;
+
     @TableField("sku_id")
     private Long skuId;
 
@@ -283,6 +289,14 @@ public class AllocationCart implements Serializable {
 
     public void setInstockOrderId(Long outstockOrderId) {
         this.instockOrderId = outstockOrderId;
+    }
+
+    public Integer getHaveBrand() {
+        return haveBrand;
+    }
+
+    public void setHaveBrand(Integer haveBrand) {
+        this.haveBrand = haveBrand;
     }
 
     @Override

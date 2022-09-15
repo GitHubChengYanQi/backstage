@@ -28,7 +28,11 @@ public class ActivitiProcessTask implements Serializable {
     @TableId(value = "process_task_id", type = IdType.ID_WORKER)
     private Long processTaskId;
 
-
+    /**
+     * 注意事项
+     */
+    @TableField("notice_id")
+    private String noticeId;
 
     @TableField("process_id")
     private Long processId;
@@ -308,7 +312,13 @@ public class ActivitiProcessTask implements Serializable {
         this.deptId = deptId;
     }
 
+    public String getNoticeId() {
+        return noticeId;
+    }
 
+    public void setNoticeId(String noticeId) {
+        this.noticeId = noticeId;
+    }
 
     @Override
     public String toString() {

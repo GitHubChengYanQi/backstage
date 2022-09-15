@@ -46,6 +46,15 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
 
     @Override
     public Long add(TemplateParam param) {
+
+        if (ToolUtil.isNotEmpty(param.getModule())) {
+            Template template = new Template();
+            template.setDisplay(0);
+            QueryWrapper<Template> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("module", param.getModule());
+            this.update(template, queryWrapper);
+        }
+
         Template entity = getEntity(param);
         this.save(entity);
         return entity.getTemplateId();

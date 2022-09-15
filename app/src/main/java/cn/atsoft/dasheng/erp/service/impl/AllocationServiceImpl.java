@@ -11,10 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.AllocationMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
-import cn.atsoft.dasheng.erp.model.result.AllocationCartResult;
-import cn.atsoft.dasheng.erp.model.result.AllocationDetailResult;
-import cn.atsoft.dasheng.erp.model.result.AllocationResult;
-import cn.atsoft.dasheng.erp.model.result.InstockListResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -118,6 +115,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Autowired
     private InstockListService instockListService;
 
+    @Autowired
+    private SkuService skuService;
+
 
     @Override
     @Transactional
@@ -193,7 +193,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             shopCart.setDisplay(0);
         }
         shopCartService.updateBatchById(shopCarts);
-        shopCartService.addDynamic(entity.getAllocationId(), "发起了调拨申请");
+        shopCartService.addDynamic(entity.getAllocationId(), null, "发起了调拨申请");
         return entity;
     }
 
@@ -365,7 +365,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     detailIds.add(allocationCart.getAllocationDetailId());
                 }
             }
-            List<AllocationDetail> allocationDetails =detailIds.size() == 0 ? new ArrayList<>() : allocationDetailService.listByIds(detailIds);
+            List<AllocationDetail> allocationDetails = detailIds.size() == 0 ? new ArrayList<>() : allocationDetailService.listByIds(detailIds);
             for (AllocationDetail allocationDetail : allocationDetails) {
                 skuIds.add(allocationDetail.getSkuId());
                 if (ToolUtil.isNotEmpty(allocationDetail.getStorehousePositionsId())) {
@@ -373,15 +373,15 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 }
             }
             List<StorehousePositionsBind> list = new ArrayList<>();
-            if (skuIds.size()>0 && positionIds.size() >0) {
-                list  = storehousePositionsBindService.query().in("sku_id", skuIds).in("position_id", positionIds).list();
+            if (skuIds.size() > 0 && positionIds.size() > 0) {
+                list = storehousePositionsBindService.query().in("sku_id", skuIds).in("position_id", positionIds).list();
             }
 
 
             for (AllocationDetail allocationDetail : allocationDetails) {
                 if (ToolUtil.isNotEmpty(list)) {
                     for (StorehousePositionsBind storehousePositionsBind : list) {
-                        if (allocationDetail.getSkuId().equals(storehousePositionsBind.getSkuId()) && ToolUtil.isNotEmpty(allocationDetail.getStorehousePositionsId()) && allocationDetail.getStorehousePositionsId().equals(storehousePositionsBind.getPositionId())){
+                        if (allocationDetail.getSkuId().equals(storehousePositionsBind.getSkuId()) && ToolUtil.isNotEmpty(allocationDetail.getStorehousePositionsId()) && allocationDetail.getStorehousePositionsId().equals(storehousePositionsBind.getPositionId())) {
                             storehousePositionsBind.setDisplay(0);
                         }
                     }
@@ -441,7 +441,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 }
             }
         }
-        shopCartService.addDynamic(allocation.getAllocationId(), "指派了调拨物料");
+        shopCartService.addDynamic(allocation.getAllocationId(), null,"指派了调拨物料");
         if (haveTransfer) {
             wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
                 setFunction(MarkDownTemplateTypeEnum.transfer);
@@ -469,24 +469,38 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             allocationIds.add(datum.getAllocationId());
         }
         List<AllocationDetail> details = allocationIds.size() == 0 ? new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
-        List<AllocationCart> allocationCarts = allocationIds.size() == 0 ? new ArrayList<>() : allocationCartService.query().in("allocation_id", allocationIds).eq("type","carry").eq("display", 1).list();
+        List<AllocationCart> allocationCarts = allocationIds.size() == 0 ? new ArrayList<>() : allocationCartService.query().in("allocation_id", allocationIds).eq("type", "carry").eq("display", 1).list();
+        List<Long> querySkuIds = new ArrayList<>();
+        for (AllocationDetail detail : details) {
+            querySkuIds.add(detail.getSkuId());
+        }
+        querySkuIds = querySkuIds .stream().distinct().collect(Collectors.toList());
+        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(querySkuIds);
         for (AllocationResult datum : data) {
             List<Long> skuIds = new ArrayList<>();
             List<Long> storehousePositionsIds = new ArrayList<>();
             int detailNumber = 0;
-            int doneNumber  = 0;
+            int doneNumber = 0;
+            List<SkuSimpleResult> skuSimpleResultList = new ArrayList<>();
             for (AllocationDetail detail : details) {
                 if (datum.getAllocationId().equals(detail.getAllocationId())) {
                     skuIds.add(detail.getSkuId());
-                    detailNumber+=detail.getNumber();
+                    detailNumber += detail.getNumber();
                     if (ToolUtil.isNotEmpty(detail.getStorehousePositionsId())) {
                         storehousePositionsIds.add(detail.getStorehousePositionsId());
                     }
                 }
-
+                for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                    if (skuSimpleResultList.size()<2){
+                        if (skuSimpleResult.getSkuId().equals(detail.getSkuId())){
+                            skuSimpleResultList.add(skuSimpleResult);
+                        }
+                    }
+                }
+                datum.setSkuResults(skuSimpleResultList);
             }
             for (AllocationCart allocationCart : allocationCarts) {
-                if (allocationCart.getAllocationId().equals(datum.getAllocationId())){
+                if (allocationCart.getAllocationId().equals(datum.getAllocationId())) {
                     doneNumber += allocationCart.getDoneNumber();
                 }
             }
@@ -627,7 +641,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
             }
             allocationLogDetailService.saveBatch(allocationLogDetails);
-            shopCartService.addDynamic(param.getAllocationId(), "库内调拨了物料");
+            shopCartService.addDynamic(param.getAllocationId(), null,"库内调拨了物料");
         }
     }
 
@@ -808,7 +822,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
         }
         allocationLogDetailService.saveBatch(allocationLogDetails);
-        shopCartService.addDynamic(param.getAllocationId(), "库内调拨了物料");
+        shopCartService.addDynamic(param.getAllocationId(), null,"库内调拨了物料");
 
     }
 
@@ -976,8 +990,9 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         allocationCartService.updateBatchById(allocationCarts);
         allocationDetailService.updateBatchById(allocationDetails);
     }
+
     @Override
-    public List<InstockListResult> getInstockListResultsByAllocationTask(Long taskId){
+    public List<InstockListResult> getInstockListResultsByAllocationTask(Long taskId) {
         List<ActivitiProcessTask> childrenTasks = activitiProcessTaskService.query().eq("pid", taskId).list();
         List<Long> formIds = new ArrayList<>();
         for (ActivitiProcessTask childrenTask : childrenTasks) {
@@ -985,10 +1000,10 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 formIds.add(childrenTask.getFormId());
             }
         }
-        List<InstockList> instock_order_id =formIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", formIds).list();
+        List<InstockList> instock_order_id = formIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", formIds).list();
         List<InstockListResult> instockListResults = BeanUtil.copyToList(instock_order_id, InstockListResult.class);
         instockListService.format(instockListResults);
-        return  instockListResults;
+        return instockListResults;
 
     }
 }

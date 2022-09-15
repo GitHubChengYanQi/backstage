@@ -576,7 +576,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
 
         String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
-        shopCartService.addDynamic(oldEntity.getFormId(), skuMessage + "修改了异常描述");
+        shopCartService.addDynamic(oldEntity.getFormId(), oldEntity.getSkuId(),skuMessage + "修改了异常描述");
         return newEntity;
     }
 
@@ -646,9 +646,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
         if (ToolUtil.isNotEmpty(param.getCheckNumber())) {
-            shopCartService.addDynamic(oldEntity.getOrderId(), "对" + skuMessage + "数量进行复核");
+            shopCartService.addDynamic(oldEntity.getOrderId(), oldEntity.getSkuId(),"对" + skuMessage + "数量进行复核");
         }
-        shopCartService.addDynamic(oldEntity.getOrderId(), "对" + skuMessage + "确认了处理意见");
+        shopCartService.addDynamic(oldEntity.getOrderId(), oldEntity.getSkuId(),"对" + skuMessage + "确认了处理意见");
     }
 
     /**
