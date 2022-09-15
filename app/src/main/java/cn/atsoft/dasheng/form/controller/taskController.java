@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
@@ -55,8 +56,9 @@ import java.util.List;
 @Api(tags = "流程主表")
 public class taskController extends BaseController {
 
+
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private ActivitiProcessTaskService taskService;
@@ -102,6 +104,8 @@ public class taskController extends BaseController {
     private AllocationService allocationService;
     @Autowired
     private InstockOrderService instockOrderService;
+    @Autowired
+    private ShopCartService shopCartService;
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -295,5 +299,23 @@ public class taskController extends BaseController {
     public ResponseData canOperat(@RequestBody ActivitiProcessParam activitiProcessParam) {
         boolean b = logService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
         return ResponseData.success(b);
+    }
+
+    @RequestMapping(value = "/revoke", method = RequestMethod.POST)
+    public ResponseData revoke(@RequestBody AuditParam auditParam ) {
+        if (ToolUtil.isEmpty(auditParam.getRevokeContent())) {
+            throw new ServiceException(500,"撤回任务必须填写撤回原因");
+        }
+        Long taskId = auditParam.getTaskId();
+        ActivitiProcessTask processTask = taskService.getById(taskId);
+        Long userId = LoginContextHolder.getContext().getUserId();
+        if (!processTask.getUserId().equals(userId)){
+            throw new ServiceException(500,"不是任务创建人，无法撤回");
+        }else {
+            //TODO 更新任务状态
+            processTask.setStatus(49);
+            shopCartService.addDynamic(processTask.getFormId(), null,LoginContextHolder.getContext().getUser().getName()+"撤回了任务,撤回原因"+auditParam.getRevokeContent());
+        }
+        return ResponseData.success();
     }
 }

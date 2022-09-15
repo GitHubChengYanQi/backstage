@@ -184,6 +184,17 @@ public class ActivitiProcessTaskController extends BaseController {
         return this.activitiProcessTaskService.auditList(activitiProcessTaskParam);
     }
 
+    @RequestMapping(value = "/aboutMeTasks", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<ActivitiProcessTaskResult> aboutMeTasks(@RequestBody(required = false) ActivitiProcessTaskParam param) {
+
+        if (ToolUtil.isEmpty(param)) {
+            param = new ActivitiProcessTaskParam();
+        }
+        param.setUserId(LoginContextHolder.getContext().getUserId());
+        return this.activitiProcessTaskService.aboutMeTasks(param);
+    }
+
 
     @RequestMapping(value = "/LoginStart", method = RequestMethod.POST)
     @ApiOperation("列表")

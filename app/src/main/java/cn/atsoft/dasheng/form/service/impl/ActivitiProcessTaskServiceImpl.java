@@ -234,6 +234,71 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return PageFactory.createPageInfo(page);
 
     }
+    @Override
+    public PageInfo<ActivitiProcessTaskResult> aboutMeTasks(ActivitiProcessTaskParam param) {
+        if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的
+            Long userId = LoginContextHolder.getContext().getUserId();
+            param.setParticipantUser(userId);  //参与人和负责人
+        }
+        if (ToolUtil.isNotEmpty(param.getStatusList())) {
+            param.setStatusList(param.getStatusList().stream().distinct().collect(Collectors.toList()));
+        }
+
+        /**
+         * 超期筛选
+         */
+        if (ToolUtil.isNotEmpty(param.getOutTime())) {
+            List<Long> timeOutTaskIds = new ArrayList<>();
+            switch (param.getOutTime()) {
+                case "yes":
+                    timeOutTaskIds.addAll(inventoryService.timeOut(true));
+                    break;
+                case "no":
+                    inventoryService.timeOut(false);
+                    break;
+            }
+            param.setTimeOutTaskIds(timeOutTaskIds);
+        }
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.aboutMeTask(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+
+    }
+
+    @Override
+    public PageInfo<ActivitiProcessTaskResult> auditListV1(ActivitiProcessTaskParam param) {
+
+        if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的
+            Long userId = LoginContextHolder.getContext().getUserId();
+            param.setParticipantUser(userId);  //参与人和负责人
+        }
+        if (ToolUtil.isNotEmpty(param.getStatusList())) {
+            param.setStatusList(param.getStatusList().stream().distinct().collect(Collectors.toList()));
+        }
+
+        /**
+         * 超期筛选
+         */
+        if (ToolUtil.isNotEmpty(param.getOutTime())) {
+            List<Long> timeOutTaskIds = new ArrayList<>();
+            switch (param.getOutTime()) {
+                case "yes":
+                    timeOutTaskIds.addAll(inventoryService.timeOut(true));
+                    break;
+                case "no":
+                    inventoryService.timeOut(false);
+                    break;
+            }
+            param.setTimeOutTaskIds(timeOutTaskIds);
+        }
+
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+
+    }
 
 
     @Override

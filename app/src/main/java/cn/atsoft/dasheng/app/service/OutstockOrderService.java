@@ -46,6 +46,9 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
     OutstockOrderResult getOrder(Long id);
 
     Map<Long, Long> outBoundByLists(List<OutstockListingParam> listings);
+
+    OutstockOrderResult detail(Long id);
+
     void outBound(List<OutstockListingParam> listings);
 
     /**

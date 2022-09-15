@@ -140,7 +140,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private AnnouncementsService announcementsService;
@@ -163,7 +163,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ShopCartService shopCartService;
 
     @Autowired
-    private ActivitiProcessLogService processLogService;
+    private ActivitiProcessLogV1Service processLogService;
 
     @Autowired
     private ActivitiStepsService activitiStepsService;
@@ -361,7 +361,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     if (detailResult.getStockNumber() > 0) {
                         result.setCanOperate(true);
                     }
-                    if (skuResults.size()<2 && detailResult.getPickListsId().equals(result.getPickListsId())){
+                    if (skuResults.size() < 2 && detailResult.getPickListsId().equals(result.getPickListsId())) {
                         skuResults.add(detailResult.getSkuResult());
                     }
                     listsSkuIds.add(detailResult.getSkuId());
@@ -586,7 +586,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }});
         if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
             for (Long pickListsId : param.getPickListsIds()) {
-                shopCartService.addDynamic(pickListsId, null,"通知领料人进行领料");
+                shopCartService.addDynamic(pickListsId, null, "通知领料人进行领料");
             }
         }
     }
@@ -906,8 +906,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         /**
          * 取出购物车数据
          */
-        List<ProductionPickLists> pickLists = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).list();
-
+        List<ProductionPickLists> pickLists = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds.stream().distinct().collect(Collectors.toList())).list();
 
         /**
          * 查询购物车
@@ -917,15 +916,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             stockIds.add(listsCart.getStorehouseId());
         }
 
-
-//        /**
-//         * 拦截判断
-//         */
-//        List<Long> userIds = new ArrayList<>();
-//        for (ProductionPickLists pickList : pickLists) {
-//            userIds.add(pickList.getUserId());
-//        }
-//
         List<ProductionPickListsCart> newCarts = new ArrayList<>();
         /**
          * 取出出库申请子表 未完成状态数据
@@ -995,8 +985,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                             }
                         }
                     }
-
-
                 }
             }
         }
@@ -1007,78 +995,82 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 创建出库记录
          */
         stockIds = stockIds.stream().distinct().collect(Collectors.toList());
+
         for (Long stockId : stockIds) {
-            OutstockOrderParam outstockOrder = new OutstockOrderParam();
-            outstockOrder.setStorehouseId(stockId);
+            //fix 增加一层循环用于添加来源id字段
+            for (ProductionPickLists pickList : pickLists) {
+                OutstockOrderParam outstockOrder = new OutstockOrderParam();
+                outstockOrder.setStorehouseId(stockId);
+                outstockOrder.setUserId(pickList.getUserId());
+                List<OutstockListingParam> listings = new ArrayList<>();
+                /**
+                 * 如果部分领取涉及到拆分购物车 老购物车保留 出库出新购物车
+                 */
+                List<InstockLogDetail> logDetails = new ArrayList<>();
+                for (ProductionPickListsCart listsCart : listsCarts) {
+                    if (pickList.getPickListsId().equals(listsCart.getPickListsId()) && listsCart.getStatus() == 99 && listsCart.getStorehouseId().equals(stockId)) {
+                        OutstockListingParam listingParam = new OutstockListingParam();
+                        listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
+                        listingParam.setSkuId(listsCart.getSkuId());
+                        listingParam.setInkindId(listsCart.getInkindId());
+                        listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                        if (ToolUtil.isNotEmpty(listsCart.getBrandId()) || listsCart.getBrandId().equals(0L)) {
+                            listingParam.setBrandId(listsCart.getBrandId());
+                        }
+                        InstockLogDetail log = new InstockLogDetail();
+                        ToolUtil.copyProperties(listingParam, log);
+                        log.setSource("pick_lists");
+                        log.setSourceId(listsCart.getPickListsId());
+                        logDetails.add(log);
+                        listings.add(listingParam);
 
-            outstockOrder.setUserId(LoginContextHolder.getContext().getUserId());
-            List<OutstockListingParam> listings = new ArrayList<>();
-            /**
-             * 如果部分领取涉及到拆分购物车 老购物车保留 出库出新购物车
-             */
-            List<InstockLogDetail> logDetails = new ArrayList<>();
-            for (ProductionPickListsCart listsCart : listsCarts) {
-                if (listsCart.getStatus() == 99 && listsCart.getStorehouseId().equals(stockId)) {
-                    OutstockListingParam listingParam = new OutstockListingParam();
-                    listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
-                    listingParam.setSkuId(listsCart.getSkuId());
-                    listingParam.setInkindId(listsCart.getInkindId());
-                    listingParam.setPositionsId(listsCart.getStorehousePositionsId());
-                    if (ToolUtil.isNotEmpty(listsCart.getBrandId()) || listsCart.getBrandId().equals(0L)) {
-                        listingParam.setBrandId(listsCart.getBrandId());
                     }
-                    InstockLogDetail log = new InstockLogDetail();
-                    ToolUtil.copyProperties(listingParam, log);
-                    log.setSource("pick_lists");
-                    log.setSourceId(listsCart.getPickListsId());
-                    logDetails.add(log);
-                    listings.add(listingParam);
-
                 }
-            }
-            if (ToolUtil.isNotEmpty(fromAllocation)) {
-                AllocationLog allocationLog = new AllocationLog();
-                allocationLog.setAllocationId(fromAllocation);
-                allocationLog.setCoding(codingRulesService.defaultEncoding());
-                allocationLogService.save(allocationLog);
-                List<AllocationLogDetail> allocationLogDetails = new ArrayList<>();
-                for (InstockLogDetail logDetail : logDetails) {
-                    AllocationLogDetail allocationLogDetail = BeanUtil.copyProperties(logDetail, AllocationLogDetail.class);
-                    allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
-                    allocationLogDetails.add(allocationLogDetail);
-                }
-                allocationLogDetailService.saveBatch(allocationLogDetails);
-
-
-            }
-            for (ProductionPickListsCart listsCart : newCarts) {
-                if (listsCart.getStatus() == 99 && listsCart.getStorehouseId().equals(stockId)) {
-                    OutstockListingParam listingParam = new OutstockListingParam();
-                    listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
-                    listingParam.setSkuId(listsCart.getSkuId());
-                    listingParam.setPositionsId(listsCart.getStorehousePositionsId());
-                    listingParam.setInkindId(listsCart.getInkindId());
-                    if (ToolUtil.isNotEmpty(listsCart.getBrandId())) {
-                        listingParam.setBrandId(listsCart.getBrandId());
+                //调拨
+                if (ToolUtil.isNotEmpty(fromAllocation)) {
+                    AllocationLog allocationLog = new AllocationLog();
+                    allocationLog.setAllocationId(fromAllocation);
+                    allocationLog.setCoding(codingRulesService.defaultEncoding());
+                    allocationLogService.save(allocationLog);
+                    List<AllocationLogDetail> allocationLogDetails = new ArrayList<>();
+                    for (InstockLogDetail logDetail : logDetails) {
+                        AllocationLogDetail allocationLogDetail = BeanUtil.copyProperties(logDetail, AllocationLogDetail.class);
+                        allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
+                        allocationLogDetails.add(allocationLogDetail);
                     }
-                    InstockLogDetail log = new InstockLogDetail();
-                    ToolUtil.copyProperties(listsCarts, log);
-                    log.setSource("pick_lists");
-                    log.setSourceId(listsCart.getPickListsId());
-                    logDetails.add(log);
-                    listings.add(listingParam);
+                    allocationLogDetailService.saveBatch(allocationLogDetails);
                 }
-            }
-            if (ToolUtil.isNotEmpty(listings) || listings.size() > 0) {
-                instockLogDetailService.saveBatch(logDetails);
-                outstockOrder.setListingParams(listings);
-                outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
-                outstockOrder.setSource("pickLists");
-                outstockOrder.setSourceId(pickListsIds.get(0));
-                Map<Long, Long> longLongMap = outstockOrderService.outBoundByLists(listings);
-                oldAndNewInkindIds.putAll(longLongMap);
+
+                for (ProductionPickListsCart listsCart : newCarts) {
+                    if (listsCart.getStatus() == 99 && listsCart.getStorehouseId().equals(stockId)) {
+                        OutstockListingParam listingParam = new OutstockListingParam();
+                        listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
+                        listingParam.setSkuId(listsCart.getSkuId());
+                        listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                        listingParam.setInkindId(listsCart.getInkindId());
+                        if (ToolUtil.isNotEmpty(listsCart.getBrandId())) {
+                            listingParam.setBrandId(listsCart.getBrandId());
+                        }
+                        InstockLogDetail log = new InstockLogDetail();
+                        ToolUtil.copyProperties(listsCarts, log);
+                        log.setSource("pick_lists");
+                        log.setSourceId(listsCart.getPickListsId());
+                        logDetails.add(log);
+                        listings.add(listingParam);
+                    }
+                }
+                if (ToolUtil.isNotEmpty(listings) || listings.size() > 0) {
+                    instockLogDetailService.saveBatch(logDetails);
+                    outstockOrder.setListingParams(listings);
+                    outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
+                    outstockOrder.setSource("pickLists");
+                    outstockOrder.setSourceId(pickList.getPickListsId());
+                    Map<Long, Long> longLongMap = outstockOrderService.outBoundByLists(listings);
+                    oldAndNewInkindIds.putAll(longLongMap);
+                }
             }
         }
+
 
         this.updateBatchById(pickLists);
         for (ProductionPickListsCart listsCart : newCarts) {
@@ -1096,7 +1088,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          * 如有任务 则更新任务
          */
         checkListsStatus(pickLists);
-        shopCartService.addDynamic(pickLists.get(0).getPickListsId(), skuId,"领取了物料 "+skuService.skuMessage(skuId));
+        shopCartService.addDynamic(pickLists.get(0).getPickListsId(), skuId, "领取了物料 " + skuService.skuMessage(skuId));
         return null;
     }
 

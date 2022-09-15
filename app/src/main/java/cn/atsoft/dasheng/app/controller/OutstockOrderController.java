@@ -78,6 +78,12 @@ public class OutstockOrderController extends BaseController {
         return ResponseData.success(order);
     }
 
+    @RequestMapping(value = "/getOrder", method = RequestMethod.GET)
+    public ResponseData getOrder(@RequestParam Long outStockOrderId) {
+        OutstockOrderResult order = this.outstockOrderService.detail(outStockOrderId);
+        return ResponseData.success(order);
+    }
+
 
     /**
      * @param param
