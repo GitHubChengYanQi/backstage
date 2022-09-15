@@ -198,6 +198,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         format(new ArrayList<ActivitiProcessTaskResult>() {{
             add(taskResult);
         }});
+
         return taskResult;
     }
 
@@ -656,6 +657,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(orderResult.getStatus());
                     orderResult.setStatusName(statusName);
                     datum.setReceipts(orderResult);
+                    datum.setCoding(orderResult.getCoding());
                     break;
                 }
             }
@@ -665,6 +667,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(anomalyOrderResult.getStatus());
                     anomalyOrderResult.setStatusName(statusName);
                     datum.setReceipts(anomalyOrderResult);
+                    datum.setCoding(anomalyOrderResult.getCoding());
+
                     break;
                 }
             }
@@ -673,6 +677,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(productionPickListsResult.getStatus());
                     productionPickListsResult.setStatusName(statusName);
                     datum.setReceipts(productionPickListsResult);
+                    datum.setCoding(productionPickListsResult.getCoding());
                     break;
                 }
             }
@@ -682,6 +687,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(inventoryResult.getStatus());
                     inventoryResult.setStatusName(statusName);
                     datum.setReceipts(inventoryResult);
+                    datum.setCoding(inventoryResult.getCoding());
                     break;
                 }
             }
@@ -696,6 +702,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(status);
                     maintenanceResult.setStatusName(statusName);
                     datum.setReceipts(maintenanceResult);
+                    datum.setCoding(maintenanceResult.getCoding());
                 }
             }
             for (AllocationResult allocationResult : allocationResults) {
@@ -703,6 +710,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(allocationResult.getStatus());
                     allocationResult.setStatusName(statusName);
                     datum.setReceipts(allocationResult);
+                    datum.setCoding(allocationResult.getCoding());
                 }
             }
         }
