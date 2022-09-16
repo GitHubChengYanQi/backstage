@@ -6,14 +6,17 @@ import cn.afterturn.easypoi.word.WordExportUtil;
 import cn.atsoft.dasheng.Excel.pojo.LabelResult;
 import cn.atsoft.dasheng.Excel.pojo.TempReplaceRule;
 import cn.atsoft.dasheng.app.entity.Contract;
+import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.service.ContractService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.oshi.model.SysFileInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractTemplete;
 import cn.atsoft.dasheng.crm.entity.ContractTempleteDetail;
+import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentDetailResult;
 import cn.atsoft.dasheng.crm.pojo.ContractEnum;
@@ -85,9 +88,7 @@ public class ContractExcel {
     @Autowired
     private OrderService orderService;
     @Autowired
-    private ContractTempleteService templeteService;
-    @Autowired
-    private ContractTempleteDetailService templeteDetailService;
+    private CustomerService customerService;
 
 
     @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
@@ -136,8 +137,23 @@ public class ContractExcel {
         try {
             XWPFDocument document = formatDocument(contract, template, fileInfo.getFilePath());  //读取word
 
-            String fileName = "test.docx";
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+            Order order = orderService.getById(contract.getSourceId());
+            Long customerId;
+            if (ToolUtil.isNotEmpty(order.getType()) && order.getType().equals(1)) {
+                customerId = order.getSellerId();
+            } else {
+                customerId = order.getBuyerId();
+            }
+            Customer customer = customerService.getById(customerId);
+
+            if (ToolUtil.isEmpty(contract.getCoding())) {
+                contract.setCoding("");
+            }
+
+            String fileName = contract.getCoding() + customer.getCustomerName() ;
+            String encode = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-Disposition", "attachment; filename=" + encode + ".docx");
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             OutputStream os = response.getOutputStream();
             document.write(os);

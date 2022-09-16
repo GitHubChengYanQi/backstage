@@ -50,6 +50,8 @@ public interface SupplyService extends IService<Supply> {
      */
     void update(SupplyParam param);
 
+    void updateBind(SupplyParam param);
+
     /**
      * 查询单条数据，Specification模式
      *

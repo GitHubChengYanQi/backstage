@@ -28,6 +28,9 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<SupplyParam> supplyParams;
+
+    private String supplierModel;
+
     @NotNull
     private List<Long> brandIds;
 

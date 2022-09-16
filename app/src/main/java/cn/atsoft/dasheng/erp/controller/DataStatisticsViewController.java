@@ -158,6 +158,7 @@ public class DataStatisticsViewController extends BaseController {
                     if (ToolUtil.isNotEmpty(param.getCreateUser())) {
                         setCreateUser(param.getCreateUser());
                     }
+                    setComplete(99);
                     setTimes(times);
                 }});
                 ToolUtil.copyProperties(pageBySpec3, result);

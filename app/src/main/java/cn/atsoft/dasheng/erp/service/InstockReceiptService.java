@@ -6,11 +6,13 @@ import cn.atsoft.dasheng.erp.entity.InstockReceipt;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.InstockReceiptParam;
 import cn.atsoft.dasheng.erp.model.result.InstockReceiptResult;
+import cn.atsoft.dasheng.erp.pojo.ReplaceSku;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -32,7 +34,11 @@ public interface InstockReceiptService extends IService<InstockReceipt> {
 
     void addReceipt(InstockOrderParam param, List<InstockLogDetail> instockLogDetails);
 
-    XWPFDocument createWord( Long receiptId, Long fileId);
+    XWPFDocument createWord(String module, Map<String, Object> map, Map<String, List<ReplaceSku>> skuMap);
+
+    Map<String, Object> detailBackMap(Long id);
+
+    Map<String, List<ReplaceSku>> detailBackSkuMap(Long id);
 
     InstockReceiptResult detail(Long receiptId);
 
@@ -74,6 +80,6 @@ public interface InstockReceiptService extends IService<InstockReceipt> {
      * @author song
      * @Date 2022-08-11
      */
-     PageInfo<InstockReceiptResult> findPageBySpec(InstockReceiptParam param);
+    PageInfo<InstockReceiptResult> findPageBySpec(InstockReceiptParam param);
 
 }

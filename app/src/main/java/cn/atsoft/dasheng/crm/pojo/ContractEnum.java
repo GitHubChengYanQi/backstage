@@ -11,8 +11,18 @@ import java.util.Map;
 
 public enum ContractEnum {
 
+    floatingAmount("浮动金额"), //浮动金额
+
+    totalAmount("总金额"), //总金额
+
+    paperType("票据类型"), //票据类型
+
+    rate("税率"), //税率
+    DeliveryCycle("交货周期"), //交货周期
+
     contractCoding("采购合同编号"),  //采购合同编号
-    ASite("合同签订地点"),           //签订地点
+
+    //    ASite("合同签订地点"),           //签订地点
     ATime("合同签订时间"),           //签订时间
     ACustomerName("需方公司名称"),   //需方公司名称
     BCustomerName("供方公司名称"),   //供方公司名称
@@ -62,7 +72,7 @@ public enum ContractEnum {
     number("数量"),
     UnitPrice("单价"),
     DeliveryDate("交货日期"),
-    DeliveryCycle("交货周期"),
+
     TotalAmountInWords("合计金额大写"),
     TotalAmountInFigures("合计金额小写"),
 
@@ -93,7 +103,6 @@ public enum ContractEnum {
     public String toString() {
         return type;
     }
-
 
 
     public static ContractEnum fromString(String text) {

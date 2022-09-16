@@ -48,7 +48,7 @@ public class OrderReplace {
     public XWPFTable replaceInTable(XWPFDocument document, XWPFTable xwpfTable) {
 
         XWPFTable table = document.createTable();
-        table.removeRow(0);
+        table.removeRow(0);  //防止表格粘连
         for (int i = 0; i < xwpfTable.getRows().size(); i++) {
             XWPFTableRow xwpfTableRow = xwpfTable.getRows().get(i);
             copy(table, xwpfTableRow, i);
