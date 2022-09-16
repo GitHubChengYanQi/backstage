@@ -425,6 +425,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             }
         }
 
+        inventory.setHandleUser(LoginContextHolder.getContext().getUserId());
         inventory.setComplete(99);
         inventoryService.updateById(inventory);
 

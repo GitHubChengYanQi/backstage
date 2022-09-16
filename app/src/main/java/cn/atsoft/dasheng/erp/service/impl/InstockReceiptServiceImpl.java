@@ -317,7 +317,9 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
 
     private void replace(XWPFTable xwpfTable, Map<String, Object> map) {
+
         for (int i = 0; i < xwpfTable.getRows().size(); i++) {
+
             XWPFTableRow row = xwpfTable.getRow(i);
             noneCopy(row, map);
         }

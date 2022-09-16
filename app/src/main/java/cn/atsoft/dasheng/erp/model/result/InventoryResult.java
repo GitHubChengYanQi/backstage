@@ -27,8 +27,13 @@ public class InventoryResult implements Serializable {
 
     private List<InventoryStockResult> stockResults;
 
+    private String createUserName;
+
+    private String handleUserName;
+
     private Long inkindId;
 
+    private Long handleUser;
     private static final long serialVersionUID = 1L;
 
     private StorehousePositionsResult positionsResult;
