@@ -22,6 +22,7 @@ import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.InstockReceiptParam;
 import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
 import cn.atsoft.dasheng.erp.model.result.InstockReceiptResult;
+import cn.atsoft.dasheng.erp.pojo.ReplaceSku;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.InstockLogDetailService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
@@ -29,6 +30,7 @@ import cn.atsoft.dasheng.erp.service.InstockReceiptService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.StepsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
@@ -44,8 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -123,19 +123,16 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
 
     @Override
-    public XWPFDocument createWord(Long receiptId) {
-        InstockReceiptResult detail = detail(receiptId);
-        Map<String, Object> map = new HashMap<>();
-        DateTime dateTime = new DateTime(detail.getCreateTime());
-        map.put("申请时间", dateTime);
-        map.put("申请人", detail.getUser().getName());
-        map.put("单号", detail.getCoding());
+    public XWPFDocument createWord(String module, Map<String, Object> map, Map<String, List<ReplaceSku>> skuMap) {
 
 
         /**
          * 取出模板  和替换规则
          */
-        Template template = templateService.query().eq("module", "inStock").eq("display", 1).one();
+        Template template = templateService.query().eq("module", module).eq("display", 1).one();
+        if (ToolUtil.isEmpty(template)) {
+            throw new ServiceException(500, "没有当前单据推送模板");
+        }
         FileInfo fileInfo = fileInfoService.getById(template.getFileId());
         TempReplaceRule replaceRules = JSON.parseObject(template.getReplaceRule(), TempReplaceRule.class);
 
@@ -145,19 +142,18 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
             replaceInPara(document, map);   //段落替换
 
-            replaceTable(document, replaceRules, detail, map);  //表格替换
+            replaceTable(document, replaceRules, skuMap, map);  //表格替换
 
             String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
             uploadPath = uploadPath.replace("\\", "");
-            String path = uploadPath +"编号:"+ detail.getCoding()+"的入库单.docx";
+            String filePath = uploadPath + map.get("path");
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
             document.write(bao);
-            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
             fileOutputStream.write(bao.toByteArray());
-            File file = new File(path);
+            File file = new File(filePath);
             orderUpload.upload(file);
             return document;
-
         } catch (Exception e) {
             //异常处理
             e.printStackTrace();
@@ -167,7 +163,77 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     }
 
 
-    public void replaceTable(XWPFDocument document, TempReplaceRule replaceRules, InstockReceiptResult detail, Map<String, Object> map) {
+    @Override
+    public Map<String, Object> detailBackMap(Long id) {
+        Map<String, Object> map = new HashMap<>();
+        InstockReceipt instockReceipt = this.getById(id);
+
+        User user = userService.getById(instockReceipt.getCreateUser());
+        InstockOrder instockOrder = instockOrderService.getById(instockReceipt.getInstockOrderId());
+        User inStockUser = userService.getById(instockOrder.getCreateUser());
+        ActivitiProcessTask task = taskService.getById(instockOrder.getTaskId());
+
+        map.put("关联任务", task.getTaskName() + "/" + instockOrder.getCoding());
+        map.put("申请人", inStockUser.getName());
+        map.put("申请时间", new DateTime(instockOrder.getCreateTime()));
+        map.put("执行人", user.getName());
+        map.put("执行时间", new DateTime(instockReceipt.getCreateTime()));
+        map.put("path", instockReceipt.getCoding() + ".docx");
+        map.put("单号", instockReceipt.getCoding());
+
+        return map;
+    }
+
+
+    @Override
+    public Map<String, List<ReplaceSku>> detailBackSkuMap(Long id) {
+        Map<String, List<ReplaceSku>> skuMap = new HashMap<>();
+
+
+        List<InstockLogDetail> instockLogDetails = instockLogDetailService.query().eq("receipt_id", id).eq("display", 1).list();
+        List<InstockLogDetailResult> detailResults = BeanUtil.copyToList(instockLogDetails, InstockLogDetailResult.class);
+        instockLogDetailService.format(detailResults);
+
+        Map<Long, List<InstockLogDetailResult>> map = new HashMap<>();
+
+
+        for (InstockLogDetailResult detailResult : detailResults) {
+            List<InstockLogDetailResult> results = map.get(detailResult.getCustomerId());
+            if (ToolUtil.isEmpty(results)) {
+                results = new ArrayList<>();
+            }
+            results.add(detailResult);
+            map.put(detailResult.getCustomerId(), results);
+        }
+
+        for (Long customerId : map.keySet()) {
+            List<InstockLogDetailResult> results = map.get(customerId);
+            Customer customer = customerService.getById(customerId);
+
+            List<ReplaceSku> replaceSkus = new ArrayList<>();
+            for (InstockLogDetailResult result : results) {
+                ReplaceSku replaceSku = new ReplaceSku();
+                replaceSku.setSkuName(result.getSkuResult().getSkuName());
+                replaceSku.setStandard(result.getSkuResult().getStandard());
+                replaceSku.setSpuName(result.getSkuResult().getSpuResult().getName());
+                if (ToolUtil.isNotEmpty(result.getBrandResult())) {
+                    replaceSku.setBrandName(result.getBrandResult().getBrandName());
+                } else {
+                    replaceSku.setBrandName("");
+                }
+                replaceSku.setNum(result.getNumber() + "");
+                replaceSku.setUnit(result.getSkuResult().getSpuResult().getUnitResult().getUnitName());
+                replaceSkus.add(replaceSku);
+            }
+            skuMap.put(customer.getCustomerName(), replaceSkus);
+        }
+
+
+        return skuMap;
+    }
+
+
+    public void replaceTable(XWPFDocument document, TempReplaceRule replaceRules, Map<String, List<ReplaceSku>> skuMap, Map<String, Object> map) {
         for (int i = 0; i < document.getTables().size(); i++) {
 
             TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
@@ -176,17 +242,16 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
                 switch (tableRule.getTableType()) {
                     case "sku":
-                        Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
                         List<XWPFTable> xwpfTables = new ArrayList<>();
-                        for (String customer : customerMap.keySet()) {
+                        for (String customer : skuMap.keySet()) {
                             XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
-                            List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
+                            List<ReplaceSku> results = skuMap.get(customer);
                             replace(document, newTable, customer, results, tableRule, replaceRules.getReplaceRules());
                             xwpfTables.add(newTable);
                         }
                         int pos = document.getPosOfTable(xwpfTable);  //删除模板中需替换的表格
                         document.removeBodyElement(pos);
-                        int tablePos = pos-1;
+                        int tablePos = pos - 1;
                         for (XWPFTable table : xwpfTables) {          //插入替换完的表格
                             document.insertTable(tablePos, table);
                             tablePos++;
@@ -259,7 +324,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     }
 
 
-    private void replace(XWPFDocument document, XWPFTable xwpfTable, String customer, List<InstockLogDetailResult> results, TempReplaceRule.ReplaceRule tableRule, List<TempReplaceRule.ReplaceRule> replaceRules) {
+    private void replace(XWPFDocument document, XWPFTable xwpfTable, String customer, List<ReplaceSku> results, TempReplaceRule.ReplaceRule tableRule, List<TempReplaceRule.ReplaceRule> replaceRules) {
 
         for (int i = 0; i < xwpfTable.getRows().size(); i++) {   //表格里循环 行
 
@@ -324,7 +389,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     }
 
 
-    public boolean loopCopy(XWPFTable table, XWPFTableRow sourceRow, List<InstockLogDetailResult> results) {
+    public boolean loopCopy(XWPFTable table, XWPFTableRow sourceRow, List<ReplaceSku> results) {
         List<XWPFTableCell> cellList = sourceRow.getTableCells();
         if (null == cellList) {
             return true;
@@ -354,7 +419,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
      * @param xwpfTableRow
      * @param results
      */
-    private boolean insertNewRow(XWPFTable table, XWPFTableRow xwpfTableRow, List<InstockLogDetailResult> results) {
+    private boolean insertNewRow(XWPFTable table, XWPFTableRow xwpfTableRow, List<ReplaceSku> results) {
         int size;
 
         int size1 = results.size();//  需要插入行的长度
@@ -366,7 +431,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             if (null == cellList) {
                 return true;
             }
-            InstockLogDetailResult instockLogDetailResult = results.get(i1);
+            ReplaceSku replaceSku = results.get(i1);
             XWPFTableRow newRow = table.insertNewTableRow(size);
             newRow.getCtRow().setTrPr(xwpfTableRow.getCtRow().getTrPr());
 
@@ -389,7 +454,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                 } else {
                     targetCell.setText(xwpfTableCell.getText());
                 }
-                replace(xwpfTableCell, instockLogDetailResult, i1);  //替换
+                replace(xwpfTableCell, replaceSku, i1);  //替换
             }
 
             xwpfTableRow = newRow;
@@ -402,41 +467,41 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
      * 替换
      *
      * @param xwpfTableCell
-     * @param instockLogDetailResult
+     * @param
      * @param i
      */
-    private void replace(XWPFTableCell xwpfTableCell, InstockLogDetailResult instockLogDetailResult, int i) {
+    private void replace(XWPFTableCell xwpfTableCell, ReplaceSku replaceSku, int i) {
         Matcher matcher = matcher(xwpfTableCell.getText());
         while (matcher.find()) {      //每一列替换
             String group = matcher.group(0);
             switch (group) {
                 case "${物料名称}":
                     xwpfTableCell.removeParagraph(0);
-                    xwpfTableCell.setText(instockLogDetailResult.getSkuResult().getStandard());
+                    xwpfTableCell.setText(replaceSku.getStandard());
                     break;
                 case "${产品名称}":
                     xwpfTableCell.removeParagraph(0);
-                    xwpfTableCell.setText(instockLogDetailResult.getSkuResult().getSpuResult().getName());
+                    xwpfTableCell.setText(replaceSku.getSpuName());
                     break;
                 case "${型号规格}":
                     xwpfTableCell.removeParagraph(0);
-                    xwpfTableCell.setText(instockLogDetailResult.getSkuResult().getSpecifications());
+                    xwpfTableCell.setText(replaceSku.getSkuName());
                     break;
                 case "${品牌厂家}":
                     xwpfTableCell.removeParagraph(0);
-                    if (ToolUtil.isEmpty(instockLogDetailResult.getBrandResult()) || ToolUtil.isEmpty(instockLogDetailResult.getBrandResult().getBrandName())) {
-                        xwpfTableCell.setText("");
-                    } else {
-                        xwpfTableCell.setText(instockLogDetailResult.getBrandResult().getBrandName());
-                    }
+                    xwpfTableCell.setText(replaceSku.getBrandName());
                     break;
                 case "${数量}":
                     xwpfTableCell.removeParagraph(0);
-                    xwpfTableCell.setText(instockLogDetailResult.getNumber() + "");
+                    xwpfTableCell.setText(replaceSku.getNum() + "");
                     break;
                 case "${序号}":
                     xwpfTableCell.removeParagraph(0);
                     xwpfTableCell.setText(i + 1 + "");
+                    break;
+                case "${单位}":
+                    xwpfTableCell.removeParagraph(0);
+                    xwpfTableCell.setText(replaceSku.getUnit());
                     break;
             }
         }

@@ -26,6 +26,8 @@ public class InstockReceiptParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     private List<String> times;
 
+    private String module;
+
     private Long templateId;
 
     private Long fileId;

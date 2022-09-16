@@ -147,8 +147,11 @@ public class ContractExcel {
             }
             Customer customer = customerService.getById(customerId);
 
+            if (ToolUtil.isEmpty(contract.getCoding())) {
+                contract.setCoding("");
+            }
 
-            String fileName =customer.getCustomerName()+ contract.getCoding();
+            String fileName = contract.getCoding() + customer.getCustomerName() ;
             String encode = URLEncoder.encode(fileName, "utf-8");
             response.setHeader("Content-Disposition", "attachment; filename=" + encode + ".docx");
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
