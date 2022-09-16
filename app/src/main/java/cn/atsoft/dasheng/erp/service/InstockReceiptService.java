@@ -32,7 +32,7 @@ public interface InstockReceiptService extends IService<InstockReceipt> {
 
     void addReceipt(InstockOrderParam param, List<InstockLogDetail> instockLogDetails);
 
-    XWPFDocument createWord( Long receiptId, Long fileId);
+    XWPFDocument createWord( Long receiptId);
 
     InstockReceiptResult detail(Long receiptId);
 

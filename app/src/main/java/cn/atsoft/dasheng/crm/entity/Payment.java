@@ -25,6 +25,31 @@ public class Payment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    /**
+     * 浮动金额
+     */
+    @TableField("floating_amount")
+    private Integer floatingAmount;
+
+    /**
+     * 总金额
+     */
+    @TableField("total_amount")
+    private Integer totalAmount;
+
+    /**
+     * 票据类型
+     */
+    @TableField("paper_type")
+    private Integer paperType;
+
+    /**
+     * 税率
+     */
+    @TableField("rate")
+    private Long rate;
+
     /**
      * 付款信息id
      */
@@ -269,6 +294,39 @@ public class Payment implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+
+    public Integer getFloatingAmount() {
+        return floatingAmount;
+    }
+
+    public void setFloatingAmount(Integer floatingAmount) {
+        this.floatingAmount = floatingAmount;
+    }
+
+    public Integer getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Integer totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Integer getPaperType() {
+        return paperType;
+    }
+
+    public void setPaperType(Integer paperType) {
+        this.paperType = paperType;
+    }
+
+    public Long getRate() {
+        return rate;
+    }
+
+    public void setRate(Long rate) {
+        this.rate = rate;
     }
 
     @Override

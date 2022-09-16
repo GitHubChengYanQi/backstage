@@ -24,6 +24,9 @@ public class Supply implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("supplier_model")
+    private String supplierModel;
+
     @TableId(value = "supply_id", type = IdType.ID_WORKER)
     private Long supplyId;
     /**
@@ -63,6 +66,13 @@ public class Supply implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
+    public String getSupplierModel() {
+        return supplierModel;
+    }
+
+    public void setSupplierModel(String supplierModel) {
+        this.supplierModel = supplierModel;
+    }
 
     public Long getSupplyId() {
         return supplyId;

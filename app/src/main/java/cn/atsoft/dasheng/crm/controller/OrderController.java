@@ -64,6 +64,18 @@ public class OrderController extends BaseController {
         return ResponseData.success(order);
     }
 
+    /**
+     * 订单生成合同
+     * @param orderParam
+     * @return
+     */
+    @RequestMapping(value = "/updateContract", method = RequestMethod.POST)
+    @ApiOperation("生成合同")
+    public ResponseData updateContract(@RequestBody OrderParam orderParam) {
+        this.orderService.updateContract(orderParam.getOrderId(), orderParam.getContractParam());
+        return ResponseData.success();
+    }
+
 
     /**
      * 查看详情接口

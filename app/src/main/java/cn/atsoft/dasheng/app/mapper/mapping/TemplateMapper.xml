@@ -16,11 +16,12 @@
         <result column="file_id" property="fileId"/>
         <result column="contract_class_id" property="contractClassId"/>
         <result column="replace_rule" property="replaceRule"/>
+        <result column="module" property="module"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">deptId
-    AS "deptId",contract_class_id AS "contractClassId",file_id AS "fileId",replace_rule AS "replace_rule",
+    AS "deptId",contract_class_id AS "contractClassId",file_id AS "fileId",replace_rule AS "replace_rule",module AS "module",
         template_id
         AS "templateId", name AS "name", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>

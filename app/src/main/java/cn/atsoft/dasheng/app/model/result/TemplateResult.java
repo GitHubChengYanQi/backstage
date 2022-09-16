@@ -25,6 +25,8 @@ public class TemplateResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String module;
+
     private String replaceRule;
 
     private ContractClassResult classResult;

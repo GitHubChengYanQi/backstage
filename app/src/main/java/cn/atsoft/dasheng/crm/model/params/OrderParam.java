@@ -29,6 +29,10 @@ public class OrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String fileId;
+
+    private String leadTime;
+
     private String skuName;
 
     private String customerName;

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.service;
 
+import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Order;
@@ -36,6 +37,8 @@ public interface OrderService extends IService<Order> {
      * @Date 2022-02-23
      */
     void delete(OrderParam param);
+
+    void updateContract(Long orderId, ContractParam contractParam);
 
     /**
      * 更新

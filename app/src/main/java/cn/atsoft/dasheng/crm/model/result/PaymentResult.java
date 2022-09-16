@@ -22,9 +22,32 @@ import java.util.List;
 @ApiModel
 public class PaymentResult implements Serializable {
 
+
+
     private static final long serialVersionUID = 1L;
 
     private List<PaymentDetailResult> detailResults;
+
+    /**
+     * 浮动金额
+     */
+
+    private Integer floatingAmount;
+
+    /**
+     * 总金额
+     */
+    private Integer totalAmount;
+
+    /**
+     * 票据类型
+     */
+    private Integer paperType;
+
+    /**
+     * 税率
+     */
+    private Long rate;
 
     private Integer money;
     /**

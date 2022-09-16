@@ -35,6 +35,7 @@ public class OrderDetailResult implements Serializable {
     private CustomerResult customerResult;
     private Unit unit;
     private TaxRate taxRate;
+    private String remark;
 
     /**
      * 详情id

@@ -217,6 +217,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
          */
         if (ToolUtil.isNotEmpty(param.getOutTime())) {
             List<Long> timeOutTaskIds = new ArrayList<>();
+            timeOutTaskIds.add(0L);
             switch (param.getOutTime()) {
                 case "yes":
                     timeOutTaskIds.addAll(inventoryService.timeOut(true));

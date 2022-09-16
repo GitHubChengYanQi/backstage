@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
+import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -33,6 +34,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,10 +46,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,54 +123,38 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
 
 
     @Override
-    public XWPFDocument createWord(Long receiptId, Long templateId) {
+    public XWPFDocument createWord(Long receiptId) {
         InstockReceiptResult detail = detail(receiptId);
+        Map<String, Object> map = new HashMap<>();
+        DateTime dateTime = new DateTime(detail.getCreateTime());
+        map.put("申请时间", dateTime);
+        map.put("申请人", detail.getUser().getName());
+        map.put("单号", detail.getCoding());
+
+
         /**
          * 取出模板  和替换规则
          */
-        Template template = templateService.getById(templateId);
+        Template template = templateService.query().eq("module", "inStock").eq("display", 1).one();
         FileInfo fileInfo = fileInfoService.getById(template.getFileId());
         TempReplaceRule replaceRules = JSON.parseObject(template.getReplaceRule(), TempReplaceRule.class);
 
         try {
-            InputStream inputStream = Files.newInputStream(Paths.get(fileInfo.getFilePath()));
+            InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
             XWPFDocument document = new XWPFDocument(inputStream);
 
+            replaceInPara(document, map);   //段落替换
 
-            for (int i = 0; i < document.getTables().size(); i++) {
-                TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
-                if (ToolUtil.isNotEmpty(tableRule) && tableRule.getTableType().equals("sku")) {        //循环插入规则则
+            replaceTable(document, replaceRules, detail, map);  //表格替换
 
-                    XWPFTable xwpfTable = document.getTableArray(i);     //需要替换表格的位置
-                    Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
-                    List<XWPFTable> xwpfTables = new ArrayList<>();
-
-
-                    for (String customer : customerMap.keySet()) {
-                        XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
-                        List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
-                        replace(document, newTable, customer, results, tableRule, replaceRules.getReplaceRules());
-                        xwpfTables.add(newTable);
-                    }
-
-
-                    int pos = document.getPosOfTable(xwpfTable);  //删除模板中需替换的表格
-                    document.removeBodyElement(pos);
-
-                    int tablePos = pos;
-                    for (XWPFTable table : xwpfTables) {          //插入替换完的表格
-                        document.insertTable(tablePos, table);
-                        tablePos++;
-                    }
-                }
-            }
-
-
+            String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
+            uploadPath = uploadPath.replace("\\", "");
+            String path = uploadPath +"编号:"+ detail.getCoding()+"的入库单.docx";
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
             document.write(bao);
-            FileOutputStream fileOutputStream = new FileOutputStream("D:/tmp/\\test.docx");
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
             fileOutputStream.write(bao.toByteArray());
-            File file = new File("D:/tmp/\\test.docx");
+            File file = new File(path);
             orderUpload.upload(file);
             return document;
 
@@ -181,6 +164,98 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         }
 
         return null;
+    }
+
+
+    public void replaceTable(XWPFDocument document, TempReplaceRule replaceRules, InstockReceiptResult detail, Map<String, Object> map) {
+        for (int i = 0; i < document.getTables().size(); i++) {
+
+            TempReplaceRule.ReplaceRule tableRule = OrderReplace.getTableRule(i, replaceRules);   //表格规则
+            if (ToolUtil.isNotEmpty(tableRule) && ToolUtil.isNotEmpty(tableRule.getTableType())) {       //循环插入规则则
+                XWPFTable xwpfTable = document.getTableArray(i);     //需要替换表格的位置
+
+                switch (tableRule.getTableType()) {
+                    case "sku":
+                        Map<String, List<InstockLogDetailResult>> customerMap = detail.getCustomerMap();
+                        List<XWPFTable> xwpfTables = new ArrayList<>();
+                        for (String customer : customerMap.keySet()) {
+                            XWPFTable newTable = orderReplace.replaceInTable(document, xwpfTable);//表格循环插入
+                            List<InstockLogDetailResult> results = detail.getCustomerMap().get(customer);
+                            replace(document, newTable, customer, results, tableRule, replaceRules.getReplaceRules());
+                            xwpfTables.add(newTable);
+                        }
+                        int pos = document.getPosOfTable(xwpfTable);  //删除模板中需替换的表格
+                        document.removeBodyElement(pos);
+                        int tablePos = pos-1;
+                        for (XWPFTable table : xwpfTables) {          //插入替换完的表格
+                            document.insertTable(tablePos, table);
+                            tablePos++;
+                        }
+                        break;
+                    case "none":
+                        replace(xwpfTable, map);
+                        break;
+
+                }
+
+            }
+        }
+    }
+
+    public void replaceInPara(XWPFDocument doc, Map<String, Object> params) {
+        Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+        while (iterator.hasNext()) {
+            replaceInPara(iterator.next(), params);
+        }
+    }
+
+    /**
+     * 段落替换
+     *
+     * @param para
+     * @param params
+     */
+    private void replaceInPara(XWPFParagraph para, Map<String, Object> params) {
+        for (String key : params.keySet()) {
+            params.putIfAbsent(key, "");
+        }
+
+        List<XWPFRun> runs;
+        StringBuilder runText = new StringBuilder();
+
+        if (matcher(para.getParagraphText()).find()) {
+            runs = para.getRuns();
+            int j = runs.size();
+            for (int i = 0; i < j; i++) {
+
+                if (ToolUtil.isNotEmpty(runs.get(0).getText(0))) {
+                    runText.append(runs.get(0).getText(0));
+                }
+                //保留最后一个段落，在这段落中替换值，保留原有段落样式
+                if (!((j - 1) == i)) {
+                    para.removeRun(0);
+                }
+            }
+            String text = runText.toString();
+            Matcher matcher;
+            while ((matcher = matcher(text)).find()) {
+                String group = matcher.group(1);
+                if (group.equals("${sku}") || group.equals("${pay}")) {
+                    text = matcher.replaceFirst("");
+                } else {
+                    text = matcher.replaceFirst(String.valueOf(params.get(group)));
+                }
+            }
+            runs.get(0).setText(text, 0);
+        }
+    }
+
+
+    private void replace(XWPFTable xwpfTable, Map<String, Object> map) {
+        for (int i = 0; i < xwpfTable.getRows().size(); i++) {
+            XWPFTableRow row = xwpfTable.getRow(i);
+            noneCopy(row, map);
+        }
     }
 
 
@@ -219,6 +294,30 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                         xwpfTableCell.removeParagraph(0);
                         xwpfTableCell.setText(content);
                         break;
+                }
+            }
+        }
+    }
+
+    /**
+     * 表格普通替换
+     *
+     * @param sourceRow
+     * @param map
+     */
+    private void noneCopy(XWPFTableRow sourceRow, Map<String, Object> map) {
+        List<XWPFTableCell> cellList = sourceRow.getTableCells();
+        if (ToolUtil.isEmpty(cellList)) {
+            return;
+        }
+        for (XWPFTableCell xwpfTableCell : cellList) {
+            Matcher matcher = matcher(xwpfTableCell.getText());
+            while (matcher.find()) {
+                String group = matcher.group(1);
+                Object o = map.get(group);
+                if (ToolUtil.isNotEmpty(o)) {
+                    xwpfTableCell.removeParagraph(0);
+                    xwpfTableCell.setText(String.valueOf(map.get(group)));
                 }
             }
         }

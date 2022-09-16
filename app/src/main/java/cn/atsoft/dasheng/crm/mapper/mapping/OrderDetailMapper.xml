@@ -23,10 +23,12 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
+        <result column="remark" property="remark"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">remark
+    AS "remark",
         detail_id
         AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
@@ -141,7 +143,7 @@
         LEFT JOIN daoxin_crm_order orders on orderDetail.order_id = orders.order_id
         WHERE ISNULL(planDetail.production_plan_detail_id)
         <if test="paramCondition.type != null">
-           and orders.type = #{paramCondition.type}
+            and orders.type = #{paramCondition.type}
         </if>
     </select>
 

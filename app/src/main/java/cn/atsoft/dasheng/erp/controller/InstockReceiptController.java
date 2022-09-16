@@ -107,9 +107,9 @@ public class InstockReceiptController extends BaseController {
 
 
     @RequestMapping(value = "/createWord", method = RequestMethod.POST)
-    public ResponseData<InstockReceiptResult> createWord(HttpServletResponse response, @RequestBody InstockReceiptParam instockReceiptParam) {
+    public void createWord(HttpServletResponse response, @RequestBody InstockReceiptParam instockReceiptParam) {
         try {
-            XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getReceiptId(), instockReceiptParam.getTemplateId());
+            XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getReceiptId());
             String fileName = "test.docx";
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
@@ -118,7 +118,7 @@ public class InstockReceiptController extends BaseController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ResponseData.success();
+
     }
 
 }
