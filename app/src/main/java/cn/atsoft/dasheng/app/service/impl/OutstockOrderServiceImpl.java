@@ -310,7 +310,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             result.setUserResult(userResult);
         }
         if (result.getCreateUser() != null) {
-            UserResult createUserResult = BeanUtil.copyProperties(userService.getById(result.getCreateUserResult()), UserResult.class);
+            UserResult createUserResult = BeanUtil.copyProperties(userService.getById(result.getCreateUser()), UserResult.class);
 
             result.setCreateUserResult(createUserResult);
         }

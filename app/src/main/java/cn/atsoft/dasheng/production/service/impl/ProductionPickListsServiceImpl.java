@@ -1002,6 +1002,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 OutstockOrderParam outstockOrder = new OutstockOrderParam();
                 outstockOrder.setStorehouseId(stockId);
                 outstockOrder.setUserId(pickList.getUserId());
+                outstockOrder.setSourceId(pickList.getPickListsId());
+                outstockOrder.setSource("pickLists");
                 List<OutstockListingParam> listings = new ArrayList<>();
                 /**
                  * 如果部分领取涉及到拆分购物车 老购物车保留 出库出新购物车

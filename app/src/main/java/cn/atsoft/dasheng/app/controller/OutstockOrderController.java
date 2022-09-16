@@ -78,7 +78,7 @@ public class OutstockOrderController extends BaseController {
         return ResponseData.success(order);
     }
 
-    @RequestMapping(value = "/getOrder", method = RequestMethod.GET)
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
     public ResponseData getOrder(@RequestParam Long outStockOrderId) {
         OutstockOrderResult order = this.outstockOrderService.detail(outStockOrderId);
         return ResponseData.success(order);
@@ -133,23 +133,23 @@ public class OutstockOrderController extends BaseController {
         this.outstockOrderService.delete(outstockOrderParam);
         return ResponseData.success();
     }
-
-    /**
-     * 查看详情接口
-     *
-     * @author cheng
-     * @Date 2021-08-16
-     */
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData detail(@RequestBody OutstockOrderParam outstockOrderParam) {
-        OutstockOrder detail = this.outstockOrderService.getById(outstockOrderParam.getOutstockOrderId());
-        OutstockOrderResult result = new OutstockOrderResult();
-        ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
-    }
+//
+//    /**
+//     * 查看详情接口
+//     *
+//     * @author cheng
+//     * @Date 2021-08-16
+//     */
+//    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+//    @ApiOperation("详情")
+//    public ResponseData detail(@RequestBody OutstockOrderParam outstockOrderParam) {
+//        OutstockOrder detail = this.outstockOrderService.getById(outstockOrderParam.getOutstockOrderId());
+//        OutstockOrderResult result = new OutstockOrderResult();
+//        ToolUtil.copyProperties(detail, result);
+//
+////        result.setValue(parentValue);
+//        return ResponseData.success(result);
+//    }
 
     /**
      * 查询列表
