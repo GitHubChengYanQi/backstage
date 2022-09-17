@@ -37,7 +37,7 @@ public class ActivitiStepsResult implements Serializable {
 
     private ActivitiAuditResult serviceAudit;
 
-    private ActivitiProcessLogResult logResult;
+    private List<ActivitiProcessLogResult> logResults;
 
     private String stepType;
 

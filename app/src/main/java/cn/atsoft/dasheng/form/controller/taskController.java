@@ -240,7 +240,9 @@ public class taskController extends BaseController {
         appStepService.headPortrait(stepResult);
 
         //取出所有未审核节点
-        List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit3(taskId);
+        List<ActivitiProcessLog> allUnAuditLog = new ArrayList<>();
+        allUnAuditLog.addAll(activitiProcessLogService.getAudit3(taskId)) ;
+        allUnAuditLog.addAll(activitiProcessLogService.getAudit1(taskId)) ;
 
         /**
          * 流程中审核节点
@@ -258,7 +260,7 @@ public class taskController extends BaseController {
             }});
 
             taskResult.setPermissions(false);
-            for (ActivitiProcessLog activitiProcessLog : audit) {
+            for (ActivitiProcessLog activitiProcessLog : allUnAuditLog) {
                 if (activitiProcessLog.getStatus() == -1) {
                     /**
                      * 取节点规则

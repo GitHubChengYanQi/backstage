@@ -671,6 +671,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         if (ToolUtil.isEmpty(stepResult)) {
             return;
         }
+        List<ActivitiProcessLogResult> logResults = new ArrayList<>();
         for (ActivitiProcessLogResult logResult : logs) {
             if (logResult.getSetpsId().equals(stepResult.getSetpsId())) {
 
@@ -710,8 +711,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                         }
                     }
                 }
-                stepResult.setLogResult(logResult);
+                logResults.add(logResult);
+
             }
+            stepResult.setLogResults(logResults);
         }
 
         if (ToolUtil.isNotEmpty(stepResult.getChildNode())) {
