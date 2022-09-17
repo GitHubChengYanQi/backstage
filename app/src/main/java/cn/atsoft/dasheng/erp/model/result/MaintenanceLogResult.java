@@ -23,6 +23,11 @@ public class MaintenanceLogResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String coding;
+
+    private String notice;
+
+    List<AnnouncementsResult> announcementsResults;
+
     @ApiModelProperty("")
     private Long maintenanceLogId;
 
