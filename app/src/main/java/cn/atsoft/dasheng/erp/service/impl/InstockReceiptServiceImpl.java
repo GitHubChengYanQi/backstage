@@ -142,6 +142,9 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         try {
             InputStream inputStream = new FileInputStream(fileInfo.getFilePath());
             XWPFDocument document = new XWPFDocument(inputStream);
+            if (ToolUtil.isEmpty(document)) {
+                throw new ServiceException(500, "模板读取失败");
+            }
 
             replaceInPara(document, map);   //段落替换
 
