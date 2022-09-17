@@ -28,9 +28,6 @@ public class MaintenanceLogDetailResult implements Serializable {
     private InkindResult inkindResult;
 
     @ApiModelProperty("")
-    private InkindResult inkindResult;
-
-    @ApiModelProperty("")
     private Long maintenanceLogId;
 
     @ApiModelProperty("")

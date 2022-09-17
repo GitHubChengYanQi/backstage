@@ -71,8 +71,7 @@ public class GetOrigin {
 
     @Autowired
     private ActivitiProcessTaskService taskService;
-    @Autowired
-    private MaintenanceService maintenanceService;
+
 
 
     public ThemeAndOrigin getOrigin(ThemeAndOrigin themeAndOrigin) {
@@ -130,8 +129,6 @@ public class GetOrigin {
         List<Long> pickListsIds = new ArrayList<>();
         List<Long> productionPlanIds = new ArrayList<>();
         List<Long> processTaskIds = new ArrayList<>();
-        List<Long> maintenanceIds = new ArrayList<>();
-        List<Long> pickListsIds = new ArrayList<>();
         for (ThemeAndOrigin themeAndOrigin : param) {
             if (ToolUtil.isNotEmpty(themeAndOrigin.getSourceId()) && ToolUtil.isNotEmpty(themeAndOrigin.getSourceId())) {
                 //TODO 可增加表单类型

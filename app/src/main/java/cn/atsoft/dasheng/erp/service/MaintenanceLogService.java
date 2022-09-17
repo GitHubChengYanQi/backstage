@@ -68,5 +68,4 @@ public interface MaintenanceLogService extends IService<MaintenanceLog> {
      */
      PageInfo<MaintenanceLogResult> findPageBySpec(MaintenanceLogParam param);
 
-    MaintenanceLogResult detail(Long id);
 }

@@ -95,9 +95,6 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     @Autowired
     private AnnouncementsService announcementsService;
 
-    @Autowired
-    private GetOrigin getOrigin;
-
     @Override
     public void add(MaintenanceLogParam param){
 
@@ -263,18 +260,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         IPage<MaintenanceLogResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
-    @Override
-    public MaintenanceLogResult detail(Long id){
-        MaintenanceLogResult result = BeanUtil.copyProperties(this.getById(id), MaintenanceLogResult.class);
-        List<MaintenanceLogDetailResult> logDetails = BeanUtil.copyToList(maintenanceLogDetailService.query().eq("maintenance_log_id", id).list(), MaintenanceLogDetailResult.class);
-        maintenanceLogDetailService.format(logDetails);
-        if (ToolUtil.isNotEmpty(result.getOrigin())) {
-            result.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(result.getOrigin(), ThemeAndOrigin.class)));
-        }
-        result.setCreateUserResult(BeanUtil.copyProperties(userService.getById(result.getCreateUser()), UserResult.class));
-        result.setDetailResults(logDetails);
-        return result;
-    }
+
     private Serializable getKey(MaintenanceLogParam param){
         return param.getMaintenanceLogId();
     }

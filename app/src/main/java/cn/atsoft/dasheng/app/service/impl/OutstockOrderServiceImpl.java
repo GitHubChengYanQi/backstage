@@ -110,9 +110,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private GetOrigin getOrigin;
 
 
-    @Autowired
-    private GetOrigin getOrigin;
-
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
 

@@ -99,19 +99,6 @@ public class MaintenanceLogController extends BaseController {
         }
         return this.maintenanceLogService.findPageBySpec(maintenanceLogParam);
     }
-    /**
-     * 查询列表
-     *
-     * @author Captain_Jazz
-     * @Date 2022-08-11
-     */
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
-    @ApiOperation("列表")
-    public MaintenanceLogResult detail(@RequestParam Long id) {
-
-        return this.maintenanceLogService.detail(id);
-    }
-
 
 
 

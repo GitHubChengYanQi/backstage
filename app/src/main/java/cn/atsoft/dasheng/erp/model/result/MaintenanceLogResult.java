@@ -32,7 +32,6 @@ public class MaintenanceLogResult implements Serializable {
     @ApiModelProperty("")
     private Long maintenanceLogId;
 
-    List<MaintenanceLogDetailResult> detailResults;
 
 
     private String origin;

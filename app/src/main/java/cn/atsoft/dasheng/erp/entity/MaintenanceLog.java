@@ -94,20 +94,7 @@ public class MaintenanceLog implements Serializable {
     @TableField("enclosure")
     private String enclosure;
 
-    /**
-     * 来源
-     */
-    @TableField("source")
-    private String source;
 
-    @TableField("source_id")
-    private Integer sourceId;
-
-    @TableField("theme")
-    private String theme;
-
-    @TableField("origin")
-    private String origin;
 
 
     public Long getMaintenanceLogId() {
