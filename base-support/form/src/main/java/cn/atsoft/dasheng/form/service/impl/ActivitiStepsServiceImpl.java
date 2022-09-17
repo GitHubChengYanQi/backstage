@@ -715,6 +715,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
             }
             stepResult.setLogResults(logResults);
+            stepResult.setLogResult(logResult);
         }
 
         if (ToolUtil.isNotEmpty(stepResult.getChildNode())) {
