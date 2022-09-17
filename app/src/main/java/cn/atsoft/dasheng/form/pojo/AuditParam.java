@@ -20,4 +20,5 @@ public class AuditParam {
     private Long pid;
 
     private List<Long> logIds;
+    private String revokeContent;
 }

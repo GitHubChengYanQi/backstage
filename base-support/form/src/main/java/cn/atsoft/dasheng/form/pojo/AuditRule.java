@@ -18,6 +18,8 @@ public class AuditRule {
     private String formType;
 
     private List<ActionStatus> actionStatuses;
+    //1或签 2并签
+    private Integer nodeApprovalType;
 
 
 

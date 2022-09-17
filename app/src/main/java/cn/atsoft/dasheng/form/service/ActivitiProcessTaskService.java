@@ -87,6 +87,10 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
     PageInfo auditList(ActivitiProcessTaskParam param);
 
 
+    PageInfo<ActivitiProcessTaskResult> aboutMeTasks(ActivitiProcessTaskParam param);
+
+    PageInfo<ActivitiProcessTaskResult> auditListV1(ActivitiProcessTaskParam param);
+
     PageInfo LoginStart(ActivitiProcessTaskParam param);
 
     boolean startHaveME(AuditRule rule, LoginContext loginContext);

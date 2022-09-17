@@ -6,8 +6,11 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.entity.Maintenance;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.erp.service.MaintenanceService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
@@ -61,6 +64,9 @@ public class GetOrigin {
 
     @Autowired
     private ProductionPickListsService pickListsService;
+
+    @Autowired
+    private MaintenanceService maintenanceService;
 
 
     @Autowired
@@ -118,18 +124,32 @@ public class GetOrigin {
         List<Long> planIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> productionPlanIds = new ArrayList<>();
+        List<Long> processTaskIds = new ArrayList<>();
+        List<Long> maintenanceIds = new ArrayList<>();
+        List<Long> pickListsIds = new ArrayList<>();
         for (ThemeAndOrigin themeAndOrigin : param) {
-            //TODO 可增加表单类型
-            switch (themeAndOrigin.getSource()) {
-                case "purchaseAsk":
-                    askIds.add(themeAndOrigin.getSourceId());
-                    break;
-                case "ProcurementPlan":
-                    planIds.add(themeAndOrigin.getSourceId());
-                    break;
-                case "productionPlan":
-                    productionPlanIds.add(themeAndOrigin.getSourceId());
-                    break;
+            if (ToolUtil.isNotEmpty(themeAndOrigin.getSourceId()) && ToolUtil.isNotEmpty(themeAndOrigin.getSourceId())) {
+                //TODO 可增加表单类型
+                switch (themeAndOrigin.getSource()) {
+                    case "purchaseAsk":
+                        askIds.add(themeAndOrigin.getSourceId());
+                        break;
+                    case "ProcurementPlan":
+                        planIds.add(themeAndOrigin.getSourceId());
+                        break;
+                    case "productionPlan":
+                        productionPlanIds.add(themeAndOrigin.getSourceId());
+                        break;
+                    case "processTask":
+                        processTaskIds.add(themeAndOrigin.getSourceId());
+                        break;
+                    case "maintenance":
+                        maintenanceIds.add(themeAndOrigin.getSourceId());
+                        break;
+                    case "pickListsIds":
+                        pickListsIds.add(themeAndOrigin.getSourceId());
+                        break;
+                }
             }
         }
         List<ProductionPlanResult> productionPlanResults = productionPlanService.resultsByIds(productionPlanIds);
@@ -146,7 +166,14 @@ public class GetOrigin {
         for (ProcurementPlanResult procurementPlan : procurementPlans) {
             userIds.add(procurementPlan.getCreateUser());
         }
-
+        List<Maintenance> maintenances = maintenanceService.listByIds(maintenanceIds);
+        for (ProcurementPlanResult procurementPlan : procurementPlans) {
+            userIds.add(procurementPlan.getCreateUser());
+        }
+        List<ActivitiProcessTask> processTasks = processTaskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(processTaskIds);
+        for (ActivitiProcessTask processTask : processTasks) {
+            userIds.add(processTask.getCreateUser());
+        }
 
         List<UserResult> userResults = userService.getUserResultsByIds(userIds.stream().distinct().collect(Collectors.toList()));
         for (ThemeAndOrigin themeAndOrigin : param) {
@@ -166,6 +193,28 @@ public class GetOrigin {
                     for (UserResult userResult : userResults) {
                         if (productionPlanResult.getCreateUser().equals(userResult.getUserId())) {
                             this.copy2Ret(themeAndOrigin, productionPlanResult, themeAndOrigin.getSource(), userResult);
+                            break;
+                        }
+                    }
+                }
+            }
+            for (Maintenance maintenance : maintenances) {
+                if (themeAndOrigin.getSource().equals("maintenance") && themeAndOrigin.getSourceId().equals(maintenance.getMaintenanceId())) {
+                    for (UserResult userResult : userResults) {
+                        if (maintenance.getCreateUser().equals(userResult.getUserId())) {
+                            this.copy2Ret(themeAndOrigin, maintenance, themeAndOrigin.getSource(), userResult);
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+            for (ActivitiProcessTask processTask : processTasks) {
+                if (themeAndOrigin.getSource().equals("processTask") && themeAndOrigin.getSourceId().equals(processTask.getProcessTaskId())) {
+                    for (UserResult userResult : userResults) {
+                        if (processTask.getCreateUser().equals(userResult.getUserId())) {
+                            this.copy2Ret(themeAndOrigin, processTask, themeAndOrigin.getSource(), userResult);
                             break;
                         }
                     }
@@ -242,6 +291,7 @@ public class GetOrigin {
             case "pickLists":
             case "outstockOrder":
                 ProductionPickLists pickLists = JSONObject.parseObject(JSONObject.toJSONString(param), ProductionPickLists.class);
+                title = pickLists.getPickListsName();
                 fromId = pickLists.getPickListsId();
                 coding = pickLists.getCoding();
                 createTime = pickLists.getCreateTime();
@@ -256,20 +306,31 @@ public class GetOrigin {
                 JSONObject.toJSONString(param);
                 ActivitiProcessTask activitiProcessTask = JSON.parseObject(JSONObject.toJSONString(param), ActivitiProcessTask.class);
                 fromId = activitiProcessTask.getProcessTaskId();
-//                coding = activitiProcessTas
+                title = activitiProcessTask.getTaskName();
+                ActivitiProcessTaskResult detail = taskService.detail(activitiProcessTask.getProcessTaskId());
+                coding = detail.getCoding();
                 createTime = activitiProcessTask.getCreateTime();
+                break;
+            case "maintenance":
+                JSONObject.toJSONString(param);
+                Maintenance maintenance = JSON.parseObject(JSONObject.toJSONString(param), Maintenance.class);
+                fromId = maintenance.getMaintenanceId();
+                title = maintenance.getMaintenanceName();
+                coding = maintenance.getCoding();
+                createTime = maintenance.getCreateTime();
                 break;
         }
         Long finalFromId = fromId;
         String finalCoding = coding;
         Date finalCreateTime = createTime;
+        String finalTitle = title;
         result.setRet(new ThemeAndOrigin.Ret() {{
             setCreateUser(createUser);
             setCreateTime(finalCreateTime);
             setFrom(source);
             setFromId(finalFromId);
             setCoding(finalCoding);
-            setTitle(title);
+            setTitle(finalTitle);
         }});
 
     }

@@ -21,7 +21,8 @@ import cn.atsoft.dasheng.erp.service.QualityTaskRefuseService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -54,7 +55,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
     @Autowired
     private QualityTaskService taskService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired

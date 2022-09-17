@@ -54,6 +54,12 @@ public class ActivitiProcessLog implements Serializable {
     private Long taskId;
 
     /**
+     * 步骤Id
+     */
+    @TableField("audit_user_id")
+    private Long auditUserId;
+
+    /**
      * 0（拒绝），1（通过）
      */
     @TableField("status")
@@ -164,6 +170,14 @@ public class ActivitiProcessLog implements Serializable {
 
     public void setActionStatus(String actionStatus) {
         this.actionStatus = actionStatus;
+    }
+
+    public Long getAuditUserId() {
+        return auditUserId;
+    }
+
+    public void setAuditUserId(Long auditUserId) {
+        this.auditUserId = auditUserId;
     }
 
     @Override

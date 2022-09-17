@@ -27,6 +27,7 @@ import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
@@ -39,8 +40,12 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.production.controller.ProductionPickListsController;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -99,6 +104,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private ActivitiProcessService activitiProcessService;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private ProductionPickListsService pickListsService;
+    @Autowired
+    private GetOrigin getOrigin;
+
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -164,8 +174,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
 
-
-
     /**
      * 出库单添加出库记录
      *
@@ -222,6 +230,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         OutstockOrder entity = getEntity(param);
         entity.setCoding(encoding);
         this.save(entity);
+        String origin = getOrigin.newThemeAndOrigin("outStockLog", entity.getOutstockOrderId(), entity.getSource(), entity.getSourceId());
+        entity.setOrigin(origin);
+        this.updateById(entity);
 
 //        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
 //            List<ApplyDetails> applyDetails = param.getApplyDetails();
@@ -242,10 +253,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //            outstockListingService.saveBatch(outstockListings);
 //        }
         List<OutstockListing> listings = new ArrayList<>();
-        if(ToolUtil.isNotEmpty(param.getListingParams())){
+        if (ToolUtil.isNotEmpty(param.getListingParams())) {
             for (OutstockListingParam listingParam : param.getListingParams()) {
                 OutstockListing outstockListing = new OutstockListing();
-                ToolUtil.copyProperties(listingParam,outstockListing);
+                ToolUtil.copyProperties(listingParam, outstockListing);
                 outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
                 listings.add(outstockListing);
             }
@@ -295,11 +306,39 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         return outstockResult;
     }
 
+    @Override
+    public OutstockOrderResult detail(Long id) {
+        OutstockOrder outstockOrder = this.getById(id);
+        OutstockOrderResult result = BeanUtil.copyProperties(outstockOrder, OutstockOrderResult.class);
+        this.getListing(result);
+        if (result.getUserId() != null) {
+            UserResult userResult = BeanUtil.copyProperties(userService.getById(result.getUserId()), UserResult.class);
+            result.setUserResult(userResult);
+        }
+        if (result.getCreateUser() != null) {
+            UserResult createUserResult = BeanUtil.copyProperties(userService.getById(result.getCreateUser()), UserResult.class);
+
+            result.setCreateUserResult(createUserResult);
+        }
+        if (result.getStorehouseId() != null) {
+            StorehouseResult storehouseResult = BeanUtil.copyProperties(storehouseService.getById(result.getStorehouseId()), StorehouseResult.class);
+            result.setStorehouseResult(storehouseResult);
+        }
+        /**
+         * 来源
+         */
+        if (ToolUtil.isNotEmpty(result.getSource()) && result.getSource().equals("pickLists") && ToolUtil.isNotEmpty(result.getSourceId())) {
+            ProductionPickLists productionPickLists = pickListsService.getById(result.getSourceId());
+            ProductionPickListsResult pickListsResult = BeanUtil.copyProperties(productionPickLists, ProductionPickListsResult.class);
+            result.setPickListsResult(pickListsResult);
+        }
+        return result;
+    }
+
     private void getListing(OutstockOrderResult result) {
         List<OutstockListing> outstockListings = outstockListingService.query().eq("outstock_order_id", result.getOutstockOrderId()).list();
         List<OutstockListingResult> resultList = BeanUtil.copyToList(outstockListings, OutstockListingResult.class, new CopyOptions());
         outstockListingService.format(resultList);
-
 
         Map<Long, List<StorehousePositionsResult>> supperMap = new HashMap<>();
         for (OutstockListingResult outstockListingResult : resultList) {
@@ -317,7 +356,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             listing.setPositionsResults(positionsResults);
             list.add(listing);
         }
-
         result.setListing(list);
     }
 
@@ -348,8 +386,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //        }});
         addOutStockRecord(listings, "自由出库记录");  //添加记录
     }
+
     @Override
-    public Map<Long, Long>  outBoundByLists(List<OutstockListingParam> listings) {
+    public Map<Long, Long> outBoundByLists(List<OutstockListingParam> listings) {
 
         Map<Long, Long> longLongMap = this.outStockByLists(listings);
 
@@ -357,27 +396,29 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //        addOutStockRecord(listings, "出库记录");
         return longLongMap;
     }
-    public Map<Long,Long>  outStockByLists(List<OutstockListingParam> listings){
+
+    public Map<Long, Long> outStockByLists(List<OutstockListingParam> listings) {
         List<Long> inkindIds = new ArrayList<>();
         for (OutstockListingParam listing : listings) {
             inkindIds.add(listing.getInkindId());
         }
-        List<StockDetails> stockDetails =inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().eq("display", 1).eq("stage", 1).in("inkind_id", inkindIds).orderByAsc("create_time").list();
-        Map<Long,Long> updateInkind = new HashMap<>();
+        List<StockDetails> stockDetails = inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().eq("display", 1).eq("stage", 1).in("inkind_id", inkindIds).orderByAsc("create_time").list();
+        Map<Long, Long> updateInkind = new HashMap<>();
         List<Inkind> newInkinds = new ArrayList<>();
         List<Inkind> oldInkinds = new ArrayList<>();
         for (StockDetails stockDetail : stockDetails) {
             for (OutstockListingParam listing : listings) {
-                if (stockDetail.getInkindId().equals(listing.getInkindId())){
+                if (stockDetail.getInkindId().equals(listing.getInkindId())) {
                     long number = stockDetail.getNumber() - listing.getNumber();
-                    if (number > 0){
+                    if (number > 0) {
                         Inkind newInkind = new Inkind();
                         newInkind.setSkuId(stockDetail.getSkuId());
                         newInkind.setSource("inkind");
                         newInkind.setSourceId(stockDetail.getInkindId());
-                        if (ToolUtil.isNotEmpty(stockDetail.getBrandId())){
+                        if (ToolUtil.isNotEmpty(stockDetail.getBrandId())) {
                             newInkind.setBrandId(stockDetail.getBrandId());
-                        }if (ToolUtil.isNotEmpty(stockDetail.getCustomerId())){
+                        }
+                        if (ToolUtil.isNotEmpty(stockDetail.getCustomerId())) {
                             newInkind.setCustomerId(stockDetail.getCustomerId());
                         }
                         newInkind.setSkuId(stockDetail.getSkuId());
@@ -389,12 +430,12 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                         oldInkind.setNumber(number);
                         oldInkinds.add(oldInkind);
                         inkindService.save(newInkind);
-                        updateInkind.put(oldInkind.getInkindId(),newInkind.getInkindId());
-                    }else if (number == 0){
+                        updateInkind.put(oldInkind.getInkindId(), newInkind.getInkindId());
+                    } else if (number == 0) {
                         stockDetail.setNumber(0L);
                         stockDetail.setStage(2);
                         stockDetail.setDisplay(0);
-                        updateInkind.put(stockDetail.getInkindId(),stockDetail.getInkindId());
+                        updateInkind.put(stockDetail.getInkindId(), stockDetail.getInkindId());
                     }
                 }
             }
@@ -405,6 +446,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         return updateInkind;
     }
+
     /**
      * 任意品牌出库
      *
@@ -435,10 +477,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                             setSource("pick_lists");
                         }});
                         if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
-                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>() {{
                                 add(newInkindId);
                             }}));
-                        }else {
+                        } else {
                             List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
                             longs.add(newInkindId);
                             listingParam.setInkindIds(JSON.toJSONString(longs));
@@ -452,10 +494,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                         detail.setNumber(0L);
                         detail.setStage(2);
                         if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
-                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>() {{
                                 add(detail.getInkindId());
                             }}));
-                        }else {
+                        } else {
                             List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
                             longs.add(detail.getInkindId());
                             listingParam.setInkindIds(JSON.toJSONString(longs));
@@ -494,10 +536,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                             setSource("pick_lists");
                         }});
                         if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
-                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>() {{
                                 add(newInkindId);
                             }}));
-                        }else {
+                        } else {
                             List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
                             longs.add(newInkindId);
                             listingParam.setInkindIds(JSON.toJSONString(longs));
@@ -509,10 +551,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                         detail.setNumber(0L);
                         detail.setStage(2);
                         if (ToolUtil.isEmpty(listingParam.getInkindIds())) {
-                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>(){{
+                            listingParam.setInkindIds(JSON.toJSONString(new ArrayList<Long>() {{
                                 add(detail.getInkindId());
                             }}));
-                        }else {
+                        } else {
                             List<Long> longs = JSON.parseArray(listingParam.getInkindIds(), Long.class);
                             longs.add(detail.getInkindId());
                             listingParam.setInkindIds(JSON.toJSONString(longs));
@@ -621,14 +663,15 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
     public void format(List<OutstockOrderResult> data) {
-        List<Long> ids = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
         List<Long> stockHouseIds = new ArrayList<>();
 
         for (OutstockOrderResult datum : data) {
-            ids.add(datum.getUserId());
+            userIds.add(datum.getCreateUser());
+            userIds.add(datum.getUserId());
             stockHouseIds.add(datum.getStorehouseId());
         }
-        List<User> users = ids.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, ids).list();
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
 
         List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
 
@@ -640,6 +683,12 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     datum.setUserResult(userResult);
+                    break;
+                }
+                if (datum.getCreateUser() != null && user.getUserId().equals(datum.getCreateUser())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    datum.setCreateUserResult(userResult);
                     break;
                 }
             }
