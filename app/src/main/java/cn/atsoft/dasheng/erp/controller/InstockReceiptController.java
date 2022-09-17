@@ -4,9 +4,11 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockReceipt;
 import cn.atsoft.dasheng.erp.model.params.InstockReceiptParam;
 import cn.atsoft.dasheng.erp.model.result.InstockReceiptResult;
+import cn.atsoft.dasheng.erp.pojo.ReplaceSku;
 import cn.atsoft.dasheng.erp.service.InstockReceiptService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,7 +112,34 @@ public class InstockReceiptController extends BaseController {
     @RequestMapping(value = "/createWord", method = RequestMethod.POST)
     public void createWord(HttpServletResponse response, @RequestBody InstockReceiptParam instockReceiptParam) {
         try {
-            XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getReceiptId());
+            if (ToolUtil.isEmpty(instockReceiptParam.getReceiptId())) {
+                throw new ServiceException(500, "缺少单据主键");
+            }
+            if (ToolUtil.isEmpty(instockReceiptParam.getModule())) {
+                throw new ServiceException(500, "缺少单据类型");
+            }
+            Map<String, Object> map = new HashMap<>();
+            Map<String, List<ReplaceSku>> skuMap = new HashMap<>();
+            switch (instockReceiptParam.getModule()) {
+                case "inStock":
+                    map = instockReceiptService.detailBackMap(instockReceiptParam.getReceiptId());
+                    skuMap = instockReceiptService.detailBackSkuMap(instockReceiptParam.getReceiptId());
+                    break;
+                case "outStock":
+
+                    break;
+                case "stocktaking":
+
+                    break;
+                case "curing":
+
+                    break;
+                case "allocation":
+
+                    break;
+
+            }
+            XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getModule(), map, skuMap);
             String fileName = "test.docx";
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
             response.setContentType("application/vnd.ms-excel;charset=utf-8");

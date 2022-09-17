@@ -10,12 +10,11 @@ import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceLogDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogDetailParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
-import cn.atsoft.dasheng.erp.model.result.MaintenanceAndDetail;
+import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogDetailResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -193,18 +192,26 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
         this.format(MaintenanceLogDetailResults);
         return MaintenanceLogDetailResults;
     }
-
-    private void format(List<MaintenanceLogDetailResult> data){
+@Override
+public void format(List<MaintenanceLogDetailResult> data){
+        List<Long> inkindIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         for (MaintenanceLogDetailResult datum : data) {
+            inkindIds.add(datum.getInkindId());
             userIds.add(datum.getCreateUser());
         }
-        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+    List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
+    List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
         for (MaintenanceLogDetailResult datum : data) {
             for (UserResult userResult : userResultsByIds) {
                 if (datum.getCreateUser().equals(userResult.getUserId())){
                     userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     datum.setUserResult(userResult);
+                }
+            }
+            for (InkindResult inKind : inKinds) {
+                if(datum.getInkindId().equals(inKind.getInkindId())){
+                    datum.setInkindResult(inKind);
                 }
             }
         }
