@@ -426,7 +426,11 @@ public class WordUtils {
                 if (group.equals("${sku}") || group.equals("${pay}")) {
                     text = matcher.replaceFirst("");
                 } else {
-                    text = matcher.replaceFirst(String.valueOf(params.get(group)));
+                    String s = String.valueOf(params.get(group));
+                    if (ToolUtil.isEmpty(s)||s.equals("null")) {
+                        s = "";
+                    }
+                    text = matcher.replaceFirst(s);
                 }
             }
             runs.get(0).setText(text, 0);
@@ -507,10 +511,6 @@ public class WordUtils {
         createTable(document, table2);
         document.insertTable(pos, xwpfTable);
     }
-
-
-
-
 
 
     /**

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.Excel.ContractExcel;
 import cn.atsoft.dasheng.Excel.pojo.TempReplaceRule;
 import cn.atsoft.dasheng.Word.OrderReplace;
 import cn.atsoft.dasheng.app.entity.Customer;
@@ -13,6 +14,7 @@ import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.entity.InstockLogDetail;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
@@ -187,7 +189,12 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         map.put("执行时间", new DateTime(instockReceipt.getCreateTime()));
         map.put("path", instockReceipt.getCoding() + ".docx");
         map.put("单号", instockReceipt.getCoding());
-
+        List<ReplaceSku> replaceSkus = new ArrayList<>();
+        ReplaceSku replaceSku = new ReplaceSku();
+        replaceSku.setSkuName("aaaaa");
+        replaceSku.setBrandName("vvvvv");
+        replaceSkus.add(replaceSku);
+        map.put("sku", replaceSkus);
         return map;
     }
 
@@ -265,7 +272,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                         }
                         break;
                     case "none":
-                        replace(xwpfTable, map);
+                        replace(xwpfTable, map, tableRule, replaceRules.getReplaceRules());
                         break;
 
                 }
@@ -315,7 +322,11 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                 if (group.equals("${sku}") || group.equals("${pay}")) {
                     text = matcher.replaceFirst("");
                 } else {
-                    text = matcher.replaceFirst(String.valueOf(params.get(group)));
+                    String s = String.valueOf(params.get(group));
+                    if (ToolUtil.isEmpty(s) || s.equals("null")) {
+                        s = "";
+                    }
+                    text = matcher.replaceFirst(s);
                 }
             }
             runs.get(0).setText(text, 0);
@@ -323,12 +334,50 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     }
 
 
-    private void replace(XWPFTable xwpfTable, Map<String, Object> map) {
-
+    private void replace(XWPFTable xwpfTable, Map<String, Object> map, TempReplaceRule.ReplaceRule tableRule, List<TempReplaceRule.ReplaceRule> replaceRules) {
         for (int i = 0; i < xwpfTable.getRows().size(); i++) {
+            String rowRule = OrderReplace.getRowRule(i, tableRule, replaceRules);   //行替换规则
+            XWPFTableRow row = xwpfTable.getRow(i);         //获取当期行
+            switch (rowRule) {
+                case "sku":
+                    List<ReplaceSku> results = (List<ReplaceSku>) map.get(rowRule);
+                    int i1 = 1;
+                    for (ReplaceSku result : results) {
 
-            XWPFTableRow row = xwpfTable.getRow(i);
-            noneCopy(row, map);
+                        XWPFTableRow xwpfTableRow = xwpfTable.insertNewTableRow(i + i1);  //新行
+
+                        Map<String, Object> orderFormat = orderFormat(result);
+                        List<XWPFTableCell> cells = row.getTableCells();
+                        for (XWPFTableCell cell : cells) {          //段落
+
+                            XWPFTableCell xwpfTableCell = xwpfTableRow.addNewTableCell();
+                            //列属性
+                            xwpfTableCell.getCTTc().setTcPr(cell.getCTTc().getTcPr());
+                            //段落属性
+                            if (cell.getParagraphs() != null && cell.getParagraphs().size() > 0) {
+                                xwpfTableCell.getParagraphs().get(0).getCTP().setPPr(cell.getParagraphs().get(0).getCTP().getPPr());
+                                if (cell.getParagraphs().get(0).getRuns() != null && cell.getParagraphs().get(0).getRuns().size() > 0) {
+                                    XWPFRun cellR = xwpfTableCell.getParagraphs().get(0).createRun();
+                                    cellR.setText(cell.getText());
+                                    cellR.setBold(cell.getParagraphs().get(0).getRuns().get(0).isBold());
+                                } else {
+                                    xwpfTableCell.setText(cell.getText());
+                                }
+                            } else {
+                                xwpfTableCell.setText(cell.getText());
+                            }
+                            List<XWPFParagraph> paras = xwpfTableCell.getParagraphs();
+                            for (XWPFParagraph para : paras) {
+                                replaceInPara(para, orderFormat);
+                            }
+                        }
+
+                        i1++;
+                    }
+                    xwpfTable.removeRow(i);
+                    break;
+            }
+//            noneCopy(row, map);
         }
     }
 
@@ -514,6 +563,19 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
                     break;
             }
         }
+    }
+
+
+    public Map<String, Object> orderFormat(ReplaceSku replaceSku) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("物料编码", replaceSku.getStandard());
+        map.put("产品名称", replaceSku.getSpuName());
+        map.put("型号规格", replaceSku.getSkuName());
+        map.put("品牌厂家", replaceSku.getBrandName());
+        map.put("数量", replaceSku.getNum());
+        map.put("单位", replaceSku.getUnit());
+
+        return map;
     }
 
 
