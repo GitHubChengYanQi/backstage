@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -18,6 +19,7 @@ import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -70,6 +72,8 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
     private UserService userService;
     @Autowired
     private StepsService stepsService;
+    @Autowired
+    private MediaService mediaService;
 
 
     @Override
@@ -192,22 +196,26 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
         this.format(MaintenanceLogDetailResults);
         return MaintenanceLogDetailResults;
     }
-@Override
-public void format(List<MaintenanceLogDetailResult> data){
+    @Override
+    public void format(List<MaintenanceLogDetailResult> data){
         List<Long> inkindIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         for (MaintenanceLogDetailResult datum : data) {
             inkindIds.add(datum.getInkindId());
             userIds.add(datum.getCreateUser());
         }
-    List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
-    List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+        List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
         for (MaintenanceLogDetailResult datum : data) {
             for (UserResult userResult : userResultsByIds) {
                 if (datum.getCreateUser().equals(userResult.getUserId())){
                     userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     datum.setUserResult(userResult);
                 }
+            }
+            if (ToolUtil.isNotEmpty(datum.getEnclosure())) {
+                List<Long> enclosure = JSON.parseArray(datum.getEnclosure(), Long.class);
+                mediaService.getMediaUrlResults(enclosure);
             }
             for (InkindResult inKind : inKinds) {
                 if(datum.getInkindId().equals(inKind.getInkindId())){

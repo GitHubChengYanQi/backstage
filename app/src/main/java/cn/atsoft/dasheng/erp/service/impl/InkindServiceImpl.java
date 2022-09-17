@@ -242,7 +242,6 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
                     inKindResult.setQrCodeId(qrCode.getOrCodeId());
                 }
             }
-
         }
 
         return inKindResults;

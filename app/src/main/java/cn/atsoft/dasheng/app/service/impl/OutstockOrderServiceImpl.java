@@ -110,6 +110,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private GetOrigin getOrigin;
 
 
+    @Autowired
+    private GetOrigin getOrigin;
+
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
 
@@ -125,6 +128,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         OutstockOrder entity = getEntity(param);
         this.save(entity);
+
+        String origin = getOrigin.newThemeAndOrigin("outStockLog", entity.getOutstockOrderId(), entity.getSource(), entity.getSourceId());
+        entity.setOrigin(origin);
+        this.updateById(entity);
 
         if (ToolUtil.isNotEmpty(param.getListingParams()) && param.getListingParams().size() > 0) {
             List<OutstockListingParam> listingParams = param.getListingParams();

@@ -72,21 +72,18 @@ public class MaintenanceLogController extends BaseController {
         return ResponseData.success();
     }
 
-//    /**
-//     * 查看详情接口
-//     *
-//     * @author Captain_Jazz
-//     * @Date 2022-08-11
-//     */
-//    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-//    @ApiOperation("详情")
-//    public ResponseData detail(@RequestBody MaintenanceLogParam maintenanceLogParam) {
-//        MaintenanceLog detail = this.maintenanceLogService.getById(maintenanceLogParam.getMaintenanceLogId());
-//        MaintenanceLogResult result = new MaintenanceLogResult();
-//        ToolUtil.copyProperties(detail, result);
-//
-//        return ResponseData.success(result);
-//    }
+    /**
+     * 查看详情接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-08-11
+     */
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public MaintenanceLogResult detail(@RequestParam Long id) {
+
+        return this.maintenanceLogService.detail(id);
+    }
 
     /**
      * 查询列表

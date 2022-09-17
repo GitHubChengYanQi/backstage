@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.entity.MaintenanceLog;
 import cn.atsoft.dasheng.erp.entity.MaintenanceLogDetail;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceLogMapper;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
+import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceAndDetail;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogDetailResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult;
@@ -34,7 +35,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -87,6 +90,10 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
 
     @Autowired
     private ShopCartService shopCartService;
+    @Autowired
+    private GetOrigin getOrigin;
+    @Autowired
+    private AnnouncementsService announcementsService;
 
     @Autowired
     private GetOrigin getOrigin;
@@ -141,6 +148,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         this.save(entity);
         getOrigin.newThemeAndOrigin("maintenanceLog",entity.getMaintenanceLogId(),"maintenance",entity.getMaintenanceId());
         this.updateById(entity);
+
         for (MaintenanceLogDetail maintenanceLogDetail : logs) {
             maintenanceLogDetail.setMaintenanceLogId(entity.getMaintenanceLogId());
         }
@@ -204,6 +212,26 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
 
 
 
+    }
+
+    @Override
+    public MaintenanceLogResult detail(Long id){
+        MaintenanceLogResult result = BeanUtil.copyProperties(this.getById(id), MaintenanceLogResult.class);
+        List<MaintenanceLogDetailResult> logDetails = BeanUtil.copyToList(maintenanceLogDetailService.query().eq("maintenance_log_id", id).list(), MaintenanceLogDetailResult.class);
+        maintenanceLogDetailService.format(logDetails);
+        if (ToolUtil.isNotEmpty(result.getOrigin())) {
+            result.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(result.getOrigin(), ThemeAndOrigin.class)));
+        }
+
+        if (ToolUtil.isNotEmpty(result.getNotice())) {
+            List<Long> collect = Arrays.asList(result.getNotice().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<AnnouncementsResult> announcementsResults = BeanUtil.copyToList(announcementsService.listByIds(collect), AnnouncementsResult.class);
+            result.setAnnouncementsResults(announcementsResults);
+        }
+
+        result.setCreateUserResult(BeanUtil.copyProperties(userService.getById(result.getCreateUser()), UserResult.class));
+        result.setDetailResults(logDetails);
+        return result;
     }
 
     @Override

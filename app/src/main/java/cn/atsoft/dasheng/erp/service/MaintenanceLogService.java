@@ -26,6 +26,8 @@ public interface MaintenanceLogService extends IService<MaintenanceLog> {
      */
     void add(MaintenanceLogParam param);
 
+    MaintenanceLogResult detail(Long id);
+
     /**
      * 删除
      *

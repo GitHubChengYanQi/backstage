@@ -71,6 +71,9 @@ public class GetOrigin {
 
     @Autowired
     private ActivitiProcessTaskService taskService;
+    @Autowired
+    private MaintenanceService maintenanceService;
+
 
     public ThemeAndOrigin getOrigin(ThemeAndOrigin themeAndOrigin) {
 //        ThemeAndOrigin themeAndOrigin = JSON.parseObject(Origin, ThemeAndOrigin.class); //将字段中的JSON解析出对象
@@ -123,6 +126,8 @@ public class GetOrigin {
         List<Long> askIds = new ArrayList<>();
         List<Long> planIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
+        List<Long> maintenanceIds = new ArrayList<>();
+        List<Long> pickListsIds = new ArrayList<>();
         List<Long> productionPlanIds = new ArrayList<>();
         List<Long> processTaskIds = new ArrayList<>();
         List<Long> maintenanceIds = new ArrayList<>();
@@ -166,7 +171,7 @@ public class GetOrigin {
         for (ProcurementPlanResult procurementPlan : procurementPlans) {
             userIds.add(procurementPlan.getCreateUser());
         }
-        List<Maintenance> maintenances = maintenanceService.listByIds(maintenanceIds);
+        List<Maintenance> maintenances =maintenanceIds.size() == 0 ? new ArrayList<>() : maintenanceService.listByIds(maintenanceIds);
         for (ProcurementPlanResult procurementPlan : procurementPlans) {
             userIds.add(procurementPlan.getCreateUser());
         }
@@ -188,6 +193,17 @@ public class GetOrigin {
                     }
                 }
             }
+            for (Maintenance maintenance : maintenances) {
+                if (themeAndOrigin.getSource().equals("maintenance") && themeAndOrigin.getSourceId().equals(maintenance.getMaintenanceId())) {
+                    for (UserResult userResult : userResults) {
+                        if (maintenance.getCreateUser().equals(userResult.getUserId())) {
+                            this.copy2Ret(themeAndOrigin, maintenance, themeAndOrigin.getSource(), userResult);
+                            break;
+                        }
+                    }
+                }
+            }
+
             for (ProductionPlanResult productionPlanResult : productionPlanResults) {
                 if (themeAndOrigin.getSource().equals("productionPlan") && themeAndOrigin.getSourceId().equals(productionPlanResult.getProductionPlanId())) {
                     for (UserResult userResult : userResults) {
