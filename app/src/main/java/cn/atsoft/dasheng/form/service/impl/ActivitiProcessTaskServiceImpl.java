@@ -53,7 +53,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Autowired
     private UserService userService;
     @Autowired
-    private ActivitiProcessLogService processLogService;
+    private ActivitiProcessLogV1Service processLogService;
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired

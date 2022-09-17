@@ -189,6 +189,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         List<ActivitiAudit> activitiAudits = stepIds.size() == 0 ? new ArrayList<>() : this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
             in("setps_id", stepIds);
         }});
+        //TODO 更换新的审批流查询逻辑
         List<ActivitiProcessLog> audit = logService.getAudit(auditParam.getTaskId());
         for (ActivitiProcessLog activitiProcessLog : audit) {
             ActivitiAudit activitiAudit = logService.getRule(activitiAudits, activitiProcessLog.getSetpsId());

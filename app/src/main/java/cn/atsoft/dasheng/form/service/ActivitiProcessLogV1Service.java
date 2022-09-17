@@ -61,7 +61,7 @@ public interface ActivitiProcessLogV1Service extends IService<ActivitiProcessLog
      */
     void update(ActivitiProcessLogParam param);
 
-    List<ActivitiProcessLog> getAudit(Long taskId);
+    List<ActivitiProcessLog> getAudit3(Long taskId);
 
     List<ActivitiProcessLog> getAudit1(Long taskId);
 

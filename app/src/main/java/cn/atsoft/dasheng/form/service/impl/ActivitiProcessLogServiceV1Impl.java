@@ -1,14 +1,20 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.action.Enum.*;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
+import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
+import cn.atsoft.dasheng.erp.service.impl.CheckInstock;
 import cn.atsoft.dasheng.erp.service.impl.CheckQualityTask;
 import cn.atsoft.dasheng.erp.service.impl.ProcessTaskEndSend;
 import cn.atsoft.dasheng.form.entity.*;
@@ -18,12 +24,19 @@ import cn.atsoft.dasheng.form.model.result.*;
 import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
+import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.production.service.impl.ProductionPickListsServiceImpl;
+import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.*;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -37,6 +50,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static cn.atsoft.dasheng.form.pojo.ProcessType.ALLOCATION;
 
 
 /**
@@ -89,26 +104,47 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
     @Autowired
     private AuditViewService viewService;
 
+    @Autowired
+    private ProcurementPlanService procurementPlanService;
+
+    @Autowired
+    private PurchaseAskService purchaseAskService;
 
     @Autowired
     private ProcurementOrderService procurementOrderService;
-
+    @Autowired
+    private InquiryTaskService inquiryTaskService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CheckInstock checkInstock;
 
+    @Autowired
+    private InstockOrderService instockOrderService;
 
     @Autowired
     private DocumentsActionService documentsActionService;
     @Autowired
+    private AnomalyOrderService anomalyOrderService;
+    @Autowired
+    private AnomalyService anomalyService;
+    @Autowired
     private InstockListService instockListService;
-
-
+    @Autowired
+    private InventoryService inventoryService;
+    @Autowired
+    private AllocationService allocationService;
+    @Autowired
     private ActivitiProcessService processService;
 
-
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
+    @Autowired
+    private AllocationCartService allocationCartService;
     @Autowired
     private ShopCartService shopCartService;
-
+    @Autowired
+    private SkuService skuService;
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
         for (ActivitiAudit activitiAudit : activitiAudits) {
@@ -161,7 +197,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         }
 
         List<ActivitiProcessLog> logs = listByTaskId(taskId);
-        List<ActivitiProcessLog> audit = this.getAudit(taskId);
+        List<ActivitiProcessLog> audit = this.getAudit3(taskId);
         /**
          * 流程中审核节点
          */
@@ -374,282 +410,279 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
 
     private void updateDocumentStatus(List<ActivitiProcessLog> logs, List<ActivitiAudit> activitiAudits, ActivitiProcessTask task) {
+        /**
+         * 把所有过程（非 开始、路由、分支）
+         */
+        List<ActivitiAudit> process = new ArrayList<>();
+        for (ActivitiProcessLog activitiProcessLog : logs) {
+            for (ActivitiAudit activitiAudit : activitiAudits) {
+                if (activitiProcessLog.getSetpsId().equals(activitiAudit.getSetpsId()) && activitiAudit.getType().equals("process")) {
+                    process.add(activitiAudit);
+                }
+            }
+        }
 
-//        /**
-//         * 把所有过程（非 开始、路由、分支）
-//         */
-//        List<ActivitiAudit> process = new ArrayList<>();
-//        for (ActivitiProcessLog activitiProcessLog : logs) {
-//            for (ActivitiAudit activitiAudit : activitiAudits) {
-//                if (activitiProcessLog.getSetpsId().equals(activitiAudit.getSetpsId()) && activitiAudit.getType().equals("process")) {
-//                    process.add(activitiAudit);
-//                }
-//            }
-//        }
-//
-//        if (ToolUtil.isNotEmpty(process) && ToolUtil.isNotEmpty(process.get(0).getDocumentsStatusId())) {
-//            Long documentsStatusId = process.get(0).getDocumentsStatusId();
-//            Long formId = task.getFormId();
-//            String type = task.getType();
-//            switch (type) {
-//                case "quality_task":
-//                    QualityTask qualityTask = qualityTaskService.getById(formId);
-//                    qualityTask.setStatus(documentsStatusId);
-//                    qualityTaskService.updateById(qualityTask);
-//                    break;
-//                case "purchaseAsk":
-//                    PurchaseAsk purchaseAsk = purchaseAskService.getById(formId);
-//                    purchaseAsk.setStatus(documentsStatusId);
-//                    purchaseAskService.updateById(purchaseAsk);
-//                    break;
-//                case "procurementOrder":
-//                    ProcurementOrder procurementOrder = procurementOrderService.getById(formId);
-//                    procurementOrder.setStatus(documentsStatusId);
-//                    procurementOrderService.updateById(procurementOrder);
-//                    break;
-//                case "purchasePlan":
-//                    break;
-//                case "INSTOCK":
-//                    InstockOrder instockOrder = instockOrderService.getById(formId);
-//                    instockOrder.setStatus(documentsStatusId);
-//                    instockOrderService.updateById(instockOrder);
-//                    break;
-//                case "ERROR":
-//                    AnomalyOrder anomalyOrder = anomalyOrderService.getById(formId);
-//                    anomalyOrder.setStatus(documentsStatusId);
-//                    anomalyOrderService.updateById(anomalyOrder);
-//                    break;
-//                case "OUTSTOCK":
-//                    ProductionPickLists productionPickLists = pickListsService.getById(formId);
-//                    productionPickLists.setStatus(documentsStatusId);
-//                    pickListsService.updateById(productionPickLists);
-//                    break;
-//                case "Stocktaking":
-//                    Inventory inventory = inventoryService.getById(formId);
-//                    inventory.setStatus(documentsStatusId);
-//                    inventoryService.updateById(inventory);
-//                    break;
-//            }
-//
-//        }
-//
-//
+        if (ToolUtil.isNotEmpty(process) && ToolUtil.isNotEmpty(process.get(0).getDocumentsStatusId())) {
+            Long documentsStatusId = process.get(0).getDocumentsStatusId();
+            Long formId = task.getFormId();
+            String type = task.getType();
+            switch (type) {
+                case "quality_task":
+                    QualityTask qualityTask = qualityTaskService.getById(formId);
+                    qualityTask.setStatus(documentsStatusId);
+                    qualityTaskService.updateById(qualityTask);
+                    break;
+                case "purchaseAsk":
+                    PurchaseAsk purchaseAsk = purchaseAskService.getById(formId);
+                    purchaseAsk.setStatus(documentsStatusId);
+                    purchaseAskService.updateById(purchaseAsk);
+                    break;
+                case "procurementOrder":
+                    ProcurementOrder procurementOrder = procurementOrderService.getById(formId);
+                    procurementOrder.setStatus(documentsStatusId);
+                    procurementOrderService.updateById(procurementOrder);
+                    break;
+                case "purchasePlan":
+                    break;
+                case "INSTOCK":
+                    InstockOrder instockOrder = instockOrderService.getById(formId);
+                    instockOrder.setStatus(documentsStatusId);
+                    instockOrderService.updateById(instockOrder);
+                    break;
+                case "ERROR":
+                    AnomalyOrder anomalyOrder = anomalyOrderService.getById(formId);
+                    anomalyOrder.setStatus(documentsStatusId);
+                    anomalyOrderService.updateById(anomalyOrder);
+                    break;
+                case "OUTSTOCK":
+                    ProductionPickLists productionPickLists = pickListsService.getById(formId);
+                    productionPickLists.setStatus(documentsStatusId);
+                    pickListsService.updateById(productionPickLists);
+                    break;
+                case "Stocktaking":
+                    Inventory inventory = inventoryService.getById(formId);
+                    inventory.setStatus(documentsStatusId);
+                    inventoryService.updateById(inventory);
+                    break;
+            }
+
+        }
     }
 
     //
     private void updateStatus(ActivitiProcessTask processTask) {
-//        switch (processTask.getType()) {
-//            case "purchasePlan":
-//                procurementPlanService.updateState(processTask);
-//                break;
-//            case "inQuality":
-//            case "outQuality":
-//                break;
-//            case "purchaseAsk":
-//                purchaseAskService.updateStatus(processTask);
-//                break;
-//            case "procurementOrder":
-//                procurementOrderService.updateStatus(processTask);
-//                break;
-//            case "inQuiry":
-//            case "inquiry":
-//                inquiryTaskService.updateStatus(processTask);
-//                break;
-//            case "ERROR":
-//                anomalyOrderService.updateStatus(processTask);
-//                break;
-//            case "INSTOCK":
-//                instockOrderService.updateCreateInstockStatus(processTask);
-//                break;
-//            case "Stocktaking":
-//                inventoryService.updateStatus(processTask);
-//                break;
-//            case "OUTSTOCK":
-//                pickListsService.updateStatus(processTask);
-//                break;
-//        }
+        switch (processTask.getType()) {
+            case "purchasePlan":
+                procurementPlanService.updateState(processTask);
+                break;
+            case "inQuality":
+            case "outQuality":
+                break;
+            case "purchaseAsk":
+                purchaseAskService.updateStatus(processTask);
+                break;
+            case "procurementOrder":
+                procurementOrderService.updateStatus(processTask);
+                break;
+            case "inQuiry":
+            case "inquiry":
+                inquiryTaskService.updateStatus(processTask);
+                break;
+            case "ERROR":
+                anomalyOrderService.updateStatus(processTask);
+                break;
+            case "INSTOCK":
+                instockOrderService.updateCreateInstockStatus(processTask);
+                break;
+            case "Stocktaking":
+                inventoryService.updateStatus(processTask);
+                break;
+            case "OUTSTOCK":
+                pickListsService.updateStatus(processTask);
+                break;
+        }
     }
 
     private void updateParentProcessTask(ActivitiProcessTask processTask, Long loginUserId) {
-//        ThemeAndOrigin origin = new ThemeAndOrigin();
-//        switch (processTask.getType()) {
-//            case "outQuality":
-//            case "inQuality":
-//                QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
-//                if (ToolUtil.isNotEmpty(qualityTask.getOrigin())) {
-//                    origin = getOrigin.getOrigin(JSON.parseObject(qualityTask.getOrigin(), ThemeAndOrigin.class));
+        ThemeAndOrigin origin = new ThemeAndOrigin();
+        switch (processTask.getType()) {
+            case "outQuality":
+            case "inQuality":
+                QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
+                if (ToolUtil.isNotEmpty(qualityTask.getOrigin())) {
+                    origin = getOrigin.getOrigin(JSON.parseObject(qualityTask.getOrigin(), ThemeAndOrigin.class));
+                    if (ToolUtil.isNotEmpty(origin.getParent())) {
+                        for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
+                            if (themeAndOrigin.getSource().equals("processTask")) {
+                                //如果来源存的是流程任务的id
+                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
+
+                                checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus(), loginUserId);
+                            } else {
+                                //如果来源存的是主单据的id
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus(), loginUserId);
+                            }
+                        }
+                    }
+                }
+                break;
+            case "purchaseInstock":
+                break;
+
+            case "INSTOCK":
+                InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
+                if (ToolUtil.isNotEmpty(processTask.getSource())) {
+                    switch (processTask.getSource()) {
+                        /**
+                         * 如果说 入库单来源是调拨  那么 需要检查调拨 任务是否完成
+                         */
+                        case "ALLOCATION":
+                            List<InstockList> instockLists = instockListService.query().eq("instock_order_id", instockOrder.getInstockOrderId()).eq("display", 1).list();
+                            allocationService.checkCartDone(processTask.getPid(), instockLists);
+                            skuService.skuMessage(instockLists.get(0).getSkuId());
+                            break;
+                        default:
+
+                    }
+                }
+//                if (ToolUtil.isNotEmpty(instockOrderByid.getOrigin())) {
+//                    origin = getOrigin.getOrigin(JSON.parseObject(instockOrderByid.getOrigin(), ThemeAndOrigin.class));
 //                    if (ToolUtil.isNotEmpty(origin.getParent())) {
 //                        for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
 //                            if (themeAndOrigin.getSource().equals("processTask")) {
 //                                //如果来源存的是流程任务的id
 //                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
-//
-//                                checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus(), loginUserId);
-//                            } else {
-//                                //如果来源存的是主单据的id
-//                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus(), loginUserId);
-//                            }
-//                        }
-//                    }
-//                }
-//                break;
-//            case "purchaseInstock":
-//                break;
-//
-//            case "INSTOCK":
-//                InstockOrder instockOrder = instockOrderService.getById(processTask.getFormId());
-//                if (ToolUtil.isNotEmpty(processTask.getSource())) {
-//                    switch (processTask.getSource()) {
-//                        /**
-//                         * 如果说 入库单来源是调拨  那么 需要检查调拨 任务是否完成
-//                         */
-//                        case "ALLOCATION":
-//                            List<InstockList> instockLists = instockListService.query().eq("instock_order_id", instockOrder.getInstockOrderId()).eq("display", 1).list();
-//                            allocationService.checkCartDone(processTask.getPid(), instockLists);
-//                            skuService.skuMessage(instockLists.get(0).getSkuId());
-//                            break;
-//                        default:
-//
-//                    }
-//                }
-////                if (ToolUtil.isNotEmpty(instockOrderByid.getOrigin())) {
-////                    origin = getOrigin.getOrigin(JSON.parseObject(instockOrderByid.getOrigin(), ThemeAndOrigin.class));
-////                    if (ToolUtil.isNotEmpty(origin.getParent())) {
-////                        for (ThemeAndOrigin themeAndOrigin : origin.getParent()) {
-////                            if (themeAndOrigin.getSource().equals("processTask")) {
-////                                //如果来源存的是流程任务的id
-////                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
-////                                List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
-////                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
-////                                    checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
-////                                }
-////                            }
-////                            else {
-////                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.query().eq("type", themeAndOrigin.getSource()).eq("form_id", themeAndOrigin.getSourceId()).one();
-////                                List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
-////                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
-////                                    checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
-////                                }
-////                            }
-////                        }
-////                    }
-////                }
-//                break;
-//            case "ERROR":
-//                List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();
-//                if (ToolUtil.isNotEmpty(anomalies)) {
-//                    Anomaly anomaly = anomalies.get(0);
-//                    if (anomaly.getType().equals("InstockError")) {
-//                        boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
-//                        if (b) {
-//                            ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
-//                            autoAudit(task.getProcessTaskId(), 1, loginUserId);
-//                        }
-//                    }
-//
-//                }
-//
-//                break;
-//
-//            case "OUTSTOCK":
-//                ProductionPickLists pickLists = pickListsService.getById(processTask.getFormId());
-//                if (ToolUtil.isNotEmpty(pickLists.getSource()) && pickLists.getSource().equals("processTask")) {
-//                    ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getPid());
-//                    if (parentTask.getType().equals("ALLOCATION")) {
-//
-//                        /**
-//                         * 如果来源是调拨单
-//                         * 对应生成入库单
-//                         */
-//                        List<ProductionPickListsCart> pickListsCarts = pickListsCartService.query().eq("pick_lists_id", processTask.getFormId()).eq("status", 99).list();
-//                        Allocation allocation = allocationService.getById(parentTask.getFormId());
-//                        List<AllocationCart> allocationCarts = allocationCartService.query().eq("allocation_id", allocation.getAllocationId()).eq("pick_lists_id", pickLists.getPickListsId()).eq("status", 98).list();
-//
-//                        List<InstockListParam> instockListParams = BeanUtil.copyToList(pickListsCarts, InstockListParam.class);
-//                        for (InstockListParam instockListParam : instockListParams) {
-//                            instockListParam.setStatus(0L);
-//                        }
-//                        List<InstockListParam> totalList = new ArrayList<>();
-//                        instockListParams.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
-//                                (id, transfer) -> {
-//                                    transfer.stream().reduce((a, b) -> new InstockListParam() {{
-//                                        setSkuId(a.getSkuId());
-//                                        setNumber(a.getNumber() + b.getNumber());
-//                                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
-//                                    }}).ifPresent(totalList::add);
-//                                }
-//                        );
-//                        for (InstockListParam instockListParam : totalList) {
-//                            List<Long> inkindIds = new ArrayList<>();
-//                            for (InstockListParam listParam : instockListParams) {
-//                                if (instockListParam.getSkuId().equals(listParam.getSkuId()) && instockListParam.getBrandId().equals(listParam.getBrandId())){
-//                                    inkindIds.add( listParam.getInkindId());
+//                                List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
+//                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
+//                                    checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
 //                                }
 //                            }
-//                            instockListParam.setInkindIds(inkindIds);
+//                            else {
+//                                ActivitiProcessTask parentProcessTask = activitiProcessTaskService.query().eq("type", themeAndOrigin.getSource()).eq("form_id", themeAndOrigin.getSourceId()).one();
+//                                List<ActivitiProcessTask> list = activitiProcessTaskService.query().eq("source", "processTask").eq("source_id", parentProcessTask.getProcessTaskId()).list();
+//                                if (list.stream().allMatch(i -> i.getStatus().equals(99))) {
+//                                    checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.INSTOCK.name(), InStockActionEnum.done.getStatus(), loginUserId);
+//                                }
+//                            }
 //                        }
-//                        InstockOrderParam instockOrderParam = new InstockOrderParam();
-//
-//                        instockOrderParam.setUserId(allocation.getUserId());
-//
-//                        switch (allocation.getAllocationType()) {
-//                            case 1:
-//                                instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
-//                                break;
-//                            case 2:
-//                                instockOrderParam.setStoreHouseId(allocationCarts.get(0).getStorehouseId());
-//                                break;
-//                        }
-//                        instockOrderParam.setType("调拨入库");
-//                        instockOrderParam.setSource("processTask");
-//                        if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
-//                            instockOrderParam.setMainTaskId(processTask.getMainTaskId());
-//                        }
-//                        instockOrderParam.setSourceId(parentTask.getProcessTaskId());
-//                        instockOrderParam.setPid(parentTask.getProcessTaskId());
-//                        instockOrderParam.setListParams(totalList);
-//                        InstockOrder addEntity = instockOrderService.add(instockOrderParam);
-//                        for (AllocationCart allocationCart : allocationCarts) {
-//                            allocationCart.setInstockOrderId(addEntity.getInstockOrderId());
-//                        }
-//                        allocationCartService.updateBatchById(allocationCarts);
 //                    }
-//                    break;
 //                }
-//
-//                }
+                break;
+            case "ERROR":
+                List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();
+                if (ToolUtil.isNotEmpty(anomalies)) {
+                    Anomaly anomaly = anomalies.get(0);
+                    if (anomaly.getType().equals("InstockError")) {
+                        boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
+                        if (b) {
+                            ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
+                            autoAudit(task.getProcessTaskId(), 1, loginUserId);
+                        }
+                    }
+
+                }
+
+                break;
+
+            case "OUTSTOCK":
+                ProductionPickLists pickLists = pickListsService.getById(processTask.getFormId());
+                if (ToolUtil.isNotEmpty(pickLists.getSource()) && pickLists.getSource().equals("processTask")) {
+                    ActivitiProcessTask parentTask = activitiProcessTaskService.getById(processTask.getPid());
+                    if (parentTask.getType().equals("ALLOCATION")) {
+
+                        /**
+                         * 如果来源是调拨单
+                         * 对应生成入库单
+                         */
+                        List<ProductionPickListsCart> pickListsCarts = pickListsCartService.query().eq("pick_lists_id", processTask.getFormId()).eq("status", 99).list();
+                        Allocation allocation = allocationService.getById(parentTask.getFormId());
+                        List<AllocationCart> allocationCarts = allocationCartService.query().eq("allocation_id", allocation.getAllocationId()).eq("pick_lists_id", pickLists.getPickListsId()).eq("status", 98).list();
+
+                        List<InstockListParam> instockListParams = BeanUtil.copyToList(pickListsCarts, InstockListParam.class);
+                        for (InstockListParam instockListParam : instockListParams) {
+                            instockListParam.setStatus(0L);
+                        }
+                        List<InstockListParam> totalList = new ArrayList<>();
+                        instockListParams.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                                (id, transfer) -> {
+                                    transfer.stream().reduce((a, b) -> new InstockListParam() {{
+                                        setSkuId(a.getSkuId());
+                                        setNumber(a.getNumber() + b.getNumber());
+                                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                                    }}).ifPresent(totalList::add);
+                                }
+                        );
+                        for (InstockListParam instockListParam : totalList) {
+                            List<Long> inkindIds = new ArrayList<>();
+                            for (InstockListParam listParam : instockListParams) {
+                                if (instockListParam.getSkuId().equals(listParam.getSkuId()) && instockListParam.getBrandId().equals(listParam.getBrandId())){
+                                    inkindIds.add( listParam.getInkindId());
+                                }
+                            }
+                            instockListParam.setInkindIds(inkindIds);
+                        }
+                        InstockOrderParam instockOrderParam = new InstockOrderParam();
+
+                        instockOrderParam.setUserId(allocation.getUserId());
+
+                        switch (allocation.getAllocationType()) {
+                            case 1:
+                                instockOrderParam.setStoreHouseId(allocation.getStorehouseId());
+                                break;
+                            case 2:
+                                instockOrderParam.setStoreHouseId(allocationCarts.get(0).getStorehouseId());
+                                break;
+                        }
+                        instockOrderParam.setType("调拨入库");
+                        instockOrderParam.setSource("processTask");
+                        if (ToolUtil.isNotEmpty(processTask.getMainTaskId())) {
+                            instockOrderParam.setMainTaskId(processTask.getMainTaskId());
+                        }
+                        instockOrderParam.setSourceId(parentTask.getProcessTaskId());
+                        instockOrderParam.setPid(parentTask.getProcessTaskId());
+                        instockOrderParam.setListParams(totalList);
+                        InstockOrder addEntity = instockOrderService.add(instockOrderParam);
+                        for (AllocationCart allocationCart : allocationCarts) {
+                            allocationCart.setInstockOrderId(addEntity.getInstockOrderId());
+                        }
+                        allocationCartService.updateBatchById(allocationCarts);
+                    }
+                    break;
+                }
+
+                }
     }
 
 
     private void updateRefuseStatus(ActivitiProcessTask processTask) {
-//        switch (processTask.getType()) {
-//            case "purchasePlan":
-//                procurementPlanService.updateRefuseStatus(processTask);
-//                break;
-//            case "inQuality":
-//            case "outQuality":
-//                break;
-//            case "purchaseAsk":
-//                purchaseAskService.updateRefuseStatus(processTask);
-//                break;
-//            case "procurementOrder":
-//                procurementOrderService.updateRefuseStatus(processTask);
-//                break;
-//            case "inQuiry":
-//            case "inquiry":
-//                inquiryTaskService.updateRefuseStatus(processTask);
-//                break;
-//            case "Error":
-//                instockOrderService.updateRefuseStatus(processTask);
-//                break;
-//            case "INSTOCK":
-//                instockOrderService.updateCreateInstockRefuseStatus(processTask);
-//                break;
-//            case "OUTSTOCK":
-//                pickListsService.updateOutStockRefuseStatus(processTask);
-//                break;
-//
-//        }
+        switch (processTask.getType()) {
+            case "purchasePlan":
+                procurementPlanService.updateRefuseStatus(processTask);
+                break;
+            case "inQuality":
+            case "outQuality":
+                break;
+            case "purchaseAsk":
+                purchaseAskService.updateRefuseStatus(processTask);
+                break;
+            case "procurementOrder":
+                procurementOrderService.updateRefuseStatus(processTask);
+                break;
+            case "inQuiry":
+            case "inquiry":
+                inquiryTaskService.updateRefuseStatus(processTask);
+                break;
+            case "Error":
+                instockOrderService.updateRefuseStatus(processTask);
+                break;
+            case "INSTOCK":
+                instockOrderService.updateCreateInstockRefuseStatus(processTask);
+                break;
+            case "OUTSTOCK":
+                pickListsService.updateOutStockRefuseStatus(processTask);
+                break;
+
+        }
     }
 
     private void refuseTask(ActivitiProcessTask processTask) {
@@ -661,7 +694,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
     private void loopNext(ActivitiProcessTask task, List<ActivitiAudit> activitiAuditList, List<ActivitiSteps> allSteps, Boolean auditCheck, Long loginUserId) {
 
-        List<ActivitiProcessLog> audit = this.getAudit(task.getProcessTaskId());
+        List<ActivitiProcessLog> audit = this.getAudit3(task.getProcessTaskId());
 
         if (auditCheck) {
             this.sendNextStepsByTask(task, audit, loginUserId);
@@ -718,7 +751,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         if (ToolUtil.isEmpty(processTask)) {
             throw new ServiceException(500, "当前任务不存在");
         }
-        List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
+        List<ActivitiProcessLog> logs = this.getAudit3(processTask.getProcessTaskId());
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : logs) {
             stepIds.add(processLog.getSetpsId());
@@ -735,7 +768,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
     public void checkAction(Long id, Long actionId, Long loginUserId) {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(id);
-        List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
+        List<ActivitiProcessLog> logs = this.getAudit3(processTask.getProcessTaskId());
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : logs) {
             stepIds.add(processLog.getSetpsId());
@@ -1041,7 +1074,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
      * @return
      */
     @Override
-    public List<ActivitiProcessLog> getAudit(Long taskId) {
+    public List<ActivitiProcessLog> getAudit3(Long taskId) {
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
         if (ToolUtil.isEmpty(task)) {
             return new ArrayList<>();
@@ -1840,7 +1873,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
     @Override
     public List<ActivitiProcessLog> getAuditByForm(Long formId, String type) {
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", type).eq("form_id", formId).eq("display", 1).one();
-        List<ActivitiProcessLog> audit = this.getAudit(processTask.getProcessTaskId());
+        List<ActivitiProcessLog> audit = this.getAudit3(processTask.getProcessTaskId());
         return audit;
     }
 

@@ -78,7 +78,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     private WxCpSendTemplate wxCpSendTemplate;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private ProductionTaskDetailService productionTaskDetailService;

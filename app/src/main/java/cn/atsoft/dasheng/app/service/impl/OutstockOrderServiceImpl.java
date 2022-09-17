@@ -44,6 +44,7 @@ import cn.atsoft.dasheng.production.controller.ProductionPickListsController;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -105,6 +106,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private ProductionPickListsService pickListsService;
+    @Autowired
+    private GetOrigin getOrigin;
 
 
     @Override
@@ -227,6 +230,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         OutstockOrder entity = getEntity(param);
         entity.setCoding(encoding);
         this.save(entity);
+        String origin = getOrigin.newThemeAndOrigin("outStockLog", entity.getOutstockOrderId(), entity.getSource(), entity.getSourceId());
+        entity.setOrigin(origin);
+        this.updateById(entity);
 
 //        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
 //            List<ApplyDetails> applyDetails = param.getApplyDetails();
