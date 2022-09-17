@@ -32,6 +32,21 @@ public class MaintenanceLog implements Serializable {
     private Long createUser;
 
     /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+    @TableField("source_id")
+    private Integer sourceId;
+
+    @TableField("theme")
+    private String theme;
+
+    @TableField("origin")
+    private String origin;
+
+    /**
      * 创建时间
      */
       @TableField(value = "create_time", fill = FieldFill.INSERT)
@@ -160,6 +175,38 @@ public class MaintenanceLog implements Serializable {
 
     public void setCoding(String coding) {
         this.coding = coding;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Integer getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Integer sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     @Override

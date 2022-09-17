@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -23,6 +25,21 @@ public class MaintenanceLogResult implements Serializable {
     private String coding;
     @ApiModelProperty("")
     private Long maintenanceLogId;
+
+    List<MaintenanceLogDetailResult> detailResults;
+
+
+    private String origin;
+
+    private String theme;
+
+    private String source;
+
+    private Long sourceId;
+
+    private ThemeAndOrigin themeAndOrigin;
+
+    private UserResult createUserResult;
 
     /**
      * 创建者

@@ -39,6 +39,7 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -100,6 +101,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
 
+    @Autowired
+    private GetOrigin getOrigin;
+
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
 
@@ -115,6 +119,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         OutstockOrder entity = getEntity(param);
         this.save(entity);
+
+        String origin = getOrigin.newThemeAndOrigin("outStockLog", entity.getOutstockOrderId(), entity.getSource(), entity.getSourceId());
+        entity.setOrigin(origin);
+        this.updateById(entity);
 
         if (ToolUtil.isNotEmpty(param.getListingParams()) && param.getListingParams().size() > 0) {
             List<OutstockListingParam> listingParams = param.getListingParams();

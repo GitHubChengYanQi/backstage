@@ -15,11 +15,15 @@
         <result column="maintenance_detail_id" property="maintenanceDetailId" />
         <result column="maintenance_id" property="maintenanceId" />
         <result column="enclosure" property="enclosure" />
+        <result column="source" property="source" />
+        <result column="source_id" property="sourceId" />
+        <result column="theme" property="theme" />
+        <result column="origin" property="origin" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        maintenance_log_id AS "maintenanceLogId",coding AS "coding", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", enclosure AS "enclosure"
+        maintenance_log_id AS "maintenanceLogId",coding AS "coding", source AS "source",source_id AS "sourceId",theme AS "theme",origin AS "origin",create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", enclosure AS "enclosure"
     </sql>
 
 
