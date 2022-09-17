@@ -25,6 +25,9 @@ public class Inventory implements Serializable {
     @TableField("task_id")
     private Long taskId;
 
+    @TableField("handle_user")
+    private Long handleUser;
+
     @TableField("complete")
     private Integer complete;
 
@@ -284,6 +287,14 @@ public class Inventory implements Serializable {
 
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
+    }
+
+    public Long getHandleUser() {
+        return handleUser;
+    }
+
+    public void setHandleUser(Long handleUser) {
+        this.handleUser = handleUser;
     }
 
     @Override

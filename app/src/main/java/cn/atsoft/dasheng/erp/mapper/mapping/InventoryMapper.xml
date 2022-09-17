@@ -25,13 +25,14 @@
         <result column="status" property="status"/>
         <result column="position_id" property="positionId"/>
         <result column="complete" property="complete"/>
+        <result column="handle_user" property="handleUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">participants
     AS "participants",user_id AS "userId",coding AS "coding",status AS "status",  position_id AS "positionId",complete AS "complete",
         notice
-        AS "notice",end_time AS "endTime", begin_time AS "beginTime",mode AS "mode",method as "method",
+        AS "notice",end_time AS "endTime", begin_time AS "beginTime",mode AS "mode",method as "method",handle_user AS "handleUser",
         inventory_task_id
         AS "inventoryTaskId", inventory_task_name AS "inventoryTaskName", remark AS "remark", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
     </sql>

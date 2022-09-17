@@ -32,6 +32,8 @@ public class ContractParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String coding;
+
     private List<ContractDetail> contractDetailList;
 
     private List<ContractReplace> contractReplaces; //替换
@@ -44,7 +46,7 @@ public class ContractParam implements Serializable, BaseValidatingParam {
 
     private List<LabelResult> labelResults;
 
-    private String coding;
+
 
     /**
      * 合同分类

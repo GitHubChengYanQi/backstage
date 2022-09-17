@@ -215,6 +215,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 throw new ServiceException(500, "请配置入库单据自动生成编码规则");
             }
         }
+        param.setComplete(99);  //提交直接完成
+        param.setHandleUser(LoginContextHolder.getContext().getUserId());
         Inventory entity = getEntity(param);
         this.save(entity);
 
@@ -877,6 +879,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             List<Long> medias = JSON.parseArray(inventoryResult.getEnclosure(), Long.class);
             List<String> mediaUrls = mediaService.getMediaUrls(medias, null);
             inventoryResult.setMediaUrls(mediaUrls);
+        }
+
+        User createUser = userService.getById(inventoryResult.getCreateUser());
+        inventoryResult.setCreateUserName(createUser.getName());
+
+        if (ToolUtil.isNotEmpty(inventoryResult.getHandleUser())) {
+            User handleUser = userService.getById(inventoryResult.getHandleUser());
+            inventoryResult.setHandleUserName(handleUser.getName());
         }
 
         Map<String, Integer> map = inventoryStockService.speedProgress(id);

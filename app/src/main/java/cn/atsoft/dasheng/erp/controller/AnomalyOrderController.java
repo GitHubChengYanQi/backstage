@@ -91,11 +91,7 @@ public class AnomalyOrderController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData detail(@RequestBody AnomalyOrderParam anomalyOrderParam) {
-        AnomalyOrder detail = this.anomalyOrderService.getById(anomalyOrderParam.getOrderId());
-        AnomalyOrderResult result = new AnomalyOrderResult();
-        ToolUtil.copyProperties(detail, result);
-
-
+        AnomalyOrderResult result =  this.anomalyOrderService.detail(anomalyOrderParam.getOrderId());
         return ResponseData.success(result);
     }
 
