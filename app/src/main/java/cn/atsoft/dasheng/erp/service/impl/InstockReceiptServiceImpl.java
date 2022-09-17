@@ -42,6 +42,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.poi.xwpf.usermodel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,9 +88,10 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
     private WxCpService wxCpService;
     @Autowired
     private MediaService mediaService;
-
     @Autowired
     private OrderUpload orderUpload;
+
+    protected static final Logger logger = LoggerFactory.getLogger(InstockReceiptServiceImpl.class);
 
     @Override
 
@@ -155,6 +158,7 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
             orderUpload.upload(file);
             return document;
         } catch (Exception e) {
+            logger.info("单据推送报错日志:" + e);
             //异常处理
             e.printStackTrace();
         }

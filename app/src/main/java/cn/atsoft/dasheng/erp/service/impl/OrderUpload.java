@@ -31,14 +31,14 @@ public class OrderUpload {
 
         try {
 
-            WxMediaUploadResult  upload = wxCpService.getWxCpClient().getMediaService().upload("file", file);
+            WxMediaUploadResult upload = wxCpService.getWxCpClient().getMediaService().upload("file", file);
             String mediaId = upload.getMediaId();
 
             Long userId = LoginContextHolder.getContext().getUserId();
-            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").one();
+            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").eq("display", 1).one();
 
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
-                UcOpenUserInfo userInfo = openUserInfoService.query().eq("source","wxCp").eq("member_id", wxuserInfo.getMemberId()).one();
+                UcOpenUserInfo userInfo = openUserInfoService.query().eq("source", "wxCp").eq("member_id", wxuserInfo.getMemberId()).one();
                 if (ToolUtil.isNotEmpty(userInfo)) {
                     WxCpMessage wxCpMessage = new WxCpMessage();
                     wxCpMessage.setToUser(userInfo.getUuid());

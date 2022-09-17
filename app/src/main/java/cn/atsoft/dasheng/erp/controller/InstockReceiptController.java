@@ -111,43 +111,39 @@ public class InstockReceiptController extends BaseController {
 
     @RequestMapping(value = "/createWord", method = RequestMethod.POST)
     public void createWord(HttpServletResponse response, @RequestBody InstockReceiptParam instockReceiptParam) {
-        try {
-            if (ToolUtil.isEmpty(instockReceiptParam.getReceiptId())) {
-                throw new ServiceException(500, "缺少单据主键");
-            }
-            if (ToolUtil.isEmpty(instockReceiptParam.getModule())) {
-                throw new ServiceException(500, "缺少单据类型");
-            }
-            Map<String, Object> map = new HashMap<>();
-            Map<String, List<ReplaceSku>> skuMap = new HashMap<>();
-            switch (instockReceiptParam.getModule()) {
-                case "inStock":
-                    map = instockReceiptService.detailBackMap(instockReceiptParam.getReceiptId());
-                    skuMap = instockReceiptService.detailBackSkuMap(instockReceiptParam.getReceiptId());
-                    break;
-                case "outStock":
-
-                    break;
-                case "stocktaking":
-
-                    break;
-                case "curing":
-
-                    break;
-                case "allocation":
-
-                    break;
-
-            }
-            XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getModule(), map, skuMap);
-            String fileName = "test.docx";
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            OutputStream os = response.getOutputStream();
-            document.write(os);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (ToolUtil.isEmpty(instockReceiptParam.getReceiptId())) {
+            throw new ServiceException(500, "缺少单据主键");
         }
+        if (ToolUtil.isEmpty(instockReceiptParam.getModule())) {
+            throw new ServiceException(500, "缺少单据类型");
+        }
+        Map<String, Object> map = new HashMap<>();
+        Map<String, List<ReplaceSku>> skuMap = new HashMap<>();
+        switch (instockReceiptParam.getModule()) {
+            case "inStock":
+                map = instockReceiptService.detailBackMap(instockReceiptParam.getReceiptId());
+                skuMap = instockReceiptService.detailBackSkuMap(instockReceiptParam.getReceiptId());
+                break;
+            case "outStock":
+
+                break;
+            case "stocktaking":
+
+                break;
+            case "curing":
+
+                break;
+            case "allocation":
+
+                break;
+
+        }
+        XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getModule(), map, skuMap);
+//            String fileName = "test.docx";
+//            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+//            OutputStream os = response.getOutputStream();
+//            document.write(os);
 
     }
 
