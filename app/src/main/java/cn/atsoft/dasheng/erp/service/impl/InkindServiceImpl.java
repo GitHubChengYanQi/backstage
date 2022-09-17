@@ -223,7 +223,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
 
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-
+        List<OrCodeBind> qrCodes =inKindIds.size() == 0 ? new ArrayList<>() : orCodeBindService.query().eq("source", "item").in("form_id", inKindIds).list();
         for (InkindResult inKindResult : inKindResults) {
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(inKindResult.getSkuId())) {
@@ -237,7 +237,11 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
                     break;
                 }
             }
-
+            for (OrCodeBind qrCode : qrCodes) {
+                if (qrCode.getFormId().equals(inKindResult.getInkindId())) {
+                    inKindResult.setQrCodeId(qrCode.getOrCodeId());
+                }
+            }
         }
 
         return inKindResults;

@@ -78,14 +78,11 @@ public class MaintenanceLogController extends BaseController {
      * @author Captain_Jazz
      * @Date 2022-08-11
      */
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData detail(@RequestBody MaintenanceLogParam maintenanceLogParam) {
-        MaintenanceLog detail = this.maintenanceLogService.getById(maintenanceLogParam.getMaintenanceLogId());
-        MaintenanceLogResult result = new MaintenanceLogResult();
-        ToolUtil.copyProperties(detail, result);
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public MaintenanceLogResult detail(@RequestParam Long id) {
 
-        return ResponseData.success(result);
+        return this.maintenanceLogService.detail(id);
     }
 
     /**
