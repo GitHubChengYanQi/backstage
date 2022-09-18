@@ -14,6 +14,9 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
+import cn.atsoft.dasheng.purchase.service.GetOrigin;
+import com.alibaba.fastjson.JSON;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +43,8 @@ public class ActivitiProcessTaskController extends BaseController {
     private ActivitiProcessTaskSend taskSend;
     @Autowired
     private ActivitiAuditService activitiAuditService;
+    @Autowired
+    private GetOrigin getOrigin;
 
     /**
      * 新增接口
@@ -182,6 +187,17 @@ public class ActivitiProcessTaskController extends BaseController {
             activitiProcessTaskParam = new ActivitiProcessTaskParam();
         }
         return this.activitiProcessTaskService.auditList(activitiProcessTaskParam);
+    }
+
+    @RequestMapping(value = "/aboutMeTasks", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<ActivitiProcessTaskResult> aboutMeTasks(@RequestBody(required = false) ActivitiProcessTaskParam param) {
+
+        if (ToolUtil.isEmpty(param)) {
+            param = new ActivitiProcessTaskParam();
+        }
+        param.setUserId(LoginContextHolder.getContext().getUserId());
+        return this.activitiProcessTaskService.aboutMeTasks(param);
     }
 
 

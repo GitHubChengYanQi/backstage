@@ -5,7 +5,6 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
 
@@ -31,6 +30,7 @@ public class ActivitiProcessTaskResult implements Serializable {
     private Object receipts;
 
     private ActivitiStepsResult stepsResult;
+    private String coding;
 
     private List<Long> processUserIds;   //执行人
 
@@ -44,6 +44,9 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     @ApiModelProperty("")
     private Long processTaskId;
+
+    private Object themeAndOrigin;
+
 
     @ApiModelProperty("")
     private Long processId;

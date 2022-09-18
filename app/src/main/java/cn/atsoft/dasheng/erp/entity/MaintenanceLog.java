@@ -95,6 +95,8 @@ public class MaintenanceLog implements Serializable {
     private String enclosure;
 
 
+
+
     public Long getMaintenanceLogId() {
         return maintenanceLogId;
     }

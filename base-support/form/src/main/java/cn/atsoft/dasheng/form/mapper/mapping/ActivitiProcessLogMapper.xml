@@ -14,12 +14,13 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="audit_user_id" property="auditUserId"/>
         <result column="action_status" property="actionStatus"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">action_status AS "actionStatus",
+    <sql id="Base_Column_List">action_status AS "actionStatus",audit_user_id AS "auditUserId",
         log_id
         AS "logId", peocess_id AS "peocessId",task_id AS "taskId", setps_id AS "setpsId", status AS "status", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>

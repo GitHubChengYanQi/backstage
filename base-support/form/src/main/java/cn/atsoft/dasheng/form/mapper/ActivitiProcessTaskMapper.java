@@ -59,4 +59,5 @@ public interface ActivitiProcessTaskMapper extends BaseMapper<ActivitiProcessTas
 
 
     Page<ActivitiProcessTaskResult> auditList(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
+    Page<ActivitiProcessTaskResult> aboutMeTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 }
