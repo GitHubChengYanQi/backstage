@@ -143,7 +143,8 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         maintenanceDetailService.updateBatchById(maintenanceDetails);
         MaintenanceLog entity = getEntity(param);
         this.save(entity);
-        getOrigin.newThemeAndOrigin("maintenanceLog",entity.getMaintenanceLogId(),"maintenance",entity.getMaintenanceId());
+        String origin = getOrigin.newThemeAndOrigin("maintenanceLog", entity.getMaintenanceLogId(), "maintenance", entity.getMaintenanceId());
+        entity.setOrigin(origin);
         this.updateById(entity);
 
         for (MaintenanceLogDetail maintenanceLogDetail : logs) {
