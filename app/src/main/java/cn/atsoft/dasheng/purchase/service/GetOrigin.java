@@ -370,7 +370,15 @@ public class GetOrigin {
                 ProductionPickLists pickLists = pickListsService.getById(sourceId);
                 json = pickLists.getOrigin();
                 break;
+            case "maintenance":
+                Maintenance maintenance = maintenanceService.getById(sourceId);
+                json = JSON.toJSONString(new ThemeAndOrigin(){{
+                    setSource("maintenance");
+                    setSourceId(maintenance.getMaintenanceId());
+                }});
+                break;
             default:
+                break;
         }
         if (ToolUtil.isNotEmpty(json) && !json.equals("")) {
             parent = JSON.parseObject(json, ThemeAndOrigin.class);
