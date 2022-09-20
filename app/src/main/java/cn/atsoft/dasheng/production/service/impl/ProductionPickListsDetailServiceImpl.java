@@ -149,6 +149,12 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
          */
         List<LockedStockDetails> lockSkuAndNumber = pickListsCartService.getLockSkuAndNumber(skuIds);
 
+        /**
+         * 获取购物车信息
+         */
+        List<ProductionPickListsCart> carts = pickListsCartService.query().in("pick_lists_detail_id", detailIds).ne("status", -1).list();
+
+
         //TODO notin
         List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : lockedInkindIds.size() == 0 ? stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id",lockedInkindIds).eq("display", 1).list();
         List<ProductionPickListsCartResult> cartResults = pickListsCartService.listByListsDetailIds(detailIds);
@@ -197,9 +203,19 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
 
         List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         for (ProductionPickListsDetailResult result : results) {
+            //还没有备料的数量 detail中总数减去 用购物车中数量
+            result.setNeedOperateNum(result.getNumber());
             List<String> positionNames = new ArrayList<>();
             List<Long> positionIdList = new ArrayList<>();
             result.setIsMeet(false);
+
+            for (ProductionPickListsCart  cart : carts) {
+                if (result.getPickListsDetailId().equals(cart.getPickListsDetailId())) {
+                    result.setNeedOperateNum(result.getNeedOperateNum()-cart.getNumber());
+                }
+            }
+
+
             if (!result.getBrandId().equals(0L)) {
                 for (StockDetails stockSkuTotal : totalList) {
                     if (result.getSkuId().equals(stockSkuTotal.getSkuId()) && result.getBrandId().equals(stockSkuTotal.getBrandId())) {
