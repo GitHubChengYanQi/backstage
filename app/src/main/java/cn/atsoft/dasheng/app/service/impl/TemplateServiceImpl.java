@@ -102,7 +102,7 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         for (TemplateResult datum : data) {
             classIds.add(datum.getContractClassId());
         }
-        List<ContractClass> contractClasses = contractClassService.listByIds(classIds);
+        List<ContractClass> contractClasses = classIds.size() == 0 ? new ArrayList<>() : contractClassService.listByIds(classIds);
 
         for (TemplateResult datum : data) {
             for (ContractClass contractClass : contractClasses) {
