@@ -358,7 +358,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             List<SkuSimpleResult> skuResults = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
-                    if (detailResult.getStockNumber() > 0) {
+                    if (detailResult.getStockNumber() > 0 && detailResult.getNeedOperateNum()>0) {
                         result.setCanOperate(true);
                     }
                     if (skuResults.size() < 2 && detailResult.getPickListsId().equals(result.getPickListsId())) {
