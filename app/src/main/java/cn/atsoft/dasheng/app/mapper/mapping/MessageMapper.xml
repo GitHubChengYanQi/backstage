@@ -50,7 +50,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.MessageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_message where display = 1
+        from daoxin_message where 1 = 1 and display = 1
         <if test="paramCondition.createTime">
             and create_time &lt;= #{paramCondition.createTime}
         </if>
