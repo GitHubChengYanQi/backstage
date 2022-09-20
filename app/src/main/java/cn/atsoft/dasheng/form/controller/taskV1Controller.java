@@ -219,7 +219,7 @@ public class taskV1Controller {
         //取出所有未审核节点
         List<ActivitiProcessLog> allUnAuditLog = new ArrayList<>();
         allUnAuditLog.addAll(activitiProcessLogService.getAudit3(taskId));
-        allUnAuditLog.addAll(activitiProcessLogService.getAudit1(taskId));
+//        allUnAuditLog.addAll(activitiProcessLogService.getAudit1(taskId));
 
         /**
          * 流程中审核节点
@@ -238,7 +238,7 @@ public class taskV1Controller {
 
             taskResult.setPermissions(false);
             for (ActivitiProcessLog activitiProcessLog : allUnAuditLog) {
-                if (activitiProcessLog.getStatus() == -1) {
+                if (activitiProcessLog.getStatus() == 3) {
                     /**
                      * 取节点规则
                      */
