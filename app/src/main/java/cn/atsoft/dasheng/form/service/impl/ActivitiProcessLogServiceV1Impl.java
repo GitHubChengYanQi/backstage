@@ -35,6 +35,7 @@ import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.*;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
@@ -145,6 +146,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
     private ShopCartService shopCartService;
     @Autowired
     private SkuService skuService;
+
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
         for (ActivitiAudit activitiAudit : activitiAudits) {
@@ -345,9 +347,9 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                 }
 
                 AuditRule rule = activitiAudit.getRule();
-                if ((ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getNodeApprovalType()) && rule.getNodeApprovalType().equals(1)) ||  ToolUtil.isEmpty(rule.getNodeApprovalType())) {
+                if ((ToolUtil.isNotEmpty(rule) && ToolUtil.isNotEmpty(rule.getNodeApprovalType()) && rule.getNodeApprovalType().equals(1)) || ToolUtil.isEmpty(rule.getNodeApprovalType())) {
                     for (ActivitiProcessLog processLog : logs) {
-                        if(processLog.getStatus().equals(3)){
+                        if (processLog.getStatus().equals(3)) {
                             processLog.setStatus(4);
                             processLogs.add(processLog);
                         }
@@ -615,8 +617,8 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                         for (InstockListParam instockListParam : totalList) {
                             List<Long> inkindIds = new ArrayList<>();
                             for (InstockListParam listParam : instockListParams) {
-                                if (instockListParam.getSkuId().equals(listParam.getSkuId()) && instockListParam.getBrandId().equals(listParam.getBrandId())){
-                                    inkindIds.add( listParam.getInkindId());
+                                if (instockListParam.getSkuId().equals(listParam.getSkuId()) && instockListParam.getBrandId().equals(listParam.getBrandId())) {
+                                    inkindIds.add(listParam.getInkindId());
                                 }
                             }
                             instockListParam.setInkindIds(inkindIds);
@@ -650,7 +652,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                     break;
                 }
 
-                }
+        }
     }
 
 
@@ -1144,7 +1146,8 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         }
         return activitiStepsResultList;
     }
- /**
+
+    /**
      * 取出当前待审核的所有节点
      *
      * @param
@@ -1162,7 +1165,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
     }
 
     private List<ActivitiProcessLog> loopAudit1(ActivitiStepsResult
-                                                       activitiStepsResult, List<ActivitiProcessLog> activityProcessLog) {
+                                                        activitiStepsResult, List<ActivitiProcessLog> activityProcessLog) {
         List<ActivitiProcessLog> activitiStepsResultList = new ArrayList<>();
 
         if (ToolUtil.isEmpty(activitiStepsResult)) {
@@ -1282,7 +1285,30 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
         List<ActivitiProcessLog> processLogs = new ArrayList<>();
         List<Long> users = taskSend.selectUsers(activitiStepsResult.getAuditRule(), taskId);
-        for (Long user : users) {
+        if (ToolUtil.isNotEmpty(users)) {
+            for (Long user : users) {
+                ActivitiProcessLog processLog = new ActivitiProcessLog();
+                processLog.setPeocessId(processId);
+                processLog.setTaskId(taskId);
+                processLog.setSetpsId(activitiStepsResult.getSetpsId());
+                processLog.setStatus(status);
+                processLog.setUpdateUser(loginUserId);
+                processLog.setCreateUser(loginUserId);
+                processLog.setUpdateTime(new Date());
+                processLog.setAuditUserId(user);
+                if (ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule()) && ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule().getActionStatuses())) {
+                    List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
+                    if (ToolUtil.isNotEmpty(actionStatuses)) {
+                        for (ActionStatus actionStatus : actionStatuses) {
+                            actionStatus.setStatus(0);
+                        }
+                        processLog.setActionStatus(JSON.toJSONString(actionStatuses));
+                    }
+                }
+                processLogs.add(processLog);
+            }
+            this.saveBatch(processLogs);
+        } else {
             ActivitiProcessLog processLog = new ActivitiProcessLog();
             processLog.setPeocessId(processId);
             processLog.setTaskId(taskId);
@@ -1291,7 +1317,6 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
             processLog.setUpdateUser(loginUserId);
             processLog.setCreateUser(loginUserId);
             processLog.setUpdateTime(new Date());
-            processLog.setAuditUserId(user);
             if (ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule()) && ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule().getActionStatuses())) {
                 List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
                 if (ToolUtil.isNotEmpty(actionStatuses)) {
@@ -1301,12 +1326,8 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                     processLog.setActionStatus(JSON.toJSONString(actionStatuses));
                 }
             }
-            processLogs.add(processLog);
+            this.save(processLog);
         }
-
-
-
-        this.saveBatch(processLogs);
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
             for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
@@ -1324,7 +1345,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
         Long processId = activitiStepsResult.getProcessId();
         List<Long> users = taskSend.selectUsers(activitiStepsResult.getAuditRule(), taskId);
-        if (activitiStepsResult.getType().toString().equals(StepsType.START.getType())){
+        if (activitiStepsResult.getType().toString().equals(StepsType.START.getType())) {
             ActivitiProcessLog processLog = new ActivitiProcessLog();
             processLog.setPeocessId(processId);
             processLog.setTaskId(taskId);
@@ -1341,8 +1362,8 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                 }
             }
             this.save(processLog);
-        }else {
-            if  (users.size()>0){
+        } else {
+            if (users.size() > 0) {
                 for (Long user : users) {
                     /**
                      * insert
@@ -1518,6 +1539,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
      */
     private void logActionFormat(List<ActivitiProcessLogResult> param) {
         List<Long> actionIds = new ArrayList<>();
+        List<Long> auditUserIds = new ArrayList<>();
         for (ActivitiProcessLogResult activitiProcessLogResult : param) {
             if (ToolUtil.isNotEmpty(activitiProcessLogResult.getActionStatus())) {
                 List<ActionStatus> actionStatuses = JSON.parseArray(activitiProcessLogResult.getActionStatus(), ActionStatus.class);
@@ -1525,7 +1547,13 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                     actionIds.add(actionStatus.getActionId());
                 }
             }
+            if (ToolUtil.isNotEmpty(activitiProcessLogResult.getAuditUserId())) {
+                auditUserIds.add(activitiProcessLogResult.getAuditUserId());
+            }
         }
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(auditUserIds);
+
+
         List<DocumentsAction> documentsActions = actionIds.size() == 0 ? new ArrayList<>() : documentsActionService.listByIds(actionIds);
         List<DocumentsActionResult> results = new ArrayList<>();
         for (DocumentsAction documentsAction : documentsActions) {
@@ -1547,7 +1575,11 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                 }
                 activitiProcessLogResult.setActionResults(documentsActionResults);
             }
-
+            for (UserResult userResultsById : userResultsByIds) {
+                if (ToolUtil.isNotEmpty(activitiProcessLogResult.getAuditUserId()) && activitiProcessLogResult.getAuditUserId().equals(userResultsById.getUserId())) {
+                    activitiProcessLogResult.setAuditUserResult(userResultsById);
+                }
+            }
         }
     }
 
