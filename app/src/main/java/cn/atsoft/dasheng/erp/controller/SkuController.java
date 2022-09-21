@@ -3,10 +3,12 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
@@ -22,6 +24,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ErrorResponseData;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
 import cn.atsoft.dasheng.query.entity.QueryLog;
 import cn.atsoft.dasheng.query.service.QueryLogService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
@@ -65,6 +68,8 @@ public class SkuController extends BaseController {
     private SpuClassificationService spuClassificationService;
     @Autowired
     private QueryLogService queryLogService;
+    @Autowired
+    private PrintTemplateService printTemplateService;
 
 
     /**
@@ -255,6 +260,50 @@ public class SkuController extends BaseController {
         return ResponseData.success(sku);
 
     }
+    /**
+     * 查看详情接口
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @ApiVersion("1.1")
+    @RequestMapping(value = "/{v}/detail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData detailV1(@RequestBody SkuParam skuParam) {
+
+        SkuResult sku = skuService.getSku(skuParam.getSkuId());
+        if (ToolUtil.isNotEmpty(sku.getSpuId())) {
+            Spu spu = spuService.getById(sku.getSpuId());
+            if (ToolUtil.isNotEmpty(spu.getUnitId())) {
+                Unit unit = unitService.getById(spu.getUnitId());
+                sku.setUnit(unit);
+            }
+            if (ToolUtil.isNotEmpty(spu.getSpuClassificationId())) {
+//                SpuClassification spuClassification = spuClassificationService.getById(spu.getSpuClassificationId());
+//                sku.setSpuClassification(spuClassification);  //产品
+//
+//                if (ToolUtil.isNotEmpty(spuClassification.getPid())) {
+                //分类
+                SpuClassification spuClassification1 = spuClassificationService.getById(spu.getSpuClassificationId());
+                sku.setSpuClass(spuClassification1.getSpuClassificationId());
+//                    sku.setSkuClass(spuClassification1);
+//                }
+
+            }
+        }
+        if (ToolUtil.isNotEmpty(sku.getQualityPlanId())) {
+            QualityPlan plan = qualityPlanService.getById(sku.getQualityPlanId());
+            sku.setQualityPlan(plan);
+        }
+        User user = userService.getById(sku.getCreateUser());
+        if (ToolUtil.isNotEmpty(user)) {
+            sku.setCreateUserName(user.getName());
+        }
+
+
+        return ResponseData.success(sku);
+
+    }
 
 
     /**
@@ -359,6 +408,38 @@ public class SkuController extends BaseController {
     public ResponseData resultSkuByIds(@RequestBody(required = false) SkuParam skuParam) {
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuParam.getSkuIds());
         return ResponseData.success(skuSimpleResults);
+    }
+
+    @RequestMapping(value = "/getSkuDrawing", method = RequestMethod.GET)
+    @ApiOperation("Select数据接口")
+//    @Permission
+    public ResponseData getSkuDrawing(@RequestParam Long skuId) {
+        Sku byId = this.skuService.getById(skuId);
+        if (ToolUtil.isNotEmpty(byId.getDrawing())) {
+            return ResponseData.success(skuService.strToMediaResults(byId.getDrawing()));
+
+        }
+        return ResponseData.success(new ArrayList<>());
+    }
+    @RequestMapping(value = "/getSkuFile", method = RequestMethod.GET)
+    @ApiOperation("Select数据接口")
+//    @Permission
+    public ResponseData getSkuFile(@RequestParam Long skuId) {
+        Sku byId = this.skuService.getById(skuId);
+        if (ToolUtil.isNotEmpty(byId.getFileId())) {
+            return ResponseData.success(skuService.strToMediaResults(byId.getFileId()));
+
+        }
+        return ResponseData.success(new ArrayList<>());
+    }
+    @RequestMapping(value = "/printSkuTemplate", method = RequestMethod.GET)
+    @ApiOperation("打印信息")
+//    @Permission
+    public ResponseData printSkuTemplate(@RequestParam Long skuId) {
+        if (ToolUtil.isNotEmpty(skuId)) {
+            return ResponseData.success(printTemplateService.replaceInkindTemplate(skuId));
+        }
+        return ResponseData.success("");
     }
 
 

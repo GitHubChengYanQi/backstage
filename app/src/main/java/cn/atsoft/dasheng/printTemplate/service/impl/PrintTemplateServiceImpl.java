@@ -31,12 +31,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
-import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.POSITIONS;
+import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.SKU;
 
 /**
  * <p>
@@ -222,6 +223,88 @@ public class PrintTemplateServiceImpl extends ServiceImpl<PrintTemplateMapper, P
                     OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{
                         eq("form_id", inkind.getInkindId());
                         eq("source", "item");
+                    }});
+                    Long url = orCodeBind.getOrCodeId();
+                    String qrCode = qrCodeCreateService.createQrCode(url.toString());
+                    templete = templete.replace("${{qrCode}}", qrCode);
+                }
+
+                String toString = replaceStr.toString();
+                String group = m.group(0);
+                templete = templete.replace(group, toString);
+            }
+        }
+        return templete;
+    }
+    @Override
+    public String replaceSkuTemplate(Long skuId) {
+        PrintTemplate printTemplate = this.getOne(new QueryWrapper<PrintTemplate>() {{
+            eq("type", SKU);
+            eq("display", 1);
+        }});
+
+        if (ToolUtil.isEmpty(printTemplate)) {
+            throw new ServiceException(500, "请先定义二维码模板");
+        }
+        String templete = printTemplate.getTemplete();
+        if (ToolUtil.isEmpty(skuId)) {
+            if (templete.contains("${{序号}}")) {
+                templete = templete.replace("${{序号}}", "");
+            }
+            if (templete.contains("${{物料编码}}")) {
+                templete = templete.replace("${{物料编码}}", "");
+            }
+            if (templete.contains("${{产品名称}}")) {
+                templete = templete.replace("${{产品名称}}", "");
+            }
+            if (templete.contains("${{型号}}")) {
+                templete = templete.replace("${{型号}}", "");
+            }
+            if (templete.contains("${{规格}}")) {
+                templete = templete.replace("${{规格}}", "");
+            }
+            if (templete.contains("${{品牌}}")) {
+                templete = templete.replace("${{品牌}}", "");
+            }
+            if (templete.contains("${{供应商}}")) {
+                templete = templete.replace("${{供应商}}", "");
+            }
+
+            return templete;
+        }
+
+        String regStr = "\\<tr(.*?)\\>([\\w\\W]+?)<\\/tr>";
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher m = pattern.matcher(templete);
+
+        while (m.find()) {
+            String inkindGrop = m.group(0);
+            if (inkindGrop.contains("sku")) {
+                SkuResult skuResult = BeanUtil.copyProperties(skuService.getById(skuId), SkuResult.class);
+                skuService.format(new ArrayList<SkuResult>(){{
+                    add(skuResult);
+                }});
+                StringBuilder replaceStr = new StringBuilder(m.group(0));
+                if (replaceStr.toString().contains("${{物料编码}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    replaceStr = new StringBuilder(replaceStr.toString().replace("${{物料编码}}", skuResult.getStandard()));
+                }
+                if (replaceStr.toString().contains("${{产品名称}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    replaceStr = new StringBuilder(replaceStr.toString().replace("${{产品名称}}", skuResult.getSpuResult().getName()));
+                }
+                if (replaceStr.toString().contains("${{型号}}") && ToolUtil.isNotEmpty(skuResult)) {
+                    replaceStr = new StringBuilder(replaceStr.toString().replace("${{型号}}", skuResult.getSkuName()));
+                }
+                if (replaceStr.toString().contains("${{规格}}")) {
+                    if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isNotEmpty(skuResult.getSpecifications())) {
+                        replaceStr = new StringBuilder(replaceStr.toString().replace("${{规格}}", skuResult.getSpecifications()));
+                    } else {
+                        replaceStr = new StringBuilder(replaceStr.toString().replace("${{规格}}", ""));
+                    }
+                }
+                if (replaceStr.toString().contains("${{qrCode}}")) {
+                    OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{
+                        eq("form_id", skuResult.getSkuId());
+                        eq("source", "sku");
                     }});
                     Long url = orCodeBind.getOrCodeId();
                     String qrCode = qrCodeCreateService.createQrCode(url.toString());
