@@ -35,6 +35,11 @@ public class MediaResult implements Serializable {
     @ApiModelProperty("媒体名称")
     private String filedName;
     /**
+      * 媒体ID
+    */
+    @ApiModelProperty("缩略图")
+    private String ThumbUrl;
+    /**
      * 媒体ID
      */
     @ApiModelProperty("媒体类型")

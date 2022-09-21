@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.app.model.params.PartsParam;
+import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
@@ -112,6 +113,10 @@ public interface SkuService extends IService<Sku> {
 
 
     List<SkuResult> AllSku();
+
+    void formatSkuMedias(SkuResult skuResult);
+
+    List<MediaResult> strToMediaResults(String param);
 
     void format(List<SkuResult> param);
 

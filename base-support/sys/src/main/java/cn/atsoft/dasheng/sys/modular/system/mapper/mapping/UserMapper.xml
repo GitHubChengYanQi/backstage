@@ -301,6 +301,24 @@
             </foreach>
         </if>
     </select>
+    <select id="listUserByIds" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult">
+        select
+        DISTINCT
+        users.user_id,
+        userInfo.avatar,
+        users.`name`
+        FROM
+        sys_user users
+        LEFT JOIN daoxin_portal_wxuser_info wxuserInfo on users.user_id = wxuserInfo.user_id
+        LEFT JOIN uc_open_user_info userInfo on userInfo.member_id = wxuserInfo.member_id  and userInfo.source = "WxCp"
+        WHERE 1 = 1
+        <if test=" userIds!=null and userIds.size()>0">
+            AND users.user_id IN
+            <foreach item="i" index="index" collection="userIds" open="(" separator="," close=")">
+                #{i}
+            </foreach>
+        </if>
+    </select>
 
 
 </mapper>

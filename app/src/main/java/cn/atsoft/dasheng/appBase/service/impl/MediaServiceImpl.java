@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.appBase.config.AliyunService;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -54,7 +55,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         Media entity = getEntity(param);
         this.save(entity);
     }
-
+    private final static String THUMB_URL_PARAM = "image/resize,m_fill,h_200,w_200";
     @Override
     public void delete(MediaParam param) {
         this.removeById(getKey(param));
@@ -212,12 +213,11 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     }
     @Override
     public List<MediaUrlResult> getMediaUrlResults(List<Long> mediaIds) {
-        String param = "image/resize,m_fill,h_200,w_200";
         List<MediaUrlResult>  results = new ArrayList<>();
         for (Long mediaId : mediaIds) {
             MediaUrlResult result = new MediaUrlResult();
             String url = getMediaUrlAddUseData(mediaId, null, null);
-            String ThumbUrl = getMediaUrlAddUseData(mediaId, null, param);
+            String ThumbUrl = getMediaUrlAddUseData(mediaId, null, THUMB_URL_PARAM);
             result.setUrl(url);
             result.setMediaId(mediaId);
             result.setThumbUrl(ThumbUrl);
@@ -342,6 +342,29 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
         return null;
     }
+    @Override
+    public List<MediaResult> listByIds(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids) || ids.size() == 0) {
+            return new ArrayList<>();
+        }
+        List<MediaResult> results = BeanUtil.copyToList(this.lambdaQuery().in(Media::getMediaId, ids).list(), MediaResult.class);
 
+        for (MediaResult result : results) {
+            String url = getMediaUrlAddUseData(result.getMediaId(), null, null);
+            result.setUrl(url);
+            //为以后更多类型预留
+            switch (result.getType()) {
+                case "jpeg":
+                case "png":
+                case "jpg":
+                    String thumbUrl = getMediaUrlAddUseData(result.getMediaId(), null, THUMB_URL_PARAM);
+                    result.setThumbUrl(thumbUrl);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return results;
+    }
 
 }

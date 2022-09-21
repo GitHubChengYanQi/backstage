@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
+import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -28,7 +28,6 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.params.StepsParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.RemarksService;
@@ -36,7 +35,6 @@ import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
-import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.query.service.QueryLogService;
 import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
@@ -912,7 +910,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                         || !oldEntity.getBatch().equals(param.getBatch())
                         || !oldEntity.getSpuId().equals(param.getSpuId())
                         || (orSaveSpu.getSpuId().equals(oldSpu.getSpuId()) && !oldSpu.getUnitId().equals(param.getUnitId()))
-        ) && editSkuFlag){
+        ) && editSkuFlag) {
             /**
              * 如要变更sku主要信息数据  需要验证物料是否正在被 物料清单所使用   如果被使用则不可更改
              * 如果只是更新 上传附件与图片之类资料完善则不需查询清单中是否被使用
@@ -1409,6 +1407,40 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return skuResults;
     }
 
+    @Override
+    public void formatSkuMedias(SkuResult skuResult) {
+
+        if (ToolUtil.isNotEmpty(skuResult.getFileId())) {
+            skuResult.setFiledResults(strToMediaResults(skuResult.getFileId()));
+        }
+
+        if (ToolUtil.isNotEmpty(skuResult.getDrawing())) {
+            skuResult.setDrawingResults(strToMediaResults(skuResult.getDrawing()));
+        }
+
+        if (ToolUtil.isNotEmpty(skuResult.getEnclosure())) {
+
+            skuResult.setEnclosureResults(strToMediaResults(skuResult.getEnclosure()));
+
+        }
+
+        if (ToolUtil.isNotEmpty(skuResult.getImages())) {
+            skuResult.setImgResults(strToMediaResults(skuResult.getImages()));
+        }
+    }
+
+    @Override
+    public List<MediaResult> strToMediaResults(String param) {
+        try {
+            List<Long> mediaIdList = Arrays.asList(param.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            return mediaService.listByIds(mediaIdList);
+        } catch (Exception ignored) {
+
+        }
+        return new ArrayList<>();
+    }
+
+
     private void getSpu(List<SkuResult> skuResults) {
         List<Long> spuIds = new ArrayList<>();
         for (SkuResult skuResult : skuResults) {
@@ -1552,20 +1584,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     skuResult.setLockStockDetailNumber(Math.toIntExact(stockDetails.getNumber()));
                 }
             }
-            //图片
-            try {
-                List<Long> imageIds = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-                List<MediaUrlResult> mediaUrlResults = mediaService.getMediaUrlResults(new ArrayList<Long>(){{
-                    add(imageIds.get(0));
-                }});
-                if (imageIds.size()>0){
-                    skuResult.setImgResults(mediaUrlResults);
-                }
-            } catch (Exception e) {
 
-            }
-            List<String> imageUrls = new ArrayList<>();
-            List<String> imgThumbUrls = new ArrayList<>();
 //            for (Long imageid : imageIds) {
 //                imageUrls.add(mediaService.getMediaUrl(imageid, 1L));
 //                String imgThumbUrl = mediaService.getMediaUrlAddUseData(imageid, 0L, "image/resize,m_fill,h_200,w_200");
@@ -1666,7 +1685,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             add(skuResult);
         }});
 
-        //返回附件图片等
+        this.formatSkuMedias(skuResult);
+//返回附件图片等
         try {
             if (ToolUtil.isNotEmpty(skuResult.getFileId())) {
                 List<Long> filedIds = Arrays.asList(skuResult.getFileId().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
@@ -1709,19 +1729,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         } catch (Exception ignored) {
 
         }
-//        if (ToolUtil.isNotEmpty(skuResult.getImages())) {
-//            List<Long> enclosure = Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-//            List<String> filedUrls = new ArrayList<>();
-//            List<String> imgThumbUrls = new ArrayList<>();
-//            for (Long filedId : enclosure) {
-//                String mediaUrl = mediaService.getMediaUrl(filedId, 0L);
-//                String imgThumbUrl = mediaService.getMediaUrlAddUseData(filedId, 0L,"image/resize,m_fill,h_200,w_200");
-//                filedUrls.add(mediaUrl);
-//                imgThumbUrls.add(imgThumbUrl);
-//            }
-//            skuResult.setImgUrls(filedUrls);
-//            skuResult.setImgThumbUrls(imgThumbUrls);
-//        }
 
 //        List<SkuBrandBind> skuBrandBindList = skuBrandBindService.query().eq("sku_id", id).eq("display", 1).list();
 //        List<Long> brandIds = new ArrayList<>();

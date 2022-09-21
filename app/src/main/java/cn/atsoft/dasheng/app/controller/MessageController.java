@@ -127,7 +127,6 @@ public class MessageController extends BaseController {
         Long userId = LoginContextHolder.getContext().getUserId();
         QueryWrapper<Message> queryWrapper = new QueryWrapper();
         queryWrapper.eq("user_id", userId);
-        queryWrapper.eq("display", 1);
 
         Message message = new Message();
         message.setView(1);

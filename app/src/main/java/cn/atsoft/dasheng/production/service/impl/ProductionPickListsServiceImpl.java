@@ -252,7 +252,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
-
+            shopCartService.addDynamic(entity.getPickListsId(), null, "发起了入库申请");
             if (ToolUtil.isNotEmpty(param.getRemarkUserIds())) {
 
                 RemarksParam remarksParam = new RemarksParam();

@@ -359,15 +359,14 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
 
     public List<UserResult> getUserResultsByIds(List<Long> ids){
-        List<User> users = ids.size() == 0 ? new ArrayList<>() : this.query().in("user_id", ids).list();
-        List<UserResult> results = new ArrayList<>();
-        for (User user : users) {
-            UserResult userResult = new UserResult();
-            ToolUtil.copyProperties(user,userResult);
-            results.add(userResult);
+        if(ToolUtil.isEmpty(ids) || ids.size() == 0){
+            return new ArrayList<>();
         }
+        List<UserResult> results = this.baseMapper.listUserByIds(ids);
+
         return results;
     }
+
 //    public List<User> getUserByPositionAndDept(Map<String,List> param){
 //        return this.baseMapper.listUserByPositionAndDept(param.get("position"),);
 //    }
