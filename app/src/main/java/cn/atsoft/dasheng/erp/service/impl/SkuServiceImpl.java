@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -1554,6 +1555,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
         for (SkuResult skuResult : param) {
+            //图片
+            List<Long> imageIds = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(skuResult.getImages())) {
+                List<MediaResult> results = strToMediaResults(skuResult.getImages());
+                skuResult.setImgResults(results);
+            }
+
             for (MaintenanceCycle maintenanceCycle : maintenanceCycles) {
                 if (skuResult.getSkuId().equals(maintenanceCycle.getSkuId())) {
                     skuResult.setMaintenancePeriod(maintenanceCycle.getMaintenancePeriod());
