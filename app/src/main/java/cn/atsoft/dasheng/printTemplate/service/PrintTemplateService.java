@@ -69,4 +69,6 @@ public interface PrintTemplateService extends IService<PrintTemplate> {
 
 
     String replaceInkindTemplate( Long inkindId);
+
+    String replaceSkuTemplate(Long skuId);
 }

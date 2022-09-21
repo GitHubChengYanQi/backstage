@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 public enum PrintTemplateEnum {
 
 
-    PHYSICALDETAIL, POSITIONS,
+    PHYSICALDETAIL, POSITIONS,SKU
 
 
 }

@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.appBase.aop.FieldPermission;
+import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -40,7 +41,6 @@ public class SkuResult implements Serializable {
     private Boolean inSupply;
     private Integer maintenancePeriod; // 养护周期
 //    List<String> imgUrls;
-    List<MediaUrlResult> imgResults;    //图片返回
     List<AttributeValuesResult> list;   //规格型号
     private List<SkuJson> skuJsons;
     private SpuResult spuResult;
@@ -77,11 +77,16 @@ public class SkuResult implements Serializable {
     private Long inventoryStockId;
     //图片  附件  文件等
     private String images;
+    List<MediaResult> imgResults;    //图片返回
+    private String fileds;
     private List<String> filedUrls;
+    private List<MediaResult> filedResults;
     private String drawing;
     private List<String> drawingUrls;
+    private List<MediaResult> drawingResults;
     private String enclosure;
     private List<String> enclosureUrls;
+    private List<MediaResult> enclosureResults;
 
     /**
      * 预购数量

@@ -351,13 +351,13 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
         for (MediaResult result : results) {
             String url = getMediaUrlAddUseData(result.getMediaId(), null, null);
+            result.setUrl(url);
             //为以后更多类型预留
             switch (result.getType()) {
                 case "jpeg":
                 case "png":
                 case "jpg":
                     String thumbUrl = getMediaUrlAddUseData(result.getMediaId(), null, THUMB_URL_PARAM);
-                    result.setUrl(url);
                     result.setThumbUrl(thumbUrl);
                     break;
                 default:
