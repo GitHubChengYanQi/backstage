@@ -63,6 +63,18 @@ public class SupplyController extends BaseController {
     }
 
     /**
+     * 绑定列表
+     *
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/bindList", method = RequestMethod.POST)
+    public ResponseData bindList(@RequestBody SupplyParam param) {
+        List<SupplyResult> results = this.supplyService.findListBySpec(param);
+        return ResponseData.success(results);
+    }
+
+    /**
      * 条件查询
      *
      * @param supplyParam
