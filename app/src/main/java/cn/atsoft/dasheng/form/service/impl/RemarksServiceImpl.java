@@ -70,6 +70,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     @Autowired
     private StepsService stepsService;
 
+
     @Override
     public void add(Long logId, String note) {
         Remarks remarks = new Remarks();
@@ -150,12 +151,16 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     void format(List<RemarksResult> data) {
         List<Long> taskIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
+        List<String> mediaIds = new ArrayList<>();
+
         for (RemarksResult datum : data) {
             userIds.add(datum.getCreateUser());
             taskIds.add(datum.getTaskId());
+            mediaIds.add(datum.getPhotoId());
         }
         List<ActivitiProcessTask> tasks = taskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(taskIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+
 
         for (RemarksResult datum : data) {
             for (User user : userList) {
@@ -225,14 +230,14 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
          */
         ActivitiProcessTask processTask = taskService.getById(auditParam.getTaskId());
         if (ToolUtil.isNotEmpty(processTask)) {
-            shopCartService.addDynamic(processTask.getFormId(), null,"发布了评论");
+            shopCartService.addDynamic(processTask.getFormId(), null, "发布了评论");
         }
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setFunction(MarkDownTemplateTypeEnum.toPerson);
             setType(2);
             setItems("收到评论");
-            setDescription(LoginContextHolder.getContext().getUser().getName()+"发布了评论");
+            setDescription(LoginContextHolder.getContext().getUser().getName() + "发布了评论");
             setCreateTime(remarks.getCreateTime());
             setTaskId(processTask.getProcessTaskId());
             setDescription(remarks.getContent());
@@ -240,7 +245,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             setSourceId(processTask.getProcessTaskId());
             setUserId(remarks.getCreateUser());
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/Receipts/ReceiptsDetail?id=" + processTask.getProcessTaskId());
-            setUserIds(new ArrayList<Long>(){{
+            setUserIds(new ArrayList<Long>() {{
                 add(processTask.getCreateUser());
             }});
             setCreateUser(remarks.getCreateUser());
