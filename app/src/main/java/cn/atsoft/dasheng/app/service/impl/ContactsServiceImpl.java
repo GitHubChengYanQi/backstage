@@ -241,6 +241,18 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @FreedLog
     public Contacts update(ContactsParam param) {
 
+        //先验证需要修改的电话号是否被其他人使用
+        List<Long> phoneNumber = new ArrayList<>();
+        for (PhoneParam phoneParam : param.getPhoneParams()) {
+            phoneNumber.add(phoneParam.getPhoneNumber());
+        }
+        List<Phone> phone_number = phoneService.query().in("phone_number", phoneNumber).list();
+        phone_number.removeIf(i->i.getContactsId().equals(param.getContactsId()));
+        if (phone_number.size()>0){
+            throw new ServiceException(500,"电话号已被其他联系人绑定");
+        }
+
+
         Long customerId = param.getCustomerId();
         QueryWrapper<ContactsBind> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("contacts_id", param.getContactsId());

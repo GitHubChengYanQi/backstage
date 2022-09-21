@@ -96,7 +96,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private CodingRulesService codingRulesService;
@@ -127,6 +127,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private MaintenanceLogDetailService logDetailService;
     @Autowired
     private ProductionPickListsCartService pickListsCartService;
+    @Autowired
+    private ShopCartService shopCartService;
 
     @Override
 
@@ -176,6 +178,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+            shopCartService.addDynamic(entity.getMaintenanceId(), null, "发起了养护申请");
             if (ToolUtil.isNotEmpty(param.getUserIds())) {
                 /**
                  * 评论

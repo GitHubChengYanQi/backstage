@@ -65,6 +65,8 @@ public interface MaintenanceLogDetailService extends IService<MaintenanceLogDeta
 
     List<MaintenanceLogDetailResult> lastLogByInkindIds(List<Long> inkindIds);
 
+    void format(List<MaintenanceLogDetailResult> data);
+
     /**
      * 查询分页数据，Specification模式
      *

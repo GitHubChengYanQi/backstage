@@ -6,7 +6,8 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -34,7 +35,7 @@ public class RemarksController extends BaseController {
     private RemarksService remarksService;
 
     @Autowired
-    private ActivitiProcessLogService logService;
+    private ActivitiProcessLogV1Service logService;
 
 
     /**

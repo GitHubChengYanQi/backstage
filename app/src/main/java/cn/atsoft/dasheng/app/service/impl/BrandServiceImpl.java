@@ -158,8 +158,13 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     public BrandResult getBrandResult(Long id) {
         Brand brand = this.getById(id);
         BrandResult brandResult = new BrandResult();
-        ToolUtil.copyProperties(brand, brandResult);
-        return brandResult;
+        if (ToolUtil.isNotEmpty(brand)){
+            ToolUtil.copyProperties(brand, brandResult);
+            return brandResult;
+        }else{
+            return null;
+        }
+
     }
 
     private Serializable getKey(BrandParam param) {

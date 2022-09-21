@@ -117,6 +117,36 @@
 	daoxin_task_participant.type as "participantType"
 
     </sql>
+    <sql id="auditColumn2">
+        activiti_process_task
+        .
+        process_task_id
+        AS "processTaskId",
+	task.form_id AS "formId",
+	task.type AS "type",
+	task.remark AS "remark",
+	task.cause AS "cause",
+	task.user_id AS "userId",
+	task.main_task_id AS "mainTaskId",
+	task.pid AS "pid",
+	task.theme AS "theme",
+	task.origin AS "origin",
+	task.user_ids AS "userIds",
+	task.STATUS AS "status",
+	task.deptIds AS "deptIds",
+	task.task_name AS "taskName",
+	task.process_id AS "processId",
+	task.display AS "display",
+	task.create_user AS "createUser",
+	task.update_user AS "updateUser",
+	task.create_time AS "createTime",
+	task.update_time AS "updateTime",
+	task.source AS "source",
+	task.source_id AS "source_id" ,
+	participant.user_id as "participantUser",
+	participant.type as "participantType"
+
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
@@ -253,5 +283,93 @@
             )
         </if>
         group by processTaskId
+    </select>
+    <select id="aboutMeTask" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+        select
+        <include refid="auditColumn"/>
+        from activiti_process_task task
+        LEFT JOIN activiti_process_log  log on log.task_id = task.process_task_id
+        LEFT JOIN activiti_steps steps  on steps.setps_id = log.setps_id
+        LEFT JOIN daoxin_task_participant participant ON task.process_task_id =
+        participant.process_task_id
+        where  1 = 1  and task.display = 1
+    --  查询关于我的任务
+
+        <if  test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
+            <choose>
+                <when test="paramCondition.queryType ==1">
+                    and steps.type = "audit"
+                    and log.audit_user_id = #{paramCondition.userId}
+                    <if test="paramCondition.status !=null and paramCondition.status !=''">
+                        and log.status =  #{paramCondition.status}
+                    </if>
+                </when>
+                <when test=" paramCondition.queryType ==2">
+                    and steps.type = "send"
+                    and log.audit_user_id = #{paramCondition.userId}
+                    and log.status = 1
+                </when>
+            </choose>
+        </if>
+
+
+
+        <if test="paramCondition.skuNmae != null">
+            and (
+            task.form_id in (
+            select instock_order_id from daoxin_erp_instock_order where coding like
+            CONCAT('%',#{paramCondition.skuNmae},'%')
+            union
+            select order_id from daoxin_anomaly_order where coding like CONCAT('%',#{paramCondition.skuNmae},'%')
+            union
+            select inventory_task_id from daoxin_erp_inventory where coding like
+            CONCAT('%',#{paramCondition.skuNmae},'%')
+            union
+            select pick_lists_id from daoxin_production_pick_lists where coding like
+            CONCAT('%',#{paramCondition.skuNmae},'%')
+            )
+            or task_name like CONCAT('%',#{paramCondition.skuNmae},'%')
+            or remark like CONCAT('%',#{paramCondition.skuNmae},'%')
+            or notice_id like CONCAT('%',#{paramCondition.skuNmae},'%')
+            )
+        </if>
+        <if test="paramCondition.createUser != null ">
+            and task.create_user = #{paramCondition.createUser}
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and task.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.statusList !=null and paramCondition.statusList.size>0 ">
+            and task.status in
+            <foreach collection="paramCondition.statusList" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.types !=null and paramCondition.types.size>0 ">
+            and task.type in
+            <foreach collection="paramCondition.types" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.timeOutTaskIds !=null and paramCondition.timeOutTaskIds.size>0 ">
+            and task.process_task_id in
+            <foreach collection="paramCondition.timeOutTaskIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
+            and task.process_task_id in
+            <foreach collection="paramCondition.taskIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.participantUser != null and paramCondition.participantUser != '' ">
+            and (daoxin_task_participant.user_id = #{paramCondition.participantUser}
+            or task.user_id = #{paramCondition.participantUser}
+            )
+        </if>
+
     </select>
 </mapper>

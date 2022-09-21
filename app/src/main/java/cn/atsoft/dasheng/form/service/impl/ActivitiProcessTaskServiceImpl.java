@@ -53,7 +53,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Autowired
     private UserService userService;
     @Autowired
-    private ActivitiProcessLogService processLogService;
+    private ActivitiProcessLogV1Service processLogService;
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
@@ -91,7 +91,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     public Long add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
         this.save(entity);
-        String origin = this.getOrigin.newThemeAndOrigin("productionTask", entity.getProcessTaskId(), ToolUtil.isEmpty(param.getSource()) ? null : param.getSource(), ToolUtil.isEmpty(param.getSourceId()) ? null : param.getSourceId());
+        String origin = this.getOrigin.newThemeAndOrigin("processTask", entity.getProcessTaskId(), ToolUtil.isEmpty(param.getSource()) ? null : param.getSource(), ToolUtil.isEmpty(param.getSourceId()) ? null : param.getSourceId());
         entity.setOrigin(origin);
 
         Set<Long> set = this.processAuditPerson(param.getProcessId());//取出执行节点执行人
@@ -198,6 +198,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         format(new ArrayList<ActivitiProcessTaskResult>() {{
             add(taskResult);
         }});
+
         return taskResult;
     }
 
@@ -218,6 +219,71 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         if (ToolUtil.isNotEmpty(param.getOutTime())) {
             List<Long> timeOutTaskIds = new ArrayList<>();
             timeOutTaskIds.add(0L);
+            switch (param.getOutTime()) {
+                case "yes":
+                    timeOutTaskIds.addAll(inventoryService.timeOut(true));
+                    break;
+                case "no":
+                    inventoryService.timeOut(false);
+                    break;
+            }
+            param.setTimeOutTaskIds(timeOutTaskIds);
+        }
+
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+
+    }
+    @Override
+    public PageInfo<ActivitiProcessTaskResult> aboutMeTasks(ActivitiProcessTaskParam param) {
+        if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的
+            Long userId = LoginContextHolder.getContext().getUserId();
+            param.setParticipantUser(userId);  //参与人和负责人
+        }
+        if (ToolUtil.isNotEmpty(param.getStatusList())) {
+            param.setStatusList(param.getStatusList().stream().distinct().collect(Collectors.toList()));
+        }
+
+        /**
+         * 超期筛选
+         */
+        if (ToolUtil.isNotEmpty(param.getOutTime())) {
+            List<Long> timeOutTaskIds = new ArrayList<>();
+            switch (param.getOutTime()) {
+                case "yes":
+                    timeOutTaskIds.addAll(inventoryService.timeOut(true));
+                    break;
+                case "no":
+                    inventoryService.timeOut(false);
+                    break;
+            }
+            param.setTimeOutTaskIds(timeOutTaskIds);
+        }
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.aboutMeTask(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+
+    }
+
+    @Override
+    public PageInfo<ActivitiProcessTaskResult> auditListV1(ActivitiProcessTaskParam param) {
+
+        if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的
+            Long userId = LoginContextHolder.getContext().getUserId();
+            param.setParticipantUser(userId);  //参与人和负责人
+        }
+        if (ToolUtil.isNotEmpty(param.getStatusList())) {
+            param.setStatusList(param.getStatusList().stream().distinct().collect(Collectors.toList()));
+        }
+
+        /**
+         * 超期筛选
+         */
+        if (ToolUtil.isNotEmpty(param.getOutTime())) {
+            List<Long> timeOutTaskIds = new ArrayList<>();
             switch (param.getOutTime()) {
                 case "yes":
                     timeOutTaskIds.addAll(inventoryService.timeOut(true));
@@ -592,6 +658,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(orderResult.getStatus());
                     orderResult.setStatusName(statusName);
                     datum.setReceipts(orderResult);
+                    datum.setCoding(orderResult.getCoding());
                     break;
                 }
             }
@@ -601,6 +668,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(anomalyOrderResult.getStatus());
                     anomalyOrderResult.setStatusName(statusName);
                     datum.setReceipts(anomalyOrderResult);
+                    datum.setCoding(anomalyOrderResult.getCoding());
+
                     break;
                 }
             }
@@ -609,6 +678,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(productionPickListsResult.getStatus());
                     productionPickListsResult.setStatusName(statusName);
                     datum.setReceipts(productionPickListsResult);
+                    datum.setCoding(productionPickListsResult.getCoding());
                     break;
                 }
             }
@@ -618,6 +688,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(inventoryResult.getStatus());
                     inventoryResult.setStatusName(statusName);
                     datum.setReceipts(inventoryResult);
+                    datum.setCoding(inventoryResult.getCoding());
                     break;
                 }
             }
@@ -632,6 +703,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(status);
                     maintenanceResult.setStatusName(statusName);
                     datum.setReceipts(maintenanceResult);
+                    datum.setCoding(maintenanceResult.getCoding());
                 }
             }
             for (AllocationResult allocationResult : allocationResults) {
@@ -639,6 +711,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     String statusName = statusMap.get(allocationResult.getStatus());
                     allocationResult.setStatusName(statusName);
                     datum.setReceipts(allocationResult);
+                    datum.setCoding(allocationResult.getCoding());
                 }
             }
         }

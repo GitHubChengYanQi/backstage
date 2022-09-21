@@ -69,6 +69,7 @@ public class ProductionPickListsDetailResult implements Serializable {
 
 
     private Integer lockStockDetailNumber;
+    private Integer needOperateNum;
 
     /**
      * 子表id
