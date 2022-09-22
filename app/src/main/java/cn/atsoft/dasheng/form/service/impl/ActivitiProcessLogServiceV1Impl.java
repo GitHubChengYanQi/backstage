@@ -794,37 +794,40 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
      */
     @Override
     public void checkLogActionComplete(Long taskId, Long stepId, Long actionId, Long loginUserId) {
-        ActivitiProcessLog processLog = this.query().eq("task_id", taskId).eq("setps_id", stepId).one();
+        List<ActivitiProcessLog> processLogs = this.query().eq("task_id", taskId).eq("setps_id", stepId).list();
         ActivitiAuditResult audit = auditService.getAudit(stepId);
 
         //TODO 等待动作节点更换逻辑后 增加人员判断
 //        if (this.checkUser(audit.getRule(), taskId)) {
-        if (ToolUtil.isNotEmpty(processLog.getActionStatus())) {
-            List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
-            for (ActionStatus actionStatus : actionStatuses) {
-                if (actionStatus.getActionId().equals(actionId)) {
-                    actionStatus.setStatus(1);
+        for (ActivitiProcessLog processLog : processLogs) {
+            if ((ToolUtil.isEmpty(processLog.getAuditUserId()) || ((ToolUtil.isNotEmpty(processLog.getAuditUserId()) && processLog.getAuditUserId().equals(loginUserId)))) && ToolUtil.isNotEmpty(processLog.getActionStatus())) {
+                List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+                for (ActionStatus actionStatus : actionStatuses) {
+                    if (actionStatus.getActionId().equals(actionId)) {
+                        actionStatus.setStatus(1);
+                    }
                 }
-            }
-            processLog.setActionStatus(JSON.toJSONString(actionStatuses));
-            this.updateById(processLog);
+                processLog.setActionStatus(JSON.toJSONString(actionStatuses));
+                this.updateById(processLog);
 
-            boolean isChecked = false;
-            boolean completeFlag = true;
-            for (ActionStatus actionStatus : actionStatuses) {
-                if (actionStatus.getStatus().equals(0) && actionStatus.isChecked()) {
-                    completeFlag = false;
-                    break;
-                } else if (actionStatus.getStatus().equals(0)) {
-                    completeFlag = false;
-                    break;
+                boolean isChecked = false;
+                boolean completeFlag = true;
+                for (ActionStatus actionStatus : actionStatuses) {
+                    if (actionStatus.getStatus().equals(0) && actionStatus.isChecked()) {
+                        completeFlag = false;
+
+                        break;
+                    } else if (actionStatus.getStatus().equals(0)) {
+                        completeFlag = false;
+                        break;
+                    }
+                    if (actionStatus.isChecked()) {
+                        isChecked = true;
+                    }
                 }
-                if (actionStatus.isChecked()) {
-                    isChecked = true;
+                if (completeFlag && isChecked) {
+                    this.autoAudit(taskId, 1, loginUserId);
                 }
-            }
-            if (completeFlag && isChecked) {
-                this.autoAudit(taskId, 1, loginUserId);
             }
         }
 
