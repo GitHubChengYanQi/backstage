@@ -58,7 +58,7 @@ public class taskController extends BaseController {
 
 
     @Autowired
-    private ActivitiProcessLogV1Service activitiProcessLogService;
+    private ActivitiProcessLogService activitiProcessLogService;
 
     @Autowired
     private ActivitiProcessTaskService taskService;
@@ -76,7 +76,7 @@ public class taskController extends BaseController {
     private UserService userService;
 
     @Autowired
-    private ActivitiProcessLogV1Service logService;
+    private ActivitiProcessLogService logService;
 
     @Autowired
     private PurchaseAskService askService;
@@ -240,7 +240,7 @@ public class taskController extends BaseController {
         appStepService.headPortrait(stepResult);
 
         //取出所有未审核节点
-        List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit3(taskId);
+        List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
 
         /**
          * 流程中审核节点
