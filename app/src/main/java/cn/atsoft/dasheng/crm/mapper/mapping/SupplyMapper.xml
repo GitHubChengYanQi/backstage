@@ -80,56 +80,74 @@
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.SupplyResult"
             parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">
-        select
-        <include refid="Base_Column_List"/>
-        from daoxin_supply where 1 = 1 and display = 1
+        SELECT
+        daoxin_supply.brand_id AS "brandId",
+        daoxin_supply.supplier_model AS "supplierModel",
+        daoxin_supply.supply_id AS "supplyId",
+        daoxin_supply.sku_id AS "skuId",
+        daoxin_supply.customer_id AS "customerId",
+        daoxin_supply.display AS "display",
+        daoxin_crm_order_detail.create_user AS "createUser",
+        daoxin_supply.update_user AS "updateUser",
+        daoxin_supply.create_time AS "createTime",
+        daoxin_supply.update_time AS "updateTime"
+        FROM
+        daoxin_supply
+        LEFT JOIN ( SELECT * FROM ( SELECT * FROM daoxin_crm_order_detail ORDER BY create_time ) AS
+        daoxin_crm_order_detail GROUP BY sku_id, customer_id ) AS daoxin_crm_order_detail ON daoxin_supply.sku_id =
+        daoxin_crm_order_detail.sku_id
+        AND daoxin_supply.customer_id = daoxin_crm_order_detail.customer_id
+        WHERE
+        1 = 1
+        AND daoxin_supply. display = 1
+
+
         <if test="paramCondition.supplyId != null">
-            and supply_id like CONCAT('%',#{paramCondition.supplyId},'%')
+            and daoxin_supply.supply_id = #{paramCondition.supplyId}
         </if>
         <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+            and daoxin_supply.sku_id = #{paramCondition.skuId}
         </if>
         <if test="paramCondition.customerId != null">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+            and daoxin_supply.customer_id = #{paramCondition.customerId}
         </if>
-        <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
-        </if>
-        <if test="paramCondition.noSkuIds != null and paramCondition.noSkuIds.size > 0
-        and paramCondition.noBrandIds !=null and paramCondition.noBrandIds.size>0
- and paramCondition.noCustomerIds !=null and paramCondition.noCustomerIds.size>0 ">
-            and sku_id not in
-            <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
-                #{state}
-            </foreach>
-            union
-            select
-            <include refid="Base_Column_List"/>
-            from daoxin_supply where 1 = 1 and display = 1
-            and brand_id not in
-            <foreach collection="paramCondition.noBrandIds" index="index" item="state" separator="," close=")" open="(">
-                #{state}
-            </foreach>
-            union
-            select
-            <include refid="Base_Column_List"/>
-            from daoxin_supply where 1 = 1 and display = 1
-            and customer_id not in
-            <foreach collection="paramCondition.noCustomerIds" index="index" item="state" separator="," close=")"
-                     open="(">
-                #{state}
-            </foreach>
-        </if>
+
+<!--        <if test="paramCondition.noSkuIds != null and paramCondition.noSkuIds.size > 0-->
+<!--        and paramCondition.noBrandIds !=null and paramCondition.noBrandIds.size>0-->
+<!-- and paramCondition.noCustomerIds !=null and paramCondition.noCustomerIds.size>0 ">-->
+<!--            and daoxin_supply.sku_id not in-->
+<!--            <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">-->
+<!--                #{state}-->
+<!--            </foreach>-->
+<!--            union-->
+<!--            select-->
+<!--            <include refid="Base_Column_List"/>-->
+<!--            from daoxin_supply where 1 = 1 and display = 1-->
+<!--            and brand_id not in-->
+<!--            <foreach collection="paramCondition.noBrandIds" index="index" item="state" separator="," close=")" open="(">-->
+<!--                #{state}-->
+<!--            </foreach>-->
+<!--            union-->
+<!--            select-->
+<!--            <include refid="Base_Column_List"/>-->
+<!--            from daoxin_supply where 1 = 1 and display = 1-->
+<!--            and customer_id not in-->
+<!--            <foreach collection="paramCondition.noCustomerIds" index="index" item="state" separator="," close=")"-->
+<!--                     open="(">-->
+<!--                #{state}-->
+<!--            </foreach>-->
+<!--        </if>-->
         <choose>
             <when test="paramCondition.nameSource == '供应商'">
-                and customer_id in (select customer_id from daoxin_crm_customer where customer_name like
+                and daoxin_supply.customer_id in (select customer_id from daoxin_crm_customer where customer_name like
                 CONCAT('%',#{paramCondition.name},'%'))
             </when>
             <when test="paramCondition.nameSource == '品牌' ">
-                and brand_id in (select brand_id from daoxin_erp_brand where brand_name like
+                and daoxin_supply.brand_id in (select brand_id from daoxin_erp_brand where brand_name like
                 CONCAT('%',#{paramCondition.name},'%'))
             </when>
         </choose>
+        ORDER BY daoxin_crm_order_detail.create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">
