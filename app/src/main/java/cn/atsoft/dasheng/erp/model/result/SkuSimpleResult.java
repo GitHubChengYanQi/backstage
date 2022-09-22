@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -24,7 +25,7 @@ public class SkuSimpleResult {
 
     private List<String> imgThumbUrls;//缩略图
 
-    List<MediaUrlResult> imgResults;
+    List<MediaResult> imgResults;
 
 
     private Integer maintenancePeriod;

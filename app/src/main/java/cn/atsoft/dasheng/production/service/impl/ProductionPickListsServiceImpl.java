@@ -355,14 +355,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             Integer numberCount = 0;
             Integer receivedCount = 0;
             List<Boolean> canPickBooleans = new ArrayList<>();
-            List<SkuSimpleResult> skuResults = new ArrayList<>();
+            List<ProductionPickListsDetailResult> listShowDetails = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
                     if (detailResult.getStockNumber() > 0 && detailResult.getNeedOperateNum()>0) {
                         result.setCanOperate(true);
                     }
-                    if (skuResults.size() < 2 && detailResult.getPickListsId().equals(result.getPickListsId())) {
-                        skuResults.add(detailResult.getSkuResult());
+                    if (listShowDetails.size() < 2) {
+                        listShowDetails.add(detailResult);
                     }
                     listsSkuIds.add(detailResult.getSkuId());
                     canPickBooleans.add(detailResult.getCanPick());
@@ -375,7 +375,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     }
                 }
             }
-            result.setSkuResults(skuResults);
+            result.setDetailResults(listShowDetails);
             /**
              * 是否可以领料
              */
