@@ -104,6 +104,7 @@ public class taskV1Controller {
     private GetOrigin getOrigin;
     @Autowired
     private ShopCartService shopCartService;
+
     @ApiVersion("1.1")
 
     @RequestMapping(value = "/{v}/post", method = RequestMethod.POST)
@@ -219,7 +220,9 @@ public class taskV1Controller {
         //取出所有未审核节点
         List<ActivitiProcessLog> allUnAuditLog = new ArrayList<>();
         allUnAuditLog.addAll(activitiProcessLogService.getAudit3(taskId));
-//        allUnAuditLog.addAll(activitiProcessLogService.getAudit1(taskId));
+        if (allUnAuditLog.size() == 0) {
+            allUnAuditLog.addAll(activitiProcessLogService.getAudit1(taskId));
+        }
 
         /**
          * 流程中审核节点
@@ -238,7 +241,7 @@ public class taskV1Controller {
 
             taskResult.setPermissions(false);
             for (ActivitiProcessLog activitiProcessLog : allUnAuditLog) {
-                if (activitiProcessLog.getStatus() == 3) {
+                if (activitiProcessLog.getStatus() == 3 || activitiProcessLog.getStatus() == -1) {
                     /**
                      * 取节点规则
                      */

@@ -200,6 +200,9 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
         List<ActivitiProcessLog> logs = listByTaskId(taskId);
         List<ActivitiProcessLog> audit = this.getAudit3(taskId);
+        if(audit.size() == 0 ){
+            audit = this.getAudit1(taskId);
+        }
         /**
          * 流程中审核节点
          */
@@ -370,6 +373,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
          * 流程结束需要重新获取需要审批的节点
          */
         audit = this.getAudit1(taskId);
+        audit.addAll( this.getAudit3(taskId));
         // 写一个判断如果下步为动作时 执行动作
 //        startAction(audit, task);
         for (ActivitiProcessLog processLog : audit) {
@@ -754,6 +758,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
             throw new ServiceException(500, "当前任务不存在");
         }
         List<ActivitiProcessLog> logs = this.getAudit3(processTask.getProcessTaskId());
+       logs.addAll(this.getAudit1(processTask.getProcessTaskId()));
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : logs) {
             stepIds.add(processLog.getSetpsId());
@@ -763,6 +768,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
             for (ActivitiSteps activitiStep : activitiSteps) {
                 if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
                     this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId, loginUserId);
+                    return;
                 }
             }
         }
