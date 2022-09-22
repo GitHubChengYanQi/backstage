@@ -76,7 +76,7 @@ public class taskController extends BaseController {
     private UserService userService;
 
     @Autowired
-    private ActivitiProcessLogV1Service logService;
+    private ActivitiProcessLogService logService;
 
     @Autowired
     private PurchaseAskService askService;

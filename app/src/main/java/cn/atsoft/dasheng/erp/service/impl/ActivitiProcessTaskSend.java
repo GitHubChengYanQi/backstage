@@ -14,10 +14,8 @@ import cn.atsoft.dasheng.form.pojo.AppointUser;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.DeptPosition;
 import cn.atsoft.dasheng.form.pojo.RuleType;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
@@ -65,7 +63,7 @@ public class ActivitiProcessTaskSend {
     @Autowired
     private QualityTaskDetailService qualityTaskDetailService;
     @Autowired
-    private ActivitiProcessLogV1Service activitiProcessLogService;
+    private ActivitiProcessLogService activitiProcessLogService;
 
     @Autowired
     private QualityMessageSend qualityMessageSend;

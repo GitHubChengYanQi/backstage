@@ -57,7 +57,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     @Autowired
     private PurchaseListingService purchaseListingService;
     @Autowired
-    private ActivitiProcessLogV1Service activitiProcessLogService;
+    private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired

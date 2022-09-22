@@ -85,7 +85,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
-    private ActivitiProcessLogV1Service activitiProcessLogService;
+    private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private DocumentsActionService documentsActionService;
     @Autowired
