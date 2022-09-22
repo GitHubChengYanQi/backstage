@@ -285,17 +285,17 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                                 }
                                 break;
                             case "ERROR":   //入库异常
-//                            if (checkInstock.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
-//                                updateStatus(activitiProcessLog.getLogId(), status, loginUserId);
-//                                setStatus(logs, activitiProcessLog.getLogId());
-//                                //拒绝走拒绝方法
-//                                if (status.equals(0)) {
-//                                    this.refuseTask(task);
-//                                    auditCheck = false;
-//                                }
-//                            } else {
-//                                auditCheck = false;
-//                            }
+                            if (checkInstock.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
+                                updateStatus(activitiProcessLog.getLogId(), status, loginUserId);
+                                setStatus(logs, activitiProcessLog.getLogId());
+                                //拒绝走拒绝方法
+                                if (status.equals(0)) {
+                                    this.refuseTask(task);
+                                    auditCheck = false;
+                                }
+                            } else {
+                                auditCheck = false;
+                            }
                                 break;
                             case "createInstock":   //入库创建
                             case "INSTOCK":   //入库创建
@@ -696,7 +696,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
     private void loopNext(ActivitiProcessTask task, List<ActivitiAudit> activitiAuditList, List<ActivitiSteps> allSteps, Boolean auditCheck, Long loginUserId) {
 
-        List<ActivitiProcessLog> audit = this.getAudit3(task.getProcessTaskId());
+        List<ActivitiProcessLog> audit = this.getAudit1(task.getProcessTaskId());
 
         if (auditCheck) {
             this.sendNextStepsByTask(task, audit, loginUserId);
@@ -1476,7 +1476,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
         if (ToolUtil.isNotEmpty(nextStepsIds)) {
             List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
-                in("setps_id", nextStepsIds);
+                in("setps_id", nextStepsIds.stream().distinct().collect(Collectors.toList()));
             }});
 
             for (ActivitiAudit activitiAudit : activitiAudits) {
