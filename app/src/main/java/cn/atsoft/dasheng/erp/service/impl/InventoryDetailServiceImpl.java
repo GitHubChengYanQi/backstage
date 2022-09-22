@@ -27,6 +27,7 @@ import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
 import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -80,7 +81,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     @Autowired
     private ActivitiProcessTaskService taskService;
     @Autowired
-    private ActivitiProcessLogV1Service activitiProcessLogService;
+    private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private SpuClassificationService spuClassificationService;
     @Autowired

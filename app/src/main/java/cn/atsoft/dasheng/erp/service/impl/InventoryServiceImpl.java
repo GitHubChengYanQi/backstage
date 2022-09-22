@@ -103,7 +103,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
-    private ActivitiProcessLogV1Service activitiProcessLogService;
+    private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
