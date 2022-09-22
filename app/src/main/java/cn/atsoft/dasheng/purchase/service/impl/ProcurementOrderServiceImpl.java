@@ -16,10 +16,8 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
-import cn.atsoft.dasheng.form.service.ActivitiProcessService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrderDetail;
@@ -91,7 +89,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
-    private ActivitiProcessLogV1Service activitiProcessLogService;
+    private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired

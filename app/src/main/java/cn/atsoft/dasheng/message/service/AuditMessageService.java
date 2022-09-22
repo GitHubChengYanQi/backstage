@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.message.service;
 
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuditMessageService {
     @Autowired
-    private ActivitiProcessLogV1Service activitiProcessLogService;
+    private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private ActivitiProcessTaskService processTaskService;
 
