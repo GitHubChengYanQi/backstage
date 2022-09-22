@@ -118,6 +118,7 @@
 
     </sql>
     <sql id="auditColumn2">
+        DISTINCT
         task
         .
         process_task_id
