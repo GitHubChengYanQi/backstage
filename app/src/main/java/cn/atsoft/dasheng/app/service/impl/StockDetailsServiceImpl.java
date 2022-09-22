@@ -308,7 +308,10 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 //            List<Long> inkindIds = getMaintenanceInkindIds(param.getMaintenanceId());
 //            param.setInkindIds(inkindIds);
 //        }
-
+        List<Long> lockedInkindIds = pickListsCartService.getLockedInkindIds();
+        if (ToolUtil.isNotEmpty(lockedInkindIds)) {
+            param.setLockedInkindIds(lockedInkindIds);
+        }
 
         Page<StockDetailsResult> pageContext = getPageContext();
         IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
@@ -618,12 +621,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             inkindIds.add(datum.getInkindId());
             userIds.add(datum.getCreateUser());
         }
-        List<Long> lockedInkindIds = pickListsCartService.getLockedInkindIds();
-        if (ToolUtil.isNotEmpty(lockedInkindIds)) {
-            for (Long lockedInkindId : lockedInkindIds) {
-                data.removeIf(i -> i.getInkindId().equals(lockedInkindId));
-            }
-        }
+
+
         List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
         List<OrCodeBind> codeBinds = inkindIds.size() == 0 ? new ArrayList<>() : codeBindService.query().in("form_id", inkindIds).list();
         List<MaintenanceLogDetailResult> maintenanceLogDetailResults = maintenanceLogDetailService.lastLogByInkindIds(inkindIds);
