@@ -49,7 +49,6 @@ public class DynamicResult implements Serializable {
      * 内容
      */
     @ApiModelProperty("内容")
-    @JSONField(serialize = false)
     private String content;
 
     /**

@@ -31,6 +31,12 @@ public class MaintenanceLog implements Serializable {
       @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
+
+
+
+    @TableField("notice")
+    private String notice;
+
     /**
      * 来源
      */
@@ -87,6 +93,8 @@ public class MaintenanceLog implements Serializable {
      */
     @TableField("enclosure")
     private String enclosure;
+
+
 
 
     public Long getMaintenanceLogId() {
@@ -207,6 +215,14 @@ public class MaintenanceLog implements Serializable {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public String getNotice() {
+        return notice;
+    }
+
+    public void setNotice(String notice) {
+        this.notice = notice;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
@@ -23,6 +24,8 @@ import java.util.List;
 @Data
 @ApiModel
 public class RemarksResult implements Serializable {
+
+    private MediaResult mediaResult;
 
     private static final long serialVersionUID = 1L;
 

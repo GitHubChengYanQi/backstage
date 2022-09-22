@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -21,12 +22,16 @@ import java.util.List;
 public class MaintenanceLogResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    List<MaintenanceLogDetailResult> detailResults;
     private String coding;
+
+    private String notice;
+
+    List<AnnouncementsResult> announcementsResults;
+
     @ApiModelProperty("")
     private Long maintenanceLogId;
 
-    List<MaintenanceLogDetailResult> detailResults;
 
 
     private String origin;

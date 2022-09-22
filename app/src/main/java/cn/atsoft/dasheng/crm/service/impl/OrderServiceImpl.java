@@ -541,22 +541,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         result.setAcontacts(Acontacts);
         result.setBcontacts(Bcontacts);
 
-        Bank Abank = bankService.getById(result.getPartyABankId()); //甲方银行
-        Bank Bbank = bankService.getById(result.getPartyBBankId());//乙方银行
+        Bank Abank = ToolUtil.isEmpty(result.getPartyABankId()) ? null : bankService.getById(result.getPartyABankId()); //甲方银行
+        Bank Bbank = ToolUtil.isEmpty(result.getPartyBBankId()) ? null : bankService.getById(result.getPartyBBankId());//乙方银行
         result.setAbank(Abank);
         result.setBbank(Bbank);
 
-        Adress Aadress = adressService.getById(result.getPartyAAdressId());//甲方地址
-        Adress Badress = adressService.getById(result.getPartyBAdressId());//乙方地址
+        Adress Aadress = ToolUtil.isEmpty(result.getPartyAAdressId()) ? null : adressService.getById(result.getPartyAAdressId());//甲方地址
+        Adress Badress = ToolUtil.isEmpty(result.getPartyBAdressId()) ? null : adressService.getById(result.getPartyBAdressId());//乙方地址
         result.setAadress(Aadress);
         result.setBadress(Badress);
 
-        Phone Aphone = phoneService.getById(result.getPartyAPhone());//甲方电话；
-        Phone Bphone = phoneService.getById(result.getPartyBPhone());//乙方电话
-        result.setAphone(Aphone);
-        result.setBphone(Bphone);
-        result.setAContactsPhone(Aphone.getPhoneNumber());
-        result.setBContactsPhone(Bphone.getPhoneNumber());
+        Phone Aphone = ToolUtil.isEmpty(result.getPartyAPhone()) ? null : phoneService.getById(result.getPartyAPhone());//甲方电话；
+        Phone Bphone = ToolUtil.isEmpty(result.getPartyBPhone()) ? null : phoneService.getById(result.getPartyBPhone());//乙方电话
+
+        if (ToolUtil.isNotEmpty(Aphone)) {
+            result.setAphone(Aphone);
+            result.setAContactsPhone(Aphone.getPhoneNumber());
+        }
+        if (ToolUtil.isNotEmpty(Bphone)) {
+            result.setBphone(Bphone);
+            result.setBContactsPhone(Bphone.getPhoneNumber());
+        }
 
 
         Customer Acustomer = customerService.getById(result.getBuyerId());//甲方;

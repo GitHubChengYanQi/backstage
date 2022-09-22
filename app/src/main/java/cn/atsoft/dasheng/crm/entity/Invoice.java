@@ -83,7 +83,7 @@ public class Invoice implements Serializable {
      * 开户账号
      */
     @TableField("bank_no")
-    private Long bankNo;
+    private String bankNo;
 
     /**
      * 创建者
@@ -130,11 +130,11 @@ public class Invoice implements Serializable {
         this.invoiceNote = invoiceNote;
     }
 
-    public Long getBankNo() {
+    public String getBankNo() {
         return bankNo;
     }
 
-    public void setBankNo(Long bankNo) {
+    public void setBankNo(String bankNo) {
         this.bankNo = bankNo;
     }
 

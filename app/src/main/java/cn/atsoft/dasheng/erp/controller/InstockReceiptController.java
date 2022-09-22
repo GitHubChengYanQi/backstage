@@ -138,12 +138,17 @@ public class InstockReceiptController extends BaseController {
                 break;
 
         }
-        XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getModule(), map, skuMap);
-//            String fileName = "test.docx";
-//            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-//            OutputStream os = response.getOutputStream();
-//            document.write(os);
+        try {
+            XWPFDocument document = this.instockReceiptService.createWord(instockReceiptParam.getModule(), map, skuMap);
+            String fileName = "test.docx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            OutputStream os = response.getOutputStream();
+            document.write(os);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 

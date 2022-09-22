@@ -74,6 +74,8 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                 if (supplyList.stream().noneMatch(i -> i.getBrandId().equals(brandId) && i.getSkuId().equals(param.getSkuId()) && i.getCustomerId().equals(param.getCustomerId()))) {
                     supplyList.add(supply);
                 }
+            } else {
+                throw new ServiceException(500, "存在重复绑定");
             }
         }
         this.saveBatch(supplyList);
