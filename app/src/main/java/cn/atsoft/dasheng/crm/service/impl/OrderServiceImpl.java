@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.Excel.ContractExcel;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
@@ -222,6 +223,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         OrderResult orderResult = this.getDetail(detail.getSourceId());                     //订单表
         PaymentResult paymentResult = paymentService.getDetail(orderResult.getOrderId());  //付款主表
         Map<String, Object> map = new HashMap<>();
+        String sign = detailService.getSign(orderResult.getOrderId());
 
         for (ContractEnum label : ContractEnum.values()) {
             switch (label) {
@@ -327,11 +329,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     break;
                 case TotalAmountInFigures:
-                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), orderResult.getAllMoney());
+                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), sign + ContractExcel.priceReplace(orderResult.getAllMoney()));
                     break;
                 case TotalAmountInWords:
                     int money = Math.toIntExact(orderResult.getAllMoney());
                     String format = NumberChineseFormatter.format(money, true, true);
+                    format = format.replace("元", "圆");
                     map.put(ContractEnum.TotalAmountInWords.getDetail(), format);
                 case ABankNo:
                     map.put(ContractEnum.ABankNo.getDetail(), orderResult.getPartyABankNo());
@@ -497,11 +500,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (ToolUtil.isNotEmpty(paymentResult) && ToolUtil.isNotEmpty(paymentResult.getOrderId())) {
             details = detailService.getDetails(paymentResult.getOrderId());
         }
-        long allMoney = 0L;
-        long totalNumber = 0L;
+        int allMoney = 0;
+        int totalNumber = 0;
         for (OrderDetailResult detail : details) {
             totalNumber = totalNumber + detail.getPurchaseNumber();
-            long money = detail.getOnePrice() * detail.getPurchaseNumber();
+            int money = detail.getOnePrice() * detail.getPurchaseNumber();
             allMoney = allMoney + money;
         }
         orderResult.setTotalNumber(totalNumber);

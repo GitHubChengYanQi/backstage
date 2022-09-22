@@ -29,7 +29,7 @@ import java.util.List;
 @ApiModel
 public class OrderResult implements Serializable {
 
-    private Long totalNumber;
+    private int totalNumber;
 
     private Long fileId;
 
@@ -50,7 +50,7 @@ public class OrderResult implements Serializable {
 
     private Long BContactsPhone;
 
-    private Long allMoney;
+    private Integer allMoney;
 
     private Adress adress;
 

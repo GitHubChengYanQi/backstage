@@ -29,6 +29,8 @@ public class OrderDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String sign; //币种
+
     private OrderResult orderResult;
     private SkuResult skuResult;
     private BrandResult brandResult;
@@ -68,7 +70,7 @@ public class OrderDetailResult implements Serializable {
      * 采购数量
      */
     @ApiModelProperty("采购数量")
-    private Long purchaseNumber;
+    private Integer purchaseNumber;
 
     /**
      * 单位id

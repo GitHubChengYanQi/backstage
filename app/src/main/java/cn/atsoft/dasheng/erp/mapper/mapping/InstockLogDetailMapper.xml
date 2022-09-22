@@ -66,12 +66,9 @@
             and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
         </if>
 
-
         <if test="paramCondition.storehouseId != null">
             and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
         </if>
-
-
         <if test="paramCondition.storehousePositionsId != null">
             and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
         </if>
@@ -99,6 +96,17 @@
         <if test="paramCondition.sourceId != null">
             and source_id = #{paramCondition.sourceId}
         </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_id in (
+            select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where standard like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
+            CONCAT('%',#{paramCondition.skuName},'%') )
+                        )
+        </if>
+
         order by create_time
     </select>
 
@@ -223,6 +231,17 @@
         <if test="paramCondition.sourceId != null">
             and source_id = #{paramCondition.sourceId}
         </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_id in (
+            select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where standard like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
+            CONCAT('%',#{paramCondition.skuName},'%') )
+            )
+        </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map"

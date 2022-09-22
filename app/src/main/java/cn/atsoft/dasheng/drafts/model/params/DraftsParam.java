@@ -27,6 +27,8 @@ public class DraftsParam implements Serializable, BaseValidatingParam {
     private String startDay;
     private String endDay;
 
+    private String name;
+
     /**
      * 草稿箱id
      */

@@ -28,6 +28,8 @@ public class DraftsResult implements Serializable {
 
     private UserResult createUserResult;
 
+    private String name;
+
 
     /**
      * 草稿箱id
