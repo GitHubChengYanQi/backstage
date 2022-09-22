@@ -553,7 +553,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> {
                         StockDetailsResult stockDetailsResult = BeanUtil.copyProperties(a, StockDetailsResult.class);
-                        stockDetailsResult.setNumber(a.getNumber()+b.getNumber());
+                        stockDetailsResult.setNumber(a.getNumber() + b.getNumber());
                         return stockDetailsResult;
                     }).ifPresent(totalList::add);
                 }
@@ -621,9 +621,10 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<Long> lockedInkindIds = pickListsCartService.getLockedInkindIds();
         if (ToolUtil.isNotEmpty(lockedInkindIds)) {
             for (Long lockedInkindId : lockedInkindIds) {
-                data.removeIf(i->i.getInkindId().equals(lockedInkindId));
+                data.removeIf(i -> i.getInkindId().equals(lockedInkindId));
             }
         }
+        List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
         List<OrCodeBind> codeBinds = inkindIds.size() == 0 ? new ArrayList<>() : codeBindService.query().in("form_id", inkindIds).list();
         List<MaintenanceLogDetailResult> maintenanceLogDetailResults = maintenanceLogDetailService.lastLogByInkindIds(inkindIds);
         List<CustomerResult> results = customerService.getResults(customerIds);
@@ -635,6 +636,12 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
 
         for (StockDetailsResult datum : data) {
+            for (Inkind inkind : inkinds) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId()) && inkind.getInkindId().equals(datum.getInkindId())) {
+                    datum.setAnomaly(inkind.getAnomaly());
+                    break;
+                }
+            }
 
             for (OrCodeBind codeBind : codeBinds) {
                 if (codeBind.getFormId().equals(datum.getInkindId())) {
@@ -806,15 +813,15 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                     queryWrapper.eq("brand_id", cartParam.getBrandId());
                 }
                 queryWrapper.eq("storehouse_positions_id", cartParam.getStorehousePositionsId());
-                queryWrapper.eq("display",1);
-                queryWrapper.eq("stage",1);
+                queryWrapper.eq("display", 1);
+                queryWrapper.eq("stage", 1);
 
                 list.addAll(this.list(queryWrapper));
             }
         }
-         list = list.stream().distinct().collect(Collectors.toList());
+        list = list.stream().distinct().collect(Collectors.toList());
         for (Long inkindId : cartInkindIds) {
-            list.removeIf(i->i.getInkindId().equals(inkindId));
+            list.removeIf(i -> i.getInkindId().equals(inkindId));
         }
         return list;
     }
