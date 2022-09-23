@@ -907,42 +907,42 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
 
     @Override
     public void createOrder(AllocationParam param) {
-//        if (ToolUtil.isEmpty(param.getUserId())) {
-//            throw new ServiceException(500, "请填写负责人");
-//        }
-//        if (ToolUtil.isEmpty(param.getAllocationId())) {
-//            throw new ServiceException(500, "请选择单据");
-//        }
-//        Allocation allocation = this.getById(param.getAllocationId());
-//
-//        List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status", 0).list();
-//        List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("status", 0).eq("type", "carry").list();
-//
-//
-//        for (AllocationCart cart : carts) {
-//            cart.setStatus(98);
-//            int num = cart.getNumber();
-//            for (AllocationDetail detail : details) {
-//                if (num > 0) {
-//                    if (cart.getAllocationDetailId().equals(detail.getAllocationDetailId())) {
-//                        detail.setCarryNumber(detail.getCarryNumber() + num);
-//                        if (Objects.equals(detail.getCarryNumber(), detail.getNumber())) {
-//                            detail.setStatus(98);
-//                        }
-//                        num -= (detail.getNumber() - detail.getCarryNumber());
-//
-//                    }
-//                }
-//            }
-//
-//        }
-//        allocationDetailService.updateBatchById(details);
-//        allocationCartService.updateBatchById(carts);
-//        this.createPickListsAndInStockOrder(param, carts);
-//        details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
-//        if (details.stream().noneMatch(i -> i.getStatus().equals(0))) {
+        if (ToolUtil.isEmpty(param.getUserId())) {
+            throw new ServiceException(500, "请填写负责人");
+        }
+        if (ToolUtil.isEmpty(param.getAllocationId())) {
+            throw new ServiceException(500, "请选择单据");
+        }
+        Allocation allocation = this.getById(param.getAllocationId());
+
+        List<AllocationDetail> details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).eq("status", 0).list();
+        List<AllocationCart> carts = allocationCartService.query().eq("allocation_id", param.getAllocationId()).eq("display", 1).eq("status", 0).eq("type", "carry").list();
+
+
+        for (AllocationCart cart : carts) {
+            cart.setStatus(98);
+            int num = cart.getNumber();
+            for (AllocationDetail detail : details) {
+                if (num > 0) {
+                    if (cart.getAllocationDetailId().equals(detail.getAllocationDetailId())) {
+                        detail.setCarryNumber(detail.getCarryNumber() + num);
+                        if (Objects.equals(detail.getCarryNumber(), detail.getNumber())) {
+                            detail.setStatus(98);
+                        }
+                        num -= (detail.getNumber() - detail.getCarryNumber());
+
+                    }
+                }
+            }
+
+        }
+        allocationDetailService.updateBatchById(details);
+        allocationCartService.updateBatchById(carts);
+        this.createPickListsAndInStockOrder(param, carts);
+        details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
+        if (details.stream().noneMatch(i -> i.getStatus().equals(0))) {
             checkCart(param.getAllocationId());
-//        }
+        }
     }
 
     @Override
