@@ -23,6 +23,7 @@
         <result column="cause" property="cause"/>
         <result column="status" property="status"/>
         <result column="deptId" property="deptId"/>
+        <result column="version" property="version"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -57,7 +58,8 @@
 	    update_time AS "updateTime",
             source AS "source",
             source_id AS "source_id",
-            deptId AS "deptId"
+            deptId AS "deptId",
+            version AS "version"
     </sql>
     <sql id="Left_Join_Column_List">
         activiti_process_task
@@ -85,7 +87,8 @@
 	    activiti_process_task.update_time AS "updateTime",
         activiti_process_task.source AS "source",
         activiti_process_task.source_id AS "source_id",
-        activiti_process_task.deptId AS "deptId"
+        activiti_process_task.deptId AS "deptId",
+          activiti_process_task.version AS "version"
     </sql>
     <sql id="auditColumn">
         activiti_process_task
@@ -114,7 +117,8 @@
 	activiti_process_task.source AS "source",
 	activiti_process_task.source_id AS "source_id" ,
 	daoxin_task_participant.user_id as "participantUser",
-	daoxin_task_participant.type as "participantType"
+	daoxin_task_participant.type as "participantType",
+            activiti_process_task.version AS "version"
 
     </sql>
     <sql id="auditColumn2">
@@ -145,7 +149,9 @@
 	task.source AS "source",
 	task.source_id AS "source_id" ,
 	participant.user_id as "participantUser",
-	participant.type as "participantType"
+	participant.type as "participantType",
+    task.version AS "version"
+
 
     </sql>
 
@@ -371,6 +377,6 @@
             or task.user_id = #{paramCondition.participantUser}
             )
         </if>
-
+        group by task.process_task_id
     </select>
 </mapper>

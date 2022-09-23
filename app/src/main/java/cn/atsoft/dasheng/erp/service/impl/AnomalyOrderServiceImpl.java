@@ -88,7 +88,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     @Autowired
     private AnomalyBindService bindService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
     @Autowired
     private ActivitiStepsService stepsService;
     @Autowired
@@ -108,7 +108,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     @Autowired
     private MessageProducer messageProducer;
     @Autowired
-    private ActivitiProcessLogService processLogService;
+    private ActivitiProcessLogV1Service processLogService;
     @Autowired
     private InstockLogDetailService instockLogDetailService;
     @Autowired

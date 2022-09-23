@@ -79,10 +79,10 @@ public class ExcelAsync {
 
 
     @Async
-    public void skuAdd(List<SkuExcelItem> skuExcelItemList) {
+    public void skuAdd(List<SkuExcelItem> skuExcelItemList,Long userId) {
 
         //-------------------------------------------------------------------------------------------------------------
-        List<Sku> skuList = new ArrayList<>();
+         List<Sku> skuList = new ArrayList<>();
         List<Sku> skus = skuService.query().eq("display", 1).list();  //所有sku
         List<SpuClassification> spuClassifications = classificationService.query().eq("display", 1).eq("type", 1).list(); //所有分类
         List<Spu> spuList = spuService.query().eq("display", 1).list();
@@ -94,6 +94,7 @@ public class ExcelAsync {
         asynTask.setAllCount(skuExcelItemList.size());
         asynTask.setType("物料导入");
         asynTask.setStatus(0);
+        asynTask.setCreateUser(userId);
         taskService.save(asynTask);
 
 
@@ -158,6 +159,7 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(categoryId)) {
                     Category category = new Category();
                     category.setCategoryName(skuExcelItem.getClassItem());
+                    category.setCreateUser(userId);
                     categoryService.save(category);
                     categories.add(category);
                     categoryId = category.getCategoryId();
@@ -205,6 +207,7 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(unitId)) {
                     Unit newUnit = new Unit();
                     newUnit.setUnitName(skuExcelItem.getUnit());
+                    newUnit.setCreateUser(userId);
                     unitService.save(newUnit);
                     units.add(newUnit);
                     unitId = newUnit.getUnitId();
@@ -240,6 +243,7 @@ public class ExcelAsync {
                                     ItemAttribute itemAttribute = new ItemAttribute();
                                     itemAttribute.setAttribute(attributeStr);
                                     itemAttribute.setCategoryId(categoryId);
+                                    itemAttribute.setCreateUser(userId);
                                     attributeService.save(itemAttribute);
                                     attributeId = itemAttribute.getAttributeId();
                                 } else {
@@ -258,6 +262,7 @@ public class ExcelAsync {
                                     AttributeValues values = new AttributeValues();
                                     values.setAttributeValues(valueStr);
                                     values.setAttributeId(attributeId);
+                                    values.setCreateUser(userId);
                                     valuesService.save(values);
                                     valueId = values.getAttributeValuesId();
                                 } else {
@@ -320,6 +325,7 @@ public class ExcelAsync {
                     asynTaskDetail.setContentJson(JSON.toJSONString(skuExcelItem));
                     asynTaskDetail.setStatus(99);
                     asynTaskDetails.add(asynTaskDetail);
+                    newSku.setCreateUser(userId);
                     skuList.add(newSku);
                 }
 
@@ -327,6 +333,7 @@ public class ExcelAsync {
                 skuExcelItem.setError(e.getMessage());
                 asynTaskDetail.setStatus(50);
                 asynTaskDetail.setContentJson(JSON.toJSONString(skuExcelItem));
+                asynTaskDetail.setCreateUser(userId);
                 asynTaskDetails.add(asynTaskDetail);
                 e.printStackTrace();
                 logger.error("写入异常:" + "第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);   //错误异常
@@ -343,7 +350,7 @@ public class ExcelAsync {
 
 
     @Async
-    public void spuAdd(List<SpuExcel> spuExcels) {
+    public void spuAdd(List<SpuExcel> spuExcels,Long userId) {
         List<Spu> spuList = spuService.query().eq("display", 1).list();
         List<Category> categoryList = categoryService.query().eq("display", 1).list();
         List<SpuClassification> spuClassList = classificationService.query().eq("display", 1).list();
@@ -354,7 +361,7 @@ public class ExcelAsync {
         asynTask.setType("产品导入");
         asynTask.setStatus(0);
         asynTask.setAllCount(spuExcels.size());
-
+        asynTask.setCreateUser(userId);
 
         taskService.save(asynTask);
         List<Spu> spus = new ArrayList<>();
@@ -418,6 +425,7 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(cate)) {
                     cate = new Category();
                     cate.setCategoryName(spuExcel.getSpuName());
+                    cate.setCreateUser(userId);
                     categoryService.save(cate);
                     categoryList.add(cate);
                 }
@@ -435,11 +443,13 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(newSpu.getUnitId())) {
                     Unit unit = new Unit();
                     unit.setUnitName(spuExcel.getUnit());
+                    unit.setCreateUser(userId);
                     unitService.save(unit);
                     units.add(unit);
                     newSpu.setUnitId(unit.getUnitId());
                 }
                 newSpu.setCategoryId(cate.getCategoryId());
+                newSpu.setCreateUser(userId);
 
 
                 /**
@@ -466,6 +476,7 @@ public class ExcelAsync {
                 asynTaskDetail.setStatus(50);
                 spuExcel.setError(e.getMessage());
                 asynTaskDetail.setContentJson(JSON.toJSONString(spuExcel));
+                asynTaskDetail.setCreateUser(userId);
                 asynTaskDetails.add(asynTaskDetail);
                 e.printStackTrace();
             }

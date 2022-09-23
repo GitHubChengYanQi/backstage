@@ -65,7 +65,6 @@ public class taskController extends BaseController {
 
     @Autowired
     private ActivitiStepsService stepsService;
-
     @Autowired
     private ActivitiAuditService auditService;
 

@@ -81,7 +81,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     @Autowired
     private ActivitiProcessTaskService taskService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
     @Autowired
     private SpuClassificationService spuClassificationService;
     @Autowired

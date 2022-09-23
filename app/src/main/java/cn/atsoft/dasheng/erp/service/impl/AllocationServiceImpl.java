@@ -85,7 +85,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
     @Autowired
     private DocumentsActionService documentsActionService;
     @Autowired
@@ -941,7 +941,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         this.createPickListsAndInStockOrder(param, carts);
         details = allocationDetailService.query().eq("allocation_id", param.getAllocationId()).list();
         if (details.stream().noneMatch(i -> i.getStatus().equals(0))) {
-            checkCart(allocation.getAllocationId());
+            checkCart(param.getAllocationId());
         }
     }
 

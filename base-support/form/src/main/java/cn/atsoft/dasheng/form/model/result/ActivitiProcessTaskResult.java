@@ -47,6 +47,7 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private Object themeAndOrigin;
 
+    private Integer version;
 
     @ApiModelProperty("")
     private Long processId;

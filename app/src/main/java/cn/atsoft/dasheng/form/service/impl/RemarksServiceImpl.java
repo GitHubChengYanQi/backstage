@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 @Service
 public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> implements RemarksService {
     @Autowired
-    private ActivitiProcessLogService logService;
+    private ActivitiProcessLogV1Service logService;
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
@@ -204,7 +204,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             in("setps_id", stepIds);
         }});
         //TODO 更换新的审批流查询逻辑
-        List<ActivitiProcessLog> audit = logService.getAudit(auditParam.getTaskId());
+        List<ActivitiProcessLog> audit = logService.getAudit3(auditParam.getTaskId());
         for (ActivitiProcessLog activitiProcessLog : audit) {
             ActivitiAudit activitiAudit = logService.getRule(activitiAudits, activitiProcessLog.getSetpsId());
             AuditRule rule = activitiAudit.getRule();

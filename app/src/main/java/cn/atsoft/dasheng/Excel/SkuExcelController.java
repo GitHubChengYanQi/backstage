@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.Excel;
 
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelItem;
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
@@ -112,7 +114,7 @@ public class SkuExcelController {
         /**
          * 调用异步添加
          */
-        excelAsync.skuAdd(skuExcelItemList);
+        excelAsync.skuAdd(skuExcelItemList, LoginContextHolder.getContext().getUserId());
         //-------------------------------------------------------------------------------------------------------------
 
         return ResponseData.success("ok");

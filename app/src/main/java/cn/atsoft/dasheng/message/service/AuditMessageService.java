@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuditMessageService {
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
     @Autowired
     private ActivitiProcessTaskService processTaskService;
 

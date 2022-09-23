@@ -140,7 +140,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private AnnouncementsService announcementsService;
@@ -163,7 +163,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ShopCartService shopCartService;
 
     @Autowired
-    private ActivitiProcessLogService processLogService;
+    private ActivitiProcessLogV1Service processLogService;
 
     @Autowired
     private ActivitiStepsService activitiStepsService;
