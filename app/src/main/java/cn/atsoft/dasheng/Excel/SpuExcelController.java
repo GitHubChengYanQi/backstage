@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.Excel;
 
 import cn.atsoft.dasheng.Excel.pojo.SpuExcel;
 import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -92,7 +93,7 @@ public class SpuExcelController {
         /**
          * 调用异步方法
          */
-        excelAsync.spuAdd(spuExcels);
+        excelAsync.spuAdd(spuExcels, LoginContextHolder.getContext().getUserId());
         return ResponseData.success("ok");
     }
 

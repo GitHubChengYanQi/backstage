@@ -28,6 +28,7 @@ public interface MaintenanceLogMapper extends BaseMapper<MaintenanceLog> {
      * @Date 2022-08-11
      */
     List<MaintenanceLogResult> customList(@Param("paramCondition") MaintenanceLogParam paramCondition);
+    List<MaintenanceLogResult> leftJoinList(@Param("paramCondition") MaintenanceLogParam paramCondition);
 
     /**
      * 获取map列表
