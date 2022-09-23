@@ -230,6 +230,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             String name = LoginContextHolder.getContext().getUser().getName();
             activitiProcessTaskParam.setTaskName(name + "的出库申请 ");
+            activitiProcessTaskParam.setRemark(entity.getRemarks());
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getPickListsId());
             activitiProcessTaskParam.setType("OUTSTOCK");
@@ -358,7 +359,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             List<ProductionPickListsDetailResult> listShowDetails = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
-                    if (detailResult.getStockNumber() > 0 && detailResult.getNeedOperateNum()>0) {
+                    if (detailResult.getStockNumber() > 0 && detailResult.getNeedOperateNum() > 0) {
                         result.setCanOperate(true);
                     }
                     if (listShowDetails.size() < 2) {

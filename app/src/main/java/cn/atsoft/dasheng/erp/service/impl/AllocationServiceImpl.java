@@ -152,6 +152,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             String name = LoginContextHolder.getContext().getUser().getName();
             activitiProcessTaskParam.setTaskName(name + "调拨申请 ");
             activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setRemark(entity.getRemark());
             activitiProcessTaskParam.setFormId(entity.getAllocationId());
             activitiProcessTaskParam.setType("ALLOCATION");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());

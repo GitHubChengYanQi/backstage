@@ -103,8 +103,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 if (phone.getPhoneNumber() != null) {
                     phone.setContactsId(entity.getContactsId());
                     phoneService.add(phone);
-                } else {
-                    throw new ServiceException(500, "请填写正确联系人电话");
                 }
             }
 

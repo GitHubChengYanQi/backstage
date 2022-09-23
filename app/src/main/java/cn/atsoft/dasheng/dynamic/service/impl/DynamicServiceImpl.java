@@ -73,7 +73,8 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     public PageInfo<DynamicResult> findPageBySpec(DynamicParam param){
         Page<DynamicResult> pageContext = getPageContext();
         IPage<DynamicResult> page = this.baseMapper.customPageList(pageContext, param);
-//        this.format(page.getRecords());
+
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
     private void format(List<DynamicResult> data){
@@ -85,37 +86,12 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
 
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
         for (DynamicResult datum : data) {
-            if (datum.getType().equals("1")) {
-                datum.setType("添加");
-            } else if (datum.getType().equals("2")) {
-                datum.setType("更新");
-            }
-
             for (UserResult userResultsById : userResultsByIds) {
                 if (userResultsById.getUserId().equals(datum.getUserId())){
                     datum.setUserResult(userResultsById);
                     break;
                 }
             }
-            switch (datum.getSource()){
-                case "Sku":
-                    datum.setSourceName("物料");
-                    break;
-                case "ActivitiProcessTask":
-                    datum.setSourceName("任务");
-                    break;
-                case "ActivitiProcessLog":
-                    datum.setSourceName("流程");
-                    break;
-                case "OperationLog":
-                    datum.setSourceName("操作日志");
-                    break;
-                default:
-                    break;
-            }
-
-
-
 
 
         }

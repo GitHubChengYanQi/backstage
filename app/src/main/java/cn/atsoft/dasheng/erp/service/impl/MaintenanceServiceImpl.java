@@ -169,6 +169,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             activitiProcessTaskParam.setTaskName(name + "养护申请 ");
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getMaintenanceId());
+            activitiProcessTaskParam.setRemark(param.getRemark());
             activitiProcessTaskParam.setType("MAINTENANCE");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
@@ -271,7 +272,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         stockDetails = inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
         List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
-        List<MaintenanceLogDetail> logDetails =skuIds.size() == 0 ? new ArrayList<>() : logDetailService.query().in("sku_id", skuIds).list();
+        List<MaintenanceLogDetail> logDetails = skuIds.size() == 0 ? new ArrayList<>() : logDetailService.query().in("sku_id", skuIds).list();
         /**
          * 查询养护记录   被养护过的实物计算总数  如果此实物养护记录数量小于库存数量  证明此实物未被全部养护完（针对批量物料）
          */
@@ -457,8 +458,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                     num += maintenanceDetail.getNumber();
                     doneNumber += maintenanceDetail.getDoneNumber();
                     for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                        if( skuSimpleResultList.size() <2 && maintenanceDetail.getSkuId().equals(skuSimpleResult.getSkuId())){
-                                skuSimpleResultList.add(skuSimpleResult);
+                        if (skuSimpleResultList.size() < 2 && maintenanceDetail.getSkuId().equals(skuSimpleResult.getSkuId())) {
+                            skuSimpleResultList.add(skuSimpleResult);
                         }
                     }
 
@@ -662,7 +663,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                             maintenanceDetail.setStatus(99);
                             maintenanceDetail.setDoneNumber(maintenanceDetail.getNumber());
                         } else {
-                            maintenanceDetail.setDoneNumber((int) (maintenanceDetail.getNumber()-details.getNumber()));
+                            maintenanceDetail.setDoneNumber((int) (maintenanceDetail.getNumber() - details.getNumber()));
 
                         }
                     }
