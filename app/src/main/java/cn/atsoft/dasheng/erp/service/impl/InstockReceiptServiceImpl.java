@@ -574,7 +574,11 @@ public class InstockReceiptServiceImpl extends ServiceImpl<InstockReceiptMapper,
         map.put("品牌厂家", replaceSku.getBrandName());
         map.put("数量", replaceSku.getNum());
         map.put("单位", replaceSku.getUnit());
-
+        map.put("库位", replaceSku.getPositionName());
+        map.put("库存数", replaceSku.getStockNumber());
+        map.put("盘点数", replaceSku.getInventoryNumber());
+        map.put("异常数", replaceSku.getErrorNumber());
+        map.put("异常原因", replaceSku.getError());
         return map;
     }
 

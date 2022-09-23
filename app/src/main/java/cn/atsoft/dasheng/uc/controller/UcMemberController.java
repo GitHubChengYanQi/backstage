@@ -163,7 +163,7 @@ public class UcMemberController extends BaseController {
                     }
                     Long memberId = openUserInfo.getMemberId();
                     if (ToolUtil.isNotEmpty(memberId)) {
-                        WxuserInfo wxuserInfo =  wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").one();
+                        WxuserInfo wxuserInfo =  wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").orderByDesc("create_time").last(" limit 1").one();
                         if (ToolUtil.isNotEmpty(wxuserInfo)) {
                             User user = userService.getById(wxuserInfo.getUserId());
                             if (ToolUtil.isNotEmpty(user)) {

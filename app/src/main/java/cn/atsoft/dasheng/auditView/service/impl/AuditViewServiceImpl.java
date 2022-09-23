@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
@@ -38,7 +39,7 @@ import java.util.List;
 @Service
 public class AuditViewServiceImpl extends ServiceImpl<AuditViewMapper, AuditView> implements AuditViewService {
     @Autowired
-    private ActivitiProcessLogV1Service logService;
+    private ActivitiProcessLogService logService;
     @Autowired
     private ActivitiProcessTaskService taskService;
 

@@ -17,4 +17,14 @@ public class ReplaceSku {
 
     private String unit;
 
+    private String positionName;
+
+    private String stockNumber;
+
+    private String errorNumber;
+
+    private String error;
+
+    private String inventoryNumber;
+
 }
