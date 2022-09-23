@@ -13,6 +13,8 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SpuClassificationSelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
+import cn.atsoft.dasheng.form.entity.FormStyle;
+import cn.atsoft.dasheng.form.service.FormStyleService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.convert.Convert;
@@ -41,6 +43,9 @@ public class SpuClassificationController extends BaseController {
 
     @Autowired
     private SpuClassificationService spuClassificationService;
+
+    @Autowired
+    private FormStyleService formStyleService;
 
     /**
      * 新增接口
@@ -96,7 +101,10 @@ public class SpuClassificationController extends BaseController {
         SpuClassification detail = this.spuClassificationService.getById(spuClassificationParam.getSpuClassificationId());
         SpuClassificationResult result = new SpuClassificationResult();
         ToolUtil.copyProperties(detail, result);
-
+        if (ToolUtil.isNotEmpty(result.getFormStyleId())) {
+            FormStyle formStyle = formStyleService.getById(result.getFormStyleId());
+            result.setTypeSetting(formStyle.getTypeSetting());
+        }
 
         return ResponseData.success(result);
     }

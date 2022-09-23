@@ -23,6 +23,7 @@ import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
 import cn.atsoft.dasheng.crm.service.ContractTempleteService;
 import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.erp.service.impl.OrderUpload;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
@@ -93,6 +94,8 @@ public class ContractExcel {
     private OrderService orderService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private OrderUpload orderUpload;
 
 
     @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
@@ -161,6 +164,17 @@ public class ContractExcel {
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             OutputStream os = response.getOutputStream();
             document.write(os);
+
+            String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
+            uploadPath = uploadPath.replace("\\", "");
+            String filePath = uploadPath + fileName + ".docx";
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            document.write(bao);
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+            fileOutputStream.write(bao.toByteArray());
+            File file = new File(filePath);
+            orderUpload.upload(file);
+
 
 //            BufferedOutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
 //            PdfOptions options = PdfOptions.create();
