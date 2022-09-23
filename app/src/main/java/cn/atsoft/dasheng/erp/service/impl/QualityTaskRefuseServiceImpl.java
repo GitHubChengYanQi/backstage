@@ -56,7 +56,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
     @Autowired
     private QualityTaskService taskService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired

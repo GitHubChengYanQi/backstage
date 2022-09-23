@@ -39,7 +39,7 @@ import java.util.List;
 @Service
 public class AuditViewServiceImpl extends ServiceImpl<AuditViewMapper, AuditView> implements AuditViewService {
     @Autowired
-    private ActivitiProcessLogService logService;
+    private ActivitiProcessLogV1Service logService;
     @Autowired
     private ActivitiProcessTaskService taskService;
 

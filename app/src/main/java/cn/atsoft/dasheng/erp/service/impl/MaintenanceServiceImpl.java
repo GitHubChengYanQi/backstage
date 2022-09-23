@@ -96,7 +96,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private CodingRulesService codingRulesService;
