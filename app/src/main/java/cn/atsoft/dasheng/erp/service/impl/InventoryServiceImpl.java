@@ -755,13 +755,15 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
             //添加log
-            messageProducer.auditMessageDo(new AuditEntity() {{
-                setMessageType(AuditMessageType.CREATE_TASK);
-                setActivitiProcess(activitiProcess);
-                setTaskId(taskId);
-                setTimes(0);
-                setMaxTimes(1);
-            }});
+//            messageProducer.auditMessageDo(new AuditEntity() {{
+//                setMessageType(AuditMessageType.CREATE_TASK);
+//                setActivitiProcess(activitiProcess);
+//                setTaskId(taskId);
+//                setTimes(0);
+//                setMaxTimes(1);
+//            }});
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
 
             List<Long> userIds = new ArrayList<>();
             if (ToolUtil.isNotEmpty(param.getParticipants())) {

@@ -1270,7 +1270,6 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
     public ActivitiStepsResult addLog(Long processId, Long taskId, Integer status, Long loginUserId) {
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
         loopAdd(activitiStepsResult, taskId, status, loginUserId);
-
         viewService.addView(taskId);
         return activitiStepsResult;
     }
