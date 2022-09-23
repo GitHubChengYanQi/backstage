@@ -1570,10 +1570,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              * 材质
              */
             List<MaterialResult> materialResultList = new ArrayList<>();
-            if (ToolUtil.isNotEmpty(skuResult.getMediaIds())) {
-                for (Long mediaId : skuResult.getMediaIds()) {
+            if (ToolUtil.isNotEmpty(skuResult.getMaterialIdList())) {
+                for (Long materialId : skuResult.getMaterialIdList()) {
                     for (MaterialResult materialResult : materialResults) {
-                        if (materialResult.getMaterialId().equals(mediaId)) {
+                        if (materialResult.getMaterialId().equals(materialId)) {
                             materialResultList.add(materialResult);
                         }
                     }

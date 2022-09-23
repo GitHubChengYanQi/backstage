@@ -258,7 +258,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     @Override
     public PageInfo<MaintenanceLogResult> findPageBySpec(MaintenanceLogParam param){
         Page<MaintenanceLogResult> pageContext = getPageContext();
-        IPage<MaintenanceLogResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<MaintenanceLogResult> page = this.baseMapper.leftJoinList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
