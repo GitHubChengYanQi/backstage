@@ -54,8 +54,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Autowired
     private UserService userService;
     @Autowired
-    private ActivitiProcessLogService processLogService;
-    @Autowired
     private ActivitiAuditService auditService;
     @Autowired
     private InstockOrderService instockOrderService;
@@ -331,19 +329,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcessTask entity = new ActivitiProcessTask();
         ToolUtil.copyProperties(param, entity);
         return entity;
-    }
-
-
-    private List<Long> getTaskId() {
-        List<Long> taskIds = new ArrayList<>();
-        List<Long> stepIds = getStepIdsByType();
-        List<ActivitiProcessLog> processLogList = stepIds.size() == 0 ? new ArrayList<>() : processLogService.query()
-                .in("setps_id", stepIds)
-                .groupBy("task_id").list();
-        for (ActivitiProcessLog activitiProcessLog : processLogList) {
-            taskIds.add(activitiProcessLog.getTaskId());
-        }
-        return taskIds;
     }
 
     /**
