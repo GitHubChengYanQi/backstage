@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -231,7 +232,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
-        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.aboutMeTask(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
@@ -714,6 +715,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     datum.setCoding(allocationResult.getCoding());
                 }
             }
+            datum.setThemeAndOrigin(JSON.parseObject(datum.getOrigin(), ThemeAndOrigin.class));
         }
 
     }

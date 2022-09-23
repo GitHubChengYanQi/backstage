@@ -211,16 +211,6 @@ public class GetOrigin {
                     }
                 }
             }
-            for (Maintenance maintenance : maintenances) {
-                if (themeAndOrigin.getSource().equals("maintenance") && themeAndOrigin.getSourceId().equals(maintenance.getMaintenanceId())) {
-                    for (UserResult userResult : userResults) {
-                        if (maintenance.getCreateUser().equals(userResult.getUserId())) {
-                            this.copy2Ret(themeAndOrigin, maintenance, themeAndOrigin.getSource(), userResult);
-                            break;
-                        }
-                    }
-                }
-            }
 
 
             for (ActivitiProcessTask processTask : processTasks) {
@@ -233,8 +223,6 @@ public class GetOrigin {
                     }
                 }
             }
-
-
         }
         return param;
     }
@@ -352,7 +340,14 @@ public class GetOrigin {
         ThemeAndOrigin themeAndOrigin = originFormat(source, sourceId);
         themeAndOrigin.setSource(self);
         themeAndOrigin.setSourceId(selfId);
-        return JSON.toJSONString(themeAndOrigin);
+        List<ThemeAndOrigin> querry = this.querry(new ArrayList<ThemeAndOrigin>() {{
+            add(themeAndOrigin);
+        }});
+
+
+
+
+        return JSON.toJSONString(querry.get(0));
     }
 
     public ThemeAndOrigin originFormat(String source, Long sourceId) {
