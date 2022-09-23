@@ -1465,19 +1465,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
 
-        List<InventoryStock> inventoryStocks = inventoryIds.size() == 0 ? new ArrayList<>() : inventoryStockService.query().in("inventory_id", inventoryIds).eq("display", 1).last("limit 2").list();
-        List<InventoryStockResult> inventoryStockResults = BeanUtil.copyToList(inventoryStocks, InventoryStockResult.class);
-        inventoryStockService.format(inventoryStockResults);
 
         for (InventoryResult datum : data) {
 
-            List<InventoryStockResult> stockResults = new ArrayList<>();
-            for (InventoryStockResult inventoryStockResult : inventoryStockResults) {
-                if (inventoryStockResult.getInventoryId().equals(datum.getInventoryTaskId())) {
-                    stockResults.add(inventoryStockResult);
-                }
-            }
-            datum.setStockResults(stockResults);
+            List<InventoryStock> inventoryStocks = inventoryIds.size() == 0 ? new ArrayList<>() : inventoryStockService.query().eq("inventory_id", datum.getInventoryTaskId()).last("limit 2").eq("display", 1).list();
+            List<InventoryStockResult> inventoryStockResults = BeanUtil.copyToList(inventoryStocks, InventoryStockResult.class);
+            inventoryStockService.format(inventoryStockResults);
+            datum.setStockResults(inventoryStockResults);
 
             for (StorehousePositionsResult positionsResult : positionsResultList) {
                 if (ToolUtil.isNotEmpty(datum.getPositionId()) && datum.getPositionId().equals(positionsResult.getStorehousePositionsId())) {
