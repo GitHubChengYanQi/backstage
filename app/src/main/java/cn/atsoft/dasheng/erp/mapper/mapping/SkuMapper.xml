@@ -28,10 +28,29 @@
         <result column="images" property="images"/>
         <result column="drawing" property="drawing"/>
         <result column="maintenance_period" property="maintenancePeriod"/>
+        <result column="level" property="level"/>
+        <result column="color" property="color"/>
+        <result column="sku_size" property="skuSize"/>
+        <result column="weight" property="weight"/>
+        <result column="material_id" property="materialId"/>
+        <result column="part_no" property="partNo"/>
+        <result column="national_standard" property="nationalStandard"/>
+        <result column="heat_treatment" property="heatTreatment"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">type
+    <sql id="Base_Column_List">
+        level
+        AS "level",
+            color AS "color",
+            sku_size AS "skuSize",
+            weight AS "weight",
+            material_id AS "materialId",
+            part_no AS "partNo",
+            national_standard AS "nationalStandard",
+            heat_treatment AS "heatTreatment",
+
+type
     AS "type",enclosure AS "enclosure",images AS "images",maintenance_period AS "maintenancePeriod",drawing AS "drawing",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId", add_method AS "addMethod" ,
         sku_id
         AS "skuId",batch AS "batch", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
@@ -62,7 +81,15 @@
         goods_sku.create_user AS "createUser",
         goods_sku.update_time AS "updateTime",
         goods_sku.update_user AS "updateUser",
-        goods_sku.display AS "display"
+        goods_sku.display AS "display",
+           goods_sku.level AS "level",
+         goods_sku.color AS "color",
+         goods_sku.sku_size AS "skuSize",
+           goods_sku.weight AS "weight",
+          goods_sku.material_id AS "materialId",
+          goods_sku.part_no AS "partNo",
+          goods_sku.national_standard AS "nationalStandard",
+           goods_sku.heat_treatment AS "heatTreatment"
     </sql>
 
 
@@ -181,7 +208,7 @@
         <include refid="Left_Join_List"/>
         ,goods_spu.spu_id
         ,goods_spu_class.spu_classification_id
-        ,ifNULL(daoxin_erp_stock_details.number,0)  as stockNumber
+        ,ifNULL(daoxin_erp_stock_details.number,0) as stockNumber
         ,goods_spu.display
         from goods_sku
         LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
@@ -280,7 +307,8 @@
 
         <if test="paramCondition.anomalySkuIds != null  and paramCondition.anomalySkuIds.size > 0 ">
             and goods_sku.sku_id in
-            <foreach collection="paramCondition.anomalySkuIds" index="index" item="state" separator="," close=")" open="(">
+            <foreach collection="paramCondition.anomalySkuIds" index="index" item="state" separator="," close=")"
+                     open="(">
                 #{state}
             </foreach>
         </if>
@@ -473,7 +501,8 @@
 
         <if test="paramCondition.anomalySkuIds != null  and paramCondition.anomalySkuIds.size > 0 ">
             and goods_sku.sku_id in
-            <foreach collection="paramCondition.anomalySkuIds" index="index" item="state" separator="," close=")" open="(">
+            <foreach collection="paramCondition.anomalySkuIds" index="index" item="state" separator="," close=")"
+                     open="(">
                 #{state}
             </foreach>
         </if>

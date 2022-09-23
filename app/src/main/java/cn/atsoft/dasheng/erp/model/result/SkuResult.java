@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.appBase.aop.FieldPermission;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
@@ -37,10 +38,10 @@ import java.util.List;
 public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-//    private List<String> imgThumbUrls;//缩略图
+    //    private List<String> imgThumbUrls;//缩略图
     private Boolean inSupply;
     private Integer maintenancePeriod; // 养护周期
-//    List<String> imgUrls;
+    //    List<String> imgUrls;
     List<AttributeValuesResult> list;   //规格型号
     private List<SkuJson> skuJsons;
     private SpuResult spuResult;
@@ -87,6 +88,41 @@ public class SkuResult implements Serializable {
     private String enclosure;
     private List<String> enclosureUrls;
     private List<MediaResult> enclosureResults;
+    private List<Long> materialIdList;
+    private List<MaterialResult> materialResultList;
+    /**
+     * 热处理
+     */
+    private String heatTreatment;
+
+    /**
+     * 级别
+     */
+    private String level;
+    /**
+     * 表色
+     */
+    private String color;
+    /**
+     * 尺寸
+     */
+    private String skuSize;
+    /**
+     * 重量
+     */
+    private String weight;
+    /**
+     * 材质id
+     */
+    private String materialId;
+    /**
+     * 零件号
+     */
+    private String partNo;
+    /**
+     * 国家标准
+     */
+    private String nationalStandard;
 
     /**
      * 预购数量
@@ -126,7 +162,6 @@ public class SkuResult implements Serializable {
     private String skuValueMd5;
     @ApiModelProperty("执行标准")
     private String standard;
-
 
 
     /**

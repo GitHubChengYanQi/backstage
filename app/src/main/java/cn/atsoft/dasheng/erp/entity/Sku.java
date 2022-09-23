@@ -24,22 +24,63 @@ import java.io.Serializable;
 public class Sku implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 热处理
+     */
+    @TableField("heat_treatment")
+    private String heatTreatment;
+    /**
+     * 级别
+     */
+    @TableField("level")
+    private String level;
+    /**
+     * 表色
+     */
+    @TableField("color")
+    private String color;
+    /**
+     * 尺寸
+     */
+    @TableField("sku_size")
+    private String skuSize;
+    /**
+     * 重量
+     */
+    @TableField("weight")
+    private String weight;
+    /**
+     * 材质id
+     */
+    @TableField("material_id")
+    private String materialId;
+    /**
+     * 零件号
+     */
+    @TableField("part_no")
+    private String partNo;
+    /**
+     * 国家标准
+     */
+    @TableField("national_standard")
+    private String nationalStandard;
     /**
      * 之间方案id
      */
     @TableField("quality_plan_id")
     private Long qualityPlanId;
 
-    @TableField(value ="file_id" ,fill = FieldFill.UPDATE)
+    @TableField(value = "file_id", fill = FieldFill.UPDATE)
     private String fileId;
 
-    @TableField(value ="enclosure",fill = FieldFill.UPDATE)
+    @TableField(value = "enclosure", fill = FieldFill.UPDATE)
     private String enclosure;
 
-    @TableField(value ="images",fill = FieldFill.UPDATE)
+    @TableField(value = "images", fill = FieldFill.UPDATE)
     private String images;
 
-    @TableField(value ="drawing",fill = FieldFill.UPDATE)
+    @TableField(value = "drawing", fill = FieldFill.UPDATE)
     private String drawing;
     /**
      * 批量
@@ -82,7 +123,6 @@ public class Sku implements Serializable {
 
     @TableField("is_ban")
     private Integer isBan;
-
 
 
     @TableField("add_method")
@@ -213,6 +253,62 @@ public class Sku implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getSkuSize() {
+        return skuSize;
+    }
+
+    public void setSkuSize(String skuSize) {
+        this.skuSize = skuSize;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
+    }
+
+    public String getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(String materialId) {
+        this.materialId = materialId;
+    }
+
+    public String getPartNo() {
+        return partNo;
+    }
+
+    public void setPartNo(String partNo) {
+        this.partNo = partNo;
+    }
+
+    public String getNationalStandard() {
+        return nationalStandard;
+    }
+
+    public void setNationalStandard(String nationalStandard) {
+        this.nationalStandard = nationalStandard;
+    }
+
     public String getRemarks() {
         return remarks;
     }
@@ -323,6 +419,14 @@ public class Sku implements Serializable {
 
     public void setMaintenancePeriod(Integer maintenancePeriod) {
         this.maintenancePeriod = maintenancePeriod;
+    }
+
+    public String getHeatTreatment() {
+        return heatTreatment;
+    }
+
+    public void setHeatTreatment(String heatTreatment) {
+        this.heatTreatment = heatTreatment;
     }
 
     @Override

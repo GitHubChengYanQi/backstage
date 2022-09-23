@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
+import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
@@ -140,6 +141,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private RemarksService remarksService;
     @Autowired
     private DictService dictService;
+
+    @Autowired
+    private MaterialService materialService;
 
 
     @Transactional
@@ -1470,6 +1474,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> attributeIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
+        List<Long> materialIds = new ArrayList<>();
         for (SkuResult skuResult : param) {
             skuIds.add(skuResult.getSkuId());
             spuIds.add(skuResult.getSpuId());
@@ -1478,6 +1483,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
             for (AttributeValues valuesRequest : valuesRequests) {
                 attributeIds.add(valuesRequest.getAttributeId());
+            }
+            if (ToolUtil.isNotEmpty(skuResult.getMaterialId())) {
+                List<Long> materialIdList = JSON.parseArray(skuResult.getMaterialId(), Long.class);
+                skuResult.setMaterialIdList(materialIdList);
+                materialIds.addAll(materialIdList);
             }
         }
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
@@ -1553,8 +1563,24 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          */
         List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
 
+        List<MaterialResult> materialResults = materialService.details(materialIds);
 
         for (SkuResult skuResult : param) {
+            /**
+             * 材质
+             */
+            List<MaterialResult> materialResultList = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(skuResult.getMediaIds())) {
+                for (Long mediaId : skuResult.getMediaIds()) {
+                    for (MaterialResult materialResult : materialResults) {
+                        if (materialResult.getMaterialId().equals(mediaId)) {
+                            materialResultList.add(materialResult);
+                        }
+                    }
+                }
+            }
+            skuResult.setMaterialResultList(materialResultList);
+
             //图片
             List<Long> imageIds = new ArrayList<>();
             if (ToolUtil.isNotEmpty(skuResult.getImages())) {
