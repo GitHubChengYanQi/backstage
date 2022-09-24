@@ -36,6 +36,9 @@
         <result column="part_no" property="partNo"/>
         <result column="national_standard" property="nationalStandard"/>
         <result column="heat_treatment" property="heatTreatment"/>
+        <result column="packaging" property="packaging"/>
+        <result column="view_frame" property="viewFrame"/>
+        <result column="model" property="model"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -49,6 +52,9 @@
             part_no AS "partNo",
             national_standard AS "nationalStandard",
             heat_treatment AS "heatTreatment",
+            packaging AS "packaging",
+            view_frame AS "viewFrame",
+            model AS "model",
 
 type
     AS "type",enclosure AS "enclosure",images AS "images",maintenance_period AS "maintenancePeriod",drawing AS "drawing",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId", add_method AS "addMethod" ,
@@ -89,6 +95,9 @@ type
           goods_sku.material_id AS "materialId",
           goods_sku.part_no AS "partNo",
           goods_sku.national_standard AS "nationalStandard",
+        goods_sku.packaging AS "packaging",
+        goods_sku.view_frame AS "viewFrame",
+        goods_sku.model AS "model",
            goods_sku.heat_treatment AS "heatTreatment"
     </sql>
 

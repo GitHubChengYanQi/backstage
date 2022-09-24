@@ -26,6 +26,24 @@ public class Sku implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 包装材料
+     */
+    @TableField("packaging")
+    private String packaging;
+
+    /**
+     * 图幅
+     */
+    @TableField("view_frame")
+    private String viewFrame;
+
+    /**
+     * 型号
+     */
+    @TableField("model")
+    private String model;
+
+    /**
      * 热处理
      */
     @TableField("heat_treatment")
@@ -427,6 +445,30 @@ public class Sku implements Serializable {
 
     public void setHeatTreatment(String heatTreatment) {
         this.heatTreatment = heatTreatment;
+    }
+
+    public String getPackaging() {
+        return packaging;
+    }
+
+    public void setPackaging(String packaging) {
+        this.packaging = packaging;
+    }
+
+    public String getViewFrame() {
+        return viewFrame;
+    }
+
+    public void setViewFrame(String viewFrame) {
+        this.viewFrame = viewFrame;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 
     @Override

@@ -90,6 +90,21 @@ public class SkuResult implements Serializable {
     private List<MediaResult> enclosureResults;
     private List<Long> materialIdList;
     private List<MaterialResult> materialResultList;
+
+
+    /**
+     * 型号
+     */
+    private String model;
+    /**
+     * 包装材料
+     */
+    private String packaging;
+
+    /**
+     * 图幅
+     */
+    private String viewFrame;
     /**
      * 热处理
      */

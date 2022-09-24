@@ -4,11 +4,15 @@ import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 养护记录
@@ -25,13 +29,20 @@ public class MaintenanceLogResult implements Serializable {
     List<MaintenanceLogDetailResult> detailResults;
     private String coding;
 
+    private Long skuId;
+
+    private Long inkindId;
+
     private String notice;
+
+    private SkuResult skuResult;
+
+    private InkindResult inkindResult;
 
     List<AnnouncementsResult> announcementsResults;
 
     @ApiModelProperty("")
     private Long maintenanceLogId;
-
 
 
     private String origin;

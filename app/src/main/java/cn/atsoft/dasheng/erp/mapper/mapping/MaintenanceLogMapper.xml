@@ -175,6 +175,7 @@
         select
         <include refid="leftJoin"/>
         ,logDetail.sku_id as skuId
+        ,logDetail.inkind_id as inkindId
         FROM
         `daoxin_erp_maintenance_log` log
         LEFT JOIN daoxin_erp_maintenance_log_detail logDetail ON log.maintenance_log_id = logDetail.maintenance_log_id
