@@ -169,7 +169,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             activitiProcessTaskParam.setTaskName(name + "养护申请 ");
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getMaintenanceId());
-            activitiProcessTaskParam.setRemark(param.getRemark());
+            activitiProcessTaskParam.setRemark(param.getNote());
             activitiProcessTaskParam.setType("MAINTENANCE");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();

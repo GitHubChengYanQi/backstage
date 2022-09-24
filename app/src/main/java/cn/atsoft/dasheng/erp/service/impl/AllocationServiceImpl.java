@@ -152,7 +152,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             String name = LoginContextHolder.getContext().getUser().getName();
             activitiProcessTaskParam.setTaskName(name + "调拨申请 ");
             activitiProcessTaskParam.setUserId(param.getUserId());
-            activitiProcessTaskParam.setRemark(entity.getRemark());
+            activitiProcessTaskParam.setRemark(entity.getNote());
             activitiProcessTaskParam.setFormId(entity.getAllocationId());
             activitiProcessTaskParam.setType("ALLOCATION");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
@@ -442,7 +442,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 }
             }
         }
-        shopCartService.addDynamic(allocation.getAllocationId(), null,"指派了调拨物料");
+        shopCartService.addDynamic(allocation.getAllocationId(), null, "指派了调拨物料");
         if (haveTransfer) {
             wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
                 setFunction(MarkDownTemplateTypeEnum.transfer);
@@ -475,7 +475,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         for (AllocationDetail detail : details) {
             querySkuIds.add(detail.getSkuId());
         }
-        querySkuIds = querySkuIds .stream().distinct().collect(Collectors.toList());
+        querySkuIds = querySkuIds.stream().distinct().collect(Collectors.toList());
         List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(querySkuIds);
         for (AllocationResult datum : data) {
             List<Long> skuIds = new ArrayList<>();
@@ -492,8 +492,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                     }
                 }
                 for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                    if (skuSimpleResultList.size()<2){
-                        if (skuSimpleResult.getSkuId().equals(detail.getSkuId())){
+                    if (skuSimpleResultList.size() < 2) {
+                        if (skuSimpleResult.getSkuId().equals(detail.getSkuId())) {
                             skuSimpleResultList.add(skuSimpleResult);
                         }
                     }
@@ -642,7 +642,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
             }
             allocationLogDetailService.saveBatch(allocationLogDetails);
-            shopCartService.addDynamic(param.getAllocationId(), null,"库内调拨了物料");
+            shopCartService.addDynamic(param.getAllocationId(), null, "库内调拨了物料");
         }
     }
 
@@ -823,7 +823,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
             allocationLogDetail.setAllocationLogId(allocationLog.getAllocationLogId());
         }
         allocationLogDetailService.saveBatch(allocationLogDetails);
-        shopCartService.addDynamic(param.getAllocationId(), null,"库内调拨了物料");
+        shopCartService.addDynamic(param.getAllocationId(), null, "库内调拨了物料");
 
     }
 
