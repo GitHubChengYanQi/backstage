@@ -250,8 +250,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
 
         submit(entity);
-        shopCartService.addDynamic(param.getInstockOrderId(), null,"提交了异常描述");
-        shopCartService.addDynamic(entity.getOrderId(), null,"提交了异常");
+        shopCartService.addDynamic(param.getInstockOrderId(), null, "提交了异常描述");
+        shopCartService.addDynamic(entity.getOrderId(), null, "提交了异常");
 
         return anomalyList;
     }
@@ -706,7 +706,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             addShopCart(result);
             canInStock(result);               //允许入库
             String skuMessage = skuService.skuMessage(result.getSkuId());
-            shopCartService.addDynamic(result.getFormId(), result.getSkuId(),"异常物料" + skuMessage + "允许入库");
+            shopCartService.addDynamic(result.getFormId(), result.getSkuId(), "异常物料" + skuMessage + "允许入库");
         }
 
         for (AnomalyDetailResult detail : result.getDetails()) {
@@ -835,6 +835,11 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         }
         result.setAnomalyResults(anomalyResults);
 
+        /**
+         * 返回单据状态
+         */
+        DocumentsStatusResult detail = statusService.detail(result.getStatus());
+        result.setStatusName(detail.getName());
         return result;
     }
 

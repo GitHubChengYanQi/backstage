@@ -86,6 +86,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Autowired
     private AnnouncementsService announcementsService;
 
+    @Autowired
+    private ShopCartService shopCartService;
+
     @Override
     public Long add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
@@ -98,8 +101,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         entity.setUserIds(JSON.toJSONString(userIds));
 
         this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
-
         this.updateById(entity);
+
+        shopCartService.addDynamicByTaskId(entity.getProcessTaskId(), null, "提交了申请");  //任务创建动态
         return entity.getProcessTaskId();
     }
 
@@ -235,6 +239,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return PageFactory.createPageInfo(page);
 
     }
+
     @Override
     public PageInfo<ActivitiProcessTaskResult> aboutMeTasks(ActivitiProcessTaskParam param) {
         if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的

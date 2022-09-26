@@ -25,6 +25,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.erp.mapper.InventoryMapper;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -136,6 +137,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private TaskParticipantService taskParticipantService;
     @Autowired
     private AnomalyService anomalyService;
+
+    @Autowired
+    private DocumentStatusService statusService;
 
     @Override
     @Transactional
@@ -891,6 +895,12 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             User handleUser = userService.getById(inventoryResult.getHandleUser());
             inventoryResult.setHandleUserName(handleUser.getName());
         }
+
+        /**
+         * 返回单据状态
+         */
+        DocumentsStatusResult detail = statusService.detail(inventoryResult.getStatus());
+        inventoryResult.setStatusName(detail.getName());
 
         Map<String, Integer> map = inventoryStockService.speedProgress(id);
         inventoryResult.setTotal(map.get("total"));

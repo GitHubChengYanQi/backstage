@@ -404,21 +404,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 remarksParam.setContent(param.getRemark());
                 remarksService.addByMQ(remarksParam);
             }
-            /**
-             * 添加动态记录
-             */
-            shopCartService.addDynamic(entity.getInstockOrderId(), null,"发起了入库申请");
-
-//           activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-//                activitiProcessLogService.autoAudit(taskId, 1);
-
-
-            /**
-             * 内部调用创建质检
-             */
-//            this.createQualityTask(param, skus);
-
-
         }
         return entity;
     }
