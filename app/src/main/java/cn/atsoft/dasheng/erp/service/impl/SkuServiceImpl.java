@@ -227,7 +227,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              * 做匹配保存 属性属性值方法
              *
              */
-            List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
+            List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
 
             Sku entity = getEntity(param);
 
@@ -510,7 +510,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 查询产品，添加产品 在上方spu查询
          */
 
-        List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
+        List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
 
         Sku entity = getEntity(param);
 
@@ -804,7 +804,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              * 查询产品，添加产品 在上方spu查询
              */
 
-            List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
+            List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
 
             Sku entity = getEntity(param);
 
@@ -883,7 +883,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Category category = this.getOrSaveCategory(param);
         Long categoryId = category.getCategoryId();
 
-        List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
+        List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
 
         SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
         Long spuClassificationId = spuClassification.getSpuClassificationId();

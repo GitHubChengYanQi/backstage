@@ -418,8 +418,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
         List<UserResult> userResults = userService.getUserResultsByIds(userIds);
 
-        List<MaintenanceDetail> maintenanceDetails = ids.size() == 0 ? new ArrayList<>() : maintenanceDetailService.query().in("maintenance_id", ids).list();
-
+        List<MaintenanceDetailResult> maintenanceDetails = ids.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(maintenanceDetailService.query().in("maintenance_id", ids).list(),MaintenanceDetailResult.class);
+        maintenanceDetailService.format(maintenanceDetails);
         for (MaintenanceResult maintenanceResult : param) {
             for (UserResult userResult : userResults) {
                 if (maintenanceResult.getUserId().equals(userResult.getUserId())) {
@@ -448,23 +448,21 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             skuIds = new ArrayList<>();
             Integer num = 0;
             Integer doneNumber = 0;
-            List<SkuSimpleResult> skuSimpleResultList = new ArrayList<>();
-
-            for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
+            List<MaintenanceDetailResult> maintenanceDetailList = new ArrayList<>();
+            for (MaintenanceDetailResult maintenanceDetail : maintenanceDetails) {
                 if (maintenanceDetail.getMaintenanceId().equals(maintenanceResult.getMaintenanceId())) {
+                    if (maintenanceDetailList.size() < 2){
+                        maintenanceDetailList.add(maintenanceDetail);
+                    }
                     storehousePositionsIds.add(maintenanceDetail.getStorehousePositionsId());
                     skuIds.add(maintenanceDetail.getSkuId());
                     num += maintenanceDetail.getNumber();
                     doneNumber += maintenanceDetail.getDoneNumber();
-                    for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                        if( skuSimpleResultList.size() <2 && maintenanceDetail.getSkuId().equals(skuSimpleResult.getSkuId())){
-                                skuSimpleResultList.add(skuSimpleResult);
-                        }
-                    }
+
 
                 }
             }
-            maintenanceResult.setSkuResults(skuSimpleResultList);
+            maintenanceResult.setMaintenanceDetailResults(maintenanceDetailList);
             skuIds = skuIds.stream().distinct().collect(Collectors.toList());
             storehousePositionsIds = storehousePositionsIds.stream().distinct().collect(Collectors.toList());
             maintenanceResult.setNumberCount(num);

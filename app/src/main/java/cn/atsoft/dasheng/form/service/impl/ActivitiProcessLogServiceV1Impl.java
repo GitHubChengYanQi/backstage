@@ -1919,7 +1919,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
     private void judgeStatus(Long logId, List<ActivitiProcessLog> logs) {
         for (ActivitiProcessLog activitiProcessLog : logs) {
-            if (activitiProcessLog.getLogId().equals(logId) && activitiProcessLog.getStatus() != 3) {
+            if (activitiProcessLog.getLogId().equals(logId) && ( activitiProcessLog.getStatus() != 3 && activitiProcessLog.getStatus() != -1 )) {
                 throw new ServiceException(500, "当前节点已被操作,请刷新页面");
             }
         }
