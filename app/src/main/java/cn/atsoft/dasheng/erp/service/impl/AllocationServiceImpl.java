@@ -469,37 +469,30 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         for (AllocationResult datum : data) {
             allocationIds.add(datum.getAllocationId());
         }
-        List<AllocationDetail> details = allocationIds.size() == 0 ? new ArrayList<>() : allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list();
+        List<AllocationDetailResult> details = allocationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(allocationDetailService.query().in("allocation_id", allocationIds).eq("display", 1).list(),AllocationDetailResult.class);
+        allocationDetailService.format(details);
         List<AllocationCart> allocationCarts = allocationIds.size() == 0 ? new ArrayList<>() : allocationCartService.query().in("allocation_id", allocationIds).eq("type", "carry").eq("display", 1).list();
-        List<Long> querySkuIds = new ArrayList<>();
-        for (AllocationDetail detail : details) {
-            querySkuIds.add(detail.getSkuId());
-        }
-        querySkuIds = querySkuIds.stream().distinct().collect(Collectors.toList());
-        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(querySkuIds);
+
         for (AllocationResult datum : data) {
             List<Long> skuIds = new ArrayList<>();
             List<Long> storehousePositionsIds = new ArrayList<>();
             int detailNumber = 0;
             int doneNumber = 0;
-            List<SkuSimpleResult> skuSimpleResultList = new ArrayList<>();
-            for (AllocationDetail detail : details) {
+            List<AllocationDetailResult> detailResultList = new ArrayList<>();
+            for (AllocationDetailResult detail : details) {
                 if (datum.getAllocationId().equals(detail.getAllocationId())) {
+                    if  (detailResultList.size() < 2){
+                        detailResultList.add(detail);
+                    }
                     skuIds.add(detail.getSkuId());
                     detailNumber += detail.getNumber();
                     if (ToolUtil.isNotEmpty(detail.getStorehousePositionsId())) {
                         storehousePositionsIds.add(detail.getStorehousePositionsId());
                     }
                 }
-                for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                    if (skuSimpleResultList.size() < 2) {
-                        if (skuSimpleResult.getSkuId().equals(detail.getSkuId())) {
-                            skuSimpleResultList.add(skuSimpleResult);
-                        }
-                    }
-                }
-                datum.setSkuResults(skuSimpleResultList);
+
             }
+            datum.setDetailResults(detailResultList);
             for (AllocationCart allocationCart : allocationCarts) {
                 if (allocationCart.getAllocationId().equals(datum.getAllocationId())) {
                     doneNumber += allocationCart.getDoneNumber();

@@ -29,7 +29,9 @@ import cn.atsoft.dasheng.query.entity.QueryLog;
 import cn.atsoft.dasheng.query.service.QueryLogService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.rest.service.RestUserService;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.DictService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -70,6 +72,8 @@ public class SkuController extends BaseController {
     private QueryLogService queryLogService;
     @Autowired
     private PrintTemplateService printTemplateService;
+    @Autowired
+    private DictService dictService;
 
 
     /**
@@ -256,7 +260,9 @@ public class SkuController extends BaseController {
             sku.setCreateUserName(user.getName());
         }
 
-
+        Dict dict = dictService.query().eq("code", "editSku").one();
+        boolean editSkuFlag = ToolUtil.isNotEmpty(dict) && dict.getStatus().equals("ENABLE");
+        sku.setEditSkuFlag(editSkuFlag);
         return ResponseData.success(sku);
 
     }
