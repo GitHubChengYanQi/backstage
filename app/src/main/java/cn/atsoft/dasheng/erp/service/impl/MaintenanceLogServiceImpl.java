@@ -12,10 +12,7 @@ import cn.atsoft.dasheng.erp.entity.MaintenanceLog;
 import cn.atsoft.dasheng.erp.entity.MaintenanceLogDetail;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceLogMapper;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
-import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
-import cn.atsoft.dasheng.erp.model.result.MaintenanceAndDetail;
-import cn.atsoft.dasheng.erp.model.result.MaintenanceLogDetailResult;
-import cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
@@ -59,6 +56,9 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     private cn.atsoft.dasheng.erp.service.MaintenanceLogDetailService MaintenanceLogDetailService;
 
     @Autowired
+    private InkindService inkindService;
+
+    @Autowired
     private SkuService skuService;
 
     @Autowired
@@ -73,8 +73,8 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     @Autowired
     private StorehousePositionsService storehousePositionsService;
 
-    @Autowired
-    private InkindService inkindService;
+
+
 
     @Autowired
     private MaintenanceCycleService maintenanceCycleService;
@@ -96,11 +96,10 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     private AnnouncementsService announcementsService;
 
     @Override
-    public void add(MaintenanceLogParam param){
+    public void add(MaintenanceLogParam param) {
 
         String code = RandomUtil.randomString(5);
         param.setCoding(code);
-
 
 
         if (ToolUtil.isEmpty(param.getMaintenanceLogDetailParams())) {
@@ -143,7 +142,8 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         maintenanceDetailService.updateBatchById(maintenanceDetails);
         MaintenanceLog entity = getEntity(param);
         this.save(entity);
-        getOrigin.newThemeAndOrigin("maintenanceLog",entity.getMaintenanceLogId(),"maintenance",entity.getMaintenanceId());
+        String origin = getOrigin.newThemeAndOrigin("maintenanceLog", entity.getMaintenanceLogId(), "maintenance", entity.getMaintenanceId());
+        entity.setOrigin(origin);
         this.updateById(entity);
 
         for (MaintenanceLogDetail maintenanceLogDetail : logs) {
@@ -153,7 +153,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
             maintenanceService.updateStatus(param.getMaintenanceId());
         }
-        shopCartService.addDynamic(param.getMaintenanceId(), maintenanceDetails.get(0).getSkuId(),"对 "+skuService.skuMessage(maintenanceDetails.get(0).getSkuId()) +" 进行了养护");
+        shopCartService.addDynamic(param.getMaintenanceId(), maintenanceDetails.get(0).getSkuId(), "对 " + skuService.skuMessage(maintenanceDetails.get(0).getSkuId()) + " 进行了养护");
 
 //        List<MaintenanceDetail> details = new ArrayList<>();
 //        if (ToolUtil.isNotEmpty(param.getMaintenanceId())){
@@ -207,12 +207,10 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
 //            }
 
 
-
-
     }
 
     @Override
-    public MaintenanceLogResult detail(Long id){
+    public MaintenanceLogResult detail(Long id) {
         MaintenanceLogResult result = BeanUtil.copyProperties(this.getById(id), MaintenanceLogResult.class);
         List<MaintenanceLogDetailResult> logDetails = BeanUtil.copyToList(maintenanceLogDetailService.query().eq("maintenance_log_id", id).list(), MaintenanceLogDetailResult.class);
         maintenanceLogDetailService.format(logDetails);
@@ -232,12 +230,12 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     }
 
     @Override
-    public void delete(MaintenanceLogParam param){
+    public void delete(MaintenanceLogParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(MaintenanceLogParam param){
+    public void update(MaintenanceLogParam param) {
         MaintenanceLog oldEntity = getOldEntity(param);
         MaintenanceLog newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -245,23 +243,24 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     }
 
     @Override
-    public MaintenanceLogResult findBySpec(MaintenanceLogParam param){
+    public MaintenanceLogResult findBySpec(MaintenanceLogParam param) {
         return null;
     }
 
     @Override
-    public List<MaintenanceLogResult> findListBySpec(MaintenanceLogParam param){
+    public List<MaintenanceLogResult> findListBySpec(MaintenanceLogParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<MaintenanceLogResult> findPageBySpec(MaintenanceLogParam param){
+    public PageInfo<MaintenanceLogResult> findPageBySpec(MaintenanceLogParam param) {
         Page<MaintenanceLogResult> pageContext = getPageContext();
-        IPage<MaintenanceLogResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<MaintenanceLogResult> page = this.baseMapper.leftJoinList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(MaintenanceLogParam param){
+    private Serializable getKey(MaintenanceLogParam param) {
         return param.getMaintenanceLogId();
     }
 
@@ -279,4 +278,23 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         return entity;
     }
 
+
+    private void format(List<MaintenanceLogResult> data) {
+        List<Long> inkindIds = new ArrayList<>();
+        for (MaintenanceLogResult datum : data) {
+            inkindIds.add(datum.getInkindId());
+        }
+
+
+        List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
+
+        for (MaintenanceLogResult datum : data) {
+            for (InkindResult inKind : inKinds) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId())&&datum.getInkindId().equals(inKind.getInkindId())) {
+                    datum.setInkindResult(inKind);
+                    break;
+                }
+            }
+        }
+    }
 }

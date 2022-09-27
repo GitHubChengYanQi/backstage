@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,12 @@ public class OrderDetailController extends BaseController {
 
         return ResponseData.success(result);
     }
+    @RequestMapping(value = "/record", method = RequestMethod.POST)
+    public ResponseData record(@RequestBody OrderDetailParam orderDetailParam) {
+        OrderDetailResult result = this.orderDetailService.record(orderDetailParam);
+        return ResponseData.success(result);
+    }
+
 
     /**
      * 查询列表
@@ -59,13 +66,11 @@ public class OrderDetailController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OrderDetailResult> list(@RequestBody(required = false) OrderDetailParam orderDetailParam) {
-        if(ToolUtil.isEmpty(orderDetailParam)){
+        if (ToolUtil.isEmpty(orderDetailParam)) {
             orderDetailParam = new OrderDetailParam();
         }
         return this.orderDetailService.findPageBySpec(orderDetailParam);
     }
-
-
 
 
 }

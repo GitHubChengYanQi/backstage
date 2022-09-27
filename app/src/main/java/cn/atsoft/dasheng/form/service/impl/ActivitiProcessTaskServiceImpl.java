@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -52,8 +53,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private ActivitiProcessLogService processLogService;
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
@@ -87,6 +86,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Autowired
     private AnnouncementsService announcementsService;
 
+    @Autowired
+    private ShopCartService shopCartService;
+
     @Override
     public Long add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
@@ -99,8 +101,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         entity.setUserIds(JSON.toJSONString(userIds));
 
         this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
-
         this.updateById(entity);
+
+        shopCartService.addDynamicByTaskId(entity.getProcessTaskId(), null, "提交了申请");  //任务创建动态
         return entity.getProcessTaskId();
     }
 
@@ -231,11 +234,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
-        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.aboutMeTask(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
     }
+
     @Override
     public PageInfo<ActivitiProcessTaskResult> aboutMeTasks(ActivitiProcessTaskParam param) {
         if (ToolUtil.isEmpty(param.getCreateUser())) {                              //为空:我审批的    不为空:我发起的
@@ -330,19 +334,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcessTask entity = new ActivitiProcessTask();
         ToolUtil.copyProperties(param, entity);
         return entity;
-    }
-
-
-    private List<Long> getTaskId() {
-        List<Long> taskIds = new ArrayList<>();
-        List<Long> stepIds = getStepIdsByType();
-        List<ActivitiProcessLog> processLogList = stepIds.size() == 0 ? new ArrayList<>() : processLogService.query()
-                .in("setps_id", stepIds)
-                .groupBy("task_id").list();
-        for (ActivitiProcessLog activitiProcessLog : processLogList) {
-            taskIds.add(activitiProcessLog.getTaskId());
-        }
-        return taskIds;
     }
 
     /**
@@ -714,6 +705,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     datum.setCoding(allocationResult.getCoding());
                 }
             }
+            datum.setThemeAndOrigin(JSON.parseObject(datum.getOrigin(), ThemeAndOrigin.class));
         }
 
     }

@@ -129,6 +129,7 @@ public class TableViewController extends BaseController {
         }
         Long userId = LoginContextHolder.getContext().getUserId();
         tableViewQueryWrapper.in("create_user", userId);
+        tableViewQueryWrapper.eq("display", 1);
         List<Map<String, Object>> list = this.tableViewService.listMaps(tableViewQueryWrapper);
         TableViewSelectWrapper tableViewSelectWrapper = new TableViewSelectWrapper(list);
         List<Map<String, Object>> result = tableViewSelectWrapper.wrap();

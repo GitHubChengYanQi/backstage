@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.form.mapper.FormStyleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.FormStyle">
+        <id column="style_id" property="styleId" />
+        <result column="form_type" property="formType" />
+        <result column="type_setting" property="typeSetting" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        style_id AS "styleId", form_type AS "formType", type_setting AS "typeSetting", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.FormStyleResult" parameterType="cn.atsoft.dasheng.form.model.params.FormStyleParam">
+        select
+        <include refid="Base_Column_List"/>
+        from form_style where 1 = 1
+            <if test="paramCondition.styleId != null">
+                and style_id like CONCAT('%',#{paramCondition.styleId},'%')
+            </if>
+            <if test="paramCondition.formType != null and paramCondition.formType != ''">
+                and form_type like CONCAT('%',#{paramCondition.formType},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.FormStyleParam">
+        select
+        <include refid="Base_Column_List"/>
+        from form_style where 1 = 1
+                <if test="paramCondition.styleId != null">
+                        and style_id like CONCAT('%',#{paramCondition.styleId},'%')
+                </if>
+                <if test="paramCondition.formType != null and paramCondition.formType != ''">
+                        and form_type like CONCAT('%',#{paramCondition.formType},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.FormStyleResult" parameterType="cn.atsoft.dasheng.form.model.params.FormStyleParam">
+        select
+        <include refid="Base_Column_List"/>
+        from form_style where 1 = 1
+                <if test="paramCondition.styleId != null">
+                        and style_id like CONCAT('%',#{paramCondition.styleId},'%')
+                </if>
+                <if test="paramCondition.formType != null and paramCondition.formType != ''">
+                        and form_type like CONCAT('%',#{paramCondition.formType},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.FormStyleParam">
+        select
+        <include refid="Base_Column_List"/>
+        from form_style where 1 = 1
+                <if test="paramCondition.styleId != null">
+                        and style_id like CONCAT('%',#{paramCondition.styleId},'%')
+                </if>
+                <if test="paramCondition.formType != null and paramCondition.formType != ''">
+                        and form_type like CONCAT('%',#{paramCondition.formType},'%')
+                </if>
+    </select>
+
+</mapper>

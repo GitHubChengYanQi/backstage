@@ -71,5 +71,7 @@ public interface AllocationDetailService extends IService<AllocationDetail> {
 
     List<AllocationDetailResult> resultsByAllocationId(Long allocationId);
 
+    void format(List<AllocationDetailResult> results);
+
     List<AllocationDetailResult> listByAllocationIdAndSkuId(Long allocationId, Long skuId);
 }

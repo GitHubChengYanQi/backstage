@@ -23,6 +23,7 @@ import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.ContractTempleteDetailService;
 import cn.atsoft.dasheng.crm.service.ContractTempleteService;
 import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.erp.service.impl.OrderUpload;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
@@ -34,6 +35,7 @@ import cn.hutool.poi.word.DocUtil;
 import cn.hutool.poi.word.Word07Writer;
 import com.alibaba.fastjson.JSON;
 import com.sun.org.apache.bcel.internal.generic.NEW;
+
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
@@ -44,6 +46,7 @@ import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFPictureData;
@@ -66,8 +69,10 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +94,8 @@ public class ContractExcel {
     private OrderService orderService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private OrderUpload orderUpload;
 
 
     @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
@@ -151,12 +158,32 @@ public class ContractExcel {
                 contract.setCoding("");
             }
 
-            String fileName = contract.getCoding() + customer.getCustomerName() ;
+            String fileName = contract.getCoding() + customer.getCustomerName();
             String encode = URLEncoder.encode(fileName, "utf-8");
             response.setHeader("Content-Disposition", "attachment; filename=" + encode + ".docx");
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
             OutputStream os = response.getOutputStream();
             document.write(os);
+
+            String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
+            uploadPath = uploadPath.replace("\\", "");
+            String filePath = uploadPath + fileName + ".docx";
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            document.write(bao);
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+            fileOutputStream.write(bao.toByteArray());
+            File file = new File(filePath);
+            orderUpload.upload(file);
+
+
+//            BufferedOutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
+//            PdfOptions options = PdfOptions.create();
+//            PdfConverter.getInstance().convert(document, outputStream, options);
+//
+//            response.setHeader("Content-Disposition", "attachment; filename=" + encode + ".pdf");
+//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+
+
         } catch (Exception e) {
             //异常处理
             e.printStackTrace();
@@ -249,7 +276,7 @@ public class ContractExcel {
             switch (value) {
                 case payMoney:
                     if (ToolUtil.isNotEmpty(result.getMoney())) {
-                        map.put(ContractEnum.payMoney.getDetail(), result.getMoney());
+                        map.put(ContractEnum.payMoney.getDetail(), priceReplace(result.getMoney()));
                     } else {
                         map.put(ContractEnum.payMoney.getDetail(), "");
                     }
@@ -334,13 +361,13 @@ public class ContractExcel {
 
                 case UnitPrice:
                     if (ToolUtil.isNotEmpty(results.getOnePrice())) {
-                        map.put(ContractEnum.UnitPrice.getDetail(), results.getOnePrice() + "");
+                        map.put(ContractEnum.UnitPrice.getDetail(), results.getSign() + priceReplace(results.getOnePrice()));
                     } else {
                         map.put(ContractEnum.UnitPrice.getDetail(), "");
                     }
                 case TotalPrice:
                     if (ToolUtil.isNotEmpty(results.getTotalPrice())) {
-                        map.put(ContractEnum.TotalPrice.getDetail(), results.getTotalPrice() + "");
+                        map.put(ContractEnum.TotalPrice.getDetail(), results.getSign() + priceReplace(results.getTotalPrice()));
                     } else {
                         map.put(ContractEnum.TotalPrice.getDetail(), "");
                     }
@@ -362,5 +389,18 @@ public class ContractExcel {
             }
         }
         return map;
+    }
+
+    /**
+     * 币种+千位符 +.00
+     *
+     * @return
+     */
+
+    public static String priceReplace(int price) {
+        BigDecimal decimal = new BigDecimal(price);
+        DecimalFormat df = new DecimalFormat(",###,##0.00"); //保留二位小数
+
+        return df.format(decimal);
     }
 }

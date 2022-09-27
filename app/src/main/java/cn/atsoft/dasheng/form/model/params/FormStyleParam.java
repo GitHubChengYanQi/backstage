@@ -1,57 +1,55 @@
-package cn.atsoft.dasheng.drafts.model.result;
+package cn.atsoft.dasheng.form.model.params;
 
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
-import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
-import java.util.Date;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
+
 /**
  * <p>
- * 草稿箱
+ * 表单风格
  * </p>
  *
- * @author Captain_Jazz
- * @since 2022-04-21
+ * @author 
+ * @since 2022-09-23
  */
 @Data
 @ApiModel
-public class DraftsResult implements Serializable {
+public class FormStyleParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     @ApiModelProperty("")
-    private String type;
-
-    private UserResult createUserResult;
-
-    private String name;
-
+    private Long styleId;
 
     /**
-     * 草稿箱id
+     * 表单类型
      */
-    @ApiModelProperty("草稿箱id")
-    private Long draftsId;
+    @ApiModelProperty("表单类型")
+    private String formType;
 
-    @ApiModelProperty("")
-    private String info;
+    /**
+     * 排版
+     */
+    @ApiModelProperty("排版")
+    private String typeSetting;
 
     /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
     private Long createUser;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
     private Long updateUser;
 
     /**
@@ -64,7 +62,6 @@ public class DraftsResult implements Serializable {
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
@@ -72,6 +69,19 @@ public class DraftsResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门id")
+    private Long deptId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

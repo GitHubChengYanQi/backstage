@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.uc.controller;
 import cn.atsoft.dasheng.api.uc.entity.OpenUserInfo;
 import cn.atsoft.dasheng.api.uc.service.OpenUserInfoService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
+import cn.atsoft.dasheng.base.auth.exception.AuthException;
+import cn.atsoft.dasheng.base.auth.exception.enums.AuthExceptionEnum;
 import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
 import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
 import cn.atsoft.dasheng.base.auth.service.AuthService;
@@ -328,12 +330,12 @@ public class AuthLoginController extends BaseController {
             }
             logger.info("account"+username+"_"+"userId"+userId+"_"+"ucJwtPayLoad"+ JSON.toJSONString(ucJwtPayLoad));
             return ResponseData.success(token);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
         //登录并创建token
 //        String token = authService.login(username, password);
-        return ResponseData.error("登录错误");
+        throw new AuthException(AuthExceptionEnum.USERNAME_PWD_ERROR);
     }
     /**
      * 企业微信退出 删除绑定关系

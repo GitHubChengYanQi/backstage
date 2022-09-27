@@ -146,7 +146,7 @@ public class AllocationDetailServiceImpl extends ServiceImpl<AllocationDetailMap
         this.format(results);
         return results;
     }
-
+    @Override
     public void format(List<AllocationDetailResult> results) {
 
         List<Long> skuIds = new ArrayList<>();

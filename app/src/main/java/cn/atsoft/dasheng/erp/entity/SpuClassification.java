@@ -24,6 +24,13 @@ public class SpuClassification implements Serializable {
 
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 表单风格
+     */
+    @TableField("form_style_id")
+    private Long formStyleId;
+
     @TableField("children")
     private String children;
 
@@ -100,6 +107,14 @@ public class SpuClassification implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+
+    public Long getFormStyleId() {
+        return formStyleId;
+    }
+
+    public void setFormStyleId(Long formStyleId) {
+        this.formStyleId = formStyleId;
+    }
 
     public Long getSpuClassificationId() {
         return spuClassificationId;
@@ -212,7 +227,6 @@ public class SpuClassification implements Serializable {
     public void setType(Long type) {
         this.type = type;
     }
-
 
 
     @Override

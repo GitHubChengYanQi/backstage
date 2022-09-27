@@ -33,6 +33,8 @@ import java.util.Map;
 @ApiModel
 public class SkuParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
+
+
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValues;
     @ApiModelProperty("skuId")
@@ -130,6 +132,40 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     public String specifications;
     @ApiModelProperty("执行标准")
     private String standard;
+
+
+    /**
+     * 热处理
+     */
+    private String heatTreatment;
+    /**
+     * 级别
+     */
+    private String level;
+    /**
+     * 表色
+     */
+    private String color;
+    /**
+     * 尺寸
+     */
+    private String skuSize;
+    /**
+     * 重量
+     */
+    private String weight;
+    /**
+     * 材质id
+     */
+    private String materialId;
+    /**
+     * 零件号
+     */
+    private String partNo;
+    /**
+     * 国家标准
+     */
+    private String nationalStandard;
 
     /**
      * 之间方案id

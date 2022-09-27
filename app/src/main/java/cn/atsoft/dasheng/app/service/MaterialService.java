@@ -43,6 +43,8 @@ public interface MaterialService extends IService<Material> {
      */
     void update(MaterialParam param);
 
+    List<MaterialResult> details(List<Long> materialIds);
+
     /**
      * 查询单条数据，Specification模式
      *

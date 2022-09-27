@@ -96,7 +96,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private CodingRulesService codingRulesService;
@@ -169,6 +169,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             activitiProcessTaskParam.setTaskName(name + "养护申请 ");
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getMaintenanceId());
+            activitiProcessTaskParam.setRemark(param.getNote());
             activitiProcessTaskParam.setType("MAINTENANCE");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
@@ -271,7 +272,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         stockDetails = inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
         List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkindIds);
-        List<MaintenanceLogDetail> logDetails =skuIds.size() == 0 ? new ArrayList<>() : logDetailService.query().in("sku_id", skuIds).list();
+        List<MaintenanceLogDetail> logDetails = skuIds.size() == 0 ? new ArrayList<>() : logDetailService.query().in("sku_id", skuIds).list();
         /**
          * 查询养护记录   被养护过的实物计算总数  如果此实物养护记录数量小于库存数量  证明此实物未被全部养护完（针对批量物料）
          */
@@ -418,8 +419,8 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
 
         List<UserResult> userResults = userService.getUserResultsByIds(userIds);
 
-        List<MaintenanceDetail> maintenanceDetails = ids.size() == 0 ? new ArrayList<>() : maintenanceDetailService.query().in("maintenance_id", ids).list();
-
+        List<MaintenanceDetailResult> maintenanceDetails = ids.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(maintenanceDetailService.query().in("maintenance_id", ids).list(),MaintenanceDetailResult.class);
+        maintenanceDetailService.format(maintenanceDetails);
         for (MaintenanceResult maintenanceResult : param) {
             for (UserResult userResult : userResults) {
                 if (maintenanceResult.getUserId().equals(userResult.getUserId())) {
@@ -448,23 +449,21 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             skuIds = new ArrayList<>();
             Integer num = 0;
             Integer doneNumber = 0;
-            List<SkuSimpleResult> skuSimpleResultList = new ArrayList<>();
-
-            for (MaintenanceDetail maintenanceDetail : maintenanceDetails) {
+            List<MaintenanceDetailResult> maintenanceDetailList = new ArrayList<>();
+            for (MaintenanceDetailResult maintenanceDetail : maintenanceDetails) {
                 if (maintenanceDetail.getMaintenanceId().equals(maintenanceResult.getMaintenanceId())) {
+                    if (maintenanceDetailList.size() < 2){
+                        maintenanceDetailList.add(maintenanceDetail);
+                    }
                     storehousePositionsIds.add(maintenanceDetail.getStorehousePositionsId());
                     skuIds.add(maintenanceDetail.getSkuId());
                     num += maintenanceDetail.getNumber();
                     doneNumber += maintenanceDetail.getDoneNumber();
-                    for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-                        if( skuSimpleResultList.size() <2 && maintenanceDetail.getSkuId().equals(skuSimpleResult.getSkuId())){
-                                skuSimpleResultList.add(skuSimpleResult);
-                        }
-                    }
+
 
                 }
             }
-            maintenanceResult.setSkuResults(skuSimpleResultList);
+            maintenanceResult.setMaintenanceDetailResults(maintenanceDetailList);
             skuIds = skuIds.stream().distinct().collect(Collectors.toList());
             storehousePositionsIds = storehousePositionsIds.stream().distinct().collect(Collectors.toList());
             maintenanceResult.setNumberCount(num);
@@ -662,7 +661,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                             maintenanceDetail.setStatus(99);
                             maintenanceDetail.setDoneNumber(maintenanceDetail.getNumber());
                         } else {
-                            maintenanceDetail.setDoneNumber((int) (maintenanceDetail.getNumber()-details.getNumber()));
+                            maintenanceDetail.setDoneNumber((int) (maintenanceDetail.getNumber() - details.getNumber()));
 
                         }
                     }

@@ -27,6 +27,7 @@ import java.util.List;
 @Data
 @ApiModel
 public class SpuParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
+
     private Boolean isHidden;
     private static final long serialVersionUID = 1L;
     private SpuRequest spuAttributes;
@@ -38,9 +39,21 @@ public class SpuParam extends AbstractDictMap implements Serializable, BaseValid
     private String specifications;
 
     /**
+     * 包装材料
+     */
+    private String packaging;
+
+    /**
+     * 图幅
+     */
+    private String viewFrame;
+
+
+    /**
      * 类型
      */
     private Integer type;
+
     /**
      * 分类id
      */

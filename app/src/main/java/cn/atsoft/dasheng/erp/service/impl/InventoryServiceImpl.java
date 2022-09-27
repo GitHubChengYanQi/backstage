@@ -19,23 +19,18 @@ import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.pojo.AnomalyType;
-import cn.atsoft.dasheng.erp.pojo.SkuBind;
-import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
+import cn.atsoft.dasheng.erp.pojo.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.erp.mapper.InventoryMapper;
-import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.AuditMessageType;
-import cn.atsoft.dasheng.message.enmu.OperationType;
 import cn.atsoft.dasheng.message.entity.AuditEntity;
-import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
@@ -43,7 +38,6 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
-import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -57,18 +51,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.bouncycastle.tsp.TSPUtil;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
 
-import static com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isNull;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -103,7 +92,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
@@ -148,6 +137,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private TaskParticipantService taskParticipantService;
     @Autowired
     private AnomalyService anomalyService;
+
+    @Autowired
+    private DocumentStatusService statusService;
 
     @Override
     @Transactional
@@ -322,28 +314,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }
         }
     }
-
-//    /**
-//     * 静态开始时间  退回所有备料购物车
-//     */
-//    @Scheduled(cron = "0 */15 * * * ?")
-//    public void darkDiskUpdateCart() {
-//        System.err.println("静态盘点定时任务-----------(锁库)----------->" + new DateTime());
-//        DateTime dateTime = new DateTime();
-//        Integer count = this.query().eq("mode", "staticState")
-//                .eq("begin_time", dateTime)
-//                .eq("display", 1)
-//                .count();
-//        if (count > 0) {
-//            QueryWrapper<ProductionPickListsCart> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("display", 1);
-//            queryWrapper.ne("type", "frmLoss");
-//            queryWrapper.eq("status", 0);
-//            ProductionPickListsCart pickListsCart = new ProductionPickListsCart();
-//            pickListsCart.setDisplay(0);
-//            listsCartService.update(pickListsCart, queryWrapper);
-//        }
-//    }
 
     /**
      * 条件盘点
@@ -790,13 +760,15 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
             //添加log
-            messageProducer.auditMessageDo(new AuditEntity() {{
-                setMessageType(AuditMessageType.CREATE_TASK);
-                setActivitiProcess(activitiProcess);
-                setTaskId(taskId);
-                setTimes(0);
-                setMaxTimes(1);
-            }});
+//            messageProducer.auditMessageDo(new AuditEntity() {{
+//                setMessageType(AuditMessageType.CREATE_TASK);
+//                setActivitiProcess(activitiProcess);
+//                setTaskId(taskId);
+//                setTimes(0);
+//                setMaxTimes(1);
+//            }});
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
 
             List<Long> userIds = new ArrayList<>();
             if (ToolUtil.isNotEmpty(param.getParticipants())) {
@@ -835,6 +807,41 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         inventory.setStatus(StocktakingEnum.done.getStatus());
         this.updateById(inventory);
     }
+
+    @Override
+    public Map<String, Object> detailBackMap(Long id) {
+        Map<String, Object> map = new HashMap<>();
+        InventoryResult detail = detail(id);
+        map.put("负责人", detail.getHandleUserName());
+        map.put("发起人", detail.getUser().getName());
+        map.put("申请时间", new DateTime(detail.getCreateTime()));
+        map.put("单号", detail.getCoding());
+        map.put("path", detail.getCoding() + ".docx");
+
+        List<InventoryStock> inventoryStocks = inventoryStockService.query().eq("inventory_id", detail.getInventoryTaskId()).eq("display", 1).list();
+        List<InventoryStockResult> stockResults = BeanUtil.copyToList(inventoryStocks, InventoryStockResult.class);
+        inventoryStockService.format(stockResults);
+
+
+        List<ReplaceSku> replaceSkus = new ArrayList<>();
+        for (InventoryStockResult stockResult : stockResults) {
+            ReplaceSku replaceSku = new ReplaceSku();
+            replaceSku.setSkuName(stockResult.getSkuResult().getSkuName());
+            replaceSku.setUnit(stockResult.getSkuResult().getSpuResult().getUnitResult().getUnitName());
+            if (stockResult.getBrandId() == 0) {
+                replaceSku.setBrandName("无品牌");
+            } else {
+                replaceSku.setBrandName(stockResult.getBrandResult().getBrandName());
+            }
+            replaceSku.setSpuName(stockResult.getSkuResult().getSpuResult().getName());
+            replaceSku.setPositionName(stockResult.getPositionsResult().getName());
+            replaceSku.setStandard(stockResult.getSkuResult().getStandard());
+            replaceSkus.add(replaceSku);
+        }
+        map.put("sku", replaceSkus);
+        return map;
+    }
+
 
     @Override
     public InventoryResult detail(Long id) {
@@ -889,6 +896,12 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             User handleUser = userService.getById(inventoryResult.getHandleUser());
             inventoryResult.setHandleUserName(handleUser.getName());
         }
+
+        /**
+         * 返回单据状态
+         */
+        DocumentsStatusResult detail = statusService.detail(inventoryResult.getStatus());
+        inventoryResult.setStatusName(detail.getName());
 
         Map<String, Integer> map = inventoryStockService.speedProgress(id);
         inventoryResult.setTotal(map.get("total"));
@@ -1462,7 +1475,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<StorehousePositions> positions = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
         List<StorehousePositionsResult> positionsResultList = BeanUtil.copyToList(positions, StorehousePositionsResult.class, new CopyOptions());
-
 
 
         for (InventoryResult datum : data) {

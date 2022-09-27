@@ -13,21 +13,19 @@ import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.mapper.OrderDetailMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
-import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
-import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.taxRate.entity.TaxRate;
 import cn.atsoft.dasheng.taxRate.service.TaxRateService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.log.Log;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -62,11 +60,42 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private TaxRateService rateService;
     @Autowired
     private ActivitiProcessService processService;
+
     @Override
     public void add(OrderDetailParam param) {
         OrderDetail entity = getEntity(param);
         this.save(entity);
     }
+
+    /**
+     * 取上次供应商这个物料的订录
+     *
+     * @return
+     */
+    @Override
+    public OrderDetailResult record(OrderDetailParam param) {
+        if (ToolUtil.isEmpty(param.getCustomerId()) || ToolUtil.isEmpty(param.getSkuId())) {
+            throw new ServiceException(500, "缺少参数");
+        }
+        QueryWrapper<OrderDetail> detailQueryWrapper = new QueryWrapper<>();
+        detailQueryWrapper.eq("customer_id", param.getCustomerId());
+        detailQueryWrapper.eq("sku_id", param.getSkuId());
+        if (ToolUtil.isNotEmpty(param.getBrandId())) {
+            detailQueryWrapper.eq("brand_id", param.getBrandId());
+        }
+        detailQueryWrapper.orderByDesc("create_time");
+        detailQueryWrapper.last("limit 1");
+
+        OrderDetail orderDetail = this.getOne(detailQueryWrapper);
+        if (ToolUtil.isEmpty(orderDetail)) {
+            return null;
+        }
+
+        OrderDetailResult result = new OrderDetailResult();
+        ToolUtil.copyProperties(orderDetail, result);
+        return result;
+    }
+
 
     /**
      * 批量添加
@@ -76,6 +105,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
      */
 
     @Override
+
     public void addList(Long orderId, Long customerId, List<OrderDetailParam> params) {
         List<OrderDetail> details = new ArrayList<>();
         for (OrderDetailParam param : params) {
@@ -198,28 +228,26 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         List<Long> unitIds = new ArrayList<>();
         List<Long> taxIds = new ArrayList<>();
 
+        long orderId = 0;
         for (OrderDetailResult orderDetailResult : param) {
             skuIds.add(orderDetailResult.getSkuId());
             brandIds.add(orderDetailResult.getBrandId());
             customerIds.add(orderDetailResult.getCustomerId());
             unitIds.add(orderDetailResult.getUnitId());
             taxIds.add(orderDetailResult.getRate());
+            orderId = orderDetailResult.getOrderId();
         }
+
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
         List<Unit> unitList = unitIds.size() == 0 ? new ArrayList<>() : unitService.listByIds(unitIds);
         List<TaxRate> taxRates = taxIds.size() == 0 ? new ArrayList<>() : rateService.listByIds(taxIds);
-
-//        List<OrderResult> orderResults = orderService.findListBySpec(new OrderParam());
+        String sign = getSign(orderId);
 
         for (OrderDetailResult orderDetailResult : param) {
-//            for (OrderResult orderResult : orderResults) {
-//                if (orderResult.getOrderId().equals(orderDetailResult.getOrderId())){
-//                    orderDetailResult.setOrderResult(orderResult);
-//                    break;
-//                }
-//            }
+            orderDetailResult.setSign(sign);
+
             for (SkuResult skuResult : skuResults) {
                 if (orderDetailResult.getSkuId().equals(skuResult.getSkuId())) {
                     orderDetailResult.setSkuResult(skuResult);
@@ -253,12 +281,32 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         }
 
     }
+
     @Override
-    public  List<OrderDetailResult> getOrderDettailProductionIsNull( OrderDetailParam paramCondition){
+    public List<OrderDetailResult> getOrderDettailProductionIsNull(OrderDetailParam paramCondition) {
         if (ToolUtil.isEmpty(paramCondition)) {
             return new ArrayList<>();
         }
         return this.baseMapper.pendingProductionPlanByOrder(paramCondition);
     }
 
+    @Override
+    public String getSign(Long orderId) {
+        Order order = orderService.getById(orderId);
+        String sign = "";
+        if (ToolUtil.isNotEmpty(order)) {
+            switch (order.getCurrency()) {
+                case "人民币":
+                    sign = "¥";
+                    break;
+                case "美元":
+                    sign = "$";
+                    break;
+                case "欧元":
+                    sign = "€";
+                    break;
+            }
+        }
+        return sign;
+    }
 }

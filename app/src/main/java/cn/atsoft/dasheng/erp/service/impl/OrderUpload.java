@@ -35,7 +35,7 @@ public class OrderUpload {
             String mediaId = upload.getMediaId();
 
             Long userId = LoginContextHolder.getContext().getUserId();
-            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").eq("display", 1).one();
+            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").orderByDesc("create_time").last("limit 1").eq("display", 1).one();
 
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
                 UcOpenUserInfo userInfo = openUserInfoService.query().eq("source", "wxCp").eq("member_id", wxuserInfo.getMemberId()).one();

@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -57,6 +58,8 @@ public interface InventoryService extends IService<Inventory> {
     void bySku(InventoryParam param);
 
     void updateStatus(ActivitiProcessTask processTask);
+
+    Map<String, Object> detailBackMap(Long id);
 
     InventoryResult detail(Long id);
 

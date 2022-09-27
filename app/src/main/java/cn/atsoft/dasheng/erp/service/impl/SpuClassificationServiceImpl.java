@@ -11,6 +11,8 @@ import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
 import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SpuService;
+import cn.atsoft.dasheng.form.entity.FormStyle;
+import cn.atsoft.dasheng.form.service.FormStyleService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -42,6 +44,9 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Autowired
     private SpuService spuService;
 
+    @Autowired
+    private FormStyleService formStyleService;
+
     @Override
     @Transactional
     public Long add(SpuClassificationParam param) {
@@ -63,8 +68,15 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         SpuClassification entity = getEntity(param);
         this.save(entity);
 
-
-        // 更新当前节点，及下级
+        //分类标单排版
+        if (ToolUtil.isNotEmpty(param.getTypeSetting())) {
+            FormStyle formStyle = new FormStyle();
+            formStyle.setTypeSetting(param.getTypeSetting());
+            formStyle.setFormType("spuClass");
+            formStyleService.save(formStyle);
+            entity.setFormStyleId(formStyle.getStyleId());
+            this.updateById(entity);
+        }
 
 
         return entity.getSpuClassificationId();
@@ -74,13 +86,9 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Override
 
     public void delete(SpuClassificationParam param) {
-        Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).and(i -> i.eq(Spu::getDisplay, 1)).count();
         Integer children = this.query().eq("pid", param.getSpuClassificationId()).eq("display", 1).count();
-        if (count > 0) {
-            throw new ServiceException(500, "此分类下有物品,无法删除");
-        } else if (children > 0) {
+        if (children > 0) {
             throw new ServiceException(500, "此分类下有下级,无法删除");
-
         } else {
             SpuClassification spuClassification = new SpuClassification();
             spuClassification.setSpuClassificationId(param.getSpuClassificationId());
@@ -93,66 +101,26 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Override
     @Transactional
     public void update(SpuClassificationParam param) {
-        //如果设为顶级 修改所有当前节点的父级
-//        SpuClassification classification = this.getById(param.getSpuClassificationId());
-//        SpuClassification pid = this.getById(classification.getPid());
-//        if (ToolUtil.isNotEmpty(pid) && ToolUtil.isNotEmpty(pid.getType()) && pid.getType() == 2) {
-//            throw new ServiceException(500, "产品不可以有下级分类");
-//        }
-//
-//        if (classification.getPid() == 0) {
-//            List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
-//            for (SpuClassification spuClassification : spuClassifications) {
-//                JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
-//                JSONArray childrenJson = JSONUtil.parseArray(spuClassification.getChildren());
-//                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
-//                List<Long> newChildrenList = new ArrayList<>();
-//                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-//                longs.remove(param.getSpuClassificationId());
-//                for (Long aLong : oldchildrenList) {
-//                    if (!aLong.equals(param.getSpuClassificationId())) {
-//                        newChildrenList.add(aLong);
-//                    }
-//                }
-//                spuClassification.setChildren(JSON.toJSONString(newChildrenList));
-//                spuClassification.setChildrens(JSON.toJSONString(longs));
-//                this.update(spuClassification, new QueryWrapper<SpuClassification>().in("spu_classification_id", spuClassification.getSpuClassificationId()));
-//            }
-//
-//        }
-//
-//        if (ToolUtil.isNotEmpty(param.getPid())) {
-//            SpuClassification one = this.query().eq("spu_classification_id", param.getSpuClassificationId()).eq("display", 1).one();
-//            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
-//            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-//            for (Long aLong : longs) {
-//                if (param.getPid().equals(aLong)) {
-//                    throw new ServiceException(500, "请勿循环添加");
-//                }
-//            }
-//
-//        }
-//
-//
-//        // 更新当前节点，及下级
-//        SpuClassification spuClassification = new SpuClassification();
-//        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
-//        List<Long> childrens = childrenMap.get("childrens");
-//        childrens.add(param.getSpuClassificationId());
-//        spuClassification.setChildrens(JSON.toJSONString(childrens));
-//        List<Long> children = childrenMap.get("children");
-//        children.add(param.getSpuClassificationId());
-//        spuClassification.setChildren(JSON.toJSONString(children));
-//        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
-//        QueryWrapper.eq("spu_classification_id", param.getPid());
-//        this.update(spuClassification, QueryWrapper);
-//
-//        updateChildren(param.getPid());
 
         SpuClassification oldEntity = getOldEntity(param);
         SpuClassification newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
+        if (ToolUtil.isNotEmpty(param.getTypeSetting())) {
+            FormStyle formStyle = null;
+            if (ToolUtil.isNotEmpty(newEntity.getFormStyleId())) {
+                formStyle = formStyleService.getById(newEntity.getFormStyleId());
+                formStyle.setTypeSetting(param.getTypeSetting());
+                formStyleService.updateById(formStyle);
+            } else {
+                formStyle = new FormStyle();
+                formStyle.setTypeSetting(param.getTypeSetting());
+                formStyleService.save(formStyle);
+                newEntity.setFormStyleId(formStyle.getStyleId());
+                this.updateById(newEntity);
+            }
+        }
     }
 
     /**

@@ -83,7 +83,10 @@ public class PluginsConfig {
                 try {
                     //获取当前登录用户
                     Object accountId = getUserUniqueId();
-                    setFieldValByName(getCreateUserFieldName(), accountId, metaObject);
+                    Object fieldValByName = getFieldValByName(getCreateUserFieldName(), metaObject);
+                    if(ToolUtil.isEmpty(fieldValByName)){
+                        setFieldValByName(getCreateUserFieldName(), accountId, metaObject);
+                    }
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }

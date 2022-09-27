@@ -9,7 +9,6 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.dynamic.entity.Dynamic;
 import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
 import cn.atsoft.dasheng.dynamic.service.DynamicService;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -49,7 +48,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static cn.atsoft.dasheng.message.enmu.MicroServiceType.DYNAMIC;
-import static org.apache.poi.hemf.record.emfplus.HemfPlusRecordType.object;
 
 /**
  * <p>
@@ -185,7 +183,7 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
                     instockList = instockListService.getById(shopCart.getFormId());
                     instockList.setRealNumber(shopCart.getNumber());
                     skuMessage = skuService.skuMessage(instockList.getSkuId());
-                    addDynamic(instockList.getInstockOrderId(), instockList.getSkuId(),skuMessage + "取消入库重新核验");
+                    addDynamic(instockList.getInstockOrderId(), instockList.getSkuId(), skuMessage + "取消入库重新核验");
                     break;
                 case "instockByAnomaly":
                     throw new ServiceException(500, "异常件不可退回");
@@ -249,6 +247,53 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
         }
 
+    }
+
+    /**
+     * 通过任务id 添加动态
+     *
+     * @param taskId
+     * @param skuId
+     * @param content
+     */
+    @Override
+    public void addDynamicByTaskId(Long taskId, Long skuId, String content) {
+        if (ToolUtil.isEmpty(taskId)) {
+            return;
+        }
+
+        if (ToolUtil.isNotEmpty(taskId)) {
+            RemarksParam remarksParam = new RemarksParam();
+            remarksParam.setTaskId(taskId);
+            remarksParam.setType("dynamic");
+            remarksParam.setCreateUser(LoginContextHolder.getContext().getUserId());
+            remarksParam.setContent(content);
+            Remarks entity = new Remarks();
+            ToolUtil.copyProperties(remarksParam, entity);
+            remarksService.save(entity);
+
+
+            /**
+             * 统一动态
+             */
+            DynamicParam dynamic = new DynamicParam();
+            dynamic.setType("1");
+            dynamic.setSource("processTask");
+            dynamic.setUserId(LoginContextHolder.getContext().getUserId());
+            dynamic.setTaskId(taskId);
+            dynamic.setSkuId(skuId);
+            dynamic.setContent(content);
+            dynamicService.add(dynamic);
+//            messageProducer.microService(new MicroServiceEntity() {{
+//                setType(DYNAMIC);
+//                setObject(dynamic);
+//                setOperationType(OperationType.SAVE);
+//                setMaxTimes(2);
+//                setTimes(1);
+//                ;
+//            }});
+
+        }
 
     }
 

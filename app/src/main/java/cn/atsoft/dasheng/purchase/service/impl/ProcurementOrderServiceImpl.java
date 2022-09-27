@@ -89,7 +89,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired

@@ -25,6 +25,8 @@ import java.util.List;
 @ApiModel
 public class RemarksResult implements Serializable {
 
+    private List<MediaResult> mediaResults;
+
     private MediaResult mediaResult;
 
     private static final long serialVersionUID = 1L;

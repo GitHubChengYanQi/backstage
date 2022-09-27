@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 @Service
 public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> implements RemarksService {
     @Autowired
-    private ActivitiProcessLogService logService;
+    private ActivitiProcessLogV1Service logService;
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
@@ -158,19 +158,25 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         for (RemarksResult datum : data) {
             userIds.add(datum.getCreateUser());
             taskIds.add(datum.getTaskId());
-            mediaIds.add(Long.valueOf(datum.getPhotoId()));
+            if (ToolUtil.isNotEmpty(datum.getPhotoId()) && !datum.getPhotoId().equals("")) {
+                String[] split = datum.getPhotoId().split(",");
+                for (String s : split) {
+                    mediaIds.add(Long.valueOf(s));
+                }
+            }
         }
         List<ActivitiProcessTask> tasks = taskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(taskIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<MediaResult> medias = mediaService.listByIds(mediaIds);
 
         for (RemarksResult datum : data) {
+            List<MediaResult> mediaResults = new ArrayList<>();
             for (MediaResult media : medias) {
-                if (ToolUtil.isNotEmpty(datum.getPhotoId()) && media.getMediaId().toString().equals(datum.getPhotoId())) {
-                    datum.setMediaResult(media);
-                    break;
+                if (ToolUtil.isNotEmpty(datum.getPhotoId()) && datum.getPhotoId().contains(media.getMediaId().toString())) {
+                    mediaResults.add(media);
                 }
             }
+            datum.setMediaResults(mediaResults);
 
             for (User user : userList) {
                 if (ToolUtil.isNotEmpty(datum.getCreateUser()) && user.getUserId().equals(datum.getCreateUser())) {
@@ -204,7 +210,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             in("setps_id", stepIds);
         }});
         //TODO 更换新的审批流查询逻辑
-        List<ActivitiProcessLog> audit = logService.getAudit(auditParam.getTaskId());
+        List<ActivitiProcessLog> audit = logService.getAudit3(auditParam.getTaskId());
         for (ActivitiProcessLog activitiProcessLog : audit) {
             ActivitiAudit activitiAudit = logService.getRule(activitiAudits, activitiProcessLog.getSetpsId());
             AuditRule rule = activitiAudit.getRule();
@@ -240,14 +246,14 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
          */
         ActivitiProcessTask processTask = taskService.getById(auditParam.getTaskId());
         if (ToolUtil.isNotEmpty(processTask)) {
-            shopCartService.addDynamic(processTask.getFormId(), null, "发布了评论");
+            shopCartService.addDynamic(processTask.getFormId(), null, "添加了评论");
         }
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setFunction(MarkDownTemplateTypeEnum.toPerson);
             setType(2);
             setItems("收到评论");
-            setDescription(LoginContextHolder.getContext().getUser().getName() + "发布了评论");
+            setDescription(LoginContextHolder.getContext().getUser().getName() + "添加了评论");
             setCreateTime(remarks.getCreateTime());
             setTaskId(processTask.getProcessTaskId());
             setDescription(remarks.getContent());

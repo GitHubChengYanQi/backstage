@@ -74,7 +74,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private ProcurementPlanBindService planBindService;

@@ -33,6 +33,10 @@ public class SpuClassificationResult implements Serializable {
     @JSONField(serialize = false)
     private String childrens;
 
+    private Long formStyleId;
+
+    private String typeSetting;
+
     /**
      * 最下级
      */

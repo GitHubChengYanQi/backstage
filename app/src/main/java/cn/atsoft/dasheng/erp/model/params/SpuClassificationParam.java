@@ -6,6 +6,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -22,14 +23,15 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class SpuClassificationParam  extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class SpuClassificationParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
     private String children;
 
+    private String typeSetting;
 
-    private  Integer isNotproduct;
+    private Integer isNotproduct;
 
     private String childrens;
     /**

@@ -63,7 +63,7 @@ public class ActivitiProcessTaskSend {
     @Autowired
     private QualityTaskDetailService qualityTaskDetailService;
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private QualityMessageSend qualityMessageSend;

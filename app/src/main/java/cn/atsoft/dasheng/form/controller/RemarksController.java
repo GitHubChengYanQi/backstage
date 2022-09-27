@@ -36,7 +36,7 @@ public class RemarksController extends BaseController {
     private RemarksService remarksService;
 
     @Autowired
-    private ActivitiProcessLogService logService;
+    private ActivitiProcessLogV1Service logService;
 
 
     /**

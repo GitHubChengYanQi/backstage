@@ -27,6 +27,8 @@ public class InstockLogDetailParam implements Serializable, BaseValidatingParam 
 
     private Long realNumber;
 
+    private String skuName;
+
     private Long anomalyId;
 
     private Long receiptId;

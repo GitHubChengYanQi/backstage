@@ -26,6 +26,8 @@ public interface OrderDetailService extends IService<OrderDetail> {
      */
     void add(OrderDetailParam param);
 
+    OrderDetailResult record(OrderDetailParam param);
+
     void addList(Long orderId, Long customerId, List<OrderDetailParam> params);
 
     /**
@@ -73,4 +75,6 @@ public interface OrderDetailService extends IService<OrderDetail> {
     void format(List<OrderDetailResult> param);
 
     List<OrderDetailResult> getOrderDettailProductionIsNull(OrderDetailParam paramCondition);
+
+    String getSign(Long orderId);
 }

@@ -40,6 +40,9 @@ public class ActivitiProcessTask implements Serializable {
     @TableField("task_name")
     private String taskName;
 
+    @TableField("version")
+    private Integer version;
+
     public Long getFormId() {
         return formId;
     }
@@ -320,16 +323,42 @@ public class ActivitiProcessTask implements Serializable {
         this.noticeId = noticeId;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @Override
     public String toString() {
         return "ActivitiProcessTask{" +
                 "processTaskId=" + processTaskId +
+                ", noticeId='" + noticeId + '\'' +
                 ", processId=" + processId +
+                ", taskName='" + taskName + '\'' +
+                ", version=" + version +
+                ", formId=" + formId +
+                ", deptIds='" + deptIds + '\'' +
+                ", deptId=" + deptId +
+                ", type='" + type + '\'' +
+                ", remark='" + remark + '\'' +
+                ", cause='" + cause + '\'' +
+                ", status=" + status +
+                ", userIds='" + userIds + '\'' +
+                ", theme='" + theme + '\'' +
+                ", origin='" + origin + '\'' +
+                ", source='" + source + '\'' +
+                ", sourceId='" + sourceId + '\'' +
+                ", mainTaskId=" + mainTaskId +
+                ", pid=" + pid +
+                ", userId=" + userId +
                 ", display=" + display +
                 ", createUser=" + createUser +
                 ", updateUser=" + updateUser +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                "}";
+                '}';
     }
 }

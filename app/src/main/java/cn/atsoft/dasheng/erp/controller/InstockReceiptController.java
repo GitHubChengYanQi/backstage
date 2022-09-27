@@ -2,12 +2,14 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockReceipt;
+import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.model.params.InstockReceiptParam;
 import cn.atsoft.dasheng.erp.model.result.InstockReceiptResult;
 import cn.atsoft.dasheng.erp.pojo.ReplaceSku;
 import cn.atsoft.dasheng.erp.service.InstockReceiptService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -39,6 +41,9 @@ public class InstockReceiptController extends BaseController {
 
     @Autowired
     private InstockReceiptService instockReceiptService;
+
+    @Autowired
+    private InventoryService inventoryService;
 
 //    /**
 //     * 新增接口
@@ -128,7 +133,7 @@ public class InstockReceiptController extends BaseController {
 
                 break;
             case "stocktaking":
-
+                map = inventoryService.detailBackMap(instockReceiptParam.getReceiptId());
                 break;
             case "curing":
 

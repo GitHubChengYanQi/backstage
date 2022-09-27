@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -29,10 +30,11 @@ public class MaintenanceLogParam implements Serializable, BaseValidatingParam {
     private String coding;
     private Long storehousePositionsId;
 
+    private String skuName;
+
     private List<String> times;
 
     private String notice;
-
 
     @ApiModelProperty("")
     private Long maintenanceLogId;

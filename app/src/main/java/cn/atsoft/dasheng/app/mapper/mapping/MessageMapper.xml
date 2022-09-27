@@ -57,7 +57,7 @@
         <if test="paramCondition.userId">
             and user_id = #{paramCondition.userId}
         </if>
-        <if test="paramCondition.view != null and paramCondition.view != ''">
+        <if test="paramCondition.view != null">
             and view = #{paramCondition.view}
         </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">

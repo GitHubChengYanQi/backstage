@@ -86,7 +86,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;

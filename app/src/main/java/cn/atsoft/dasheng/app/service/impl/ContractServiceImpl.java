@@ -59,6 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -469,7 +470,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             document.write(os);
 
 
-
 //            Options options = Options.getFrom(DocumentKind.DOCX).to(ConverterTypeTo.PDF);
 
 //            IConverter converter = ConverterRegistry.getRegistry().getConverter(options);
@@ -486,8 +486,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
 
 
         //转化数据流，替换特殊字符
@@ -660,6 +658,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                                     trString = trString.replace(ContractEnum.unit.getDetail(), result.getUnit().getUnitName());
                                     break;
                                 case UnitPrice:
+
                                     trString = trString.replace(ContractEnum.UnitPrice.getDetail(), result.getOnePrice() + "");
                                     break;
                                 case TotalPrice:

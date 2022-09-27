@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.appBase.aop.FieldPermission;
+import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -36,11 +38,10 @@ import java.util.List;
 public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-//    private List<String> imgThumbUrls;//缩略图
+    //    private List<String> imgThumbUrls;//缩略图
     private Boolean inSupply;
     private Integer maintenancePeriod; // 养护周期
-//    List<String> imgUrls;
-    List<MediaUrlResult> imgResults;    //图片返回
+    //    List<String> imgUrls;
     List<AttributeValuesResult> list;   //规格型号
     private List<SkuJson> skuJsons;
     private SpuResult spuResult;
@@ -77,11 +78,67 @@ public class SkuResult implements Serializable {
     private Long inventoryStockId;
     //图片  附件  文件等
     private String images;
+    List<MediaResult> imgResults;    //图片返回
+    private String fileds;
     private List<String> filedUrls;
+    private List<MediaResult> filedResults;
     private String drawing;
     private List<String> drawingUrls;
+    private List<MediaResult> drawingResults;
     private String enclosure;
     private List<String> enclosureUrls;
+    private List<MediaResult> enclosureResults;
+    private Boolean editSkuFlag; //是否可以更改物料相关信息（字典配置）
+    private List<Long> materialIdList;
+    private List<MaterialResult> materialResultList;
+
+
+    /**
+     * 型号
+     */
+    private String model;
+    /**
+     * 包装材料
+     */
+    private String packaging;
+
+    /**
+     * 图幅
+     */
+    private String viewFrame;
+    /**
+     * 热处理
+     */
+    private String heatTreatment;
+
+    /**
+     * 级别
+     */
+    private String level;
+    /**
+     * 表色
+     */
+    private String color;
+    /**
+     * 尺寸
+     */
+    private String skuSize;
+    /**
+     * 重量
+     */
+    private String weight;
+    /**
+     * 材质id
+     */
+    private String materialId;
+    /**
+     * 零件号
+     */
+    private String partNo;
+    /**
+     * 国家标准
+     */
+    private String nationalStandard;
 
     /**
      * 预购数量
@@ -121,7 +178,6 @@ public class SkuResult implements Serializable {
     private String skuValueMd5;
     @ApiModelProperty("执行标准")
     private String standard;
-
 
 
     /**

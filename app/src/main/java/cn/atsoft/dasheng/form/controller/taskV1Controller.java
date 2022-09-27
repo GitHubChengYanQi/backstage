@@ -2,13 +2,10 @@ package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
-import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
-import cn.atsoft.dasheng.erp.service.impl.AllocationServiceImpl;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -17,7 +14,6 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
-import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -54,17 +50,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/audit")
 @Api(tags = "流程主表")
-public class taskController extends BaseController {
+public class taskV1Controller {
 
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private ActivitiProcessTaskService taskService;
 
     @Autowired
     private ActivitiStepsService stepsService;
+
     @Autowired
     private ActivitiAuditService auditService;
 
@@ -75,7 +72,7 @@ public class taskController extends BaseController {
     private UserService userService;
 
     @Autowired
-    private ActivitiProcessLogService logService;
+    private ActivitiProcessLogV1Service logService;
 
     @Autowired
     private PurchaseAskService askService;
@@ -108,8 +105,9 @@ public class taskController extends BaseController {
     @Autowired
     private ShopCartService shopCartService;
 
+    @ApiVersion("1.1")
 
-    @RequestMapping(value = "/post", method = RequestMethod.POST)
+    @RequestMapping(value = "/{v}/post", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData audit(@RequestBody AuditParam auditParam) {
         //添加备注
@@ -120,27 +118,8 @@ public class taskController extends BaseController {
         return ResponseData.success();
     }
 
-    @RequestMapping(value = "/comments", method = RequestMethod.POST)
-    @ApiOperation("新建评论")
-    public ResponseData addComments(@RequestBody AuditParam auditParam) {
-        if (ToolUtil.isEmpty(auditParam.getTaskId())) {
-            throw new ServiceException(500, "请检查任务id");
-        }
-        remarksService.addComments(auditParam);
-        return ResponseData.success();
-    }
-
-    @RequestMapping(value = "/getChildrenTasks", method = RequestMethod.GET)
-    @ApiOperation("获取子一级任务")
-    public ResponseData getChildrenTasks(Long taskId) {
-        List<ActivitiProcessTask> activitiProcessTasks = taskService.query().eq("pid", taskId).eq("display", 1).list();
-        List<ActivitiProcessTaskResult> activitiProcessTaskResults = BeanUtil.copyToList(activitiProcessTasks, ActivitiProcessTaskResult.class);
-        taskService.format(activitiProcessTaskResults);
-        return ResponseData.success(activitiProcessTaskResults);
-    }
-
-
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @ApiVersion("1.1")
+    @RequestMapping(value = "/{v}/detail", method = RequestMethod.GET)
     public ResponseData detail(@Param("taskId") Long taskId) {
         //流程任务
         if (ToolUtil.isEmpty(taskId)) {
@@ -239,7 +218,11 @@ public class taskController extends BaseController {
         appStepService.headPortrait(stepResult);
 
         //取出所有未审核节点
-        List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
+        List<ActivitiProcessLog> allUnAuditLog = new ArrayList<>();
+        allUnAuditLog.addAll(activitiProcessLogService.getAudit3(taskId));
+        if (allUnAuditLog.size() == 0) {
+            allUnAuditLog.addAll(activitiProcessLogService.getAudit1(taskId));
+        }
 
         /**
          * 流程中审核节点
@@ -257,8 +240,8 @@ public class taskController extends BaseController {
             }});
 
             taskResult.setPermissions(false);
-            for (ActivitiProcessLog activitiProcessLog : audit) {
-                if (activitiProcessLog.getStatus() == -1) {
+            for (ActivitiProcessLog activitiProcessLog : allUnAuditLog) {
+                if (activitiProcessLog.getStatus() == 3 || activitiProcessLog.getStatus() == -1) {
                     /**
                      * 取节点规则
                      */
@@ -299,29 +282,5 @@ public class taskController extends BaseController {
         return null;
     }
 
-    @RequestMapping(value = "/canOperat", method = RequestMethod.POST)
-    public ResponseData canOperat(@RequestBody ActivitiProcessParam activitiProcessParam) {
-        boolean b = logService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
-        return ResponseData.success(b);
-    }
-    @RequestMapping(value = "/revoke", method = RequestMethod.POST)
-    public ResponseData revoke(@RequestBody AuditParam auditParam ) {
-        if (ToolUtil.isEmpty(auditParam.getRevokeContent())) {
-            throw new ServiceException(500,"撤回任务必须填写撤回原因");
-        }
-        Long taskId = auditParam.getTaskId();
-        ActivitiProcessTask processTask = taskService.getById(taskId);
-        Long userId = LoginContextHolder.getContext().getUserId();
-        if (!processTask.getUserId().equals(userId)){
-            throw new ServiceException(500,"不是任务创建人，无法撤回");
-        }else {
-            //TODO 更新任务状态
-            processTask.setStatus(49);
-            shopCartService.addDynamic(processTask.getFormId(), null,LoginContextHolder.getContext().getUser().getName()+"撤回了任务,撤回原因"+auditParam.getRevokeContent());
-        }
 
-
-
-        return ResponseData.success();
-    }
 }

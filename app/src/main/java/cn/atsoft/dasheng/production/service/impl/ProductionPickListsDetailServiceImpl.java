@@ -157,7 +157,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
 
         //TODO notin
         List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : lockedInkindIds.size() == 0 ? stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id",lockedInkindIds).eq("display", 1).list();
-        List<ProductionPickListsCartResult> cartResults = pickListsCartService.listByListsDetailIds(detailIds);
+        List<ProductionPickListsCartResult> cartResults = detailIds.size() == 0 ? new ArrayList<>() : pickListsCartService.listByListsDetailIds(detailIds);
         for (StockDetails skus : stockSkus) {
             if (ToolUtil.isEmpty(skus.getBrandId())) {
                 skus.setBrandId(0L);

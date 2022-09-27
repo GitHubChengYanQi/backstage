@@ -140,7 +140,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
+    private ActivitiProcessLogV1Service activitiProcessLogService;
 
     @Autowired
     private AnnouncementsService announcementsService;
@@ -163,7 +163,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private ShopCartService shopCartService;
 
     @Autowired
-    private ActivitiProcessLogService processLogService;
+    private ActivitiProcessLogV1Service processLogService;
 
     @Autowired
     private ActivitiStepsService activitiStepsService;
@@ -230,6 +230,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             String name = LoginContextHolder.getContext().getUser().getName();
             activitiProcessTaskParam.setTaskName(name + "的出库申请 ");
+            activitiProcessTaskParam.setRemark(entity.getNote());
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getPickListsId());
             activitiProcessTaskParam.setType("OUTSTOCK");
@@ -252,7 +253,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
-            shopCartService.addDynamic(entity.getPickListsId(), null, "发起了入库申请");
             if (ToolUtil.isNotEmpty(param.getRemarkUserIds())) {
 
                 RemarksParam remarksParam = new RemarksParam();
@@ -355,14 +355,14 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             Integer numberCount = 0;
             Integer receivedCount = 0;
             List<Boolean> canPickBooleans = new ArrayList<>();
-            List<SkuSimpleResult> skuResults = new ArrayList<>();
+            List<ProductionPickListsDetailResult> listShowDetails = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
-                    if (detailResult.getStockNumber() > 0 && detailResult.getNeedOperateNum()>0) {
+                    if (detailResult.getStockNumber() > 0 && detailResult.getNeedOperateNum() > 0) {
                         result.setCanOperate(true);
                     }
-                    if (skuResults.size() < 2 && detailResult.getPickListsId().equals(result.getPickListsId())) {
-                        skuResults.add(detailResult.getSkuResult());
+                    if (listShowDetails.size() < 2) {
+                        listShowDetails.add(detailResult);
                     }
                     listsSkuIds.add(detailResult.getSkuId());
                     canPickBooleans.add(detailResult.getCanPick());
@@ -375,7 +375,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     }
                 }
             }
-            result.setSkuResults(skuResults);
+            result.setDetailResults(listShowDetails);
             /**
              * 是否可以领料
              */
