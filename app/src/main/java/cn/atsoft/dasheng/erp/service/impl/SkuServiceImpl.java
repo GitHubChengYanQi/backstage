@@ -1734,6 +1734,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         } catch (Exception ignored) {
 
         }
+
+
+        try {
+            List<Long> imageIds = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<MediaResult> mediaUrlResults = mediaService.listByIds(imageIds);
+            if (imageIds.size()>0){
+                skuResult.setImgResults(mediaUrlResults);
+            }
+        } catch (Exception e) {
+
+        }
+
+
         try {
             if (ToolUtil.isNotEmpty(skuResult.getDrawing())) {
                 List<Long> filedIds = Arrays.asList(skuResult.getDrawing().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());

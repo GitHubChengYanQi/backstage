@@ -152,7 +152,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
         /**
          * 获取购物车信息
          */
-        List<ProductionPickListsCart> carts =detailIds.size() == 0 ? new ArrayList<>() : pickListsCartService.query().in("pick_lists_detail_id", detailIds).ne("status", -1).list();
+        List<ProductionPickListsCart> carts = detailIds.size() == 0 ? new ArrayList<>() : pickListsCartService.query().in("pick_lists_detail_id", detailIds).ne("status", -1).list();
 
 
         //TODO notin

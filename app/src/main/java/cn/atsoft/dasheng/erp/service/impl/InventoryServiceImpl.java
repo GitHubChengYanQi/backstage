@@ -374,6 +374,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      * @param param
      */
     @Override
+    @Transactional
     public Inventory InventoryApply(InventoryParam param) {
 
         if (ToolUtil.isEmpty(param.getCoding())) {
