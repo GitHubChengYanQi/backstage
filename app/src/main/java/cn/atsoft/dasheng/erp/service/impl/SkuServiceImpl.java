@@ -1738,7 +1738,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         try {
             List<Long> imageIds = ToolUtil.isEmpty(skuResult.getImages()) ? new ArrayList<>() : Arrays.asList(skuResult.getImages().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            List<MediaUrlResult> mediaUrlResults = mediaService.getMediaUrlResults(imageIds);
+            List<MediaResult> mediaUrlResults = mediaService.listByIds(imageIds);
             if (imageIds.size()>0){
                 skuResult.setImgResults(mediaUrlResults);
             }
