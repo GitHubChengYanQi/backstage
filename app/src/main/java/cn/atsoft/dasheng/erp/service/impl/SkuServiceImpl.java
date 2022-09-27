@@ -1747,7 +1747,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         } catch (Exception ignored) {
 
         }
-
         try {
             if (ToolUtil.isNotEmpty(skuResult.getEnclosure())) {
                 List<Long> enclosure = Arrays.asList(skuResult.getEnclosure().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
@@ -1799,7 +1798,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            skuResult.setInBom(true);
 //            skuResult.setPartsId(parts.getPartsId());
 //        }
-
         JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
         List<Long> attIds = new ArrayList<>();
