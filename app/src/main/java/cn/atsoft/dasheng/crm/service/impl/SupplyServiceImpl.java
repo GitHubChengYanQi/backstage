@@ -487,6 +487,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             datum.setStockNumber(stockNumber);
             datum.setApplyNumber(applyNumber);
         }
+        data.removeIf(i->ToolUtil.isEmpty(i.getCustomerResult()));
 
     }
 
@@ -495,7 +496,8 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
      *
      * @param customerIds
      * @return
-     */
+    **/
+
     @Override
     public List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds) {
         if (ToolUtil.isEmpty(customerIds)) {
