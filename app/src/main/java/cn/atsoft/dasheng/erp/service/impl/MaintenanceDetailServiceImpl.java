@@ -234,7 +234,9 @@ public class MaintenanceDetailServiceImpl extends ServiceImpl<MaintenanceDetailM
     }
 
     private Page<MaintenanceDetailResult> getPageContext() {
-        return PageFactory.defaultPage();
+        Page<MaintenanceDetailResult> objectPage = PageFactory.defaultPage();
+        objectPage.setOrders(new ArrayList<>());
+        return objectPage;
     }
 
     private MaintenanceDetail getOldEntity(MaintenanceDetailParam param) {
