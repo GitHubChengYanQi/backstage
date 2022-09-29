@@ -891,9 +891,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (instockList.getRealNumber() < 0) {
             throw new ServiceException(500, "当前入库数量与单据数量不符");
         }
-//        if (instockList.getRealNumber() == 0) {
-//            instockList.setStatus(99L);
-//        }
+
         instockListService.updateById(instockList);
 
         if (ToolUtil.isNotEmpty(listParam.getCartId())) {

@@ -590,17 +590,18 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 //                }
                 break;
             case "ERROR":
-                List<Anomaly> anomalies = anomalyService.lambdaQuery().eq(Anomaly::getOrderId, processTask.getFormId()).list();
-                if (ToolUtil.isNotEmpty(anomalies)) {
-                    Anomaly anomaly = anomalies.get(0);
-                    if (anomaly.getType().equals("InstockError")) {
-                        boolean b = instockOrderService.instockOrderComplete(anomaly.getFormId());
+                /**
+                 * 查询父级任务 是否还有未完成的子任务
+                 */
+                int count = ToolUtil.isEmpty(processTask.getPid()) ? 1 : activitiProcessTaskService.query().eq("pid", processTask.getPid()).eq("display", 1).ne("status", 99).count();
+                if (ToolUtil.isEmpty(count) || count == 0) {
+                    ActivitiProcessTask fatherTask = activitiProcessTaskService.getById(processTask.getPid());
+                    if (fatherTask.getType().equals("INSTOCK")) {  //入库异常完成更新入库任务
+                        boolean b = instockOrderService.instockOrderComplete(fatherTask.getFormId());
                         if (b) {
-                            ActivitiProcessTask task = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getFormId, anomaly.getFormId()).one();
-                            autoAudit(task.getProcessTaskId(), 1, loginUserId);
+                            autoAudit(fatherTask.getProcessTaskId(), 1, loginUserId);
                         }
                     }
-
                 }
 
                 break;
@@ -759,7 +760,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         /**
          * 添加动态
          */
-         String content = "";
+        String content = "";
         switch (status) {
             case 1:
                 content = "同意了申请";
@@ -786,7 +787,9 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
             throw new ServiceException(500, "当前任务不存在");
         }
         List<ActivitiProcessLog> logs = this.getAudit3(processTask.getProcessTaskId());
-        logs.addAll(this.getAudit1(processTask.getProcessTaskId()));
+        if (logs.size() == 0 ){
+            logs.addAll(this.getAudit1(processTask.getProcessTaskId()));
+        }
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : logs) {
             stepIds.add(processLog.getSetpsId());
@@ -794,7 +797,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         List<ActivitiSteps> activitiSteps = stepIds.size() == 0 ? new ArrayList<>() : stepsService.listByIds(stepIds);
         for (ActivitiProcessLog processLog : logs) {
             for (ActivitiSteps activitiStep : activitiSteps) {
-                if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
+                if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status") && (ToolUtil.isEmpty(processLog.getAuditUserId()) || processLog.getAuditUserId().equals(loginUserId))) {
                     this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId, loginUserId);
                     return;
                 }
@@ -834,7 +837,8 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         //TODO 等待动作节点更换逻辑后 增加人员判断
 //        if (this.checkUser(audit.getRule(), taskId)) {
         for (ActivitiProcessLog processLog : processLogs) {
-            if ((ToolUtil.isEmpty(processLog.getAuditUserId()) || ((ToolUtil.isNotEmpty(processLog.getAuditUserId()) && processLog.getAuditUserId().equals(loginUserId)))) && ToolUtil.isNotEmpty(processLog.getActionStatus())) {
+            //TODO 可以将其他人的JSON一并更改
+            if ((ToolUtil.isEmpty(processLog.getAuditUserId()) ||processLog.getAuditUserId().equals(loginUserId)) && ToolUtil.isNotEmpty(processLog.getActionStatus())) {
                 List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
                 for (ActionStatus actionStatus : actionStatuses) {
                     if (actionStatus.getActionId().equals(actionId)) {
@@ -1932,7 +1936,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
     private void judgeStatus(Long logId, List<ActivitiProcessLog> logs) {
         for (ActivitiProcessLog activitiProcessLog : logs) {
-            if (activitiProcessLog.getLogId().equals(logId) && ( activitiProcessLog.getStatus() != 3 && activitiProcessLog.getStatus() != -1 )) {
+            if (activitiProcessLog.getLogId().equals(logId) && (activitiProcessLog.getStatus() != 3 && activitiProcessLog.getStatus() != -1)) {
                 throw new ServiceException(500, "当前节点已被操作,请刷新页面");
             }
         }
