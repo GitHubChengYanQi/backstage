@@ -757,18 +757,6 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         entity.setUpdateUser(loginUserId);
         this.updateById(entity);
 
-        /**
-         * 添加动态
-         */
-        String content = "";
-        switch (status) {
-            case 1:
-                content = "同意了申请";
-                break;
-        }
-
-        shopCartService.addDynamicByTaskId(taskId, null, content);
-
     }
 
 

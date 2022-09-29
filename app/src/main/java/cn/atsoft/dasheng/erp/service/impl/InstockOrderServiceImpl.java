@@ -704,9 +704,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         List<InstockHandle> instockHandles = new ArrayList<>();
+        long skuId = 0;
 
         for (InstockListParam listParam : param.getListParams()) {
-
+            skuId = listParam.getSkuId();
             InstockHandle instockHandle = new InstockHandle();    //添加入庫处理结果
             ToolUtil.copyProperties(listParam, instockHandle);
             instockHandle.setInstockOrderId(param.getInstockOrderId());
@@ -749,7 +750,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         /**
          * 添加动态
          */
-        shopCartService.addDynamic(param.getInstockOrderId(), null,"将物料入库");
+        String skuMessage = skuService.skuMessage(skuId);
+        shopCartService.addDynamic(param.getInstockOrderId(), null, "将" + skuMessage + "入库");
         /**
          * 更新单据状态
          */
@@ -770,7 +772,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setActionId(param.getActionId());
 //            }});
             InstockOrder order = this.getById(param.getInstockOrderId());
-            shopCartService.addDynamic(param.getInstockOrderId(), null, "单据:" + order.getCoding() + "完成了入库");
+            shopCartService.addDynamic(param.getInstockOrderId(), null, "完成任务");
 
         }
 
