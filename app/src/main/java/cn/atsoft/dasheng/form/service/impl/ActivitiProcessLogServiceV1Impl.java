@@ -355,7 +355,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                 List<ActivitiProcessLog> processLogs = new ArrayList<>();
                 for (ActivitiSteps step : allSteps) {
                     if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
-                        processLogs = updateSupper(allSteps, logs, step);
+                        processLogs = updateSupper(allSteps, logs, step,loginUserId);
                     }
                 }
                 for (ActivitiProcessLog processLog : processLogs) {
@@ -735,7 +735,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                 updateStatus(activitiProcessLog.getLogId(), task.getProcessTaskId(), 1, loginUserId);
 
                 ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
-                List<ActivitiProcessLog> processLogs = updateSupper(allSteps, logs, activitiSteps);
+                List<ActivitiProcessLog> processLogs = updateSupper(allSteps, logs, activitiSteps,loginUserId);
 
 
                 if (processLogs.size() > 0) {
@@ -877,7 +877,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
 
     private List<ActivitiProcessLog> updateSupper
-    (List<ActivitiSteps> steps, List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps) {
+    (List<ActivitiSteps> steps, List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps,Long loginUser) {
         List<ActivitiProcessLog> logs = new ArrayList<>();
 
         for (ActivitiSteps step : steps) {
@@ -890,15 +890,15 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                         //TODO 原判断 if (log.getStatus().equals(1))
                         if (log.getStatus().equals(1)) {
                             for (ActivitiProcessLog processLog : processLogs) {
-                                if (processLog.getSetpsId().equals(log.getSetpsId())) {
+                                if (processLog.getSetpsId().equals(log.getSetpsId()) && ((ToolUtil.isNotEmpty(processLog.getAuditUserId()) && processLog.getAuditUserId().equals(loginUser) )||ToolUtil.isEmpty(processLog.getAuditUserId())) ) {
                                     processLog.setStatus(1);
                                 }
                             }
-                            if (log.getStatus().equals(-1)) {
+                            if (log.getStatus().equals(-1) || log.getStatus().equals(3)) {
                                 logs.add(log);
                             }
 //                            logs.add(log);
-                            List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()));
+                            List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()),loginUser);
                             logs.addAll(newLogs);
                         }
                         break;
@@ -913,7 +913,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                             }
                             logs.add(log);
                             // 下级完成递归传入当前步骤判断上一级
-                            List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()));
+                            List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()),loginUser);
                             logs.addAll(newLogs);
                         }
                         break;
@@ -944,7 +944,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                                 }
                             }
                             logs.add(log);
-                            List<ActivitiProcessLog> routeLog = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()));
+                            List<ActivitiProcessLog> routeLog = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()),loginUser);
                             logs.addAll(routeLog);
                         }
 //                        return logs;
@@ -1138,7 +1138,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                 case AUDIT:
 
                     if (ToolUtil.isNotEmpty(log)) {
-                        if (log.getStatus().equals(1)) {
+                        if (log.getStatus().equals(1) || log.getStatus().equals(4)) {
                             activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activityProcessLog));
                             //TODO 需要测试验证
                         } else if (log.getStatus().equals(3)) {
