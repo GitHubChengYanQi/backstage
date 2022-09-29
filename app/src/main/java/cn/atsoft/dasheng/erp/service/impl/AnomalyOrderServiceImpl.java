@@ -180,12 +180,14 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         //判断是否提交过
         List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(ids);
         List<AnomalyDetail> anomalyDetails = ids.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", ids).eq("display", 1).isNotNull("inkind_id").list();
-
         List<Long> anomalyIds = new ArrayList<>();
+
+        long skuId = 0;
         for (Anomaly anomaly : anomalyList) {
             if (anomaly.getStatus() == 98) {
                 throw new ServiceException(500, "请勿重新提交异常");
             }
+            skuId = anomaly.getSkuId();
             anomalyIds.add(anomaly.getAnomalyId());
         }
         /**
@@ -250,7 +252,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
 
         submit(entity);
-        shopCartService.addDynamic(param.getInstockOrderId(), null, "提交了异常描述");
+        String skuMessage = skuService.skuMessage(skuId);
+        shopCartService.addDynamic(param.getInstockOrderId(), null, "提交了异常描述" + skuMessage);
         shopCartService.addDynamic(entity.getOrderId(), null, "提交了异常");
 
         return anomalyList;
