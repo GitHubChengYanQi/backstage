@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
 
@@ -26,6 +27,9 @@ import java.util.List;
 public class ActivitiProcessTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+
+    private Long userId;
 
     private Object receipts;
 

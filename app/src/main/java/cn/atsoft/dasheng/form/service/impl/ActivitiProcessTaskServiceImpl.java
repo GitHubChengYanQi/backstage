@@ -330,7 +330,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return this.getById(getKey(param));
     }
 
-    private ActivitiProcessTask getEntity(ActivitiProcessTaskParam param) {
+    @Override
+    public ActivitiProcessTask getEntity(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = new ActivitiProcessTask();
         ToolUtil.copyProperties(param, entity);
         return entity;
@@ -560,6 +561,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 userIds.addAll(processUserIds);
 
             }
+            userIds.add(datum.getUserId());
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
                 case "INSTOCK":
@@ -624,7 +626,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         for (ActivitiProcessTaskResult datum : data) {
 
-            if ((datum.getType().equals("INSTOCK") || datum.getType().equals("OUTSTOCK")) && ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
+            if ((datum.getType().equals("INSTOCK") || datum.getType().equals("OUTSTOCK") || datum.getType().equals("ERROR")) && ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
                 List<User> processUsers = new ArrayList<>();
                 for (Long processUserId : datum.getProcessUserIds()) {
                     for (User user : users) {
@@ -688,6 +690,18 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     datum.setReceipts(anomalyResult);
                 }
             }
+            if (datum.getType().equals("ErrorForWard")) {   //取转交异常执行人
+                for (User user : users) {
+                    if (ToolUtil.isNotEmpty(datum.getUserId()) && datum.getUserId().equals(user.getUserId())) {
+                        datum.setProcessUsers(new ArrayList<User>() {{
+                            add(user);
+                        }});
+                        break;
+                    }
+                }
+            }
+
+
             for (MaintenanceResult maintenanceResult : maintenanceResults) {
                 if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
                     long status = (long) maintenanceResult.getStatus();
