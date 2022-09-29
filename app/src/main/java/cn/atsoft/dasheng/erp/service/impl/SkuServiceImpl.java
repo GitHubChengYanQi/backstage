@@ -177,8 +177,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Long categoryId = category.getCategoryId();
             Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
             //同分类，同产品下不可有同名物料
+            Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
+            boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
+
             Sku sku = this.throwDuplicate(param, spu.getSpuId());
-            if (ToolUtil.isNotEmpty(sku)) {
+            if (ToolUtil.isNotEmpty(sku) && md5Flag) {
                 {
                     return new HashMap<String, Sku>() {{
                         put("error", sku);
@@ -243,10 +246,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassificationId);
 
-
             entity.setSkuValueMd5(md5);
-
-
+            if(md5Flag){
+                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,entity.getSkuId())).count();
+                if (skuCount > 0) {
+                    throw new ServiceException(500, "该物料已经存在");
+                }
+            }
             this.save(entity);
             skuId = entity.getSkuId();
             ToolUtil.copyProperties(entity, result);
@@ -291,15 +297,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //                entity.setSkuValue(spuId + "," + json);
                 String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + param.getSpuClassificationId());
                 entity.setSkuValueMd5(md5);
+                Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
+                boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
+                if(md5Flag){
+                    Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,entity.getSkuId())).count();
+                    if (skuCount > 0) {
+                        throw new ServiceException(500, "该物料已经存在");
+                    }
+                }
                 /**
                  * //原 SKU防重复判断
                  *
-                 * Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
-                 *  if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(spu)) {
-                 *    throw new ServiceException(500, "此物料在产品中已存在");
-                 *} else {
-                 *    this.save(entity);
-                 *}
                  *
                  *  ↓为新sku防止重复判断  以名称加型号 做数据库比对判断
                  */
@@ -527,12 +535,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassification.getSpuClassificationId());
 
         entity.setSkuValueMd5(md5);
-//        if (ToolUtil.isNotEmpty(codingRules)) {
-//            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
-//            if (skuCount > 0) {
-//                throw new ServiceException(500, "该物料已经存在");
-//            }
-//        }
+
+        Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
+        boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
+        if(md5Flag){
+            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
+            if (skuCount > 0) {
+                throw new ServiceException(500, "该物料已经存在");
+            }
+        }
 
 
         this.save(entity);
@@ -928,7 +939,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         newEntity.setSkuValueMd5(md5);
-
+        Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
+        boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
+        if(md5Flag){
+            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,newEntity.getSkuId())).count();
+            if (skuCount > 0) {
+                throw new ServiceException(500, "该物料已经存在");
+            }
+        }
 
         /**
          * 更新品牌
