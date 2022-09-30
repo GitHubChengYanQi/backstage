@@ -19,6 +19,11 @@ public enum PurchaseActionEnum implements FormActionInterface {
             return 50L;
         }
     },
+    revoke("撤回") {
+        public Long getStatus() {
+            return 49L;
+        }
+    },
     perform("执行");
 
 
