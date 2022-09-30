@@ -19,6 +19,11 @@ public enum InStockActionEnum implements FormActionInterface {
             return 50L;
         }
     },
+    revoke("撤回") {
+        public Long getStatus() {
+            return 49L;
+        }
+    },
     verify("核实") {  //核实
 
     }, performInstock("执行入库") {  //执行入库
