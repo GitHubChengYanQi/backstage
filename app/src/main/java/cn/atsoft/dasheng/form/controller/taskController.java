@@ -75,7 +75,7 @@ public class taskController extends BaseController {
     private UserService userService;
 
     @Autowired
-    private ActivitiProcessLogService logService;
+    private ActivitiProcessLogV1Service activitiProcessLogV1Service;
 
     @Autowired
     private PurchaseAskService askService;
@@ -232,7 +232,7 @@ public class taskController extends BaseController {
         //树形结构
         ActivitiStepsResult stepResult = stepsService.getStepResult(taskResult.getProcessId());
         //获取当前processTask 下的所有log
-        List<ActivitiProcessLogResult> process = logService.getLogByTaskProcess(processTask.getProcessId(), taskId);
+        List<ActivitiProcessLogResult> process = activitiProcessLogService.getLogByTaskProcess(processTask.getProcessId(), taskId);
         //比对log
         stepsService.getStepLog(stepResult, process);
         //返回头像
@@ -301,7 +301,7 @@ public class taskController extends BaseController {
 
     @RequestMapping(value = "/canOperat", method = RequestMethod.POST)
     public ResponseData canOperat(@RequestBody ActivitiProcessParam activitiProcessParam) {
-        boolean b = logService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
+        boolean b = activitiProcessLogService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
         return ResponseData.success(b);
     }
     @RequestMapping(value = "/revoke", method = RequestMethod.POST)
@@ -312,14 +312,14 @@ public class taskController extends BaseController {
         Long taskId = auditParam.getTaskId();
         ActivitiProcessTask processTask = taskService.getById(taskId);
         Long userId = LoginContextHolder.getContext().getUserId();
-        if (!processTask.getUserId().equals(userId)){
+        if (!processTask.getCreateUser().equals(userId)){
             throw new ServiceException(500,"不是任务创建人，无法撤回");
         }else {
             //TODO 更新任务状态
             processTask.setStatus(49);
             shopCartService.addDynamic(processTask.getFormId(), null,LoginContextHolder.getContext().getUser().getName()+"撤回了任务,撤回原因"+auditParam.getRevokeContent());
         }
-
+        activitiProcessLogV1Service.autoAudit(taskId,2,LoginContextHolder.getContext().getUserId());
 
 
         return ResponseData.success();

@@ -14,6 +14,11 @@ public enum QualityActionEnum implements FormActionInterface {
             return 99L;
         }
     },
+    revoke("撤回") {
+        public Long getStatus() {
+            return 49L;
+        }
+    },
     refuse("拒绝") {
         public Long getStatus() {
             return 50L;
