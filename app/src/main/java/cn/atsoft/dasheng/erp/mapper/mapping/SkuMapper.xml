@@ -88,17 +88,17 @@ type
         goods_sku.update_time AS "updateTime",
         goods_sku.update_user AS "updateUser",
         goods_sku.display AS "display",
-           goods_sku.level AS "level",
-         goods_sku.color AS "color",
-         goods_sku.sku_size AS "skuSize",
-           goods_sku.weight AS "weight",
-          goods_sku.material_id AS "materialId",
-          goods_sku.part_no AS "partNo",
-          goods_sku.national_standard AS "nationalStandard",
+        goods_sku.level AS "level",
+        goods_sku.color AS "color",
+        goods_sku.sku_size AS "skuSize",
+        goods_sku.weight AS "weight",
+        goods_sku.material_id AS "materialId",
+        goods_sku.part_no AS "partNo",
+        goods_sku.national_standard AS "nationalStandard",
         goods_sku.packaging AS "packaging",
         goods_sku.view_frame AS "viewFrame",
         goods_sku.model AS "model",
-           goods_sku.heat_treatment AS "heatTreatment"
+        goods_sku.heat_treatment AS "heatTreatment"
     </sql>
 
 
