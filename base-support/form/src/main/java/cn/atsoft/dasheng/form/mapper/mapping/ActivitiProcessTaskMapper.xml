@@ -352,6 +352,26 @@
             or notice_id like CONCAT('%',#{paramCondition.skuName},'%')
             )
         </if>
+        <if test="paramCondition.skuId != null and paramCondition.skuId != ''">
+            and (
+            task.form_id in (
+            select instock_order_id from daoxin_erp_instock_order where skuId =
+            #{paramCondition.skuId}
+            union
+            select order_id from daoxin_anomaly_order where skuId =
+            #{paramCondition.skuId}
+            union
+            select inventory_task_id from daoxin_erp_inventory where skuId =
+            #{paramCondition.skuId}
+            union
+            select pick_lists_id from daoxin_production_pick_lists where skuId =
+            #{paramCondition.skuId}
+            union
+            select maintenance_id from daoxin_erp_maintenance where skuId =
+            #{paramCondition.skuId}
+            )
+            )
+        </if>
         <if test="paramCondition.createUser != null ">
             and task.create_user = #{paramCondition.createUser}
         </if>
