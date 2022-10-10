@@ -625,8 +625,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         for (ActivitiProcessTaskResult datum : data) {
 
-//            if ((datum.getType().equals("INSTOCK") || datum.getType().equals("OUTSTOCK")) && ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
-            if (ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
+            if ((datum.getType().equals("INSTOCK") || datum.getType().equals("OUTSTOCK")) && ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
                 List<UserResult> processUsers = new ArrayList<>();
                 for (Long processUserId : datum.getProcessUserIds()) {
                     for (UserResult user : users) {
