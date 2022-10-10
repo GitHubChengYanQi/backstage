@@ -349,6 +349,14 @@ public class PartsController extends BaseController {
         return ResponseData.success(treeParts);
     }
 
+
+    @RequestMapping(value = "getParent", method = RequestMethod.GET)
+    @ApiOperation("返回当前父级集合")
+    public ResponseData getParent(@RequestParam Long id) {
+        List<PartsResult> treeParts = this.partsService.getParent(id);
+        return ResponseData.success(treeParts);
+    }
+
 }
 
 
