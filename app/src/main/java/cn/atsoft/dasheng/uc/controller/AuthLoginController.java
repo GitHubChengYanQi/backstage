@@ -68,6 +68,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static cn.atsoft.dasheng.action.dict.InStockDictEnum.userId;
@@ -99,7 +100,7 @@ public class AuthLoginController extends BaseController {
     @Autowired
     private SessionManager sessionManager;
 
-    protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
@@ -108,8 +109,6 @@ public class AuthLoginController extends BaseController {
         String token = ucMemberAuth.loginByCode(smsCodeParam.getPhone(), smsCodeParam.getCode());
         return ResponseData.success(token);
     }
-
-
 
 
     /**
@@ -239,7 +238,7 @@ public class AuthLoginController extends BaseController {
             queryWrapper.eq("member_id", memberId);
             queryWrapper.in("source", "wxCp");
             queryWrapper.isNotNull("user_id");
-            queryWrapper.eq("display",1);
+            queryWrapper.eq("display", 1);
             queryWrapper.last("limit 1");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(queryWrapper);
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
@@ -251,7 +250,6 @@ public class AuthLoginController extends BaseController {
                     //创建登录会话
                     sessionManager.createSession(token, authService.user(byId.getAccount()));
                 }
-
             }
         }
 
@@ -359,7 +357,7 @@ public class AuthLoginController extends BaseController {
                 wxuserInfoQueryWrapper.eq("display", 1);
                 wxuserInfoService.update(wxuserInfo, wxuserInfoQueryWrapper);
             }
-            logger.info("userId: "+userId+" 退出登录");
+            logger.info("userId: " + userId + " 退出登录");
             return ResponseData.success();
         } catch (Exception e) {
 
