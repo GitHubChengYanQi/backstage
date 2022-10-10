@@ -247,8 +247,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassificationId);
 
             entity.setSkuValueMd5(md5);
-            if(md5Flag){
-                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,entity.getSkuId())).count();
+            if (md5Flag) {
+                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId, entity.getSkuId())).count();
                 if (skuCount > 0) {
                     throw new ServiceException(500, "该物料已经存在");
                 }
@@ -299,8 +299,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 entity.setSkuValueMd5(md5);
                 Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
                 boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
-                if(md5Flag){
-                    Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,entity.getSkuId())).count();
+                if (md5Flag) {
+                    Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId, entity.getSkuId())).count();
                     if (skuCount > 0) {
                         throw new ServiceException(500, "该物料已经存在");
                     }
@@ -538,7 +538,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
         boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
-        if(md5Flag){
+        if (md5Flag) {
             Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
             if (skuCount > 0) {
                 throw new ServiceException(500, "该物料已经存在");
@@ -941,8 +941,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         newEntity.setSkuValueMd5(md5);
         Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
         boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
-        if(md5Flag){
-            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,newEntity.getSkuId())).count();
+        if (md5Flag) {
+            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId, newEntity.getSkuId())).count();
             if (skuCount > 0) {
                 throw new ServiceException(500, "该物料已经存在");
             }
@@ -1953,6 +1953,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             add("skuName");
             add("spuName");
             add("stockNumber");
+            add("standard");
             add("spuId");
         }};
         return PageFactory.defaultPage(fields);
