@@ -1,18 +1,16 @@
 package cn.atsoft.dasheng.app.pojo;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.task.entity.AsynTask;
-import cn.atsoft.dasheng.task.service.AsynTaskService;
+import cn.atsoft.dasheng.asyn.entity.AsynTask;
+import cn.atsoft.dasheng.asyn.service.AsynTaskService;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.fastjson.JSON;
 import jdk.nashorn.internal.runtime.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
