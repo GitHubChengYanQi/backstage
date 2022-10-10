@@ -35,6 +35,8 @@ public interface PartsService extends IService<Parts> {
 
     void updateAdd(PartsParam partsParam);
 
+    List<PartsResult> getParent(Long skuId);
+
     /**
      * 删除
      *

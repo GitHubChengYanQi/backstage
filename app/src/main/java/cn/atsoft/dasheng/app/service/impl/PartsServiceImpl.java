@@ -1,12 +1,9 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
-import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
-import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.app.pojo.AllBomParam;
 import cn.atsoft.dasheng.app.pojo.AsyncMethod;
 import cn.atsoft.dasheng.app.service.*;
@@ -37,7 +34,6 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import cn.hutool.log.Log;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -350,6 +346,20 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
     /**
+     * 获取当前上一级
+     *
+     * @param skuId
+     * @return
+     */
+    @Override
+    public List<PartsResult> getParent(Long skuId) {
+        List<Parts> parts = this.query().like("children", skuId).eq("status", 99).eq("display", 1).orderByDesc("create_time").list();
+        List<PartsResult> partsResults = BeanUtil.copyToList(parts, PartsResult.class);
+        format(partsResults);
+        return partsResults;
+    }
+
+    /**
      * 更新包含它的
      */
     public void updateChildren(Long skuId, String type) {
@@ -514,6 +524,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Page<PartsResult> pageContext = getPageContext();
         param.setStatus(99);
         param.setDisplay(1);
+        //skuId 取 清单id
+        if (ToolUtil.isNotEmpty(param.getChildren())) {
+            Parts parts = this.query().eq("sku_id", param.getChildren()).eq("status", 99).eq("display", 1).orderByDesc("create_time").last("limit 1").one();
+            if (ToolUtil.isNotEmpty(parts)) {
+                param.setChildren(parts.getPartsId().toString());
+            }
+        }
         IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
         pageFormat(page.getRecords());
         return PageFactory.createPageInfo(page);
