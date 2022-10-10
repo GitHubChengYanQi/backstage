@@ -155,6 +155,9 @@
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
         </if>
+        <if test="paramCondition.children != null  ">
+            and daoxin_erp_parts.children like CONCAT('%',#{paramCondition.children},'%')
+        </if>
     </select>
 
     <select id="oldCustomPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
