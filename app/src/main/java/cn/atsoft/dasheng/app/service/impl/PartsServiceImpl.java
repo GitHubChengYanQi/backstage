@@ -526,9 +526,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         param.setDisplay(1);
         //skuId 取 清单id
         if (ToolUtil.isNotEmpty(param.getChildren())) {
-            Parts parts = this.query().eq("sku_id", param.getChildren()).eq("status", 99).eq("display", 1).orderByDesc("create_time").last("limit 1").one();
-            if (ToolUtil.isNotEmpty(parts)) {
-                param.setChildren(parts.getPartsId().toString());
+            List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.query().eq("sku_id", param.getChildren()).eq("display", 1).list();
+            if (ToolUtil.isNotEmpty(erpPartsDetails)) {
+                List<Long> partsIds = new ArrayList<>();
+                for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
+                    partsIds.add(erpPartsDetail.getPartsId());
+                }
+                param.setPartIds(partsIds);
             }
         }
         IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
