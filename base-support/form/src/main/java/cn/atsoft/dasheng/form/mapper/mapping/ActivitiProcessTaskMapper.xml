@@ -355,19 +355,19 @@
         <if test="paramCondition.skuId != null and paramCondition.skuId != ''">
             and (
             task.form_id in (
-            select instock_order_id from daoxin_erp_instock_order where skuId =
+            select instock_order_id from daoxin_erp_instock_order where sku_id =
             #{paramCondition.skuId}
             union
-            select order_id from daoxin_anomaly_order where skuId =
+            select order_id from daoxin_anomaly_order where sku_id =
             #{paramCondition.skuId}
             union
-            select inventory_task_id from daoxin_erp_inventory where skuId =
+            select inventory_task_id from daoxin_erp_inventory where sku_id =
             #{paramCondition.skuId}
             union
-            select pick_lists_id from daoxin_production_pick_lists where skuId =
+            select pick_lists_id from daoxin_production_pick_lists where sku_id =
             #{paramCondition.skuId}
             union
-            select maintenance_id from daoxin_erp_maintenance where skuId =
+            select maintenance_id from daoxin_erp_maintenance where sku_id =
             #{paramCondition.skuId}
             )
             )
