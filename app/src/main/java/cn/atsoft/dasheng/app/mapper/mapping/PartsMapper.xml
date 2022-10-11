@@ -104,6 +104,12 @@
         <if test="paramCondition.partsId != null">
             and daoxin_erp_parts.parts_id like CONCAT('%',#{paramCondition.partsId},'%')
         </if>
+        <if test="paramCondition.partIds != null and  paramCondition.partIds.size>0">
+            and daoxin_erp_parts.parts_id in
+            <foreach collection="paramCondition.partIds" separator="," open="(" item="state" index="index" close=")">
+                #{state}
+            </foreach>
+        </if>
         <if test="paramCondition.spuId != null">
             and daoxin_erp_parts.spu_id like CONCAT('%',#{paramCondition.spuId},'%')
         </if>
@@ -155,9 +161,7 @@
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
         </if>
-        <if test="paramCondition.children != null  ">
-            and daoxin_erp_parts.children like CONCAT('%',#{paramCondition.children},'%')
-        </if>
+
     </select>
 
     <select id="oldCustomPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
