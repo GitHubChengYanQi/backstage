@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
+import cn.atsoft.dasheng.generalForm.service.GeneralFormDataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ErrorResponseData;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -74,6 +75,8 @@ public class SkuController extends BaseController {
     private PrintTemplateService printTemplateService;
     @Autowired
     private DictService dictService;
+    @Autowired
+    private GeneralFormDataService generalFormDataService;
 
 
     /**
@@ -89,6 +92,12 @@ public class SkuController extends BaseController {
         skuParam.setSkuId(null);
 
         Map<String, Sku> skuMap = this.skuService.add(skuParam);
+
+
+        if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams()) || skuParam.getGeneralFormDataParams().size() > 0) {
+            generalFormDataService.addBatch(skuParam.getGeneralFormDataParams());
+        }
+
         if (ToolUtil.isNotEmpty(skuMap.get("success"))) {
             return ResponseData.success(skuMap.get("success").getSkuId());
         } else {

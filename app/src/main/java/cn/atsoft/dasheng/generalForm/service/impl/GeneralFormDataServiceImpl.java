@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +33,16 @@ public class GeneralFormDataServiceImpl extends ServiceImpl<GeneralFormDataMappe
     public void add(GeneralFormDataParam param){
         GeneralFormData entity = getEntity(param);
         this.save(entity);
+    }
+    @Override
+    public void addBatch(List<GeneralFormDataParam> params){
+         params.removeIf(i->ToolUtil.isEmpty(i.getFieldName()) || ToolUtil.isEmpty(i.getValue()));
+            List<GeneralFormData> entityList = new ArrayList<>();
+        for (GeneralFormDataParam param : params) {
+            entityList.add(getEntity(param));
+
+        }
+        this.saveBatch(entityList);
     }
 
     @Override
