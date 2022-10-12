@@ -87,7 +87,10 @@ public class SkuController extends BaseController {
     public ResponseData addItem(@RequestBody SkuParam skuParam) {
         skuParam.setAddMethod(1);
         skuParam.setSkuId(null);
-
+        skuParam.setCreateTime(null);
+        skuParam.setCreateUser(null);
+        skuParam.setUpdateTime(null);
+        skuParam.setUpdateUser(null);
         Map<String, Sku> skuMap = this.skuService.add(skuParam);
         if (ToolUtil.isNotEmpty(skuMap.get("success"))) {
             return ResponseData.success(skuMap.get("success").getSkuId());

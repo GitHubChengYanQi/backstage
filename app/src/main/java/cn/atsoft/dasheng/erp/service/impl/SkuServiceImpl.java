@@ -359,6 +359,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             ToolUtil.copyProperties(parts, newSkuParts);
             newSkuParts.setPartsId(null);
             newSkuParts.setSkuId(newSkuId);
+            newSkuParts.setCreateTime(null);
+            newSkuParts.setCreateUser(null);
+            newSkuParts.setUpdateTime(null);
+            newSkuParts.setUpdateUser(null);
             partsService.save(newSkuParts);
             List<ErpPartsDetail> newSkuPartsDetails = new ArrayList<>();
             for (ErpPartsDetail partsDetail : partsDetails) {
@@ -378,6 +382,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             ActivitiStepsResult activitiStepsResult = stepsService.detail(activitiProcess.getProcessId());
             StepsParam param = new StepsParam();
             ToolUtil.copyProperties(activitiStepsResult, param);
+            param.setCreateTime(null);
+            param.setCreateUser(null);
+            param.setUpdateTime(null);
+            param.setUpdateUser(null);
             System.out.println(param);
             param.setProcess(new ActivitiProcessParam() {{
                 setSkuId(newSkuId);
