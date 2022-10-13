@@ -533,6 +533,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     partsIds.add(erpPartsDetail.getPartsId());
                 }
                 param.setPartIds(partsIds);
+            }else {
+                return new PageInfo();
             }
         }
         IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
