@@ -43,6 +43,8 @@ public class PartsResult implements Serializable {
 
     private List<ErpPartsDetailResult> parts;
 
+    private String name;
+
 
     private String children;
 
