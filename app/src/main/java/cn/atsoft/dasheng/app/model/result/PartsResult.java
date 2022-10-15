@@ -45,7 +45,6 @@ public class PartsResult implements Serializable {
 
     private String name;
 
-
     private String children;
 
     private String type;
@@ -126,11 +125,7 @@ public class PartsResult implements Serializable {
     @ApiModelProperty("部门编号")
     private Long deptId;
 
-    /**
-     * 零件名称
-     */
-    @ApiModelProperty("零件名称")
-    private String partName;
+
 
     /**
      * 备注
