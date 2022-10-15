@@ -29,6 +29,8 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
 
     private List<SupplyParam> supplyParams;
 
+    private List<Long> supplyIds;
+
     private String supplierModel;
 
     @NotNull
