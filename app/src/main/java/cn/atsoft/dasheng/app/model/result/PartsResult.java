@@ -43,6 +43,7 @@ public class PartsResult implements Serializable {
 
     private List<ErpPartsDetailResult> parts;
 
+    private String name;
 
     private String children;
 
@@ -124,11 +125,7 @@ public class PartsResult implements Serializable {
     @ApiModelProperty("部门编号")
     private Long deptId;
 
-    /**
-     * 零件名称
-     */
-    @ApiModelProperty("零件名称")
-    private String partName;
+
 
     /**
      * 备注
