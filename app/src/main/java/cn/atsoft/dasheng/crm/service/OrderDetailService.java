@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public interface OrderDetailService extends IService<OrderDetail> {
 
     OrderDetailResult record(OrderDetailParam param);
 
-    void addList(Long orderId, Long customerId, List<OrderDetailParam> params);
+    Integer addList(Long orderId, Long customerId, List<OrderDetailParam> params);
 
     /**
      * 删除

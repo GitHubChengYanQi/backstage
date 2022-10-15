@@ -106,35 +106,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         param.getPaymentParam().setOrderId(entity.getOrderId());
         supplyService.OrdersBackFill(param.getSellerId(), param.getDetailParams());  //回填
-        detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());
+        Integer totalAmount = detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());    //返回添加所有物料总价
         paymentService.add(param.getPaymentParam(), orderType);
+        if (ToolUtil.isNotEmpty(param.getPaymentParam()) && ToolUtil.isNotEmpty(param.getPaymentParam().getFloatingAmount())) {
+            totalAmount = totalAmount + param.getPaymentParam().getFloatingAmount();
+        }
+        entity.setTotalAmount(totalAmount);  //订单总金额
         this.updateById(entity);
         return entity;
 
-
-        //发起审批流程
-//        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", param.getProcessType()).eq("status", 99).eq("module", "purchaseAsk").one();
-//        if (ToolUtil.isNotEmpty(activitiProcess)) {
-//            qualityTaskSers);//检查创建权限
-////            LoginUser user = LoginContextHolder.getCvice.power(activitiProcesontext().getUser();
-//            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-//            activitiProcessTaskParam.setTaskName(user.getName() + "提交的" + source + "申请");
-////            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
-//            activitiProcessTaskParam.setUserId(param.getCreateUser());
-//            activitiProcessTaskParam.setFormId(entity.getOrderId());
-//            activitiProcessTaskParam.setType(type);
-//            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-//            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-//            //添加小铃铛
-//            wxCpSendTemplate.setSource("processTask");
-//            wxCpSendTemplate.setSourceId(taskId);
-//            //添加log
-//            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getOrderId(), type);
-//            activitiProcessLogService.autoAudit(taskId, 1);
-//        } else {
-////            entity.setStatus(99);
-////            this.updateById(entity);
-//        }
     }
 
     @Override
@@ -502,11 +482,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         int allMoney = 0;
         int totalNumber = 0;
-        for (OrderDetailResult detail : details) {
-            totalNumber = totalNumber + detail.getPurchaseNumber();
-            int money = detail.getOnePrice() * detail.getPurchaseNumber();
-            allMoney = allMoney + money;
-        }
+        allMoney = order.getTotalAmount();
         orderResult.setTotalNumber(totalNumber);
         orderResult.setAllMoney(allMoney);
         orderResult.setDetailResults(details);
