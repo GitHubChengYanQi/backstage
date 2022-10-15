@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -40,9 +41,15 @@ public class GeneralFormDataServiceImpl extends ServiceImpl<GeneralFormDataMappe
             List<GeneralFormData> entityList = new ArrayList<>();
         for (GeneralFormDataParam param : params) {
             entityList.add(getEntity(param));
-
         }
-        this.saveBatch(entityList);
+
+        List<GeneralFormData> list = this.lambdaQuery().in(GeneralFormData::getValue, entityList.stream().map(GeneralFormData::getValue).collect(Collectors.toList())).list();
+        for (GeneralFormData generalFormData : list) {
+            entityList.removeIf(i->i.getValue().equals(generalFormData.getValue()) && i.getFieldName().equals(generalFormData.getFieldName()));
+        }
+        if (entityList.size()>0) {
+            this.saveBatch(entityList);
+        }
     }
 
     @Override

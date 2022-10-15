@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
+import cn.atsoft.dasheng.generalForm.model.params.GeneralFormDataParam;
 import cn.atsoft.dasheng.generalForm.service.GeneralFormDataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ErrorResponseData;
@@ -95,6 +96,9 @@ public class SkuController extends BaseController {
 
 
         if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams()) || skuParam.getGeneralFormDataParams().size() > 0) {
+            for (GeneralFormDataParam generalFormDataParam : skuParam.getGeneralFormDataParams()) {
+                generalFormDataParam.setTableName("goods_sku");
+            }
             generalFormDataService.addBatch(skuParam.getGeneralFormDataParams());
         }
 
@@ -153,7 +157,12 @@ public class SkuController extends BaseController {
     @BussinessLog(value = "修改sku", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody SkuParam skuParam) {
-
+        if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams()) || skuParam.getGeneralFormDataParams().size() > 0) {
+            for (GeneralFormDataParam generalFormDataParam : skuParam.getGeneralFormDataParams()) {
+                generalFormDataParam.setTableName("goods_sku");
+            }
+            generalFormDataService.addBatch(skuParam.getGeneralFormDataParams());
+        }
         this.skuService.update(skuParam);
         return ResponseData.success();
     }
@@ -183,6 +192,12 @@ public class SkuController extends BaseController {
     @ApiOperation("编辑")
     @Permission(name = "合并物料")
     public ResponseData mirageSku(@RequestBody SkuParam skuParam) {
+        if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams()) || skuParam.getGeneralFormDataParams().size() > 0) {
+            for (GeneralFormDataParam generalFormDataParam : skuParam.getGeneralFormDataParams()) {
+                generalFormDataParam.setTableName("goods_sku");
+            }
+            generalFormDataService.addBatch(skuParam.getGeneralFormDataParams());
+        }
         this.skuService.mirageSku(skuParam);
         return ResponseData.success();
     }
