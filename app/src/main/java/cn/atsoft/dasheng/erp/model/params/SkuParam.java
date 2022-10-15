@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.pojo.SearchObject;
 import cn.atsoft.dasheng.erp.pojo.SelectBomEnum;
+import cn.atsoft.dasheng.generalForm.entity.GeneralFormData;
+import cn.atsoft.dasheng.generalForm.model.params.GeneralFormDataParam;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -44,6 +46,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private List<Long> skuIds = new ArrayList<>();
     private List<Long> imageIds;
     private List<Long> enclosureIds;
+    private List<GeneralFormDataParam> generalFormDataParams;
     private List<Long> fileIds;
     private SpuParam spu;
     private Long spuClassificationId;
@@ -75,6 +78,9 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String startTime;
     private String endTime;
     private String enclosure;   //附件
+    private String model;//型号
+    private String packaging;//包装方式
+
 
     private List<Long> anomalySkuIds; //异常的物料
     private Boolean openBom = false;
@@ -158,6 +164,10 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
      * 材质id
      */
     private String materialId;
+    /**
+     * 图幅
+     */
+    private String viewFrame;
     /**
      * 零件号
      */
