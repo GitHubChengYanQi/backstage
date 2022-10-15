@@ -216,6 +216,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         if (ToolUtil.isNotEmpty(param.getStatusList())) {
             param.setStatusList(param.getStatusList().stream().distinct().collect(Collectors.toList()));
         }
+        param.setUserId(LoginContextHolder.getContext().getUserId());
 
         /**
          * 超期筛选
