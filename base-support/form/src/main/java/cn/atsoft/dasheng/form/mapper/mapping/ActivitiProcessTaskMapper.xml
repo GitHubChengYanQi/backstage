@@ -306,14 +306,14 @@
         <if  test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
             <choose>
                 <when test="paramCondition.queryType ==1">
-                    and steps.type = "audit"
+                    and steps.step_type = "audit"
                     and log.audit_user_id = #{paramCondition.userId}
                     <if test="paramCondition.status !=null and paramCondition.status !=''">
                         and log.status =  #{paramCondition.status}
                     </if>
                 </when>
                 <when test=" paramCondition.queryType ==2">
-                    and steps.type = "send"
+                    and steps.step_type = "send"
                     and log.audit_user_id = #{paramCondition.userId}
                     and log.status = 1
                 </when>
