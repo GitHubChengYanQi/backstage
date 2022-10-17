@@ -22,10 +22,12 @@
         <result column="update_time" property="updateTime"/>
         <result column="update_user" property="updateUser"/>
         <result column="version" property="version"/>
+        <result column="job_no" property="jobNo"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List"> job_no
+    AS "jobNo",
         user_id
         AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
     </sql>
@@ -104,6 +106,12 @@
         from uc_open_user_info
         where source = 'wxCp'
           and member_id =
-              (select member_id from daoxin_portal_wxuser_info where source = 'wxCp' and user_id = #{userId} and display = 1 order By create_time limit 1)
+              (select member_id
+               from daoxin_portal_wxuser_info
+               where source = 'wxCp'
+                 and user_id = #{userId}
+                 and display = 1
+               order By create_time
+            limit 1)
     </select>
 </mapper>

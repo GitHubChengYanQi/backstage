@@ -33,6 +33,8 @@ public class UserDto {
 
     private Long userId;
 
+    private String jobNo ;  //工号
+
     @NotBlank
     private String account;
 
@@ -63,5 +65,7 @@ public class UserDto {
 
     @NotBlank
     private String position;
+
+
 
 }
