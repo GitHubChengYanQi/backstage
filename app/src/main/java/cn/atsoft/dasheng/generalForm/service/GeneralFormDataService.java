@@ -26,6 +26,8 @@ public interface GeneralFormDataService extends IService<GeneralFormData> {
      */
     void add(GeneralFormDataParam param);
 
+    void addBatch(List<GeneralFormDataParam> params);
+
     /**
      * 删除
      *

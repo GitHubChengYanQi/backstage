@@ -1,12 +1,9 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
-import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
-import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import cn.atsoft.dasheng.app.pojo.AllBomParam;
 import cn.atsoft.dasheng.app.pojo.AsyncMethod;
 import cn.atsoft.dasheng.app.service.*;
@@ -30,14 +27,13 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.atsoft.dasheng.task.entity.AsynTask;
-import cn.atsoft.dasheng.task.service.AsynTaskService;
+import cn.atsoft.dasheng.asyn.entity.AsynTask;
+import cn.atsoft.dasheng.asyn.service.AsynTaskService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import cn.hutool.log.Log;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -350,6 +346,20 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
 
     /**
+     * 获取当前上一级
+     *
+     * @param skuId
+     * @return
+     */
+    @Override
+    public List<PartsResult> getParent(Long skuId) {
+        List<Parts> parts = this.query().like("children", skuId).eq("status", 99).eq("display", 1).orderByDesc("create_time").list();
+        List<PartsResult> partsResults = BeanUtil.copyToList(parts, PartsResult.class);
+        format(partsResults);
+        return partsResults;
+    }
+
+    /**
      * 更新包含它的
      */
     public void updateChildren(Long skuId, String type) {
@@ -514,6 +524,19 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Page<PartsResult> pageContext = getPageContext();
         param.setStatus(99);
         param.setDisplay(1);
+        //skuId 取 清单id
+        if (ToolUtil.isNotEmpty(param.getChildren())) {
+            List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.query().eq("sku_id", param.getChildren()).eq("display", 1).list();
+            if (ToolUtil.isNotEmpty(erpPartsDetails)) {
+                List<Long> partsIds = new ArrayList<>();
+                for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
+                    partsIds.add(erpPartsDetail.getPartsId());
+                }
+                param.setPartIds(partsIds);
+            }else {
+                return new PageInfo();
+            }
+        }
         IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
         pageFormat(page.getRecords());
         return PageFactory.createPageInfo(page);

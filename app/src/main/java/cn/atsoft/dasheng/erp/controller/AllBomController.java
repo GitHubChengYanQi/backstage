@@ -8,12 +8,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.task.entity.AsynTask;
-import cn.atsoft.dasheng.task.service.AsynTaskService;
-import com.alibaba.fastjson.JSON;
-import com.sun.corba.se.impl.orbutil.concurrent.Sync;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 @RestController
 @RequestMapping("/mes")
