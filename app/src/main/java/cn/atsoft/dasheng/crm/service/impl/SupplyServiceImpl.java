@@ -106,7 +106,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Override
     @Transactional
     public void updateBind(SupplyParam param) {
-        this.removeById(param.getSupplyId());
+        this.removeByIds(param.getSupplyIds());
         param.setSupplyId(null);
         add(param);
     }
