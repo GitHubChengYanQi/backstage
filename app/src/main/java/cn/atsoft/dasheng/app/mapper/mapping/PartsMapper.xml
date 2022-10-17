@@ -46,6 +46,7 @@
         "number", daoxin_erp_parts.create_time AS "createTime", daoxin_erp_parts.update_time AS "updateTime",
         daoxin_erp_parts.create_user AS "createUser", daoxin_erp_parts.update_user AS
         "updateUser", daoxin_erp_parts.display AS "display", daoxin_erp_parts.deptId AS "deptId",
+            daoxin_erp_parts.name AS "name",
         daoxin_erp_parts.part_name AS "partName", daoxin_erp_parts.note AS "note"
     </sql>
 
