@@ -275,19 +275,19 @@
                  left join sys_dept dept on u.dept_id = dept.dept_id
     </select>
 
-<!--    <select id="listUserByPositionAndDept" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">-->
-<!--        select sys_user.user_id,sys_user.name,sys_user.dept_id , sys_user_pos.pos_id-->
-<!--        from sys_user left join sys_user_pos-->
-<!--        on sys_user.user_id = sys_user_pos.user_id-->
-<!--        where status = 'ENABLE'-->
-<!--        <if test="position!=null and position.size()>0">-->
-<!--          and sys_user.dept_id = #{position.key}-->
-<!--            and sys_user_pos.pos_id in-->
-<!--            <foreach item="i" index="index" collection="position.positions" open="(" separator="," close=")">-->
-<!--                #{i}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--    </select>-->
+    <!--    <select id="listUserByPositionAndDept" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">-->
+    <!--        select sys_user.user_id,sys_user.name,sys_user.dept_id , sys_user_pos.pos_id-->
+    <!--        from sys_user left join sys_user_pos-->
+    <!--        on sys_user.user_id = sys_user_pos.user_id-->
+    <!--        where status = 'ENABLE'-->
+    <!--        <if test="position!=null and position.size()>0">-->
+    <!--          and sys_user.dept_id = #{position.key}-->
+    <!--            and sys_user_pos.pos_id in-->
+    <!--            <foreach item="i" index="index" collection="position.positions" open="(" separator="," close=")">-->
+    <!--                #{i}-->
+    <!--            </foreach>-->
+    <!--        </if>-->
+    <!--    </select>-->
     <select id="listUserByPositionAndDept" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
         select sys_user.user_id,sys_user.name,sys_user.dept_id , sys_user_pos.pos_id
         from sys_user left join sys_user_pos
@@ -302,22 +302,45 @@
         </if>
     </select>
     <select id="listUserByIds" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult">
-        select
-        DISTINCT
+        SELECT
         users.user_id,
         userInfo.avatar,
         users.`name`
         FROM
         sys_user users
-        LEFT JOIN daoxin_portal_wxuser_info wxuserInfo on users.user_id = wxuserInfo.user_id
-        LEFT JOIN uc_open_user_info userInfo on userInfo.member_id = wxuserInfo.member_id  and userInfo.source = "WxCp"
-        WHERE 1 = 1
+        LEFT JOIN (
+        SELECT
+        a.*
+        FROM
+        daoxin_portal_wxuser_info a,(
+        SELECT
+        user_id,
+        max( create_time ) AS create_time
+        FROM
+        daoxin_portal_wxuser_info
+        GROUP BY
+        user_id
+        ) AS b
+        WHERE
+        a.user_id = b.user_id
+        AND a.create_time = b.create_time
+        AND a.source = 'wxCp'
+        GROUP BY
+        a.user_id
+        ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
+        LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
+        AND userInfo.source = "WxCp"
+        WHERE
+        1 = 1
         <if test=" userIds!=null and userIds.size()>0">
             AND users.user_id IN
             <foreach item="i" index="index" collection="userIds" open="(" separator="," close=")">
                 #{i}
             </foreach>
         </if>
+
+
+
     </select>
 
 
