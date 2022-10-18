@@ -24,6 +24,7 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -621,14 +622,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<AllocationResult> allocationResults = allocationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(allocationService.listByIds(allocationIds), AllocationResult.class);
         allocationService.format(allocationResults);
-        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<UserResult> users = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
 
         for (ActivitiProcessTaskResult datum : data) {
 
             if ((datum.getType().equals("INSTOCK") || datum.getType().equals("OUTSTOCK")) && ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
-                List<User> processUsers = new ArrayList<>();
+                List<UserResult> processUsers = new ArrayList<>();
                 for (Long processUserId : datum.getProcessUserIds()) {
-                    for (User user : users) {
+                    for (UserResult user : users) {
                         if (user.getUserId().equals(processUserId)) {
                             processUsers.add(user);
                         }
@@ -638,9 +639,15 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
 
 
-            for (User user : users) {
+            for (UserResult user : users) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     datum.setUser(user);
+                    break;
+                }
+            }
+            for (UserResult user : users) {
+                if (ToolUtil.isNotEmpty(datum.getUserId()) && user.getUserId().equals(datum.getUserId())) {
+                    datum.setUserResult(user);
                     break;
                 }
             }
