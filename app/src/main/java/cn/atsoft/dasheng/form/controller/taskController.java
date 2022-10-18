@@ -323,47 +323,49 @@ public class taskController extends BaseController {
             processTask.setStatus(49);
             taskService.updateById(processTask);
             shopCartService.addDynamic(processTask.getFormId(), null,LoginContextHolder.getContext().getUser().getName()+"撤回了任务,撤回原因"+auditParam.getRevokeContent());
-        }
-        Long formId = processTask.getFormId();
-        String type = processTask.getType();
-        switch (type) {
-            case "quality_task":
-                QualityTask qualityTask = qualityTaskService.getById(formId);
-                qualityTask.setStatus(49L);
-                qualityTaskService.updateById(qualityTask);
-                break;
-            case "purchaseAsk":
+            activitiProcessLogV1Service.autoAudit(taskId,2,LoginContextHolder.getContext().getUserId());
+            Long formId = processTask.getFormId();
+            String type = processTask.getType();
+            switch (type) {
+                case "quality_task":
+                    QualityTask qualityTask = qualityTaskService.getById(formId);
+                    qualityTask.setStatus(49L);
+                    qualityTaskService.updateById(qualityTask);
+                    break;
+                case "purchaseAsk":
 //                PurchaseAsk purchaseAsk = purchaseAskService.getById(formId);
 //                purchaseAsk.setStatus(documentsStatusId);
 //                purchaseAskService.updateById(purchaseAsk);
-                break;
-            case "procurementOrder":
-                ProcurementOrder procurementOrder = procurementOrderService.getById(formId);
-                procurementOrder.setStatus(49L);
-                procurementOrderService.updateById(procurementOrder);
-                break;
-            case "purchasePlan":
-                break;
-            case "INSTOCK":
-                InstockOrder instockOrder = instockOrderService.getById(formId);
-                instockOrder.setStatus(49L);
-                instockOrderService.updateById(instockOrder);
-                break;
-            case "ERROR":
-                AnomalyOrder anomalyOrder = anomalyOrderService.getById(formId);
-                anomalyOrder.setStatus(49L);
-                anomalyOrderService.updateById(anomalyOrder);
-                break;
-            case "OUTSTOCK":
-                ProductionPickLists productionPickLists = pickListsService.getById(formId);
-                productionPickLists.setStatus(49L);
-                pickListsService.updateById(productionPickLists);
-                break;
-            case "Stocktaking":
-                Inventory inventory = inventoryService.getById(formId);
-                inventory.setStatus(49L);
-                inventoryService.updateById(inventory);
-                break;
+                    break;
+                case "procurementOrder":
+                    ProcurementOrder procurementOrder = procurementOrderService.getById(formId);
+                    procurementOrder.setStatus(49L);
+                    procurementOrderService.updateById(procurementOrder);
+                    break;
+                case "purchasePlan":
+                    break;
+                case "INSTOCK":
+                    InstockOrder instockOrder = instockOrderService.getById(formId);
+                    instockOrder.setStatus(49L);
+                    instockOrderService.updateById(instockOrder);
+                    break;
+                case "ERROR":
+                    AnomalyOrder anomalyOrder = anomalyOrderService.getById(formId);
+                    anomalyOrder.setStatus(49L);
+                    anomalyOrderService.updateById(anomalyOrder);
+                    break;
+                case "OUTSTOCK":
+                    ProductionPickLists productionPickLists = pickListsService.getById(formId);
+                    productionPickLists.setStatus(49L);
+                    pickListsService.updateById(productionPickLists);
+                    break;
+                case "Stocktaking":
+                    Inventory inventory = inventoryService.getById(formId);
+                    inventory.setStatus(49L);
+                    inventoryService.updateById(inventory);
+                    break;
+            }
+
         }
 
         return ResponseData.success();
