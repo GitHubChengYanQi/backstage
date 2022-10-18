@@ -8,7 +8,7 @@ import cn.atsoft.dasheng.view.entity.TableView;
 import cn.atsoft.dasheng.view.mapper.TableViewMapper;
 import cn.atsoft.dasheng.view.model.params.TableViewParam;
 import cn.atsoft.dasheng.view.model.result.TableViewResult;
-import  cn.atsoft.dasheng.view.service.TableViewService;
+import cn.atsoft.dasheng.view.service.TableViewService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,19 +20,19 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-04
  */
 @Service
 public class TableViewServiceImpl extends ServiceImpl<TableViewMapper, TableView> implements TableViewService {
 
     @Override
-    public TableView add(TableViewParam param){
+    public TableView add(TableViewParam param) {
 
-        Integer count = this.query().in("table_key",param.getTableKey()).eq("name", param.getName()).count();
+        Integer count = this.query().in("table_key", param.getTableKey()).eq("name", param.getName()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "视图名称重复,请更换");
         }
@@ -43,13 +43,13 @@ public class TableViewServiceImpl extends ServiceImpl<TableViewMapper, TableView
     }
 
     @Override
-    public void delete(TableViewParam param){
+    public void delete(TableViewParam param) {
         param.setDisplay(0);
         this.update(param);
     }
 
     @Override
-    public void update(TableViewParam param){
+    public void update(TableViewParam param) {
         TableView oldEntity = getOldEntity(param);
         TableView newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -57,23 +57,23 @@ public class TableViewServiceImpl extends ServiceImpl<TableViewMapper, TableView
     }
 
     @Override
-    public TableViewResult findBySpec(TableViewParam param){
+    public TableViewResult findBySpec(TableViewParam param) {
         return null;
     }
 
     @Override
-    public List<TableViewResult> findListBySpec(TableViewParam param){
+    public List<TableViewResult> findListBySpec(TableViewParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<TableViewResult> findPageBySpec(TableViewParam param){
+    public PageInfo<TableViewResult> findPageBySpec(TableViewParam param) {
         Page<TableViewResult> pageContext = getPageContext();
         IPage<TableViewResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(TableViewParam param){
+    private Serializable getKey(TableViewParam param) {
         return param.getTableViewId();
     }
 

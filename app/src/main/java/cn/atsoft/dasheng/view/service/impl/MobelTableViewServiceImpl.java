@@ -48,7 +48,7 @@ public class MobelTableViewServiceImpl extends ServiceImpl<MobelTableViewMapper,
             entity.setField(JSON.toJSONString(param.getDetails()));
         }
 
-        Integer count = this.query().in("table_key", param.getTableKey()).eq("name", param.getName()).eq("user_id", userId).count();
+        Integer count = this.query().in("table_key", param.getTableKey()).eq("display",1).eq("name", param.getName()).eq("user_id", userId).count();
         if (count > 0) {
             throw new ServiceException(500, "视图名称重复,请更换");
         }
