@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author Captain_Jazz
@@ -52,5 +52,13 @@ public interface InstockLogDetailMapper extends BaseMapper<InstockLogDetail> {
      * @Date 2022-04-14
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") InstockLogDetailParam paramCondition);
+
+    /**
+     * 通过物料查询记录
+     *
+     * @param paramCondition
+     * @return
+     */
+    List<InstockLogDetailResult> skuLogDetail(@Param("paramCondition") InstockLogDetailParam paramCondition);
 
 }

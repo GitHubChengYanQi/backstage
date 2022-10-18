@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
@@ -11,22 +10,21 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.InstockLogDetail;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.mapper.InstockLogDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam;
-import cn.atsoft.dasheng.erp.model.result.InstockHandleResult;
 import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.pojo.SkuLogDetail;
 import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.erp.service.InstockLogDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -62,12 +60,66 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
     @Autowired
     private StockDetailsService stockDetailsService;
 
+    @Autowired
+    private ActivitiProcessTaskService processTaskService;
+
 
     @Override
     public void add(InstockLogDetailParam param) {
         InstockLogDetail entity = getEntity(param);
         this.save(entity);
     }
+
+    /**
+     * 查询物料操作记录
+     *
+     * @param skuId
+     * @return
+     */
+
+    @Override
+    public List<SkuLogDetail> skuLogDetail(Long skuId) {
+        List<SkuLogDetail> skuLogDetails = new ArrayList<>();
+        InstockLogDetailParam param = new InstockLogDetailParam();
+        param.setSkuId(skuId);
+        List<InstockLogDetailResult> results = this.baseMapper.skuLogDetail(param);
+        this.format(results);
+
+        List<Long> formIds = new ArrayList<>();
+        for (InstockLogDetailResult result : results) {
+            switch (result.getSource()) {
+                case "instock":
+                    formIds.add(result.getSourceId());
+                    break;
+            }
+        }
+
+        List<ActivitiProcessTask> taskList = formIds.size() == 0 ? new ArrayList<>() : processTaskService.query().in("form_id", formIds).list();
+
+        for (InstockLogDetailResult result : results) {
+
+            SkuLogDetail skuLogDetail = new SkuLogDetail();
+            skuLogDetail.setType(result.getSource());
+            skuLogDetail.setTime(result.getCreateTime());
+            skuLogDetail.setUserName(result.getUser().getName());
+            skuLogDetail.setPosition(result.getStorehousePositionsResult().getName());
+            skuLogDetail.setBrandName(result.getBrandResult().getBrandName());
+            skuLogDetail.setOperationNum(Math.toIntExact(result.getNumber()));
+            skuLogDetail.setBalance(Math.toIntExact(result.getNumber()+result.getCurrentNumber()));
+
+            for (ActivitiProcessTask activitiProcessTask : taskList) {
+                if (result.getSourceId().equals(activitiProcessTask.getFormId())) {
+                    skuLogDetail.setTheme(activitiProcessTask.getTheme());
+                    break;
+                }
+            }
+            skuLogDetails.add(skuLogDetail);
+        }
+
+
+        return skuLogDetails;
+    }
+
 
     /**
      * 历史记录
@@ -248,6 +300,11 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
             if (ToolUtil.isNotEmpty(result.getInstockOrderId())) {
                 instockOrderId.add(result.getInstockOrderId());
             }
+            if (ToolUtil.isEmpty(result.getBrandId()) || result.getBrandId() == 0) {
+                result.setBrandResult(new BrandResult() {{
+                    setBrandName("无品牌");
+                }});
+            }
             brandIds.add(result.getBrandId());
             if (ToolUtil.isNotEmpty(result.getCustomerId())) {
                 customerIds.add(result.getCustomerId());
@@ -328,7 +385,7 @@ public class InstockLogDetailServiceImpl extends ServiceImpl<InstockLogDetailMap
                 }
         );
 
-        List<InstockLogDetailResult> results =  totalList.stream().sorted(Comparator.comparing(InstockLogDetailResult::getCreateTime).reversed()).collect(Collectors.toList());
+        List<InstockLogDetailResult> results = totalList.stream().sorted(Comparator.comparing(InstockLogDetailResult::getCreateTime).reversed()).collect(Collectors.toList());
         this.format(results);
         return results;
     }

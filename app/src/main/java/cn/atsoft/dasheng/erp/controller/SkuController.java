@@ -12,10 +12,12 @@ import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
+import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.pojo.SkuBind;
 import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
+import cn.atsoft.dasheng.erp.pojo.SkuLogDetail;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -78,6 +80,9 @@ public class SkuController extends BaseController {
     private DictService dictService;
     @Autowired
     private GeneralFormDataService generalFormDataService;
+
+    @Autowired
+    private InstockLogDetailService instockLogDetailService;
 
 
     /**
@@ -166,6 +171,7 @@ public class SkuController extends BaseController {
         this.skuService.update(skuParam);
         return ResponseData.success();
     }
+
     /**
      * 编辑接口
      *
@@ -290,6 +296,7 @@ public class SkuController extends BaseController {
         return ResponseData.success(sku);
 
     }
+
     /**
      * 查看详情接口
      *
@@ -451,6 +458,7 @@ public class SkuController extends BaseController {
         }
         return ResponseData.success(new ArrayList<>());
     }
+
     @RequestMapping(value = "/getSkuFile", method = RequestMethod.GET)
     @ApiOperation("Select数据接口")
 //    @Permission
@@ -462,6 +470,7 @@ public class SkuController extends BaseController {
         }
         return ResponseData.success(new ArrayList<>());
     }
+
     @RequestMapping(value = "/printSkuTemplate", method = RequestMethod.GET)
     @ApiOperation("打印信息")
 //    @Permission
@@ -472,6 +481,13 @@ public class SkuController extends BaseController {
         return ResponseData.success("");
     }
 
+
+    @RequestMapping(value = "/skuLogDetail", method = RequestMethod.GET)
+    @ApiOperation("物料操作记录")
+    public ResponseData skuLogDetail(@RequestParam("skuId") Long skuId) {
+        List<SkuLogDetail> logDetailResults = instockLogDetailService.skuLogDetail(skuId);
+        return ResponseData.success(logDetailResults);
+    }
 
 }
 

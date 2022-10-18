@@ -312,6 +312,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "发起的入库申请");
             activitiProcessTaskParam.setQTaskId(entity.getInstockOrderId());
+            activitiProcessTaskParam.setTheme(param.getTheme());
             activitiProcessTaskParam.setFormId(entity.getInstockOrderId());
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
             activitiProcessTaskParam.setRemark(entity.getRemark());
@@ -723,8 +724,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 if (listParam.getBatch()) {   //批量
                     Long inKind = createInKind(listParam);
                     listParam.setInkind(inKind);
-                    handle(listParam, inKind);
-                    InstockLogDetail instockLogDetail = addLog(param, listParam, inKind);
+                    Integer number = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);//入库前的库存数
+                    handle(listParam, inKind);  //入库之前的库存数
+                    InstockLogDetail instockLogDetail = addLog(param, listParam, inKind, number);  //添加记录
                     instockLogDetails.add(instockLogDetail);
                 } else {
                     batchInStock(param, listParam, instockLogDetails);
@@ -749,7 +751,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         /**
          * 添加动态
          */
-        shopCartService.addDynamic(param.getInstockOrderId(), null,"将物料入库");
+        shopCartService.addDynamic(param.getInstockOrderId(), null, "将物料入库");
         /**
          * 更新单据状态
          */
@@ -788,6 +790,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private void batchInStock(InstockOrderParam param, InstockListParam listParam, List<InstockLogDetail> instockLogDetails) {
 
         Long number = listParam.getNumber();
+        Integer numberByStock = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);  //入库之前库存数
 
         List<OrCode> orCodes = new ArrayList<>();
         List<Inkind> inkinds = new ArrayList<>();   //先创建实物
@@ -840,10 +843,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetails.setNumber(inkind.getNumber());
             stockDetailList.add(stockDetails);
 
-            InstockLogDetail instockLogDetail = addLog(param, listParam, inkind.getInkindId());
-            instockLogDetails.add(instockLogDetail);
-
         }
+        InstockLogDetail instockLogDetail = addLog(param, listParam, null, numberByStock);
+        instockLogDetails.add(instockLogDetail);
         stockDetailsService.saveBatch(stockDetailList);
         orCodeBindService.saveBatch(binds);
     }
@@ -851,13 +853,16 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     /**
      * 添加入库记录
      */
-    private InstockLogDetail addLog(InstockOrderParam param, InstockListParam listParam, Long inkindId) {
+    private InstockLogDetail addLog(InstockOrderParam param, InstockListParam listParam, Long inkindId, Integer stockNum) {
         InstockLogDetail instockLogDetail = new InstockLogDetail();
         instockLogDetail.setInstockOrderId(param.getInstockOrderId());
         instockLogDetail.setSkuId(listParam.getSkuId());
         instockLogDetail.setType("normal");
         instockLogDetail.setSource("instock");
+        instockLogDetail.setSourceId(param.getInstockOrderId());
         instockLogDetail.setInkindId(inkindId);
+        instockLogDetail.setRealNumber(stockNum + listParam.getNumber());
+        instockLogDetail.setCurrentNumber(Long.valueOf(stockNum));  //入库之后库存数
         instockLogDetail.setBrandId(listParam.getBrandId());
         instockLogDetail.setCustomerId(listParam.getCustomerId());
         instockLogDetail.setStorehousePositionsId(listParam.getStorehousePositionsId());
@@ -964,7 +969,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @param inkindId
      */
     private void handle(InstockListParam param, Long inkindId) {
-
 
         StockDetails stockDetails = new StockDetails();
         stockDetails.setSkuId(param.getSkuId());
