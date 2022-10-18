@@ -119,6 +119,7 @@
         select
         <include refid="Base_Column_List"/>
         from asyn_task where 1 = 1 and type != '报表物料分析'
+
         <if test="paramCondition.taskId != null">
             and task_id like CONCAT('%',#{paramCondition.taskId},'%')
         </if>
