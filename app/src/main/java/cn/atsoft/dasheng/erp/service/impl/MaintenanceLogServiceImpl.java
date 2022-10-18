@@ -284,6 +284,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         for (MaintenanceLogResult datum : data) {
             inkindIds.add(datum.getInkindId());
         }
+        List<UserResult> userResultsByIds =data.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(data.stream().map(MaintenanceLogResult::getCreateUser).collect(Collectors.toList()));
         List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
         List<MaintenanceLogDetail> details =data.size() == 0 ? new ArrayList<>() : maintenanceLogDetailService.lambdaQuery().in(MaintenanceLogDetail::getMaintenanceLogId, data.stream().map(MaintenanceLogResult::getMaintenanceLogId).collect(Collectors.toList())).list();
         List<MaintenanceLogDetailResult> maintenanceLogDetailResults = BeanUtil.copyToList(details, MaintenanceLogDetailResult.class);
@@ -299,6 +300,12 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
             for (MaintenanceLogDetailResult detail : maintenanceLogDetailResults) {
                 if (detail.getMaintenanceLogId().equals(datum.getMaintenanceLogId())){
                     detailResults.add(detail);
+                }
+            }
+            for (UserResult userResultsById : userResultsByIds) {
+                if (datum.getCreateUser().equals(userResultsById.getUserId())){
+                    datum.setCreateUserResult(userResultsById);
+                    break;
                 }
             }
             datum.setDetailResults(detailResults);
