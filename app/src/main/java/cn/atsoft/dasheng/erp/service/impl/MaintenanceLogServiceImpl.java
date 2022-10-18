@@ -284,10 +284,10 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         for (MaintenanceLogResult datum : data) {
             inkindIds.add(datum.getInkindId());
         }
-
-
         List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
-
+        List<MaintenanceLogDetail> details =data.size() == 0 ? new ArrayList<>() : maintenanceLogDetailService.lambdaQuery().in(MaintenanceLogDetail::getMaintenanceLogId, data.stream().map(MaintenanceLogResult::getMaintenanceLogId).collect(Collectors.toList())).list();
+        List<MaintenanceLogDetailResult> maintenanceLogDetailResults = BeanUtil.copyToList(details, MaintenanceLogDetailResult.class);
+        maintenanceLogDetailService.format(maintenanceLogDetailResults);
         for (MaintenanceLogResult datum : data) {
             for (InkindResult inKind : inKinds) {
                 if (ToolUtil.isNotEmpty(datum.getInkindId())&&datum.getInkindId().equals(inKind.getInkindId())) {
@@ -295,6 +295,15 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
                     break;
                 }
             }
+            List<MaintenanceLogDetailResult> detailResults = new ArrayList<>();
+            for (MaintenanceLogDetailResult detail : maintenanceLogDetailResults) {
+                if (detail.getMaintenanceLogId().equals(datum.getMaintenanceLogId())){
+                    detailResults.add(detail);
+                }
+            }
+            datum.setDetailResults(detailResults);
+
+
         }
     }
 }
