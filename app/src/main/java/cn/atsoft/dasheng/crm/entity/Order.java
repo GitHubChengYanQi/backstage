@@ -25,6 +25,12 @@ public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 订单总金额
+     */
+    @TableField("total_amount")
+    private Integer totalAmount;
+
+    /**
      * 交货周期
      */
     @TableField("lead_time")
@@ -671,6 +677,14 @@ public class Order implements Serializable {
 
     public void setLeadTime(String leadTime) {
         this.leadTime = leadTime;
+    }
+
+    public Integer getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Integer totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     @Override
