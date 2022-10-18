@@ -482,7 +482,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         int allMoney = 0;
         int totalNumber = 0;
-        if (ToolUtil.isNotEmpty(order.getTotalAmount())) {
+        if (ToolUtil.isNotEmpty(order.getTotalAmount())) {  //兼容之前老订单  没有总价格 
             allMoney = order.getTotalAmount();
         }
         orderResult.setTotalNumber(totalNumber);
