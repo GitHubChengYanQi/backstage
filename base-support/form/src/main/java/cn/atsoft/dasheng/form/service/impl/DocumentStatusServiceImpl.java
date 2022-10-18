@@ -66,6 +66,8 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
         }
         if (statusId == 0) {
             documentsStatusResult.setName("发起");
+        } else if (statusId == 49) {
+            documentsStatusResult.setName("已撤回");
         } else if (statusId == 50) {
             documentsStatusResult.setName("拒绝");
         } else if (statusId == 99) {
@@ -175,6 +177,11 @@ public class DocumentStatusServiceImpl extends ServiceImpl<DocumentStatusMapper,
                 DocumentsStatusResult result = new DocumentsStatusResult();
                 result.setName("发起");
                 result.setDocumentsStatusId(0L);
+                documentsStatusResults.add(result);
+            } else if (id == 49) {
+                DocumentsStatusResult result = new DocumentsStatusResult();
+                result.setDocumentsStatusId(49L);
+                result.setName("已撤回");
                 documentsStatusResults.add(result);
             } else if (id == 50) {
                 DocumentsStatusResult result = new DocumentsStatusResult();
