@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.appBase.service.MediaService;
@@ -13,6 +14,7 @@ import cn.atsoft.dasheng.erp.model.params.MaintenanceLogDetailParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogDetailResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -204,9 +207,29 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
             inkindIds.add(datum.getInkindId());
             userIds.add(datum.getCreateUser());
         }
+        List<SkuSimpleResult> skuSimpleResultList =data.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(data.stream().map(MaintenanceLogDetailResult::getSkuId).collect(Collectors.toList()));
+
+        List<BrandResult> brandResults = brandService.getBrandResults(data.stream().map(MaintenanceLogDetailResult::getBrandId).collect(Collectors.toList()));
+
+
+
+
+
         List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
         for (MaintenanceLogDetailResult datum : data) {
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
+                if (datum.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    datum.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && brandResult.getBrandId().equals(datum.getBrandId())){
+                    datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
             for (UserResult userResult : userResultsByIds) {
                 if (datum.getCreateUser().equals(userResult.getUserId())){
                     userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
