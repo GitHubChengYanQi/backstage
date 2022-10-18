@@ -1453,6 +1453,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         Map<Long, String> statusMap = new HashMap<>();
         List<DocumentsStatus> statuses = statusService.list();
         statusMap.put(0L, "开始");
+        statusMap.put(49L,"已撤回");
         statusMap.put(99L, "完成");
         statusMap.put(50L, "拒绝");
         for (DocumentsStatus status : statuses) {
