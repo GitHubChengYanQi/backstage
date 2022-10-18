@@ -162,7 +162,11 @@
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
         </if>
-
+        <if test="paramCondition.spuClass !=null and  paramCondition.spuClass != ''">
+           and  daoxin_erp_parts.sku_id in (
+               select sku_id from goods_sku where spu_id in ( select spu_id from goods_spu where spu_classification_id  = #{paramCondition.spuClass})
+            )
+        </if>
     </select>
 
     <select id="oldCustomPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
