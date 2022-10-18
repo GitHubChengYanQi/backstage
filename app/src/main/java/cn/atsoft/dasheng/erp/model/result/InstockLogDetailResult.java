@@ -38,7 +38,7 @@ public class InstockLogDetailResult implements Serializable {
     private Long receiptId;
     private String source;
     private Long sourceId;
-    private Integer currentNumber;
+    private Integer currentNumber = 0;  //默认给个0  防止空
     @ApiModelProperty("")
     private Long instockLogDetailId;
 

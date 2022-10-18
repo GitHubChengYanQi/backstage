@@ -505,7 +505,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public Integer getNumberByStock(Long skuId, Long brandId, Long positionId) {
-        return this.baseMapper.getNumberByStock(skuId, brandId, positionId);
+        Integer number = this.baseMapper.getNumberByStock(skuId, brandId, positionId);
+        if (ToolUtil.isEmpty(number)) {
+            number = 0;
+        }
+        return number;
     }
 
     @Override
