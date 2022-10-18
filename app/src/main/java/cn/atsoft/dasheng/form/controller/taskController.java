@@ -276,12 +276,12 @@ public class taskController extends BaseController {
         List comments = remarksService.getComments(taskId);
         taskResult.setRemarks(comments);
 
-        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
-            User user = userService.getById(taskResult.getCreateUser());
-            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
-            user.setAvatar(imgUrl);
-            taskResult.setUser(user);
-        }
+//        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
+//            User user = userService.getById(taskResult.getCreateUser());
+//            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+//            user.setAvatar(imgUrl);
+//            taskResult.setUser(user);
+//        }
         if (ToolUtil.isNotEmpty(taskResult.getOrigin())) {
             taskResult.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(taskResult.getOrigin(), ThemeAndOrigin.class)));
         }
