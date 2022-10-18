@@ -856,6 +856,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         instockLogDetail.setInstockOrderId(param.getInstockOrderId());
         instockLogDetail.setSkuId(listParam.getSkuId());
         instockLogDetail.setType("normal");
+        instockLogDetail.setSource("instock");
         instockLogDetail.setInkindId(inkindId);
         instockLogDetail.setBrandId(listParam.getBrandId());
         instockLogDetail.setCustomerId(listParam.getCustomerId());
