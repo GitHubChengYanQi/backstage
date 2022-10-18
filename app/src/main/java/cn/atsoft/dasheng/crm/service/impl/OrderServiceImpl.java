@@ -482,7 +482,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         int allMoney = 0;
         int totalNumber = 0;
-        allMoney = order.getTotalAmount();
+        if (ToolUtil.isNotEmpty(order.getTotalAmount())) {
+            allMoney = order.getTotalAmount();
+        }
         orderResult.setTotalNumber(totalNumber);
         orderResult.setAllMoney(allMoney);
         orderResult.setDetailResults(details);
