@@ -28,6 +28,7 @@
         AS "maintenanceLogId",notice AS "notice",coding AS "coding", source AS "source",source_id AS "sourceId",theme AS "theme",origin AS "origin",create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", enclosure AS "enclosure"
     </sql>
     <sql id="leftJoin">
+
         log
         .
         maintenance_log_id
@@ -212,6 +213,7 @@
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
         </if>
+        group by log.maintenance_log_id
     </select>
 
 </mapper>
