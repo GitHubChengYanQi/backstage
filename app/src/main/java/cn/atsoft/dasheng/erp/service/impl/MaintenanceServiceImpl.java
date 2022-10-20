@@ -174,6 +174,17 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
             ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
+            if (ToolUtil.isNotEmpty(param.getNotice())) {
+                List<Long> collect = Arrays.asList(param.getNotice().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                List<AnnouncementsResult> announcementsResults = BeanUtil.copyToList(announcementsService.listByIds(collect), AnnouncementsResult.class);
+                StringBuffer sb = new StringBuffer();
+                for (AnnouncementsResult announcementsResult : announcementsResults) {
+                    sb.append(announcementsResult.getContent()).append(",");
+                }
+                if(sb.length()>0){
+                    activitiProcessTaskParam.setTheme(sb.substring(0,sb.length()-1).toString());
+                }
+            }
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
 
             //添加log
