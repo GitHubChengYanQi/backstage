@@ -28,8 +28,11 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private List<String> types;
 
+    private String keyWords;
 
     private String startTime;
+    private Long customerId;
+    private Long pickUserId;
 
     private String endTime;
     //通过物料查询任务
