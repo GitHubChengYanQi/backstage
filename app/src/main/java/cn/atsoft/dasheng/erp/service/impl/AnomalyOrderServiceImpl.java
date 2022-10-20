@@ -796,6 +796,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         Long inStockListId = anomalyResult.getSourceId();
         InstockList instockList = instockListService.getById(inStockListId);
         instockList.setStatus(-1L);
+        instockList.setAnomalyHandle("stopInStock");
         instockListService.updateById(instockList);
     }
 

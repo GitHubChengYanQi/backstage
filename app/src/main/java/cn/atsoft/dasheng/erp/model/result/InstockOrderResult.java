@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.erp.entity.Announcements;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
@@ -42,6 +43,8 @@ public class InstockOrderResult implements Serializable {
     private ThemeAndOrigin themeAndOrigin;
     private DocumentsStatusResult statusResult;
     private String pushPeople;
+    private CustomerResult customerResult;
+    private Long customerId;
     private String type;
     private Long status;
     private Long enoughNumber;

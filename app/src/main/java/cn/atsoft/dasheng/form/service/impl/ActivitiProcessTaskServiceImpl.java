@@ -40,6 +40,9 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.atsoft.dasheng.form.pojo.ProcessType.*;
+import static cn.atsoft.dasheng.form.pojo.ProcessType.INSTOCK;
+
 
 /**
  * <p>
@@ -235,8 +238,54 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             param.setTimeOutTaskIds(timeOutTaskIds);
         }
 
+
+
+
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
-        IPage<ActivitiProcessTaskResult> page = this.baseMapper.aboutMeTask(pageContext, param);
+        IPage<ActivitiProcessTaskResult> page = new Page<>();
+        String type = param.getType();
+        ProcessType enumByType = getEnumByType(type);
+        if (ToolUtil.isEmpty(enumByType)) {
+            page = this.baseMapper.aboutMeTask(pageContext, param);
+        }else {
+            switch (enumByType){
+                case ALLOCATION:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case INSTOCK:
+                    page =  this.baseMapper.instockTask(pageContext, param);
+                    break;
+                case MAINTENANCE:
+                    page =  this.baseMapper.maintenanceTask(pageContext, param);
+                    break;
+                case ERROR:
+                    page =  this.baseMapper.errorTask(pageContext, param);
+                    break;
+                case SHIP:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case QUALITY:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case OUTSTOCK:
+                    page =  this.baseMapper.outstockTask(pageContext, param);
+                    break;
+                case PURCHASEASK:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case Stocktaking:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case PROCUREMENTORDER:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+
+                default:
+                    page = this.baseMapper.aboutMeTask(pageContext, param);
+
+                    break;
+            }
+        }
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
@@ -723,7 +772,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcessTask processTask = this.getById(taskId);
         Long processId = processTask.getProcessId();
         ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
-        String modelName = ProcessType.getNameByEnum(activitiProcess.getType());
+        String modelName = getNameByEnum(activitiProcess.getType());
         Map<String, String> result = new HashMap<>();
         result.put("function", modelName);
         String coding = "";
