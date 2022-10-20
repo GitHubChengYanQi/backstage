@@ -328,6 +328,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 activitiProcessTaskParam.setStatus(99);
             }
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            if(ToolUtil.isNotEmpty(entity.getTheme())){
+                activitiProcessTaskParam.setTheme(entity.getTheme());
+            }
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             entity.setTaskId(taskId);
             this.updateById(entity);

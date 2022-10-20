@@ -246,6 +246,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             activitiProcessTaskParam.setSourceId(param.getSourceId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
             ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
+            if (ToolUtil.isNotEmpty(entity.getTheme())){
+                activitiProcessTaskParam.setTheme(entity.getTheme());
+            }
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加铃铛
             wxCpSendTemplate.setSource("processTask");
