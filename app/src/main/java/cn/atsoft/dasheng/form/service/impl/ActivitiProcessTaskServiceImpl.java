@@ -105,6 +105,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         if (!entity.getType().equals("ErrorForWard")) {   //异常转交不需要 参与人
             this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
         }
+        
 
         this.updateById(entity);
 
