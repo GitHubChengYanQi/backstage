@@ -16,7 +16,11 @@ public enum StocktakingEnum implements FormActionInterface {
     check("盘点") {
 
     },
-
+    revoke("撤回") {
+        public Long getStatus() {
+            return 49L;
+        }
+    },
     refuse("拒绝") {
         public Long getStatus() {
             return 50L;
