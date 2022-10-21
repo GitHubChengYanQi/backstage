@@ -160,7 +160,7 @@ public class SkuController extends BaseController {
     @BussinessLog(value = "修改sku", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody SkuParam skuParam) {
-        if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams()) || skuParam.getGeneralFormDataParams().size() > 0) {
+        if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams()) && skuParam.getGeneralFormDataParams().size() > 0) {
             for (GeneralFormDataParam generalFormDataParam : skuParam.getGeneralFormDataParams()) {
                 generalFormDataParam.setTableName("goods_sku");
             }
