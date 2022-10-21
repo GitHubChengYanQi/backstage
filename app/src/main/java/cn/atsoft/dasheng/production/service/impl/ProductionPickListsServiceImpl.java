@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.action.Enum.OutStockActionEnum;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
+import cn.atsoft.dasheng.app.model.request.OutStockView;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
@@ -15,9 +16,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
-import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -1612,5 +1613,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         ProductionPickLists lists = this.getById(processTask.getFormId());
         lists.setStatus(OutStockActionEnum.refuse.getStatus());
         this.updateById(lists);
+    }
+    @Override
+    public Page<OutStockView> outStockView(DataStatisticsViewParam param) {
+       return this.baseMapper.outstockView(PageFactory.defaultPage(),param);
+
     }
 }

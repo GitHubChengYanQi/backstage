@@ -263,5 +263,20 @@
             and sku_id = #{paramCondition.skuId}
         </if>
     </select>
+    <select id="get" resultType="Long" parameterType="cn.atsoft.dasheng.production.pojo.QuerryLockedParam">
+        SELECT
+
+            lists.user_id AS "userId",
+
+            cart.pick_lists_cart AS "pickListsCart",
+            cart.number AS "number",
+            cart.sku_id
+        FROM
+            `daoxin_production_pick_lists` lists
+                LEFT JOIN daoxin_production_pick_lists_cart cart on lists.pick_lists_id = cart.pick_lists_id
+        WHERE cart.pick_lists_cart is not NULL
+
+
+    </select>
 
 </mapper>

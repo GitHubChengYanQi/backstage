@@ -173,5 +173,22 @@
 
 
     </select>
+    <select id="customIdList" resultType="cn.atsoft.dasheng.app.model.request.InstockView" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
+        SELECT
+            DISTINCT
+            customer.customer_id  AS "customerId",
+            instock_order.instock_order_id AS "instockOrderId",
+            customer.create_time AS "createTime"
+        FROM
+            daoxin_crm_customer customer
+                LEFT JOIN daoxin_erp_instock_order instock_order ON customer.customer_id = instock_order.customer_id
+                LEFT JOIN daoxin_erp_instock_log_detail log ON instock_order.instock_order_id = log.instock_order_id
+
+        WHERE 1=1 and  instock_order.instock_order_id is not NULL
+        group by customer.customer_id
+
+
+    </select>
+
 
 </mapper>
