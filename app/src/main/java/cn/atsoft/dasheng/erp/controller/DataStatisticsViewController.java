@@ -148,74 +148,9 @@ public class DataStatisticsViewController extends BaseController {
     @RequestMapping(value = "/instockView", method = RequestMethod.POST)
     @ApiOperation("新增")
     public PageInfo billPageList(@RequestBody DataStatisticsViewParam param) {
-
-        Page<InstockView> longPageInfo = customerService.customIdListFromInStockOrder(param);
-        List<CustomerResult> customerResults = longPageInfo.getRecords().size() == 0 ? new ArrayList<>() : customerService.getResults(longPageInfo.getRecords().stream().map(InstockView::getCustomerId).collect(Collectors.toList()));
-        List<InstockOrder> list = longPageInfo.getRecords().size() == 0 ? new ArrayList<>() : instockOrderService.lambdaQuery().in(InstockOrder::getCustomerId, longPageInfo.getRecords().stream().map(InstockView::getCustomerId).collect(Collectors.toList())).list();
-        List<InstockLogDetail> logDetails = (list.size() == 0) ? new ArrayList<>() : instockLogDetailService.lambdaQuery().in(InstockLogDetail::getInstockOrderId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list();
-        List<InstockList> instockLists = list.size() == 0 ? new ArrayList<>() : instockListService.lambdaQuery().in(InstockList::getInstockOrderId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).eq(InstockList::getAnomalyHandle,"stopInStock").list();
-        List<AnomalyResult> instockErrors = BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
-        anomalyService.format(instockErrors);
-
-
-
-        for (InstockView record : longPageInfo.getRecords()) {
-            for (CustomerResult customerResult : customerResults) {
-                if (record.getCustomerId().equals(customerResult.getCustomerId())) {
-                    record.setCustomerResult(customerResult);
-                }
-            }
-
-            List<InstockLogDetail> detailResults = new ArrayList<>();
-            List<InstockList> lists = new ArrayList<>();
-            for (InstockOrder instockOrder : list) {
-                if (record.getCustomerId().equals(instockOrder.getCustomerId())) {
-                    for (InstockLogDetail detail : logDetails) {
-                        if (detail.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
-                            detailResults.add(detail);
-                        }
-                    }
-
-                    for (InstockList instockList : instockLists) {
-                        if (instockList.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
-                            lists.add(instockList);
-                        }
-                    }
-                }
-                for (AnomalyResult instockError : instockErrors) {
-
-                }
-            }
-            record.setInstockLists(lists);
-            record.setInstockLogDetails(detailResults);
-            Integer logSkuCount = detailResults.stream().map(InstockLogDetail::getSkuId).distinct().collect(Collectors.toList()).size();
-            Integer detailSkuCount = lists.stream().map(InstockList::getSkuId).distinct().collect(Collectors.toList()).size();
-            int logNumberCount = 0;
-            for (InstockLogDetail detailResult : detailResults) {
-                logNumberCount += detailResult.getNumber();
-            }
-            int detailNumberCount = 0;
-            for (InstockList listResult : lists) {
-                detailNumberCount += listResult.getNumber();
-            }
-            int errorSkuCount = instockErrors.stream().map(AnomalyResult::getSkuId).collect(Collectors.toList()).size();
-            int errorNumberCount = 0;
-            for (AnomalyResult instockError : instockErrors) {
-                errorNumberCount += instockError.getErrorNumber();
-            }
-
-
-
-            record.setErrorNumberCount(errorNumberCount);
-            record.setErrorSkuCount(errorSkuCount);
-            record.setDetailSkuCount(detailSkuCount);
-            record.setDetailNumberCount(detailNumberCount);
-            record.setLogSkuCount(logSkuCount);
-            record.setLogNumberCount(logNumberCount);
-        }
-
-        return PageFactory.createPageInfo(longPageInfo);
+        return PageFactory.createPageInfo(instockOrderService.instockView(param));
     }
+
 
     @RequestMapping(value = "/outstockView", method = RequestMethod.POST)
     @ApiOperation("新增")

@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.app.entity.Stock;
+import cn.atsoft.dasheng.app.model.request.InstockView;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
@@ -15,6 +17,7 @@ import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
 import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -145,4 +148,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
     void format(List<InstockOrderResult> data);
 
     void checkAllocationDone(ActivitiProcessTask processTask);
+
+    Page<InstockView> instockView(DataStatisticsViewParam param);
+
+    List<InstockView> instockViewExcel(DataStatisticsViewParam param);
 }
