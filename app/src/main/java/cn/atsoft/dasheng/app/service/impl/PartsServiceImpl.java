@@ -557,6 +557,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         for (PartsResult datum : data) {
             partIds.add(datum.getPartsId());
         }
+        
         //查询子表取配套数量
         List<ErpPartsDetail> erpPartsDetails = partIds.size() == 0 ? new ArrayList<>() : erpPartsDetailService.query().in("parts_id", partIds).eq("sku_id", skuId).list();
         for (PartsResult datum : data) {
