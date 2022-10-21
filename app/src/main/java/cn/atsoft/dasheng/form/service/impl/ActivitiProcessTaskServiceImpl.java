@@ -592,6 +592,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         statusMap.put(0L, "开始");
         statusMap.put(99L, "完成");
         statusMap.put(50L, "拒绝");
+        statusMap.put(49L, "已撤回");
 
         for (DocumentsStatus status : statuses) {
             statusMap.put(status.getDocumentsStatusId(), status.getName());

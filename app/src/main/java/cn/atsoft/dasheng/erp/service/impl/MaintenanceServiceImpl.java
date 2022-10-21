@@ -609,6 +609,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         }
         Map<Long, String> statusMap = new HashMap<>();
         statusMap.put(0L, "开始");
+        statusMap.put(49L,"已撤回");
         statusMap.put(99L, "完成");
         statusMap.put(50L, "拒绝");
         MaintenanceResult maintenanceResult = new MaintenanceResult();
