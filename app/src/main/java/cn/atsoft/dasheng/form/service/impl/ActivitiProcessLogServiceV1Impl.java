@@ -194,10 +194,10 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
     }
 
 
-    private void setStatus(List<ActivitiProcessLog> logs, Long logId) {
+    private void setStatus(List<ActivitiProcessLog> logs, Long logId,Integer status) {
         for (ActivitiProcessLog activitiProcessLog : logs) {
             if (logId.equals(activitiProcessLog.getLogId())) {
-                activitiProcessLog.setStatus(1);
+                activitiProcessLog.setStatus(status);
             }
         }
     }
@@ -276,7 +276,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                                 if (checkQualityTask.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                     //更新状态
                                     updateStatus(activitiProcessLog.getLogId(), taskId, status, loginUserId);
-                                    setStatus(logs, activitiProcessLog.getLogId());
+                                    setStatus(logs, activitiProcessLog.getLogId(),status);
                                     //拒绝走拒绝方法
                                     if (status.equals(0)) {
                                         this.refuseTask(task);
@@ -290,7 +290,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                             case "purchaseAsk":
                                 if (checkPurchaseAsk.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                     updateStatus(activitiProcessLog.getLogId(), taskId, status, loginUserId);
-                                    setStatus(logs, activitiProcessLog.getLogId());
+                                    setStatus(logs, activitiProcessLog.getLogId(),status);
                                     //拒绝走拒绝方法
                                     if (status.equals(0)) {
                                         this.refuseTask(task);
@@ -303,7 +303,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                             case "ERROR":   //入库异常
                                 if (checkInstock.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                     updateStatus(activitiProcessLog.getLogId(), taskId, status, loginUserId);
-                                    setStatus(logs, activitiProcessLog.getLogId());
+                                    setStatus(logs, activitiProcessLog.getLogId(),status);
                                     //拒绝走拒绝方法
                                     if (status.equals(0)) {
                                         this.refuseTask(task);
@@ -320,7 +320,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                             case "MAINTENANCE":
                             case "ALLOCATION":
                                 updateStatus(activitiProcessLog.getLogId(), taskId, status, loginUserId);
-                                setStatus(logs, activitiProcessLog.getLogId());
+                                setStatus(logs, activitiProcessLog.getLogId(),status);
                                 //拒绝走拒绝方法
                                 if (status.equals(0)) {
                                     this.refuseTask(task);
@@ -334,13 +334,13 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                         }
                     } else {
                         updateStatus(activitiProcessLog.getLogId(), taskId, status, loginUserId);
-                        setStatus(logs, activitiProcessLog.getLogId());
+                        setStatus(logs, activitiProcessLog.getLogId(),status);
                     }
                 } else {
                     //判断权限  筛选对应log
                     if (this.checkUser(activitiAudit.getRule(), loginUserId, taskId)) {
                         updateStatus(activitiProcessLog.getLogId(), taskId, status, loginUserId);
-                        setStatus(logs, activitiProcessLog.getLogId());
+                        setStatus(logs, activitiProcessLog.getLogId(),status);
                         //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
                         if (status.equals(0)) {
                             this.refuseTask(task);
@@ -391,14 +391,14 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         }
         // 写一个判断如果下步为动作时 执行动作
 //        startAction(audit, task);
-        for (ActivitiProcessLog processLog : audit) {
-            processLog.setStatus(3);
-        }
-        this.updateBatchById(audit);
         /**
          * 更新单据状态
          */
         if (auditCheck) {
+            for (ActivitiProcessLog processLog : audit) {
+                processLog.setStatus(3);
+            }
+            this.updateBatchById(audit);
             updateDocumentStatus(audit, activitiAudits, task);
         }
 
