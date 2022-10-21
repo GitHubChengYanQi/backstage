@@ -43,6 +43,12 @@ public class InstockOrder implements Serializable {
     private String source;
 
     /**
+     * 客户id
+     */
+    @TableField("customer_id")
+    private Long customerId;
+
+    /**
      * 类型
      */
     @TableField("type")
@@ -374,10 +380,35 @@ public class InstockOrder implements Serializable {
         this.taskId = taskId;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     @Override
     public String toString() {
         return "InstockOrder{" +
-                "instockOrderId=" + instockOrderId +
+                "taskId=" + taskId +
+                ", pushPeople='" + pushPeople + '\'' +
+                ", noticeId='" + noticeId + '\'' +
+                ", source='" + source + '\'' +
+                ", customerId=" + customerId +
+                ", type='" + type + '\'' +
+                ", sourceId=" + sourceId +
+                ", storehousePositionsId=" + storehousePositionsId +
+                ", registerTime=" + registerTime +
+                ", coding='" + coding + '\'' +
+                ", instockOrderId=" + instockOrderId +
+                ", storeHouseId=" + storeHouseId +
+                ", stockUserId=" + stockUserId +
+                ", instockTime=" + instockTime +
+                ", remark='" + remark + '\'' +
+                ", urgent=" + urgent +
+                ", enclosure='" + enclosure + '\'' +
+                ", status=" + status +
                 ", userId=" + userId +
                 ", createTime=" + createTime +
                 ", createUser=" + createUser +
@@ -386,6 +417,8 @@ public class InstockOrder implements Serializable {
                 ", display=" + display +
                 ", deptId=" + deptId +
                 ", state=" + state +
-                "}";
+                ", theme='" + theme + '\'' +
+                ", origin='" + origin + '\'' +
+                '}';
     }
 }

@@ -41,6 +41,9 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     private Long participantUser;
 
     private String outTime;
+    private String keyWords;
+    private Long customerId;
+    private Long pickUserId;
 
     private List<String> types;
 
