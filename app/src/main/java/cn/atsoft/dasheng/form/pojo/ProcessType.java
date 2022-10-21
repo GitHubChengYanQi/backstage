@@ -136,5 +136,13 @@ public enum ProcessType {
         }
         return null;
     }
+    public static ProcessType getEnumByType(String param){
+        for (ProcessType value : ProcessType.values()) {
+            if (value.name().equals(param)){
+                return value;
+            }
+        }
+        return null;
+    }
 }
 
