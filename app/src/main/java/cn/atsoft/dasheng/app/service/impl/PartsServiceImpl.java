@@ -533,13 +533,40 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     partsIds.add(erpPartsDetail.getPartsId());
                 }
                 param.setPartIds(partsIds);
-            }else {
+            } else {
                 return new PageInfo();
             }
         }
+
         IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
         pageFormat(page.getRecords());
+        if (ToolUtil.isNotEmpty(param.getChildren())) {  //取配套数量
+            formatNumBySku(page.getRecords(), Long.valueOf(param.getChildren()));
+        }
         return PageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 取配套数量
+     *
+     * @param data
+     * @param skuId
+     */
+    private void formatNumBySku(List<PartsResult> data, Long skuId) {
+        List<Long> partIds = new ArrayList<>();
+        for (PartsResult datum : data) {
+            partIds.add(datum.getPartsId());
+        }
+        List<ErpPartsDetail> erpPartsDetails = partIds.size() == 0 ? new ArrayList<>() : erpPartsDetailService.query().in("parts_id", partIds).eq("sku_id", skuId).list();
+        for (PartsResult datum : data) {
+            for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
+                if (datum.getPartsId().equals(erpPartsDetail.getPartsId())) {
+                    datum.setBomNum(erpPartsDetail.getNumber());
+                }
+            }
+        }
+
+
     }
 
 

@@ -45,6 +45,8 @@ public class PartsResult implements Serializable {
 
     private String name;
 
+    private Double bomNum;  //配套数量
+
     private String children;
 
     private String type;
@@ -124,7 +126,6 @@ public class PartsResult implements Serializable {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
-
 
 
     /**
