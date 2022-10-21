@@ -750,6 +750,18 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             activitiProcessTaskParam.setNoticeId(announcementsService.toList(param.getNotice()));
             activitiProcessTaskParam.setType(ReceiptsEnum.Stocktaking.name());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            if(ToolUtil.isNotEmpty(param.getNotice())){
+                List<Long> longs = JSON.parseArray(param.getNotice(), Long.class);
+
+                List<Announcements> announcements =longs.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(longs);
+                StringBuffer sb = new StringBuffer();
+                for (Announcements announcementsResult : announcements) {
+                    sb.append(announcementsResult.getContent()).append(",");
+                }
+                if(sb.length()>0){
+                    activitiProcessTaskParam.setTheme(sb.substring(0,sb.length()-1).toString());
+                }
+            }
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //任务参与人
             if (ToolUtil.isNotEmpty(param.getParticipants())) {
