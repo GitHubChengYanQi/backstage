@@ -312,7 +312,7 @@
                 </when>
                 <when test=" paramCondition.queryType ==2">
                     and steps.step_type = "audit"
-                    and log.status = 1
+                    and (log.status = 1 or log.status = 0)
                     and log.audit_user_id = #{paramCondition.userId}
                 </when>
                 <when test=" paramCondition.queryType ==3">
@@ -458,7 +458,7 @@
                 </when>
                 <when test=" paramCondition.queryType ==2">
                     and steps.step_type = "audit"
-                    and log.status = 1
+                    and (log.status = 1 or log.status = 0)
                     and log.audit_user_id = #{paramCondition.userId}
                 </when>
                 <when test=" paramCondition.queryType ==3">
@@ -569,10 +569,10 @@
                 </when>
                 <when test=" paramCondition.queryType ==2">
                     and steps.step_type = "audit"
-                    and log.status = 1
+                    and (log.status = 1 or log.status = 0)
                     and log.audit_user_id = #{paramCondition.userId}
                 </when>
-                <when test=" paramCondition.queryType ==2">
+                <when test=" paramCondition.queryType ==3">
                     and steps.step_type = "send"
                     and log.status = 1
                     and log.audit_user_id = #{paramCondition.userId}
@@ -680,10 +680,10 @@
                 </when>
                 <when test=" paramCondition.queryType ==2">
                     and steps.step_type = "audit"
-                    and log.status = 1
+                    and (log.status = 1 or log.status = 0)
                     and log.audit_user_id = #{paramCondition.userId}
                 </when>
-                <when test=" paramCondition.queryType ==2">
+                <when test=" paramCondition.queryType ==3">
                     and steps.step_type = "send"
                     and log.status = 1
                     and log.audit_user_id = #{paramCondition.userId}
@@ -787,10 +787,10 @@
                 </when>
                 <when test=" paramCondition.queryType ==2">
                     and steps.step_type = "audit"
-                    and log.status = 1
+                    and (log.status = 1 or log.status = 0)
                     and log.audit_user_id = #{paramCondition.userId}
                 </when>
-                <when test=" paramCondition.queryType ==2">
+                <when test=" paramCondition.queryType ==3">
                     and steps.step_type = "send"
                     and log.status = 1
                     and log.audit_user_id = #{paramCondition.userId}
@@ -894,10 +894,10 @@
                 </when>
                 <when test=" paramCondition.queryType ==2">
                     and steps.step_type = "audit"
-                    and log.status = 1
+                    and (log.status = 1 or log.status = 0)
                     and log.audit_user_id = #{paramCondition.userId}
                 </when>
-                <when test=" paramCondition.queryType ==2">
+                <when test=" paramCondition.queryType ==3">
                     and steps.step_type = "send"
                     and log.status = 1
                     and log.audit_user_id = #{paramCondition.userId}
