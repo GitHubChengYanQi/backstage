@@ -247,6 +247,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             activitiProcessTaskParam.setSourceId(param.getSourceId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
             ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
+            if (ToolUtil.isNotEmpty(entity.getTheme())){
+                activitiProcessTaskParam.setTheme(entity.getTheme());
+            }
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加铃铛
             wxCpSendTemplate.setSource("processTask");
@@ -1454,6 +1457,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         Map<Long, String> statusMap = new HashMap<>();
         List<DocumentsStatus> statuses = statusService.list();
         statusMap.put(0L, "开始");
+        statusMap.put(49L,"已撤回");
         statusMap.put(99L, "完成");
         statusMap.put(50L, "拒绝");
         for (DocumentsStatus status : statuses) {

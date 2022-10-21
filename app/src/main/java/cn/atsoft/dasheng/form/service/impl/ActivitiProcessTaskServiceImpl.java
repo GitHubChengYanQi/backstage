@@ -101,7 +101,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> userIds = new ArrayList<>(set);
         entity.setUserIds(JSON.toJSONString(userIds));
 
-        this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
+
+        if (!entity.getType().equals("ErrorForWard")) {   //异常转交不需要 参与人
+            this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
+        }
+        
+
         this.updateById(entity);
 
         shopCartService.addDynamicByTaskId(entity.getProcessTaskId(), null, "提交了申请");  //任务创建动态
@@ -592,6 +597,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         statusMap.put(0L, "开始");
         statusMap.put(99L, "完成");
         statusMap.put(50L, "拒绝");
+        statusMap.put(49L, "已撤回");
 
         for (DocumentsStatus status : statuses) {
             statusMap.put(status.getDocumentsStatusId(), status.getName());
