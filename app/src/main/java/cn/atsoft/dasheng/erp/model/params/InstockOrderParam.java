@@ -36,6 +36,8 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
 
     private Long actionId;
 
+    private Long customerId;
+
     private List<Long> mediaIds;
 
     private List<Long> noticeIds;
