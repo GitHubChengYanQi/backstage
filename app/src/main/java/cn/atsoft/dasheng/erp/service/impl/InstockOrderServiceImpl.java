@@ -47,6 +47,7 @@ import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -2010,5 +2011,82 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
         data.setInstockViewDetails(results);
+    }
+    @Override
+    public List<InstockViewDetail>  viewDetail(DataStatisticsViewParam param){
+        List<InstockOrder> instockOrders = this.lambdaQuery().eq(InstockOrder::getCustomerId, param.getCustomerId()).eq(InstockOrder::getDisplay, 1).list();
+
+        List<InstockListResult> instockLists = BeanUtil.copyToList(instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockListResult.class);
+        instockListService.format(instockLists);
+        List<InstockLogDetailResult> logDetails = instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockLogDetailService.lambdaQuery().in(InstockLogDetail::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockLogDetailResult.class);
+        instockLogDetailService.format(logDetails);
+        List<AnomalyResult> instockErrors = BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
+        anomalyService.format(instockErrors);
+
+
+
+        List<InstockListResult> instockListsTotal = new ArrayList<>();
+        instockLists.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockListResult() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                    }}).ifPresent(instockListsTotal::add);
+                }
+        );
+        List<InstockLogDetailResult> logDetailsTotal = new ArrayList<>();
+        logDetails.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockLogDetailResult() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                    }}).ifPresent(logDetailsTotal::add);
+                }
+        );
+        List<AnomalyResult> instockErrorsTotal = new ArrayList<>();
+        instockErrors.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new AnomalyResult() {{
+                        setSkuId(a.getSkuId());
+                        setInstockNumber(a.getInstockNumber() + b.getInstockNumber());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                    }}).ifPresent(instockErrorsTotal::add);
+                }
+        );
+
+
+        List<InstockViewDetail> instockViewDetails = new ArrayList<>();
+
+        for (InstockListResult instockListResult : instockListsTotal) {
+            InstockViewDetail detail = new InstockViewDetail();
+            detail.setBrandId(instockListResult.getBrandId());
+            if (ToolUtil.isNotEmpty(instockListResult.getBrandId())){
+                detail.setBrandResult(instockListResult.getBrandResult());
+            }
+            detail.setListCount(Math.toIntExact(instockListResult.getNumber()));
+            detail.setSkuResult(BeanUtil.copyProperties(instockListResult.getSkuResult(),SkuSimpleResult.class));
+
+            for (InstockLogDetailResult instockLogDetailResult : logDetailsTotal) {
+                if(instockLogDetailResult.getSkuId().equals(instockListResult.getSkuId()) && instockListResult.getBrandId().equals(instockLogDetailResult.getBrandId())){
+                    detail.setLogCount(Math.toIntExact(instockLogDetailResult.getNumber()));
+                }
+            }
+            for (AnomalyResult anomalyResult : instockErrorsTotal) {
+                if(anomalyResult.getSkuId().equals(instockListResult.getSkuId()) && anomalyResult.getBrandId().equals(instockListResult.getBrandId())){
+                    detail.setErrorCount(Math.toIntExact(anomalyResult.getErrorNumber()));
+                }
+            }
+            instockViewDetails.add(detail);
+        }
+        return instockViewDetails;
+
+
+
+
+
+
+
     }
 }

@@ -11,5 +11,5 @@ public class DataStatisticsViewParam {
     private Long createUser;
     private List<Date> dateParams;
     private List<String> dates;
-
+    private Long customerId;
 }

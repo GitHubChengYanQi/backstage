@@ -244,9 +244,6 @@ public class InstockViewExcelImpl implements InstockViewExcel {
         }
 
         int rowNum2 = 1;
-        int cell2Sum = 0;
-        int cell3Sum = 0;
-        int cell4Sum = 0;
         for (InstockView instockView : instockViews) {
             for (InstockOrder instockOrder : instockView.getInstockOrders()) {
                 if (instockView.getCustomerId().equals(instockOrder.getCustomerId())) {
@@ -271,9 +268,6 @@ public class InstockViewExcelImpl implements InstockViewExcel {
         }
         XSSFRow row = sheet2.createRow(rowNum2);
         row.createCell(1).setCellValue("合计");
-        row.createCell(2).setCellValue(cell2Sum);
-        row.createCell(3).setCellValue(cell3Sum);
-        row.createCell(4).setCellValue(cell4Sum);
     }
 
     private void sheet5(XSSFWorkbook workbook, List<InstockView> instockViews) {
@@ -320,10 +314,6 @@ public class InstockViewExcelImpl implements InstockViewExcel {
             }
         }
         XSSFRow row = sheet2.createRow(rowNum2);
-        row.createCell(1).setCellValue("合计");
-        row.createCell(2).setCellValue(cell2Sum);
-        row.createCell(3).setCellValue(cell3Sum);
-        row.createCell(4).setCellValue(cell4Sum);
     }
 
     private String skuMessage(SkuSimpleResult sku) {

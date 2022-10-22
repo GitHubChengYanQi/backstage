@@ -158,7 +158,10 @@ public class DataStatisticsViewController extends BaseController {
         Page<OutStockView> outStockViewPage = pickListsService.outStockView(param);
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(outStockViewPage.getRecords().stream().map(OutStockView::getUserId).collect(Collectors.toList()));
         List<ProductionPickListsCart> carts = pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, outStockViewPage.getRecords().stream().map(OutStockView::getPickListsId).collect(Collectors.toList())).ne(ProductionPickListsCart::getStatus, -1).list();
+        pickListsDetailService.lambdaQuery().in()
+        for (OutStockView record : outStockViewPage.getRecords()) {
 
+        }
         return PageFactory.createPageInfo(new Page<>());
     }
 

@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
+import cn.atsoft.dasheng.erp.model.request.InstockViewDetail;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
 import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
@@ -152,4 +153,6 @@ public interface InstockOrderService extends IService<InstockOrder> {
     Page<InstockView> instockView(DataStatisticsViewParam param);
 
     List<InstockView> instockViewExcel(DataStatisticsViewParam param);
+
+    List<InstockViewDetail>  viewDetail(DataStatisticsViewParam param);
 }
