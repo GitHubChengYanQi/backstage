@@ -21,7 +21,7 @@ public enum InstockErrorActionEnum implements FormActionInterface {
         public Long getStatus() {
             return 49L;
         }
-    },   resubmit("resubmit") {  //重新提交
+    },   resubmit("重新提交") {  //重新提交
 
     },
     refuse("拒绝") {

@@ -15,7 +15,7 @@ public enum StocktakingEnum implements FormActionInterface {
     },
     check("盘点") {
 
-    }, resubmit("resubmit") {  //重新提交
+    }, resubmit("重新提交") {  //重新提交
 
     },
     revoke("撤回") {
