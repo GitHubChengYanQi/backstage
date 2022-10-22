@@ -23,7 +23,7 @@ public enum PurchaseActionEnum implements FormActionInterface {
         public Long getStatus() {
             return 49L;
         }
-    },   resubmit("重新提交") {  //重新提交
+    },   resubmit("再次提交") {  //再次提交
 
     },
     perform("执行");
