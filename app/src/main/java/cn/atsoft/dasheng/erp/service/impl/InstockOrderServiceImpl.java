@@ -218,6 +218,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         boolean t = true;
         if (ToolUtil.isNotEmpty(param.getType())) {
             switch (param.getType()) {
+                case "resubmit":
                 case "调拨入库":
                     t = false;
                     break;
