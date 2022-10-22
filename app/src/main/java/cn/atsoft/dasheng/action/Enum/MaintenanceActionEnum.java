@@ -23,7 +23,7 @@ public enum MaintenanceActionEnum implements FormActionInterface {
             return 49L;
         }
     },
-    resubmit("resubmit") {  //重新提交
+    resubmit("重新提交") {  //重新提交
 
     },
     maintenanceing ("开始养护");

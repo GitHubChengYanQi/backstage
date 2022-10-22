@@ -24,7 +24,7 @@ public enum AllocationActionEnum   implements FormActionInterface {
         }
     },
     assign ("分派"),
-     resubmit("resubmit") {  //重新提交
+     resubmit("重新提交") {  //重新提交
 
     },
     carryAllocation ("执行");

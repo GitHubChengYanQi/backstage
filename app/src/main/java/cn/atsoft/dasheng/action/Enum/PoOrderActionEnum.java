@@ -19,7 +19,7 @@ public enum PoOrderActionEnum implements FormActionInterface {
             return 49L;
         }
     },
-    resubmit("resubmit") {  //重新提交
+    resubmit("重新提交") {  //重新提交
 
     },
     refuse("拒绝") {
