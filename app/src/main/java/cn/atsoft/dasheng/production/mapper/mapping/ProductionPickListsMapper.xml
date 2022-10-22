@@ -75,18 +75,8 @@
             </if>
     </select>
      <select id="outstockView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
-            select
-                lists.pick_lists_id AS "pickListsId",
-                lists.user_id AS "userId",
-                sum(detail.number) AS "detailCount",
-                sum(detail.received_number) AS "doneNumber",
-                lists.create_time AS "createTime"
-            from
-            `daoxin_production_pick_lists` lists
-            LEFT JOIN daoxin_production_pick_lists_detail detail on lists.pick_lists_id = detail.pick_lists_id
-            GROUP BY lists.user_id
 
-        </select>
+     </select>
     <select id="pickView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
             select
                 lists.pick_lists_id AS "pickListsId",

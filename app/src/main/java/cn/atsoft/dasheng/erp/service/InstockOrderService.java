@@ -155,4 +155,6 @@ public interface InstockOrderService extends IService<InstockOrder> {
     List<InstockView> instockViewExcel(DataStatisticsViewParam param);
 
     List<InstockViewDetail>  viewDetail(DataStatisticsViewParam param);
+
+    InstockView  viewTotail(DataStatisticsViewParam param);
 }

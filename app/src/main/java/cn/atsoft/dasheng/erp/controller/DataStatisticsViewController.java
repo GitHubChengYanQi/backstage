@@ -1,12 +1,16 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.request.InstockView;
+import cn.atsoft.dasheng.app.model.request.OutStockDetailView;
 import cn.atsoft.dasheng.app.model.request.OutStockView;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -21,6 +25,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
@@ -30,6 +35,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -87,6 +93,10 @@ public class DataStatisticsViewController extends BaseController {
     private ProductionPickListsCartService pickListsCartService;
     @Autowired
     private ProductionPickListsDetailService pickListsDetailService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private BrandService brandService;
 
 
     @RequestMapping(value = "/taskCountView", method = RequestMethod.GET)
@@ -147,8 +157,41 @@ public class DataStatisticsViewController extends BaseController {
 
     @RequestMapping(value = "/instockView", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public PageInfo billPageList(@RequestBody DataStatisticsViewParam param) {
+    public PageInfo instockView(@RequestBody DataStatisticsViewParam param) {
         return PageFactory.createPageInfo(instockOrderService.instockView(param));
+    }
+
+    @RequestMapping(value = "/instockDetailView", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData instockDetailView(@RequestBody DataStatisticsViewParam param) {
+        return ResponseData.success(instockOrderService.viewDetail(param));
+    }
+
+    @RequestMapping(value = "/viewTotail", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData viewTotail(@RequestBody DataStatisticsViewParam param) {
+        return ResponseData.success(instockOrderService.viewTotail(param));
+    }
+    @RequestMapping(value = "/outstockViewTotail", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outstockViewTotail(@RequestBody DataStatisticsViewParam param) {
+        OutStockView outStockView = new OutStockView();
+        int skuCount = 0;
+        int numCount = 0;
+        List<Long> skuIds = new ArrayList<>();
+        LambdaQueryChainWrapper<ProductionPickLists> productionPickListsLambdaQueryChainWrapper = pickListsService.lambdaQuery();
+        if(param.getBeginTime()!=null && param.getEndTime()!=null){
+            productionPickListsLambdaQueryChainWrapper.between(ProductionPickLists::getCreateTime,DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
+        }
+        List<ProductionPickLists> list = productionPickListsLambdaQueryChainWrapper.list();
+        List<ProductionPickListsDetail> list1 =list.size() == 0 ? new ArrayList<>() : pickListsDetailService.lambdaQuery().in(ProductionPickListsDetail::getPickListsId, list.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).list();
+        for (ProductionPickListsDetail listsDetail : list1) {
+            numCount+=listsDetail.getReceivedNumber();
+            skuIds.add(listsDetail.getSkuId());
+        }
+        outStockView.setOutSkuCount(skuIds.stream().distinct().collect(Collectors.toList()).size());
+        outStockView.setOutNumCount(numCount);
+        return ResponseData.success(outStockView);
     }
 
 
@@ -157,12 +200,136 @@ public class DataStatisticsViewController extends BaseController {
     public PageInfo outStockView(@RequestBody DataStatisticsViewParam param) {
         Page<OutStockView> outStockViewPage = pickListsService.outStockView(param);
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(outStockViewPage.getRecords().stream().map(OutStockView::getUserId).collect(Collectors.toList()));
-        List<ProductionPickListsCart> carts = pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, outStockViewPage.getRecords().stream().map(OutStockView::getPickListsId).collect(Collectors.toList())).ne(ProductionPickListsCart::getStatus, -1).list();
-        pickListsDetailService.lambdaQuery().in()
-        for (OutStockView record : outStockViewPage.getRecords()) {
-
+        LambdaQueryChainWrapper<ProductionPickLists> productionPickListsLambdaQueryChainWrapper = pickListsService.lambdaQuery();
+        if(param.getBeginTime()!=null && param.getEndTime()!=null){
+            productionPickListsLambdaQueryChainWrapper.between(ProductionPickLists::getCreateTime,DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
         }
-        return PageFactory.createPageInfo(new Page<>());
+        List<ProductionPickLists> pickLists =userResultsByIds.size() == 0 ? new ArrayList<>() : productionPickListsLambdaQueryChainWrapper.in(ProductionPickLists::getUserId, userResultsByIds.stream().map(UserResult::getUserId).distinct().collect(Collectors.toList())).list();
+        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).ne(ProductionPickListsCart::getStatus, -1).list();
+        List<ProductionPickListsDetail> details = pickLists.size() == 0 ? new ArrayList<>() : pickListsDetailService.lambdaQuery().in(ProductionPickListsDetail::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).list();
+
+        for (OutStockView record : outStockViewPage.getRecords()) {
+            int outNumCount = 0;
+            int pickNumCount = 0;
+            List<Long> outSkuList = new ArrayList<>();
+            List<Long> pickSkuList = new ArrayList<>();
+            for (ProductionPickLists pickList : pickLists) {
+                if (record.getUserId().equals(pickList.getUserId())) {
+                    for (ProductionPickListsDetail detail : details) {
+                        if (pickList.getPickListsId().equals(detail.getPickListsId())) {
+                            outNumCount += detail.getReceivedNumber();
+                            outSkuList.add(detail.getSkuId());
+                        }
+                    }
+                }
+            }
+            for (ProductionPickListsCart cart : carts) {
+                if (cart.getCreateUser().equals(record.getUserId())) {
+                    pickNumCount += cart.getNumber();
+                    pickSkuList.add(cart.getSkuId());
+                }
+            }
+            int outSkuCount = outSkuList.stream().distinct().collect(Collectors.toList()).size();
+            int pickSkuCount = pickSkuList.stream().distinct().collect(Collectors.toList()).size();
+            record.setPickNumCount(pickNumCount);
+            record.setPickSkuCount(pickSkuCount);
+            record.setOutNumCount(outNumCount);
+            record.setOutSkuCount(outSkuCount);
+        }
+        return PageFactory.createPageInfo(outStockViewPage);
+    }
+
+    @RequestMapping(value = "/outStockDetailView", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outStockDetailView(@RequestBody DataStatisticsViewParam param) {
+//        pickListsDetailService.lambdaQuery()
+        LambdaQueryChainWrapper<ProductionPickLists> productionPickListsLambdaQueryChainWrapper = pickListsService.lambdaQuery();
+        if(param.getBeginTime()!=null && param.getEndTime()!=null){
+            productionPickListsLambdaQueryChainWrapper.between(ProductionPickLists::getCreateTime,DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
+        }
+        List<ProductionPickLists> pickLists = productionPickListsLambdaQueryChainWrapper.eq(ProductionPickLists::getUserId, param.getUserId()).list();
+        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).ne(ProductionPickListsCart::getStatus, -1).list();
+        List<OutStockDetailView> results = new ArrayList<>();
+        List<OutStockDetailView> results2 = new ArrayList<>();
+
+
+        for (ProductionPickLists pickList : pickLists) {
+
+            for (ProductionPickListsCart cart : carts) {
+                if (cart.getPickListsId().equals(pickList.getPickListsId()) && cart.getStatus().equals(99)){
+                    OutStockDetailView result = new OutStockDetailView();
+                    result.setSkuId(cart.getSkuId());
+                    result.setOutNumCount(cart.getNumber());
+                    result.setBrandId(cart.getBrandId());
+                    results.add(result);
+                }
+            }
+        }
+        for (ProductionPickLists pickList : pickLists) {
+
+            for (ProductionPickListsCart cart : carts) {
+                if (cart.getPickListsId().equals(pickList.getPickListsId())&& cart.getCreateUser().equals(param.getUserId())) {
+                    OutStockDetailView result = new OutStockDetailView();
+                    result.setSkuId(cart.getSkuId());
+                    result.setPickNumCount(cart.getNumber());
+                    result.setBrandId(cart.getBrandId());
+                    results2.add(result);
+                }
+            }
+        }
+
+
+
+        List<OutStockDetailView> totalResults = new ArrayList<>();
+
+        results.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) , Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new OutStockDetailView() {{
+                        setOutNumCount(a.getOutNumCount()+b.getOutNumCount());
+                        setSkuId(a.getSkuId());
+                        setBrandId(a.getBrandId());
+                    }}).ifPresent(totalResults::add);
+                }
+        );
+        List<OutStockDetailView> totalResults2 = new ArrayList<>();
+
+        results2.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + (ToolUtil.isEmpty(item.getBrandId()) ? 0 : item.getBrandId()) , Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new OutStockDetailView() {{
+                        setPickNumCount(a.getPickNumCount()+b.getPickNumCount());
+                        setSkuId(a.getSkuId());
+                        setBrandId(a.getBrandId());
+                    }}).ifPresent(totalResults2::add);
+                }
+        );
+
+        for (OutStockDetailView totalResult : totalResults) {
+            for (OutStockDetailView outStockDetailView : totalResults2) {
+                if (totalResult.getSkuId().equals(outStockDetailView.getSkuId()) && totalResult.getBrandId().equals(outStockDetailView.getBrandId())){
+                    totalResult.setPickNumCount(outStockDetailView.getPickNumCount());
+                    break;
+                }
+            }
+        }
+        List<SkuSimpleResult> skuSimpleResults = totalResults.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(totalResults.stream().map(OutStockDetailView::getSkuId).distinct().collect(Collectors.toList()));
+        List<BrandResult> brandResults = totalResults.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(totalResults.stream().map(OutStockDetailView::getSkuId).distinct().collect(Collectors.toList()));
+        for (OutStockDetailView totalResult : totalResults) {
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                if (totalResult.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    totalResult.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (totalResult.getBrandId().equals(brandResult.getBrandId())){
+                    totalResult.setBrandResult(brandResult);
+                    break;
+                }
+            }
+        }
+
+
+        return ResponseData.success(totalResults);
     }
 
 }

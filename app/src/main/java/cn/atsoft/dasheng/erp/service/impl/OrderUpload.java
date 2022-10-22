@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Component
 public class OrderUpload {
@@ -31,11 +33,10 @@ public class OrderUpload {
 
         try {
 
-            WxMediaUploadResult upload = wxCpService.getWxCpClient().getMediaService().upload("file", file);
+             WxMediaUploadResult upload = wxCpService.getWxCpClient().getMediaService().upload("file", file);
             String mediaId = upload.getMediaId();
-
             Long userId = LoginContextHolder.getContext().getUserId();
-            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").orderByDesc("create_time").last("limit 1").eq("display", 1).one();
+            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").orderByDesc("create_time").last("limit 1").one();
 
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
                 UcOpenUserInfo userInfo = openUserInfoService.query().eq("source", "wxCp").eq("member_id", wxuserInfo.getMemberId()).one();
@@ -51,6 +52,36 @@ public class OrderUpload {
 
         } catch (WxErrorException e) {
             e.printStackTrace();
+        }
+
+
+    }
+    public void upload(String mediaType, String fileType, InputStream inputStream) {
+
+
+        try {
+
+             WxMediaUploadResult upload = wxCpService.getWxCpClient().getMediaService().upload(mediaType, fileType,inputStream);
+            String mediaId = upload.getMediaId();
+            Long userId = LoginContextHolder.getContext().getUserId();
+            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").orderByDesc("create_time").last("limit 1").one();
+
+            if (ToolUtil.isNotEmpty(wxuserInfo)) {
+                UcOpenUserInfo userInfo = openUserInfoService.query().eq("source", "wxCp").eq("member_id", wxuserInfo.getMemberId()).one();
+                if (ToolUtil.isNotEmpty(userInfo)) {
+                    WxCpMessage wxCpMessage = new WxCpMessage();
+                    wxCpMessage.setToUser(userInfo.getUuid());
+                    wxCpMessage.setMsgType("file");
+                    wxCpMessage.setMediaId(mediaId);
+                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
+                }
+            }
+
+
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
 

@@ -2,26 +2,35 @@ package cn.atsoft.dasheng.Excel.service.impl;
 
 import cn.atsoft.dasheng.Excel.service.InstockViewExcel;
 import cn.atsoft.dasheng.app.model.request.InstockView;
+import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.InstockLogDetail;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.erp.service.impl.OrderUpload;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.net.URLEncodeUtil;
+import me.chanjar.weixin.common.api.WxConsts;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.List;
 
 @Service
 public class InstockViewExcelImpl implements InstockViewExcel {
     @Autowired
     private InstockOrderService instockOrderService;
+
+    @Autowired
+    private OrderUpload orderUpload;
 
     @Override
     public void excel(HttpServletResponse response, DataStatisticsViewParam param) throws IOException {
@@ -34,18 +43,28 @@ public class InstockViewExcelImpl implements InstockViewExcel {
         sheet4(workbook, instockViews);
         sheet5(workbook, instockViews);
 
-        //准备将Excel的输出流通过response输出到页面下载
-        //八进制输出流
-        response.setContentType("application/octet-stream");
 
-        //这后面可以设置导出Excel的名称
-        response.setHeader("Content-disposition", "attachment;filename=skuExport.xls");
+        OutputStream os = response.getOutputStream();
+        workbook.write(os);
 
-        //刷新缓冲
-        response.flushBuffer();
 
-        //workbook将Excel写入到response的输出流中，供页面下载
-        workbook.write(response.getOutputStream());
+
+
+
+        String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
+        uploadPath = uploadPath.replace("\\", "");
+        String filePath =uploadPath+"入库统计" + DateUtil.today() + ".xlsx";
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        workbook.write(bao);
+//        InputStream inputStream =  new ByteArrayInputStream(bao.toByteArray());
+        FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+        fileOutputStream.write(bao.toByteArray());
+        File file = new File(filePath);
+//        orderUpload.upload(WxConsts.KefuMsgType.FILE,"xlsx",inputStream);
+        orderUpload.upload(file);
+        file.deleteOnExit();
+        fileOutputStream.close();
+        bao.close();
     }
 
 

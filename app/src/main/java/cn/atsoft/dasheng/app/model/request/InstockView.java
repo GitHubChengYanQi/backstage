@@ -31,4 +31,5 @@ public class InstockView {
     private List<InstockViewDetail> instockViewDetails;
     private List<UserResult> userResults;
     private List<SkuSimpleResult> skuSimpleResults;
+    private Integer orderCount;
 }
