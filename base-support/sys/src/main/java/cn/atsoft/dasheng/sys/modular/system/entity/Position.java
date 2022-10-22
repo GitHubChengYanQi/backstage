@@ -25,6 +25,12 @@ public class Position implements Serializable {
     private Long positionId;
 
     /**
+     * 主管
+     */
+    @TableField("governor")
+    private Integer governor;
+
+    /**
      * 职位名称
      */
     @TableField("name")
@@ -78,6 +84,13 @@ public class Position implements Serializable {
     @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
+    public Integer getGovernor() {
+        return governor;
+    }
+
+    public void setGovernor(Integer governor) {
+        this.governor = governor;
+    }
 
     public Long getPositionId() {
         return positionId;
@@ -162,16 +175,16 @@ public class Position implements Serializable {
     @Override
     public String toString() {
         return "Position{" +
-        "positionId=" + positionId +
-        ", name=" + name +
-        ", code=" + code +
-        ", sort=" + sort +
-        ", status=" + status +
-        ", remark=" + remark +
-        ", createTime=" + createTime +
-        ", updateUser=" + updateUser +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        "}";
+                "positionId=" + positionId +
+                ", name=" + name +
+                ", code=" + code +
+                ", sort=" + sort +
+                ", status=" + status +
+                ", remark=" + remark +
+                ", createTime=" + createTime +
+                ", updateUser=" + updateUser +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                "}";
     }
 }
