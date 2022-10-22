@@ -24,7 +24,9 @@ public enum OutStockActionEnum implements FormActionInterface {
             return 49L;
         }
     },
+    resubmit("resubmit") {  //重新提交
 
+    },
     outStock("出库") {
 
     };

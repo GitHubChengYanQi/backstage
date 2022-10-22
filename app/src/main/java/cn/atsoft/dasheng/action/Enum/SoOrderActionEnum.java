@@ -13,6 +13,8 @@ public enum SoOrderActionEnum implements FormActionInterface {
         public Long getStatus() {
             return 99L;
         }
+    },   resubmit("resubmit") {  //重新提交
+
     },
     refuse("拒绝") {
         public Long getStatus() {
