@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
 import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.MediaService;
@@ -165,6 +166,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private InstockReceiptService instockReceiptService;
 
+    @Autowired
+    private CustomerService customerService;
 
     @Override
     @Transactional
@@ -329,7 +332,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 activitiProcessTaskParam.setStatus(99);
             }
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            if(ToolUtil.isNotEmpty(entity.getTheme())){
+            if (ToolUtil.isNotEmpty(entity.getTheme())) {
                 activitiProcessTaskParam.setTheme(entity.getTheme());
             }
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
@@ -1580,7 +1583,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> noticeIds = new ArrayList<>();
         List<Long> mediaIds = new ArrayList<>();
         List<Long> formIds = new ArrayList<>();
-
+        List<Long> customerIds = new ArrayList<>();
 
         for (InstockOrderResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getNoticeId())) {
@@ -1602,7 +1605,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             if (ToolUtil.isNotEmpty(datum.getStatus())) {
                 statusIds.add(datum.getStatus());
             }
+            customerIds.add(datum.getCustomerId());
         }
+
 
         List<Announcements> announcements = noticeIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(noticeIds);
         List<DocumentsStatusResult> documentsStatusResults = documentStatusService.resultsByIds(statusIds);
@@ -1621,7 +1626,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
         List<ShopCart> shopCarts = formIds.size() == 0 ? new ArrayList<>() : shopCartService.query().in("form_id", formIds).eq("display", 1).eq("status", 0).list();
-
+        List<CustomerResult> results = customerService.getResults(customerIds);
 
         for (InstockOrderResult datum : data) {
 
@@ -1631,6 +1636,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             int instockErrorNum = 0;
             List<InstockListResult> instockListResults = new ArrayList<>();
 
+            for (CustomerResult result : results) {
+                if (ToolUtil.isNotEmpty(datum.getCustomerId())&&datum.getCustomerId().equals(result.getCustomerId())) {
+                    datum.setCustomerResult(result);
+                    break;
+                }
+            }
 
             for (InstockListResult instockList : instockListList) {
                 for (Anomaly anomaly : anomalyList) {
