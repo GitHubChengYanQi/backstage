@@ -67,7 +67,7 @@ public class CustomerResult implements Serializable {
     private Phone phone;
     private ContactsResult defaultContactsResult;
     private UserResult createUserResult;
-    private CustomerResult customerResult;
+
 
     /**
      * 客户id

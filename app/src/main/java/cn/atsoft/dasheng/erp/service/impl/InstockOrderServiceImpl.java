@@ -1638,7 +1638,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
             for (CustomerResult result : results) {
                 if (ToolUtil.isNotEmpty(datum.getCustomerId())&&datum.getCustomerId().equals(result.getCustomerId())) {
-                    result.setCustomerResult(result);
+                    datum.setCustomerResult(result);
                     break;
                 }
             }
