@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -64,6 +65,9 @@ public interface AnomalyDetailService extends IService<AnomalyDetail> {
     List<AnomalyDetailResult> findListBySpec(AnomalyDetailParam param);
 
     List<AnomalyDetailResult> getDetails(Long anomalyId);
+
+
+    Map<Long, Long> inStockErrorNum(List<Long> orderIds);
 
     /**
      * 查询分页数据，Specification模式

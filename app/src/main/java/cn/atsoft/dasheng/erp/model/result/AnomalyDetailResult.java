@@ -29,6 +29,11 @@ public class AnomalyDetailResult implements Serializable {
 
     private List<Announcements> announcements;
 
+    private Long fromId;  //主单据id   例如入库单
+
+    private Long sourceId; //来源id   例如入库清单
+
+
     private Long codeId;
 
     private List<String> reasonUrls;

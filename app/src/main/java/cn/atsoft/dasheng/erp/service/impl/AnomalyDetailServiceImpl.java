@@ -13,21 +13,16 @@ import cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.message.enmu.OperationType;
-import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -43,7 +38,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static cn.hutool.core.date.DateTime.now;
 
@@ -258,6 +255,32 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         List<AnomalyDetailResult> results = BeanUtil.copyToList(details, AnomalyDetailResult.class, new CopyOptions());
         format(results);
         return results;
+    }
+
+    /**
+     * 返回入库单终止入库数量
+     *
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public Map<Long, Long> inStockErrorNum(List<Long> orderIds) {
+
+        AnomalyDetailParam anomalyDetailParam = new AnomalyDetailParam();
+        anomalyDetailParam.setOrderIds(orderIds);
+        anomalyDetailParam.setStauts(-1L);
+        anomalyDetailParam.setType("InstockError");
+        List<AnomalyDetailResult> anomalyDetailResults = this.baseMapper.orderError(anomalyDetailParam);
+        Map<Long, Long> map = new HashMap<>();
+        for (AnomalyDetailResult anomalyDetailResult : anomalyDetailResults) {
+            Long number = map.get(anomalyDetailResult.getFromId());
+            if (ToolUtil.isEmpty(number)) {
+                number = 0L;
+            }
+            number = number + anomalyDetailResult.getNumber();
+            map.put(anomalyDetailResult.getFromId(), number);
+        }
+        return map;
     }
 
 
