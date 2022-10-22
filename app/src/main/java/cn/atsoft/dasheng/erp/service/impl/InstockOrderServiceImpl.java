@@ -316,7 +316,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             activitiProcessTaskParam.setType(ReceiptsEnum.INSTOCK.name());
             activitiProcessTaskParam.setRemark(entity.getRemark());
             activitiProcessTaskParam.setNoticeId(announcementsService.toList(entity.getNoticeId()));
-
+            activitiProcessTaskParam.setTheme(param.getTheme());
             if (ToolUtil.isNotEmpty(entity.getSource()) && ToolUtil.isNotEmpty(entity.getSourceId())) {
                 activitiProcessTaskParam.setSource(entity.getSource());
                 activitiProcessTaskParam.setSourceId(entity.getSourceId());

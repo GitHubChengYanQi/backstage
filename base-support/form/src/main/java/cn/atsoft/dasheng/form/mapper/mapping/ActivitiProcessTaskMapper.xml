@@ -296,14 +296,14 @@
         select
         <include refid="auditColumn2"/>
         from activiti_process_task task
-        LEFT JOIN activiti_process_log  log on log.task_id = task.process_task_id
-        LEFT JOIN activiti_steps steps  on steps.setps_id = log.setps_id
+        LEFT JOIN activiti_process_log log on log.task_id = task.process_task_id
+        LEFT JOIN activiti_steps steps on steps.setps_id = log.setps_id
         LEFT JOIN daoxin_task_participant participant ON task.process_task_id =
         participant.process_task_id
-        where  1 = 1  and task.display = 1
-    --  查询关于我的任务
+        where 1 = 1 and task.display = 1
+        -- 查询关于我的任务
 
-        <if  test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
+        <if test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
             <choose>
                 <when test="paramCondition.queryType ==1">
                     and steps.step_type = "audit"
@@ -379,6 +379,7 @@
             or task_name like CONCAT('%',#{paramCondition.skuName},'%')
             or remark like CONCAT('%',#{paramCondition.skuName},'%')
             or notice_id like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.theme like CONCAT('%',#{paramCondition.skuName},'%')
             )
         </if>
         <if test="paramCondition.skuId != null and paramCondition.skuId != ''">
@@ -447,9 +448,9 @@
         LEFT JOIN daoxin_erp_instock_order instock on instock.instock_order_id = task.form_id
         LEFT JOIN daoxin_erp_instock_list instock_list on instock.instock_order_id = instock_list.instock_order_id
         LEFT JOIN goods_sku sku on instock_list.sku_id = sku.sku_id
-        where  1 = 1  and task.display = 1
-    --  查询关于我的任务
-        <if  test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
+        where 1 = 1 and task.display = 1
+        -- 查询关于我的任务
+        <if test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
             <choose>
                 <when test="paramCondition.queryType ==1">
                     and steps.step_type = "audit"
@@ -469,7 +470,7 @@
             </choose>
         </if>
         <if test="paramCondition.customerId !=null and paramCondition.customerId !=''">
-          and instock.customer_id = #{paramCondition.customerId}
+            and instock.customer_id = #{paramCondition.customerId}
         </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
@@ -499,8 +500,8 @@
         </if>
         <if test="paramCondition.keyWords !=null and paramCondition.keyWords !=''">
             and (
-                instock.coding = #{paramCondition.keyWords}
-                or  sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
+            instock.coding = #{paramCondition.keyWords}
+            or sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
             )
         </if>
         <!--开始时间-->
@@ -556,11 +557,12 @@
         LEFT JOIN activiti_steps steps ON steps.setps_id = log.setps_id
         LEFT JOIN daoxin_task_participant participant ON task.process_task_id = participant.process_task_id
         LEFT JOIN daoxin_production_pick_lists picklists on picklists.pick_lists_id = task.form_id
-        LEFT JOIN daoxin_production_pick_lists_detail picklists_detail on picklists.pick_lists_id = picklists_detail.pick_lists_id
+        LEFT JOIN daoxin_production_pick_lists_detail picklists_detail on picklists.pick_lists_id =
+        picklists_detail.pick_lists_id
         LEFT JOIN goods_sku sku on picklists_detail.sku_id = sku.sku_id
-        where  1 = 1  and task.display = 1
-    --  查询关于我的任务
-        <if  test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
+        where 1 = 1 and task.display = 1
+        -- 查询关于我的任务
+        <if test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
             <choose>
                 <when test="paramCondition.queryType ==1">
                     and steps.step_type = "audit"
@@ -611,8 +613,8 @@
         </if>
         <if test="paramCondition.keyWords !=null and paramCondition.keyWords !=''">
             and (
-                picklists.coding = #{paramCondition.keyWords}
-                or  sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
+            picklists.coding = #{paramCondition.keyWords}
+            or sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
             )
         </if>
         <!--开始时间-->
@@ -667,11 +669,12 @@
         LEFT JOIN activiti_steps steps ON steps.setps_id = log.setps_id
         LEFT JOIN daoxin_task_participant participant ON task.process_task_id = participant.process_task_id
         LEFT JOIN daoxin_erp_maintenance maintenance on maintenance.maintenance_id = task.form_id
-        LEFT JOIN daoxin_erp_maintenance_detail maintenance_detail on maintenance.maintenance_id = maintenance_detail.maintenance_id
+        LEFT JOIN daoxin_erp_maintenance_detail maintenance_detail on maintenance.maintenance_id =
+        maintenance_detail.maintenance_id
         LEFT JOIN goods_sku sku on maintenance_detail.sku_id = sku.sku_id
-        where  1 = 1  and task.display = 1
-    --  查询关于我的任务
-        <if  test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
+        where 1 = 1 and task.display = 1
+        -- 查询关于我的任务
+        <if test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
             <choose>
                 <when test="paramCondition.queryType ==1">
                     and steps.step_type = "audit"
@@ -718,8 +721,8 @@
         </if>
         <if test="paramCondition.keyWords !=null and paramCondition.keyWords !=''">
             and (
-                picklists.coding = #{paramCondition.keyWords}
-                or  sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
+            picklists.coding = #{paramCondition.keyWords}
+            or sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
             )
         </if>
         <!--开始时间-->
@@ -774,11 +777,12 @@
         LEFT JOIN activiti_steps steps ON steps.setps_id = log.setps_id
         LEFT JOIN daoxin_task_participant participant ON task.process_task_id = participant.process_task_id
         LEFT JOIN daoxin_erp_allocation allocation on allocation.allocation_id = task.form_id
-        LEFT JOIN daoxin_erp_allocation_detail allocation_detail on allocation.allocation_id = allocation_detail.allocation_id
+        LEFT JOIN daoxin_erp_allocation_detail allocation_detail on allocation.allocation_id =
+        allocation_detail.allocation_id
         LEFT JOIN goods_sku sku on allocation_detail.sku_id = sku.sku_id
-        where  1 = 1  and task.display = 1
-    --  查询关于我的任务
-        <if  test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
+        where 1 = 1 and task.display = 1
+        -- 查询关于我的任务
+        <if test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
             <choose>
                 <when test="paramCondition.queryType ==1">
                     and steps.step_type = "audit"
@@ -825,8 +829,8 @@
         </if>
         <if test="paramCondition.keyWords !=null and paramCondition.keyWords !=''">
             and (
-                picklists.coding = #{paramCondition.keyWords}
-                or  sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
+            picklists.coding = #{paramCondition.keyWords}
+            or sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
             )
         </if>
         <!--开始时间-->
@@ -883,9 +887,9 @@
         LEFT JOIN daoxin_anomaly_order anomaly_order on anomaly_order.order_id = task.form_id
         LEFT JOIN daoxin_anomaly anomaly on anomaly.order_id = anomaly_order.order_id
         LEFT JOIN goods_sku sku on anomaly.sku_id = sku.sku_id
-        where  1 = 1  and task.display = 1
-    --  查询关于我的任务
-        <if  test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
+        where 1 = 1 and task.display = 1
+        -- 查询关于我的任务
+        <if test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
             <choose>
                 <when test="paramCondition.queryType ==1">
                     and steps.step_type = "audit"
@@ -932,8 +936,8 @@
         </if>
         <if test="paramCondition.keyWords !=null and paramCondition.keyWords !=''">
             and (
-                picklists.coding = #{paramCondition.keyWords}
-                or  sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
+            picklists.coding = #{paramCondition.keyWords}
+            or sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
             )
         </if>
         <!--开始时间-->
