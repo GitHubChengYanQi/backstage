@@ -205,7 +205,7 @@ public class DataStatisticsViewController extends BaseController {
             productionPickListsLambdaQueryChainWrapper.between(ProductionPickLists::getCreateTime,DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
         }
         List<ProductionPickLists> pickLists =userResultsByIds.size() == 0 ? new ArrayList<>() : productionPickListsLambdaQueryChainWrapper.in(ProductionPickLists::getUserId, userResultsByIds.stream().map(UserResult::getUserId).distinct().collect(Collectors.toList())).list();
-        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).ne(ProductionPickListsCart::getStatus, -1).list();
+        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
         List<ProductionPickListsDetail> details = pickLists.size() == 0 ? new ArrayList<>() : pickListsDetailService.lambdaQuery().in(ProductionPickListsDetail::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).list();
 
         for (OutStockView record : outStockViewPage.getRecords()) {
@@ -221,16 +221,16 @@ public class DataStatisticsViewController extends BaseController {
             List<Long> pickSkuList = new ArrayList<>();
             for (ProductionPickLists pickList : pickLists) {
                 if (record.getUserId().equals(pickList.getUserId())) {
-                    for (ProductionPickListsDetail detail : details) {
-                        if (pickList.getPickListsId().equals(detail.getPickListsId())) {
-                            outNumCount += detail.getReceivedNumber();
-                            outSkuList.add(detail.getSkuId());
+                    for (ProductionPickListsCart cart : carts) {
+                        if (pickList.getPickListsId().equals(cart.getPickListsId())) {
+                            outNumCount += cart.getNumber();
+                            outSkuList.add(cart.getSkuId());
                         }
                     }
                 }
             }
             for (ProductionPickListsCart cart : carts) {
-                if (cart.getCreateUser().equals(record.getUserId())) {
+                if (cart.getUpdateUser().equals(record.getUserId())) {
                     pickNumCount += cart.getNumber();
                     pickSkuList.add(cart.getSkuId());
                 }
