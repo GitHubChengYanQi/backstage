@@ -19,4 +19,5 @@ public class OutStockView {
     private Integer pickNumCount;
     private Integer outSkuCount;
     private Integer outNumCount;
+    private Integer orderCount;
 }

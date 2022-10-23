@@ -80,6 +80,10 @@
          create_time AS "createTime"
          from sys_user where 1 = 1
          and status  = "ENABLE"
+
+         <if test="paramCondition.userId != null">
+             and user_id = #{paramCondition.userId}
+         </if>
      </select>
 
 

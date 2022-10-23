@@ -179,18 +179,16 @@ public class DataStatisticsViewController extends BaseController {
         int skuCount = 0;
         int numCount = 0;
         List<Long> skuIds = new ArrayList<>();
-        LambdaQueryChainWrapper<ProductionPickLists> productionPickListsLambdaQueryChainWrapper = pickListsService.lambdaQuery();
-        if(param.getBeginTime()!=null && param.getEndTime()!=null){
-            productionPickListsLambdaQueryChainWrapper.between(ProductionPickLists::getCreateTime,DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
-        }
-        List<ProductionPickLists> list = productionPickListsLambdaQueryChainWrapper.list();
-        List<ProductionPickListsDetail> list1 =list.size() == 0 ? new ArrayList<>() : pickListsDetailService.lambdaQuery().in(ProductionPickListsDetail::getPickListsId, list.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).list();
+        List<OutStockView> pickListsView =pickListsService.outStockView(param);
+        List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
+        List<ProductionPickListsDetail> list1 =pickLists.size() == 0 ? new ArrayList<>() : pickListsDetailService.lambdaQuery().in(ProductionPickListsDetail::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).list();
         for (ProductionPickListsDetail listsDetail : list1) {
             numCount+=listsDetail.getReceivedNumber();
             skuIds.add(listsDetail.getSkuId());
         }
         outStockView.setOutSkuCount(skuIds.stream().distinct().collect(Collectors.toList()).size());
         outStockView.setOutNumCount(numCount);
+        outStockView.setOrderCount(pickLists.stream().distinct().collect(Collectors.toList()).size());
         return ResponseData.success(outStockView);
     }
 
