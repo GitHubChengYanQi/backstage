@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.Excel.service.impl;
 
 import cn.atsoft.dasheng.Excel.service.OutStockViewExcel;
 import cn.atsoft.dasheng.app.model.request.InstockView;
+import cn.atsoft.dasheng.app.model.request.OutStockView;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
@@ -68,7 +69,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
 
         String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
         uploadPath = uploadPath.replace("\\", "");
-        String filePath = uploadPath + "入库统计" + DateUtil.today() + ".xlsx";
+        String filePath = uploadPath + "出库统计" + DateUtil.today() + ".xlsx";
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         workbook.write(bao);
 //        InputStream inputStream =  new ByteArrayInputStream(bao.toByteArray());
@@ -113,15 +114,9 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
 
     private void sheet1(XSSFWorkbook workbook, DataStatisticsViewParam param) {
         String[] header = {"物料编码", "分类", "物料描述", "数量", "品牌", "领料人", "出库人", "时间", "单据", "任务编号"};
-        LambdaQueryChainWrapper<ProductionPickLists> listsWrapper = pickListsService.lambdaQuery();
-        if (param.getBeginTime() != null && param.getEndTime() != null) {
-            listsWrapper.between(ProductionPickLists::getCreateTime, DateUtil.format(param.getBeginTime(), "yyyy-MM-dd"), DateUtil.format(param.getEndTime(), "yyyy-MM-dd"));
-        }
-        if (param.getUserId() != null) {
-            listsWrapper.eq(ProductionPickLists::getUserId, param.getUserId());
-        }
-        List<ProductionPickLists> pickLists = listsWrapper.list();
-        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId)).eq(ProductionPickListsCart::getStatus, 99).list();
+        List<OutStockView> pickListsView =pickListsService.outStockView(param);
+        List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
+        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
 
         List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(pickLists.stream().map(ProductionPickLists::getUserId).collect(Collectors.toList()));
         List<SkuSimpleResult> skuResults = pickLists.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(carts.stream().map(ProductionPickListsCart::getSkuId).collect(Collectors.toList()));
@@ -143,8 +138,10 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
         }
 
         int index = 1;
-        int numCount = 0;
+
         for (ProductionPickLists pickList : pickLists) {
+            int numCount = 0;
+            List<Long>skuIds = new ArrayList<>();
             for (ProductionPickListsCart cart : carts) {
                 if (cart.getPickListsId().equals(pickList.getPickListsId())) {
                     numCount += cart.getNumber();
@@ -155,6 +152,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
                             row.createCell(0).setCellValue(skuResult.getStandard());
                             row.createCell(1).setCellValue(skuResult.getSpuResult().getSpuClassificationResult().getName());
                             row.createCell(2).setCellValue(skuMessage(skuResult));
+                            skuIds.add(skuResult.getSkuId());
                             break;
                         }
                     }
@@ -182,29 +180,25 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
                     row.createCell(9).setCellValue(pickList.getCoding());
                 }
             }
-            XSSFRow row = sheet.createRow(index);
-            row.createCell(0).setCellValue("合计出库" + skuResults.stream().distinct().collect(Collectors.toList()).size() + "类" + numCount + "件");
-            index += 1;
+            if (numCount>0){
+                XSSFRow row = sheet.createRow(index);
+                row.createCell(0).setCellValue("合计出库" + skuIds.stream().distinct().collect(Collectors.toList()).size() + "类" + numCount + "件");
+                index += 2;
+            }
         }
     }
 
     private void sheet2(XSSFWorkbook workbook, DataStatisticsViewParam param) {
         String[] header = {"出库人", "分类", "物料描述", "数量", "品牌", "领料人", "时间", "单据", "任务编号"};
-        LambdaQueryChainWrapper<ProductionPickLists> listsWrapper = pickListsService.lambdaQuery();
-        if (param.getBeginTime() != null && param.getEndTime() != null) {
-            listsWrapper.between(ProductionPickLists::getCreateTime, DateUtil.format(param.getBeginTime(), "yyyy-MM-dd"), DateUtil.format(param.getEndTime(), "yyyy-MM-dd"));
-        }
-        if (param.getUserId() != null) {
-            listsWrapper.eq(ProductionPickLists::getUserId, param.getUserId());
-        }
-        List<ProductionPickLists> pickLists = listsWrapper.list();
-        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId)).eq(ProductionPickListsCart::getStatus, 99).list();
+        List<OutStockView> pickListsView =pickListsService.outStockView(param);
+        List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
+        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
 
         List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(pickLists.stream().map(ProductionPickLists::getUserId).collect(Collectors.toList()));
         List<SkuSimpleResult> skuResults = pickLists.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(carts.stream().map(ProductionPickListsCart::getSkuId).collect(Collectors.toList()));
         List<BrandResult> brandResults = pickLists.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(carts.stream().map(ProductionPickListsCart::getBrandId).collect(Collectors.toList()));
 
-        XSSFSheet sheet = createSheet(workbook, "物料明细表");
+        XSSFSheet sheet = createSheet(workbook, "出库明细");
 
         XSSFRow headRow = sheet.createRow(0);
 
@@ -222,6 +216,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
         int index = 1;
         for (UserResult userResultsById : userResultsByIds) {
             int numCount = 0;
+            List<Long >skuIds= new ArrayList<>();
             for (ProductionPickLists pickList : pickLists) {
                 if (userResultsById.getUserId().equals(pickList.getUserId())) {
                     for (ProductionPickListsCart cart : carts) {
@@ -230,13 +225,14 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
                             XSSFRow row = sheet.createRow(index);
                             index += 1;
 
-                            if (userResultsById.getUserId().equals(cart.getUpdateUser())) {
+                            if (userResultsById.getUserId().equals(cart.getCreateUser())) {
                                 row.createCell(0).setCellValue(userResultsById.getName());
                             }
                             for (SkuSimpleResult skuResult : skuResults) {
                                 if (cart.getSkuId().equals(skuResult.getSkuId())) {
                                     row.createCell(1).setCellValue(skuResult.getSpuResult().getSpuClassificationResult().getName());
                                     row.createCell(2).setCellValue(skuMessage(skuResult));
+                                    skuIds.add(skuResult.getSkuId());
                                     break;
                                 }
                             }
@@ -259,30 +255,27 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
                     }
                 }
             }
-            XSSFRow row = sheet.createRow(index);
-            row.createCell(0).setCellValue("合计出库" + skuResults.stream().distinct().collect(Collectors.toList()).size() + "类" + numCount + "件");
-            index += 1;
+
+            if (numCount>0){
+                XSSFRow row = sheet.createRow(index);
+                row.createCell(0).setCellValue("合计出库" + skuIds.stream().distinct().collect(Collectors.toList()).size() + "类" + numCount + "件");
+                index += 2;
+            }
         }
 
     }
 
     private void sheet3(XSSFWorkbook workbook, DataStatisticsViewParam param) {
         String[] header = {"出库人", "分类", "物料描述", "数量", "品牌", "领料人", "时间", "单据", "任务编号"};
-        LambdaQueryChainWrapper<ProductionPickLists> listsWrapper = pickListsService.lambdaQuery();
-        if (param.getBeginTime() != null && param.getEndTime() != null) {
-            listsWrapper.between(ProductionPickLists::getCreateTime, DateUtil.format(param.getBeginTime(), "yyyy-MM-dd"), DateUtil.format(param.getEndTime(), "yyyy-MM-dd"));
-        }
-        if (param.getUserId() != null) {
-            listsWrapper.eq(ProductionPickLists::getUserId, param.getUserId());
-        }
-        List<ProductionPickLists> pickLists = listsWrapper.list();
-        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId)).eq(ProductionPickListsCart::getStatus, 99).list();
+        List<OutStockView> pickListsView =pickListsService.outStockView(param);
+        List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
+        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
 
         List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(pickLists.stream().map(ProductionPickLists::getUserId).collect(Collectors.toList()));
         List<SkuSimpleResult> skuResults = pickLists.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(carts.stream().map(ProductionPickListsCart::getSkuId).collect(Collectors.toList()));
         List<BrandResult> brandResults = pickLists.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(carts.stream().map(ProductionPickListsCart::getBrandId).collect(Collectors.toList()));
 
-        XSSFSheet sheet = createSheet(workbook, "物料明细表");
+        XSSFSheet sheet = createSheet(workbook, "领料明细");
 
         XSSFRow headRow = sheet.createRow(0);
 
@@ -300,6 +293,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
         int index = 1;
         for (UserResult userResultsById : userResultsByIds) {
             int numCount = 0;
+            List<Long> skuIds = new ArrayList<>();
             for (ProductionPickListsCart cart : carts) {
                 if (userResultsById.getUserId().equals(cart.getCreateUser())) {
                     for (ProductionPickLists pickList : pickLists) {
@@ -308,13 +302,14 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
                             XSSFRow row = sheet.createRow(index);
                             index += 1;
 
-                            if (userResultsById.getUserId().equals(cart.getUpdateUser())) {
+                            if (userResultsById.getUserId().equals(cart.getCreateUser())) {
                                 row.createCell(0).setCellValue(userResultsById.getName());
                             }
                             for (SkuSimpleResult skuResult : skuResults) {
                                 if (cart.getSkuId().equals(skuResult.getSkuId())) {
                                     row.createCell(1).setCellValue(skuResult.getSpuResult().getSpuClassificationResult().getName());
                                     row.createCell(2).setCellValue(skuMessage(skuResult));
+                                    skuIds.add(skuResult.getSkuId());
                                     break;
                                 }
                             }
@@ -339,9 +334,11 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
                 }
 
             }
-            XSSFRow row = sheet.createRow(index);
-            row.createCell(0).setCellValue("合计出库" + skuResults.stream().distinct().collect(Collectors.toList()).size() + "类" + numCount + "件");
-            index += 1;
+            if (numCount>0){
+                XSSFRow row = sheet.createRow(index);
+                row.createCell(0).setCellValue("合计出库" + skuIds.stream().distinct().collect(Collectors.toList()).size() + "类" + numCount + "件");
+                index += 2;
+            }
         }
 
 
@@ -349,18 +346,12 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
 
     private void sheet4(XSSFWorkbook workbook, DataStatisticsViewParam param) {
         String[] header = {"人员", "出库数量", "领料数量"};
-        LambdaQueryChainWrapper<ProductionPickLists> listsWrapper = pickListsService.lambdaQuery();
-        if (param.getBeginTime() != null && param.getEndTime() != null) {
-            listsWrapper.between(ProductionPickLists::getCreateTime, DateUtil.format(param.getBeginTime(), "yyyy-MM-dd"), DateUtil.format(param.getEndTime(), "yyyy-MM-dd"));
-        }
-        if (param.getUserId() != null) {
-            listsWrapper.eq(ProductionPickLists::getUserId, param.getUserId());
-        }
-        List<ProductionPickLists> pickLists = listsWrapper.list();
-        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId)).eq(ProductionPickListsCart::getStatus, 99).list();
+        List<OutStockView> pickListsView =pickListsService.outStockView(param);
+        List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
+        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
 
         List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(pickLists.stream().map(ProductionPickLists::getUserId).collect(Collectors.toList()));
-        XSSFSheet sheet = createSheet(workbook, "物料明细表");
+        XSSFSheet sheet = createSheet(workbook, "汇总表");
 
         XSSFRow headRow = sheet.createRow(0);
 
@@ -399,11 +390,12 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
                         }
                     }
                 }
-                for (ProductionPickListsCart cart : carts) {
-                    if (cart.getUpdateUser().equals(userResultsById.getUserId())){
-                        outSkuIds.add(cart.getSkuId());
-                        outNumCount+=cart.getNumber();
-                    }
+
+            }
+            for (ProductionPickListsCart cart : carts) {
+                if (cart.getCreateUser().equals(userResultsById.getUserId())){
+                    outSkuIds.add(cart.getSkuId());
+                    outNumCount+=cart.getNumber();
                 }
             }
             outSkuCount = outSkuIds.stream().distinct().collect(Collectors.toList()).size();

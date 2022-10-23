@@ -76,7 +76,8 @@
     </select>
      <select id="outstockUserView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
          select
-         user_id
+         user_id AS "userId",
+         create_time AS "createTime"
          from sys_user where 1 = 1
          and status  = "ENABLE"
      </select>
@@ -85,17 +86,17 @@
     <select id="outstockView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
             lists.pick_lists_id AS "pickListsId",
-            lists.user_id AS "userId"
+            lists.user_id AS "userId",
             lists.create_time AS "createTime"
         FROM
             daoxin_production_pick_lists lists
         LEFT JOIN daoxin_production_pick_lists_cart cart ON lists.pick_lists_id = cart.pick_lists_id
         where 1=1 and lists.status != 49
         <if test="paramCondition.userId != null">
-            and lists.user_id like CONCAT('%',#{paramCondition.userId},'%')
+            and (lists.user_id = #{paramCondition.userId} or cart.create_user = #{paramCondition.userId} )
         </if>
         <if test="paramCondition.beginTime != null and paramCondition.beginTime != '' and paramCondition.endTime != null and paramCondition.endTime != ''">
-            and (create_time between CONCAT(#{beginTime},' 00:00:00') and CONCAT(#{endTime},' 23:59:59'))
+            and (create_time between CONCAT(#{paramCondition.beginTime},' 00:00:00') and CONCAT(#{paramCondition.endTime},' 23:59:59'))
         </if>
     </select>
     <select id="pickView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">

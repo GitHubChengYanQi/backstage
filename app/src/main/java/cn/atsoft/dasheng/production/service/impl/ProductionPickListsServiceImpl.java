@@ -1625,7 +1625,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
     @Override
     public List<OutStockView> outStockView(DataStatisticsViewParam param) {
-       return this.baseMapper.outstockView(PageFactory.defaultPage(),param);
+       return this.baseMapper.outstockView(param);
 
     }
 }
