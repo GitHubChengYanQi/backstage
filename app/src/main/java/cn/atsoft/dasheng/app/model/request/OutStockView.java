@@ -8,7 +8,7 @@ import lombok.Data;
 public class OutStockView {
     private Long pickListsId;
     private Long userId;
-//    private UserResult userResult;
+    private UserResult userResult;
 //    private Integer detailCount;
 //    private Integer doneNumber;
     private SkuSimpleResult skuResult;

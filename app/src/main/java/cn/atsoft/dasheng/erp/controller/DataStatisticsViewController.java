@@ -209,6 +209,12 @@ public class DataStatisticsViewController extends BaseController {
         List<ProductionPickListsDetail> details = pickLists.size() == 0 ? new ArrayList<>() : pickListsDetailService.lambdaQuery().in(ProductionPickListsDetail::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).list();
 
         for (OutStockView record : outStockViewPage.getRecords()) {
+            for (UserResult userResultsById : userResultsByIds) {
+                if  (record.getUserId().equals(userResultsById.getUserId())){
+                    record.setUserResult(userResultsById);
+                    break;
+                }
+            }
             int outNumCount = 0;
             int pickNumCount = 0;
             List<Long> outSkuList = new ArrayList<>();
@@ -248,7 +254,7 @@ public class DataStatisticsViewController extends BaseController {
             productionPickListsLambdaQueryChainWrapper.between(ProductionPickLists::getCreateTime,DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
         }
         List<ProductionPickLists> pickLists = productionPickListsLambdaQueryChainWrapper.eq(ProductionPickLists::getUserId, param.getUserId()).list();
-        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).ne(ProductionPickListsCart::getStatus, -1).list();
+        List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).ne(ProductionPickListsCart::getStatus, -1).list();
         List<OutStockDetailView> results = new ArrayList<>();
         List<OutStockDetailView> results2 = new ArrayList<>();
 
@@ -259,7 +265,9 @@ public class DataStatisticsViewController extends BaseController {
                 if (cart.getPickListsId().equals(pickList.getPickListsId()) && cart.getStatus().equals(99)){
                     OutStockDetailView result = new OutStockDetailView();
                     result.setSkuId(cart.getSkuId());
-                    result.setOutNumCount(cart.getNumber());
+                    if(param.getUserId().equals(pickList.getUserId())){
+                        result.setOutNumCount(cart.getNumber());
+                    }
                     result.setBrandId(cart.getBrandId());
                     results.add(result);
                 }
@@ -271,7 +279,9 @@ public class DataStatisticsViewController extends BaseController {
                 if (cart.getPickListsId().equals(pickList.getPickListsId())&& cart.getCreateUser().equals(param.getUserId())) {
                     OutStockDetailView result = new OutStockDetailView();
                     result.setSkuId(cart.getSkuId());
-                    result.setPickNumCount(cart.getNumber());
+                    if (cart.getCreateUser().equals(param.getUserId())){
+                        result.setPickNumCount(cart.getNumber());
+                    }
                     result.setBrandId(cart.getBrandId());
                     results2.add(result);
                 }

@@ -75,7 +75,10 @@
             </if>
     </select>
      <select id="outstockView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
-
+         select
+         <include refid="Base_Column_List"/>
+         from daoxin_production_pick_lists where 1 = 1
+group by user_id
      </select>
     <select id="pickView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
             select
