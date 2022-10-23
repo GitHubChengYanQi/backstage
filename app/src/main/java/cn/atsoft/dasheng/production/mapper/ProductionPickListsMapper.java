@@ -45,7 +45,8 @@ public interface ProductionPickListsMapper extends BaseMapper<ProductionPickList
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    Page<OutStockView> outstockView(@Param("page") Page page, @Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<OutStockView> outstockUserView(@Param("page") Page page, @Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<OutStockView> outstockView(@Param("page") Page page, @Param("paramCondition") DataStatisticsViewParam paramCondition);
     Page<ProductionPickListsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition);
 
     /**

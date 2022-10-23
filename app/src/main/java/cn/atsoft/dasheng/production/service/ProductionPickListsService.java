@@ -116,5 +116,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     void updateOutStockRefuseStatus(ActivitiProcessTask processTask);
 
-    Page<OutStockView> outStockView(DataStatisticsViewParam param);
+    Page<OutStockView> outStockUserView(DataStatisticsViewParam param);
+
+   List<OutStockView> outStockView(DataStatisticsViewParam param);
 }

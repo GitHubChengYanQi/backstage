@@ -1619,7 +1619,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         this.updateById(lists);
     }
     @Override
-    public Page<OutStockView> outStockView(DataStatisticsViewParam param) {
+    public Page<OutStockView> outStockUserView(DataStatisticsViewParam param) {
+       return this.baseMapper.outstockUserView(PageFactory.defaultPage(),param);
+
+    }
+    @Override
+    public List<OutStockView> outStockView(DataStatisticsViewParam param) {
        return this.baseMapper.outstockView(PageFactory.defaultPage(),param);
 
     }

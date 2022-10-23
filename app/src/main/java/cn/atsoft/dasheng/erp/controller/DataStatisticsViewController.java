@@ -198,13 +198,10 @@ public class DataStatisticsViewController extends BaseController {
     @RequestMapping(value = "/outstockView", method = RequestMethod.POST)
     @ApiOperation("新增")
     public PageInfo outStockView(@RequestBody DataStatisticsViewParam param) {
-        Page<OutStockView> outStockViewPage = pickListsService.outStockView(param);
+        Page<OutStockView> outStockViewPage = pickListsService.outStockUserView(param);
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(outStockViewPage.getRecords().stream().map(OutStockView::getUserId).collect(Collectors.toList()));
-        LambdaQueryChainWrapper<ProductionPickLists> productionPickListsLambdaQueryChainWrapper = pickListsService.lambdaQuery();
-        if(param.getBeginTime()!=null && param.getEndTime()!=null){
-            productionPickListsLambdaQueryChainWrapper.between(ProductionPickLists::getCreateTime,DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
-        }
-        List<ProductionPickLists> pickLists =userResultsByIds.size() == 0 ? new ArrayList<>() : productionPickListsLambdaQueryChainWrapper.in(ProductionPickLists::getUserId, userResultsByIds.stream().map(UserResult::getUserId).distinct().collect(Collectors.toList())).list();
+        List<OutStockView> pickListsView =pickListsService.outStockView(param);
+        List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
         List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
         List<ProductionPickListsDetail> details = pickLists.size() == 0 ? new ArrayList<>() : pickListsDetailService.lambdaQuery().in(ProductionPickListsDetail::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).list();
 
