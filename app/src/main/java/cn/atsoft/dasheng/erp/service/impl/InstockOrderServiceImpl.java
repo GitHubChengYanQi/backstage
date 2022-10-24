@@ -169,9 +169,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private CustomerService customerService;
 
-    @Autowired
-    private CustomerService customerService;
-
     @Override
     @Transactional
     public InstockOrder add(InstockOrderParam param) {
