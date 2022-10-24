@@ -1932,7 +1932,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
          * 处理详细数据
          */
 //        List<InstockList> instockLists =instockOrders.size() == 0 ? new ArrayList<>() : instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list();
-        List<InstockListResult> instockLists = BeanUtil.copyToList(instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockListResult.class);
+        List<InstockListResult> instockLists =instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockListResult.class);
         instockListService.format(instockLists);
         List<InstockLogDetailResult> logDetails = list.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockLogDetailService.lambdaQuery().in(InstockLogDetail::getInstockOrderId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockLogDetailResult.class);
         instockLogDetailService.format(logDetails);
