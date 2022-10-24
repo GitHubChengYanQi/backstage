@@ -100,13 +100,7 @@ public class AnomalyDetail implements Serializable {
     private Long deptId;
 
 
-    public String getDescription() {
-        return description;
-    }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public Long getNumber() {
         return number;
