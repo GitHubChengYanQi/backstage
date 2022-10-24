@@ -6,5 +6,5 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface InstockViewExcel {
-    void excel(HttpServletResponse response, DataStatisticsViewParam param) throws IOException;
+    void excel(DataStatisticsViewParam param) throws IOException;
 }

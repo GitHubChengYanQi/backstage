@@ -16,4 +16,5 @@ public class DataStatisticsViewParam {
     private Date endTime;
     private Long instockOrderId;
     private Long userId;
+    private Long sendUser;
 }
