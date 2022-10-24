@@ -225,10 +225,13 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
                             numCount += cart.getNumber();
                             XSSFRow row = sheet.createRow(index);
                             index += 1;
-
-                            if (userResultsById.getUserId().equals(cart.getCreateUser())) {
-                                row.createCell(0).setCellValue(userResultsById.getName());
+                            for (UserResult resultsById : userResultsByIds) {
+                                if (resultsById.getUserId().equals(cart.getCreateUser())) {
+                                    row.createCell(0).setCellValue(resultsById.getName());
+                                }
                             }
+
+
                             for (SkuSimpleResult skuResult : skuResults) {
                                 if (cart.getSkuId().equals(skuResult.getSkuId())) {
                                     row.createCell(1).setCellValue(skuResult.getSpuResult().getSpuClassificationResult().getName());
