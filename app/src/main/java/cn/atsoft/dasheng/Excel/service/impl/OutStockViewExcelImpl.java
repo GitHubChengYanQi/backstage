@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -189,7 +190,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
     }
 
     private void sheet2(XSSFWorkbook workbook, DataStatisticsViewParam param) {
-        String[] header = {"出库人", "分类", "物料描述", "数量", "品牌", "领料人", "时间", "单据", "任务编号"};
+        String[] header = {"出库人", "分类", "物料描述", "数量", "品牌", "时间", "单据", "任务编号"};
         List<OutStockView> pickListsView =pickListsService.outStockView(param);
         List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
         List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
@@ -266,7 +267,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
     }
 
     private void sheet3(XSSFWorkbook workbook, DataStatisticsViewParam param) {
-        String[] header = {"出库人", "分类", "物料描述", "数量", "品牌", "领料人", "时间", "单据", "任务编号"};
+        String[] header = {"出库人", "分类", "物料描述", "数量", "品牌", "时间", "单据", "任务编号"};
         List<OutStockView> pickListsView =pickListsService.outStockView(param);
         List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
         List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
@@ -350,7 +351,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
         List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
         List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
 
-        List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(pickLists.stream().map(ProductionPickLists::getUserId).collect(Collectors.toList()));
+        List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() :BeanUtil.copyToList( userService.lambdaQuery().eq(User::getStatus,"ENABLE").list(),UserResult.class);
         XSSFSheet sheet = createSheet(workbook, "汇总表");
 
         XSSFRow headRow = sheet.createRow(0);
