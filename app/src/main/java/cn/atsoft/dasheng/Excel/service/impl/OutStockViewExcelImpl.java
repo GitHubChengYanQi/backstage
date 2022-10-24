@@ -119,7 +119,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
         List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
         List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
 
-        List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(pickLists.stream().map(ProductionPickLists::getUserId).collect(Collectors.toList()));
+        List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() :BeanUtil.copyToList( userService.lambdaQuery().eq(User::getStatus,"ENABLE").list(),UserResult.class);
         List<SkuSimpleResult> skuResults = pickLists.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(carts.stream().map(ProductionPickListsCart::getSkuId).collect(Collectors.toList()));
         List<BrandResult> brandResults = pickLists.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(carts.stream().map(ProductionPickListsCart::getBrandId).collect(Collectors.toList()));
 
@@ -195,7 +195,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
         List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
         List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
 
-        List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(pickLists.stream().map(ProductionPickLists::getUserId).collect(Collectors.toList()));
+        List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() :BeanUtil.copyToList( userService.lambdaQuery().eq(User::getStatus,"ENABLE").list(),UserResult.class);
         List<SkuSimpleResult> skuResults = pickLists.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(carts.stream().map(ProductionPickListsCart::getSkuId).collect(Collectors.toList()));
         List<BrandResult> brandResults = pickLists.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(carts.stream().map(ProductionPickListsCart::getBrandId).collect(Collectors.toList()));
 
@@ -272,7 +272,7 @@ public class OutStockViewExcelImpl implements OutStockViewExcel {
         List<ProductionPickLists> pickLists =pickListsView.size() == 0 ? new ArrayList<>() : pickListsService.listByIds(pickListsView.stream().map(OutStockView::getPickListsId).collect(Collectors.toList()));
         List<ProductionPickListsCart> carts = pickLists.size() == 0 ? new ArrayList<>() : cartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickLists.stream().map(ProductionPickLists::getPickListsId).collect(Collectors.toList())).eq(ProductionPickListsCart::getStatus, 99).list();
 
-        List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(pickLists.stream().map(ProductionPickLists::getUserId).collect(Collectors.toList()));
+        List<UserResult> userResultsByIds = pickLists.size() == 0 ? new ArrayList<>() :BeanUtil.copyToList( userService.lambdaQuery().eq(User::getStatus,"ENABLE").list(),UserResult.class);
         List<SkuSimpleResult> skuResults = pickLists.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(carts.stream().map(ProductionPickListsCart::getSkuId).collect(Collectors.toList()));
         List<BrandResult> brandResults = pickLists.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(carts.stream().map(ProductionPickListsCart::getBrandId).collect(Collectors.toList()));
 
