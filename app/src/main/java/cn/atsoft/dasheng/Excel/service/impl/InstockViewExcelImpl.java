@@ -10,6 +10,8 @@ import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.impl.OrderUpload;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.net.URLEncodeUtil;
@@ -31,6 +33,9 @@ public class InstockViewExcelImpl implements InstockViewExcel {
 
     @Autowired
     private OrderUpload orderUpload;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void excel(HttpServletResponse response, DataStatisticsViewParam param) throws IOException {
@@ -98,7 +103,7 @@ public class InstockViewExcelImpl implements InstockViewExcel {
     }
 
     private void sheet1(XSSFWorkbook workbook, List<InstockView> instockViews) {
-        String[] header = {"物料编码", "分类", "物料描述", "数量", "供应商", "状态", "时间", "执行人", "执行人", "单据", "单据编号"};
+        String[] header = {"物料编码", "分类", "物料描述", "数量", "供应商", "品牌","状态", "时间", "执行人", "单据", "单据编号"};
 
 
         XSSFSheet sheet = createSheet(workbook, "供应商明细表");
@@ -202,7 +207,7 @@ public class InstockViewExcelImpl implements InstockViewExcel {
     private void sheet3(XSSFWorkbook workbook, List<InstockView> instockViews) {
         XSSFSheet sheet2 = createSheet(workbook, "物料明细");
         String[] header2 = {"物料编码", "分类", "物料描述", "数量", "品牌", "时间", "执行人", "单据", "单据编号"};
-
+        List<User> users = userService.lambdaQuery().eq(User::getStatus, "ENABLE").list();
         XSSFRow headRow2 = sheet2.createRow(0);
 
         for (int i = 0; i < header2.length; i++) {
@@ -230,8 +235,14 @@ public class InstockViewExcelImpl implements InstockViewExcel {
                             row.createCell(2).setCellValue(skuMessage(BeanUtil.copyProperties(instockList.getSkuResult(), SkuSimpleResult.class)));
                             row.createCell(3).setCellValue(instockList.getNumber());
                             row.createCell(4).setCellValue(instockList.getBrandId() == null ? "无品牌" : instockList.getBrandId().equals(0L) ? "无品牌" : instockList.getBrandResult().getBrandName());
-                            row.createCell(5).setCellValue(instockList.getCreateTime());
-                            row.createCell(6).setCellValue(instockList.getCreateUser());
+                            row.createCell(5).setCellValue(DateUtil.format(instockList.getCreateTime(),"yyyy-MM-dd"));
+                            XSSFCell cell = row.createCell(6);
+                            for (User user : users) {
+                                if (instockList.getCreateUser().equals(user.getUserId())){
+                                    cell.setCellValue(user.getName());
+                                    break;
+                                }
+                            }
                             row.createCell(7).setCellValue(instockOrder.getTheme() == null ? "" :instockOrder.getTheme());
                             row.createCell(8).setCellValue(instockOrder.getCoding());
                         }
@@ -275,8 +286,8 @@ public class InstockViewExcelImpl implements InstockViewExcel {
                             row.createCell(2).setCellValue(skuMessage(BeanUtil.copyProperties(instockList.getSkuResult(), SkuSimpleResult.class)));
                             row.createCell(3).setCellValue(instockList.getNumber());
                             row.createCell(4).setCellValue(instockList.getBrandId() == null ? "无品牌" : instockList.getBrandId().equals(0L) ? "无品牌" : instockList.getBrandResult().getBrandName());
-                            row.createCell(5).setCellValue(instockList.getCreateTime());
-                            row.createCell(6).setCellValue(instockList.getCreateUser());
+                            row.createCell(5).setCellValue(DateUtil.format(instockList.getCreateTime(),"yyyy-MM-dd"));
+                            row.createCell(6).setCellValue(instockList.getUser().getName());
                             row.createCell(7).setCellValue(instockOrder.getTheme() == null ? "" :instockOrder.getTheme());
                             row.createCell(8).setCellValue(instockOrder.getCoding());
                         }
@@ -292,6 +303,7 @@ public class InstockViewExcelImpl implements InstockViewExcel {
     private void sheet5(XSSFWorkbook workbook, List<InstockView> instockViews) {
         XSSFSheet sheet2 = createSheet(workbook, "退货明细");
         String[] header2 = {"物料编码", "分类", "物料描述", "数量", "品牌", "时间", "执行人", "单据", "单据编号"};
+        List<User> users = userService.lambdaQuery().eq(User::getStatus, "ENABLE").list();
 
         XSSFRow headRow2 = sheet2.createRow(0);
 
@@ -322,8 +334,14 @@ public class InstockViewExcelImpl implements InstockViewExcel {
                             row.createCell(2).setCellValue(skuMessage(BeanUtil.copyProperties(instockList.getSkuResult(), SkuSimpleResult.class)));
                             row.createCell(3).setCellValue(instockList.getErrorNumber());
                             row.createCell(4).setCellValue(instockList.getBrandId() == null ? "无品牌" : instockList.getBrandId().equals(0L) ? "无品牌" : instockList.getBrand().getBrandName());
-                            row.createCell(5).setCellValue(instockList.getCreateTime());
-                            row.createCell(6).setCellValue(instockList.getCreateUser());
+                            row.createCell(5).setCellValue(DateUtil.format(instockList.getCreateTime(),"yyyy-MM-dd"));
+                            XSSFCell cell = row.createCell(6);
+                            for (User user : users) {
+                                if (instockList.getCreateUser().equals(user.getUserId())){
+                                    cell.setCellValue(user.getName());
+                                    break;
+                                }
+                            }
                             row.createCell(7).setCellValue(instockOrder.getTheme() == null ? "" :instockOrder.getTheme());
                             row.createCell(8).setCellValue(instockOrder.getCoding());
                         }
