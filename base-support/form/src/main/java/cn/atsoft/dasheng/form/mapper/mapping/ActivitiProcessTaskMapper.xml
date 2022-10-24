@@ -261,7 +261,7 @@
                 #{state}
             </foreach>
         </if>
-        <if test="paramCondition.skuName != null">
+        <if test="paramCondition.skuName != null and  paramCondition.skuName != ''">
             and (activiti_process_task.form_id in (
             select instock_order_id from daoxin_erp_instock_order where coding like
             CONCAT('%',#{paramCondition.skuName},'%')
@@ -360,9 +360,7 @@
             and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
         </if>
-
-
-        <if test="paramCondition.skuName != null">
+        <if test="paramCondition.skuName != null and  paramCondition.skuName != ''">
             and (
             task.form_id in (
             select instock_order_id from daoxin_erp_instock_order where coding like
@@ -376,9 +374,9 @@
             select pick_lists_id from daoxin_production_pick_lists where coding like
             CONCAT('%',#{paramCondition.skuName},'%')
             )
-            or task_name like CONCAT('%',#{paramCondition.skuName},'%')
-            or remark like CONCAT('%',#{paramCondition.skuName},'%')
-            or notice_id like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.task_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.remark like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.notice_id like CONCAT('%',#{paramCondition.skuName},'%')
             or task.theme like CONCAT('%',#{paramCondition.skuName},'%')
             )
         </if>
@@ -515,6 +513,17 @@
             and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
         </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and (
+            task.form_id in (
+            select instock_order_id from daoxin_erp_instock_order where coding like
+            CONCAT('%',#{paramCondition.skuName},'%') )
+            or task.task_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.remark like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.notice_id like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.theme like CONCAT('%',#{paramCondition.skuName},'%')
+            )
+        </if>
 
         <if test="paramCondition.createUser != null ">
             and task.create_user = #{paramCondition.createUser}
@@ -610,6 +619,18 @@
                     and task.status = 49
                 </when>
             </choose>
+        </if>
+        <if test="paramCondition.skuName != null and  paramCondition.skuName != ''">
+            and (
+            task.form_id in (
+            select pick_lists_id from daoxin_production_pick_lists where coding like
+            CONCAT('%',#{paramCondition.skuName},'%')
+            )
+            or task.task_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.remark like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.notice_id like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.theme like CONCAT('%',#{paramCondition.skuName},'%')
+            )
         </if>
         <if test="paramCondition.keyWords !=null and paramCondition.keyWords !=''">
             and (
