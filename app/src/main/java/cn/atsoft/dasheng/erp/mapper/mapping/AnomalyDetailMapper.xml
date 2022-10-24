@@ -250,4 +250,43 @@
         </if>
     </select>
 
+    <select id="orderError" resultType="cn.atsoft.dasheng.erp.model.result.AnomalyDetailResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.AnomalyDetailParam">
+        SELECT detail.number AS "number",
+        detail.detail_id AS "detailId",
+        detail.anomaly_id AS "anomalyId",
+        detail.inkind_id AS "inkindId",
+        detail.stauts AS "stauts",
+        detail.remark AS "remark",
+        detail.reason_img AS "reasonImg",
+        detail.user_id AS "userId",
+        detail.opinion AS "opinion",
+        detail.opinion_img AS "opinionImg",
+        detail.description AS "description",
+        detail.create_time AS "createTime",
+        detail.create_user AS "createUser",
+        detail.update_time AS "updateTime",
+        detail.update_user AS "updateUser",
+        detail.display AS "display",
+        detail.deptId AS "deptId",
+        anomaly.form_id as formId,
+        anomaly.source_id as sourceId,
+        anomaly.type as type
+        FROM daoxin_anomaly_detail detail
+        JOIN daoxin_anomaly anomaly ON detail.anomaly_id = anomaly.anomaly_id
+        where 1 = 1
+        <if test="paramCondition.type != null">
+            and anomaly.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.stauts != null">
+            and detail.stauts = #{paramCondition.stauts}
+        </if>
+        <if test="paramCondition.orderIds != null and  paramCondition.orderIds.size > 0">
+            and anomaly.form_id in
+            <foreach collection="paramCondition.orderIds" close=")" index="index" item="state" open="(" separator=",">
+                #{state}
+            </foreach>
+        </if>
+    </select>
+
 </mapper>
