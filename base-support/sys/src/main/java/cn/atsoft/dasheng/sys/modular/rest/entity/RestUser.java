@@ -19,6 +19,12 @@ public class RestUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 工号
+     */
+    @TableField("job_no")
+    private String jobNo;
+
+    /**
      * 主键id
      */
     @TableId(value = "user_id", type = IdType.ID_WORKER)
@@ -126,6 +132,13 @@ public class RestUser implements Serializable {
     @TableField("version")
     private Integer version;
 
+    public String getJobNo() {
+        return jobNo;
+    }
+
+    public void setJobNo(String jobNo) {
+        this.jobNo = jobNo;
+    }
 
     public Long getUserId() {
         return userId;

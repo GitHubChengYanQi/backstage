@@ -59,10 +59,10 @@ public class RestUserFactory {
         if (newUser == null || oldUser == null) {
             return oldUser;
         } else {
-            if (ToolUtil.isNotEmpty(newUser.getUserId())){
+            if (ToolUtil.isNotEmpty(newUser.getUserId())) {
                 oldUser.setUserId(newUser.getUserId());
             }
-            if (ToolUtil.isNotEmpty(newUser.getAccount())){
+            if (ToolUtil.isNotEmpty(newUser.getAccount())) {
                 oldUser.setAccount(newUser.getAccount());
             }
             if (ToolUtil.isNotEmpty(newUser.getAvatar())) {
@@ -85,6 +85,9 @@ public class RestUserFactory {
             }
             if (ToolUtil.isNotEmpty(newUser.getPhone())) {
                 oldUser.setPhone(newUser.getPhone());
+            }
+            if (ToolUtil.isNotEmpty(newUser.getJobNo())) {
+                oldUser.setJobNo(newUser.getJobNo());
             }
             return oldUser;
         }
