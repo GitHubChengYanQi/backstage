@@ -143,6 +143,7 @@ public class AnnouncementsController extends BaseController {
             param = new AnnouncementsParam();
         }
         QueryWrapper<Announcements> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
         if (ToolUtil.isNotEmpty(param.getType())) {
             queryWrapper.eq("type", param.getType());
         }
