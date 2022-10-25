@@ -218,8 +218,8 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
             result.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(result.getOrigin(), ThemeAndOrigin.class)));
         }
 
-        if (ToolUtil.isNotEmpty(result.getNotice())) {
-            List<Long> collect = Arrays.asList(result.getNotice().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        if (ToolUtil.isNotEmpty(result.getNoticeIds())) {
+            List<Long> collect = Arrays.asList(result.getNoticeIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<AnnouncementsResult> announcementsResults = BeanUtil.copyToList(announcementsService.listByIds(collect), AnnouncementsResult.class);
             result.setAnnouncementsResults(announcementsResults);
         }

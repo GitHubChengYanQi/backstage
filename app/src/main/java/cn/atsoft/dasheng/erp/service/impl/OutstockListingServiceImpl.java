@@ -3,11 +3,13 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ItemsService;
+import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -39,6 +41,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -61,6 +64,9 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
 
     @Autowired
     private StorehousePositionsService positionsService;
+
+    @Autowired
+    private OutstockOrderService outstockOrderService;
 
     @Override
     public void add(OutstockListingParam param) {
@@ -154,15 +160,17 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     public void format(List<OutstockListingResult> data) {
         List<Long> brandIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
+        List<Long> outStockOrderIds = new ArrayList<>();
         for (OutstockListingResult record : data) {
             brandIds.add(record.getBrandId());
             skuIds.add(record.getSkuId());
+            outStockOrderIds.add(record.getOutstockOrderId());
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.lambda().in(Brand::getBrandId, brandIds);
         List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
         List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
-
+        List<OutstockOrder> outstockOrders = outStockOrderIds.size() == 0 ? new ArrayList<>() : outstockOrderService.listByIds(outStockOrderIds.stream().distinct().collect(Collectors.toList()));
 
         for (OutstockListingResult record : data) {
             List<BackSku> backSkus = skuService.backSku(record.getSkuId());
@@ -189,6 +197,14 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
                         SkuResult skuResult = new SkuResult();
                         ToolUtil.copyProperties(sku, skuResult);
                         record.setSkuResult(skuResult);
+                    }
+                }
+            }
+            for (OutstockOrder outstockOrder : outstockOrders) {
+                if (outstockOrder.getOutstockOrderId().equals(record.getOutstockOrderId())){
+                    record.setCoding(outstockOrder.getCoding());
+                    if (outstockOrder.getSource()!= null && outstockOrder.getSource().equals("pickLists")){
+                        record.setPickListsId(outstockOrder.getSourceId());
                     }
                 }
             }

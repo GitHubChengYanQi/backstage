@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -49,7 +50,7 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
     private MaintenanceService maintenanceService;
 
     @Autowired
-    private MaintenanceLogDetailService MaintenanceLogDetailService;
+    private MaintenanceLogService maintenanceLogService;
 
     @Autowired
     private SkuService skuService;
@@ -204,8 +205,11 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
             inkindIds.add(datum.getInkindId());
             userIds.add(datum.getCreateUser());
         }
+
         List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+        List<MaintenanceLog> maintenanceLogs = data.size() == 0 ? new ArrayList<>() : maintenanceLogService.lambdaQuery().in(MaintenanceLog::getMaintenanceId, data.stream().map(MaintenanceLogDetailResult::getMaintenanceId).collect(Collectors.toList())).list();
+
         for (MaintenanceLogDetailResult datum : data) {
             for (UserResult userResult : userResultsByIds) {
                 if (datum.getCreateUser().equals(userResult.getUserId())){
@@ -222,6 +226,12 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
                     datum.setInkindResult(inKind);
                 }
             }
+            for (MaintenanceLog maintenanceLog : maintenanceLogs) {
+                if(datum.getMaintenanceLogId().equals(maintenanceLog.getMaintenanceLogId())){
+
+                }
+            }
+
         }
     }
     @Override
@@ -230,6 +240,7 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
         IPage<MaintenanceLogDetailResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
+
 
     private Serializable getKey(MaintenanceLogDetailParam param) {
         return param.getMaintenanceLogDetailId();

@@ -34,8 +34,8 @@ public class MaintenanceLog implements Serializable {
 
 
 
-    @TableField("notice")
-    private String notice;
+    @TableField("notice_ids")
+    private String noticeIds;
 
     /**
      * 来源
@@ -51,6 +51,10 @@ public class MaintenanceLog implements Serializable {
 
     @TableField("origin")
     private String origin;
+
+
+    @TableField("remark")
+    private String remark;
 
     /**
      * 创建时间
@@ -217,12 +221,20 @@ public class MaintenanceLog implements Serializable {
         this.origin = origin;
     }
 
-    public String getNotice() {
-        return notice;
+    public String getNoticeIds() {
+        return noticeIds;
     }
 
-    public void setNotice(String notice) {
-        this.notice = notice;
+    public void setNoticeIds(String noticeIds) {
+        this.noticeIds = noticeIds;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     @Override
