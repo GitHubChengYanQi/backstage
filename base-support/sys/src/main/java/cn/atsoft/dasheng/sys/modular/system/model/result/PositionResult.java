@@ -18,6 +18,10 @@ public class PositionResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 主管
+     */
+    private Integer governor;
 
     /**
      * 主键id

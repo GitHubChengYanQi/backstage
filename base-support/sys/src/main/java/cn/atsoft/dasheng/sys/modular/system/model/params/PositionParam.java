@@ -19,6 +19,10 @@ public class PositionParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 主管
+     */
+    private Integer governor;
 
     /**
      * 主键id
