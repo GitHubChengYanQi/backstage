@@ -29,6 +29,8 @@ import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -67,6 +69,9 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
 
     @Autowired
     private OutstockOrderService outstockOrderService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(OutstockListingParam param) {
@@ -171,7 +176,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
         List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
         List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
         List<OutstockOrder> outstockOrders = outStockOrderIds.size() == 0 ? new ArrayList<>() : outstockOrderService.listByIds(outStockOrderIds.stream().distinct().collect(Collectors.toList()));
-
+        List<UserResult> userResultsByIds = data.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(data.stream().map(OutstockListingResult::getCreateUser).collect(Collectors.toList()));
         for (OutstockListingResult record : data) {
             List<BackSku> backSkus = skuService.backSku(record.getSkuId());
             SpuResult result = skuService.backSpu(record.getSkuId());
@@ -182,7 +187,12 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
                 Sku sku = skuService.getById(record.getSkuId());
                 record.setSku(sku);
             }
-
+            for (UserResult userResultsById : userResultsByIds) {
+                if (record.getCreateUser().equals(userResultsById.getUserId())){
+                    record.setCreateUserResult(userResultsById);
+                    break;
+                }
+            }
             for (Brand brand : brandList) {
                 if (record.getBrandId() != null && record.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult = new BrandResult();

@@ -39,6 +39,10 @@ public class MaintenanceLogDetailResult implements Serializable {
     @ApiModelProperty("")
     private Long skuId;
 
+    private String noticeIds;
+
+    private List<AnnouncementsResult> announcementsResults;
+
     /**
      * 品牌id
      */
