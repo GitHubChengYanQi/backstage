@@ -165,6 +165,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private InstockReceiptService instockReceiptService;
 
+    @Autowired
+    private SkuHandleRecordService skuHandleRecordService;
+
 
     @Override
     @Transactional
@@ -329,7 +332,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 activitiProcessTaskParam.setStatus(99);
             }
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            if(ToolUtil.isNotEmpty(entity.getTheme())){
+            if (ToolUtil.isNotEmpty(entity.getTheme())) {
                 activitiProcessTaskParam.setTheme(entity.getTheme());
             }
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
@@ -705,6 +708,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         inventoryService.staticState();  //静态盘点判断
 
+        //查询任务id
+        Long taskId = activitiProcessTaskService.getTaskIdByFormId(param.getInstockOrderId());
 
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         List<InstockHandle> instockHandles = new ArrayList<>();
@@ -731,6 +736,21 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     handle(listParam, inKind);  //入库之前的库存数
                     InstockLogDetail instockLogDetail = addLog(param, listParam, inKind, number);  //添加记录
                     instockLogDetails.add(instockLogDetail);
+
+                    //添加物料的操作记录
+                    SkuHandleRecord skuHandleRecord = new SkuHandleRecord();
+                    skuHandleRecord.setSkuId(listParam.getSkuId());
+                    skuHandleRecord.setBrandId(listParam.getBrandId());
+                    skuHandleRecord.setPositionId(listParam.getStorehousePositionsId());
+                    skuHandleRecord.setSource("inStock");
+                    skuHandleRecord.setSourceId(taskId);
+                    skuHandleRecord.setNowStockNumber(Long.valueOf(number));
+                    skuHandleRecord.setOperationNumber(listParam.getNumber());
+                    skuHandleRecord.setBalanceNumber(number + listParam.getNumber());
+                    skuHandleRecord.setOperationTime(new Date());
+                    skuHandleRecord.setOperationUserId(LoginContextHolder.getContext().getUserId());
+
+                    skuHandleRecordService.save(skuHandleRecord);
                 } else {
                     batchInStock(param, listParam, instockLogDetails);
                 }
