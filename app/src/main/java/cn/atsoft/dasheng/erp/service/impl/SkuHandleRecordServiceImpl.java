@@ -1,14 +1,25 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.SkuHandleRecord;
 import cn.atsoft.dasheng.erp.mapper.SkuHandleRecordMapper;
 import cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam;
+import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.SkuHandleRecordResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.SkuHandleRecordService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -18,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,6 +47,21 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
     @Autowired
     private ActivitiProcessTaskService taskService;
 
+    @Autowired
+    private SkuService skuService;
+
+    @Autowired
+    private BrandService brandService;
+
+    @Autowired
+    private StorehousePositionsService positionsService;
+
+    @Autowired
+    private InstockOrderService instockOrderService;
+
+    @Autowired
+    private CustomerService customerService;
+
     @Override
     public void add(SkuHandleRecordParam param) {
         SkuHandleRecord entity = getEntity(param);
@@ -41,11 +69,28 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
     }
 
 
-    public void addRecord(SkuHandleRecord record) {
+    @Override
+    public void addRecord(Long skuId, Long brandId, Long positionId, Long customerId, String source, ActivitiProcessTask task, Long operationNumber, Long nowStockNum, Long balanceNumber) {
+        SkuHandleRecord skuHandleRecord = new SkuHandleRecord();
+        skuHandleRecord.setSkuId(skuId);
+        skuHandleRecord.setBrandId(brandId);
+        skuHandleRecord.setPositionId(positionId);
+        skuHandleRecord.setSource(source);
+        skuHandleRecord.setNowStockNumber(nowStockNum);
+        skuHandleRecord.setCustomerId(customerId);
+        skuHandleRecord.setOperationNumber(operationNumber);
+        skuHandleRecord.setBalanceNumber(balanceNumber);
+        skuHandleRecord.setOperationTime(new Date());
 
-        ActivitiProcessTask task = taskService.getById(record.getSourceId());
-        record.setTheme(task.getTheme());
-        this.save(record);
+        if (ToolUtil.isNotEmpty(task)) {
+            skuHandleRecord.setSourceId(task.getProcessTaskId());
+            skuHandleRecord.setReceiptId(task.getFormId());
+            skuHandleRecord.setTaskId(task.getProcessTaskId());
+            skuHandleRecord.setTheme(task.getTheme());
+        }
+
+        skuHandleRecord.setOperationUserId(LoginContextHolder.getContext().getUserId());
+        this.save(skuHandleRecord);
     }
 
     @Override
@@ -75,6 +120,7 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
     public PageInfo<SkuHandleRecordResult> findPageBySpec(SkuHandleRecordParam param) {
         Page<SkuHandleRecordResult> pageContext = getPageContext();
         IPage<SkuHandleRecordResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -94,6 +140,83 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
         SkuHandleRecord entity = new SkuHandleRecord();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    private void format(List<SkuHandleRecordResult> data) {
+
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+        List<Long> instockOrderIds = new ArrayList<>();
+        List<Long> taskIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
+
+        for (SkuHandleRecordResult datum : data) {
+            skuIds.add(datum.getSkuId());
+            brandIds.add(datum.getBrandId());
+            positionIds.add(datum.getPositionId());
+            taskIds.add(datum.getTaskId());
+            customerIds.add(datum.getCustomerId());
+            switch (datum.getSource()) {
+                case "INSTOCK":
+                    instockOrderIds.add(datum.getReceiptId());
+                    break;
+            }
+        }
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<StorehousePositionsResult> positionsServiceDetails = positionsService.getDetails(positionIds);
+        List<InstockOrderResult> instockOrderResults = instockOrderService.getDetails(instockOrderIds);
+        List<ActivitiProcessTask> tasks = taskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(taskIds);
+        List<CustomerResult> customerResults = customerService.getResults(customerIds);
+
+        brandResults.add(new BrandResult() {{
+            setBrandId(0L);
+            setBrandName("无品牌");
+        }});
+
+        for (SkuHandleRecordResult datum : data) {
+            for (SkuResult skuResult : skuResults) {
+                if (datum.getSkuId().equals(skuResult.getSkuId())) {
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brandResult.getBrandId())) {
+                    datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
+            for (StorehousePositionsResult positionsServiceDetail : positionsServiceDetails) {
+                if (positionsServiceDetail.getStorehousePositionsId().equals(datum.getPositionId())) {
+                    datum.setPositionsResult(positionsServiceDetail);
+                    break;
+                }
+            }
+
+            for (InstockOrderResult instockOrderResult : instockOrderResults) {
+                if (datum.getRecordId().equals(instockOrderResult.getInstockOrderId())) {
+                    datum.setInstockOrderResult(instockOrderResult);
+                    break;
+                }
+            }
+
+            for (ActivitiProcessTask task : tasks) {
+                if (task.getProcessTaskId().equals(datum.getTaskId())) {
+                    datum.setTask(task);
+                    break;
+                }
+            }
+            for (CustomerResult customerResult : customerResults) {
+                if (ToolUtil.isNotEmpty(datum.getCustomerId()) && datum.getCustomerId().equals(customerResult.getCustomerId())) {
+                    datum.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+        }
+
     }
 
 }

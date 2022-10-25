@@ -1,17 +1,25 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * sku 任务操作记录
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-10-25
  */
 @Data
@@ -20,6 +28,29 @@ public class SkuHandleRecordResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private SkuResult skuResult;
+
+    private BrandResult brandResult;
+
+    private StorehousePositionsResult positionsResult;
+
+    private CustomerResult customerResult;
+
+    private InstockOrderResult instockOrderResult;
+
+    private ActivitiProcessTask task;
+
+    private Long customerId;
+
+    /**
+     * 任务id
+     */
+    private Long taskId;
+
+    /**
+     * 单据Id
+     */
+    private Long receiptId;
 
     /**
      * 主键

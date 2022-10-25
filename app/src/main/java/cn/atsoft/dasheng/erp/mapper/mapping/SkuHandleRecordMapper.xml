@@ -4,120 +4,128 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.SkuHandleRecord">
-        <id column="record_id" property="recordId" />
-        <result column="source" property="source" />
-        <result column="source_id" property="sourceId" />
-        <result column="now_stock_number" property="nowStockNumber" />
-        <result column="operation_number" property="operationNumber" />
-        <result column="balance_number" property="balanceNumber" />
-        <result column="sku_id" property="skuId" />
-        <result column="brand_id" property="brandId" />
-        <result column="position_id" property="positionId" />
-        <result column="theme" property="theme" />
-        <result column="operation_time" property="operationTime" />
-        <result column="operation_user_id" property="operationUserId" />
+        <id column="record_id" property="recordId"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="now_stock_number" property="nowStockNumber"/>
+        <result column="operation_number" property="operationNumber"/>
+        <result column="balance_number" property="balanceNumber"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="position_id" property="positionId"/>
+        <result column="theme" property="theme"/>
+        <result column="operation_time" property="operationTime"/>
+        <result column="operation_user_id" property="operationUserId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="task_id" property="taskId"/>
+        <result column="receipt_id" property="receiptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        record_id AS "recordId", source AS "source", source_id AS "sourceId", now_stock_number AS "nowStockNumber", operation_number AS "operationNumber", balance_number AS "balanceNumber", sku_id AS "skuId", brand_id AS "brandId", position_id AS "positionId", theme AS "theme", operation_time AS "operationTime", operation_user_id AS "operationUserId"
+    <sql id="Base_Column_List">customer_id
+    AS "customerId",task_id AS "taskId",receipt_id AS "receiptId",
+         record_id
+        AS "recordId", source AS "source", source_id AS "sourceId", now_stock_number AS "nowStockNumber", operation_number AS "operationNumber", balance_number AS "balanceNumber", sku_id AS "skuId", brand_id AS "brandId", position_id AS "positionId", theme AS "theme", operation_time AS "operationTime", operation_user_id AS "operationUserId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.SkuHandleRecordResult" parameterType="cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.SkuHandleRecordResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam">
         select
         <include refid="Base_Column_List"/>
         from sku_handle_record where 1 = 1
-            <if test="paramCondition.recordId != null">
-                and record_id like CONCAT('%',#{paramCondition.recordId},'%')
-            </if>
-            <if test="paramCondition.source != null and paramCondition.source != ''">
-                and source like CONCAT('%',#{paramCondition.source},'%')
-            </if>
-            <if test="paramCondition.sourceId != null">
-                and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
-            </if>
-            <if test="paramCondition.skuId != null">
-                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-            </if>
-            <if test="paramCondition.positionId != null">
-                and position_id like CONCAT('%',#{paramCondition.positionId},'%')
-            </if>
+        <if test="paramCondition.recordId != null">
+            and record_id like CONCAT('%',#{paramCondition.recordId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.positionId != null">
+            and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam">
         select
         <include refid="Base_Column_List"/>
         from sku_handle_record where 1 = 1
-                <if test="paramCondition.recordId != null">
-                        and record_id like CONCAT('%',#{paramCondition.recordId},'%')
-                </if>
-                <if test="paramCondition.source != null and paramCondition.source != ''">
-                        and source like CONCAT('%',#{paramCondition.source},'%')
-                </if>
-                <if test="paramCondition.sourceId != null">
-                        and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.positionId != null">
-                        and position_id like CONCAT('%',#{paramCondition.positionId},'%')
-                </if>
+        <if test="paramCondition.recordId != null">
+            and record_id like CONCAT('%',#{paramCondition.recordId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.positionId != null">
+            and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.SkuHandleRecordResult" parameterType="cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.SkuHandleRecordResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam">
         select
         <include refid="Base_Column_List"/>
         from sku_handle_record where 1 = 1
-                <if test="paramCondition.recordId != null">
-                        and record_id like CONCAT('%',#{paramCondition.recordId},'%')
-                </if>
-                <if test="paramCondition.source != null and paramCondition.source != ''">
-                        and source like CONCAT('%',#{paramCondition.source},'%')
-                </if>
-                <if test="paramCondition.sourceId != null">
-                        and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.positionId != null">
-                        and position_id like CONCAT('%',#{paramCondition.positionId},'%')
-                </if>
+        <if test="paramCondition.recordId != null">
+            and record_id like CONCAT('%',#{paramCondition.recordId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.positionId != null">
+            and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam">
         select
         <include refid="Base_Column_List"/>
         from sku_handle_record where 1 = 1
-                <if test="paramCondition.recordId != null">
-                        and record_id like CONCAT('%',#{paramCondition.recordId},'%')
-                </if>
-                <if test="paramCondition.source != null and paramCondition.source != ''">
-                        and source like CONCAT('%',#{paramCondition.source},'%')
-                </if>
-                <if test="paramCondition.sourceId != null">
-                        and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.positionId != null">
-                        and position_id like CONCAT('%',#{paramCondition.positionId},'%')
-                </if>
+        <if test="paramCondition.recordId != null">
+            and record_id like CONCAT('%',#{paramCondition.recordId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.positionId != null">
+            and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+        </if>
     </select>
 
 </mapper>

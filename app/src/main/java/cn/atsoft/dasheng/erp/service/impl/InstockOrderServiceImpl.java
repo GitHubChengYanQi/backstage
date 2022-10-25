@@ -30,7 +30,6 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.*;
@@ -709,13 +708,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         inventoryService.staticState();  //静态盘点判断
 
         //查询任务id
-        Long taskId = activitiProcessTaskService.getTaskIdByFormId(param.getInstockOrderId());
-
+        ActivitiProcessTask task = activitiProcessTaskService.query().eq("form_id", param.getInstockOrderId()).one();
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         List<InstockHandle> instockHandles = new ArrayList<>();
 
         for (InstockListParam listParam : param.getListParams()) {
-
             InstockHandle instockHandle = new InstockHandle();    //添加入庫处理结果
             ToolUtil.copyProperties(listParam, instockHandle);
             instockHandle.setInstockOrderId(param.getInstockOrderId());
@@ -723,36 +720,23 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             instockHandle.setSource("inStockList");
             instockHandle.setSourceId(listParam.getInstockListId());
             instockHandles.add(instockHandle);
-
             listParam.setInstockOrderId(param.getInstockOrderId());
-
+            Integer number = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);//入库前的库存数
             if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
                 handle(listParam, listParam.getInkindIds());
             } else {   //创建实物入库
                 if (listParam.getBatch()) {   //批量
                     Long inKind = createInKind(listParam);
                     listParam.setInkind(inKind);
-                    Integer number = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);//入库前的库存数
-                    handle(listParam, inKind);  //入库之前的库存数
+                    handle(listParam, inKind);  //入库处理
                     InstockLogDetail instockLogDetail = addLog(param, listParam, inKind, number);  //添加记录
                     instockLogDetails.add(instockLogDetail);
-
                     //添加物料的操作记录
-                    SkuHandleRecord skuHandleRecord = new SkuHandleRecord();
-                    skuHandleRecord.setSkuId(listParam.getSkuId());
-                    skuHandleRecord.setBrandId(listParam.getBrandId());
-                    skuHandleRecord.setPositionId(listParam.getStorehousePositionsId());
-                    skuHandleRecord.setSource("inStock");
-                    skuHandleRecord.setSourceId(taskId);
-                    skuHandleRecord.setNowStockNumber(Long.valueOf(number));
-                    skuHandleRecord.setOperationNumber(listParam.getNumber());
-                    skuHandleRecord.setBalanceNumber(number + listParam.getNumber());
-                    skuHandleRecord.setOperationTime(new Date());
-                    skuHandleRecord.setOperationUserId(LoginContextHolder.getContext().getUserId());
-
-                    skuHandleRecordService.save(skuHandleRecord);
+                    skuHandleRecordService.addRecord(listParam.getSkuId(),listParam.getBrandId(),listParam.getStorehousePositionsId(),listParam.getCustomerId(),"INSTOCK",task, listParam.getNumber(), Long.valueOf(number), listParam.getNumber()+number);
                 } else {
                     batchInStock(param, listParam, instockLogDetails);
+                    //添加物料的操作记录
+                    skuHandleRecordService.addRecord(listParam.getSkuId(),listParam.getBrandId(),listParam.getStorehousePositionsId(),listParam.getCustomerId(),"INSTOCK",task, listParam.getNumber(), Long.valueOf(number), listParam.getNumber()+number);
                 }
             }
             updateStatus(listParam);
@@ -882,10 +866,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         instockLogDetail.setSkuId(listParam.getSkuId());
         instockLogDetail.setType("normal");
         instockLogDetail.setSource("instock");
+        instockLogDetail.setReceiptId(param.getInstockOrderId());
         instockLogDetail.setSourceId(param.getInstockOrderId());
         instockLogDetail.setInkindId(inkindId);
         instockLogDetail.setRealNumber(stockNum + listParam.getNumber());
-        instockLogDetail.setCurrentNumber(Long.valueOf(stockNum));  //入库之后库存数
+        instockLogDetail.setCurrentNumber(Long.valueOf(stockNum));  //原库存
         instockLogDetail.setBrandId(listParam.getBrandId());
         instockLogDetail.setCustomerId(listParam.getCustomerId());
         instockLogDetail.setStorehousePositionsId(listParam.getStorehousePositionsId());
@@ -1057,6 +1042,18 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockDetailsService.saveBatch(stockDetailList);
     }
 
+
+    @Override
+    public List<InstockOrderResult> getDetails(List<Long> orderIds) {
+        if (ToolUtil.isEmpty(orderIds)) {
+            return new ArrayList<>();
+        }
+        List<InstockOrder> instockOrders = this.listByIds(orderIds);
+        if (ToolUtil.isEmpty(instockOrders)) {
+            return new ArrayList<>();
+        }
+        return BeanUtil.copyToList(instockOrders, InstockOrderResult.class);
+    }
 
     /**
      * 通过入库单入库

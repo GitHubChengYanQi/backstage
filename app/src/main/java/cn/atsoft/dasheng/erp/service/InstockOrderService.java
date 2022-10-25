@@ -109,6 +109,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     List<Long> inStock(InstockOrderParam param);
 
+    List<InstockOrderResult> getDetails(List<Long> orderIds);
+
     boolean inStockByOrder(InStockByOrderParam param);
 
     boolean instockOrderComplete(Long orderId);

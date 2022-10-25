@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.SkuHandleRecord;
 import cn.atsoft.dasheng.erp.model.params.SkuHandleRecordParam;
 import cn.atsoft.dasheng.erp.model.result.SkuHandleRecordResult;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public interface SkuHandleRecordService extends IService<SkuHandleRecord> {
      * @Date 2022-10-25
      */
     void add(SkuHandleRecordParam param);
+
+    void addRecord(Long skuId, Long brandId, Long positionId, Long customerId, String source, ActivitiProcessTask task, Long operationNumber, Long nowStockNum, Long balanceNumber);
 
     /**
      * 删除

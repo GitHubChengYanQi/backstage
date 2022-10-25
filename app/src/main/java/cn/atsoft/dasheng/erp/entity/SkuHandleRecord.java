@@ -2,9 +2,12 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -12,7 +15,7 @@ import java.io.Serializable;
  * sku 任务操作记录
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-10-25
  */
 @TableName("sku_handle_record")
@@ -20,10 +23,27 @@ public class SkuHandleRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    /**
+     * 任务id
+     */
+    @TableField("task_id")
+    private Long taskId;
+
+    /**
+     * 单据Id
+     */
+    @TableField("receipt_id")
+    private Long receiptId;
+    /**
+     * 客户id
+     */
+    @TableField("customer_id")
+    private Long customerId;
     /**
      * 主键
      */
-      @TableId(value = "record_id", type = IdType.ID_WORKER)
+    @TableId(value = "record_id", type = IdType.ID_WORKER)
     private Long recordId;
 
     /**
@@ -89,6 +109,13 @@ public class SkuHandleRecord implements Serializable {
     @TableField("operation_user_id")
     private Long operationUserId;
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 
     public Long getRecordId() {
         return recordId;
@@ -186,21 +213,37 @@ public class SkuHandleRecord implements Serializable {
         this.operationUserId = operationUserId;
     }
 
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public Long getReceiptId() {
+        return receiptId;
+    }
+
+    public void setReceiptId(Long receiptId) {
+        this.receiptId = receiptId;
+    }
+
     @Override
     public String toString() {
         return "SkuHandleRecord{" +
-        "recordId=" + recordId +
-        ", source=" + source +
-        ", sourceId=" + sourceId +
-        ", nowStockNumber=" + nowStockNumber +
-        ", operationNumber=" + operationNumber +
-        ", balanceNumber=" + balanceNumber +
-        ", skuId=" + skuId +
-        ", brandId=" + brandId +
-        ", positionId=" + positionId +
-        ", theme=" + theme +
-        ", operationTime=" + operationTime +
-        ", operationUserId=" + operationUserId +
-        "}";
+                "recordId=" + recordId +
+                ", source=" + source +
+                ", sourceId=" + sourceId +
+                ", nowStockNumber=" + nowStockNumber +
+                ", operationNumber=" + operationNumber +
+                ", balanceNumber=" + balanceNumber +
+                ", skuId=" + skuId +
+                ", brandId=" + brandId +
+                ", positionId=" + positionId +
+                ", theme=" + theme +
+                ", operationTime=" + operationTime +
+                ", operationUserId=" + operationUserId +
+                "}";
     }
 }
