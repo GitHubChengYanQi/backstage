@@ -4,6 +4,8 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
 import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.request.InstockView;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.MediaService;
@@ -14,11 +16,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
-import cn.atsoft.dasheng.erp.model.params.InstockListParam;
-import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
-import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
-import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
+import cn.atsoft.dasheng.erp.model.request.InstockViewDetail;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
 import cn.atsoft.dasheng.erp.pojo.InStockByOrderParam;
@@ -30,7 +30,6 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.*;
@@ -57,9 +56,11 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.message.enmu.AuditEnum.CHECK_ACTION;
 
@@ -164,6 +166,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private AllocationCartService allocationCartService;
     @Autowired
     private InstockReceiptService instockReceiptService;
+    @Autowired
+    private CustomerService customerService;
 
 
     @Override
@@ -1808,4 +1812,357 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
     }
 
+
+    /**
+     * 入库统计
+     * @param param
+     * @return
+     */
+    @Override
+    public Page<InstockView> instockView(DataStatisticsViewParam param){
+        Page<InstockView> longPageInfo = customerService.customIdListFromInStockOrder(param);
+        List<CustomerResult> customerResults = longPageInfo.getRecords().size() == 0 ? new ArrayList<>() : customerService.getResults(longPageInfo.getRecords().stream().map(InstockView::getCustomerId).collect(Collectors.toList()));
+
+
+        LambdaQueryChainWrapper<InstockOrder> instockOrderLambdaQueryChainWrapper = this.lambdaQuery().in(InstockOrder::getCustomerId, longPageInfo.getRecords().stream().map(InstockView::getCustomerId).collect(Collectors.toList()));
+        if(param.getBeginTime()!=null && param.getEndTime()!=null){
+            instockOrderLambdaQueryChainWrapper.between(InstockOrder::getCreateTime, DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
+        }
+        List<InstockOrder> list = longPageInfo.getRecords().size() == 0 ? new ArrayList<>() : instockOrderLambdaQueryChainWrapper.list();
+        List<InstockListResult> instockLists = list.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockListService.lambdaQuery().in(InstockList::getInstockOrderId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockListResult.class);
+        instockListService.format(instockLists);
+        List<InstockLogDetailResult> logDetails = list.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockLogDetailService.lambdaQuery().in(InstockLogDetail::getInstockOrderId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockLogDetailResult.class);
+        instockLogDetailService.format(logDetails);
+        List<AnomalyResult> instockErrors =list.size() == 0 ? new ArrayList<>() :  BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
+        anomalyService.format(instockErrors);
+
+
+
+        for (InstockView record : longPageInfo.getRecords()) {
+            for (CustomerResult customerResult : customerResults) {
+                if (record.getCustomerId().equals(customerResult.getCustomerId())) {
+                    record.setCustomerName(customerResult.getCustomerName());
+                }
+            }
+
+            List<InstockLogDetailResult> logs = new ArrayList<>();
+            List<InstockListResult> lists = new ArrayList<>();
+            List<AnomalyResult> errorList = new ArrayList<>();
+            for (InstockOrder instockOrder : list) {
+                if (record.getCustomerId().equals(instockOrder.getCustomerId())) {
+                    for (InstockLogDetailResult detail : logDetails) {
+                        if (detail.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
+                            logs.add(detail);
+                        }
+                    }
+
+                    for (InstockListResult instockList : instockLists) {
+                        if (instockList.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
+                            lists.add(instockList);
+                        }
+                    }
+                    for (AnomalyResult instockError : instockErrors) {
+                        if (instockError.getFormId().equals(instockOrder.getInstockOrderId())){
+                            errorList.add(instockError);
+                        }
+                    }
+                }
+
+            }
+            record.setInstockLists(lists);
+            record.setInstockLogDetails(logs);
+            record.setErrorList(errorList);
+            List<InstockListResult> instockListResults = BeanUtil.copyToList(lists, InstockListResult.class);
+            instockListResults.removeIf(i -> i.getInstockNumber() == null || i.getInstockNumber() == 0);
+            Integer logSkuCount = instockListResults.stream().map(InstockListResult::getSkuId).distinct().collect(Collectors.toList()).size();
+            Integer detailSkuCount = lists.stream().map(InstockListResult::getSkuId).distinct().collect(Collectors.toList()).size();
+            int logNumberCount = 0;
+//            for (InstockLogDetailResult detailResult : logs) {
+//                logNumberCount += detailResult.getNumber();
+//            }
+            int detailNumberCount = 0;
+            for (InstockListResult listResult : lists) {
+                detailNumberCount += listResult.getNumber();
+                if(listResult.getInstockNumber() != null){
+                    logNumberCount+=listResult.getInstockNumber();
+                }
+            }
+            errorList.removeIf(i->i.getErrorNumber()==0||i.getErrorNumber()==null);
+            int errorSkuCount = errorList.stream().map(AnomalyResult::getSkuId).collect(Collectors.toList()).size();
+            int errorNumberCount = 0;
+            for (AnomalyResult instockError : errorList) {
+                errorNumberCount += instockError.getErrorNumber();
+            }
+
+
+
+            record.setErrorNumberCount(errorNumberCount);
+            record.setErrorSkuCount(errorSkuCount);
+            record.setDetailSkuCount(detailSkuCount);
+            record.setDetailNumberCount(detailNumberCount);
+            record.setLogSkuCount(logSkuCount);
+            record.setLogNumberCount(logNumberCount);
+        }
+        return longPageInfo;
+    }
+    @Override
+    public List<InstockView> instockViewExcel(DataStatisticsViewParam param){
+        LambdaQueryChainWrapper<InstockOrder> instockOrderLambdaQueryChainWrapper = this.lambdaQuery().eq(InstockOrder::getDisplay, 1).groupBy(InstockOrder::getCustomerId);
+        if(param.getBeginTime()!=null && param.getEndTime()!=null){
+            instockOrderLambdaQueryChainWrapper.between(InstockOrder::getCreateTime, DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
+        }
+        List<InstockOrder> list = instockOrderLambdaQueryChainWrapper.list();
+        List<Long> customerIds = new ArrayList<>();
+        for (InstockOrder instockOrder : list) {
+            if(ToolUtil.isNotEmpty(instockOrder.getCustomerId())){
+                customerIds.add(instockOrder.getCustomerId());
+            }
+        }
+        //用customerIds返向查询出库单
+        List<InstockOrder> instockOrders = customerIds.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(InstockOrder::getCustomerId, customerIds).eq(InstockOrder::getDisplay, 1).list();
+        List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+        List<InstockView> results = new ArrayList<>();
+        for (Long customerId : customerIds) {
+            InstockView result = new InstockView();
+            result.setCustomerId(customerId);
+            results.add(result);
+        }
+
+        /**
+         * 处理详细数据
+         */
+//        List<InstockList> instockLists =instockOrders.size() == 0 ? new ArrayList<>() : instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list();
+        List<InstockListResult> instockLists =instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockListResult.class);
+        instockListService.format(instockLists);
+        List<InstockLogDetailResult> logDetails = list.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockLogDetailService.lambdaQuery().in(InstockLogDetail::getInstockOrderId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockLogDetailResult.class);
+        instockLogDetailService.format(logDetails);
+        List<AnomalyResult> instockErrors = BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, list.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
+        anomalyService.format(instockErrors);
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        for (InstockView result : results) {
+            for (Customer customer : customers) {
+                if(result.getCustomerId().equals(customer.getCustomerId())){
+                    result.setCustomerName(customer.getCustomerName());
+                }
+            }
+            List<InstockOrder> instockOrderList = new ArrayList<>();
+            List<InstockLogDetailResult> detailResults = new ArrayList<>();
+            List<InstockListResult> lists = new ArrayList<>();
+            List<AnomalyResult> errorList = new ArrayList<>();
+            for (InstockOrder instockOrder : instockOrders) {
+                if (result.getCustomerId().equals(instockOrder.getCustomerId())) {
+                    instockOrderList.add(instockOrder);
+
+                        if (result.getCustomerId().equals(instockOrder.getCustomerId())) {
+                            for (InstockLogDetailResult detail : logDetails) {
+                                if (detail.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
+                                    detailResults.add(detail);
+                                    skuIds.add(detail.getSkuId());
+                                    userIds.add(detail.getCreateUser());
+                                }
+                            }
+
+                            for (InstockListResult instockList : instockLists) {
+                                if (instockList.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
+                                    lists.add(instockList);
+                                    skuIds.add(instockList.getSkuId());
+                                    userIds.add(instockList.getCreateUser());
+                                }
+                            }
+                            for (AnomalyResult instockError : instockErrors) {
+                                if (instockError.getFormId().equals(instockOrder.getInstockOrderId())){
+                                    errorList.add(instockError);
+                                    skuIds.add(instockError.getSkuId());
+                                    userIds.add(instockError.getCreateUser());
+                                }
+                            }
+                        }
+                }
+            }
+            result.setInstockOrders(instockOrderList);
+            result.setInstockLists(lists);
+            result.setInstockLogDetails(detailResults);
+            result.setErrorList(errorList);
+            Integer logSkuCount = detailResults.stream().map(InstockLogDetailResult::getSkuId).distinct().collect(Collectors.toList()).size();
+            Integer detailSkuCount = lists.stream().map(InstockListResult::getSkuId).distinct().collect(Collectors.toList()).size();
+            int logNumberCount = 0;
+            for (InstockLogDetailResult detailResult : detailResults) {
+                logNumberCount += detailResult.getNumber();
+            }
+            int detailNumberCount = 0;
+            for (InstockListResult listResult : lists) {
+                detailNumberCount += listResult.getNumber();
+            }
+            int errorSkuCount = instockErrors.stream().map(AnomalyResult::getSkuId).collect(Collectors.toList()).size();
+            int errorNumberCount = 0;
+            for (AnomalyResult instockError : instockErrors) {
+                errorNumberCount += instockError.getErrorNumber();
+            }
+            result.setErrorNumberCount(errorNumberCount);
+            result.setErrorSkuCount(errorSkuCount);
+            result.setDetailSkuCount(detailSkuCount);
+            result.setDetailNumberCount(detailNumberCount);
+            result.setLogSkuCount(logSkuCount);
+            result.setLogNumberCount(logNumberCount);
+        }
+        formatViewDetails(results);
+        return results ;
+    }
+
+    //format
+    private void formatViewDetails(List<InstockView> data){
+        for (InstockView datum : data) {
+            formatViewDetail(datum);
+        }
+
+    }
+    private void formatViewDetail(InstockView data) {
+        List<InstockViewDetail> results = new ArrayList<>();
+
+        for (InstockOrder instockOrder : data.getInstockOrders()) {
+
+            for (InstockListResult instockList : data.getInstockLists()) {
+
+                if (instockOrder.getInstockOrderId().equals(instockList.getInstockOrderId())) {
+
+                    InstockViewDetail result = new InstockViewDetail();
+                    ToolUtil.copyProperties(result, instockList);
+                    results.add(result);
+                }
+            }
+        }
+        data.setInstockViewDetails(results);
+    }
+    @Override
+    public List<InstockViewDetail>  viewDetail(DataStatisticsViewParam param){
+        LambdaQueryChainWrapper<InstockOrder> instockOrderLambdaQueryChainWrapper = this.lambdaQuery().eq(InstockOrder::getCustomerId, param.getCustomerId()).eq(InstockOrder::getDisplay, 1);
+        if(param.getBeginTime()!=null && param.getEndTime()!=null){
+            instockOrderLambdaQueryChainWrapper.between(InstockOrder::getCreateTime, DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
+        }
+        List<InstockOrder> instockOrders =instockOrderLambdaQueryChainWrapper.list();
+
+        List<InstockListResult> instockLists =instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockListResult.class);
+        instockListService.format(instockLists);
+
+        List<AnomalyResult> instockErrors =instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
+        anomalyService.format(instockErrors);
+
+
+
+        List<InstockListResult> instockListsTotal = new ArrayList<>();
+        instockLists.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockListResult() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        if (BeanUtil.isNotEmpty(a.getSkuResult())) {
+                            setSkuResult(a.getSkuResult());
+                        }
+                        if (BeanUtil.isNotEmpty(a.getBrandResult())){
+                            setBrandResult(a.getBrandResult());
+                        }
+                        setInstockNumber(a.getInstockNumber()+b.getInstockNumber());
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                    }}).ifPresent(instockListsTotal::add);
+                }
+        );
+
+        List<AnomalyResult> instockErrorsTotal = new ArrayList<>();
+        instockErrors.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + '_' + (ToolUtil.isEmpty(item.getBrandId()) ? 0L : item.getBrandId()), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new AnomalyResult() {{
+                        setSkuId(a.getSkuId());
+                        setErrorNumber(a.getErrorNumber() + b.getErrorNumber());
+                        if (BeanUtil.isNotEmpty(a.getSkuResult())) {
+                            setSkuResult(a.getSkuResult());
+                        }
+                        if (BeanUtil.isNotEmpty(a.getBrand())){
+                            setBrand(a.getBrand());
+                        }
+                        setBrandId(ToolUtil.isEmpty(a.getBrandId()) ? 0L : a.getBrandId());
+                    }}).ifPresent(instockErrorsTotal::add);
+                }
+        );
+
+
+        List<InstockViewDetail> instockViewDetails = new ArrayList<>();
+
+        for (InstockListResult instockListResult : instockListsTotal) {
+            InstockViewDetail detail = new InstockViewDetail();
+            detail.setBrandId(instockListResult.getBrandId());
+            detail.setListNum(Math.toIntExact(instockListResult.getNumber()));
+            if (ToolUtil.isNotEmpty(instockListResult.getBrandId())){
+                detail.setBrandResult(instockListResult.getBrandResult());
+            }
+            detail.setLogNum(Math.toIntExact(instockListResult.getInstockNumber()));
+            detail.setListCount(Math.toIntExact(instockListResult.getNumber()));
+            if (ToolUtil.isNotEmpty(instockListResult.getSkuResult())){
+                detail.setSkuResult(BeanUtil.copyProperties(instockListResult.getSkuResult(),SkuSimpleResult.class));
+            }
+
+//            for (InstockLogDetailResult instockLogDetailResult : logDetailsTotal) {
+//                if(instockLogDetailResult.getSkuId().equals(instockListResult.getSkuId()) && instockListResult.getBrandId().equals(instockLogDetailResult.getBrandId())){
+//
+//                }
+//            }
+            for (AnomalyResult anomalyResult : instockErrorsTotal) {
+                if(anomalyResult.getSkuId().equals(instockListResult.getSkuId()) && anomalyResult.getBrandId().equals(instockListResult.getBrandId())){
+                    detail.setErrorNum(Math.toIntExact(anomalyResult.getErrorNumber()));
+                }
+            }
+            instockViewDetails.add(detail);
+        }
+        return instockViewDetails;
+    }
+    @Override
+    public InstockView  viewTotail(DataStatisticsViewParam param){
+        LambdaQueryChainWrapper<InstockOrder> instockOrderLambdaQueryChainWrapper = this.lambdaQuery();
+        if (param.getInstockOrderId()==null){
+            instockOrderLambdaQueryChainWrapper.eq(InstockOrder::getDisplay, 1).isNotNull(InstockOrder::getCustomerId);
+            if(param.getBeginTime()!=null && param.getEndTime()!=null){
+                instockOrderLambdaQueryChainWrapper.between(InstockOrder::getCreateTime, DateUtil.format(param.getBeginTime(),"yyyy-MM-dd"),DateUtil.format(param.getEndTime(),"yyyy-MM-dd"));
+            }
+        }else {
+            instockOrderLambdaQueryChainWrapper.eq(InstockOrder::getInstockOrderId,param.getInstockOrderId());
+        }
+        List<InstockOrder> instockOrders =instockOrderLambdaQueryChainWrapper.list();
+
+        List<InstockListResult> instockLists =instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockListResult.class);
+        instockListService.format(instockLists);
+
+        List<AnomalyResult> instockErrors =instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
+        anomalyService.format(instockErrors);
+
+
+
+       int detailNumberCount = 0 ;
+       int logNumberCount = 0 ;
+       int errorNumberCount =0;
+        List<Long> detail = new ArrayList<>();
+        List<Long> log = new ArrayList<>();
+        List<Long> error = new ArrayList<>();
+        for (InstockListResult instockList : instockLists) {
+            detailNumberCount+= instockList.getNumber();
+            detail.add(instockList.getSkuId());
+            log.add(instockList.getSkuId());
+            logNumberCount+=instockList.getInstockNumber();
+        }
+        instockErrors.removeIf(i->i.getErrorNumber() == 0);
+        for (AnomalyResult instockError : instockErrors) {
+            errorNumberCount += instockError.getErrorNumber();
+            error.add(instockError.getSkuId());
+        }
+        InstockView result = new InstockView();
+        result.setDetailSkuCount(detail.stream().distinct().collect(Collectors.toList()).size());
+        result.setErrorSkuCount(error.stream().distinct().collect(Collectors.toList()).size());
+        result.setLogSkuCount(log.stream().distinct().collect(Collectors.toList()).size());
+        result.setDetailNumberCount(detailNumberCount);
+        result.setErrorNumberCount(errorNumberCount);
+        result.setLogNumberCount(logNumberCount);
+        result.setOrderCount(instockOrders.size());
+
+
+        return result;
+    }
 }

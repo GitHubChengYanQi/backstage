@@ -53,4 +53,7 @@ public interface AnomalyDetailMapper extends BaseMapper<AnomalyDetail> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") AnomalyDetailParam paramCondition);
 
+
+    List<AnomalyDetailResult> orderError(@Param("paramCondition") AnomalyDetailParam paramCondition);
+
 }

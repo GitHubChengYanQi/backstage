@@ -1,10 +1,13 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.request.InstockView;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -27,6 +30,8 @@ public interface CustomerService extends IService<Customer> {
      * @Date 2021-07-23
      */
     Customer add(CustomerParam param);
+
+    Page<InstockView> customIdListFromInStockOrder(DataStatisticsViewParam param);
 
     PageInfo pureList(CustomerParam param);
 
