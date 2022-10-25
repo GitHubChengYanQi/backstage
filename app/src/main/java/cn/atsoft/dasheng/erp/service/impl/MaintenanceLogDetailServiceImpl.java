@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.appBase.entity.Media;
@@ -15,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
 import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogDetailResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
@@ -214,7 +216,7 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
 
         List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
-        List<MaintenanceLog> maintenanceLogs = data.size() == 0 ? new ArrayList<>() : maintenanceLogService.lambdaQuery().in(MaintenanceLog::getMaintenanceId, data.stream().map(MaintenanceLogDetailResult::getMaintenanceId).collect(Collectors.toList())).list();
+        List<MaintenanceLog> maintenanceLogs = data.size() == 0 ? new ArrayList<>() : maintenanceLogService.lambdaQuery().in(MaintenanceLog::getMaintenanceLogId, data.stream().map(MaintenanceLogDetailResult::getMaintenanceLogId).collect(Collectors.toList())).list();
         List<Long> noticeIds = new ArrayList<>();
         for (MaintenanceLogDetailResult datum : data) {
             for (MaintenanceLog maintenanceLog : maintenanceLogs) {
@@ -278,6 +280,7 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
     public PageInfo<MaintenanceLogDetailResult> findPageBySpec(MaintenanceLogDetailParam param) {
         Page<MaintenanceLogDetailResult> pageContext = getPageContext();
         IPage<MaintenanceLogDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 

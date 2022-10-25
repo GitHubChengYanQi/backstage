@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
@@ -25,7 +26,8 @@ public class MaintenanceLogDetailResult implements Serializable {
     @ApiModelProperty("")
     private Long maintenanceLogDetailId;
 
-
+    private SkuSimpleResult skuResult;
+    private BrandResult brandResult;
 
     @ApiModelProperty("")
     private InkindResult inkindResult;
