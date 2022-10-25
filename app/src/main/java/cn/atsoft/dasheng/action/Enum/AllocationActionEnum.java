@@ -18,7 +18,11 @@ public enum AllocationActionEnum implements FormActionInterface {
             return 50L;
         }
     },
-
+    revoke("撤回") {
+        public Long getStatus() {
+            return 49L;
+        }
+    },
     assign ("分派"),
     carryAllocation ("执行");
     public String getValue() {

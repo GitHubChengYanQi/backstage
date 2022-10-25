@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
@@ -75,7 +76,7 @@ public class taskController extends BaseController {
     private UserService userService;
 
     @Autowired
-    private ActivitiProcessLogService logService;
+    private ActivitiProcessLogV1Service activitiProcessLogV1Service;
 
     @Autowired
     private PurchaseAskService askService;
@@ -107,6 +108,9 @@ public class taskController extends BaseController {
     private GetOrigin getOrigin;
     @Autowired
     private ShopCartService shopCartService;
+
+    @Autowired
+    private ProductionPickListsService productionPickListsService;
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -232,7 +236,7 @@ public class taskController extends BaseController {
         //树形结构
         ActivitiStepsResult stepResult = stepsService.getStepResult(taskResult.getProcessId());
         //获取当前processTask 下的所有log
-        List<ActivitiProcessLogResult> process = logService.getLogByTaskProcess(processTask.getProcessId(), taskId);
+        List<ActivitiProcessLogResult> process = activitiProcessLogService.getLogByTaskProcess(processTask.getProcessId(), taskId);
         //比对log
         stepsService.getStepLog(stepResult, process);
         //返回头像
@@ -276,12 +280,12 @@ public class taskController extends BaseController {
         List comments = remarksService.getComments(taskId);
         taskResult.setRemarks(comments);
 
-        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
-            User user = userService.getById(taskResult.getCreateUser());
-            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
-            user.setAvatar(imgUrl);
-            taskResult.setUser(user);
-        }
+//        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
+//            User user = userService.getById(taskResult.getCreateUser());
+//            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
+//            user.setAvatar(imgUrl);
+//            taskResult.setUser(user);
+//        }
         if (ToolUtil.isNotEmpty(taskResult.getOrigin())) {
             taskResult.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(taskResult.getOrigin(), ThemeAndOrigin.class)));
         }
@@ -301,7 +305,7 @@ public class taskController extends BaseController {
 
     @RequestMapping(value = "/canOperat", method = RequestMethod.POST)
     public ResponseData canOperat(@RequestBody ActivitiProcessParam activitiProcessParam) {
-        boolean b = logService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
+        boolean b = activitiProcessLogService.canOperat(activitiProcessParam.getType(), activitiProcessParam.getModule(), activitiProcessParam.getAction());
         return ResponseData.success(b);
     }
     @RequestMapping(value = "/revoke", method = RequestMethod.POST)
@@ -312,15 +316,57 @@ public class taskController extends BaseController {
         Long taskId = auditParam.getTaskId();
         ActivitiProcessTask processTask = taskService.getById(taskId);
         Long userId = LoginContextHolder.getContext().getUserId();
-        if (!processTask.getUserId().equals(userId)){
+        if (!processTask.getCreateUser().equals(userId)){
             throw new ServiceException(500,"不是任务创建人，无法撤回");
         }else {
             //TODO 更新任务状态
             processTask.setStatus(49);
+            taskService.updateById(processTask);
             shopCartService.addDynamic(processTask.getFormId(), null,LoginContextHolder.getContext().getUser().getName()+"撤回了任务,撤回原因"+auditParam.getRevokeContent());
+            activitiProcessLogV1Service.autoAudit(taskId,2,LoginContextHolder.getContext().getUserId());
+            Long formId = processTask.getFormId();
+            String type = processTask.getType();
+            switch (type) {
+                case "quality_task":
+                    QualityTask qualityTask = qualityTaskService.getById(formId);
+                    qualityTask.setStatus(49L);
+                    qualityTaskService.updateById(qualityTask);
+                    break;
+                case "purchaseAsk":
+//                PurchaseAsk purchaseAsk = purchaseAskService.getById(formId);
+//                purchaseAsk.setStatus(documentsStatusId);
+//                purchaseAskService.updateById(purchaseAsk);
+                    break;
+                case "procurementOrder":
+                    ProcurementOrder procurementOrder = procurementOrderService.getById(formId);
+                    procurementOrder.setStatus(49L);
+                    procurementOrderService.updateById(procurementOrder);
+                    break;
+                case "purchasePlan":
+                    break;
+                case "INSTOCK":
+                    InstockOrder instockOrder = instockOrderService.getById(formId);
+                    instockOrder.setStatus(49L);
+                    instockOrderService.updateById(instockOrder);
+                    break;
+                case "ERROR":
+                    AnomalyOrder anomalyOrder = anomalyOrderService.getById(formId);
+                    anomalyOrder.setStatus(49L);
+                    anomalyOrderService.updateById(anomalyOrder);
+                    break;
+                case "OUTSTOCK":
+                    ProductionPickLists productionPickLists = pickListsService.getById(formId);
+                    productionPickLists.setStatus(49L);
+                    pickListsService.updateById(productionPickLists);
+                    break;
+                case "Stocktaking":
+                    Inventory inventory = inventoryService.getById(formId);
+                    inventory.setStatus(49L);
+                    inventoryService.updateById(inventory);
+                    break;
+            }
+
         }
-
-
 
         return ResponseData.success();
     }

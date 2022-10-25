@@ -24,6 +24,7 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -38,6 +39,9 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cn.atsoft.dasheng.form.pojo.ProcessType.*;
+import static cn.atsoft.dasheng.form.pojo.ProcessType.INSTOCK;
 
 
 /**
@@ -100,7 +104,12 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         List<Long> userIds = new ArrayList<>(set);
         entity.setUserIds(JSON.toJSONString(userIds));
 
-        this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
+
+        if (!entity.getType().equals("ErrorForWard")) {   //异常转交不需要 参与人
+            this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
+        }
+        
+
         this.updateById(entity);
 
         shopCartService.addDynamicByTaskId(entity.getProcessTaskId(), null, "提交了申请");  //任务创建动态
@@ -234,8 +243,54 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             param.setTimeOutTaskIds(timeOutTaskIds);
         }
 
+
+
+
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
-        IPage<ActivitiProcessTaskResult> page = this.baseMapper.aboutMeTask(pageContext, param);
+        IPage<ActivitiProcessTaskResult> page = new Page<>();
+        String type = param.getType();
+        ProcessType enumByType = getEnumByType(type);
+        if (ToolUtil.isEmpty(enumByType)) {
+            page = this.baseMapper.aboutMeTask(pageContext, param);
+        }else {
+            switch (enumByType){
+                case ALLOCATION:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case INSTOCK:
+                    page =  this.baseMapper.instockTask(pageContext, param);
+                    break;
+                case MAINTENANCE:
+                    page =  this.baseMapper.maintenanceTask(pageContext, param);
+                    break;
+                case ERROR:
+                    page =  this.baseMapper.errorTask(pageContext, param);
+                    break;
+                case SHIP:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case QUALITY:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case OUTSTOCK:
+                    page =  this.baseMapper.outstockTask(pageContext, param);
+                    break;
+                case PURCHASEASK:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case Stocktaking:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+                case PROCUREMENTORDER:
+                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    break;
+
+                default:
+                    page = this.baseMapper.aboutMeTask(pageContext, param);
+
+                    break;
+            }
+        }
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
@@ -591,6 +646,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         statusMap.put(0L, "开始");
         statusMap.put(99L, "完成");
         statusMap.put(50L, "拒绝");
+        statusMap.put(49L, "已撤回");
 
         for (DocumentsStatus status : statuses) {
             statusMap.put(status.getDocumentsStatusId(), status.getName());
@@ -621,14 +677,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         List<AllocationResult> allocationResults = allocationIds.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(allocationService.listByIds(allocationIds), AllocationResult.class);
         allocationService.format(allocationResults);
-        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<UserResult> users = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
 
         for (ActivitiProcessTaskResult datum : data) {
 
             if ((datum.getType().equals("INSTOCK") || datum.getType().equals("OUTSTOCK")) && ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
-                List<User> processUsers = new ArrayList<>();
+                List<UserResult> processUsers = new ArrayList<>();
                 for (Long processUserId : datum.getProcessUserIds()) {
-                    for (User user : users) {
+                    for (UserResult user : users) {
                         if (user.getUserId().equals(processUserId)) {
                             processUsers.add(user);
                         }
@@ -638,9 +694,15 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
 
 
-            for (User user : users) {
+            for (UserResult user : users) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     datum.setUser(user);
+                    break;
+                }
+            }
+            for (UserResult user : users) {
+                if (ToolUtil.isNotEmpty(datum.getUserId()) && user.getUserId().equals(datum.getUserId())) {
+                    datum.setUserResult(user);
                     break;
                 }
             }
@@ -716,7 +778,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcessTask processTask = this.getById(taskId);
         Long processId = processTask.getProcessId();
         ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
-        String modelName = ProcessType.getNameByEnum(activitiProcess.getType());
+        String modelName = getNameByEnum(activitiProcess.getType());
         Map<String, String> result = new HashMap<>();
         result.put("function", modelName);
         String coding = "";

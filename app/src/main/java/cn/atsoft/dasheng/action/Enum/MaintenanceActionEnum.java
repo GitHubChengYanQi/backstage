@@ -18,6 +18,11 @@ public enum MaintenanceActionEnum implements FormActionInterface {
             return 50L;
         }
     },
+    revoke("撤回") {
+        public Long getStatus() {
+            return 49L;
+        }
+    },
 
     maintenanceing ("开始养护");
     public String getValue() {

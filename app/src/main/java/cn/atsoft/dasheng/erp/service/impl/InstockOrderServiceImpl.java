@@ -329,6 +329,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 activitiProcessTaskParam.setStatus(99);
             }
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            if(ToolUtil.isNotEmpty(entity.getTheme())){
+                activitiProcessTaskParam.setTheme(entity.getTheme());
+            }
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             entity.setTaskId(taskId);
             this.updateById(entity);
@@ -1327,14 +1330,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         query().in("form_id", anomalyOrderIds).list();
                 List<ActivitiProcessTaskResult> results = BeanUtil.copyToList(processTasks, ActivitiProcessTaskResult.class);
                 activitiProcessTaskService.format(results);
-                for (ActivitiProcessTaskResult result : results) {
-                    User user = result.getUser();
-                    if (ToolUtil.isNotEmpty(user)) {
-                        String imgUrl = stepsService.imgUrl(user.getUserId().toString());
-                        user.setAvatar(imgUrl);
-                    }
-                    result.setUser(user);
-                }
+//                for (ActivitiProcessTaskResult result : results) {
+//                    User user = result.getUser();
+//                    if (ToolUtil.isNotEmpty(user)) {
+//                        String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+//                        user.setAvatar(imgUrl);
+//                    }
+//                    result.setUser(user);
+//                }
                 return results;
 
             case "ERROR":
@@ -1352,14 +1355,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 List<ActivitiProcessTask> processTaskList = orderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.query().in("form_id", orderIds).list();
                 List<ActivitiProcessTaskResult> taskResults = BeanUtil.copyToList(processTaskList, ActivitiProcessTaskResult.class);
                 activitiProcessTaskService.format(taskResults);
-                for (ActivitiProcessTaskResult result : taskResults) {
-                    User user = result.getUser();
-                    if (ToolUtil.isNotEmpty(user)) {
-                        String imgUrl = stepsService.imgUrl(user.getUserId().toString());
-                        user.setAvatar(imgUrl);
-                    }
-                    result.setUser(user);
-                }
+//                for (ActivitiProcessTaskResult result : taskResults) {
+//                    User user = result.getUser();
+//                    if (ToolUtil.isNotEmpty(user)) {
+//                        String imgUrl = stepsService.imgUrl(user.getUserId().toString());
+//                        user.setAvatar(imgUrl);
+//                    }
+//                    result.setUser(user);
+//                }
                 return taskResults;
         }
 
