@@ -14,10 +14,11 @@
         <result column="update_user" property="updateUser"/>
         <result column="update_time" property="updateTime"/>
         <result column="create_user" property="createUser"/>
+        <result column="governor" property="governor"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">governor AS "governor",
         position_id AS "positionId", name AS "name", code AS "code", sort AS "sort", status AS "status", remark AS "remark", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", create_user AS "createUser"
     </sql>
 

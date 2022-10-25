@@ -19,6 +19,11 @@ public class RestPosition implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 主管
+     */
+    @TableField("governor")
+    private Integer governor;
+    /**
      * 主键id
      */
     @TableId(value = "position_id", type = IdType.ID_WORKER)
@@ -157,6 +162,14 @@ public class RestPosition implements Serializable {
 
     public void setCreateUser(Long createUser) {
         this.createUser = createUser;
+    }
+
+    public Integer getGovernor() {
+        return governor;
+    }
+
+    public void setGovernor(Integer governor) {
+        this.governor = governor;
     }
 
     @Override
