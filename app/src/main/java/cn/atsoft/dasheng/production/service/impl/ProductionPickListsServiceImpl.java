@@ -383,7 +383,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             int cartNumber = 0;
             for (ProductionPickListsCart cart : carts) {
                 if (cart.getPickListsId().equals(result.getPickListsId())){
-                    cartNumber+=cartNumber;
+                    cartNumber+=cart.getNumber();
                 }
             }
             result.setCartNumCount(cartNumber);
