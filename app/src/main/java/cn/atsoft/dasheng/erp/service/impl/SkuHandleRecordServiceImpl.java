@@ -22,6 +22,8 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -61,6 +63,10 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private UserService userService;
+
 
     @Override
     public void add(SkuHandleRecordParam param) {
@@ -118,6 +124,11 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
 
     @Override
     public PageInfo<SkuHandleRecordResult> findPageBySpec(SkuHandleRecordParam param) {
+        if (ToolUtil.isNotEmpty(param.getPositionId())) {
+            List<Long> list = positionsService.getEndChild(param.getPositionId());
+            list.add(param.getPositionId());
+            param.setPositionIds(list);
+        }
         Page<SkuHandleRecordResult> pageContext = getPageContext();
         IPage<SkuHandleRecordResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
@@ -150,6 +161,7 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
         List<Long> instockOrderIds = new ArrayList<>();
         List<Long> taskIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
 
         for (SkuHandleRecordResult datum : data) {
             skuIds.add(datum.getSkuId());
@@ -157,6 +169,7 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
             positionIds.add(datum.getPositionId());
             taskIds.add(datum.getTaskId());
             customerIds.add(datum.getCustomerId());
+            userIds.add(datum.getOperationUserId());
             switch (datum.getSource()) {
                 case "INSTOCK":
                     instockOrderIds.add(datum.getReceiptId());
@@ -170,6 +183,7 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
         List<InstockOrderResult> instockOrderResults = instockOrderService.getDetails(instockOrderIds);
         List<ActivitiProcessTask> tasks = taskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(taskIds);
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
+        List<User> users= userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
         brandResults.add(new BrandResult() {{
             setBrandId(0L);
@@ -212,6 +226,12 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
             for (CustomerResult customerResult : customerResults) {
                 if (ToolUtil.isNotEmpty(datum.getCustomerId()) && datum.getCustomerId().equals(customerResult.getCustomerId())) {
                     datum.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+            for (User user : users) {
+                if (datum.getOperationUserId().equals(user.getUserId())) {
+                    datum.setUser(user);
                     break;
                 }
             }

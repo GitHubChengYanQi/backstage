@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -27,6 +28,8 @@ import java.util.List;
 public class SkuHandleRecordResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private User user;
 
     private SkuResult skuResult;
 

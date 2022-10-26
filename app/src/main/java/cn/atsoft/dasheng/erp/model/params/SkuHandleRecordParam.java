@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * sku 任务操作记录
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-10-25
  */
 @Data
@@ -23,6 +24,19 @@ import java.util.List;
 public class SkuHandleRecordParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private List<String> types;
+
+    private List<Long> userIds;
+
+    private List<Long> brandIds;
+
+    private List<Long> positionIds;
+
+
+    private String startTime;
+
+    private String endTime;
 
 
     /**

@@ -107,6 +107,45 @@
         <if test="paramCondition.positionId != null">
             and position_id like CONCAT('%',#{paramCondition.positionId},'%')
         </if>
+        <if test="paramCondition.types != null and  paramCondition.types.size > 0 ">
+            and source in
+            <foreach collection="paramCondition.types" separator="," open="(" item="state" index="index" close=")">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.userIds != null and  paramCondition.userIds.size > 0 ">
+            and operation_user_id in
+            <foreach collection="paramCondition.userIds" separator="," open="(" item="state" index="index" close=")">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.brandIds != null and  paramCondition.brandIds.size > 0 ">
+            and brand_id in
+            <foreach collection="paramCondition.brandIds" separator="," open="(" item="state" index="index" close=")">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.positionIds != null and  paramCondition.positionIds.size > 0 ">
+            and position_id in
+            <foreach collection="paramCondition.positionIds" separator="," open="(" item="state" index="index"
+                     close=")">
+                #{state}
+            </foreach>
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.theme != null and paramCondition.theme != ''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"

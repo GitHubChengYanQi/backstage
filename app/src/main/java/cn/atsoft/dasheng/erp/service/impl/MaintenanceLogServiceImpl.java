@@ -159,9 +159,10 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         /**
          * 添加物料操作记录
          */
+        Long positionsId = param.getMaintenanceLogDetailParams().get(0).getStorehousePositionsId();
         for (String s : map.keySet()) {
             MaintenanceLogDetail logDetail = map.get(s);
-            skuHandleRecordService.addRecord(logDetail.getSkuId(), logDetail.getBrandId(), null, null, "MAINTENANCE", task,Long.valueOf(logDetail.getNumber()),null,null);
+            skuHandleRecordService.addRecord(logDetail.getSkuId(), logDetail.getBrandId(), positionsId, null, "MAINTENANCE", task,Long.valueOf(logDetail.getNumber()),null,null);
         }
 
 
