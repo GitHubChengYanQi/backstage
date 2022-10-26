@@ -533,7 +533,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     partsIds.add(erpPartsDetail.getPartsId());
                 }
                 param.setPartIds(partsIds);
-            }else {
+            } else {
                 return new PageInfo();
             }
         }
@@ -551,6 +551,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isEmpty(parts)) {
             return ids;
         } else {
+            ids.add(parts.getSkuId());
             ids.addAll(getSkuIdsByPart(parts.getPartsId()));
         }
         return ids;
@@ -560,6 +561,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Long> ids = new ArrayList<>();
         List<ErpPartsDetail> partsDetails = erpPartsDetailService.query().eq("parts_id", partId).eq("display", 1).list();
         for (ErpPartsDetail partsDetail : partsDetails) {
+            ids.add(partsDetail.getSkuId());
             ids.addAll(getSkuIdsByBom(partsDetail.getSkuId()));
         }
         return ids;

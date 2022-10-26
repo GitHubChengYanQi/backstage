@@ -140,6 +140,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                     inventoryStockService.updateInventoryStatus(param, -1);
                 }
                 break;
+
         }
         /**
          *
@@ -350,6 +351,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (!normal) {    //无异常
                     updateInventory(param);   //盘点详情 修改成正常状态
                     t = false;
+                    //记录物料操作
+                    Integer number = stockDetailsService.getNumberByStock(param.getSkuId(), param.getBrandId(), param.getPositionId());
+                    skuHandleRecordService.addRecord(param.getSkuId(), param.getBrandId(), param.getPositionId(), param.getCustomerId(), "Stocktaking", null, param.getRealNumber(), Long.valueOf(number), Long.valueOf(number));
                 } else {
                     inventoryStockService.updateInventoryStatus(param, -1);
                 }
@@ -406,13 +410,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         if (ToolUtil.isNotEmpty(param.getDetailParams()) && param.getDetailParams().size() > 0) {   //含有异常件
             return true;
         }
-        boolean check = anomalyOrderService.check(param.getSkuId(), param.getBrandId(), param.getPositionId(), Math.toIntExact(param.getRealNumber()));
-        if (!check) {  //无数量异常
-            //记录物料操作
-            Integer number = stockDetailsService.getNumberByStock(param.getSkuId(), param.getBrandId(), param.getPositionId());
-            skuHandleRecordService.addRecord(param.getSkuId(), param.getBrandId(), param.getPositionId(), param.getCustomerId(), "Stocktaking", null, param.getRealNumber(), Long.valueOf(number), Long.valueOf(number));
-        }
-        return check;
+        return anomalyOrderService.check(param.getSkuId(), param.getBrandId(), param.getPositionId(), Math.toIntExact(param.getRealNumber()));
     }
 
     /**

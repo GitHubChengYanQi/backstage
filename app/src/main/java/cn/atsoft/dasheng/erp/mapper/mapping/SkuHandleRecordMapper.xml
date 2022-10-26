@@ -19,11 +19,17 @@
         <result column="customer_id" property="customerId"/>
         <result column="task_id" property="taskId"/>
         <result column="receipt_id" property="receiptId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">customer_id
-    AS "customerId",task_id AS "taskId",receipt_id AS "receiptId",
+    AS "customerId",task_id AS "taskId",receipt_id AS "receiptId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId",
          record_id
         AS "recordId", source AS "source", source_id AS "sourceId", now_stock_number AS "nowStockNumber", operation_number AS "operationNumber", balance_number AS "balanceNumber", sku_id AS "skuId", brand_id AS "brandId", position_id AS "positionId", theme AS "theme", operation_time AS "operationTime", operation_user_id AS "operationUserId"
     </sql>
@@ -93,7 +99,7 @@
             and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
         </if>
         <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+            and sku_id = #{paramCondition.skuId}
         </if>
         <if test="paramCondition.brandId != null">
             and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
