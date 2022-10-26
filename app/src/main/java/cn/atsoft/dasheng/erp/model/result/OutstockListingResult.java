@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -29,11 +30,14 @@ public class OutstockListingResult implements Serializable {
     private ItemsResult itemsResult;
     private BrandResult brandResult;
     private Long deliveryId;
+    private Long pickListsId;
+    private String coding;
     private SkuResult skuResult;
     private List<BackSku> backSkus;
     private SpuResult spuResult;
     private List<StorehousePositionsResult> positionsResults;
     private Long customerId;
+    private UserResult createUserResult;
     /**
      * 出库数量
      */

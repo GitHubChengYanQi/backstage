@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
+import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.app.pojo.Listing;
@@ -256,10 +257,19 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //
 //            outstockListingService.saveBatch(outstockListings);
 //        }
+        List<StockDetailView> stockDetailViews = stockDetailsService.stockDetailViews();
         List<OutstockListing> listings = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getListingParams())) {
             for (OutstockListingParam listingParam : param.getListingParams()) {
+
                 OutstockListing outstockListing = new OutstockListing();
+                for (StockDetailView stockDetailView : stockDetailViews) {
+                    if (listingParam.getSkuId().equals(stockDetailView.getSkuId()) && listingParam.getBrandId().equals(stockDetailView.getBrandId())){
+                        outstockListing.setBeforeNumber(stockDetailView.getNumber());
+                        outstockListing.setAfterNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
+                        stockDetailView.setNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
+                    }
+                }
                 ToolUtil.copyProperties(listingParam, outstockListing);
                 outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
                 listings.add(outstockListing);

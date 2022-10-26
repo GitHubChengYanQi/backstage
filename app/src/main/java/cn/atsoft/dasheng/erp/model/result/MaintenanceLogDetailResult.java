@@ -27,7 +27,6 @@ public class MaintenanceLogDetailResult implements Serializable {
     private Long maintenanceLogDetailId;
 
     private SkuSimpleResult skuResult;
-
     private BrandResult brandResult;
 
     @ApiModelProperty("")
@@ -41,6 +40,10 @@ public class MaintenanceLogDetailResult implements Serializable {
 
     @ApiModelProperty("")
     private Long skuId;
+
+    private String noticeIds;
+
+    private List<AnnouncementsResult> announcementsResults;
 
     /**
      * 品牌id
