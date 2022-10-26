@@ -26,14 +26,20 @@
         <result column="receipt_id" property="receiptId"/>
         <result column="anomaly_id" property="anomalyId"/>
         <result column="real_number" property="realNumber"/>
-
+        <result column="source_id" property="sourceId"/>
+        <result column="source" property="source"/>
+        <result column="current_number" property="currentNumber"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">type
+    <sql id="Base_Column_List">
+        source_id
+        AS "sourceId", source AS "source",current_number AS "currentNumber",
+type
     AS "type", customer_id AS "customerId", receipt_id  AS "receiptId",anomaly_id AS "anomalyId",real_number AS "realNumber",
         instock_log_detail_id
         AS "instockLogDetailId", instock_log_id AS "instockLogId",source AS "source",source_id AS "sourceId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number",  instock_order_id AS "instockOrderId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+
     </sql>
 
 
@@ -52,7 +58,7 @@
             and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
         </if>
         <if test="paramCondition.skuId != null">
-            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+            and sku_id = #{paramCondition.skuId}
         </if>
         <if test="paramCondition.brandId != null">
             and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
@@ -104,11 +110,12 @@
             union
             select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
             CONCAT('%',#{paramCondition.skuName},'%') )
-                        )
+            )
         </if>
 
         order by create_time
     </select>
+
 
     <select id="customMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
@@ -304,6 +311,20 @@
         <if test="paramCondition.sourceId != null">
             and source_id = #{paramCondition.sourceId}
         </if>
+    </select>
+
+
+    <select id="skuLogDetail" resultType="cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_instock_log_detail where 1 = 1
+        and sku_id is not null and source is not null and source_id is not null
+        and source = 'instock'
+        <if test="paramCondition.skuId != null">
+            and sku_id = #{paramCondition.skuId}
+        </if>
+
     </select>
 
 </mapper>

@@ -15,6 +15,8 @@ import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
@@ -31,9 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -74,8 +74,6 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     private StorehousePositionsService storehousePositionsService;
 
 
-
-
     @Autowired
     private MaintenanceCycleService maintenanceCycleService;
 
@@ -94,6 +92,12 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
     private GetOrigin getOrigin;
     @Autowired
     private AnnouncementsService announcementsService;
+
+    @Autowired
+    private SkuHandleRecordService skuHandleRecordService;
+
+    @Autowired
+    private ActivitiProcessTaskService taskService;
 
     @Override
     public void add(MaintenanceLogParam param) {
@@ -146,9 +150,22 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         entity.setOrigin(origin);
         this.updateById(entity);
 
+        Map<String, MaintenanceLogDetail> map = new HashMap<>();
         for (MaintenanceLogDetail maintenanceLogDetail : logs) {
             maintenanceLogDetail.setMaintenanceLogId(entity.getMaintenanceLogId());
+            map.put(maintenanceLogDetail.getSkuId() + "," + maintenanceLogDetail.getBrandId(), maintenanceLogDetail);
         }
+        ActivitiProcessTask task = ToolUtil.isEmpty(param.getMaintenanceId()) ? null : taskService.query().eq("form_id", param.getMaintenanceId()).one();
+        /**
+         * 添加物料操作记录
+         */
+        Long positionsId = param.getMaintenanceLogDetailParams().get(0).getStorehousePositionsId();
+        for (String s : map.keySet()) {
+            MaintenanceLogDetail logDetail = map.get(s);
+            skuHandleRecordService.addRecord(logDetail.getSkuId(), logDetail.getBrandId(), positionsId, null, "MAINTENANCE", task,Long.valueOf(logDetail.getNumber()),null,null);
+        }
+
+
         maintenanceLogDetailService.saveBatch(logs);
         if (maintenanceDetails.stream().allMatch(i -> i.getStatus() == 99) || ToolUtil.isEmpty(maintenanceDetails)) {
             maintenanceService.updateStatus(param.getMaintenanceId());
@@ -291,7 +308,7 @@ public class MaintenanceLogServiceImpl extends ServiceImpl<MaintenanceLogMapper,
         maintenanceLogDetailService.format(maintenanceLogDetailResults);
         for (MaintenanceLogResult datum : data) {
             for (InkindResult inKind : inKinds) {
-                if (ToolUtil.isNotEmpty(datum.getInkindId())&&datum.getInkindId().equals(inKind.getInkindId())) {
+                if (ToolUtil.isNotEmpty(datum.getInkindId()) && datum.getInkindId().equals(inKind.getInkindId())) {
                     datum.setInkindResult(inKind);
                     break;
                 }

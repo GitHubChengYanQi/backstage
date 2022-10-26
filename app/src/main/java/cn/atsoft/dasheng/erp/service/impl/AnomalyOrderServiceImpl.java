@@ -140,6 +140,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     @Autowired
     private TaskParticipantService taskParticipantService;
 
+    @Autowired
+    private SkuHandleRecordService skuHandleRecordService;
+
 
     @Override
     @Transactional
@@ -163,31 +166,24 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         this.save(entity);
 
 
-        List<Anomaly> anomalies = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
-
+        List<Long> anomalyIds = new ArrayList<>();
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
             if (ToolUtil.isEmpty(anomalyParam.getAnomalyId())) {
                 throw new ServiceException(500, "缺少 异常id");
             }
-            ids.add(anomalyParam.getAnomalyId());
-            Anomaly anomaly = new Anomaly();
-            anomaly.setStatus(98);
-            ToolUtil.copyProperties(anomalyParam, anomaly);
-            anomaly.setOrderId(entity.getOrderId());
-            anomalies.add(anomaly);
+            anomalyIds.add(anomalyParam.getAnomalyId());
         }
-        //判断是否提交过
-        List<Anomaly> anomalyList = ids.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(ids);
-        List<AnomalyDetail> anomalyDetails = ids.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", ids).eq("display", 1).isNotNull("inkind_id").list();
-        List<Long> anomalyIds = new ArrayList<>();
 
-        long skuId = 0;
+        //判断是否提交过
+        List<Anomaly> anomalyList = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyService.listByIds(anomalyIds);
+        List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).eq("display", 1).isNotNull("inkind_id").list();
+
         for (Anomaly anomaly : anomalyList) {
             if (anomaly.getStatus() == 98) {
                 throw new ServiceException(500, "请勿重新提交异常");
             }
-            skuId = anomaly.getSkuId();
+            anomaly.setStatus(98);
+            anomaly.setOrderId(entity.getOrderId());
             anomalyIds.add(anomaly.getAnomalyId());
         }
         /**
@@ -198,20 +194,21 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             inkindIds.add(anomalyDetail.getInkindId());
         }
         inkindService.updateAnomalyInKind(inkindIds);
-        anomalyService.updateBatchById(anomalies);    //更新异常单据状态
+        anomalyService.updateBatchById(anomalyList);    //更新异常单据状态
 
 
         if (entity.getType().equals("Stocktaking") || entity.getType().equals("timelyInventory")) {   //更新盘点处理状态
             inventoryStockService.updateStatus(anomalyIds);
+            addSkuHandRecord(anomalyList); //添加操作记录
         }
         /**
          * 更新购物车状态
          */
         ShopCart shopCart = new ShopCart();
         shopCart.setStatus(99);
-        if (ToolUtil.isNotEmpty(ids)) {
+        if (ToolUtil.isNotEmpty(anomalyIds)) {
             shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
-                in("form_id", ids);
+                in("form_id", anomalyIds);
             }});
         }
 
@@ -219,7 +216,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
          * 创建实物并绑定
          */
         if (entity.getType().equals("instock")) {
-            List<AnomalyDetail> details = ids.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", ids).eq("display", 1).list();
+            List<AnomalyDetail> details = anomalyIds.size() == 0 ? new ArrayList<>() : detailService.query().in("anomaly_id", anomalyIds).eq("display", 1).list();
             for (AnomalyDetail detail : details) {
                 Inkind inkind = inkindService.getById(detail.getInkindId());
                 if (ToolUtil.isNotEmpty(inkind)) {
@@ -252,11 +249,46 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
 
         submit(entity);
-        String skuMessage = skuService.skuMessage(skuId);
-        shopCartService.addDynamic(param.getInstockOrderId(), null, "提交了异常描述" + skuMessage);
+        shopCartService.addDynamic(param.getInstockOrderId(), null, "提交了异常描述");
         shopCartService.addDynamic(entity.getOrderId(), null, "提交了异常");
 
         return anomalyList;
+    }
+
+    /**
+     * 有异常物料的情况  需要添加物料的操作记录
+     *
+     * @param params
+     */
+    private void addSkuHandRecord(List<Anomaly> params) {
+        List<Long> anomalyIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
+        for (Anomaly param : params) {
+            anomalyIds.add(param.getAnomalyId());
+            orderIds.add(param.getFormId());
+        }
+        /**
+         * 取任务  用来添加物料记录
+         */
+        Map<Long, ActivitiProcessTask> taskMap = new HashMap<>();
+        List<ActivitiProcessTask> taskList = orderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.query().in("form_id", orderIds).list();
+        for (ActivitiProcessTask activitiProcessTask : taskList) {
+            taskMap.put(activitiProcessTask.getFormId(), activitiProcessTask);
+        }
+
+
+        //先查询是否有异常物料
+        List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).list();
+        for (Anomaly param : params) {
+            for (AnomalyDetail anomalyDetail : anomalyDetails) {
+                if (param.getAnomalyId().equals(anomalyDetail.getAnomalyId()) && param.getNeedNumber().equals(param.getRealNumber())) {   //核实数量正确 但是有异常件
+                    skuHandleRecordService.addRecord(param.getSkuId(), param.getBrandId(), param.getPositionId(), param.getCustomerId(), "Stocktaking", taskMap.get(param.getFormId()), param.getRealNumber(), null, param.getRealNumber());
+                    break;
+                }
+            }
+        }
+
+
     }
 
     private InstockHandle createInStockHandle(AnomalyResult anomaly, String type) {
@@ -504,8 +536,20 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         param.setSource("StocktakingErrorOutStock");
         param.setSourceId(orderId);
         param.setUserId(LoginContextHolder.getContext().getUserId());
-
         List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+        Map<Long, ActivitiProcessTask> taskMap = new HashMap<>();
+        List<Long> orderIds = new ArrayList<>();
+
+        for (AnomalyResult anomalyResult : anomalyResults) {
+            orderIds.add(anomalyResult.getFormId());
+        }
+        /**
+         * 取任务  用来添加物料记录
+         */
+        List<ActivitiProcessTask> taskList = orderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.query().in("form_id", orderIds).list();
+        for (ActivitiProcessTask activitiProcessTask : taskList) {
+            taskMap.put(activitiProcessTask.getFormId(), activitiProcessTask);
+        }
 
         for (AnomalyResult anomalyResult : anomalyResults) {
 
@@ -516,7 +560,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             if (ToolUtil.isNotEmpty(anomalyResult.getCheckNumber())) {  //判断复核数
                 List<CheckNumber> checkNumbers = JSON.parseArray(anomalyResult.getCheckNumber(), CheckNumber.class);
                 int size = checkNumbers.size();
-                CheckNumber checkNumber = checkNumbers.get(size - 1);
+                CheckNumber checkNumber = checkNumbers.get(size - 1);  //取出复核数
                 if (check(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), checkNumber.getNumber())) {    //复核数 + 备料数  = 库存数  不需要修改库存
                     if (ToolUtil.isNotEmpty(anomalyResult.getCustomerNums())) {     //选择供应商需入库
                         for (AnomalyCustomerNum customerNum : anomalyResult.getCustomerNums()) {
@@ -525,6 +569,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                     } else {                                                        //需出库
                         inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), Long.valueOf(checkNumber.getNumber()));
                     }
+                    //复核数与实际库存不准 处理之后需要记录物料操作记录
+                    skuHandleRecordService.addRecord(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), anomalyResult.getCustomerId(), "Stocktaking", taskMap.get(anomalyResult.getFormId()), Long.valueOf(checkNumber.getNumber()), Long.valueOf(checkNumber.getNumber()), Long.valueOf(checkNumber.getNumber()));
                 }
             }
 

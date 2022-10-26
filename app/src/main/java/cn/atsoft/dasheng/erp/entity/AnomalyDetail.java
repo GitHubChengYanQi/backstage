@@ -100,7 +100,13 @@ public class AnomalyDetail implements Serializable {
     private Long deptId;
 
 
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Long getNumber() {
         return number;
@@ -182,17 +188,10 @@ public class AnomalyDetail implements Serializable {
         this.opinionImg = opinionImg;
     }
 
-    public String getdescription() {
-        return description;
-    }
-
-    public void setdescription(String description) {
-        this.description = description;
-    }
-
     public Date getCreateTime() {
         return createTime;
     }
+
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;

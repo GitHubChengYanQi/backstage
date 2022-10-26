@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockLogDetail;
 import cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam;
 import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
+import cn.atsoft.dasheng.erp.pojo.SkuLogDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public interface InstockLogDetailService extends IService<InstockLogDetail> {
      * @Date 2022-04-14
      */
     void add(InstockLogDetailParam param);
+
+    List<SkuLogDetail> skuLogDetail(Long skuId);
 
     List<InstockLogDetailResult> history(InstockLogDetailParam param);
 

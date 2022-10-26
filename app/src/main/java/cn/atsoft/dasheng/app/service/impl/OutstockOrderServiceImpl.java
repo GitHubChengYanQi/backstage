@@ -23,10 +23,7 @@ import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.erp.service.CodingRulesService;
-import cn.atsoft.dasheng.erp.service.InkindService;
-import cn.atsoft.dasheng.erp.service.OutstockListingService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -109,6 +106,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private ProductionPickListsService pickListsService;
     @Autowired
     private GetOrigin getOrigin;
+
+    @Autowired
+    private SkuHandleRecordService skuHandleRecordService;
 
 
     @Override
@@ -239,6 +239,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         entity.setOrigin(origin);
         this.updateById(entity);
 
+        ActivitiProcessTask task = activitiProcessTaskService.query().eq("form_id", entity.getSourceId()).one();
 //        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
 //            List<ApplyDetails> applyDetails = param.getApplyDetails();
 //
@@ -264,10 +265,13 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
                 OutstockListing outstockListing = new OutstockListing();
                 for (StockDetailView stockDetailView : stockDetailViews) {
-                    if (listingParam.getSkuId().equals(stockDetailView.getSkuId()) && listingParam.getBrandId().equals(stockDetailView.getBrandId())){
+                    if (listingParam.getSkuId().equals(stockDetailView.getSkuId()) && listingParam.getBrandId().equals(stockDetailView.getBrandId())) {
                         outstockListing.setBeforeNumber(stockDetailView.getNumber());
                         outstockListing.setAfterNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
                         stockDetailView.setNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
+                        //添加 物料操作记录
+                        skuHandleRecordService.addRecord(listingParam.getSkuId(), listingParam.getBrandId(), listingParam.getPositionsId(), listingParam.getCustomerId(), "OUTSTOCK", task, listingParam.getNumber(), Long.valueOf(stockDetailView.getNumber()), Long.valueOf(outstockListing.getAfterNumber()));
+                        break;
                     }
                 }
                 ToolUtil.copyProperties(listingParam, outstockListing);

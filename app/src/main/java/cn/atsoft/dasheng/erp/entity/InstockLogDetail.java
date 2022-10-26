@@ -25,6 +25,13 @@ public class InstockLogDetail implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 操作之前库存数
+     */
+    @TableField("current_number")
+    private Long currentNumber;
+
+
+    /**
      * 实际数量
      */
     @TableField("real_number")
@@ -57,7 +64,6 @@ public class InstockLogDetail implements Serializable {
      */
     @TableField("inkind_id")
     private Long inkindId;
-
     /**
      * sku_id
      */
@@ -315,6 +321,14 @@ public class InstockLogDetail implements Serializable {
 
     public void setAnomalyId(Long anomalyId) {
         this.anomalyId = anomalyId;
+    }
+
+    public Long getCurrentNumber() {
+        return currentNumber;
+    }
+
+    public void setCurrentNumber(Long currentNumber) {
+        this.currentNumber = currentNumber;
     }
 
     @Override

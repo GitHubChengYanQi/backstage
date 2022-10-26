@@ -112,6 +112,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private StockDetailsService stockDetailsService;
     @Autowired
     private ProductionPickListsCartService listsCartService;
+    @Autowired
+    private SkuHandleRecordService skuHandleRecordService;
 
 
     @Transactional
@@ -138,6 +140,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                     inventoryStockService.updateInventoryStatus(param, -1);
                 }
                 break;
+
         }
         /**
          *
@@ -336,6 +339,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public boolean addDetails(AnomalyParam param) {
         boolean t = true;
 
+        ActivitiProcessTask task = ToolUtil.isEmpty(param.getFormId()) ? null: taskService.query().eq("form_id", param.getFormId()).one();
+
         switch (param.getAnomalyType()) {
             case InstockError:
                 if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
@@ -348,6 +353,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                 if (!normal) {    //无异常
                     updateInventory(param);   //盘点详情 修改成正常状态
                     t = false;
+                    //记录物料操作
+                    Integer number = stockDetailsService.getNumberByStock(param.getSkuId(), param.getBrandId(), param.getPositionId());
+                    skuHandleRecordService.addRecord(param.getSkuId(), param.getBrandId(), param.getPositionId(), param.getCustomerId(), "Stocktaking", task, param.getRealNumber(), Long.valueOf(number), Long.valueOf(number));
                 } else {
                     inventoryStockService.updateInventoryStatus(param, -1);
                 }
@@ -401,7 +409,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     private boolean isNormal(AnomalyParam param) {
         //判断盘点操作权限
         inventoryDetailService.jurisdiction(param.getFormId());
-        if (ToolUtil.isNotEmpty(param.getDetailParams()) && param.getDetailParams().size() > 0) {
+        if (ToolUtil.isNotEmpty(param.getDetailParams()) && param.getDetailParams().size() > 0) {   //含有异常件
             return true;
         }
         return anomalyOrderService.check(param.getSkuId(), param.getBrandId(), param.getPositionId(), Math.toIntExact(param.getRealNumber()));
@@ -576,7 +584,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         }
 
         String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
-        shopCartService.addDynamic(oldEntity.getFormId(), oldEntity.getSkuId(),skuMessage + "修改了异常描述");
+        shopCartService.addDynamic(oldEntity.getFormId(), oldEntity.getSkuId(), skuMessage + "修改了异常描述");
         return newEntity;
     }
 
@@ -642,9 +650,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
         if (ToolUtil.isNotEmpty(param.getCheckNumber())) {
-            shopCartService.addDynamic(oldEntity.getOrderId(), oldEntity.getSkuId(),"对" + skuMessage + "数量进行复核");
+            shopCartService.addDynamic(oldEntity.getOrderId(), oldEntity.getSkuId(), "对" + skuMessage + "数量进行复核");
         }
-        shopCartService.addDynamic(oldEntity.getOrderId(), oldEntity.getSkuId(),"对" + skuMessage + "确认了处理意见");
+        shopCartService.addDynamic(oldEntity.getOrderId(), oldEntity.getSkuId(), "对" + skuMessage + "确认了处理意见");
     }
 
     /**
