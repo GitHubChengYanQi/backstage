@@ -88,6 +88,9 @@ public class ProductionPickListsResult implements Serializable {
     @ApiModelProperty("已经完成总数")
     private Integer receivedCount ;
 
+    @ApiModelProperty("购物车中未领取数量")
+    private Integer cartNumCount ;
+
     @ApiModelProperty("sku总数")
     private Integer skuCount  ;
 
