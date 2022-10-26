@@ -244,7 +244,9 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
          * 如果为false 则不向下进行推送
          */
         boolean auditCheck = true;
-
+        if(!status.equals(1)){
+            auditCheck = false;
+        }
         //循环流程下步骤
         for (ActivitiProcessLog activitiProcessLog : audit) {
             if (ToolUtil.isEmpty(activitiProcessLog.getAuditUserId()) || loginUserId.equals(activitiProcessLog.getAuditUserId())) {
