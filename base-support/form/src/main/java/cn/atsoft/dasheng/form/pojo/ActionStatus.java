@@ -15,5 +15,5 @@ public class ActionStatus {
 
     private String actionName;
 
-    private boolean checked = false;
+    private Boolean checked = false;
 }

@@ -846,22 +846,29 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
                 boolean isChecked = false;
                 boolean completeFlag = true;
-                for (ActionStatus actionStatus : actionStatuses) {
-                    if (actionStatus.getStatus().equals(0) && actionStatus.isChecked()) {
-                        completeFlag = false;
 
-                        break;
-                    } else if (actionStatus.getStatus().equals(0)) {
-                        completeFlag = false;
-                        break;
-                    }
-                    if (actionStatus.isChecked()) {
-                        isChecked = true;
-                    }
-                }
-                if (completeFlag && isChecked) {
+
+
+                actionStatuses.removeIf(i->!i.getChecked());
+                if (actionStatuses.stream().allMatch(i->i.getStatus().equals(1) && i.getChecked())) {
                     this.autoAudit(taskId, 1, loginUserId);
+
                 }
+//                for (ActionStatus actionStatus : actionStatuses) {
+//                    if (actionStatus.getStatus().equals(0) && actionStatus.getChecked()) {
+//                        completeFlag = false;
+//
+//                        break;
+//                    } else if (actionStatus.getStatus().equals(0)) {
+//                        completeFlag = false;
+//                        break;
+//                    }
+//                    if (actionStatus.getChecked()) {
+//                        isChecked = true;
+//                    }
+//                }
+//                if (completeFlag && isChecked) {
+//                }
             }
         }
 
