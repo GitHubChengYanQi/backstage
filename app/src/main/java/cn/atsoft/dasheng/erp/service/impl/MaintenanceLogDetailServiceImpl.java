@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -11,8 +13,10 @@ import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.MaintenanceLogDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogDetailParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
+import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogDetailResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
@@ -27,14 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author Captain_Jazz
@@ -49,7 +51,7 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
     private MaintenanceService maintenanceService;
 
     @Autowired
-    private MaintenanceLogDetailService MaintenanceLogDetailService;
+    private MaintenanceLogService maintenanceLogService;
 
     @Autowired
     private SkuService skuService;
@@ -73,7 +75,10 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
     @Autowired
     private StepsService stepsService;
     @Autowired
+    private AnnouncementsService announcementsService;
+    @Autowired
     private MediaService mediaService;
+
 
 
     @Override
@@ -81,6 +86,7 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
         MaintenanceLogDetail entity = this.getEntity(param);
         this.save(entity);
     }
+
     @Override
     public void processingData(MaintenanceLogParam param, List<StockDetails> stockDetails, List<MaintenanceDetail> maintenanceDetails, List<MaintenanceLogDetail> logs) {
         for (MaintenanceLogDetailParam MaintenanceLogDetailParam : param.getMaintenanceLogDetailParams()) {
@@ -94,10 +100,10 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
             List<Long> skuIds = new ArrayList<>();
             int num = MaintenanceLogDetailParam.getNumber();
             for (StockDetails details : need) {
-                if (num>0){
+                if (num > 0) {
                     int lastNumber = num;
                     num -= details.getNumber();
-                    if(num>=0){
+                    if (num >= 0) {
                         inkindIds.add(details.getInkindId());
                         MaintenanceLogDetail log = new MaintenanceLogDetail();
                         log.setNumber(Math.toIntExact(details.getNumber()));
@@ -106,7 +112,7 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
                         log.setInkindId(details.getInkindId());
                         log.setEnclosure(MaintenanceLogDetailParam.getEnclosure());
                         logs.add(log);
-                    }else {
+                    } else {
                         inkindIds.add(details.getInkindId());
                         MaintenanceLogDetail log = new MaintenanceLogDetail();
                         log.setNumber(lastNumber);
@@ -119,8 +125,6 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
                 }
 
             }
-
-
 
 
             if (num > 0) {
@@ -196,19 +200,48 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
         this.format(MaintenanceLogDetailResults);
         return MaintenanceLogDetailResults;
     }
+
     @Override
-    public void format(List<MaintenanceLogDetailResult> data){
+    public void format(List<MaintenanceLogDetailResult> data) {
         List<Long> inkindIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         for (MaintenanceLogDetailResult datum : data) {
             inkindIds.add(datum.getInkindId());
             userIds.add(datum.getCreateUser());
         }
+        List<SkuSimpleResult> skuSimpleResultList = data.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(data.stream().map(MaintenanceLogDetailResult::getSkuId).collect(Collectors.toList()));
+
+        List<BrandResult> brandResults = brandService.getBrandResults(data.stream().map(MaintenanceLogDetailResult::getBrandId).collect(Collectors.toList()));
+
+
         List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+        List<MaintenanceLog> maintenanceLogs = data.size() == 0 ? new ArrayList<>() : maintenanceLogService.lambdaQuery().in(MaintenanceLog::getMaintenanceLogId, data.stream().map(MaintenanceLogDetailResult::getMaintenanceLogId).collect(Collectors.toList())).list();
+        List<Long> noticeIds = new ArrayList<>();
         for (MaintenanceLogDetailResult datum : data) {
+            for (MaintenanceLog maintenanceLog : maintenanceLogs) {
+                if (datum.getMaintenanceLogId().equals(maintenanceLog.getMaintenanceLogId()) && maintenanceLog.getNoticeIds() != null) {
+                    noticeIds.addAll(Arrays.asList(maintenanceLog.getNoticeIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+                    datum.setNoticeIds(maintenanceLog.getNoticeIds());
+                }
+            }
+        }
+        List<Announcements> announcements =noticeIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(noticeIds);
+        for (MaintenanceLogDetailResult datum : data) {
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResultList) {
+                if (datum.getSkuId().equals(skuSimpleResult.getSkuId())) {
+                    datum.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && brandResult.getBrandId().equals(datum.getBrandId())) {
+                    datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
             for (UserResult userResult : userResultsByIds) {
-                if (datum.getCreateUser().equals(userResult.getUserId())){
+                if (datum.getCreateUser().equals(userResult.getUserId())) {
                     userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     datum.setUserResult(userResult);
                 }
@@ -218,18 +251,39 @@ public class MaintenanceLogDetailServiceImpl extends ServiceImpl<MaintenanceLogD
                 mediaService.getMediaUrlResults(enclosure);
             }
             for (InkindResult inKind : inKinds) {
-                if(datum.getInkindId().equals(inKind.getInkindId())){
+                if (datum.getInkindId().equals(inKind.getInkindId())) {
                     datum.setInkindResult(inKind);
                 }
             }
+            for (MaintenanceLog maintenanceLog : maintenanceLogs) {
+                if (datum.getMaintenanceLogId().equals(maintenanceLog.getMaintenanceLogId()) && maintenanceLog.getNoticeIds() != null) {
+                    noticeIds.addAll(Arrays.asList(maintenanceLog.getNoticeIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+                }
+            }
+            if (ToolUtil.isNotEmpty(datum.getNoticeIds())) {
+                List<Long> collect = Arrays.asList(datum.getNoticeIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                List<AnnouncementsResult>announcementsResults = new ArrayList<>();
+                for (Long aLong : collect) {
+                    for (Announcements announcement : announcements) {
+                        if (aLong.equals(announcement.getNoticeId())){
+                            announcementsResults.add(BeanUtil.copyProperties(announcement,AnnouncementsResult.class));
+                        }
+                    }
+                }
+                datum.setAnnouncementsResults(announcementsResults);
+            }
+
         }
     }
+
     @Override
     public PageInfo<MaintenanceLogDetailResult> findPageBySpec(MaintenanceLogDetailParam param) {
         Page<MaintenanceLogDetailResult> pageContext = getPageContext();
         IPage<MaintenanceLogDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
 
     private Serializable getKey(MaintenanceLogDetailParam param) {
         return param.getMaintenanceLogDetailId();

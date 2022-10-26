@@ -19,13 +19,14 @@
         <result column="source_id" property="sourceId"/>
         <result column="theme" property="theme"/>
         <result column="origin" property="origin"/>
-        <result column="notice" property="notice"/>
+        <result column="notice_ids" property="noticeIds"/>
+        <result column="remark" property="remark"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         maintenance_log_id
-        AS "maintenanceLogId",notice AS "notice",coding AS "coding", source AS "source",source_id AS "sourceId",theme AS "theme",origin AS "origin",create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", enclosure AS "enclosure"
+        AS "maintenanceLogId",remark AS "remark",notice_ids AS "noticeIds",coding AS "coding", source AS "source",source_id AS "sourceId",theme AS "theme",origin AS "origin",create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", maintenance_detail_id AS "maintenanceDetailId", maintenance_id AS "maintenanceId", enclosure AS "enclosure"
     </sql>
     <sql id="leftJoin">
 

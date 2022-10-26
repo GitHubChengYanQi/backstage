@@ -67,6 +67,18 @@ public class OutstockListing implements Serializable {
     private Date time;
 
     /**
+     * 出库前数量
+     */
+    @TableField("before_number")
+    private Integer beforeNumber;
+
+    /**
+     * 出库后数量
+     */
+    @TableField("after_number")
+    private Integer afterNumber;
+
+    /**
      * 出库数量
      */
     @TableField("number")
@@ -296,11 +308,34 @@ public class OutstockListing implements Serializable {
         this.delivery = delivery;
     }
 
+    public Integer getBeforeNumber() {
+        return beforeNumber;
+    }
+
+    public void setBeforeNumber(Integer beforeNumber) {
+        this.beforeNumber = beforeNumber;
+    }
+
+    public Integer getAfterNumber() {
+        return afterNumber;
+    }
+
+    public void setAfterNumber(Integer afterNumber) {
+        this.afterNumber = afterNumber;
+    }
+
     @Override
     public String toString() {
         return "OutstockListing{" +
                 "outstockListingId=" + outstockListingId +
+                ", inkindIds='" + inkindIds + '\'' +
+                ", customerId=" + customerId +
+                ", delivery=" + delivery +
+                ", skuId=" + skuId +
+                ", deliveryId=" + deliveryId +
                 ", time=" + time +
+                ", beforeNumber=" + beforeNumber +
+                ", afterNumber=" + afterNumber +
                 ", number=" + number +
                 ", price=" + price +
                 ", brandId=" + brandId +
@@ -314,6 +349,6 @@ public class OutstockListing implements Serializable {
                 ", state=" + state +
                 ", outstockOrderId=" + outstockOrderId +
                 ", outstockApplyId=" + outstockApplyId +
-                "}";
+                '}';
     }
 }

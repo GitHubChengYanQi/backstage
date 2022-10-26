@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.production.mapper;
 
+import cn.atsoft.dasheng.app.model.request.OutStockView;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
@@ -43,6 +45,8 @@ public interface ProductionPickListsMapper extends BaseMapper<ProductionPickList
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
+    Page<OutStockView> outstockUserView(@Param("page") Page page, @Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<OutStockView> outstockView( @Param("paramCondition") DataStatisticsViewParam paramCondition);
     Page<ProductionPickListsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition);
 
     /**

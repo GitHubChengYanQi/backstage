@@ -33,7 +33,7 @@ public class MaintenanceLogResult implements Serializable {
 
     private Long inkindId;
 
-    private String notice;
+    private String noticeIds;
 
     private SkuResult skuResult;
 
@@ -48,6 +48,7 @@ public class MaintenanceLogResult implements Serializable {
     private String origin;
 
     private String theme;
+    private String remark;
 
     private String source;
 

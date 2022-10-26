@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service;
 
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
+import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.pojo.SpuClassDetail;
 import cn.atsoft.dasheng.app.pojo.StockCensus;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
@@ -135,4 +136,6 @@ public interface StockDetailsService extends IService<StockDetails> {
     StockDetails getInkind(StockDetailsParam param);
 
     List<StockDetails> fundStockDetailByCart(ProductionPickListsCartParam param);
+
+    List<StockDetailView> stockDetailViews();
 }

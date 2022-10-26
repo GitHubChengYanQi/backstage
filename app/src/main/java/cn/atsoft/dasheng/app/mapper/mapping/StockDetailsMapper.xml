@@ -297,6 +297,17 @@ stage
 
 
     </select>
+    <select id="stockDetailView" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView">
+        SELECT
+            sku_id AS "skuId",
+            brand_id AS "brandId",
+            sum(number) AS "number"
+        from  daoxin_erp_stock_details
+        WHERE
+            display = 1 and stage = 1
+        GROUP BY
+            sku_id,brand_id
+    </select>
 
 
 </mapper>
