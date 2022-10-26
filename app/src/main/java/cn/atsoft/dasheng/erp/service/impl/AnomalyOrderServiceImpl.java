@@ -262,15 +262,27 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
      */
     private void addSkuHandRecord(List<Anomaly> params) {
         List<Long> anomalyIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
         for (Anomaly param : params) {
             anomalyIds.add(param.getAnomalyId());
+            orderIds.add(param.getFormId());
         }
+        /**
+         * 取任务  用来添加物料记录
+         */
+        Map<Long, ActivitiProcessTask> taskMap = new HashMap<>();
+        List<ActivitiProcessTask> taskList = orderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.query().in("form_id", orderIds).list();
+        for (ActivitiProcessTask activitiProcessTask : taskList) {
+            taskMap.put(activitiProcessTask.getFormId(), activitiProcessTask);
+        }
+
+
         //先查询是否有异常物料
         List<AnomalyDetail> anomalyDetails = anomalyIds.size() == 0 ? new ArrayList<>() : anomalyDetailService.query().in("anomaly_id", anomalyIds).list();
         for (Anomaly param : params) {
             for (AnomalyDetail anomalyDetail : anomalyDetails) {
                 if (param.getAnomalyId().equals(anomalyDetail.getAnomalyId()) && param.getNeedNumber().equals(param.getRealNumber())) {   //核实数量正确 但是有异常件
-                    skuHandleRecordService.addRecord(param.getSkuId(), param.getBrandId(), param.getPositionId(), null, "Stocktaking", null, param.getRealNumber(), null, param.getRealNumber());
+                    skuHandleRecordService.addRecord(param.getSkuId(), param.getBrandId(), param.getPositionId(), param.getCustomerId(), "Stocktaking", taskMap.get(param.getFormId()), param.getRealNumber(), null, param.getRealNumber());
                     break;
                 }
             }
@@ -524,8 +536,20 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         param.setSource("StocktakingErrorOutStock");
         param.setSourceId(orderId);
         param.setUserId(LoginContextHolder.getContext().getUserId());
-
         List<ProductionPickListsDetailParam> pickListsDetailParams = new ArrayList<>();
+        Map<Long, ActivitiProcessTask> taskMap = new HashMap<>();
+        List<Long> orderIds = new ArrayList<>();
+
+        for (AnomalyResult anomalyResult : anomalyResults) {
+            orderIds.add(anomalyResult.getFormId());
+        }
+        /**
+         * 取任务  用来添加物料记录
+         */
+        List<ActivitiProcessTask> taskList = orderIds.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.query().in("form_id", orderIds).list();
+        for (ActivitiProcessTask activitiProcessTask : taskList) {
+            taskMap.put(activitiProcessTask.getFormId(), activitiProcessTask);
+        }
 
         for (AnomalyResult anomalyResult : anomalyResults) {
 
@@ -546,7 +570,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                         inventoryService.outUpdateStockDetail(anomalyResult.getSkuId(), anomalyResult.getBrandId(), Long.valueOf(checkNumber.getNumber()));
                     }
                     //复核数与实际库存不准 处理之后需要记录物料操作记录
-                    skuHandleRecordService.addRecord(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), anomalyResult.getCustomerId(), "Stocktaking", null, Long.valueOf(checkNumber.getNumber()), Long.valueOf(checkNumber.getNumber()), Long.valueOf(checkNumber.getNumber()));
+                    skuHandleRecordService.addRecord(anomalyResult.getSkuId(), anomalyResult.getBrandId(), anomalyResult.getPositionId(), anomalyResult.getCustomerId(), "Stocktaking", taskMap.get(anomalyResult.getFormId()), Long.valueOf(checkNumber.getNumber()), Long.valueOf(checkNumber.getNumber()), Long.valueOf(checkNumber.getNumber()));
                 }
             }
 

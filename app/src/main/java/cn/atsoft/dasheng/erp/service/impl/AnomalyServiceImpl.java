@@ -339,6 +339,8 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
     public boolean addDetails(AnomalyParam param) {
         boolean t = true;
 
+        ActivitiProcessTask task = ToolUtil.isEmpty(param.getFormId()) ? null: taskService.query().eq("form_id", param.getFormId()).one();
+
         switch (param.getAnomalyType()) {
             case InstockError:
                 if (param.getRealNumber() - param.getNeedNumber() == 0 && ToolUtil.isEmpty(param.getDetailParams())) {
@@ -353,7 +355,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
                     t = false;
                     //记录物料操作
                     Integer number = stockDetailsService.getNumberByStock(param.getSkuId(), param.getBrandId(), param.getPositionId());
-                    skuHandleRecordService.addRecord(param.getSkuId(), param.getBrandId(), param.getPositionId(), param.getCustomerId(), "Stocktaking", null, param.getRealNumber(), Long.valueOf(number), Long.valueOf(number));
+                    skuHandleRecordService.addRecord(param.getSkuId(), param.getBrandId(), param.getPositionId(), param.getCustomerId(), "Stocktaking", task, param.getRealNumber(), Long.valueOf(number), Long.valueOf(number));
                 } else {
                     inventoryStockService.updateInventoryStatus(param, -1);
                 }
