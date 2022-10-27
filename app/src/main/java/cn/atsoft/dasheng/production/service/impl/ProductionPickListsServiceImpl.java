@@ -346,7 +346,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         List<UserResult> userResults = userService.getUserResultsByIds(userIds);
         List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.resultsByPickListsIds(pickListsIds);
-        List<ProductionPickListsCart> carts = pickListsCartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickListsIds).eq(ProductionPickListsCart::getStatus,0).list();
+        List<ProductionPickListsCart> carts =pickListsIds.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickListsIds).eq(ProductionPickListsCart::getStatus,0).list();
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
