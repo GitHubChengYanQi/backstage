@@ -11,9 +11,13 @@ import cn.atsoft.dasheng.app.model.result.MessageResult;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -41,6 +45,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     private UserService userService;
     @Autowired
     private StepsService stepsService;
+
+    @Autowired
+    private ActivitiProcessTaskService taskService;
 
     @Override
     public void add(MessageParam param) {
@@ -145,10 +152,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     private void format(List<MessageResult> data) {
 
         List<Long> userIds = new ArrayList<>();
+        List<Long> taskIds = new ArrayList<>();
         for (MessageResult datum : data) {
             userIds.add(datum.getPromoter());
+            taskIds.add(datum.getSourceId());
         }
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<ActivitiProcessTask> activitiProcessTasks = taskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(taskIds);
+        List<ActivitiProcessTaskResult> taskResults = BeanUtil.copyToList(activitiProcessTasks, ActivitiProcessTaskResult.class);
 
         for (User user : userList) {
             String imgUrl = stepsService.imgUrl(user.getUserId().toString());
@@ -159,6 +170,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             for (User user : userList) {
                 if (ToolUtil.isNotEmpty(datum.getPromoter()) && datum.getPromoter().equals(user.getUserId())) {
                     datum.setUser(user);
+                    break;
+                }
+            }
+            for (ActivitiProcessTaskResult activitiProcessTask : taskResults) {
+                if (activitiProcessTask.getProcessTaskId().equals(datum.getSourceId())) {
+                    datum.setProcessTaskResult(activitiProcessTask);
                     break;
                 }
             }

@@ -274,6 +274,9 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             List<Long> userIds = new ArrayList<>();
             for (String s : split) {
                 userIds.add(Long.valueOf(s));
+                //添加小铃铛
+
+
             }
             userIds.add(processTask.getCreateUser());
             userIds = userIds.stream().distinct().collect(Collectors.toList());

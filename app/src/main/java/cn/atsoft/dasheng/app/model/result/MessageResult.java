@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
@@ -30,6 +31,8 @@ public class MessageResult implements Serializable {
     private User user;
 
     private Long promoter;
+
+    private ActivitiProcessTaskResult processTaskResult;
     /**
      * 路径
      */
