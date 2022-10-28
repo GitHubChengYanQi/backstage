@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
+import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -67,4 +68,5 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
     List<Long> getInkindIds(@Param("paramCondition") StockDetailsParam param);
 
     List<StockDetailsResult> stockInKindList();
+    List<StockDetailView> stockDetailView();
 }

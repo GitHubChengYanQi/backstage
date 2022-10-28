@@ -421,7 +421,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 detailParam.setSpuId(spuIds.get(0));
             }
             detailParam.setInventoryId(entity.getInventoryTaskId());
-
             InventoryDetail inventoryDetail = new InventoryDetail();
             ToolUtil.copyProperties(detailParam, inventoryDetail);
             inventoryDetailService.save(inventoryDetail);

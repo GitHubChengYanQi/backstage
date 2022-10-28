@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.pojo.SpuClassDetail;
 import cn.atsoft.dasheng.app.pojo.StockCensus;
@@ -505,7 +506,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public Integer getNumberByStock(Long skuId, Long brandId, Long positionId) {
-        return this.baseMapper.getNumberByStock(skuId, brandId, positionId);
+        Integer number = this.baseMapper.getNumberByStock(skuId, brandId, positionId);
+        if (ToolUtil.isEmpty(number)) {
+            number = 0;
+        }
+        return number;
     }
 
     @Override
@@ -823,5 +828,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             list.removeIf(i -> i.getInkindId().equals(inkindId));
         }
         return list;
+    }
+    @Override
+    public List<StockDetailView> stockDetailViews(){
+        return this.baseMapper.stockDetailView();
     }
 }
