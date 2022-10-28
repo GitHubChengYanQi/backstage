@@ -118,7 +118,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
 
             }
             for (ActivitiProcessTaskResult taskResult : taskResults) {
-                if (ToolUtil.isNotEmpty(datum.getTaskId()) && datum.getSkuId().equals(taskResult.getProcessTaskId())) {
+                if (ToolUtil.isNotEmpty(datum.getTaskId()) && datum.getTaskId().equals(taskResult.getProcessTaskId())) {
                     datum.setTaskResult(taskResult);
                     break;
                 }
