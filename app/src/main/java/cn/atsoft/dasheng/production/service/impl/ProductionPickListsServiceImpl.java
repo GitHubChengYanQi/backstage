@@ -346,6 +346,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         List<UserResult> userResults = userService.getUserResultsByIds(userIds);
         List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.resultsByPickListsIds(pickListsIds);
+        List<ProductionPickListsCart> carts =pickListsIds.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickListsIds).eq(ProductionPickListsCart::getStatus,0).list();
         List<Long> skuIds = new ArrayList<>();
         for (ProductionPickListsDetailResult detailResult : detailResults) {
             skuIds.add(detailResult.getSkuId());
@@ -379,6 +380,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     }
                 }
             }
+            int cartNumber = 0;
+            for (ProductionPickListsCart cart : carts) {
+                if (cart.getPickListsId().equals(result.getPickListsId())){
+                    cartNumber+=cart.getNumber();
+                }
+            }
+            result.setCartNumCount(cartNumber);
             result.setDetailResults(listShowDetails);
             /**
              * 是否可以领料
