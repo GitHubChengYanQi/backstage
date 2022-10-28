@@ -173,6 +173,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
                     break;
                 }
             }
+
             for (ActivitiProcessTaskResult activitiProcessTask : taskResults) {
                 if (activitiProcessTask.getProcessTaskId().equals(datum.getSourceId())) {
                     datum.setProcessTaskResult(activitiProcessTask);
