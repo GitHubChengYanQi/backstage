@@ -933,6 +933,134 @@
         </if>
         group by task.process_task_id
     </select>
+    <select id="stocktakingTask" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+        select
+        <include refid="auditColumn2"/>
+        FROM activiti_process_task task
+        LEFT JOIN activiti_process_log log ON log.task_id = task.process_task_id
+        LEFT JOIN activiti_steps steps ON steps.setps_id = log.setps_id
+        LEFT JOIN daoxin_task_participant participant ON task.process_task_id = participant.process_task_id
+        LEFT JOIN daoxin_erp_inventory  inventory on inventory.inventory_task_id = task.form_id
+
+        where 1 = 1 and task.display = 1
+        <if test="paramCondition.queryType!=null and paramCondition.queryType!= ''">
+            <choose>
+                <when test="paramCondition.queryType ==1">
+                    and steps.step_type = "audit"
+                    and log.status = 3
+                    and log.audit_user_id = #{paramCondition.userId}
+                </when>
+                <when test=" paramCondition.queryType ==2">
+                    and steps.step_type = "audit"
+                    and (log.status = 1 or log.status = 0)
+                    and log.audit_user_id = #{paramCondition.userId}
+                </when>
+                <when test=" paramCondition.queryType ==3">
+                    and steps.step_type = "send"
+                    and log.status = 1
+                    and log.audit_user_id = #{paramCondition.userId}
+                </when>
+            </choose>
+        </if>
+        <if test="paramCondition.status !=null and paramCondition.status !=''">
+            <choose>
+                <when test="paramCondition.status ==1">
+                    and steps.step_type = "audit"
+                    and log.status = 3
+                    and (inventory.user_id = #{paramCondition.userId} or inventory.participants like CONCAT('%',#{paramCondition.userId},'%'))
+
+                </when>
+                <when test=" paramCondition.status ==2">
+                    and steps.step_type = "status"
+                    and log.status = 3
+                    and (inventory.user_id = #{paramCondition.userId} or inventory.participants like CONCAT('%',#{paramCondition.userId},'%'))
+
+                </when>
+                <when test=" paramCondition.status ==3">
+                    and steps.step_type = "audit"
+                    and log.status = 1
+                    and (inventory.user_id = #{paramCondition.userId} or inventory.participants like CONCAT('%',#{paramCondition.userId},'%'))
+
+                </when>
+                <when test=" paramCondition.status ==4">
+                    and steps.step_type = "audit"
+                    and log.status = 0
+                    and (inventory.user_id = #{paramCondition.userId} or inventory.participants like CONCAT('%',#{paramCondition.userId},'%'))
+
+                </when>
+                <when test=" paramCondition.status ==5">
+                    and task.status = 99
+                    and (inventory.user_id = #{paramCondition.userId} or inventory.participants like CONCAT('%',#{paramCondition.userId},'%'))
+
+                </when>
+                <when test=" paramCondition.status ==6">
+                    and task.status = 49
+                    and (inventory.user_id = #{paramCondition.userId} or inventory.participants like CONCAT('%',#{paramCondition.userId},'%'))
+
+                </when>
+            </choose>
+        </if>
+        <if test="paramCondition.skuName != null and  paramCondition.skuName != ''">
+            and (
+            task.form_id in (
+            select order_id from daoxin_anomaly_order where coding like CONCAT('%',#{paramCondition.skuName},'%')
+            )
+            or task.task_name like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.remark like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.notice_id like CONCAT('%',#{paramCondition.skuName},'%')
+            or task.theme like CONCAT('%',#{paramCondition.skuName},'%')
+            )
+        </if>
+        <if test="paramCondition.keyWords !=null and paramCondition.keyWords !=''">
+            and (
+            picklists.coding = #{paramCondition.keyWords}
+            or sku.sku_name like CONCAT('%',#{paramCondition.keyWords},'%')
+            )
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null ">
+            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y-%m-%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null ">
+            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+
+        <if test="paramCondition.createUser != null ">
+            and task.create_user = #{paramCondition.createUser}
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and task.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.statusList !=null and paramCondition.statusList.size>0 ">
+            and task.status in
+            <foreach collection="paramCondition.statusList" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.types !=null and paramCondition.types.size>0 ">
+            and task.type in
+            <foreach collection="paramCondition.types" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.taskIds !=null and paramCondition.taskIds.size>0 ">
+            and task.process_task_id in
+            <foreach collection="paramCondition.taskIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.participantUser != null and paramCondition.participantUser != '' ">
+            and (participant.user_id = #{paramCondition.participantUser}
+            or task.user_id = #{paramCondition.participantUser}
+            )
+        </if>
+        group by task.process_task_id
+    </select>
     <select id="errorTask" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
         select
