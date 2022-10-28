@@ -8,20 +8,18 @@ import cn.atsoft.dasheng.form.service.FormStyleService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 
 
 /**
  * 表单风格控制器
  *
- * @author 
+ * @author
  * @Date 2022-09-23 09:20:36
  */
 @RestController
@@ -35,7 +33,7 @@ public class FormStyleController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2022-09-23
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -48,7 +46,7 @@ public class FormStyleController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2022-09-23
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -62,12 +60,12 @@ public class FormStyleController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2022-09-23
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody FormStyleParam formStyleParam)  {
+    public ResponseData delete(@RequestBody FormStyleParam formStyleParam) {
         this.formStyleService.delete(formStyleParam);
         return ResponseData.success();
     }
@@ -75,13 +73,29 @@ public class FormStyleController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2022-09-23
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<FormStyleResult> detail(@RequestBody FormStyleParam formStyleParam) {
-        FormStyle detail = this.formStyleService.getById(formStyleParam.getStyleId());
+        FormStyle detail = null;
+        try {
+            if (ToolUtil.isNotEmpty(formStyleParam.getStyleId())) {
+                detail = this.formStyleService.getById(formStyleParam.getStyleId());
+            } else if (ToolUtil.isNotEmpty(formStyleParam.getFormType())) {
+                detail = this.formStyleService.getOne(new QueryWrapper<FormStyle>() {{
+                    eq("form_type", formStyleParam.getFormType());
+                }});
+            }
+        } catch (Exception e) {
+
+        }
+
+        if (ToolUtil.isEmpty(detail)) {
+            return ResponseData.success(null);
+        }
+
         FormStyleResult result = new FormStyleResult();
         ToolUtil.copyProperties(detail, result);
         return ResponseData.success(result);
@@ -90,19 +104,17 @@ public class FormStyleController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2022-09-23
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<FormStyleResult> list(@RequestBody(required = false) FormStyleParam formStyleParam) {
-        if(ToolUtil.isEmpty(formStyleParam)){
+        if (ToolUtil.isEmpty(formStyleParam)) {
             formStyleParam = new FormStyleParam();
         }
         return this.formStyleService.findPageBySpec(formStyleParam);
     }
-
-
 
 
 }
