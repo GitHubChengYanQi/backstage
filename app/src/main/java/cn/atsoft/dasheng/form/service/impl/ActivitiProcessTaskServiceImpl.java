@@ -278,7 +278,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     page =  this.baseMapper.aboutMeTask(pageContext, param);
                     break;
                 case Stocktaking:
-                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    page =  this.baseMapper.stocktakingTask(pageContext, param);
                     break;
                 case PROCUREMENTORDER:
                     page =  this.baseMapper.aboutMeTask(pageContext, param);

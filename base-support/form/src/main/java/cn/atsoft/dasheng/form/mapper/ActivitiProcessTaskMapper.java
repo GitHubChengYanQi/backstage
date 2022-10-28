@@ -68,6 +68,6 @@ public interface ActivitiProcessTaskMapper extends BaseMapper<ActivitiProcessTas
 //    Page<ActivitiProcessTaskResult> shipTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 //    Page<ActivitiProcessTaskResult> qualityTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 //    Page<ActivitiProcessTaskResult> purchaceTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
-//    Page<ActivitiProcessTaskResult> stocktakingTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
+    Page<ActivitiProcessTaskResult> stocktakingTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 //    Page<ActivitiProcessTaskResult> procurementTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 }
