@@ -41,7 +41,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.ProcessType.*;
-import static cn.atsoft.dasheng.form.pojo.ProcessType.INSTOCK;
 
 
 /**
@@ -910,6 +909,16 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 }
             }
         }
+
+    }
+    @Override
+    public List<ActivitiProcessTaskResult> resultsByIds(List<Long> ids){
+        if(ToolUtil.isEmpty(ids) || ids.size() == 0 ){
+            return new ArrayList<>();
+        }
+        List<ActivitiProcessTaskResult> results = BeanUtil.copyToList(this.listByIds(ids), ActivitiProcessTaskResult.class);
+        this.format(results);
+        return results;
 
     }
 }

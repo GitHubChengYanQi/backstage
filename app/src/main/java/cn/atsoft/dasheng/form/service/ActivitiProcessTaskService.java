@@ -106,4 +106,6 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
     Map<String, String> getSendData(Long taskId);
 
     void checkStartUser(Long processId);
+
+    List<ActivitiProcessTaskResult> resultsByIds(List<Long> ids);
 }

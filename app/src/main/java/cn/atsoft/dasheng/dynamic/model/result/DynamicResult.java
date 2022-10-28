@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.dynamic.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
@@ -22,6 +24,8 @@ public class DynamicResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private UserResult userResult;
+    private SkuSimpleResult skuResult;
+    private ActivitiProcessTaskResult taskResult;
 
     /**
      * 商机动态id
