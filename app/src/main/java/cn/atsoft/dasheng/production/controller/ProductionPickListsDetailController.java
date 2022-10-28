@@ -122,9 +122,9 @@ public class ProductionPickListsDetailController extends BaseController {
             productionPickListsDetailParam = new ProductionPickListsDetailParam();
         }
         if (ToolUtil.isNotEmpty(productionPickListsDetailParam.getStorehousePositionsId())) {
-            StorehousePositions positions = storehousePositionsService.getById(productionPickListsDetailParam.getStorehousePositionsId());
-            if (ToolUtil.isNotEmpty(positions.getChildrens())) {
-                List<Long> childrens = JSON.parseArray(positions.getChildrens(), Long.class);
+            List<Long> endChild = storehousePositionsService.getEndChild(productionPickListsDetailParam.getStorehousePositionsId());
+            if (ToolUtil.isNotEmpty(endChild)) {
+                List<Long> childrens = endChild;
                 productionPickListsDetailParam.setStorehousePositionsIds(childrens);
             }
         }
