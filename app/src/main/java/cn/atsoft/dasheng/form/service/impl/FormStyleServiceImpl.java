@@ -43,21 +43,16 @@ public class FormStyleServiceImpl extends ServiceImpl<FormStyleMapper, FormStyle
 
     @Override
     public void update(FormStyleParam param) {
-        FormStyle detail = null;
-        try {
-            detail = this.getOne(new QueryWrapper<FormStyle>() {{
-                eq("form_type", param.getFormType());
-            }});
-        } catch (Exception e) {
 
-        }
+        FormStyle detail = this.lambdaQuery().eq(FormStyle::getFormType, param.getFormType()).eq(FormStyle::getDisplay, 1).orderByDesc(FormStyle::getCreateTime).last(" limit 1").one();
+
         if (ToolUtil.isEmpty(detail)) {
             throw new ServiceException(500, "没找到该类型下的表单数据，修改失败!");
         }
-        ToolUtil.copyProperties(detail, param);
-        FormStyle oldEntity = getOldEntity(param);
+        FormStyleParam formStyleParam = new FormStyleParam();
+        ToolUtil.copyProperties(detail, formStyleParam);
         FormStyle newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
+        newEntity.setStyleId(detail.getStyleId());
         this.updateById(newEntity);
     }
 
