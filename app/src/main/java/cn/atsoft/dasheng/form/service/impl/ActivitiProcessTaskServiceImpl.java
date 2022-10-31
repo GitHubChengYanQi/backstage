@@ -251,7 +251,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         String type = param.getType();
         ProcessType enumByType = getEnumByType(type);
         if (ToolUtil.isEmpty(enumByType)) {
-            page = this.baseMapper.aboutMeTask(pageContext, param);
+            page = this.baseMapper.stocktakingTask(pageContext, param);
         }else {
             switch (enumByType){
                 case ALLOCATION:
