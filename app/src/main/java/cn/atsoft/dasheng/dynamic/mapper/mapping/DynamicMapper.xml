@@ -214,6 +214,9 @@
                 <if test="paramCondition.deptId != null">
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
+                <if test="paramCondition.beginTime != null and paramCondition.endTime != null">
+                    and (create_time between CONCAT(#{paramCondition.beginTime},' 00:00:00') and CONCAT(#{paramCondition.endTime},' 23:59:59'))
+                </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
@@ -273,6 +276,9 @@
                 </if>
                 <if test="paramCondition.deptId != null">
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.beginTime != null and paramCondition.endTime != null">
+                    and (create_time between CONCAT(#{paramCondition.beginTime},' 00:00:00') and CONCAT(#{paramCondition.endTime},' 23:59:59'))
                 </if>
     </select>
 
