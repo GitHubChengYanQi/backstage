@@ -211,7 +211,7 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
             }
 
             for (InstockOrderResult instockOrderResult : instockOrderResults) {
-                if (datum.getRecordId().equals(instockOrderResult.getInstockOrderId())) {
+                if (datum.getReceiptId().equals(instockOrderResult.getInstockOrderId())) {
                     datum.setInstockOrderResult(instockOrderResult);
                     break;
                 }

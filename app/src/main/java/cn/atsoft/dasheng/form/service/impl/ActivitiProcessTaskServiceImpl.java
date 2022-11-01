@@ -250,7 +250,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         String type = param.getType();
         ProcessType enumByType = getEnumByType(type);
         if (ToolUtil.isEmpty(enumByType)) {
-            page = this.baseMapper.aboutMeTask(pageContext, param);
+            page = this.baseMapper.stocktakingTask(pageContext, param);
         }else {
             switch (enumByType){
                 case ALLOCATION:
@@ -614,6 +614,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 List<Long> processUserIds = JSON.parseArray(datum.getUserIds(), Long.class);
                 datum.setProcessUserIds(processUserIds);
                 userIds.addAll(processUserIds);
+                if (ToolUtil.isNotEmpty(datum.getUserId())) {
+                    userIds.add(datum.getUserId());
+                }
 
             }
             userIds.add(datum.getUserId());

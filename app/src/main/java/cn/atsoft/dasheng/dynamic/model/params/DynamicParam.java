@@ -22,6 +22,10 @@ import java.util.List;
 @ApiModel
 public class DynamicParam implements Serializable, BaseValidatingParam {
 
+    private Date beginTime;
+
+    private Date endTime;
+
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("用户id")
