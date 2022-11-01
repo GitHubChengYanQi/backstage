@@ -614,6 +614,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 List<Long> processUserIds = JSON.parseArray(datum.getUserIds(), Long.class);
                 datum.setProcessUserIds(processUserIds);
                 userIds.addAll(processUserIds);
+                if (ToolUtil.isNotEmpty(datum.getUserId())) {
+                    userIds.add(datum.getUserId());
+                }
 
             }
             userIds.add(datum.getUserId());
