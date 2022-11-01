@@ -369,14 +369,14 @@
 
         <!--开始时间-->
         <if test="paramCondition.startTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &gt;=
+            and date_format(task.create_time,'%Y-%m-%d') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y-%m-%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
-            str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(task.create_time,'%Y-%m-%d') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y-%m-%d')
         </if>
         <if test="paramCondition.skuName != null and  paramCondition.skuName != ''">
             and (
@@ -529,14 +529,14 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &gt;=
+            and date_format(task.create_time,'%Y-%m-%d') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y-%m-%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
-            str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(task.create_time,'%Y-%m-%d') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y-%m-%d')
         </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and (
@@ -683,14 +683,14 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &gt;=
+            and date_format(task.create_time,'%Y-%m-%d') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y-%m-%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
-            str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(task.create_time,'%Y-%m-%d') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y-%m-%d')
         </if>
 
         <if test="paramCondition.createUser != null ">
@@ -802,14 +802,14 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &gt;=
+            and date_format(task.create_time,'%Y-%m-%d') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y-%m-%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
-            str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(task.create_time,'%Y-%m-%d') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y-%m-%d')
         </if>
         <if test="paramCondition.skuName != null and  paramCondition.skuName != ''">
             and (
@@ -924,14 +924,14 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &gt;=
+            and date_format(task.create_time,'%Y-%m-%d') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y-%m-%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
-            str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(task.create_time,'%Y-%m-%d') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y-%m-%d')
         </if>
         <if test="paramCondition.skuName != null and  paramCondition.skuName != ''">
             and (
@@ -1070,14 +1070,14 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &gt;=
+            and date_format(task.create_time,'%Y-%m-%d') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y-%m-%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
-            str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(task.create_time,'%Y-%m-%d') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y-%m-%d')
         </if>
 
         <if test="paramCondition.createUser != null ">
@@ -1199,14 +1199,14 @@
         </if>
         <!--开始时间-->
         <if test="paramCondition.startTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &gt;=
+            and date_format(task.create_time,'%Y-%m-%d') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y-%m-%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null ">
-            and date_format(task.create_time,'%Y-%m-%d %H:%i:%s') &lt;=
-            str_to_date(#{paramCondition.endTime},'%Y-%m-%d %H:%i:%s')
+            and date_format(task.create_time,'%Y-%m-%d') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y-%m-%d')
         </if>
 
         <if test="paramCondition.createUser != null ">
