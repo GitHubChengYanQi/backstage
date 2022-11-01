@@ -188,10 +188,17 @@ public class AnomalyDetail implements Serializable {
         this.opinionImg = opinionImg;
     }
 
+    public String getdescription() {
+        return description;
+    }
+
+    public void setdescription(String description) {
+        this.description = description;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
-
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
