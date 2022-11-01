@@ -112,6 +112,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         for (OrderDetailParam param : params) {
             OrderDetail orderDetail = new OrderDetail();
             ToolUtil.copyProperties(param, orderDetail);
+            orderDetail.setDetailId(null);
             int detailAmount = Math.toIntExact(orderDetail.getOnePrice() * orderDetail.getPurchaseNumber());
             orderDetail.setOrderId(orderId);
             orderDetail.setCustomerId(customerId);

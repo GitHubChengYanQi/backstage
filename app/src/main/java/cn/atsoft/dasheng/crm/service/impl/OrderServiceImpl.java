@@ -96,7 +96,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         this.save(entity);
 
-        if (param.getGenerateContract() == 1) {   //创建合同
+        if (ToolUtil.isNotEmpty(param.getGenerateContract())&&param.getGenerateContract() == 1) {   //创建合同
             Contract contract = contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param, orderType);
             entity.setContractId(contract.getContractId());
             if (ToolUtil.isNotEmpty(contract.getContractId())) {
