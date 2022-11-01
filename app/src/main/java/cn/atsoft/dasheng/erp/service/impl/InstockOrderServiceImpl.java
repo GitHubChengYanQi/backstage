@@ -342,9 +342,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             entity.setTaskId(taskId);
             this.updateById(entity);
-            //添加小铃铛
-            wxCpSendTemplate.setSource("processTask");
-            wxCpSendTemplate.setSourceId(taskId);
             //添加log
             if (param.getDirectInStock()) {   // 直接入库
 //                messageProducer.auditMessageDo(new AuditEntity() {{
