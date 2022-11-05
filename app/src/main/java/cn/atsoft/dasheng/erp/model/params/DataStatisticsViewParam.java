@@ -17,4 +17,7 @@ public class DataStatisticsViewParam {
     private Long instockOrderId;
     private Long userId;
     private Long sendUser;
+
+
+    private String viewMode;
 }
