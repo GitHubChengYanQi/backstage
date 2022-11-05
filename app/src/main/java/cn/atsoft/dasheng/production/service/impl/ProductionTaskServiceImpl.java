@@ -49,6 +49,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,6 +117,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     private ProductionStationBindService productionStationBindService;
 
     @Override
+    @Transactional
     public void add(ProductionTaskParam param) {
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(param.getWorkOrderId());
         List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
@@ -137,8 +139,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 判断负责人是否存在与工位中
          */
         List<ProductionStationBind> productionStationBinds = productionStationBindService.query().eq("production_station_id", setpSet.getProductionStationId()).list();
-        if (ToolUtil.isNotEmpty(param.getUserId()) && productionStationBinds.stream().noneMatch(i->i.getUserId().equals(param.getUserId()))) {
-            throw new ServiceException(500,"负责人不在此工位，无法分派");
+        if (ToolUtil.isNotEmpty(param.getUserId()) && productionStationBinds.stream().noneMatch(i -> i.getUserId().equals(param.getUserId()))) {
+            throw new ServiceException(500, "负责人不在此工位，无法分派");
         }
 
 
@@ -206,11 +208,14 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
          * 发起任务
          */
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "productionTask").eq("status", 99).one();
-        if (ToolUtil.isNotEmpty(activitiProcess) && ToolUtil.isNotEmpty(param.getUserId())) {
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "提交的生产任务 (" + param.getCoding() + ")");
-            activitiProcessTaskParam.setUserId(param.getUserId());
+            if (ToolUtil.isNotEmpty(param.getUserId())) {
+                activitiProcessTaskParam.setUserId(param.getUserId());
+            }
             activitiProcessTaskParam.setFormId(entity.getProductionTaskId());
             activitiProcessTaskParam.setType("productionTask");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
@@ -222,9 +227,14 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1,LoginContextHolder.getContext().getUserId());
+            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
 
-        } else if (ToolUtil.isNotEmpty(param.getUserId())) {
+        } else {
+            throw new ServiceException(500, "请创建质检流程！");
+        }
+
+
+        if (ToolUtil.isNotEmpty(param.getUserId())) {
             /**
              * 如果有审批则进行审批  没有直接推送微信消息
              */
@@ -233,61 +243,61 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             /**
              * 发送消息
              */
-            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
-                setFunction(MarkDownTemplateTypeEnum.action);
-                setType(0);
-                setTitle("新的生产任务");
-                setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
-//                setDescription("您被分派了新的生产任务" + entity.getCoding());
-                setSource("productionTask");
-                setSourceId(entity.getProductionTaskId());
-                setTaskId(entity.getProductionTaskId());
-                setCreateTime(entity.getCreateTime());
-                setType(0);
-                setCreateUser(entity.getCreateUser());
-
-                setUserIds(new ArrayList<Long>() {{
-                    add(entity.getUserId());
-                }});
-            }});
+//            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+//                setFunction(MarkDownTemplateTypeEnum.action);
+//                setType(0);
+//                setTitle("新的生产任务");
+//                setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
+////                setDescription("您被分派了新的生产任务" + entity.getCoding());
+//                setSource("productionTask");
+//                setSourceId(entity.getProductionTaskId());
+//                setTaskId(entity.getProductionTaskId());
+//                setCreateTime(entity.getCreateTime());
+//                setType(0);
+//                setCreateUser(entity.getCreateUser());
+//
+//                setUserIds(new ArrayList<Long>() {{
+//                    add(entity.getUserId());
+//                }});
+//            }});
 
             /**
              * 生成领料单
              */
-            MicroServiceEntity serviceEntity = new MicroServiceEntity();
-            serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
-            serviceEntity.setOperationType(OperationType.ADD);
+//            MicroServiceEntity serviceEntity = new MicroServiceEntity();
+//            serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
+//            serviceEntity.setOperationType(OperationType.ADD);
             String jsonString = JSON.toJSONString(new SavePickListsObject() {{
                 setDetails(detailEntitys);
                 setProductionTask(entity);
+                setLoginUser(LoginContextHolder.getContext().getUser());
             }});
-            serviceEntity.setObject(jsonString);
-            serviceEntity.setMaxTimes(2);
-            serviceEntity.setTimes(0);
-            messageProducer.microService(serviceEntity);
-
-        } else if (ToolUtil.isEmpty(param.getUserId())) {
+//            serviceEntity.setObject(jsonString);
+//            serviceEntity.setMaxTimes(2);
+//            serviceEntity.setTimes(0);
+//            messageProducer.microService(serviceEntity);
+            pickListsService.addByProductionTask(jsonString);
+        } else {
             /**
              * 如果有审批则进行审批  没有直接推送微信消息
              */
             entity.setStatus(0);
             this.updateById(entity);
 
-            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
-                setTitle("新的生产任务");
-                setFunction(MarkDownTemplateTypeEnum.action);
-                setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
-//                setDescription("您被分派了新的生产任务" + entity.getCoding());
-                setSource("productionTask");
-                setSourceId(entity.getProductionTaskId());
-                setTaskId(entity.getProductionTaskId());
-                setCreateTime(entity.getCreateTime());
-                setType(0);
-                setUserIds(new ArrayList<Long>() {{
-                    add(entity.getUserId());
-                }});
-            }});
-
+//            wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
+//                setTitle("新的生产任务");
+//                setFunction(MarkDownTemplateTypeEnum.action);
+//                setUrl(mobileService.getMobileConfig().getUrl() + "/#/Work/ProductionTask/Detail?id=" + entity.getProductionTaskId().toString());
+////                setDescription("您被分派了新的生产任务" + entity.getCoding());
+//                setSource("productionTask");
+//                setSourceId(entity.getProductionTaskId());
+//                setTaskId(entity.getProductionTaskId());
+//                setCreateTime(entity.getCreateTime());
+//                setType(0);
+//                setUserIds(new ArrayList<Long>() {{
+//                    add(entity.getUserId());
+//                }});
+//            }});
 
 
         }
@@ -394,6 +404,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
     /**
      * 领取任务
+     *
      * @param param
      * @return
      */
@@ -405,8 +416,8 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         //判断负责人是否存在于工位
         ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", productionWorkOrder.getStepsId()).one();
         List<ProductionStationBind> productionStationBinds = productionStationBindService.query().eq("production_station_id", setpSet.getProductionStationId()).list();
-        if (ToolUtil.isNotEmpty(param.getUserId()) && productionStationBinds.stream().noneMatch(i->i.getUserId().equals(param.getUserId()))) {
-            throw new ServiceException(500,"负责人不在此工位，无法分派");
+        if (ToolUtil.isNotEmpty(param.getUserId()) && productionStationBinds.stream().noneMatch(i -> i.getUserId().equals(param.getUserId()))) {
+            throw new ServiceException(500, "负责人不在此工位，无法分派");
         }
         checkStockDetail(param, productionWorkOrder);
         entity.setProductionTaskId(param.getProductionTaskId());
@@ -458,14 +469,13 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         }});
 
 
-
-
         MicroServiceEntity serviceEntity = new MicroServiceEntity();
         serviceEntity.setType(MicroServiceType.PRODUCTION_PICKLISTS);
         serviceEntity.setOperationType(OperationType.ADD);
         String jsonString = JSON.toJSONString(new SavePickListsObject() {{
             setDetails(detailEntitys);
             setProductionTask(entity);
+            setLoginUser(LoginContextHolder.getContext().getUser());
         }});
         serviceEntity.setObject(jsonString);
         serviceEntity.setMaxTimes(2);
@@ -478,6 +488,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
     /**
      * 转派新的负责人
+     *
      * @param param
      * @return
      */
@@ -494,9 +505,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         ProductionPickLists productionPickLists = this.pickListsService.query().eq("source", "productionTask").eq("source_id", entity.getProductionTaskId()).one();
         productionPickLists.setUserId(param.getUserId());
         pickListsService.updateById(productionPickLists);
-
-
-
 
 
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
