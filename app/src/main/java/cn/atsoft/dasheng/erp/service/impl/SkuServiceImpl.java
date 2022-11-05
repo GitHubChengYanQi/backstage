@@ -11,7 +11,6 @@ import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
-import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -1032,6 +1031,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
         return PageFactory.createPageInfo(page);
+    }
+    @Override
+    public Page skuPage(SkuParam param) {
+
+        Page<SkuResult> pageContext = getPageContext();
+        Page<SkuResult> page = this.baseMapper.customPageList(new ArrayList<>(), pageContext, param);
+        format(page.getRecords());
+
+
+        return page;
     }
 
     @Override
