@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
@@ -229,7 +230,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             activitiProcessTaskService.checkStartUser(activitiProcess.getProcessId());
             auditService.power(activitiProcess);//检查创建权限
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            String name = LoginContextHolder.getContext().getUser().getName();
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            String name ="";
+
+            if (user.getId().equals(-100L)){
+                name = param.getLoginUser().getName();
+            }else {
+                name = user.getName();
+            }
+
             activitiProcessTaskParam.setTaskName(name + "的出库申请 ");
             activitiProcessTaskParam.setRemark(entity.getNote());
             activitiProcessTaskParam.setUserId(param.getUserId());
@@ -496,13 +505,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         SavePickListsObject savePickListsObject = JSON.parseObject(param.toString(), SavePickListsObject.class);
         Long taskId = savePickListsObject.getProductionTask().getProductionTaskId();
 
-        ProductionPickLists productionPickLists = new ProductionPickLists();
+        ProductionPickListsParam productionPickLists = new ProductionPickListsParam();
         productionPickLists.setCoding(codingRulesService.defaultEncoding());
         productionPickLists.setStatus(0L);
         productionPickLists.setSourceId(taskId);
         productionPickLists.setSource("productionTask");
         productionPickLists.setUserId(savePickListsObject.getProductionTask().getUserId());
-        this.save(productionPickLists);
+//        this.save(productionPickLists);
 //        for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
 //            outskuIds.add(detail.getOutSkuId());
 //        }
@@ -522,6 +531,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 inSkuIds.add(resultByStepsId.getSkuId());
             }
         }
+        List<ProductionPickListsDetailParam> detailParams = new ArrayList<>();
+
         if (outSkuIds.size() > 0) {
             List<Parts> parts = outSkuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", outSkuIds).eq("status", 99).list();
             List<Long> partIds = new ArrayList<>();
@@ -542,41 +553,35 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
                 partsResult.setParts(partsDetailResultList);
             }
-
-            List<ProductionPickListsDetail> details = new ArrayList<>();
-
             for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
                 for (PartsResult partsResult : partsResults) {
                     if (detail.getOutSkuId().equals(partsResult.getSkuId())) {
                         for (ErpPartsDetailResult part : partsResult.getParts()) {
-                            ProductionPickListsDetail productionPickListsDetail = new ProductionPickListsDetail();
+                            ProductionPickListsDetailParam productionPickListsDetail = new ProductionPickListsDetailParam();
                             productionPickListsDetail.setNumber((int) (detail.getNumber() * part.getNumber()));
                             productionPickListsDetail.setSkuId(part.getSkuId());
                             productionPickListsDetail.setPickListsId(productionPickLists.getPickListsId());
-                            details.add(productionPickListsDetail);
+                            detailParams.add(productionPickListsDetail);
                         }
                         break;
                     }
                 }
             }
-
-
-            pickListsDetailService.saveBatch(details);
         } else if (inSkuIds.size() > 0) {
-            List<ProductionPickListsDetail> details = new ArrayList<>();
             for (Long inSkuId : inSkuIds) {
                 for (ProductionTaskDetail detail : savePickListsObject.getDetails()) {
                     if (detail.getOutSkuId().equals(inSkuId)) {
-                        ProductionPickListsDetail productionPickListsDetail = new ProductionPickListsDetail();
+                        ProductionPickListsDetailParam productionPickListsDetail = new ProductionPickListsDetailParam();
                         productionPickListsDetail.setNumber(detail.getNumber());
                         productionPickListsDetail.setSkuId(inSkuId);
                         productionPickListsDetail.setPickListsId(productionPickLists.getPickListsId());
-                        details.add(productionPickListsDetail);
+                        detailParams.add(productionPickListsDetail);
                     }
                 }
             }
-            pickListsDetailService.saveBatch(details);
         }
+        productionPickLists.setPickListsDetailParams(detailParams);
+        this.add(productionPickLists);
 
         return null;
     }

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.params;
 
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -39,6 +40,8 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
     private String code;
     @ApiModelProperty("主任务id")
     private Long mainTaskId;
+
+    private LoginUser loginUser;
 
 
 
