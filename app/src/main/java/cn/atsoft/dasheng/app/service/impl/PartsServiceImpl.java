@@ -193,6 +193,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             List<ErpPartsDetail> partsDetails = new ArrayList<>();
             for (ErpPartsDetailParam part : partsParam.getParts()) {
                 part.setPartsId(parts.getPartsId());
+                part.setAutoOutstock(part.getAutoOutstock());
                 part.setPartsDetailId(null);
                 ErpPartsDetail partsDetail = new ErpPartsDetail();
                 ToolUtil.copyProperties(part, partsDetail);
@@ -239,6 +240,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             List<ErpPartsDetail> partsDetails = new ArrayList<>();
             for (ErpPartsDetailParam part : partsParam.getParts()) {
                 part.setPartsId(parts.getPartsId());
+                part.setAutoOutstock(part.getAutoOutstock());
                 part.setPartsDetailId(null);
                 ErpPartsDetail partsDetail = new ErpPartsDetail();
                 ToolUtil.copyProperties(part, partsDetail);

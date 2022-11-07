@@ -112,6 +112,11 @@ public class ErpPartsDetail implements Serializable {
     @TableField("note")
     private String note;
 
+    /*
+     * 是否自动出库
+     */
+    @TableField("auto_outstock")
+    private Integer autoOutstock;
 
     public Long getPartsDetailId() {
         return partsDetailId;
@@ -207,6 +212,14 @@ public class ErpPartsDetail implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Integer getAutoOutstock() {
+        return autoOutstock;
+    }
+
+    public void setAutoOutstock(Integer autoOutstock) {
+        this.autoOutstock = autoOutstock;
     }
 
     @Override
