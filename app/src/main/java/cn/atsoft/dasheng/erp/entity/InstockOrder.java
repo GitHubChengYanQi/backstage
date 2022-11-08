@@ -172,6 +172,22 @@ public class InstockOrder implements Serializable {
     @TableField("origin")
     private String origin;
 
+
+
+    /**
+     * 入库类型
+     */
+    @TableField("instock_type")
+    private String instockType;
+
+    public String getInstockType() {
+        return instockType;
+    }
+
+    public void setInstockType(String instockType) {
+        this.instockType = instockType;
+    }
+    
     public Long getStatus() {
         return status;
     }
