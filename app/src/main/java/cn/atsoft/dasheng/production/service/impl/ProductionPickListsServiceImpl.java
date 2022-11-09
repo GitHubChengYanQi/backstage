@@ -203,7 +203,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         entity.setStatus(0L);
 //        entity.setUserId(LoginContextHolder.getContext().getUserId());
         this.save(entity);
-//        String origin = getOrigin.newThemeAndOrigin("OUTSTOCK", entity.getPickListsId(), entity.getSource(), entity.getSourceId());
+//        String origin = getOrigin.newThemeAndOrigin("productionTask", entity.getTaskId(), entity.getSource(), entity.getSourceId());
 //        entity.setOrigin(origin);
 //        this.updateById(entity);
 
