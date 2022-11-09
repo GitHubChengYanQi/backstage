@@ -171,6 +171,7 @@ public class PartsController extends BaseController {
         for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
             ErpPartsDetailResult erpPartsDetailResult = new ErpPartsDetailResult();
             ToolUtil.copyProperties(erpPartsDetail, erpPartsDetailResult);
+            erpPartsDetailResult.setAutoOutstock(erpPartsDetail.getAutoOutstock());
             erpPartsDetailResult.setPartsAttributes(erpPartsDetail.getAttribute());
             erpPartsDetailParams.add(erpPartsDetailResult);
             skuIds.add(erpPartsDetail.getSkuId());

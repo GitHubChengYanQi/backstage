@@ -102,6 +102,12 @@ public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("备注")
     private String note;
 
+    /**
+     * 是否自动出库
+     */
+    @ApiModelProperty("是否自动出库")
+    private Integer autoOutstock;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
