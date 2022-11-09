@@ -547,7 +547,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             for (PartsResult partsResult : partsResults) {
                 List<ErpPartsDetailResult> partsDetailResultList = new ArrayList<>();
                 for (ErpPartsDetailResult partsDetailResult : partsDetailResults) {
-                    if (partsDetailResult.getPartsId().equals(partsResult.getPartsId())) {
+                    if (partsDetailResult.getPartsId().equals(partsResult.getPartsId()) && partsDetailResult.getAutoOutstock().equals(1)) {
                         partsDetailResultList.add(partsDetailResult);
                     }
                 }
