@@ -127,6 +127,13 @@ public class ErpPartsDetailResult implements Serializable {
     @ApiModelProperty("备注")
     @JSONField(serialize = false)
     private String note;
+    
+    /**
+     * 是否自动出库
+     */
+    @ApiModelProperty("是否自动出库")
+    private Integer autoOutstock;
+
     @ApiModelProperty("父ID顺序数组")
     @JSONField(serialize = false)
     private List<String> pidValue;
