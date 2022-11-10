@@ -135,13 +135,6 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             }
         }
 
-        /**
-         * 判断负责人是否存在与工位中
-         */
-        List<ProductionStationBind> productionStationBinds = productionStationBindService.query().eq("production_station_id", setpSet.getProductionStationId()).list();
-        if (ToolUtil.isNotEmpty(param.getUserId()) && productionStationBinds.stream().noneMatch(i -> i.getUserId().equals(param.getUserId()))) {
-            throw new ServiceException(500, "负责人不在此工位，无法分派");
-        }
 
 
         /**
@@ -210,6 +203,13 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 //        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "productionTask").eq("status", 99).one();
 //        if (ToolUtil.isNotEmpty(activitiProcess)) {
 //
+//        /**
+//         * 判断负责人是否存在与工位中
+//         */
+//        List<ProductionStationBind> productionStationBinds = productionStationBindService.query().eq("production_station_id", setpSet.getProductionStationId()).list();
+//        if (ToolUtil.isNotEmpty(param.getUserId()) && productionStationBinds.stream().noneMatch(i -> i.getUserId().equals(param.getUserId()))) {
+//            throw new ServiceException(500, "负责人不在此工位，无法分派");
+//        }
 //            LoginUser user = LoginContextHolder.getContext().getUser();
 //            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
 //            activitiProcessTaskParam.setTaskName(user.getName() + "提交的生产任务 (" + param.getCoding() + ")");
