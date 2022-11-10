@@ -1,4 +1,4 @@
 package cn.atsoft.dasheng.Excel.service;
 
-public interface excelEntity {
+public interface IExcelEntity {
 }

@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.Excel;
 
-import cn.atsoft.dasheng.Excel.pojo.SkuExcelExportPojo;
-import cn.atsoft.dasheng.Excel.service.excelEntity;
+import cn.atsoft.dasheng.Excel.pojo.SkuIExcelExportPojo;
+import cn.atsoft.dasheng.Excel.service.IExcelEntity;
 import cn.atsoft.dasheng.Excel.service.impl.SkuExcelExport;
 import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -189,11 +189,11 @@ public class SkuExportExcel extends BaseController {
 
         List<SkuResult> listBySpec = skuService.findListBySpec(new SkuParam());
 
-        List<excelEntity> list = new ArrayList<>();
+        List<IExcelEntity> list = new ArrayList<>();
 
 
         for (SkuResult skuResult : listBySpec) {
-            SkuExcelExportPojo skuExcelExportPojo = new SkuExcelExportPojo();
+            SkuIExcelExportPojo skuExcelExportPojo = new SkuIExcelExportPojo();
             ToolUtil.copyProperties(skuResult,skuExcelExportPojo);
             if (ToolUtil.isNotEmpty(skuResult.getSpuResult())) {
                 if (ToolUtil.isNotEmpty(skuResult.getSpuResult().getCoding())) {

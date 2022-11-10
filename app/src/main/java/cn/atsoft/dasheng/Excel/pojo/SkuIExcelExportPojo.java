@@ -1,20 +1,14 @@
 package cn.atsoft.dasheng.Excel.pojo;
 
-import cn.atsoft.dasheng.Excel.service.excelEntity;
+import cn.atsoft.dasheng.Excel.service.IExcelEntity;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.appBase.model.result.MediaResult;
-import cn.atsoft.dasheng.erp.model.params.SkuJson;
-import cn.atsoft.dasheng.erp.model.result.SpuResult;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.serializer.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class SkuExcelExportPojo  implements excelEntity {
+public class SkuIExcelExportPojo implements IExcelEntity {
     List<BrandResult> brandResults;
 
     @ApiModelProperty("物料编码")

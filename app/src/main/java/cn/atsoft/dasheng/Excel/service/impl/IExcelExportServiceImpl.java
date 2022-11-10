@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.Excel.service.impl;
 
-import cn.atsoft.dasheng.Excel.service.ExcelExportService;
-import cn.atsoft.dasheng.Excel.service.excelEntity;
+import cn.atsoft.dasheng.Excel.service.IExcelExportService;
+import cn.atsoft.dasheng.Excel.service.IExcelEntity;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ExcelExportServiceImpl implements ExcelExportService<excelEntity> {
+public class IExcelExportServiceImpl implements IExcelExportService<IExcelEntity> {
 
-    List<excelEntity> data = new ArrayList<>();
+    List<IExcelEntity> data = new ArrayList<>();
 
     private Map<String, String> sortColum;
 
@@ -47,7 +47,7 @@ public class ExcelExportServiceImpl implements ExcelExportService<excelEntity> {
          * 创建数据
          */
         int index = 1;
-        for (excelEntity datum : data) {
+        for (IExcelEntity datum : data) {
             //创建行
             XSSFRow dataRow = sheet.createRow(index);
             int cellIndex = 0;
@@ -77,7 +77,7 @@ public class ExcelExportServiceImpl implements ExcelExportService<excelEntity> {
     }
 
     @Override
-    public void setData(List<excelEntity> data) {
+    public void setData(List<IExcelEntity> data) {
         this.data = data;
     }
 

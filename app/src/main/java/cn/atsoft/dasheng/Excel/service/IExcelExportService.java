@@ -5,11 +5,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.List;
 import java.util.Map;
 
-public interface ExcelImportService<T> {
+public interface IExcelExportService<T> {
 
-    XSSFWorkbook importExcel(List<String> columNames);
 
-    void getData(List<T> data);
+    XSSFWorkbook exportExcel(List<String> columNames);
+
+    void setData(List<T> data);
 
     void sortColum(Map<String, String> sortColum);
 }

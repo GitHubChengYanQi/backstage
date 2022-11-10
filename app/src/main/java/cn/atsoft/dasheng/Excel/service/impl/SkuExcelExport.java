@@ -1,13 +1,13 @@
 package cn.atsoft.dasheng.Excel.service.impl;
 
-import cn.atsoft.dasheng.Excel.service.excelEntity;
+import cn.atsoft.dasheng.Excel.service.IExcelEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class SkuExcelExport extends ExcelExportServiceImpl implements excelEntity {
+public class SkuExcelExport extends IExcelExportServiceImpl implements IExcelEntity {
 
     private Map<String, String> sortColum = new HashMap<String, String>() {{
         put("standard", "物料编码");

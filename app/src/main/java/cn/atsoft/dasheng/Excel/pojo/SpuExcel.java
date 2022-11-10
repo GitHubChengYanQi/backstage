@@ -1,9 +1,10 @@
 package cn.atsoft.dasheng.Excel.pojo;
 
+import cn.atsoft.dasheng.Excel.service.IExcelEntity;
 import lombok.Data;
 
 @Data
-public class SpuExcel {
+public class SpuExcel implements IExcelEntity {
     private String spuName;
     private String spuCoding;
     private String spuClass;
