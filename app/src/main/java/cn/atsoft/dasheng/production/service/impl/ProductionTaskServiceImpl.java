@@ -204,34 +204,34 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         productionTaskDetailService.saveBatch(detailEntitys);
 
 
-        /**
-         * 发起任务
-         */
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "productionTask").eq("status", 99).one();
-        if (ToolUtil.isNotEmpty(activitiProcess)) {
-
-            LoginUser user = LoginContextHolder.getContext().getUser();
-            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "提交的生产任务 (" + param.getCoding() + ")");
-            if (ToolUtil.isNotEmpty(param.getUserId())) {
-                activitiProcessTaskParam.setUserId(param.getUserId());
-            }
-            activitiProcessTaskParam.setFormId(entity.getProductionTaskId());
-            activitiProcessTaskParam.setType("productionTask");
-            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
-            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
-            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-            //添加铃铛`
-            wxCpSendTemplate.setSource("productionTask");
-            wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
-            //添加log
-            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
-
-        } else {
-            throw new ServiceException(500, "请创建质检流程！");
-        }
+//        /**
+//         * 发起任务
+//         */
+//        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "productionTask").eq("status", 99).one();
+//        if (ToolUtil.isNotEmpty(activitiProcess)) {
+//
+//            LoginUser user = LoginContextHolder.getContext().getUser();
+//            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+//            activitiProcessTaskParam.setTaskName(user.getName() + "提交的生产任务 (" + param.getCoding() + ")");
+//            if (ToolUtil.isNotEmpty(param.getUserId())) {
+//                activitiProcessTaskParam.setUserId(param.getUserId());
+//            }
+//            activitiProcessTaskParam.setFormId(entity.getProductionTaskId());
+//            activitiProcessTaskParam.setType("productionTask");
+//            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+//            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
+//            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
+//            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+//            //添加铃铛`
+//            wxCpSendTemplate.setSource("productionTask");
+//            wxCpSendTemplate.setSourceId(entity.getProductionTaskId());
+//            //添加log
+//            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+//            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
+//
+//        } else {
+//            throw new ServiceException(500, "请创建生产流程！");
+//        }
 
 
         if (ToolUtil.isNotEmpty(param.getUserId())) {
