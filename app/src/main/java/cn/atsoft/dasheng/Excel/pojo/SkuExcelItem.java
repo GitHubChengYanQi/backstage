@@ -73,6 +73,8 @@ public class SkuExcelItem implements IExcelEntity {
 
     private String remarks;
 
+    private String attributeAndValue;
+
     private String maintenancePeriod;
 
     private String skuSize;
