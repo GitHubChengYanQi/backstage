@@ -1,17 +1,11 @@
 package cn.atsoft.dasheng.Excel;
 
 import cn.atsoft.dasheng.Excel.pojo.SpuExcel;
-import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.Excel.service.IExcelEntity;
+import cn.atsoft.dasheng.Excel.service.impl.SpuImportExcel;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.Category;
-import cn.atsoft.dasheng.erp.entity.Spu;
-import cn.atsoft.dasheng.erp.entity.SpuClassification;
-import cn.atsoft.dasheng.erp.model.result.CategoryResult;
-import cn.atsoft.dasheng.erp.service.CategoryService;
-import cn.atsoft.dasheng.erp.service.SpuClassificationService;
-import cn.atsoft.dasheng.erp.service.SpuService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
@@ -32,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -45,10 +38,12 @@ public class SpuExcelController {
     private SkuExcelService skuExcelService;
     @Autowired
     private ExcelAsync excelAsync;
+    @Autowired
+     SpuImportExcel spuImportExcel;
 
 
-    @RequestMapping(value = "/spuImport", method = RequestMethod.GET)
-    @ResponseBody
+//    @RequestMapping(value = "/spuImport", method = RequestMethod.GET)
+//    @ResponseBody
     public ResponseData spuImport(@RequestParam Long fileId) {
 
         FileInfo fileInfo = fileInfoService.getById(fileId);
@@ -94,6 +89,51 @@ public class SpuExcelController {
          * 调用异步方法
          */
         excelAsync.spuAdd(spuExcels, LoginContextHolder.getContext().getUserId());
+        return ResponseData.success("ok");
+    }
+    @RequestMapping(value = "/spuImport", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData spuImportV1(@RequestParam Long fileId) {
+
+        FileInfo fileInfo = fileInfoService.getById(fileId);
+        File excelFile = new File(fileInfo.getFilePath());
+
+        ExcelReader reader = ExcelUtil.getReader(excelFile);
+        spuImportExcel.importExcel(reader, SpuExcel.class);
+        List<SpuExcel> data = spuImportExcel.getData();
+
+
+
+        /**
+         * 去掉首尾空格
+         */
+        for (SpuExcel spuExcel : data) {
+
+            if (ToolUtil.isNotEmpty(spuExcel.getSpuCoding())) {
+                spuExcel.setSpuCoding(spuExcel.getSpuCoding().trim());
+            }
+
+            if (ToolUtil.isNotEmpty(spuExcel.getSpuClass())) {
+                spuExcel.setSpuClass(spuExcel.getSpuClass().trim());
+            }
+
+            if (ToolUtil.isNotEmpty(spuExcel.getSpuName())) {
+                spuExcel.setSpuName(spuExcel.getSpuName().trim());
+            }
+
+            if (ToolUtil.isNotEmpty(spuExcel.getUnit())) {
+                spuExcel.setUnit(spuExcel.getUnit().trim());
+            }
+
+            if (ToolUtil.isNotEmpty(spuExcel.getSpecifications())) {
+                spuExcel.setSpecifications(spuExcel.getSpecifications().trim());
+            }
+
+        }
+        /**
+         * 调用异步方法
+         */
+        excelAsync.spuAdd(data, LoginContextHolder.getContext().getUserId());
         return ResponseData.success("ok");
     }
 

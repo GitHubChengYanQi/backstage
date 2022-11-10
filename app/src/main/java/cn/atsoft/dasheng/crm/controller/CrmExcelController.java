@@ -8,6 +8,8 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
 
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import cn.atsoft.dasheng.Excel.SkuExcelService;
+import cn.atsoft.dasheng.Excel.SkuExportExcel;
+import cn.atsoft.dasheng.Excel.service.impl.SkuExcelExport;
 import cn.atsoft.dasheng.Tool.VoUtilsTool;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.service.*;
@@ -41,6 +43,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -91,6 +94,10 @@ public class CrmExcelController {
 
     @Autowired
     private SkuExcelService skuExcelService;
+
+
+    @Autowired
+    private SkuExcelExport skuExcelExport;
 
     /**
      * 上传excel填报
@@ -355,44 +362,32 @@ public class CrmExcelController {
 
     @RequestMapping(value = "/SkuExcel", method = RequestMethod.GET)
     @ApiOperation("导出")
-    public void SkuExcel(HttpServletResponse response, Long type, String url) throws IOException {
-
-        String[] header = {"物料编码", "分类", "产品", "型号", "单位", "是否批量","规格","物料描述"};
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet hssfSheet = workbook.createSheet("物料模板");
-        HSSFSheet sheet = skuExcelService.dataEffective(hssfSheet,300);
-        HSSFRow titleRow = sheet.createRow(0);
-        HSSFCell ti = titleRow.createCell(0);
-
-        HSSFCellStyle titleStyle = workbook.createCellStyle();
-        titleStyle.setFillForegroundColor((short) 10);
-//        titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);
-        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        ti.setCellStyle(titleStyle);
+    public void SkuExcel(HttpServletResponse response) throws IOException {
 
 
-        HSSFRow headRow = sheet.createRow(0);
-
-        for (int i = 0; i < header.length; i++) {
-
-
-            //创建一个单元格
-            HSSFCell cell = headRow.createCell(i);
-
-            //创建一个内容对象
-            HSSFRichTextString text = new HSSFRichTextString(header[i]);
-
-
-            HSSFCellStyle headerStyle = workbook.createCellStyle();
-            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-            //将内容对象的文字内容写入到单元格中
-            cell.setCellValue(text);
-            cell.setCellStyle(headerStyle);
-        }
-
+        XSSFWorkbook workbook = skuExcelExport.exportExcel(new ArrayList<String>() {{
+            add("standard");
+            add("spu");
+            add("spuClass");
+            add("unitId");
+            add("model");
+            add("partNo");
+            add("nationalStandard");
+            add("specifications");
+            add("spuCoding");
+            add("sku");
+            add("materialId");
+            add("level");
+            add("heatTreatment");
+            add("weight");
+            add("skuSize");
+            add("color");
+            add("packaging");
+            add("remarks");
+            add("maintenancePeriod");
+            add("batch");
+            add("viewFrame");
+        }});
 
 
         //准备将Excel的输出流通过response输出到页面下载
