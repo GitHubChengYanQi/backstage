@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.Excel;
 import cn.atsoft.dasheng.Excel.pojo.SkuExcelExportPojo;
 import cn.atsoft.dasheng.Excel.service.excelEntity;
 import cn.atsoft.dasheng.Excel.service.impl.SkuExcelExport;
+import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -182,7 +183,7 @@ public class SkuExportExcel extends BaseController {
     @ApiOperation("导出")
     @ApiVersion("1.1")
     public void excelTest1(HttpServletResponse response, @RequestParam List<String > columNames) throws IOException {
-        if (ToolUtil.isNotEmpty(columNames)){
+        if (ToolUtil.isEmpty(columNames)){
             throw new ServiceException(500,"请选择导出列");
         }
 
@@ -193,27 +194,27 @@ public class SkuExportExcel extends BaseController {
 
         for (SkuResult skuResult : listBySpec) {
             SkuExcelExportPojo skuExcelExportPojo = new SkuExcelExportPojo();
-
             ToolUtil.copyProperties(skuResult,skuExcelExportPojo);
-            String message = "";
-
-            try{
-                String skuName = skuResult.getSkuName();
-                String spuName = skuResult.getSpuResult().getName();
-                if (ToolUtil.isEmpty(spuName)) {
-                    spuName = "";
+            if (ToolUtil.isNotEmpty(skuResult.getSpuResult())) {
+                if (ToolUtil.isNotEmpty(skuResult.getSpuResult().getCoding())) {
+                    skuExcelExportPojo.setSpuCoding(skuResult.getSpuResult().getCoding());
                 }
-                String spe = skuResult.getSpecifications();
-                if (ToolUtil.isNotEmpty(spe)) {
-                    spe = "/" + spe;
-                } else {
-                    spe = "";
+                if (ToolUtil.isNotEmpty(skuResult.getSpuResult().getName())) {
+                    skuExcelExportPojo.setSpu(skuResult.getSpuResult().getName());
+                } if (ToolUtil.isNotEmpty(skuResult.getSpuResult().getUnitResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getUnitResult().getUnitName()) ) {
+                    skuExcelExportPojo.setUnitId(skuResult.getSpuResult().getUnitResult().getUnitName());
                 }
-                message = spuName + "/" + skuName + spe;
-            }catch (Exception e){
-
             }
-            skuExcelExportPojo.setSkuMessage(message);
+            if (ToolUtil.isNotEmpty(skuResult.getMaterialResultList())){
+                StringBuffer materialNames = new StringBuffer();
+                for (MaterialResult materialResult : skuResult.getMaterialResultList()) {
+                    materialNames.append(materialResult.getName()!=null ? materialResult.getName():"").append(",");
+                }
+                if (materialNames.length()>0){
+                    skuExcelExportPojo.setMaterialId(materialNames.substring(0,materialNames.length()-1));
+                }
+            }
+
             list.add(skuExcelExportPojo);
         }
 

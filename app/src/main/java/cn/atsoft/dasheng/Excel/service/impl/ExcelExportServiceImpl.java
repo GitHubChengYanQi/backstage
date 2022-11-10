@@ -14,7 +14,7 @@ public class ExcelExportServiceImpl implements ExcelExportService<excelEntity> {
 
     List<excelEntity> data = new ArrayList<>();
 
-    private Map<String,String> sortColum;
+    private Map<String, String> sortColum;
 
     @Override
     public XSSFWorkbook exportExcel(List<String> columNames) {
@@ -34,13 +34,13 @@ public class ExcelExportServiceImpl implements ExcelExportService<excelEntity> {
         XSSFRow headRow = sheet.createRow(0);
 
         for (String columKey : sortColum.keySet()) {
-            if (columNames.stream().anyMatch(i->i.equals(columKey))){
-              //创建一个单元格
-              XSSFCell cell = headRow.createCell(headerIndex);
-              //将内容对象的文字内容写入到单元格中
-              cell.setCellValue(sortColum.get(columKey));
-              cell.setCellStyle(headerStyle(workbook));
-              headerIndex+=1;
+            if (columNames.stream().anyMatch(i -> i.equals(columKey))) {
+                //创建一个单元格
+                XSSFCell cell = headRow.createCell(headerIndex);
+                //将内容对象的文字内容写入到单元格中
+                cell.setCellValue(sortColum.get(columKey));
+                cell.setCellStyle(headerStyle(workbook));
+                headerIndex += 1;
             }
         }
         /**
@@ -50,34 +50,26 @@ public class ExcelExportServiceImpl implements ExcelExportService<excelEntity> {
         for (excelEntity datum : data) {
             //创建行
             XSSFRow dataRow = sheet.createRow(index);
-            int cellIndex = 0 ;
+            int cellIndex = 0;
             for (String columKey : sortColum.keySet()) {
-                if (columNames.stream().anyMatch(i->i.equals(columKey))){
-
-                    Field[] fields = datum.getClass().getDeclaredFields();
-
-                    for (Field field : fields) {
-                        field.setAccessible(true);
-                        if (field.getName().equals(columKey)) {
+                Field[] fields = datum.getClass().getDeclaredFields();
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    if (field.getName().equals(columKey)) {
+                        try {
                             XSSFCell cell = dataRow.createCell(cellIndex);
-                            Object value = null ;
-                            try{
-                                value = field.get(datum);
-                            }catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                            cell.setCellValue(value == null ? "" : value.toString());
-                            cellIndex+=1;
+                            cell.setCellValue(field.get(datum) == null ? "" : field.get(datum).toString());
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
                         }
+
                     }
-
                 }
+                cellIndex += 1;
+
             }
-            index+=1;
+            index += 1;
         }
-
-
-
 
 
         return workbook;
@@ -102,6 +94,7 @@ public class ExcelExportServiceImpl implements ExcelExportService<excelEntity> {
         headerStyle.setBorderTop(BorderStyle.MEDIUM);
         return headerStyle;
     }
+
     private XSSFSheet createSheet(XSSFWorkbook workbook, String name) {
         XSSFSheet sheet = workbook.createSheet(name);
 
