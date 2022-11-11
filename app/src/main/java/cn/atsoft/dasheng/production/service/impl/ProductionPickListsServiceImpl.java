@@ -197,7 +197,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 entity.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置养护单据自动生成编码规则");
+                throw new ServiceException(500, "请配置出库单据自动生成编码规则");
             }
         }
         entity.setStatus(0L);
