@@ -13,6 +13,8 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
+import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
@@ -116,9 +118,21 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     @Autowired
     private ProductionStationBindService productionStationBindService;
 
+    @Autowired
+    private CodingRulesService codingRulesService;
+
     @Override
     @Transactional
     public void add(ProductionTaskParam param) {
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "18").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置生产任务单据编码规则");
+            }
+        }
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(param.getWorkOrderId());
         List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
 
