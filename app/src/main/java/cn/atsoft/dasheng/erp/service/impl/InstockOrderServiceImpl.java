@@ -64,6 +64,7 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -474,6 +475,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         qualityTaskParam.setDetails(qualityTaskDetailParams);
         qualityTaskParam.setMicroUserId(LoginContextHolder.getContext().getUserId());
+
         MicroServiceEntity serviceEntity = new MicroServiceEntity();
         serviceEntity.setType(MicroServiceType.QUALITY_TASK);
         serviceEntity.setOperationType(OperationType.ADD);
@@ -2154,7 +2156,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<AnomalyResult> instockErrors =instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
         anomalyService.format(instockErrors);
 
-
+        List<Long> customerIds = new ArrayList<>();
+        for (InstockListResult instockList : instockLists) {
+            if(ToolUtil.isNotEmpty(instockList.getCustomerId())){
+                customerIds.add(instockList.getCustomerId());
+            }
+        }
 
        int detailNumberCount = 0 ;
        int logNumberCount = 0 ;
@@ -2181,7 +2188,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         result.setErrorNumberCount(errorNumberCount);
         result.setLogNumberCount(logNumberCount);
         result.setOrderCount(instockOrders.size());
-
+        result.setCustomerCount(customerIds.stream().distinct().collect(Collectors.toList()).size());
 
         return result;
     }

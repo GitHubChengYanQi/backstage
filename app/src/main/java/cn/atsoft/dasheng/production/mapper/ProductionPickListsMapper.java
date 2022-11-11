@@ -1,12 +1,11 @@
 package cn.atsoft.dasheng.production.mapper;
 
-import cn.atsoft.dasheng.app.model.request.OutStockView;
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
@@ -45,8 +44,8 @@ public interface ProductionPickListsMapper extends BaseMapper<ProductionPickList
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    Page<OutStockView> outstockUserView(@Param("page") Page page, @Param("paramCondition") DataStatisticsViewParam paramCondition);
-    List<OutStockView> outstockView( @Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outstockUserView(@Param("page") Page page, @Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> outstockView(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     Page<ProductionPickListsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition);
 
     /**
@@ -57,5 +56,10 @@ public interface ProductionPickListsMapper extends BaseMapper<ProductionPickList
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition);
     List<Long> idsList(@Param("paramCondition") ProductionPickListsParam paramCondition);
+
+    List<StockView> orderCountByType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> orderCountByStatus(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> orderCountByCreateUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> orderDetailCountByCreateUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
 }

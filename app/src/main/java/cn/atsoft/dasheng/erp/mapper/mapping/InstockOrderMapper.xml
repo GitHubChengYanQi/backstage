@@ -76,6 +76,56 @@
             and state like CONCAT('%',#{paramCondition.state},'%')
         </if>
     </select>
+    <select id="countOrderByType" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        count(instock_order_id) AS orderCount,create_user AS createUser,instock_type AS type
+        FROM
+            daoxin_erp_instock_order
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY instock_type
+    </select>
+    <select id="countOrderByStatus" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+            count(instock_order_id) AS "orderCount",create_user AS "createUser",status AS "status",instock_type AS "type"
+        FROM
+            daoxin_erp_instock_order
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY status
+
+    </select>
+<select id="countOrderByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+            count(instock_order_id) AS "orderCount",create_user AS "createUser",status AS "status",instock_type AS "type"
+        FROM
+            daoxin_erp_instock_order
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY create_user
+
+    </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.InstockOrderParam">
         select

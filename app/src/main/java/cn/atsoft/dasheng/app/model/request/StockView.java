@@ -6,24 +6,30 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
-public class OutStockView {
+public class StockView {
     private Long pickListsId;
     private Long userId;
     private UserResult userResult;
     private Long skuId;
-//    private Integer detailCount;
-//    private Integer doneNumber;
     private SkuSimpleResult skuResult;
     private List<SkuAndNumber> skuAndNumbers;
     private List<UserAndNumber> userAndNumbers;
     private Date createDate;
+    private Long status;
+    private Map<String,Integer> numberByMonth;
+    private Map<String,Integer> errorNumberByMonth;
+    private String type;
     private Integer pickSkuCount;
     private Integer pickNumCount;
     private Integer outSkuCount;
     private Integer outNumCount;
+    private Integer inNumCount;
+    private Integer inSkuCount;
     private Integer orderCount;
+    private Long createUser;
 
     @Data
     public static class SkuAndNumber{

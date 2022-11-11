@@ -388,6 +388,7 @@ public class InstockOrder implements Serializable {
         this.customerId = customerId;
     }
 
+
     @Override
     public String toString() {
         return "InstockOrder{" +

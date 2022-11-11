@@ -4,7 +4,7 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.action.Enum.OutStockActionEnum;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
-import cn.atsoft.dasheng.app.model.request.OutStockView;
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
@@ -1627,12 +1627,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         this.updateById(lists);
     }
     @Override
-    public Page<OutStockView> outStockUserView(DataStatisticsViewParam param) {
+    public Page<StockView> outStockUserView(DataStatisticsViewParam param) {
        return this.baseMapper.outstockUserView(PageFactory.defaultPage(),param);
 
     }
     @Override
-    public List<OutStockView> outStockView(DataStatisticsViewParam param) {
+    public List<StockView> outStockView(DataStatisticsViewParam param) {
        return this.baseMapper.outstockView(param);
 
     }
