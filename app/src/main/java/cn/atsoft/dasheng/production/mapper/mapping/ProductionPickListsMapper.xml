@@ -129,10 +129,10 @@
         LEFT JOIN daoxin_production_pick_lists_detail detail on lists.pick_lists_id = detail.pick_lists_id
         where 1=1
         <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            and date_format(lists.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
             %H:%i:%s')
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            and date_format(lists.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         GROUP BY lists.type
@@ -166,7 +166,7 @@
          
         count(*) AS "orderCount",
         lists.create_time AS "createTime",
-        lists.create_user AS "createUser"
+        lists.create_user AS "createUser",
         lists.status AS "status"
         from
         `daoxin_production_pick_lists` lists
@@ -186,8 +186,7 @@
     <select id="orderDetailCountByCreateUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         select
---         sum(detail.number) AS "detailCount",
---         sum(detail.received_number) AS "doneNumber",
+
         pick_lists_id AS "pickListsId",
         create_time AS "createTime",
         create_user AS "createUser"

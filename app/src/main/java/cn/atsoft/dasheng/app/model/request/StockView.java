@@ -28,8 +28,14 @@ public class StockView {
     private Integer outNumCount;
     private Integer inNumCount;
     private Integer inSkuCount;
+    private Integer errorSkuCount;
+    private Integer errorNumCount;
     private Integer orderCount;
     private Long createUser;
+    private String spuClassName;
+    private String customerName;
+    private String storehouseName;
+    private String monthOfYear;
 
     @Data
     public static class SkuAndNumber{

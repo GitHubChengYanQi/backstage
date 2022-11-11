@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.erp.entity.InstockLogDetail;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.InstockLogDetailParam;
 import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -60,5 +62,5 @@ public interface InstockLogDetailMapper extends BaseMapper<InstockLogDetail> {
      * @return
      */
     List<InstockLogDetailResult> skuLogDetail(@Param("paramCondition") InstockLogDetailParam paramCondition);
-
+    StockView count(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 }

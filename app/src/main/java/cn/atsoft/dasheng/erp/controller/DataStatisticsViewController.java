@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.service.BrandService;
@@ -10,8 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
-import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
-import cn.atsoft.dasheng.erp.mapper.OutstockListingMapper;
+import cn.atsoft.dasheng.erp.mapper.*;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
@@ -103,6 +103,12 @@ public class DataStatisticsViewController extends BaseController {
     private ProductionPickListsMapper pickListsMapper;
     @Autowired
     private InstockOrderMapper instockOrderMapper;
+    @Autowired
+    private InstockListMapper instockListMapper;
+    @Autowired
+    private AnomalyMapper anomalyMapper;
+    @Autowired
+    private InstockLogDetailMapper instockLogDetailMapper;
 
 
     @RequestMapping(value = "/taskCountView", method = RequestMethod.GET)
@@ -591,43 +597,8 @@ public class DataStatisticsViewController extends BaseController {
         }
         return ResponseData.success();
     }
-    @RequestMapping(value = "/outStockView", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData outStockView(@RequestBody DataStatisticsViewParam param) {
-        List<UserResult> userResults = new ArrayList<>();
-        if (param.getSearchType() != null) {
-            switch (param.getSearchType()) {
-                case ORDER_LOG:
-                    List<StockView> logViews = outstockOrderMapper.groupByUser(param);
-                    userResults = logViews.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(logViews.stream().map(StockView::getCreateUser).collect(Collectors.toList()));
-                    for (StockView stockView : logViews) {
-                        for (UserResult userResult : userResults) {
-                            if (stockView.getCreateUser().equals(userResult.getUserId())) {
-                                stockView.setUserResult(userResult);
-                                break;
-                            }
-                        }
-                    }
-                    return ResponseData.success(logViews);
-                case ORDER_LOG_DETAIL:
 
-                    List<StockView> logDetailViews = outstockListingMapper.groupByUser(param);
-                    userResults = logDetailViews.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(logDetailViews.stream().map(StockView::getCreateUser).collect(Collectors.toList()));
-                    for (StockView stockView : logDetailViews) {
-                        for (UserResult userResult : userResults) {
-                            if (stockView.getCreateUser().equals(userResult.getUserId())) {
-                                stockView.setUserResult(userResult);
-                                break;
-                            }
-                        }
-                    }
-                    return ResponseData.success(logDetailViews);
-                default:
-                    break;
-            }
-        }
-        return ResponseData.success();
-    }
+
     @RequestMapping(value = "/instockLogView", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData instockLogView(@RequestBody DataStatisticsViewParam param) {
@@ -772,7 +743,6 @@ public class DataStatisticsViewController extends BaseController {
     @RequestMapping(value = "/instockCountViewByMonth", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData instockCountViewByMonth(@RequestBody DataStatisticsViewParam param) {
-
         LambdaQueryChainWrapper<InstockOrder> instockOrderLambdaQueryChainWrapper = this.instockOrderService.lambdaQuery();
         instockOrderLambdaQueryChainWrapper.orderByDesc(InstockOrder::getCreateTime);
         instockOrderLambdaQueryChainWrapper.between(InstockOrder::getCreateTime,DateUtil.format(DateUtil.offsetMonth(new Date(),-11),"yyyy-MM"+"-1"),DateUtil.format(new Date(),"yyyy-MM-dd"));
@@ -786,8 +756,8 @@ public class DataStatisticsViewController extends BaseController {
         int[] monthList = {0,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11};
         Date date = new Date();
         List<String> monthListStr = new ArrayList<>();
-        for (int moonthOffSet : monthList) {
-            monthListStr.add(DateUtil.format(DateUtil.offsetMonth(date ,moonthOffSet),"yyyy-MM"));
+        for (int monthOffSet : monthList) {
+            monthListStr.add(DateUtil.format(DateUtil.offsetMonth(date ,monthOffSet),"yyyy-MM"));
         }
 
         Map<String,Integer> instockNumberByMonth = new HashMap<>();
@@ -820,9 +790,121 @@ public class DataStatisticsViewController extends BaseController {
             errorNumberByMonth.put(month,errorNumber);
         }
         StockView stockView = new StockView();
+        StockView logCount = instockLogDetailMapper.count(param);
+        StockView errorCount = anomalyMapper.count(param);
         stockView.setErrorNumberByMonth(errorNumberByMonth);
         stockView.setNumberByMonth(instockNumberByMonth);
+        if (BeanUtil.isNotEmpty(logCount)) {
+            stockView.setInSkuCount(ToolUtil.isEmpty(logCount.getInSkuCount())?0:logCount.getInSkuCount());
+            stockView.setInNumCount(ToolUtil.isEmpty(logCount.getInNumCount())?0:logCount.getInNumCount());
+        }
+        if (BeanUtil.isNotEmpty(errorCount)) {
+            stockView.setErrorSkuCount(ToolUtil.isEmpty(errorCount.getErrorSkuCount())?0:errorCount.getErrorSkuCount());
+            stockView.setErrorNumCount(ToolUtil.isEmpty(errorCount.getErrorNumCount())?0:errorCount.getErrorNumCount());
+
+        }
+
+
         return ResponseData.success(stockView);
     }
+    @RequestMapping(value = "/outstockCountViewByMonth", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outstockCountViewByMonth(@RequestBody DataStatisticsViewParam param) {
+        param.setBeginTime(DateUtil.beginOfMonth(DateUtil.offsetMonth(DateUtil.date(),-11)));
+        param.setEndTime(DateUtil.date());
+        List<StockView> stockViews = outstockListingMapper.groupByMonth(param);
+
+
+        int[] monthList = {0,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11};
+        Date date = new Date();
+        List<String> monthListStr = new ArrayList<>();
+        for (int monthOffSet : monthList) {
+            monthListStr.add(DateUtil.format(DateUtil.offsetMonth(date ,monthOffSet),"yyyy-MM"));
+        }
+
+        Map<String,Integer> outstockNumberByMonth = new HashMap<>();
+        for (String month : monthListStr) {
+
+            for (StockView stockView : stockViews) {
+                if(BeanUtil.isNotEmpty(stockView.getMonthOfYear()) && stockView.getMonthOfYear().equals(month)){
+                    outstockNumberByMonth.put(month,stockView.getOrderCount());
+                }
+            }
+        }
+
+
+        StockView stockView = new StockView();
+
+        stockView.setNumberByMonth(outstockNumberByMonth);
+
+
+
+
+        return ResponseData.success(stockView);
+    }
+    @RequestMapping(value = "/instockDetailBySpuClass", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData instockDetailBySpuClass(@RequestBody DataStatisticsViewParam param) {
+        if (ToolUtil.isNotEmpty(param.getSearchType())){
+            switch (param.getSearchType()){
+                case SPU_CLASS:
+                    return ResponseData.success(instockListMapper.groupBySpuClass(param));
+
+                case TYPE:
+                    return ResponseData.success(instockListMapper.groupByInstockType(param));
+
+                case STOREHOUSE:
+                    return ResponseData.success(instockListMapper.groupByStorehouse(param));
+            }
+        }
+        return ResponseData.success();
+    }
+    @RequestMapping(value = "/instockDetailByCustomer", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData instockDetailByCustomer(@RequestBody DataStatisticsViewParam param) {
+        if (ToolUtil.isNotEmpty(param.getSearchType())){
+            switch (param.getSearchType()){
+                case SKU_COUNT:
+                    return ResponseData.success(instockListMapper.groupByCustomerSku(param));
+
+                case NUM_COUNT:
+                    return ResponseData.success(instockListMapper.groupByCustomerNum(param));
+
+
+            }
+        }
+        return ResponseData.success();
+    }
+    @RequestMapping(value = "/errorBySpuClass", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData errorBySpuClass(@RequestBody DataStatisticsViewParam param) {
+
+        return ResponseData.success(anomalyMapper.countErrorByOrderType(param));
+    }
+    @RequestMapping(value = "/outBySpuClass", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outBySpuClass(@RequestBody DataStatisticsViewParam param) {
+
+        return ResponseData.success(anomalyMapper.countErrorByOrderType(param));
+    }
+    @RequestMapping(value = "/outBytype", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outBytype(@RequestBody DataStatisticsViewParam param) {
+
+        return ResponseData.success(anomalyMapper.countErrorByOrderType(param));
+    }
+    @RequestMapping(value = "/outByUser", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outByUser(@RequestBody DataStatisticsViewParam param) {
+
+        return ResponseData.success(anomalyMapper.countErrorByOrderType(param));
+    }
+    @RequestMapping(value = "/outBystorehouse", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outBystorehouse(@RequestBody DataStatisticsViewParam param) {
+
+        return ResponseData.success(anomalyMapper.countErrorByOrderType(param));
+    }
+
 
 }

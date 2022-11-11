@@ -188,13 +188,13 @@
     <select id="groupByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
-            create_user AS "createUser",
-            create_time AS "create_time",
-            COUNT(outstock_order_id) AS "orderCount"
+        create_user AS "createUser",
+        create_time AS "create_time",
+        COUNT(outstock_order_id) AS "orderCount"
         FROM
-            daoxin_erp_outstock_listing
+        daoxin_erp_outstock_listing
         WHERE
-            1 = 1
+        1 = 1
         <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
             and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
@@ -203,7 +203,77 @@
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         GROUP BY
-            create_user
+        create_user
+    </select>
+    <select id="groupByMonth" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        table2.create_time AS "monthOfYear",
+        sum(table2.orderCount) AS "orderCount"
+        FROM
+        (
+        SELECT
+        DATE_FORMAT( create_time, '%Y-%m' ) AS "create_time",
+        COUNT( outstock_order_id ) AS "orderCount"
+        FROM
+        daoxin_erp_outstock_listing
+        WHERE
+        1 = 1
+        GROUP BY
+        create_time
+        ) table2
+        WHERE 1= 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY table2.create_time
+    </select>
+    <select id="count" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        count( DISTINCT sku_id ) AS "outSkuCount",
+        sum(number) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+    </select>
+    <select id="outBySpuClass" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        class.`name` AS "spuClassName",
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
+        LEFT JOIN goods_spu_class class ON spu.spu_classification_id = class.spu_classification_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        GROUP BY
+        class.spu_classification_id
     </select>
 
 </mapper>
