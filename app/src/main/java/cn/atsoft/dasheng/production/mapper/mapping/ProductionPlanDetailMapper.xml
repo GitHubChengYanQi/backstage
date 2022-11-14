@@ -10,6 +10,7 @@
         <result column="plan_number" property="planNumber"/>
         <result column="making_number" property="makingNumber"/>
         <result column="delivery_date" property="deliveryDate"/>
+        <result column="contract_id" property="contractId"/>
         <result column="create_user" property="createUser"/>
         <result column="deptId" property="deptId"/>
         <result column="display" property="display"/>
@@ -23,7 +24,7 @@
     <sql id="Base_Column_List">plan_number
     AS "planNumber",making_number AS "makingNumber",
         production_plan_detail_id
-        AS "productionPlanDetailId", production_plan_id AS "productionPlanId",order_detail_id AS "orderDetailId", sku_id AS "skuId", delivery_date AS "deliveryDate", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        AS "productionPlanDetailId", production_plan_id AS "productionPlanId",order_detail_id AS "orderDetailId", sku_id AS "skuId", delivery_date AS "deliveryDate", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser" , contract_id AS "contractId"
     </sql>
 
 
@@ -65,6 +66,9 @@
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
+        <if test="paramCondition.contractId != null">
+            and contract_id like CONCAT('%',#{paramCondition.contractId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map"
@@ -104,6 +108,9 @@
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.contractId != null">
+            and contract_id like CONCAT('%',#{paramCondition.contractId},'%')
         </if>
     </select>
 
@@ -145,6 +152,9 @@
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
+        <if test="paramCondition.contractId != null">
+            and contract_id like CONCAT('%',#{paramCondition.contractId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
@@ -184,6 +194,9 @@
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.contractId != null">
+            and contract_id like CONCAT('%',#{paramCondition.contractId},'%')
         </if>
     </select>
 

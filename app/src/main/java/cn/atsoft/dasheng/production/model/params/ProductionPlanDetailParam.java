@@ -99,6 +99,12 @@ public class ProductionPlanDetailParam implements Serializable, BaseValidatingPa
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
+    /**
+     * 合同编号
+     */
+    @ApiModelProperty("合同编号")
+    private Long contractId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 

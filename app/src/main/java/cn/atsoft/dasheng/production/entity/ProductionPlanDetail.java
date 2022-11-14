@@ -110,7 +110,19 @@ public class ProductionPlanDetail implements Serializable {
     @TableField("order_detail_id")
     private Long orderDetailId;
 
+    /**
+     * 合同编号
+     */
+    @TableField("contract_id")
+    private  Long contractId;
 
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
 
     public Long getProductionPlanDetailId() {
         return productionPlanDetailId;
