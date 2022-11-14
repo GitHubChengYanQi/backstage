@@ -79,7 +79,7 @@
     <select id="countOrderByType" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
-        count(instock_order_id) AS orderCount,create_user AS createUser,instock_type AS type
+        count(instock_order_id) AS "orderCount",create_user AS "createUser",instock_type AS "type",create_time AS "createTime"
         FROM
             daoxin_erp_instock_order
         WHERE 1 = 1

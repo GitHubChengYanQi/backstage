@@ -16,6 +16,8 @@
         <result column="update_user" property="updateUser"/>
         <result column="after_number" property="afterNumber"/>
         <result column="before_number" property="beforeNumber"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="storehouse_id" property="storehouseId"/>
         <result column="display" property="display"/>
         <result column="item_id" property="itemId"/>
         <result column="state" property="state"/>
@@ -28,7 +30,9 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">delivery_id
+    <sql id="Base_Column_List">storehouse_positions_id
+    AS "storehousePositionsId", storehouse_id AS "storehouseId",
+delivery_id
     AS "deliveryId",sku_id AS "skuId",delivery AS "delivery", customer_id AS "customerId",after_number AS "afterNumber",before_number AS "beforeNumber",
         outstock_listing_id
         AS "outstockListingId", time AS "time", number AS "number", price AS "price", brand_id AS "brandId", deptId AS "deptId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", item_id AS "itemId", state AS "state", outstock_order_id AS "outstockOrderId", outstock_apply_id AS "outstockApplyId"
@@ -274,6 +278,114 @@
 
         GROUP BY
         class.spu_classification_id
+    </select>
+    <select id="outByType" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        lists.type,
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN daoxin_erp_outstock_order outstock on list.outstock_order_id = outstock.outstock_order_id
+        LEFT JOIN daoxin_production_pick_lists lists on lists.pick_lists_id = outstock.source_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        GROUP BY lists.type
+    </select>
+    <select id="outByStoreHouse" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        storehouse.`name`,
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing list
+
+        LEFT JOIN daoxin_erp_storehouse storehouse on list.storehouse_id = storehouse.storehouse_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        storehouse.storehouse_id
+    </select>
+    <select id="outByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        user.user_id AS "userId",
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN sys_user user ON list.create_user = user.user_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY user.user_id
+    </select>
+    <select id="outByCustomerSkuCount" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        user.user_id AS "userId",
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN sys_user user ON list.create_user = user.user_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY user.user_id
+        ORDER BY count( DISTINCT list.sku_id )
+    </select>
+    <select id="outByCustomerNumCount" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        user.user_id AS "userId",
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN sys_user user ON list.create_user = user.user_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY user.user_id
+        ORDER BY sum( list.number )
+
     </select>
 
 </mapper>

@@ -30,7 +30,8 @@ public class OutstockListingParam extends AbstractDictMap implements Serializabl
 
     private Long customerId;
     @NotNull
-    private Long positionsId;
+    private Long storehousePositionsId;
+    private Long storehouseId;
 
     private Long deliveryId;
 

@@ -1027,7 +1027,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
                         listingParam.setSkuId(listsCart.getSkuId());
                         listingParam.setInkindId(listsCart.getInkindId());
-                        listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                        listingParam.setStorehousePositionsId(listsCart.getStorehousePositionsId());
                         if (ToolUtil.isNotEmpty(listsCart.getBrandId()) || listsCart.getBrandId().equals(0L)) {
                             listingParam.setBrandId(listsCart.getBrandId());
                         }
@@ -1060,7 +1060,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         OutstockListingParam listingParam = new OutstockListingParam();
                         listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
                         listingParam.setSkuId(listsCart.getSkuId());
-                        listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                        listingParam.setStorehousePositionsId(listsCart.getStorehousePositionsId());
+                        listingParam.setStorehouseId(listsCart.getStorehouseId());
                         listingParam.setInkindId(listsCart.getInkindId());
                         if (ToolUtil.isNotEmpty(listsCart.getBrandId())) {
                             listingParam.setBrandId(listsCart.getBrandId());
@@ -1197,7 +1198,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
                     listingParam.setSkuId(listsCart.getSkuId());
                     listingParam.setInkindId(listsCart.getInkindId());
-                    listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                    listingParam.setStorehousePositionsId(listsCart.getStorehousePositionsId());
                     if (ToolUtil.isNotEmpty(listsCart.getBrandId()) || listsCart.getBrandId().equals(0L)) {
                         listingParam.setBrandId(listsCart.getBrandId());
                     }
@@ -1215,7 +1216,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     OutstockListingParam listingParam = new OutstockListingParam();
                     listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
                     listingParam.setSkuId(listsCart.getSkuId());
-                    listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                    listingParam.setStorehousePositionsId(listsCart.getStorehousePositionsId());
                     listingParam.setInkindId(listsCart.getInkindId());
                     if (ToolUtil.isNotEmpty(listsCart.getBrandId())) {
                         listingParam.setBrandId(listsCart.getBrandId());

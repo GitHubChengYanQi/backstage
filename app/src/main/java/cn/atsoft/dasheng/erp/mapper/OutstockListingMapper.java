@@ -57,5 +57,10 @@ public interface OutstockListingMapper extends BaseMapper<OutstockListing> {
     List<StockView> groupByMonth(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> count(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> outBySpuClass(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> outByType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> outByStoreHouse(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> outByUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> outByCustomerSkuCount(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> outByCustomerNumCount(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
 }

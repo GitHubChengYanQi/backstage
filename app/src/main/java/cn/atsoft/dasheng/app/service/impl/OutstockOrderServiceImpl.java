@@ -270,7 +270,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                         outstockListing.setAfterNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
                         stockDetailView.setNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
                         //添加 物料操作记录
-                        skuHandleRecordService.addRecord(listingParam.getSkuId(), listingParam.getBrandId(), listingParam.getPositionsId(), listingParam.getCustomerId(), "OUTSTOCK", task, listingParam.getNumber(), Long.valueOf(stockDetailView.getNumber()), Long.valueOf(outstockListing.getAfterNumber()));
+                        skuHandleRecordService.addRecord(listingParam.getSkuId(), listingParam.getBrandId(), listingParam.getStorehousePositionsId(), listingParam.getCustomerId(), "OUTSTOCK", task, listingParam.getNumber(), Long.valueOf(stockDetailView.getNumber()), Long.valueOf(outstockListing.getAfterNumber()));
                         break;
                     }
                 }
@@ -475,7 +475,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         long number = 0;
 
         for (StockDetails detail : details) {
-            if (listingParam.getSkuId().equals(detail.getSkuId()) && listingParam.getPositionsId().equals(detail.getStorehousePositionsId())) {
+            if (listingParam.getSkuId().equals(detail.getSkuId()) && listingParam.getStorehousePositionsId().equals(detail.getStorehousePositionsId())) {
                 number = number + detail.getNumber();
             }
         }
@@ -485,7 +485,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         for (StockDetails detail : details) {
             if (detail.getStage() == 1) {
-                if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                if (listingParam.getSkuId().equals(detail.getSkuId()) && detail.getStorehousePositionsId().equals(listingParam.getStorehousePositionsId())) {
                     number = detail.getNumber() - listingParam.getNumber();
                     if (number > 0) {
                         detail.setNumber(number);
@@ -532,7 +532,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         for (StockDetails detail : details) {
             if (ToolUtil.isNotEmpty(detail.getBrandId()) && listingParam.getSkuId().equals(detail.getSkuId())
                     && listingParam.getBrandId().equals(detail.getBrandId())
-                    && listingParam.getPositionsId().equals(detail.getStorehousePositionsId())) {
+                    && listingParam.getStorehousePositionsId().equals(detail.getStorehousePositionsId())) {
                 number = number + detail.getNumber();
             }
         }
@@ -543,7 +543,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         for (StockDetails detail : details) {
             if (detail.getStage() == 1) {
                 if (ToolUtil.isNotEmpty(detail.getBrandId()) && detail.getSkuId().equals(listingParam.getSkuId()) && detail.getBrandId().equals(listingParam.getBrandId())
-                        && detail.getStorehousePositionsId().equals(listingParam.getPositionsId())) {
+                        && detail.getStorehousePositionsId().equals(listingParam.getStorehousePositionsId())) {
                     number = detail.getNumber() - listingParam.getNumber();
                     if (number > 0) {
 

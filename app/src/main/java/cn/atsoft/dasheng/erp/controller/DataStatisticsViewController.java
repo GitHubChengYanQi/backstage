@@ -905,6 +905,38 @@ public class DataStatisticsViewController extends BaseController {
 
         return ResponseData.success(anomalyMapper.countErrorByOrderType(param));
     }
+    @RequestMapping(value = "/outStockDetailBySpuClass", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outStockDetailBySpuClass(@RequestBody DataStatisticsViewParam param) {
+        if (ToolUtil.isNotEmpty(param.getSearchType())){
+            switch (param.getSearchType()){
+                case SPU_CLASS:
+                    return ResponseData.success(outstockListingMapper.outBySpuClass(param));
 
+                case TYPE:
+                    return ResponseData.success(outstockListingMapper.outByType(param));
+
+                case STOREHOUSE:
+                    return ResponseData.success(outstockListingMapper.outByStoreHouse(param));
+                case PICK_USER:
+                    return ResponseData.success(outstockListingMapper.outByUser(param));
+            }
+        }
+        return ResponseData.success();
+    }
+    @RequestMapping(value = "/outstockDetailByCustomer", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outstockDetailByCustomer(@RequestBody DataStatisticsViewParam param) {
+        if (ToolUtil.isNotEmpty(param.getSearchType())){
+            switch (param.getSearchType()){
+                case SKU_COUNT:
+                    return ResponseData.success(outstockListingMapper.outByCustomerSkuCount(param));
+
+                case NUM_COUNT:
+                    return ResponseData.success(outstockListingMapper.outByCustomerNumCount(param));
+            }
+        }
+        return ResponseData.success();
+    }
 
 }

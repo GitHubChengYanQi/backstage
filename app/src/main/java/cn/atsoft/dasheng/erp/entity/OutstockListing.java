@@ -97,6 +97,17 @@ public class OutstockListing implements Serializable {
     private Long brandId;
 
     /**
+     * 仓库id
+     */
+    @TableField("storehouse_id")
+    private Long storehouseId;
+    /**
+     * 仓库id
+     */
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
+
+    /**
      * 部门编号
      */
     @TableField(value = "deptId", fill = FieldFill.INSERT)
@@ -324,6 +335,22 @@ public class OutstockListing implements Serializable {
         this.afterNumber = afterNumber;
     }
 
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
+    }
+
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
+    }
+
     @Override
     public String toString() {
         return "OutstockListing{" +
@@ -339,6 +366,8 @@ public class OutstockListing implements Serializable {
                 ", number=" + number +
                 ", price=" + price +
                 ", brandId=" + brandId +
+                ", storehouseId=" + storehouseId +
+                ", storehousePositionsId=" + storehousePositionsId +
                 ", deptId=" + deptId +
                 ", createTime=" + createTime +
                 ", createUser=" + createUser +
