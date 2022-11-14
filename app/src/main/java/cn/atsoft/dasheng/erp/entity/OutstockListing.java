@@ -33,13 +33,10 @@ public class OutstockListing implements Serializable {
 
     private String inkindIds;
 
-    public String getInkindIds() {
-        return inkindIds;
-    }
+    @TableField("inkind_id")
 
-    public void setInkindIds(String inkindIds) {
-        this.inkindIds = inkindIds;
-    }
+    private Long inkindId;
+
 
     /**
      * 供应商id
@@ -349,6 +346,22 @@ public class OutstockListing implements Serializable {
 
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public String getInkindIds() {
+        return inkindIds;
+    }
+
+    public void setInkindIds(String inkindIds) {
+        this.inkindIds = inkindIds;
+    }
+
+    public Long getInkind_id() {
+        return inkindId;
+    }
+
+    public void setInkind_id(Long inkindId) {
+        this.inkindId = inkindId;
     }
 
     @Override
