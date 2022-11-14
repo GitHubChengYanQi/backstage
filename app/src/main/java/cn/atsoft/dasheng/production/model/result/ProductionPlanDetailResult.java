@@ -113,10 +113,10 @@ public class ProductionPlanDetailResult implements Serializable {
     private Long updateUser;
 
     /**
-     * 合同编号
+     * 合同编码
      */
-    @ApiModelProperty("合同编号")
-    private String contractId;
+    @ApiModelProperty("合同编码")
+    private String contractCoding;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

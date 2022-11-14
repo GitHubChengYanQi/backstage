@@ -111,17 +111,17 @@ public class ProductionPlanDetail implements Serializable {
     private Long orderDetailId;
 
     /**
-     * 合同编号
+     * 合同编码
      */
-    @TableField("contract_id")
-    private  String contractId;
+    @TableField("contract_coding")
+    private  String contractCoding;
 
-    public String getContractId() {
-        return contractId;
+    public String getContractCoding() {
+        return contractCoding;
     }
 
-    public void setContractId(String contractId) {
-        this.contractId = contractId;
+    public void setContractCoding(String contractCoding) {
+        this.contractCoding = contractCoding;
     }
 
     public Long getProductionPlanDetailId() {
