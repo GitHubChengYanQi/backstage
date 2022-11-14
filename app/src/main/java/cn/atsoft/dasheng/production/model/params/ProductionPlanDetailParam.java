@@ -103,7 +103,7 @@ public class ProductionPlanDetailParam implements Serializable, BaseValidatingPa
      * 合同编号
      */
     @ApiModelProperty("合同编号")
-    private Long contractId;
+    private String contractId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
