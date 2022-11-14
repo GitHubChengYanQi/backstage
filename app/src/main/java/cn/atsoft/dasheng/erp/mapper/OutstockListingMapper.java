@@ -54,13 +54,15 @@ public interface OutstockListingMapper extends BaseMapper<OutstockListing> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") OutstockListingParam paramCondition);
     List<StockView> groupByUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> groupByUserAndSku(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> groupByMonth(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> count(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> outBySpuClass(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> outByType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> outByStoreHouse(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> outByUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
-    List<StockView> outByCustomerSkuCount(@Param("paramCondition") DataStatisticsViewParam paramCondition);
-    List<StockView> outByCustomerNumCount(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView.SkuAndNumber> outBySku(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outByCustomerSkuCount(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outByCustomerNumCount(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
 }

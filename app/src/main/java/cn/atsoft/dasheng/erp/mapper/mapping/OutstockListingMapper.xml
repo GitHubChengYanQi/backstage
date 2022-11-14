@@ -209,6 +209,27 @@ delivery_id
         GROUP BY
         create_user
     </select>
+    <select id="groupByUserAndSku" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        create_user AS "createUser",
+        create_time AS "create_time",
+        COUNT(outstock_order_id) AS "orderCount",
+        sum(number) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        create_user,sku_id
+    </select>
     <select id="groupByMonth" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
@@ -390,6 +411,28 @@ delivery_id
         customer.customer_id
         ORDER BY sum( list.number ) DESC
 
+    </select>
+    <select id="outBySku" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        list.sku_id AS "skuId",
+        sum( list.number ) AS "number"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN daoxin_erp_outstock_order outstock on list.outstock_order_id = outstock.outstock_order_id
+        LEFT JOIN daoxin_production_pick_lists lists on lists.pick_lists_id = outstock.source_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        list.sku_id
+        ORDER BY sum( list.number ) DESC
     </select>
 
 </mapper>

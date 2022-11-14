@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.app.model.request;
 
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,7 @@ public class StockView {
     private String customerName;
     private String storehouseName;
     private String monthOfYear;
+    private List<ActivitiProcessTaskResult> taskResults;
 
     @Data
     public static class SkuAndNumber{

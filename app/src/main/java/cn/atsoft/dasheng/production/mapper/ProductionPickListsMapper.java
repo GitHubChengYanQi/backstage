@@ -59,7 +59,7 @@ public interface ProductionPickListsMapper extends BaseMapper<ProductionPickList
 
     List<StockView> orderCountByType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> orderCountByStatus(@Param("paramCondition") DataStatisticsViewParam paramCondition);
-    List<StockView> orderCountByCreateUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
-    List<StockView> orderDetailCountByCreateUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> orderCountByCreateUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> orderDetailCountByCreateUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
 }

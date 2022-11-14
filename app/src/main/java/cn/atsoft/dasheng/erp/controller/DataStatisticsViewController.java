@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -41,6 +42,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cn.atsoft.dasheng.form.pojo.ProcessType.OUTSTOCK;
 
 @RestController
 @RequestMapping("/statisticalView")
@@ -512,53 +515,89 @@ public class DataStatisticsViewController extends BaseController {
 
     @RequestMapping(value = "/outStockDetailView", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData outStockDetailView(@RequestBody DataStatisticsViewParam param) {
+    public PageInfo outStockDetailView(@RequestBody DataStatisticsViewParam param) {
         if (param.getSearchType() != null) {
             switch (param.getSearchType()) {
+                case ORDER_TYPE:
+                    break;
+                case ORDER_STATUS:
+                    break;
                 case ORDER_BY_CREATE_USER:
-                    List<StockView> stockViewsByUser = pickListsMapper.orderCountByCreateUser(param);
-                    List<UserResult> userResults = userService.getUserResultsByIds(stockViewsByUser.stream().map(StockView::getCreateUser).collect(Collectors.toList()));
-                    for (StockView stockView : stockViewsByUser) {
+                    Page<StockView> stockViewsByUser = pickListsMapper.orderCountByCreateUser(PageFactory.defaultPage(), param);
+                    List<UserResult> userResults = stockViewsByUser.getRecords().size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(stockViewsByUser.getRecords().stream().map(StockView::getCreateUser).collect(Collectors.toList()));
+//                    List<ActivitiProcessTaskResult> activitiProcessTaskResults = BeanUtil.copyToList(activitiProcessTaskService.lambdaQuery().in(ActivitiProcessTask::getCreateUser, userResults.stream().map(UserResult::getUserId).collect(Collectors.toList())).eq(ActivitiProcessTask::getType, OUTSTOCK.getName()).list(), ActivitiProcessTaskResult.class);
+//                    activitiProcessTaskService.format(activitiProcessTaskResults);
+
+                    for (StockView stockView : stockViewsByUser.getRecords()) {
                         for (UserResult userResult : userResults) {
                             if (stockView.getCreateUser().equals(userResult.getUserId())) {
                                 stockView.setUserResult(userResult);
                                 break;
                             }
                         }
+//                        List<ActivitiProcessTaskResult> taskResults = new ArrayList<>();
+//                        for (ActivitiProcessTaskResult activitiProcessTaskResult : activitiProcessTaskResults) {
+//                            if (stockView.getCreateUser().equals(activitiProcessTaskResult.getUserId())){
+//                                taskResults.add(activitiProcessTaskResult);
+//                            }
+//                        }
+//                        stockView.setTaskResults(taskResults);
                     }
 
-                    return ResponseData.success(stockViewsByUser);
+                    return PageFactory.createPageInfo(stockViewsByUser);
                 case ORDER_BY_DETAIL:
-                    List<StockView> stockViews = pickListsMapper.orderDetailCountByCreateUser(param);
-                    List<ProductionPickListsDetail> listsDetails = stockViews.size() == 0 ? new ArrayList<>() : pickListsDetailService.lambdaQuery().in(ProductionPickListsDetail::getPickListsId, stockViews.stream().map(StockView::getPickListsId).collect(Collectors.toList())).list();
-
-                    List<Long> userIds = stockViews.stream().map(StockView::getCreateUser).distinct().collect(Collectors.toList());
-                    List<UserResult> userResultsByIds = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
+                    Page<StockView> stockViews = pickListsMapper.orderDetailCountByCreateUser(PageFactory.defaultPage(), param);
+                    List<StockView> details = pickListsDetailService.getUserSkuAndNumbers(param);
 
 
-                    List<StockView> results = new ArrayList<>();
-                    for (UserResult userResultsById : userResultsByIds) {
-                        List<Long> skuIds = new ArrayList<>();
-                        Integer number = 0;
-                        for (ProductionPickListsDetail listsDetail : listsDetails) {
-                            if (listsDetail.getReceivedNumber() > 0 && listsDetail.getCreateUser().equals(userResultsById.getUserId())) {
-                                skuIds.add(listsDetail.getSkuId());
-                                number += listsDetail.getReceivedNumber();
+                    List<SkuSimpleResult> skuResult = details.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(details.stream().map(StockView::getSkuId).distinct().collect(Collectors.toList()));
+//
+
+                    for (StockView detail : details) {
+                        for (SkuSimpleResult skuSimpleResult : skuResult) {
+                            if (detail.getSkuId().equals(skuSimpleResult.getSkuId())) {
+                                detail.setSkuResult(skuSimpleResult);
+                                break;
                             }
                         }
-                        StockView stockView = new StockView();
-                        stockView.setUserResult(userResultsById);
-                        stockView.setOutSkuCount((int) skuIds.stream().distinct().count());
-                        stockView.setOutNumCount(number);
-                        results.add(stockView);
-
                     }
-                    return ResponseData.success(results);
+                    for (StockView record : stockViews.getRecords()) {
+                        List<StockView.SkuAndNumber> skuAndNumbers = new ArrayList<>();
+                        for (StockView detail : details) {
+                            if (record.getCreateUser().equals(detail.getCreateUser())) {
+                                StockView.SkuAndNumber skuAndNumber = new StockView.SkuAndNumber();
+                                skuAndNumber.setSkuId(detail.getSkuId());
+                                skuAndNumber.setSkuResult(detail.getSkuResult());
+                                skuAndNumber.setNumber(detail.getOutNumCount());
+                                skuAndNumbers.add(skuAndNumber);
+                            }
+                        }
+                        record.setSkuAndNumbers(skuAndNumbers);
+                    }
+
+
+                    return PageFactory.createPageInfo(stockViews);
+                case ORDER_LOG:
+                    break;
+                case ORDER_LOG_DETAIL:
+                    break;
+                case SPU_CLASS:
+                    break;
+                case STOREHOUSE:
+                    break;
+                case TYPE:
+                    break;
+                case SKU_COUNT:
+                    break;
+                case NUM_COUNT:
+                    break;
+                case PICK_USER:
+                    break;
                 default:
                     break;
             }
         }
-        return ResponseData.success();
+        return new PageInfo();
     }
 
     @RequestMapping(value = "/outStockLogView", method = RequestMethod.POST)
@@ -659,16 +698,7 @@ public class DataStatisticsViewController extends BaseController {
                         stockView.setType(instockOrder.getType());
                         result.add(stockView);
                     }
-//                    userResults = userService.getUserResultsByIds(result.stream().map(StockView::getCreateUser).collect(Collectors.toList()));
-//
-//                    for (StockView stockView : result) {
-//                        for (UserResult userResult : userResults) {
-//                            if (stockView.getCreateUser().equals(userResult.getUserId())) {
-//                                stockView.setUserResult(userResult);
-//                                break;
-//                            }
-//                        }
-//                    }
+
                     return ResponseData.success(result);
                 case ORDER_STATUS:
                     QueryChainWrapper<InstockOrder> statusWrapper = instockOrderService.query().select("count(instock_order_id) AS orderCount, type AS type ,create_user AS createUser").groupBy("status");
@@ -915,6 +945,21 @@ public class DataStatisticsViewController extends BaseController {
 
         return ResponseData.success(anomalyMapper.countErrorByOrderType(param));
     }
+    @RequestMapping(value = "/outBySku", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public PageInfo outBySku(@RequestBody DataStatisticsViewParam param) {
+        Page<StockView.SkuAndNumber> stockViews = outstockListingMapper.outBySku(PageFactory.defaultPage(),param);
+        List<SkuSimpleResult> skuResult =stockViews.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockViews.getRecords().stream().map(StockView.SkuAndNumber::getSkuId).distinct().collect(Collectors.toList()));
+        for (StockView.SkuAndNumber record : stockViews.getRecords()) {
+            for (SkuSimpleResult skuSimpleResult : skuResult) {
+                if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    record.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+        }
+        return PageFactory.createPageInfo(stockViews);
+    }
 
     @RequestMapping(value = "/outStockDetailBySpuClass", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -950,17 +995,39 @@ public class DataStatisticsViewController extends BaseController {
 
     @RequestMapping(value = "/outstockDetailByCustomer", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData outstockDetailByCustomer(@RequestBody DataStatisticsViewParam param) {
+    public PageInfo outstockDetailByCustomer(@RequestBody DataStatisticsViewParam param) {
+        List<SkuSimpleResult> skuResults = new ArrayList<>();
+        Page<StockView> stockViewPage = new Page<>();
         if (ToolUtil.isNotEmpty(param.getSearchType())) {
             switch (param.getSearchType()) {
                 case SKU_COUNT:
-                    return ResponseData.success(outstockListingMapper.outByCustomerSkuCount(param));
-
+                    stockViewPage = outstockListingMapper.outByCustomerSkuCount(PageFactory.defaultPage(), param);
                 case NUM_COUNT:
-                    return ResponseData.success(outstockListingMapper.outByCustomerNumCount(param));
+
+                    stockViewPage = outstockListingMapper.outByCustomerNumCount(PageFactory.defaultPage(), param);
+            }
+            List<StockView> details = outstockListingMapper.groupByUserAndSku(param);
+            skuResults = skuService.simpleFormatSkuResult(details.stream().map(StockView::getSkuId).distinct().collect(Collectors.toList()));
+            for (StockView record : stockViewPage.getRecords()) {
+                List<StockView.SkuAndNumber> skuAndNumbers = new ArrayList<>();
+                for (StockView detail : details) {
+                    if (detail.getCreateUser().equals(record.getCreateUser())) {
+                        StockView.SkuAndNumber skuAndNumber = new StockView.SkuAndNumber();
+                        skuAndNumber.setNumber(detail.getOutNumCount());
+                        skuAndNumber.setSkuId(detail.getSkuId());
+                        for (SkuSimpleResult skuResult : skuResults) {
+                            if (detail.getSkuId().equals(skuResult.getSkuId())) {
+                                skuAndNumber.setSkuResult(skuResult);
+                                break;
+                            }
+                        }
+                        skuAndNumbers.add(skuAndNumber);
+                    }
+                }
+                record.setSkuAndNumbers(skuAndNumbers);
             }
         }
-        return ResponseData.success();
+        return PageFactory.createPageInfo(stockViewPage);
     }
 
 }
