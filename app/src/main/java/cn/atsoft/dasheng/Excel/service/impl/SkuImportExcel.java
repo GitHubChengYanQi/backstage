@@ -25,7 +25,7 @@ public class SkuImportExcel extends IExcelImportServiceImpl<SkuExcelItem>{
             put("图幅", "viewFrame");
             put("养护周期", "maintenancePeriod");
             put("产品码", "spuCoding");
-            put("二维码生成方式", "batch");
+            put("二维码生成方式", "isNotBatch");
             put("备注", "remarks");
         }});
     }
