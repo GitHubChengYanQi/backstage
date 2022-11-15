@@ -275,7 +275,7 @@ delivery_id
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
     </select>
-    <select id="outBySpuClass" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+    <select id="outBySpuClassCount" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
 
         SELECT
@@ -299,6 +299,37 @@ delivery_id
 
         GROUP BY
         class.spu_classification_id
+    </select>
+    <select id="outBySpuClass" resultType="cn.atsoft.dasheng.app.model.request.StockView$SkuAndNumber"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        class.`spu_classification_id` AS "classId",
+        list.`sku_id` AS "skuId",
+        sum( list.number ) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
+        LEFT JOIN goods_spu_class class ON spu.spu_classification_id = class.spu_classification_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.spuClassIds!=null">
+            and class.spu_classification_id in
+            <foreach collection="paramCondition.spuClassIds" item="spuClassId" index="index" open="(" separator="," close=")">
+                #{spuClassId}
+            </foreach>
+        </if>
+
+        GROUP BY
+        class.spu_classification_id,list.sku_id
     </select>
     <select id="outByType" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
@@ -412,11 +443,12 @@ delivery_id
         ORDER BY sum( list.number ) DESC
 
     </select>
-    <select id="outBySku" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+    <select id="outBySku" resultType="cn.atsoft.dasheng.app.model.request.StockView$SkuAndNumber"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
         list.sku_id AS "skuId",
-        sum( list.number ) AS "number"
+        sum( list.number ) AS "number",
+        list.create_time AS "createTime"
         FROM
         daoxin_erp_outstock_listing list
         LEFT JOIN daoxin_erp_outstock_order outstock on list.outstock_order_id = outstock.outstock_order_id

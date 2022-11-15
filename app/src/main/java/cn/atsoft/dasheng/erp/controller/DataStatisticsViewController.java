@@ -949,7 +949,36 @@ public class DataStatisticsViewController extends BaseController {
     @ApiOperation("新增")
     public PageInfo outBySku(@RequestBody DataStatisticsViewParam param) {
         Page<StockView.SkuAndNumber> stockViews = outstockListingMapper.outBySku(PageFactory.defaultPage(),param);
-        List<SkuSimpleResult> skuResult =stockViews.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockViews.getRecords().stream().map(StockView.SkuAndNumber::getSkuId).distinct().collect(Collectors.toList()));
+       List<Long> skuIds = new ArrayList<>();
+        for (StockView.SkuAndNumber record : stockViews.getRecords()) {
+            skuIds.add(record.getSkuId());
+        }
+
+
+
+        List<SkuSimpleResult> skuResult =skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+        for (StockView.SkuAndNumber record : stockViews.getRecords()) {
+            for (SkuSimpleResult skuSimpleResult : skuResult) {
+                if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    record.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+        }
+        return PageFactory.createPageInfo(stockViews);
+    }
+    @RequestMapping(value = "/outBySkuClass", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public PageInfo outBySkuClass(@RequestBody DataStatisticsViewParam param) {
+        List<StockView.SkuAndNumber> stockViews = outstockListingMapper.outBySpuClass(param);
+       List<Long> skuIds = new ArrayList<>();
+        for (StockView.SkuAndNumber record : stockViews.getRecords()) {
+            skuIds.add(record.getSkuId());
+        }
+
+
+
+        List<SkuSimpleResult> skuResult =skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
         for (StockView.SkuAndNumber record : stockViews.getRecords()) {
             for (SkuSimpleResult skuSimpleResult : skuResult) {
                 if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
@@ -967,7 +996,7 @@ public class DataStatisticsViewController extends BaseController {
         if (ToolUtil.isNotEmpty(param.getSearchType())) {
             switch (param.getSearchType()) {
                 case SPU_CLASS:
-                    return ResponseData.success(outstockListingMapper.outBySpuClass(param));
+                    return ResponseData.success(outstockListingMapper.outBySpuClassCount(param));
 
                 case TYPE:
                     return ResponseData.success(outstockListingMapper.outByType(param));

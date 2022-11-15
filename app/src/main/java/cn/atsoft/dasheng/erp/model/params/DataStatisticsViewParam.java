@@ -17,7 +17,7 @@ public class DataStatisticsViewParam {
     private List<Date> dateParams;
     private List<String> dates;
     private Long customerId;
-
+    private List<Long> spuClassIds;
     private Integer status;
 
     private Long instockOrderId;

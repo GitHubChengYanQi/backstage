@@ -43,6 +43,7 @@ public class StockView {
     @Data
     public static class SkuAndNumber{
         private Long skuId;
+        private Long classId;
         private SkuSimpleResult skuResult;
         private Integer number;
     }
