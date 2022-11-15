@@ -113,6 +113,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             detail.setPlanNumber(Math.toIntExact(orderDetailParam.getPurchaseNumber()));
             detail.setDeliveryDate(orderDetailParam.getDeliveryDate());
             detail.setSkuId(orderDetailParam.getSkuId());
+            detail.setContractCoding(entity.getCoding());
             details.add(detail);
         }
         productionPlanDetailService.saveBatch(details);

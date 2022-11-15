@@ -10,7 +10,6 @@
         <result column="plan_number" property="planNumber"/>
         <result column="making_number" property="makingNumber"/>
         <result column="delivery_date" property="deliveryDate"/>
-        <result column="contract_id" property="contractId"/>
         <result column="create_user" property="createUser"/>
         <result column="deptId" property="deptId"/>
         <result column="display" property="display"/>
