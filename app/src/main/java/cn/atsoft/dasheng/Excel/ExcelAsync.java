@@ -285,7 +285,39 @@ public class ExcelAsync {
                     json = JSON.toJSONString(list);
                     newSku.setSkuValue(json);
                 }
-
+                /**
+                 * 物料其余字段保存
+                 */
+                if (ToolUtil.isNotEmpty(skuExcelItem.getSkuSize())){
+                    newSku.setSkuSize(skuExcelItem.getSkuSize());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getHeatTreatment())){
+                    newSku.setHeatTreatment(skuExcelItem.getHeatTreatment());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getWeight())){
+                    newSku.setWeight(skuExcelItem.getWeight());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getColor())){
+                    newSku.setColor(skuExcelItem.getColor());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getPackaging())){
+                    newSku.setPackaging(skuExcelItem.getPackaging());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getViewFrame())){
+                    newSku.setViewFrame(skuExcelItem.getViewFrame());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getLevel())){
+                    newSku.setLevel(skuExcelItem.getLevel());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getModel())){
+                    newSku.setModel(skuExcelItem.getModel());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getNationalStandard())){
+                    newSku.setNationalStandard(skuExcelItem.getNationalStandard());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getPartNo())){
+                    newSku.setPartNo(skuExcelItem.getPartNo());
+                }
 
                 if (ToolUtil.isNotEmpty(skuExcelItem.getSpecifications()) &&  !skuExcelItem.getSpecifications().equals("")) {   //有规格 不进此判断
                     //判断分类 产品 型号 描述-------------------------------------------------------------------------------------
@@ -438,7 +470,7 @@ public class ExcelAsync {
                     throw new ServiceException(500, "缺少单位");
                 }
                 for (Unit unit : units) {
-                    if (unit.getUnitName().equals(spuExcel.getUnit())) {
+                    if (ToolUtil.isNotEmpty(unit.getUnitName())  && unit.getUnitName().equals(spuExcel.getUnit())) {
                         newSpu.setUnitId(unit.getUnitId());
                         break;
                     }

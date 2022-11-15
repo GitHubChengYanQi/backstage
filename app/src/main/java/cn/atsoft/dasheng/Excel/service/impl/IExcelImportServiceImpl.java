@@ -14,15 +14,16 @@ import java.util.Map;
 
 public class IExcelImportServiceImpl<T> implements IExcelImportService<T> {
 
-    List<T> data = new ArrayList<>();
 
     Map<String,String> columList = new HashMap<String,String>();
+    List<T> data = new ArrayList<>();
 
     @Override
-    public void importExcel(ExcelReader excelReader,Class<T> clazz) {
+    public List<T> importExcel(ExcelReader excelReader,Class<T> clazz) {
 
         Map<String, String> columList = this.columList;
         //设置标题行的别名Map
+        List<T> data = new ArrayList<>();
 
 
         for (Map<String, Object> stringObjectMap : excelReader.readAll()) {
@@ -42,6 +43,8 @@ public class IExcelImportServiceImpl<T> implements IExcelImportService<T> {
                 throw new RuntimeException(e);
             }
         }
+        this.data = data;
+        return data;
     }
     /**
      * Field类型转换
@@ -58,13 +61,10 @@ public class IExcelImportServiceImpl<T> implements IExcelImportService<T> {
         return null;
     }
 
-    @Override
-    public List<T> getData() {
-        return data;
-    }
+
 
     @Override
-    public void columList(Map columList) {
+    public void columList(Map<String,String> columList) {
         this.columList = columList;
     }
 }

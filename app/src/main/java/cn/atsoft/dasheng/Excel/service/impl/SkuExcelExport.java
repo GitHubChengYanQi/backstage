@@ -4,12 +4,13 @@ import cn.atsoft.dasheng.Excel.service.IExcelEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
 public class SkuExcelExport extends IExcelExportServiceImpl implements IExcelEntity {
 
-    private Map<String, String> sortColum = new HashMap<String, String>() {{
+    private Map<String, String> sortColum = new LinkedHashMap<String,String>() {{
         put("standard", "物料编码");
         put("spu", "产品名称");
         put("spuClass", "物料分类");
@@ -28,6 +29,7 @@ public class SkuExcelExport extends IExcelExportServiceImpl implements IExcelEnt
         put("viewFrame", "图幅");
         put("maintenancePeriod", "养护周期");
         put("spuCoding", "产品码");
+        put("heatTreatment", "热处理");
         put("batch", "二维码生成方式");
         put("remarks", "备注");
 

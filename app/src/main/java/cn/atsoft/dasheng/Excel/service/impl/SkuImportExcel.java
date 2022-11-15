@@ -17,6 +17,8 @@ public class SkuImportExcel extends IExcelImportServiceImpl<SkuExcelItem>{
             put("物料描述", "attributeAndValue");
             put("单位", "unit");
             put("表色", "color");
+            put("型号", "model");
+            put("热处理", "heatTreatment");
             put("级别", "level");
             put("尺寸", "skuSize");
             put("重量", "weight");
