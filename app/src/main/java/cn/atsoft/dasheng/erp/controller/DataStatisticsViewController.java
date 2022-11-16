@@ -969,17 +969,17 @@ public class DataStatisticsViewController extends BaseController {
     }
     @RequestMapping(value = "/outBySkuClass", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public PageInfo outBySkuClass(@RequestBody DataStatisticsViewParam param) {
+    public ResponseData outBySkuClass(@RequestBody DataStatisticsViewParam param) {
         List<StockView.SkuAndNumber> stockViews = outstockListingMapper.outBySpuClass(param);
        List<Long> skuIds = new ArrayList<>();
-        for (StockView.SkuAndNumber record : stockViews.getRecords()) {
+        for (StockView.SkuAndNumber record : stockViews) {
             skuIds.add(record.getSkuId());
         }
 
 
 
         List<SkuSimpleResult> skuResult =skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
-        for (StockView.SkuAndNumber record : stockViews.getRecords()) {
+        for (StockView.SkuAndNumber record : stockViews) {
             for (SkuSimpleResult skuSimpleResult : skuResult) {
                 if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
                     record.setSkuResult(skuSimpleResult);
@@ -987,7 +987,7 @@ public class DataStatisticsViewController extends BaseController {
                 }
             }
         }
-        return PageFactory.createPageInfo(stockViews);
+        return ResponseData.success(stockViews) ;
     }
 
     @RequestMapping(value = "/outStockDetailBySpuClass", method = RequestMethod.POST)
