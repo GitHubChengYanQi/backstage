@@ -99,8 +99,7 @@ public class SpuExcelController {
         File excelFile = new File(fileInfo.getFilePath());
 
         ExcelReader reader = ExcelUtil.getReader(excelFile);
-        spuImportExcel.importExcel(reader, SpuExcel.class);
-        List<SpuExcel> data = spuImportExcel.getData();
+        List<SpuExcel> data = spuImportExcel.importExcel(reader, SpuExcel.class);
 
 
 

@@ -53,8 +53,7 @@ public class SkuExcelController {
 
 
         ExcelReader excelReader = ExcelUtil.getReader(excelFile, 0);
-        skuImportExcel.importExcel(excelReader, SkuExcelItem.class);
-        List<SkuExcelItem> skuExcelItemList =skuImportExcel.getData();
+        List<SkuExcelItem> skuExcelItemList = skuImportExcel.importExcel(excelReader, SkuExcelItem.class);
 //        List<Object> readRow = excelReader.readRow(0);
 //        List<List<Object>> read = excelReader.read(1);
 //        List<SkuExcelItem> skuExcelItemList = new ArrayList<>();

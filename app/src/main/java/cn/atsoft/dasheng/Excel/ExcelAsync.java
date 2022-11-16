@@ -17,6 +17,9 @@ import cn.atsoft.dasheng.asyn.entity.AsynTask;
 import cn.atsoft.dasheng.asyn.entity.AsynTaskDetail;
 import cn.atsoft.dasheng.asyn.service.AsynTaskDetailService;
 import cn.atsoft.dasheng.asyn.service.AsynTaskService;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
+import cn.atsoft.dasheng.sys.modular.system.service.DictService;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
@@ -71,7 +74,8 @@ public class ExcelAsync {
     private StorehouseService storehouseService;
     @Autowired
     private CustomerService customerService;
-
+    @Autowired
+    private DictService dictService;
 
     protected static final Logger logger = LoggerFactory.getLogger(ExcelAsync.class);
 
@@ -94,7 +98,8 @@ public class ExcelAsync {
         asynTask.setStatus(0);
         asynTask.setCreateUser(userId);
         taskService.save(asynTask);
-
+        Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
+        boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
 
         SkuExcelResult skuExcelResult = new SkuExcelResult();
         List<SkuExcelItem> errorList = new ArrayList<>();
@@ -113,12 +118,11 @@ public class ExcelAsync {
                 asynTask.setCount(i);   //修改任务状态
                 taskService.updateById(asynTask);
 
-
                 newSku.setSkuName(skuExcelItem.getSkuName());  //   型号
 
                 Long unitId = null;
                 for (Unit unit : units) {
-                    if (unit.getUnitName().equals(skuExcelItem.getUnit())) {
+                    if (BeanUtil.isNotEmpty(unit.getUnitName()) && unit.getUnitName().equals(skuExcelItem.getUnit())) {
                         unitId = unit.getUnitId();
                         break;
                     }
@@ -213,8 +217,8 @@ public class ExcelAsync {
                 newItem.setUnitId(unitId);
                 spuService.updateById(newItem);
                 //批量-----------------------------------------------------------------------------------------------
-                if ("".equals(skuExcelItem.getIsNotBatch())) {
-                    throw new ServiceException(500, "参数错误");
+                if (ToolUtil.isEmpty(skuExcelItem.getIsNotBatch()) || "".equals(skuExcelItem.getIsNotBatch())) {
+                    throw new ServiceException(500, "二维码生成方式不可为空");
                 }
                 if (skuExcelItem.getIsNotBatch().equals("是")) {
                     newSku.setBatch(1);
@@ -281,27 +285,61 @@ public class ExcelAsync {
                     json = JSON.toJSONString(list);
                     newSku.setSkuValue(json);
                 }
-
+                /**
+                 * 物料其余字段保存
+                 */
+                if (ToolUtil.isNotEmpty(skuExcelItem.getSkuSize())){
+                    newSku.setSkuSize(skuExcelItem.getSkuSize());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getHeatTreatment())){
+                    newSku.setHeatTreatment(skuExcelItem.getHeatTreatment());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getWeight())){
+                    newSku.setWeight(skuExcelItem.getWeight());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getColor())){
+                    newSku.setColor(skuExcelItem.getColor());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getPackaging())){
+                    newSku.setPackaging(skuExcelItem.getPackaging());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getViewFrame())){
+                    newSku.setViewFrame(skuExcelItem.getViewFrame());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getLevel())){
+                    newSku.setLevel(skuExcelItem.getLevel());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getModel())){
+                    newSku.setModel(skuExcelItem.getModel());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getNationalStandard())){
+                    newSku.setNationalStandard(skuExcelItem.getNationalStandard());
+                }
+                if (ToolUtil.isNotEmpty(skuExcelItem.getPartNo())){
+                    newSku.setPartNo(skuExcelItem.getPartNo());
+                }
 
                 if (ToolUtil.isNotEmpty(skuExcelItem.getSpecifications()) &&  !skuExcelItem.getSpecifications().equals("")) {   //有规格 不进此判断
                     //判断分类 产品 型号 描述-------------------------------------------------------------------------------------
                     String md5 = SecureUtil.md5(newSku.getSpecifications() + newSku.getSpuId().toString() + newSku.getSkuName() + spuClass.getSpuClassificationId());
-                    for (Sku sku : skus) {
-                        if (md5.equals(sku.getSkuValueMd5())) {
-                            skuExcelItem.setType("skuRepeat");
-                            skuExcelItem.setUnitId(unitId);
-                            skuExcelItem.setClassId(spuClass.getSpuClassificationId());
-                            skuExcelItem.setErrorSkuId(sku.getSkuId());
-                            SkuResult results = skuService.getDetail(sku.getSkuId());
-                            skuExcelItem.setSimpleResult(results);
-                            throw new ServiceException(500, "分类，产品，型号，描述 重复");
+                    if (md5Flag){
+                        for (Sku sku : skus) {
+                            if (md5.equals(sku.getSkuValueMd5())) {
+                                skuExcelItem.setType("skuRepeat");
+                                skuExcelItem.setUnitId(unitId);
+                                skuExcelItem.setClassId(spuClass.getSpuClassificationId());
+                                skuExcelItem.setErrorSkuId(sku.getSkuId());
+                                SkuResult results = skuService.getDetail(sku.getSkuId());
+                                skuExcelItem.setSimpleResult(results);
+                                throw new ServiceException(500, "分类，产品，型号，描述 重复");
+                            }
                         }
                     }
                     newSku.setSkuValueMd5(md5);
                 } else {
                     //判断 分类 产品 型号 --------------------------------------------------------------------------------------
                     for (Sku sku : skus) {
-                        if (sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
+                        if (ToolUtil.isNotEmpty(sku.getSkuName()) && sku.getSkuName().equals(skuExcelItem.getSkuName()) && sku.getSpuId().equals(newItem.getSpuId())) {
                             for (Spu spu : spuList) {
                                 if (spu.getSpuId().equals(newItem.getSpuId()) && spu.getSpuClassificationId().equals(spuClass.getSpuClassificationId())) {
                                     skuExcelItem.setType("spuRepeat");
@@ -432,7 +470,7 @@ public class ExcelAsync {
                     throw new ServiceException(500, "缺少单位");
                 }
                 for (Unit unit : units) {
-                    if (unit.getUnitName().equals(spuExcel.getUnit())) {
+                    if (ToolUtil.isNotEmpty(unit.getUnitName())  && unit.getUnitName().equals(spuExcel.getUnit())) {
                         newSpu.setUnitId(unit.getUnitId());
                         break;
                     }

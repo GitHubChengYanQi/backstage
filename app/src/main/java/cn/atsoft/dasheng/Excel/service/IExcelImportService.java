@@ -7,8 +7,7 @@ import java.util.Map;
 
 public interface IExcelImportService<T> {
 
-    List<T> getData();
-    void importExcel(ExcelReader excelReader,Class<T> clazz);
+    List<T> importExcel(ExcelReader excelReader,Class<T> clazz);
 
     void columList(Map<String, String> columList);
 }
