@@ -30,6 +30,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.params.StepsParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.RemarksService;
@@ -1571,7 +1572,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 查询清单
          */
         List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
-//        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
+        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
         /**
          * 库存数
          */
@@ -1653,13 +1654,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            }
 
 
-//            for (ActivitiProcess process : processes) {
-//                if (process.getFormId().equals(skuResult.getSkuId())) {
-//                    ActivitiProcessResult processResult = new ActivitiProcessResult();
-//                    ToolUtil.copyProperties(process, processResult);
-//                    skuResult.setProcessResult(processResult);
-//                }
-//            }
+            for (ActivitiProcess process : processes) {
+                if (process.getFormId().equals(skuResult.getSkuId())) {
+                    ActivitiProcessResult processResult = new ActivitiProcessResult();
+                    ToolUtil.copyProperties(process, processResult);
+                    skuResult.setProcessResult(processResult);
+                }
+            }
             skuResult.setInBom(false);
 
             for (Parts part : parts) {
