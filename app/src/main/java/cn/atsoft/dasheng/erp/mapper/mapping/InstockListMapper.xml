@@ -272,7 +272,8 @@ storehouse_id
         SELECT
         customer.customer_name AS "customerName",
         count( DISTINCT list.sku_id ) AS "inSkuCount",
-        sum( list.number ) AS "inNumCount"
+        sum( list.number ) AS "inNumCount",
+        list.create_time AS "createTime"
         FROM
         daoxin_erp_instock_log_detail list
         LEFT JOIN daoxin_erp_instock_order instock on list.instock_order_id = instock.instock_order_id
@@ -296,7 +297,8 @@ storehouse_id
         SELECT
         customer.customer_name AS "customerName",
         count( DISTINCT list.sku_id ) AS "inSkuCount",
-        sum( list.number ) AS "inNumCount"
+        sum( list.number ) AS "inNumCount",
+        create_time AS "createTime"
         FROM
         daoxin_erp_instock_log_detail list
         LEFT JOIN daoxin_erp_instock_order instock on list.instock_order_id = instock.instock_order_id

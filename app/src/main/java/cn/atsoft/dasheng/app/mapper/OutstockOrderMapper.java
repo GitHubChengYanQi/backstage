@@ -55,7 +55,7 @@ public interface OutstockOrderMapper extends BaseMapper<OutstockOrder> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") OutstockOrderParam paramCondition);
 
-    List<StockView> groupByUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
 
 }

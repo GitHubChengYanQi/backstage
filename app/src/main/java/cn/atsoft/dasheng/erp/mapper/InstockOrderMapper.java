@@ -34,7 +34,10 @@ public interface InstockOrderMapper extends BaseMapper<InstockOrder> {
 
     List<StockView> countOrderByType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> countOrderByStatus(@Param("paramCondition") DataStatisticsViewParam paramCondition);
-    List<StockView> countOrderByUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> countOrderByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> sumOrderByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView.SkuAndNumber> instockDetails(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> instockCustomer(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
     /**
      * 获取map列表

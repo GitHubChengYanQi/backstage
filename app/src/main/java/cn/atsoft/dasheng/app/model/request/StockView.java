@@ -44,6 +44,7 @@ public class StockView {
     public static class SkuAndNumber{
         private Long skuId;
         private Long classId;
+        private Long userId;
         private SkuSimpleResult skuResult;
         private Integer number;
     }

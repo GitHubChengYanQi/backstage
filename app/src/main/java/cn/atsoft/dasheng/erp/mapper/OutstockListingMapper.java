@@ -53,7 +53,7 @@ public interface OutstockListingMapper extends BaseMapper<OutstockListing> {
      * @Date 2021-09-15
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") OutstockListingParam paramCondition);
-    List<StockView> groupByUser(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> groupByUserAndSku(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> groupByMonth(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> count(@Param("paramCondition") DataStatisticsViewParam paramCondition);

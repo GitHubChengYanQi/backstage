@@ -59,7 +59,7 @@ public interface InstockListMapper extends BaseMapper<InstockList> {
     List<StockView> groupBySpuClass(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> groupByInstockType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> groupByStorehouse(@Param("paramCondition") DataStatisticsViewParam paramCondition);
-    List<StockView> groupByCustomerSku(@Param("paramCondition") DataStatisticsViewParam paramCondition);
-    List<StockView> groupByCustomerNum(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupByCustomerSku(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupByCustomerNum(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
 }

@@ -194,7 +194,11 @@ delivery_id
         SELECT
         create_user AS "createUser",
         create_time AS "create_time",
-        COUNT(outstock_order_id) AS "orderCount"
+        create_time AS "create_time",
+        count( DISTINCT sku_id ) AS "inSkuCount",
+        SUM(number) AS "inNumCount",
+        create_time AS "createTime"
+
         FROM
         daoxin_erp_outstock_listing
         WHERE

@@ -62,5 +62,6 @@ public interface InstockLogDetailMapper extends BaseMapper<InstockLogDetail> {
      * @return
      */
     List<InstockLogDetailResult> skuLogDetail(@Param("paramCondition") InstockLogDetailParam paramCondition);
+    List<StockView.SkuAndNumber> instockLogs(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     StockView count(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 }

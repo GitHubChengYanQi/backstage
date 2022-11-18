@@ -109,10 +109,10 @@
         GROUP BY status
 
     </select>
-<select id="countOrderByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+    <select id="countOrderByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
-            count(instock_order_id) AS "orderCount",create_user AS "createUser",status AS "status",instock_type AS "type"
+            count(instock_order_id) AS "orderCount",create_time AS "createTime",create_user AS "createUser",status AS "status",instock_type AS "type"
         FROM
             daoxin_erp_instock_order
         WHERE 1 = 1
@@ -124,8 +124,85 @@
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         GROUP BY create_user
+        ORDER BY count(instock_order_id) DESC
 
     </select>
+    <select id="sumOrderByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        count( DISTINCT sku_id ) AS "inSkuCount",
+        create_time AS "createTime",
+        create_user AS "userId",
+        sum( number ) AS "inNumCount",
+        create_user AS "createUser"
+        FROM
+        daoxin_erp_instock_list
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY create_user
+        ORDER BY sum( number ) DESC
+    </select>
+    <select id="instockDetails" resultType="cn.atsoft.dasheng.app.model.request.StockView$SkuAndNumber"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+            list.sku_id AS "sku_id",
+            list.create_user AS createUser,
+            sum( list.number ) AS "number"
+            FROM
+            daoxin_erp_instock_list list
+            LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.userId!=null and paramCondition.userId!=null">
+            and list.create_user = #{paramCondition.userId}
+        </if>
+        GROUP BY list.sku_id
+    </select>
+    <select id="instockCustomer" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        order.customer_id AS "customerId",
+        list.sku_id AS "skuId",
+        list.number AS "number",
+        list.instock_number AS "instockNumber",
+        count( DISTINCT list.sku_id ) AS "inSkuCount",
+        count( DISTINCT error.sku_id ) AS "errorSkuCount",
+        count( DISTINCT log.sku_id ) AS "detailSkuCount",
+        IF(sum( error.real_number - error.need_number ) is null ,0,sum( error.real_number - error.need_number )) AS "errorNumCount"，
+        FROM
+        daoxin_erp_instock_order `order`
+        LEFT JOIN daoxin_erp_instock_list list ON list.instock_order_id = `order`.instock_order_id
+        LEFT JOIN daoxin_erp_instock_log_detail log ON `order`.instock_order_id = log.source_id
+        LEFT JOIN daoxin_anomaly error ON error.form_id = `order`.instock_order_id
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(order.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(order.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.userId!=null and paramCondition.userId!=null">
+            and order.create_user = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.customerId!=null">
+            and order.customer_id = #{paramCondition.customerId}
+        </if>
+        GROUP BY order.customer_id,list.sku_id
+
+        </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.InstockOrderParam">
         select
