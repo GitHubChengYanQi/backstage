@@ -96,6 +96,12 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
     private Integer display;
 
     /**
+     * 卡片编码
+     */
+    @ApiModelProperty("卡片编码")
+    private String cardCoding;
+
+    /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
