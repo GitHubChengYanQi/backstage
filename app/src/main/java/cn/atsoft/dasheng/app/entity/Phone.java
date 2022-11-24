@@ -48,7 +48,7 @@ public class Phone implements Serializable {
      * 电话号码
      */
     @TableField("phone_number")
-    private Long phoneNumber;
+    private String phoneNumber;
 
     /**
      * 创建者
@@ -97,11 +97,11 @@ public class Phone implements Serializable {
         this.contactsId = contactsId;
     }
 
-    public Long getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Long phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

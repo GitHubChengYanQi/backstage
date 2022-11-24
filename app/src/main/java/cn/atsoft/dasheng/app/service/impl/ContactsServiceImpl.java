@@ -85,7 +85,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         this.save(entity);
 
 
-        List<Long> phoneNumber = new ArrayList<>();
+        List<String> phoneNumber = new ArrayList<>();
         for (PhoneParam phoneParam : param.getPhoneParams()) {
             if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())) {
                 phoneNumber.add(phoneParam.getPhoneNumber());
@@ -240,7 +240,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     public Contacts update(ContactsParam param) {
 
         //先验证需要修改的电话号是否被其他人使用
-        List<Long> phoneNumber = new ArrayList<>();
+        List<String> phoneNumber = new ArrayList<>();
         for (PhoneParam phoneParam : param.getPhoneParams()) {
             phoneNumber.add(phoneParam.getPhoneNumber());
         }
