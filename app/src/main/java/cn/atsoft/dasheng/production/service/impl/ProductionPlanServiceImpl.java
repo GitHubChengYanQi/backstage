@@ -5,7 +5,9 @@ import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
+import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -82,10 +84,20 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
 
     @Autowired
     private ActivitiProcessService activitiProcessService;
+    @Autowired
+    private CodingRulesService codingRulesService;
 
     @Override
     public void add(ProductionPlanParam param) {
-
+        if (ToolUtil.isEmpty(param.getCoding())) {
+            CodingRules codingRules = codingRulesService.query().eq("module", "13").eq("state", 1).one();
+            if (ToolUtil.isNotEmpty(codingRules)) {
+                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+                param.setCoding(coding);
+            } else {
+                throw new ServiceException(500, "请配置生产计划单据编码规则");
+            }
+        }
         List<Long> skuIds = new ArrayList<>();
         List<ProductionPlanDetail> details = new ArrayList<>();
         for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
@@ -113,6 +125,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             detail.setPlanNumber(Math.toIntExact(orderDetailParam.getPurchaseNumber()));
             detail.setDeliveryDate(orderDetailParam.getDeliveryDate());
             detail.setSkuId(orderDetailParam.getSkuId());
+            detail.setContractCoding(orderDetailParam.getContractCoding());
             details.add(detail);
         }
         productionPlanDetailService.saveBatch(details);

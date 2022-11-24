@@ -46,9 +46,9 @@ public class OrderResult implements Serializable {
 
     private Contacts deliverer;  //交货人
 
-    private Long AContactsPhone;
+    private String AContactsPhone;
 
-    private Long BContactsPhone;
+    private String BContactsPhone;
 
     private Integer allMoney;
 
@@ -75,8 +75,8 @@ public class OrderResult implements Serializable {
     private String coding;
     private UserResult user;
 
-    private Long ACompanyPhone;
-    private Long BCompanyPhone;
+    private String ACompanyPhone;
+    private String BCompanyPhone;
 
     /**
      * 货币种类
@@ -200,7 +200,7 @@ public class OrderResult implements Serializable {
      * 甲方电话
      */
     @ApiModelProperty("甲方电话")
-    private Long partyAPhone;
+    private String partyAPhone;
 
     /**
      * 甲方委托人id
@@ -224,7 +224,7 @@ public class OrderResult implements Serializable {
      * 乙方电话
      */
     @ApiModelProperty("乙方电话")
-    private Long partyBPhone;
+    private String partyBPhone;
 
     /**
      * 乙方委托人id

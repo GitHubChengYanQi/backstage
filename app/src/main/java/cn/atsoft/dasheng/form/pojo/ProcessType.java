@@ -46,6 +46,9 @@ public enum ProcessType {
     }}),
     Stocktaking("盘点", "Stocktaking", new ArrayList<ProcessModuleEnum>() {{
         add(ProcessModuleEnum.Stocktaking);
+    }}),
+    ProductionTask("生产任务", "productionTask", new ArrayList<ProcessModuleEnum>() {{
+        add(ProcessModuleEnum.productionTask);
     }});
 
 

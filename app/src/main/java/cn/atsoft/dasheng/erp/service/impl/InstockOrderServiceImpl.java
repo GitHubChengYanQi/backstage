@@ -216,6 +216,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         this.save(entity);
         String origin = this.getOrigin.newThemeAndOrigin("INSTOCK", entity.getInstockOrderId(), ToolUtil.isEmpty(param.getSource()) ? null : param.getSource(), ToolUtil.isEmpty(param.getSourceId()) ? null : param.getSourceId());
         entity.setOrigin(origin);
+        entity.setInstockType(entity.getInstockType());
         this.updateById(entity);
 
 

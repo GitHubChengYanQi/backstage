@@ -158,6 +158,7 @@ public class ActionController {
             case MAINTENANCE:
             case Stocktaking:
             case ALLOCATION:
+            case ProductionTask:
                 DocumentsStatusParam status = statusParam.getParam();
                 status.setFormType(statusParam.getReceiptsEnum().name());
                 id = documentStatusService.add(status);

@@ -24,6 +24,7 @@ public class MarkDownTemplate {
     private List<Long> userIds;
     private String source;
     private String coding;
+    //任务id
     private Long taskId;
     private Long createUser;
     private Long sourceId;

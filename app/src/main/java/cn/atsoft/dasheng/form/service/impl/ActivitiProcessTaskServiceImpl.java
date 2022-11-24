@@ -777,16 +777,21 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     @Override
     public Map<String, String> getSendData(Long taskId) {
-        ActivitiProcessTask processTask = this.getById(taskId);
-        Long processId = processTask.getProcessId();
-        ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
-        String modelName = getNameByEnum(activitiProcess.getType());
+        //声明返回值
         Map<String, String> result = new HashMap<>();
-        result.put("function", modelName);
-        String coding = "";
-        List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
-        try {
-            switch (processTask.getType()) {
+        //查询任务
+        ActivitiProcessTask processTask = this.getById(taskId);
+        //判断任务是否为空
+        if (ToolUtil.isNotEmpty(processTask)){
+            Long processId = processTask.getProcessId();
+            ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
+            String modelName = getNameByEnum(activitiProcess.getType());
+
+            result.put("function", modelName);
+            String coding = "";
+            List<SkuSimpleResult> skuSimpleResults = new ArrayList<>();
+            try {
+                switch (processTask.getType()) {
 //                case "quality_task":
 //                    QualityTaskResult task = qualityTaskService.getTask(taskResult.getFormId());
 //                    break;
@@ -818,83 +823,84 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 //                    procurementPlanService.detail(procurementPlanResult);
 //                    taskResult.setObject(procurementPlanResult);
 //                    break;
-                case "INSTOCK":
-                    InstockOrderResult instockOrderResult = BeanUtil.copyProperties(instockOrderService.getById(processTask.getFormId()), InstockOrderResult.class);
-                    instockOrderService.formatDetail(instockOrderResult);
-                    for (InstockListResult instockListResult : instockOrderResult.getInstockListResults()) {
-                        skuSimpleResults.add(BeanUtil.copyProperties(instockListResult.getSkuResult(), SkuSimpleResult.class));
-                    }
-                    coding = instockOrderResult.getCoding();
-                    break;
-                case "ERROR":
-                    AnomalyOrderResult orderResult = anomalyOrderService.detail(processTask.getFormId());
-                    for (AnomalyResult anomalyResult : orderResult.getAnomalyResults()) {
+                    case "INSTOCK":
+                        InstockOrderResult instockOrderResult = BeanUtil.copyProperties(instockOrderService.getById(processTask.getFormId()), InstockOrderResult.class);
+                        instockOrderService.formatDetail(instockOrderResult);
+                        for (InstockListResult instockListResult : instockOrderResult.getInstockListResults()) {
+                            skuSimpleResults.add(BeanUtil.copyProperties(instockListResult.getSkuResult(), SkuSimpleResult.class));
+                        }
+                        coding = instockOrderResult.getCoding();
+                        break;
+                    case "ERROR":
+                        AnomalyOrderResult orderResult = anomalyOrderService.detail(processTask.getFormId());
+                        for (AnomalyResult anomalyResult : orderResult.getAnomalyResults()) {
+                            skuSimpleResults.add(anomalyResult.getSkuResult());
+                        }
+                        coding = orderResult.getCoding();
+                        break;
+                    case "ErrorForWard":
+                        AnomalyResult anomalyResult = anomalyService.detail(processTask.getFormId());
                         skuSimpleResults.add(anomalyResult.getSkuResult());
-                    }
-                    coding = orderResult.getCoding();
-                    break;
-                case "ErrorForWard":
-                    AnomalyResult anomalyResult = anomalyService.detail(processTask.getFormId());
-                    skuSimpleResults.add(anomalyResult.getSkuResult());
-                    break;
-                case "OUTSTOCK":
-                    ProductionPickListsResult pickListsRestult = pickListsService.detail(processTask.getFormId());
-                    for (ProductionPickListsDetailResult detailResult : pickListsRestult.getDetailResults()) {
-                        skuSimpleResults.add(detailResult.getSkuResult());
-                    }
-                    coding = pickListsRestult.getCoding();
-                    break;
-                case "MAINTENANCE":
-                    MaintenanceResult maintenanceResult = maintenanceService.detail(processTask.getFormId());
-                    for (MaintenanceDetailResult maintenanceDetailResult : maintenanceResult.getMaintenanceDetailResults()) {
-                        skuSimpleResults.add(maintenanceDetailResult.getSkuResult());
-                    }
-                    coding = maintenanceResult.getCoding();
-                    break;
-                case "Stocktaking":
-                    InventoryResult inventoryResult = inventoryService.detail(processTask.getFormId());
-                    for (InventoryDetailResult detailResult : inventoryResult.getDetailResults()) {
-                        skuSimpleResults.add(BeanUtil.copyProperties(detailResult.getSkuResult(), SkuSimpleResult.class));
-                    }
-                    coding = inventoryResult.getCoding();
+                        break;
+                    case "OUTSTOCK":
+                        ProductionPickListsResult pickListsRestult = pickListsService.detail(processTask.getFormId());
+                        for (ProductionPickListsDetailResult detailResult : pickListsRestult.getDetailResults()) {
+                            skuSimpleResults.add(detailResult.getSkuResult());
+                        }
+                        coding = pickListsRestult.getCoding();
+                        break;
+                    case "MAINTENANCE":
+                        MaintenanceResult maintenanceResult = maintenanceService.detail(processTask.getFormId());
+                        for (MaintenanceDetailResult maintenanceDetailResult : maintenanceResult.getMaintenanceDetailResults()) {
+                            skuSimpleResults.add(maintenanceDetailResult.getSkuResult());
+                        }
+                        coding = maintenanceResult.getCoding();
+                        break;
+                    case "Stocktaking":
+                        InventoryResult inventoryResult = inventoryService.detail(processTask.getFormId());
+                        for (InventoryDetailResult detailResult : inventoryResult.getDetailResults()) {
+                            skuSimpleResults.add(BeanUtil.copyProperties(detailResult.getSkuResult(), SkuSimpleResult.class));
+                        }
+                        coding = inventoryResult.getCoding();
 
-                    break;
+                        break;
 
+
+                }
+            } catch (Exception e) {
 
             }
-        } catch (Exception e) {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                if (ToolUtil.isNotEmpty(skuSimpleResult.getSpuResult()) && ToolUtil.isNotEmpty(skuSimpleResult.getSpuResult().getName())) {
+                    stringBuffer.append(skuSimpleResult.getSpuResult().getName()).append("/");
+                }
+                if (ToolUtil.isNotEmpty(skuSimpleResult.getSkuName())) {
+                    stringBuffer.append(skuSimpleResult.getSkuName()).append("/");
 
-        }
-        StringBuffer stringBuffer = new StringBuffer();
-        for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
-            if (ToolUtil.isNotEmpty(skuSimpleResult.getSpuResult()) && ToolUtil.isNotEmpty(skuSimpleResult.getSpuResult().getName())) {
-                stringBuffer.append(skuSimpleResult.getSpuResult().getName()).append("/");
+                }
+                if (ToolUtil.isNotEmpty(skuSimpleResult.getSpecifications())) {
+                    stringBuffer.append(skuSimpleResult.getSpecifications());
+                }
+                stringBuffer.append(",");
+                if (stringBuffer.length() > 28) {
+                    break;
+                }
             }
-            if (ToolUtil.isNotEmpty(skuSimpleResult.getSkuName())) {
-                stringBuffer.append(skuSimpleResult.getSkuName()).append("/");
-
+            String string = stringBuffer.toString();
+            if (string.length() > 0) {
+                string = string.substring(0, string.length() - 1);
             }
-            if (ToolUtil.isNotEmpty(skuSimpleResult.getSpecifications())) {
-                stringBuffer.append(skuSimpleResult.getSpecifications());
+            if (string.length() > 27) {
+                string = string + ".....";
             }
-            stringBuffer.append(",");
-            if (stringBuffer.length() > 28) {
-                break;
-            }
-        }
-        String string = stringBuffer.toString();
-        if (string.length() > 0) {
-            string = string.substring(0, string.length() - 1);
-        }
-        if (string.length() > 27) {
-            string = string + ".....";
-        }
 
 
-        result.put("description", string);
-        result.put("coding", coding);
-        if (ToolUtil.isNotEmpty(processTask.getTaskName())) {
-            result.put("items", processTask.getTaskName());
+            result.put("description", string);
+            result.put("coding", coding);
+            if (ToolUtil.isNotEmpty(processTask.getTaskName())) {
+                result.put("items", processTask.getTaskName());
+            }
         }
         return result;
     }

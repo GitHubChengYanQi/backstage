@@ -19,7 +19,8 @@ public enum ReceiptsEnum {
 ,
     Stocktaking("盘点"),
     ERROR("错误"),
-    ALLOCATION("调拨");
+    ALLOCATION("调拨"),
+    ProductionTask("生产任务");
 
 
     private String value;
