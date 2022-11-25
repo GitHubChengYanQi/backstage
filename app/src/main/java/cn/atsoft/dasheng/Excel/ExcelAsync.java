@@ -381,7 +381,7 @@ public class ExcelAsync {
                 errorList.add(skuExcelItem);
             }
         }
-        skuService.saveBatch(skuList);
+        skuService.saveOrUpdateBatch(skuList);
         skuExcelResult.setErrorList(errorList);
         skuExcelResult.setSuccessNum(successNum);
         asynTask.setStatus(99);
