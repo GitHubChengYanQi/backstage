@@ -111,13 +111,13 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
             }
         }
         this.updateBatchById(details);  //修改采购单详情
-        QualityTaskParam taskParam = new QualityTaskParam(); //添加质检
-        LoginUser user = LoginContextHolder.getContext().getUser();
-        taskParam.setDetails(taskDetails);
-        taskParam.setCoding(rulesService.getCodingByModule(4L).replace("${type}","AOG"));
-        taskParam.setType("采购");
-        taskParam.setUserId(user.getId());
-        taskService.add(taskParam);
+//        QualityTaskParam taskParam = new QualityTaskParam(); //添加质检
+//        LoginUser user = LoginContextHolder.getContext().getUser();
+//        taskParam.setDetails(taskDetails);
+//        taskParam.setCoding(rulesService.getCodingByModule(4L).replace("${type}","AOG"));
+//        taskParam.setType("采购");
+//        taskParam.setUserId(user.getId());
+//        taskService.add(taskParam);
 
     }
 
