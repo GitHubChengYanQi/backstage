@@ -195,11 +195,12 @@ public class ExcelAsync {
                     skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
                     for (Sku sku : skus) {
                         if (ToolUtil.isNotEmpty(sku.getStandard()) && sku.getStandard().equals(skuExcelItem.getStandard())) {
-                            SkuResult results = skuService.getDetail(sku.getSkuId());
-                            skuExcelItem.setSimpleResult(results);
-                            skuExcelItem.setErrorSkuId(sku.getSkuId());
-                            skuExcelItem.setType("codingRepeat");
-                            throw new ServiceException(500, "编码重复");
+//                            SkuResult results = skuService.getDetail(sku.getSkuId());
+//                            skuExcelItem.setSimpleResult(results);
+//                            skuExcelItem.setErrorSkuId(sku.getSkuId());
+//                           skuExcelItem.setType("codingRepeat");
+//                           throw new ServiceException(500, "编码重复");
+                            newSku = sku;
                         }
                     }
                     newSku.setStandard(skuExcelItem.getStandard());
@@ -359,7 +360,8 @@ public class ExcelAsync {
                 }
 
 
-                if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
+                Sku finalNewSku = newSku;
+                if (skuList.stream().noneMatch(item -> item.getStandard().equals(finalNewSku.getStandard()))) {  //excel 重复数据
                     successNum++;
                     asynTaskDetail.setContentJson(JSON.toJSONString(skuExcelItem));
                     asynTaskDetail.setStatus(99);
