@@ -4,18 +4,25 @@ package cn.atsoft.dasheng.crm.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.InvoiceBill;
+import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.mapper.InvoiceBillMapper;
 import cn.atsoft.dasheng.crm.model.params.InvoiceBillParam;
+import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.InvoiceBillResult;
 import  cn.atsoft.dasheng.crm.service.InvoiceBillService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.OrderService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -27,7 +34,6 @@ import java.util.List;
  */
 @Service
 public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, InvoiceBill> implements InvoiceBillService {
-
     @Override
     public void add(InvoiceBillParam param){
         InvoiceBill entity = getEntity(param);

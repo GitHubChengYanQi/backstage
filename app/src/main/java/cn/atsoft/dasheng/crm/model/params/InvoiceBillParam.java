@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -75,6 +76,13 @@ public class InvoiceBillParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
+    /**
+     * 关联订单
+     */
+    @ApiModelProperty("关联订单")
+    private Long orderId;
+
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

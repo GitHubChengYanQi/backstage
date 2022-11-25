@@ -71,6 +71,19 @@ public class InvoiceBillResult implements Serializable {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
+    /**
+     * 关联订单
+     */
+    @ApiModelProperty("关联订单")
+    private Long orderId;
+
+    /**
+     * 编码
+     */
+    @ApiModelProperty("编码")
+    private String coding;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
