@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.appBase.entity.Media;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.InvoiceBill;
@@ -34,6 +37,10 @@ import java.util.Map;
  */
 @Service
 public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, InvoiceBill> implements InvoiceBillService {
+
+    @Autowired
+    private MediaService mediaService;
+
     @Override
     public void add(InvoiceBillParam param){
         InvoiceBill entity = getEntity(param);
@@ -67,7 +74,28 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
     public PageInfo<InvoiceBillResult> findPageBySpec(InvoiceBillParam param){
         Page<InvoiceBillResult> pageContext = getPageContext();
         IPage<InvoiceBillResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+    public void format(List<InvoiceBillResult> param){
+        List<Long> mediaIds = new ArrayList<>();
+        for (InvoiceBillResult invoiceBillParam : param) {
+            if (ToolUtil.isNotEmpty(invoiceBillParam.getEnclosureId())){
+                mediaIds.add(invoiceBillParam.getEnclosureId());
+            }
+            List<MediaUrlResult> mediaList = mediaIds.size() == 0 ? new ArrayList<>() : mediaService.getMediaUrlResults(mediaIds);
+            for (InvoiceBillResult billResult : param) {
+                if (ToolUtil.isNotEmpty(billResult.getEnclosureId())) {
+                    for (MediaUrlResult media : mediaList) {
+                        if (billResult.getEnclosureId().equals(media.getMediaId())) {
+                            billResult.setMediaUrlResult(media);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private Serializable getKey(InvoiceBillParam param){
