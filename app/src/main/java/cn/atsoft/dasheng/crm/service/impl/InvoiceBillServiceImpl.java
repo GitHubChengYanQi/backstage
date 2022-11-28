@@ -15,7 +15,6 @@ import cn.atsoft.dasheng.crm.model.result.InvoiceBillResult;
 import  cn.atsoft.dasheng.crm.service.InvoiceBillService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.OrderService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -50,12 +49,7 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
 
     @Override
     public void delete(InvoiceBillParam param){
-        if (ToolUtil.isEmpty(param.getInvoiceBillId())){
-            throw new ServiceException(500,"所删除的目标不存在");
-        }else {
-            param.setDisplay(0);
-            this.update(param);
-        }
+        this.removeById(getKey(param));
     }
 
     @Override
