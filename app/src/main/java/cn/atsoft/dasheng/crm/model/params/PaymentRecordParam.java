@@ -37,7 +37,6 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
      * 付款详情id
      */
     @ApiModelProperty("付款详情id")
-    @NotNull
     private Long detailId;
 
     /**
@@ -50,7 +49,6 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
      * 付款金额
      */
     @ApiModelProperty("付款金额")
-    @NotNull
     private Integer paymentAmount;
 
     /**
@@ -94,6 +92,12 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
+    /**
+     * 订单id
+     */
+    @ApiModelProperty("订单id")
+    private Long orderId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

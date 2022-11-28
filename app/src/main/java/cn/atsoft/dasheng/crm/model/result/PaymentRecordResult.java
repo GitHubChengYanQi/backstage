@@ -86,6 +86,19 @@ public class PaymentRecordResult implements Serializable {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
+    /**
+     * 订单id
+     */
+    @ApiModelProperty("订单id")
+    private Long orderId;
+
+    /**
+     * 编码
+     */
+    @ApiModelProperty("编码")
+    private String Coding;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

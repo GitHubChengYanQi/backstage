@@ -42,19 +42,18 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
     @Override
     @Transactional
     public void add(PaymentRecordParam param) {
-        PaymentDetail detail = detailService.getById(param.getDetailId());
-        if (ToolUtil.isEmpty(detail)) {
-            throw new ServiceException(500, "付款单据错误");
-        }
         PaymentRecord entity = getEntity(param);
-        entity.setPaymentId(detail.getPaymentId());
         this.save(entity);
-        updatePayDetail(param.getDetailId());
     }
 
     @Override
     public void delete(PaymentRecordParam param) {
-        this.removeById(getKey(param));
+        if (ToolUtil.isEmpty(param.getRecordId())){
+            throw new ServiceException(500,"所删除的目标不存在");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override

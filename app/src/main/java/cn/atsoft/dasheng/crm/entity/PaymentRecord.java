@@ -87,6 +87,19 @@ public class PaymentRecord implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    /**
+     * 订单id
+     */
+    @TableField("order_id")
+    private Long orderId;
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
 
     public Long getRecordId() {
         return recordId;
