@@ -94,6 +94,12 @@ public class PaymentRecordResult implements Serializable {
     private Long orderId;
 
     /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Long status;
+
+    /**
      * 编码
      */
     @ApiModelProperty("编码")

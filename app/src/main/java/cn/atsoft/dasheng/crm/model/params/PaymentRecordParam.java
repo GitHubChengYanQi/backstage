@@ -99,6 +99,12 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("订单id")
     private Long orderId;
 
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer status;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 

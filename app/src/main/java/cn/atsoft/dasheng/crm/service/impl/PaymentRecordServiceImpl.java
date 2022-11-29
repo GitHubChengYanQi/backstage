@@ -41,10 +41,12 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
 
     @Override
     @Transactional
-    public void add(PaymentRecordParam param) {
+    public PaymentRecord add(PaymentRecordParam param) {
         PaymentRecord entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
+
 
     @Override
     public void delete(PaymentRecordParam param) {
@@ -57,9 +59,26 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
     }
 
     @Override
+    public void obsolete(PaymentRecordParam param) {
+
+        if (ToolUtil.isEmpty(param.getRecordId())){
+            throw new ServiceException(500,"所作废的目标不存在");
+        }else {
+            PaymentRecord oldEntity = getOldEntity(param);
+            if (ToolUtil.isEmpty(oldEntity)){
+                throw new ServiceException(500,"未找到此数据");
+            }
+            oldEntity.setStatus(50);
+            oldEntity.setRecordId(param.getRecordId());
+            this.updateById(oldEntity);
+        }
+    }
+
+    @Override
     public void update(PaymentRecordParam param) {
         PaymentRecord oldEntity = getOldEntity(param);
         PaymentRecord newEntity = getEntity(param);
+        newEntity.setDisplay(null);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }

@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import javafx.beans.binding.ObjectExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -43,23 +44,23 @@ public class PaymentRecordController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody @Valid PaymentRecordParam paymentRecordParam) {
-        this.paymentRecordService.add(paymentRecordParam);
-        return ResponseData.success();
+        Object add = this.paymentRecordService.add(paymentRecordParam);
+        return ResponseData.success(add);
     }
 
-//    /**
-//     * 编辑接口
-//     *
-//     * @author song
-//     * @Date 2022-03-01
-//     */
-//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-//    @ApiOperation("编辑")
-//    public ResponseData update(@RequestBody PaymentRecordParam paymentRecordParam) {
-//
-//        this.paymentRecordService.update(paymentRecordParam);
-//        return ResponseData.success();
-//    }
+    /**
+     * 编辑接口
+     *
+     * @author song
+     * @Date 2022-03-01
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData update(@RequestBody PaymentRecordParam paymentRecordParam) {
+
+        this.paymentRecordService.update(paymentRecordParam);
+        return ResponseData.success();
+    }
 //
 //    /**
 //     * 删除接口
@@ -73,6 +74,15 @@ public class PaymentRecordController extends BaseController {
 //        this.paymentRecordService.delete(paymentRecordParam);
 //        return ResponseData.success();
 //    }
+    /**
+     * 状态作废接口
+     */
+    @RequestMapping(value = "/obsolete",method = RequestMethod.POST)
+    @ApiOperation("作废")
+    public ResponseData obsolete(@RequestBody PaymentRecordParam paymentRecordParam) {
+        this.paymentRecordService.obsolete(paymentRecordParam);
+        return ResponseData.success();
+    }
 
     /**
      * 查看详情接口

@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.crm.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,7 +27,7 @@ public class PaymentRecord implements Serializable {
     /**
      * 付款记录id
      */
-      @TableId(value = "record_id", type = IdType.ID_WORKER)
+    @TableId(value = "record_id", type = IdType.ID_WORKER)
     private Long recordId;
 
     /**
@@ -54,25 +57,25 @@ public class PaymentRecord implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -92,6 +95,20 @@ public class PaymentRecord implements Serializable {
      */
     @TableField("order_id")
     private Long orderId;
+
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Long getOrderId() {
         return orderId;
@@ -192,17 +209,17 @@ public class PaymentRecord implements Serializable {
     @Override
     public String toString() {
         return "PaymentRecord{" +
-        "recordId=" + recordId +
-        ", detailId=" + detailId +
-        ", paymentId=" + paymentId +
-        ", paymentAmount=" + paymentAmount +
-        ", remark=" + remark +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "recordId=" + recordId +
+                ", detailId=" + detailId +
+                ", paymentId=" + paymentId +
+                ", paymentAmount=" + paymentAmount +
+                ", remark=" + remark +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }
