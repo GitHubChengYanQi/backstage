@@ -56,7 +56,6 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
             param.setDisplay(0);
             this.update(param);
         }
-        this.removeById(getKey(param));
     }
 
     @Override
