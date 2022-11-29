@@ -43,9 +43,10 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
     private MediaService mediaService;
 
     @Override
-    public void add(InvoiceBillParam param){
+    public InvoiceBill add(InvoiceBillParam param){
         InvoiceBill entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override

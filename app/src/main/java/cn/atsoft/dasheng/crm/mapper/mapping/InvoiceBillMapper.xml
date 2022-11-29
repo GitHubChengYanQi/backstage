@@ -32,7 +32,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.InvoiceBillResult" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceBillParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_invoice_bill where 1 = 1
+        from daoxin_invoice_bill where 1 = 1 and display = 1
             <if test="paramCondition.invoiceBillId != null">
                 and invoice_bill_id like CONCAT('%',#{paramCondition.invoiceBillId},'%')
             </if>
@@ -71,7 +71,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceBillParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_invoice_bill where 1 = 1
+        from daoxin_invoice_bill where 1 = 1 and display = 1
                 <if test="paramCondition.invoiceBillId != null">
                         and invoice_bill_id like CONCAT('%',#{paramCondition.invoiceBillId},'%')
                 </if>
@@ -110,7 +110,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.InvoiceBillResult" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceBillParam">
         select
         <include refid="List"/>
-        from daoxin_invoice_bill b LEFT JOIN daoxin_crm_order o ON b.order_id = o.order_id where 1 = 1
+        from daoxin_invoice_bill b LEFT JOIN daoxin_crm_order o ON b.order_id = o.order_id where 1 = 1 and b.display = 1
                 <if test="paramCondition.invoiceBillId != null">
                         and b.invoice_bill_id like CONCAT('%',#{paramCondition.invoiceBillId},'%')
                 </if>
