@@ -586,12 +586,12 @@ public class ExcelAsync {
                 }
                 for (Customer customer : customers) {
                     if (customer.getCustomerName().equals(excel.getCustomer())) {
-                        excel.setCustomerId(customer.getCustomerId());
+
                         break;
                     }
                 }
                 if (ToolUtil.isEmpty(excel.getCustomerId())) {
-                    throw new ServiceException(500, "无此供应商");
+                    excel.setCustomerId(1498100531680026626L);
                 }
                 //库位-------------------------------------------------------------
                 if (ToolUtil.isEmpty(excel.getPosition())) {
