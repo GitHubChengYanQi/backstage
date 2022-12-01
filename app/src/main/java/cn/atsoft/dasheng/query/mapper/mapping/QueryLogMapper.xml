@@ -91,7 +91,7 @@
             and query_log_id like CONCAT('%',#{paramCondition.queryLogId},'%')
         </if>
         <if test="paramCondition.formType != null and paramCondition.formType != ''">
-            and form_type like CONCAT('%',#{paramCondition.formType},'%')
+            and form_type = #{paramCondition.formType}
         </if>
         <if test="paramCondition.record != null and paramCondition.record != ''">
             and record like CONCAT('%',#{paramCondition.record},'%')

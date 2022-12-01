@@ -250,7 +250,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         String type = param.getType();
         ProcessType enumByType = getEnumByType(type);
         if (ToolUtil.isEmpty(enumByType)) {
-            page = this.baseMapper.aboutMeTask(pageContext, param);
+            page = this.baseMapper.stocktakingTask(pageContext, param);
         }else {
             switch (enumByType){
                 case ALLOCATION:
@@ -385,7 +385,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return this.getById(getKey(param));
     }
 
-    private ActivitiProcessTask getEntity(ActivitiProcessTaskParam param) {
+    @Override
+    public ActivitiProcessTask getEntity(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = new ActivitiProcessTask();
         ToolUtil.copyProperties(param, entity);
         return entity;
@@ -618,6 +619,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 }
 
             }
+            userIds.add(datum.getUserId());
             userIds.add(datum.getCreateUser());
             switch (datum.getType()) {
                 case "INSTOCK":
@@ -683,7 +685,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
         for (ActivitiProcessTaskResult datum : data) {
 
-            if ((datum.getType().equals("INSTOCK") || datum.getType().equals("OUTSTOCK")) && ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
+            if ((datum.getType().equals("INSTOCK") || datum.getType().equals("OUTSTOCK") || datum.getType().equals("ERROR")) && ToolUtil.isNotEmpty(datum.getProcessUserIds())) {     //执行人
                 List<UserResult> processUsers = new ArrayList<>();
                 for (Long processUserId : datum.getProcessUserIds()) {
                     for (UserResult user : users) {
@@ -753,6 +755,18 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     datum.setReceipts(anomalyResult);
                 }
             }
+            if (datum.getType().equals("ErrorForWard")) {   //取转交异常执行人
+                for (UserResult user : users) {
+                    if (ToolUtil.isNotEmpty(datum.getUserId()) && datum.getUserId().equals(user.getUserId())) {
+                        datum.setProcessUsers(new ArrayList<UserResult>() {{
+                            add(user);
+                        }});
+                        break;
+                    }
+                }
+            }
+
+
             for (MaintenanceResult maintenanceResult : maintenanceResults) {
                 if (datum.getType().equals("MAINTENANCE") && datum.getFormId().equals(maintenanceResult.getMaintenanceId())) {
                     long status = (long) maintenanceResult.getStatus();

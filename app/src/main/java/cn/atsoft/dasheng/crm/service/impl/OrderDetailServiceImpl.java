@@ -106,17 +106,22 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
     @Override
 
-    public void addList(Long orderId, Long customerId, List<OrderDetailParam> params) {
+    public Integer addList(Long orderId, Long customerId, List<OrderDetailParam> params) {
         List<OrderDetail> details = new ArrayList<>();
+        int totalAmount = 0;   //所有物料总价
         for (OrderDetailParam param : params) {
             OrderDetail orderDetail = new OrderDetail();
             ToolUtil.copyProperties(param, orderDetail);
             orderDetail.setDetailId(null);
+            int detailAmount = Math.toIntExact(orderDetail.getOnePrice() * orderDetail.getPurchaseNumber());
             orderDetail.setOrderId(orderId);
             orderDetail.setCustomerId(customerId);
+            orderDetail.setTotalPrice(detailAmount);
+            totalAmount = totalAmount + detailAmount;
             details.add(orderDetail);
         }
         this.saveBatch(details);
+        return totalAmount;
     }
 
     @Override

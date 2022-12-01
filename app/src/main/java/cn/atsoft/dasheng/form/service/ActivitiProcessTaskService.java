@@ -93,6 +93,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
 
     PageInfo LoginStart(ActivitiProcessTaskParam param);
 
+    ActivitiProcessTask getEntity(ActivitiProcessTaskParam param);
+
     boolean startHaveME(AuditRule rule, LoginContext loginContext);
 
     void setProcessUserIds(Long processId, Long taskId);

@@ -15,6 +15,8 @@ public enum StocktakingEnum implements FormActionInterface {
     },
     check("盘点") {
 
+    }, resubmit("再次提交") {  //再次提交
+
     },
     revoke("撤回") {
         public Long getStatus() {

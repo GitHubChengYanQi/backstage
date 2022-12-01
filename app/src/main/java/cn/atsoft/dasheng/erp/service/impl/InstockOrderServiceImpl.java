@@ -226,6 +226,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         boolean t = true;
         if (ToolUtil.isNotEmpty(param.getType())) {
             switch (param.getType()) {
+                case "resubmit":
                 case "调拨入库":
                     t = false;
                     break;
@@ -714,8 +715,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         ActivitiProcessTask task = activitiProcessTaskService.query().eq("form_id", param.getInstockOrderId()).one();
         List<InstockLogDetail> instockLogDetails = new ArrayList<>();
         List<InstockHandle> instockHandles = new ArrayList<>();
+        long skuId = 0;
 
         for (InstockListParam listParam : param.getListParams()) {
+            skuId = listParam.getSkuId();
             InstockHandle instockHandle = new InstockHandle();    //添加入庫处理结果
             ToolUtil.copyProperties(listParam, instockHandle);
             instockHandle.setInstockOrderId(param.getInstockOrderId());
@@ -761,7 +764,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         /**
          * 添加动态
          */
-        shopCartService.addDynamic(param.getInstockOrderId(), null, "将物料入库");
+        String skuMessage = skuService.skuMessage(skuId);
+        shopCartService.addDynamic(param.getInstockOrderId(), null, "将" + skuMessage + "入库");
         /**
          * 更新单据状态
          */
@@ -782,7 +786,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setActionId(param.getActionId());
 //            }});
             InstockOrder order = this.getById(param.getInstockOrderId());
-            shopCartService.addDynamic(param.getInstockOrderId(), null, "单据:" + order.getCoding() + "完成了入库");
+            shopCartService.addDynamic(param.getInstockOrderId(), null, "完成任务");
 
         }
 
@@ -908,9 +912,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (instockList.getRealNumber() < 0) {
             throw new ServiceException(500, "当前入库数量与单据数量不符");
         }
-//        if (instockList.getRealNumber() == 0) {
-//            instockList.setStatus(99L);
-//        }
+
         instockListService.updateById(instockList);
 
         if (ToolUtil.isNotEmpty(listParam.getCartId())) {
@@ -1604,7 +1606,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> noticeIds = new ArrayList<>();
         List<Long> mediaIds = new ArrayList<>();
         List<Long> formIds = new ArrayList<>();
-
+        List<Long> customerIds = new ArrayList<>();
 
         for (InstockOrderResult datum : data) {
             if (ToolUtil.isNotEmpty(datum.getNoticeId())) {
@@ -1626,7 +1628,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             if (ToolUtil.isNotEmpty(datum.getStatus())) {
                 statusIds.add(datum.getStatus());
             }
+            customerIds.add(datum.getCustomerId());
         }
+
 
         List<Announcements> announcements = noticeIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(noticeIds);
         List<DocumentsStatusResult> documentsStatusResults = documentStatusService.resultsByIds(statusIds);
@@ -1645,7 +1649,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
         List<ShopCart> shopCarts = formIds.size() == 0 ? new ArrayList<>() : shopCartService.query().in("form_id", formIds).eq("display", 1).eq("status", 0).list();
-
+        List<CustomerResult> results = customerService.getResults(customerIds);
 
         for (InstockOrderResult datum : data) {
 
@@ -1655,6 +1659,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             int instockErrorNum = 0;
             List<InstockListResult> instockListResults = new ArrayList<>();
 
+            for (CustomerResult result : results) {
+                if (ToolUtil.isNotEmpty(datum.getCustomerId())&&datum.getCustomerId().equals(result.getCustomerId())) {
+                    datum.setCustomerResult(result);
+                    break;
+                }
+            }
 
             for (InstockListResult instockList : instockListList) {
                 for (Anomaly anomaly : anomalyList) {
