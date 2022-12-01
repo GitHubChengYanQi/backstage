@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.*;
@@ -652,16 +653,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public Set<ContractDetailSetRequest> pendingProductionPlan(OrderParam orderParam) {
-        List<Long> orderIds = new ArrayList<>();
         /**
          * 取出orderDetail 循环取出 orderId
          */
         OrderDetailParam orderDetailParam = new OrderDetailParam();
         orderDetailParam.setType(2);
         List<OrderDetailResult> orderDetailResults = detailService.getOrderDettailProductionIsNull(orderDetailParam);
-        for (OrderDetailResult orderDetailResult : orderDetailResults) {
-            orderIds.add(orderDetailResult.getOrderId());
-        }
+
 
         /*
          * 返回合并后的数据
@@ -670,10 +668,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<Long> brandIds = new ArrayList<>();
         Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
         for (OrderDetailResult orderDetail : orderDetailResults) {
-//            Contract contract = ToolUtil.isEmpty(result.getContractId()) ? new Contract() : contractService.getById(result.getContractId());
-//            result.setContract(contract);
-            List<OrderResult> orderResults =
-            orderDetail.setOrderResult();
             ContractDetailSetRequest request = new ContractDetailSetRequest();
             ToolUtil.copyProperties(orderDetail, request);
             skuIds.add(request.getSkuId());
@@ -702,8 +696,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
         this.detailService.format(orderDetailResults);
-
-
+        List<OrderResult> orderResultList = BeanUtil.copyToList(this.listByIds(orderDetailResults.stream().map(OrderDetailResult::getOrderId).distinct().collect(Collectors.toList())), OrderResult.class);
+        //序列化 order表
+        formatOrders(orderResultList);
+        for (OrderDetailResult orderDetailResult : orderDetailResults) {
+            for (OrderResult orderResult : orderResultList) {
+                if (orderDetailResult.getOrderId().equals(orderResult.getOrderId())) {
+                    orderDetailResult.setOrderResult(orderResult);
+                    break;
+                }
+            }
+        }
         for (ContractDetailSetRequest request : contractDetailSet) {
             Long quantity = 0L;
             List<OrderDetailResult> results = new ArrayList<>();
@@ -735,8 +738,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         return contractDetailSet;
     }
-
-    private void format(List<OrderResult> data) {
+    private void formatOrders(List<OrderResult> data){
         List<Long> customerIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
@@ -754,9 +756,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         List<Contract> contractList = contractIds.size() == 0 ? new ArrayList<>() : contractService.listByIds(contractIds);
 
-        List<OrderDetail> orderDetails = orderIds.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", orderIds).eq("display", 1).list();
-        List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
-        detailService.format(detailResults);
 
 
         for (OrderResult datum : data) {
@@ -768,14 +767,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     datum.setBcustomer(customer);
                 }
             }
-
-            List<OrderDetailResult> orderDetailResults = new ArrayList<>();
-            for (OrderDetailResult detailResult : detailResults) {
-                if (detailResult.getOrderId().equals(datum.getOrderId())) {
-                    orderDetailResults.add(detailResult);
-                }
-            }
-            datum.setDetailResults(orderDetailResults);
 
 
             for (User user : userList) {
@@ -795,6 +786,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
             }
         }
+    }
+    private void format(List<OrderResult> data) {
+        this.formatOrders(data);
+        List<OrderDetail> orderDetails = data.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", data.stream().map(OrderResult::getOrderId).distinct().collect(Collectors.toList())).eq("display", 1).list();
+        List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
+        detailService.format(detailResults);
+        for (OrderResult datum : data) {
+                        List<OrderDetailResult> orderDetailResults = new ArrayList<>();
+            for (OrderDetailResult detailResult : detailResults) {
+                if (detailResult.getOrderId().equals(datum.getOrderId())) {
+                    orderDetailResults.add(detailResult);
+                }
+            }
+            datum.setDetailResults(orderDetailResults);
+        }
+
+
     }
 
 

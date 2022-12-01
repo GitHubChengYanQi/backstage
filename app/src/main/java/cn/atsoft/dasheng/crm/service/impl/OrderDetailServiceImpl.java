@@ -290,11 +290,6 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                     break;
                 }
             }
-           for (OrderResult orderResult : orderResults) {
-               if (ToolUtil.isEmpty(orderDetailResult.getOrderResult()) && orderDetailResult.getOrderId().equals(orderResult.getOrderId())) {
-                   orderDetailResult.setOrderResult(orderResult);
-               }
-           }
         }
 
     }
