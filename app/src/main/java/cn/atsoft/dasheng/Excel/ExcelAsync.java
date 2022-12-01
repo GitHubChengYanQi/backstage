@@ -224,7 +224,7 @@ public class ExcelAsync {
                 if (skuExcelItem.getIsNotBatch().equals("一物一码")) {
                     newSku.setBatch(1);
                 }
-                if (skuExcelItem.getIsNotBatch().equals("一批一码")) {
+                if (skuExcelItem.getIsNotBatch().equals("一件一码")) {
                     newSku.setBatch(0);
                 }
                 //规格-----------------------------------------------------------------------------------------------
