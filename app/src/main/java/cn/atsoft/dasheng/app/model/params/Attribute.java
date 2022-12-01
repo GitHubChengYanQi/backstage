@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class Attribute implements Comparable<Attribute> {
+public class Attribute   implements Comparable<Attribute> {
     private String attributeId;
     private Long id;
     private String attribute;

@@ -125,7 +125,17 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
             updateInStockListStatus(param.getInstockListId(), param.getFormStatus(), entity.getNumber());
             InstockList instockList = instockListService.getById(param.getInstockListId());
             String skuMessage = skuService.skuMessage(instockList.getSkuId());
-            addDynamic(instockList.getInstockOrderId(), instockList.getSkuId(), skuMessage + "核实完成准备入库");
+            String content = "";
+            switch (param.getType()) {
+                case "InstockError":
+                    content = "添加了异常描述";
+                    break;
+                case "waitInStock":
+                    content = "核实完成准备入库";
+                    break;
+            }
+            addDynamic(instockList.getInstockOrderId(), instockList.getSkuId(), skuMessage + content);
+
         }
 
         return entity.getCartId();
@@ -295,6 +305,37 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
 
         }
 
+    }
+
+    /**
+     * 审核动态
+     *
+     * @param taskId
+     * @param status
+     */
+    @Override
+    public void auditDynamic(Long taskId, Integer status) {
+        String content = "";
+        switch (status) {
+            case 1:
+                content = "同意了申请";
+                break;
+            case 0:
+                content = "拒绝了申请";
+                break;
+            case 2:
+                content = "驳回了申请";
+                break;
+        }
+
+
+        DynamicParam dynamic = new DynamicParam();
+        dynamic.setType("1");
+        dynamic.setSource("processTask");
+        dynamic.setUserId(LoginContextHolder.getContext().getUserId());
+        dynamic.setTaskId(taskId);
+        dynamic.setContent(content);
+        dynamicService.add(dynamic);
     }
 
     /**

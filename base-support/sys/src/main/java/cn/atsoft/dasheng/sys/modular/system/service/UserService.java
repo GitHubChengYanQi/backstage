@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.sys.modular.system.service;
 
+import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.sys.core.constant.Const;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.core.util.DefaultImages;
 import cn.atsoft.dasheng.sys.core.util.SaltUtil;
+import cn.atsoft.dasheng.sys.modular.system.model.params.UserParam;
+import cn.atsoft.dasheng.sys.modular.system.model.params.UserPosParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -367,7 +370,12 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return results;
     }
 
-//    public List<User> getUserByPositionAndDept(Map<String,List> param){
-//        return this.baseMapper.listUserByPositionAndDept(param.get("position"),);
-//    }
+    /**
+     * 用户分页
+     * @param param
+     * @return
+     */
+    public Page<UserResult> userResultPageList(UserParam param){
+        return this.baseMapper.userResultPage(PageFactory.defaultPage(),param);
+    }
 }

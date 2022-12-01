@@ -19,7 +19,9 @@ public enum PoOrderActionEnum implements FormActionInterface {
             return 49L;
         }
     },
+    resubmit("再次提交") {  //再次提交
 
+    },
     refuse("拒绝") {
         public Long getStatus() {
             return 50L;

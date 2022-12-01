@@ -24,7 +24,7 @@ public interface InvoiceBillService extends IService<InvoiceBill> {
      * @author song
      * @Date 2022-04-22
      */
-    void add(InvoiceBillParam param);
+    InvoiceBill add(InvoiceBillParam param);
 
     /**
      * 删除
