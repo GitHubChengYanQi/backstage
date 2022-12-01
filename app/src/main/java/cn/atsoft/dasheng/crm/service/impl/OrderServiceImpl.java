@@ -79,6 +79,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Autowired
     private InvoiceService invoiceService;
 
+    @Autowired
+    private OrderService orderService;
+
     @Override
     @Transactional
     public Order add(OrderParam param) {
@@ -410,9 +413,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                         QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
                         queryWrapper.lambda().eq(Phone::getContactsId, orderResult.getDeliverer().getContactsId());
                         List<Phone> list = phoneService.list(queryWrapper);
-                        if (ToolUtil.isEmpty(list.get(0)) || ToolUtil.isEmpty(list.get(0).getPhoneNumber())){
+                        if (ToolUtil.isEmpty(list.get(0)) || ToolUtil.isEmpty(list.get(0).getPhoneNumber())) {
                             map.put(ContractEnum.pickUpManPhone.getDetail(), "");
-                        }else {
+                        } else {
                             map.put(ContractEnum.pickUpManPhone.getDetail(), list.get(0).getPhoneNumber());
                         }
                     } else {
@@ -598,6 +601,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Adress adress = ToolUtil.isEmpty(result.getAdressId()) ? new Adress() : adressService.getById(result.getAdressId());  //交货地址
         result.setAdress(adress);
 
+        Contract contract = ToolUtil.isEmpty(result.getContractId()) ? new Contract() : contractService.getById(result.getContractId());
+        result.setContract(contract);
+
         Contacts contacts = contactsService.getById(result.getUserId());//交货人
         result.setDeliverer(contacts);
 
@@ -664,6 +670,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<Long> brandIds = new ArrayList<>();
         Set<ContractDetailSetRequest> contractDetailSet = new HashSet<>();
         for (OrderDetailResult orderDetail : orderDetailResults) {
+//            Contract contract = ToolUtil.isEmpty(result.getContractId()) ? new Contract() : contractService.getById(result.getContractId());
+//            result.setContract(contract);
+            List<OrderResult> orderResults =
+            orderDetail.setOrderResult();
             ContractDetailSetRequest request = new ContractDetailSetRequest();
             ToolUtil.copyProperties(orderDetail, request);
             skuIds.add(request.getSkuId());
@@ -730,15 +740,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<Long> customerIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
+        List<Long> contractIds = new ArrayList<>();
         for (OrderResult datum : data) {
             customerIds.add(datum.getBuyerId());
             customerIds.add(datum.getSellerId());
             userIds.add(datum.getCreateUser());
             orderIds.add(datum.getOrderId());
+            contractIds.add(datum.getContractId());
         }
 
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+
+        List<Contract> contractList = contractIds.size() == 0 ? new ArrayList<>() : contractService.listByIds(contractIds);
 
         List<OrderDetail> orderDetails = orderIds.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", orderIds).eq("display", 1).list();
         List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
@@ -772,8 +786,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     break;
                 }
             }
+            if (ToolUtil.isNotEmpty(datum.getContractId())) {
+                for (Contract contract : contractList) {
+                    if (datum.getContractId().equals(contract.getContractId())) {
+                        datum.setContract(contract);
+                        break;
+                    }
+                }
+            }
         }
-
-
     }
+
+
 }

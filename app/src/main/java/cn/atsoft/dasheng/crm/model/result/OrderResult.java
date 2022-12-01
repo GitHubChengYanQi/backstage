@@ -1,10 +1,9 @@
 package cn.atsoft.dasheng.crm.model.result;
 
-import cn.atsoft.dasheng.app.entity.Adress;
-import cn.atsoft.dasheng.app.entity.Contacts;
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.entity.Phone;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.crm.entity.Bank;
+import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
@@ -77,6 +76,8 @@ public class OrderResult implements Serializable {
 
     private String ACompanyPhone;
     private String BCompanyPhone;
+
+    private Contract contract;
 
     /**
      * 货币种类
