@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.mapper.OrderDetailMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
+import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.OrderService;
@@ -60,6 +61,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private TaxRateService rateService;
     @Autowired
     private ActivitiProcessService processService;
+    @Autowired
+    private OrderDetailService detailService;
 
     @Override
     public void add(OrderDetailParam param) {
@@ -231,6 +234,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         List<Long> customerIds = new ArrayList<>();
         List<Long> unitIds = new ArrayList<>();
         List<Long> taxIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
 
         long orderId = 0;
         for (OrderDetailResult orderDetailResult : param) {
@@ -239,6 +243,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
             customerIds.add(orderDetailResult.getCustomerId());
             unitIds.add(orderDetailResult.getUnitId());
             taxIds.add(orderDetailResult.getRate());
+            orderIds.add(orderDetailResult.getOrderId());
             orderId = orderDetailResult.getOrderId();
         }
 
@@ -247,6 +252,9 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
         List<Unit> unitList = unitIds.size() == 0 ? new ArrayList<>() : unitService.listByIds(unitIds);
         List<TaxRate> taxRates = taxIds.size() == 0 ? new ArrayList<>() : rateService.listByIds(taxIds);
+
+        List<Order> orderList = orderIds.size() == 0 ? new ArrayList<>() : orderService.listByIds(orderIds);
+        List<OrderResult> orderResults = BeanUtil.copyToList(orderList,OrderResult.class,new CopyOptions());
         String sign = getSign(orderId);
 
         for (OrderDetailResult orderDetailResult : param) {
@@ -282,6 +290,11 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                     break;
                 }
             }
+           for (OrderResult orderResult : orderResults) {
+               if (ToolUtil.isEmpty(orderDetailResult.getOrderResult()) && orderDetailResult.getOrderId().equals(orderResult.getOrderId())) {
+                   orderDetailResult.setOrderResult(orderResult);
+               }
+           }
         }
 
     }
