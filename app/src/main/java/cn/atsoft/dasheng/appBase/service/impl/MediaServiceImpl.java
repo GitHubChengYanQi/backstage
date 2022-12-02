@@ -213,15 +213,12 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     }
     @Override
     public List<MediaUrlResult> getMediaUrlResults(List<Long> mediaIds) {
-        List<MediaUrlResult>  results = new ArrayList<>();
-        for (Long mediaId : mediaIds) {
-            MediaUrlResult result = new MediaUrlResult();
-            String url = getMediaUrlAddUseData(mediaId, null, null);
-            String ThumbUrl = getMediaUrlAddUseData(mediaId, null, THUMB_URL_PARAM);
+        List<MediaUrlResult> results = BeanUtil.copyToList(this.listByIds(mediaIds), MediaUrlResult.class);
+        for (MediaUrlResult result : results) {
+            String url = getMediaUrlAddUseData(result.getMediaId(), null, null);
+            String ThumbUrl = getMediaUrlAddUseData(result.getMediaId(), null, THUMB_URL_PARAM);
             result.setUrl(url);
-            result.setMediaId(mediaId);
             result.setThumbUrl(ThumbUrl);
-            results.add(result);
         }
         return results;
     }
