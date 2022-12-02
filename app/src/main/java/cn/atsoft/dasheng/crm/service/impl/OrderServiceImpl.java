@@ -8,7 +8,6 @@ import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.*;
@@ -704,7 +703,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return contractDetailSet;
     }
 
-    private void format(List<OrderResult> data) {
+    @Override
+    public void format(List<OrderResult> data) {
         List<Long> customerIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();

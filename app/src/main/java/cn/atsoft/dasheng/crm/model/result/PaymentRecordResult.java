@@ -20,6 +20,7 @@ public class PaymentRecordResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private OrderResult orderResult;
 
     /**
      * 付款记录id

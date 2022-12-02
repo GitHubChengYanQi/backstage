@@ -4,15 +4,20 @@ package cn.atsoft.dasheng.crm.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.PaymentDetail;
 import cn.atsoft.dasheng.crm.entity.PaymentRecord;
 import cn.atsoft.dasheng.crm.mapper.PaymentRecordMapper;
 import cn.atsoft.dasheng.crm.model.params.PaymentRecordParam;
+import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentRecordResult;
+import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.crm.service.PaymentDetailService;
 import cn.atsoft.dasheng.crm.service.PaymentRecordService;
 import cn.atsoft.dasheng.crm.service.PaymentService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -21,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,6 +44,10 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
     private PaymentDetailService detailService;
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private PaymentRecordService paymentRecordService;
 
     @Override
     @Transactional
@@ -132,5 +142,27 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
         }
         detailService.updateById(detail);  //更新详情状态
         paymentService.updatePay(detail.getPaymentId());
+    }
+
+    @Override
+    public void format(List<PaymentRecordResult> results) {
+        List<Long> orderIds = new ArrayList<>();
+        for (PaymentRecordResult paymentRecordResult : results) {
+            orderIds.add(paymentRecordResult.getOrderId());
+        }
+        List<Order> orderList = orderIds.size() == 0 ? new ArrayList<>() : orderService.listByIds(orderIds);
+        List<OrderResult> orderResults = BeanUtil.copyToList(orderList,OrderResult.class, new CopyOptions());
+        orderService.format(orderResults);
+        for (PaymentRecordResult recordResult : results) {
+            if (ToolUtil.isNotEmpty(recordResult.getRecordId())) {
+                for (OrderResult orderResult : orderResults) {
+                    if (recordResult.getOrderId().equals(orderResult.getOrderId())) {
+                        recordResult.setOrderResult(orderResult);
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 }

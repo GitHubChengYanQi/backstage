@@ -96,6 +96,9 @@ public class PaymentRecordController extends BaseController {
         PaymentRecord detail = this.paymentRecordService.getById(paymentRecordParam.getRecordId());
         PaymentRecordResult result = new PaymentRecordResult();
         ToolUtil.copyProperties(detail, result);
+        paymentRecordService.format(new ArrayList<PaymentRecordResult>(){{
+            add(result);
+        }});
 
         return ResponseData.success(result);
     }
